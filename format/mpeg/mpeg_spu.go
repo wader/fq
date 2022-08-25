@@ -70,6 +70,7 @@ func rleValue(d *decode.D) (uint64, uint64, int) {
 	}
 }
 
+//nolint:unparam
 func decodeLines(d *decode.D, lines int, width int) []string {
 	var ls []string
 
@@ -99,7 +100,7 @@ func decodeLines(d *decode.D, lines int, width int) []string {
 	return ls
 }
 
-func spuDecode(d *decode.D, in any) any {
+func spuDecode(d *decode.D, _ any) any {
 	d.FieldU16("size")
 	dcsqtOffset := d.FieldU16("dcsqt_offset")
 

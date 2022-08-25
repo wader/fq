@@ -32,9 +32,9 @@ func init() {
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.PROBE}, Group: &probeFormat},
 		},
-		Files:     zipFS,
 		Functions: []string{"_help"},
 	})
+	interp.RegisterFS(zipFS)
 }
 
 const (
@@ -146,17 +146,13 @@ func fieldMSDOSDate(d *decode.D) {
 func zipDecode(d *decode.D, in any) any {
 	zi, _ := in.(format.ZipIn)
 
-	// TODO: just decode instead?
-	if !bytes.Equal(d.PeekBytes(4), []byte("PK\x03\x04")) {
-		d.Errorf("expected PK header")
-	}
-
 	d.Endian = decode.LittleEndian
 
+	// zip files are parsed from end
 	d.SeekAbs(d.Len())
 
 	// TODO: better EOCD probe
-	p, _, err := d.TryPeekFind(32, -8, -10000, func(v uint64) bool {
+	p, _, err := d.TryPeekFind(32, -8, 10000, func(v uint64) bool {
 		return v == uint64(endOfCentralDirectoryRecordSignatureN)
 	})
 	if err != nil {
@@ -182,7 +178,7 @@ func zipDecode(d *decode.D, in any) any {
 
 	// there is a end of central directory locator, is zip64
 	if offsetCD == 0xff_ff_ff_ff {
-		p, _, err := d.TryPeekFind(32, -8, -10000, func(v uint64) bool {
+		p, _, err := d.TryPeekFind(32, -8, 10000, func(v uint64) bool {
 			return v == uint64(endOfCentralDirectoryLocatorSignatureN)
 		})
 		if err != nil {

@@ -23,7 +23,7 @@ var footerFormat decode.Group
 func init() {
 	interp.RegisterFormat(decode.Format{
 		Name:        format.WAV,
-		ProbeOrder:  10, // after most others (overlap some with webp)
+		ProbeOrder:  format.ProbeOrderBinFuzzy, // after most others (overlap some with webp)
 		Description: "WAV file",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    wavDecode,
@@ -124,7 +124,7 @@ var subFormatNames = scalar.BytesToScalar{
 	{Bytes: subFormatIEEEFloat[:], Scalar: scalar.S{Sym: "ieee_float"}},
 }
 
-func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 {
+func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) {
 	d.Endian = decode.LittleEndian
 
 	chunks := map[string]func(d *decode.D){
@@ -191,8 +191,6 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) int64 {
 	if chunkLen%2 != 0 {
 		d.FieldRawLen("align", 8)
 	}
-
-	return chunkLen + 8
 }
 
 func decodeChunks(d *decode.D, stringData bool) {
@@ -201,7 +199,7 @@ func decodeChunks(d *decode.D, stringData bool) {
 	})
 }
 
-func wavDecode(d *decode.D, in any) any {
+func wavDecode(d *decode.D, _ any) any {
 	// there are wav files in the wild with id3v2 header id3v1 footer
 	_, _, _ = d.TryFieldFormat("header", headerFormat, nil)
 

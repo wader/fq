@@ -20,9 +20,9 @@ func init() {
 		Name:        format.BENCODE,
 		Description: "BitTorrent bencoding",
 		DecodeFn:    decodeBencode,
-		Files:       bencodeFS,
 		Functions:   []string{"torepr", "_help"},
 	})
+	interp.RegisterFS(bencodeFS)
 }
 
 var typeToNames = scalar.StrToSymStr{
@@ -90,7 +90,7 @@ func decodeBencodeValue(d *decode.D) {
 	}
 }
 
-func decodeBencode(d *decode.D, in any) any {
+func decodeBencode(d *decode.D, _ any) any {
 	decodeBencodeValue(d)
 	return nil
 }

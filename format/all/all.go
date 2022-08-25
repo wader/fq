@@ -1,4 +1,5 @@
 // Package all registers all builtin formats with the default registry
+//
 //nolint:revive
 package all
 
@@ -13,6 +14,8 @@ import (
 	_ "github.com/wader/fq/format/bson"
 	_ "github.com/wader/fq/format/bzip2"
 	_ "github.com/wader/fq/format/cbor"
+	_ "github.com/wader/fq/format/crypto"
+	_ "github.com/wader/fq/format/csv"
 	_ "github.com/wader/fq/format/dns"
 	_ "github.com/wader/fq/format/elf"
 	_ "github.com/wader/fq/format/fairplay"
@@ -25,6 +28,7 @@ import (
 	_ "github.com/wader/fq/format/jpeg"
 	_ "github.com/wader/fq/format/json"
 	_ "github.com/wader/fq/format/macho"
+	_ "github.com/wader/fq/format/math"
 	_ "github.com/wader/fq/format/matroska"
 	_ "github.com/wader/fq/format/mp3"
 	_ "github.com/wader/fq/format/mp4"
@@ -35,14 +39,20 @@ import (
 	_ "github.com/wader/fq/format/pcap"
 	_ "github.com/wader/fq/format/png"
 	_ "github.com/wader/fq/format/postgres"
+	_ "github.com/wader/fq/format/prores"
 	_ "github.com/wader/fq/format/protobuf"
 	_ "github.com/wader/fq/format/raw"
 	_ "github.com/wader/fq/format/rtmp"
 	_ "github.com/wader/fq/format/tar"
+	_ "github.com/wader/fq/format/text"
 	_ "github.com/wader/fq/format/tiff"
+	_ "github.com/wader/fq/format/toml"
 	_ "github.com/wader/fq/format/vorbis"
 	_ "github.com/wader/fq/format/vpx"
+	_ "github.com/wader/fq/format/wasm"
 	_ "github.com/wader/fq/format/wav"
 	_ "github.com/wader/fq/format/webp"
+	_ "github.com/wader/fq/format/xml"
+	_ "github.com/wader/fq/format/yaml"
 	_ "github.com/wader/fq/format/zip"
 )

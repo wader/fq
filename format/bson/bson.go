@@ -20,9 +20,9 @@ func init() {
 		Name:        format.BSON,
 		Description: "Binary JSON",
 		DecodeFn:    decodeBSON,
-		Files:       bsonFS,
 		Functions:   []string{"torepr", "_help"},
 	})
+	interp.RegisterFS(bsonFS)
 }
 
 const (
@@ -110,7 +110,7 @@ func decodeBSONDocument(d *decode.D) {
 	})
 }
 
-func decodeBSON(d *decode.D, in any) any {
+func decodeBSON(d *decode.D, _ any) any {
 	d.Endian = decode.LittleEndian
 
 	decodeBSONDocument(d)

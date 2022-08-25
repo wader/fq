@@ -353,11 +353,7 @@ func strIndexNull(idx int, s string) string {
 type strTable string
 
 func (m strTable) MapScalar(s scalar.S) (scalar.S, error) {
-	uv, ok := s.Actual.(uint64)
-	if !ok {
-		return s, nil
-	}
-	s.Sym = strIndexNull(int(uv), string(m))
+	s.Sym = strIndexNull(int(s.ActualU()), string(m))
 	return s, nil
 }
 
@@ -518,6 +514,15 @@ type sectionHeader struct {
 	symbols []symbol
 }
 
+const maxStrTabSize = 100_000_000
+
+func readStrTab(d *decode.D, firstBit int64, nBytes int64) string {
+	if nBytes > maxStrTabSize {
+		d.Errorf("string table too large %d > %d", nBytes, maxStrTabSize)
+	}
+	return string(d.BytesRange(firstBit, int(nBytes)))
+}
+
 func elfReadSectionHeaders(d *decode.D, ec *elfContext) {
 	for i := 0; i < ec.shNum; i++ {
 		d.SeekAbs(ec.shOff + int64(i)*ec.shEntSize)
@@ -571,7 +576,7 @@ func elfReadSectionHeaders(d *decode.D, ec *elfContext) {
 		}
 		if i, ok := ec.sectionIndexByAddr(sh.dc.strTabPtr); ok {
 			strTabSh := ec.sections[i]
-			sh.dc.strTab = string(d.BytesRange(strTabSh.offset, int(sh.dc.strSzVal/8)))
+			sh.dc.strTab = readStrTab(d, strTabSh.offset, sh.dc.strSzVal/8)
 		}
 	}
 
@@ -581,12 +586,13 @@ func elfReadSectionHeaders(d *decode.D, ec *elfContext) {
 		d.Fatalf("can't find shStrNdx %d", ec.shStrNdx)
 	}
 	sh := ec.sections[ec.shStrNdx]
-	shStrTab = string(d.BytesRange(sh.offset, int(sh.size/8)))
+
+	shStrTab = readStrTab(d, sh.offset, sh.size/8)
 	for _, sh := range ec.sections {
 		if sh.typ != SHT_STRTAB {
 			continue
 		}
-		ec.strTabMap[strIndexNull(sh.name, shStrTab)] = string(d.BytesRange(sh.offset, int(sh.size/8)))
+		ec.strTabMap[strIndexNull(sh.name, shStrTab)] = readStrTab(d, sh.offset, sh.size/8)
 	}
 }
 
@@ -695,34 +701,32 @@ func elfDecodeProgramHeader(d *decode.D, ec elfContext) {
 		})
 	}
 
-	d.FieldStruct("program_header", func(d *decode.D) {
-		var offset uint64
-		var size uint64
+	var offset uint64
+	var size uint64
 
-		switch ec.archBits {
-		case 32:
-			d.FieldU32("type", phTypeNames)
-			offset = d.FieldU("offset", ec.archBits, scalar.ActualHex)
-			d.FieldU("vaddr", ec.archBits, scalar.ActualHex)
-			d.FieldU("paddr", ec.archBits, scalar.ActualHex)
-			size = d.FieldU32("filesz")
-			d.FieldU32("memsz")
-			pFlags(d)
-			d.FieldU32("align")
-		case 64:
-			d.FieldU32("type", phTypeNames)
-			pFlags(d)
-			offset = d.FieldU("offset", ec.archBits, scalar.ActualHex)
-			d.FieldU("vaddr", ec.archBits, scalar.ActualHex)
-			d.FieldU("paddr", ec.archBits, scalar.ActualHex)
-			size = d.FieldU64("filesz")
-			d.FieldU64("memsz")
-			d.FieldU64("align")
-		}
+	switch ec.archBits {
+	case 32:
+		d.FieldU32("type", phTypeNames)
+		offset = d.FieldU("offset", ec.archBits, scalar.ActualHex)
+		d.FieldU("vaddr", ec.archBits, scalar.ActualHex)
+		d.FieldU("paddr", ec.archBits, scalar.ActualHex)
+		size = d.FieldU32("filesz")
+		d.FieldU32("memsz")
+		pFlags(d)
+		d.FieldU32("align")
+	case 64:
+		d.FieldU32("type", phTypeNames)
+		pFlags(d)
+		offset = d.FieldU("offset", ec.archBits, scalar.ActualHex)
+		d.FieldU("vaddr", ec.archBits, scalar.ActualHex)
+		d.FieldU("paddr", ec.archBits, scalar.ActualHex)
+		size = d.FieldU64("filesz")
+		d.FieldU64("memsz")
+		d.FieldU64("align")
+	}
 
-		d.RangeFn(int64(offset*8), int64(size*8), func(d *decode.D) {
-			d.FieldRawLen("data", d.BitsLeft())
-		})
+	d.RangeFn(int64(offset*8), int64(size*8), func(d *decode.D) {
+		d.FieldRawLen("data", d.BitsLeft())
 	})
 }
 
@@ -903,7 +907,7 @@ func elfDecodeSectionHeaders(d *decode.D, ec elfContext) {
 	}
 }
 
-func elfDecode(d *decode.D, in any) any {
+func elfDecode(d *decode.D, _ any) any {
 	var ec elfContext
 
 	d.FieldStruct("header", func(d *decode.D) { elfDecodeHeader(d, &ec) })
@@ -911,11 +915,9 @@ func elfDecode(d *decode.D, in any) any {
 	// a first pass to find all sections and string table information etc
 	elfReadSectionHeaders(d, &ec)
 	d.FieldArray("program_headers", func(d *decode.D) {
-		d.RangeSorted = false
 		elfDecodeProgramHeaders(d, ec)
 	})
 	d.FieldArray("section_headers", func(d *decode.D) {
-		d.RangeSorted = false
 		elfDecodeSectionHeaders(d, ec)
 	})
 

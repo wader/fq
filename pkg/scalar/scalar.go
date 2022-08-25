@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/wader/fq/internal/bitioextra"
+	"github.com/wader/fq/internal/bitioex"
 	"github.com/wader/fq/pkg/bitio"
 )
 
@@ -103,30 +103,43 @@ func ActualTrim(cutset string) ActualStrFn {
 
 var ActualTrimSpace = ActualStrFn(strings.TrimSpace)
 
-func strMapToSym(fn func(s string) (any, error)) Mapper {
+func strMapToSym(fn func(s string) (any, error), try bool) Mapper {
 	return Fn(func(s S) (S, error) {
 		ts := strings.TrimSpace(s.ActualStr())
-		if ts != "" {
-			n, err := fn(ts)
-			if err != nil {
-				return s, err
+		n, err := fn(ts)
+		if err != nil {
+			if try {
+				return s, nil
 			}
-			s.Sym = n
+			return s, err
 		}
+		s.Sym = n
 		return s, nil
 	})
 }
 
+func TrySymUParseUint(base int) Mapper {
+	return strMapToSym(func(s string) (any, error) { return strconv.ParseUint(s, base, 64) }, true)
+}
+
+func TrySymSParseInt(base int) Mapper {
+	return strMapToSym(func(s string) (any, error) { return strconv.ParseInt(s, base, 64) }, true)
+}
+
+func TrySymFParseFloat(base int) Mapper {
+	return strMapToSym(func(s string) (any, error) { return strconv.ParseFloat(s, base) }, true)
+}
+
 func SymUParseUint(base int) Mapper {
-	return strMapToSym(func(s string) (any, error) { return strconv.ParseUint(s, base, 64) })
+	return strMapToSym(func(s string) (any, error) { return strconv.ParseUint(s, base, 64) }, false)
 }
 
 func SymSParseInt(base int) Mapper {
-	return strMapToSym(func(s string) (any, error) { return strconv.ParseInt(s, base, 64) })
+	return strMapToSym(func(s string) (any, error) { return strconv.ParseInt(s, base, 64) }, false)
 }
 
 func SymFParseFloat(base int) Mapper {
-	return strMapToSym(func(s string) (any, error) { return strconv.ParseFloat(s, base) })
+	return strMapToSym(func(s string) (any, error) { return strconv.ParseFloat(s, base) }, false)
 }
 
 type URangeEntry struct {
@@ -138,10 +151,7 @@ type URangeEntry struct {
 type URangeToScalar []URangeEntry
 
 func (rs URangeToScalar) MapScalar(s S) (S, error) {
-	n, ok := s.Actual.(uint64)
-	if !ok {
-		return s, nil
-	}
+	n := s.ActualU()
 	for _, re := range rs {
 		if n >= re.Range[0] && n <= re.Range[1] {
 			ns := re.S
@@ -163,10 +173,7 @@ type SRangeEntry struct {
 type SRangeToScalar []SRangeEntry
 
 func (rs SRangeToScalar) MapScalar(s S) (S, error) {
-	n, ok := s.Actual.(int64)
-	if !ok {
-		return s, nil
-	}
+	n := s.ActualS()
 	for _, re := range rs {
 		if n >= re.Range[0] && n <= re.Range[1] {
 			ns := re.S
@@ -179,11 +186,8 @@ func (rs SRangeToScalar) MapScalar(s S) (S, error) {
 }
 
 func RawSym(s S, nBytes int, fn func(b []byte) string) (S, error) {
-	br, ok := s.Actual.(bitio.ReadAtSeeker)
-	if !ok {
-		return s, nil
-	}
-	brLen, err := bitioextra.Len(br)
+	br := s.ActualBitBuf()
+	brLen, err := bitioex.Len(br)
 	if err != nil {
 		return S{}, err
 	}
@@ -228,7 +232,7 @@ func (m BytesToScalar) MapScalar(s S) (S, error) {
 		return s, err
 	}
 	bb := &bytes.Buffer{}
-	if _, err := bitioextra.CopyBits(bb, rc); err != nil {
+	if _, err := bitioex.CopyBits(bb, rc); err != nil {
 		return s, err
 	}
 	for _, bs := range m {

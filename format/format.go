@@ -1,5 +1,15 @@
 package format
 
+// TODO: do before-format somehow and topology sort?
+const (
+	ProbeOrderBinUnique = 0   // binary with unlikely overlap
+	ProbeOrderBinFuzzy  = 100 // binary with possible overlap
+	ProbeOrderTextJSON  = 200 // text json has prio as yaml overlap
+	ProbeOrderTextFuzzy = 300 // text with possible overlap
+)
+
+// TODO: change to CamelCase?
+//
 //nolint:revive
 const (
 	ALL = "all"
@@ -39,6 +49,7 @@ const (
 	BSON                = "bson"
 	BZIP2               = "bzip2"
 	CBOR                = "cbor"
+	CSV                 = "csv"
 	DNS                 = "dns"
 	DNS_TCP             = "dns_tcp"
 	ELF                 = "elf"
@@ -61,6 +72,7 @@ const (
 	HEVC_PPS            = "hevc_pps"
 	HEVC_SPS            = "hevc_sps"
 	HEVC_VPS            = "hevc_vps"
+	HTML                = "html"
 	ICC_PROFILE         = "icc_profile"
 	ICMP                = "icmp"
 	ICMPV6              = "icmpv6"
@@ -71,7 +83,9 @@ const (
 	IPV6_PACKET         = "ipv6_packet"
 	JPEG                = "jpeg"
 	JSON                = "json"
+	JSONL               = "jsonl"
 	MACHO               = "macho"
+	MACHO_FAT           = "macho_fat"
 	MATROSKA            = "matroska"
 	MP3                 = "mp3"
 	MP3_FRAME           = "mp3_frame"
@@ -95,6 +109,7 @@ const (
 	PG_CONTROL          = "pg_control"
 	PGHEAP              = "pgheap"
 	PNG                 = "png"
+	PRORES_FRAME        = "prores_frame"
 	PROTOBUF            = "protobuf"
 	PROTOBUF_WIDEVINE   = "protobuf_widevine"
 	PSSH_PLAYREADY      = "pssh_playready"
@@ -105,6 +120,7 @@ const (
 	TAR                 = "tar"
 	TCP_SEGMENT         = "tcp_segment"
 	TIFF                = "tiff"
+	TOML                = "toml"
 	UDP_DATAGRAM        = "udp_datagram"
 	VORBIS_COMMENT      = "vorbis_comment"
 	VORBIS_PACKET       = "vorbis_packet"
@@ -112,9 +128,12 @@ const (
 	VP9_CFM             = "vp9_cfm"
 	VP9_FRAME           = "vp9_frame"
 	VPX_CCR             = "vpx_ccr"
+	WASM                = "wasm"
 	WAV                 = "wav"
 	WEBP                = "webp"
 	XING                = "xing"
+	XML                 = "xml"
+	YAML                = "yaml"
 	ZIP                 = "zip"
 )
 
@@ -279,6 +298,21 @@ type Mp4In struct {
 
 type ZipIn struct {
 	Uncompress bool `doc:"Uncompress and probe files"`
+}
+
+type XMLIn struct {
+	Seq   bool `doc:"Use seq attribute to preserve element order"`
+	Array bool `doc:"Decode as nested arrays"`
+}
+
+type HTMLIn struct {
+	Seq   bool `doc:"Use seq attribute to preserve element order"`
+	Array bool `doc:"Decode as nested arrays"`
+}
+
+type CSVLIn struct {
+	Comma   string `doc:"Separator character"`
+	Comment string `doc:"Comment line character"`
 }
 
 type PostgresIn struct {

@@ -5,22 +5,19 @@ import (
 	"encoding/binary"
 	"errors"
 
-	"github.com/wader/fq/internal/bitioextra"
+	"github.com/wader/fq/internal/bitioex"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 func bitBufIsZero(s scalar.S, isValidate bool) (scalar.S, error) {
-	br, ok := s.Actual.(bitio.ReaderAtSeeker)
-	if !ok {
-		return s, nil
-	}
+	br := s.ActualBitBuf()
 
 	isZero := true
 	// TODO: shared
 	b := make([]byte, 32*1024)
 	bLen := int64(len(b)) * 8
-	brLen, err := bitioextra.Len(br)
+	brLen, err := bitioex.Len(br)
 	if err != nil {
 		return scalar.S{}, err
 	}
@@ -80,7 +77,7 @@ func (d *D) BitBufValidateIsZero() scalar.Mapper {
 // TODO: generate?
 func assertBitBuf(s scalar.S, isErr bool, bss ...[]byte) (scalar.S, error) {
 	bb := &bytes.Buffer{}
-	if _, err := bitioextra.CopyBits(bb, s.ActualBitBuf()); err != nil {
+	if _, err := bitioex.CopyBits(bb, s.ActualBitBuf()); err != nil {
 		return s, err
 	}
 	for _, bs := range bss {

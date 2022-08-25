@@ -40,19 +40,7 @@ var obuTypeNames = scalar.UToSymStr{
 	OBU_PADDING:                "OBU_PADDING",
 }
 
-func decodeLeb128(d *decode.D) uint64 {
-	var v uint64
-	for i := 0; i < 8; i++ {
-		b := d.U8()
-		v = v | (b&0x7f)<<(i*7)
-		if b&0x80 == 0 {
-			break
-		}
-	}
-	return v
-}
-
-func obuDecode(d *decode.D, in any) any {
+func obuDecode(d *decode.D, _ any) any {
 	var obuType uint64
 	var obuSize int64
 	hasExtension := false
@@ -72,7 +60,7 @@ func obuDecode(d *decode.D, in any) any {
 	})
 
 	if hasSizeField {
-		obuSize = int64(d.FieldUFn("size", decodeLeb128))
+		obuSize = int64(d.FieldULEB128("size"))
 	} else {
 		obuSize = d.BitsLeft() / 8
 		if hasExtension {

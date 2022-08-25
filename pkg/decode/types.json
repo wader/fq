@@ -173,6 +173,16 @@
             "variants": [ {"name": "", "args": "ov", "params": "ov uint64", "call": "d.tryUnary(ov)", "doc": "unary integer using ov as \"one\" value"} ]
         },
         {
+            "name": "ULEB128",
+            "type": "U",
+            "variants": [ {"name": "", "args": "", "params": "", "call": "d.tryULEB128()", "doc": "unsigned LEB128 integer"} ]
+        },
+        {
+            "name": "SLEB128",
+            "type": "S",
+            "variants": [ {"name": "", "args": "", "params": "", "call": "d.trySLEB128()", "doc": "signed LEB128 integer"} ]
+        },
+        {
             "type": "Str",
             "name": "UTF",
             "variants": [
@@ -203,9 +213,14 @@
             ]
         },
         {
-            "name": "UTF8Null",
+            "name": "UTF",
             "type": "Str",
-            "variants": [ {"name": "", "args": "", "params": "", "call": "d.tryTextNull(1, UTF8BOM)", "doc": "null terminated UTF8 string"} ]
+            "variants": [
+                {"name": "8Null", "args": "", "params": "", "call": "d.tryTextNull(1, UTF8BOM)", "doc": "null terminated UTF8 string"},
+                {"name": "16Null", "args": "", "params": "", "call": "d.tryTextNull(2, UTF16BOM)", "doc": "null terminated UTF16 string, default big-endian and accepts BOM"},
+                {"name": "16LENull", "args": "", "params": "", "call": "d.tryTextNull(2, UTF16LE)", "doc": "null terminated UTF16LE string"},
+                {"name": "16BENull", "args": "", "params": "", "call": "d.tryTextNull(2, UTF16BE)", "doc": "null terminated UTF16BE string"}
+            ]
         },
         {
             "name": "UTF8NullFixedLen",

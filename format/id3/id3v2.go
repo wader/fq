@@ -227,10 +227,14 @@ const (
 
 // $00 ISO-8859-1 [ISO-8859-1]. Terminated with $00.
 // $01 UTF-16 [UTF-16] encoded Unicode [UNICODE] with BOM. All
-//     strings in the same frame SHALL have the same byteorder.
-//     Terminated with $00 00.
+//
+//	strings in the same frame SHALL have the same byteorder.
+//	Terminated with $00 00.
+//
 // $02 UTF-16BE [UTF-16] encoded Unicode [UNICODE] without BOM.
-//     Terminated with $00 00.
+//
+//	Terminated with $00 00.
+//
 // $03 UTF-8 [UTF-8] encoded Unicode [UNICODE]. Terminated with $00.
 var encodingNames = scalar.UToSymStr{
 	encodingISO8859_1: "iso_8859-1",
@@ -545,7 +549,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// TODO: DecodeFn
 		// TODO: unknown after frame decode
 		unsyncedBR := d.NewBitBufFromReader(unsyncReader{Reader: bitio.NewIOReader(d.BitBufRange(d.Pos(), int64(dataSize)*8))})
-		d.FieldFormatBitBuf("unsync", unsyncedBR, decode.FormatFn(func(d *decode.D, in any) any {
+		d.FieldFormatBitBuf("unsync", unsyncedBR, decode.FormatFn(func(d *decode.D, _ any) any {
 			if fn, ok := frames[idNormalized]; ok {
 				fn(d)
 			} else {
@@ -586,7 +590,7 @@ func decodeFrames(d *decode.D, version int, size uint64) {
 	}
 }
 
-func id3v2Decode(d *decode.D, in any) any {
+func id3v2Decode(d *decode.D, _ any) any {
 	d.AssertAtLeastBitsLeft(4 * 8)
 	d.FieldUTF8("magic", 3, d.AssertStr("ID3"))
 	version := int(d.FieldU8("version"))

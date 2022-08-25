@@ -192,7 +192,7 @@ $ fq -d mp4 dv aac.mp4
      |                                               |                |                          boxes[0:1]: 0x437-0x490.7 (90)
      |                                               |                |                            [0]{}: box 0x437-0x490.7 (90)
 0x430|                     00 00 00 5a               |       ...Z     |                              size: 90 0x437-0x43a.7 (4)
-0x430|                                 6d 70 34 61   |           mp4a |                              type: "mp4a" 0x43b-0x43e.7 (4)
+0x430|                                 6d 70 34 61   |           mp4a |                              type: "mp4a" (MPEG Audio) 0x43b-0x43e.7 (4)
 0x430|                                             00|               .|                              reserved: raw bits 0x43f-0x444.7 (6)
 0x440|00 00 00 00 00                                 |.....           |
 0x440|               00 01                           |     ..         |                              data_reference_index: 1 0x445-0x446.7 (2)
@@ -211,7 +211,7 @@ $ fq -d mp4 dv aac.mp4
 0x450|                                             65|               e|                                  type: "esds" (Elementary stream descriptor) 0x45f-0x462.7 (4)
 0x460|73 64 73                                       |sds             |
 0x460|         00 00 00 00                           |   ....         |                                  version: 0 0x463-0x466.7 (4)
-     |                                               |                |                                  descriptor{}: (mpeg_es) 0x467-0x490.7 (42)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|                                  descriptor{}: (mpeg_es) 0x467-0x490.7 (42)
 0x460|                     03                        |       .        |                                    tag_id: "ES_DescrTag" (3) 0x467-0x467.7 (1)
 0x460|                        80 80 80 25            |        ...%    |                                    length: 37 0x468-0x46b.7 (4)
 0x460|                                    00 01      |            ..  |                                    es_id: 1 0x46c-0x46d.7 (2)
@@ -233,7 +233,7 @@ $ fq -d mp4 dv aac.mp4
      |                                               |                |                                      decoder_specific_info{}: 0x481-0x48a.7 (10)
 0x480|   05                                          | .              |                                        tag_id: "DecSpecificInfoTag" (5) 0x481-0x481.7 (1)
 0x480|      80 80 80 05                              |  ....          |                                        length: 5 0x482-0x485.7 (4)
-     |                                               |                |                                        audio_specific_config{}: (mpeg_asc) 0x486-0x48a.7 (5)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|                                        audio_specific_config{}: (mpeg_asc) 0x486-0x48a.7 (5)
 0x480|                  12                           |      .         |                                          object_type: "aac_lc" (2) (AAC Low Complexity)) 0x486-0x486.4 (0.5)
 0x480|                  12 08                        |      ..        |                                          sampling_frequency: 44100 (4) 0x486.5-0x487 (0.4)
 0x480|                     08                        |       .        |                                          channel_configuration: 1 (front-center) 0x487.1-0x487.4 (0.4)
@@ -358,7 +358,7 @@ $ fq -d mp4 dv aac.mp4
      |                                               |                |  tracks[0:1]: 0x2c-0x59c.7 (1393)
      |                                               |                |    [0]{}: track 0x2c-0x59c.7 (1393)
      |                                               |                |      samples[0:4]: 0x2c-0x291.7 (614)
-     |                                               |                |        [0][0:4]: sample (aac_frame) 0x2c-0xf8.7 (205)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [0][0:4]: sample (aac_frame) 0x2c-0xf8.7 (205)
      |                                               |                |          [0]{}: element 0x2c-0x3c.6 (16.7)
 0x020|                                    de         |            .   |            syntax_element: "FIL" (6) 0x2c-0x2c.2 (0.3)
      |                                               |                |            cnt{}: 0x2c.3-0x2d.6 (1.4)
@@ -384,7 +384,7 @@ $ fq -d mp4 dv aac.mp4
 0x040|   a9 8c 72 50 8b 4c aa de 1d 71 72 5c 88 42 08| ..rP.L...qr\.B.|          [3]: raw bits data 0x41-0xf8.7 (184)
 0x050|10 0e 80 0c d5 9f 71 6c 47 12 cb b6 16 71 ec 69|......qlG....q.i|
 *    |until 0xf8.7 (184)                             |                |
-     |                                               |                |        [1][0:3]: sample (aac_frame) 0xf9-0x1d2.7 (218)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [1][0:3]: sample (aac_frame) 0xf9-0x1d2.7 (218)
      |                                               |                |          [0]{}: element 0xf9-0xfc.5 (3.6)
 0x0f0|                           01                  |         .      |            syntax_element: "SCE" (0) 0xf9-0xf9.2 (0.3)
 0x0f0|                           01                  |         .      |            element_instance_tag: 0 0xf9.3-0xf9.6 (0.4)
@@ -399,7 +399,7 @@ $ fq -d mp4 dv aac.mp4
 0x0f0|                                       d8 3d d6|             .=.|          [2]: raw bits data 0xfd-0x1d2.7 (214)
 0x100|93 80 76 db 22 13 6a 38 46 1c 9c 5e ae 85 f1 ab|..v.".j8F..^....|
 *    |until 0x1d2.7 (214)                            |                |
-     |                                               |                |        [2][0:3]: sample (aac_frame) 0x1d3-0x28c.7 (186)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [2][0:3]: sample (aac_frame) 0x1d3-0x28c.7 (186)
      |                                               |                |          [0]{}: element 0x1d3-0x1d6.5 (3.6)
 0x1d0|         01                                    |   .            |            syntax_element: "SCE" (0) 0x1d3-0x1d3.2 (0.3)
 0x1d0|         01                                    |   .            |            element_instance_tag: 0 0x1d3.3-0x1d3.6 (0.4)
@@ -414,7 +414,7 @@ $ fq -d mp4 dv aac.mp4
 0x1d0|                     d3 21 41 ad 34 86 c8 cd 9a|       .!A.4....|          [2]: raw bits data 0x1d7-0x28c.7 (182)
 0x1e0|f0 3d 04 a1 e7 5f 1d 0c ff 81 d6 bd bc da b0 65|.=..._.........e|
 *    |until 0x28c.7 (182)                            |                |
-     |                                               |                |        [3][0:3]: sample (aac_frame) 0x28d-0x291.7 (5)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [3][0:3]: sample (aac_frame) 0x28d-0x291.7 (5)
      |                                               |                |          [0]{}: element 0x28d-0x290.5 (3.6)
 0x280|                                       01      |             .  |            syntax_element: "SCE" (0) 0x28d-0x28d.2 (0.3)
 0x280|                                       01      |             .  |            element_instance_tag: 0 0x28d.3-0x28d.6 (0.4)
@@ -429,4 +429,4 @@ $ fq -d mp4 dv aac.mp4
 0x290|b4                                             |.               |          [1]: raw bits byte_align 0x290.6-0x290.7 (0.2)
 0x290|   70                                          | p              |          [2]: raw bits data 0x291-0x291.7 (1)
      |                                               |                |      id: 1 0x59d-NA (0)
-     |                                               |                |      data_foramt: "mp4a" 0x59d-NA (0)
+     |                                               |                |      data_foramt: "mp4a" (MPEG Audio) 0x59d-NA (0)

@@ -16,8 +16,8 @@ func init() {
 }
 
 // transform to binary using fn
-func makeBinaryTransformFn(fn func(r io.Reader) (io.Reader, error)) func(i *interp.Interp, c any) any {
-	return func(i *interp.Interp, c any) any {
+func makeBinaryTransformFn(fn func(r io.Reader) (io.Reader, error)) func(_ *interp.Interp, c any) any {
+	return func(_ *interp.Interp, c any) any {
 		inBR, err := interp.ToBitReader(c)
 		if err != nil {
 			return err
@@ -73,7 +73,8 @@ func decodeEscapeValueAbsFn(b1 int, b2 int, b3 int) func(d *decode.D) uint64 {
 }
 
 // add values and escaped values
-//nolint: deadcode,unused
+//
+//nolint:deadcode,unused
 func decodeEscapeValueAddFn(b1 int, b2 int, b3 int) func(d *decode.D) uint64 {
 	return decodeEscapeValueFn(0, b1, b2, b3)
 }

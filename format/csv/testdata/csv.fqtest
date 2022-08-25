@@ -1,0 +1,47 @@
+/test:
+1,2,3
+$ fq -d csv . /test
+[
+  [
+    "1",
+    "2",
+    "3"
+  ]
+]
+$ fq -i
+null> "a,b,c,d" | fromcsv | ., tocsv
+[
+  [
+    "a",
+    "b",
+    "c",
+    "d"
+  ]
+]
+"a,b,c,d\n"
+null> "a,\"b, c\",d" | fromcsv | ., tocsv
+[
+  [
+    "a",
+    "b, c",
+    "d"
+  ]
+]
+"a,\"b, c\",d\n"
+null> "a\t\"b\t c\"\td" | fromcsv({comma:"\t"}) | ., tocsv({comma: "\t"})
+[
+  [
+    "a",
+    "b\t c",
+    "d"
+  ]
+]
+"a\t\"b\t c\"\td\n"
+null> [[bsl(1;100)]] | tocsv | ., fromcsv
+"1267650600228229401496703205376\n"
+[
+  [
+    "1267650600228229401496703205376"
+  ]
+]
+null> ^D

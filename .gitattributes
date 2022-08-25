@@ -2,3 +2,4 @@
 *.fqtest eol=lf
 *.json eol=lf
 *.jq eol=lf
+*.xml eol=lf

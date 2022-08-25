@@ -4,7 +4,7 @@ package mpeg
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/internal/mathextra"
+	"github.com/wader/fq/internal/mathex"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
@@ -49,7 +49,7 @@ func uEV(d *decode.D) uint64 { return expGolomb(d) }
 
 func sEV(d *decode.D) int64 {
 	v := expGolomb(d) + 1
-	return mathextra.ZigZag(v) - -int64(v&1)
+	return mathex.ZigZag(v) - -int64(v&1)
 }
 
 const (
@@ -98,7 +98,7 @@ var sliceNames = scalar.UToSymStr{
 	9: "si",
 }
 
-func avcNALUDecode(d *decode.D, in any) any {
+func avcNALUDecode(d *decode.D, _ any) any {
 	d.FieldBool("forbidden_zero_bit")
 	d.FieldU2("nal_ref_idc")
 	nalType := d.FieldU5("nal_unit_type", avcNALNames)

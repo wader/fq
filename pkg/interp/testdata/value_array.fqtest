@@ -1,6 +1,7 @@
 $ fq -i -d mp3 . test.mp3
 mp3> .headers | ., tovalue, type, length?
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.headers[0:1]:
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x00|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|  [0]{}: header (id3v2)
 *   |until 0x2c.7 (45)                              |                |
 [
@@ -166,14 +167,14 @@ mp3> .headers._bits | ., type, length?
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x00|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|.: raw bits 0x0-0x2c.7 (45)
 *   |until 0x2c.7 (45)                              |                |
-"binary"
+"string"
 360
 mp3> 
 mp3> .headers._bytes | ., type, length?
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x00|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|.: raw bits 0x0-0x2c.7 (45)
 *   |until 0x2c.7 (45)                              |                |
-"binary"
+"string"
 45
 mp3> 
 mp3> .headers._error | ., type, length?
@@ -190,6 +191,7 @@ mp3> .headers[0] = 1
   "footers": [],
   "frames": [
     {
+      "audio_data": "<5>AAAAAAA=",
       "crc_calculated": "827a",
       "header": {
         "bitrate": 56000,
@@ -207,7 +209,6 @@ mp3> .headers[0] = 1
         "sample_rate": 44100,
         "sync": 2047
       },
-      "padding": "<5>AAAAAAA=",
       "side_info": {
         "granules": [
           [
@@ -245,9 +246,9 @@ mp3> .headers[0] = 1
             }
           ]
         ],
-        "main_data_end": 0,
-        "private_bits": 0,
-        "share0": 0
+        "main_data_begin": 0,
+        "scfsi0": 0,
+        "share": 0
       },
       "xing": {
         "bytes": 599,
@@ -386,8 +387,8 @@ mp3> .headers[0] = 1
       }
     },
     {
+      "audio_data": "<187>B6rDjjOF02TxocEIHFgfXh8YHEYEHonlsy5aD6g7E2vw+GBQFAQDAoJEDE5o0aNsH3iAEAQxOD/BB050+c5fznL+7p93Lg+D4Ph8EAxKAMH9IAH///555554T7EPKQdc5TdRYNYihmqWGn6jVTNuL+Em0eAKJCYbPQRwVHtKrRk2Hogmi3/vFJwLDWJ//++4IUY5R/oJnyoaCgV9HgUESINnfuTyoCETQkEv/+OQSYPWtQkEQMCZSqCIEQ==",
       "crc_calculated": "e5b0",
-      "data": "<187>B6rDjjOF02TxocEIHFgfXh8YHEYEHonlsy5aD6g7E2vw+GBQFAQDAoJEDE5o0aNsH3iAEAQxOD/BB050+c5fznL+7p93Lg+D4Ph8EAxKAMH9IAH///555554T7EPKQdc5TdRYNYihmqWGn6jVTNuL+Em0eAKJCYbPQRwVHtKrRk2Hogmi3/vFJwLDWJ//++4IUY5R/oJnyoaCgV9HgUESINnfuTyoCETQkEv/+OQSYPWtQkEQMCZSqCIEQ==",
       "header": {
         "bitrate": 64000,
         "channel_mode": "none",
@@ -404,7 +405,6 @@ mp3> .headers[0] = 1
         "sample_rate": 44100,
         "sync": 2047
       },
-      "other_data": "<0>",
       "side_info": {
         "granules": [
           [
@@ -446,14 +446,14 @@ mp3> .headers[0] = 1
             }
           ]
         ],
-        "main_data_end": 0,
-        "private_bits": 0,
-        "share0": 0
+        "main_data_begin": 0,
+        "scfsi0": 0,
+        "share": 0
       }
     },
     {
+      "audio_data": "<188>EUs2SgiDWMkg1ClSmMjI+ROAQCS8kSNCUFYNGBEDQd6wVWCsRHiwdgr6P4lOlXKBqDUqdWdiL/BXlj3Ev//xEkxBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqo=",
       "crc_calculated": "61fd",
-      "data": "<178>EUs2SgiDWMkg1ClSmMjI+ROAQCS8kSNCUFYNGBEDQd6wVWCsRHiwdgr6P4lOlXKBqDUqdWdiL/BXlj3Ev//xEkxBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqg==",
       "header": {
         "bitrate": 64000,
         "channel_mode": "none",
@@ -470,8 +470,6 @@ mp3> .headers[0] = 1
         "sample_rate": 44100,
         "sync": 2047
       },
-      "other_data": "<9>qqqqqqqqqqqq",
-      "padding_byte": "<1>qg==",
       "side_info": {
         "granules": [
           [
@@ -511,9 +509,9 @@ mp3> .headers[0] = 1
             }
           ]
         ],
-        "main_data_end": 9,
-        "private_bits": 0,
-        "share0": 15
+        "main_data_begin": 9,
+        "scfsi0": 15,
+        "share": 0
       }
     }
   ],
@@ -528,6 +526,7 @@ mp3> .headers[0] |= empty
   "footers": [],
   "frames": [
     {
+      "audio_data": "<5>AAAAAAA=",
       "crc_calculated": "827a",
       "header": {
         "bitrate": 56000,
@@ -545,7 +544,6 @@ mp3> .headers[0] |= empty
         "sample_rate": 44100,
         "sync": 2047
       },
-      "padding": "<5>AAAAAAA=",
       "side_info": {
         "granules": [
           [
@@ -583,9 +581,9 @@ mp3> .headers[0] |= empty
             }
           ]
         ],
-        "main_data_end": 0,
-        "private_bits": 0,
-        "share0": 0
+        "main_data_begin": 0,
+        "scfsi0": 0,
+        "share": 0
       },
       "xing": {
         "bytes": 599,
@@ -724,8 +722,8 @@ mp3> .headers[0] |= empty
       }
     },
     {
+      "audio_data": "<187>B6rDjjOF02TxocEIHFgfXh8YHEYEHonlsy5aD6g7E2vw+GBQFAQDAoJEDE5o0aNsH3iAEAQxOD/BB050+c5fznL+7p93Lg+D4Ph8EAxKAMH9IAH///555554T7EPKQdc5TdRYNYihmqWGn6jVTNuL+Em0eAKJCYbPQRwVHtKrRk2Hogmi3/vFJwLDWJ//++4IUY5R/oJnyoaCgV9HgUESINnfuTyoCETQkEv/+OQSYPWtQkEQMCZSqCIEQ==",
       "crc_calculated": "e5b0",
-      "data": "<187>B6rDjjOF02TxocEIHFgfXh8YHEYEHonlsy5aD6g7E2vw+GBQFAQDAoJEDE5o0aNsH3iAEAQxOD/BB050+c5fznL+7p93Lg+D4Ph8EAxKAMH9IAH///555554T7EPKQdc5TdRYNYihmqWGn6jVTNuL+Em0eAKJCYbPQRwVHtKrRk2Hogmi3/vFJwLDWJ//++4IUY5R/oJnyoaCgV9HgUESINnfuTyoCETQkEv/+OQSYPWtQkEQMCZSqCIEQ==",
       "header": {
         "bitrate": 64000,
         "channel_mode": "none",
@@ -742,7 +740,6 @@ mp3> .headers[0] |= empty
         "sample_rate": 44100,
         "sync": 2047
       },
-      "other_data": "<0>",
       "side_info": {
         "granules": [
           [
@@ -784,14 +781,14 @@ mp3> .headers[0] |= empty
             }
           ]
         ],
-        "main_data_end": 0,
-        "private_bits": 0,
-        "share0": 0
+        "main_data_begin": 0,
+        "scfsi0": 0,
+        "share": 0
       }
     },
     {
+      "audio_data": "<188>EUs2SgiDWMkg1ClSmMjI+ROAQCS8kSNCUFYNGBEDQd6wVWCsRHiwdgr6P4lOlXKBqDUqdWdiL/BXlj3Ev//xEkxBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqo=",
       "crc_calculated": "61fd",
-      "data": "<178>EUs2SgiDWMkg1ClSmMjI+ROAQCS8kSNCUFYNGBEDQd6wVWCsRHiwdgr6P4lOlXKBqDUqdWdiL/BXlj3Ev//xEkxBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqg==",
       "header": {
         "bitrate": 64000,
         "channel_mode": "none",
@@ -808,8 +805,6 @@ mp3> .headers[0] |= empty
         "sample_rate": 44100,
         "sync": 2047
       },
-      "other_data": "<9>qqqqqqqqqqqq",
-      "padding_byte": "<1>qg==",
       "side_info": {
         "granules": [
           [
@@ -849,9 +844,9 @@ mp3> .headers[0] |= empty
             }
           ]
         ],
-        "main_data_end": 9,
-        "private_bits": 0,
-        "share0": 15
+        "main_data_begin": 9,
+        "scfsi0": 15,
+        "share": 0
       }
     }
   ],

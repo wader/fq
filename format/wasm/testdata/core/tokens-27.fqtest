@@ -1,0 +1,18 @@
+$ fq -d wasm dv tokens-27.wasm
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: tokens-27.wasm (wasm) 0x0-0x13.7 (20)
+0x00|00 61 73 6d                                    |.asm            |  magic: raw bits (valid) 0x0-0x3.7 (4)
+0x00|            01 00 00 00                        |    ....        |  version: 1 0x4-0x7.7 (4)
+    |                                               |                |  sections[0:1]: 0x8-0x13.7 (12)
+    |                                               |                |    [0]{}: section 0x8-0x13.7 (12)
+0x00|                        0b                     |        .       |      id: "data_section" (11) 0x8-0x8.7 (1)
+0x00|                           0a                  |         .      |      size: 10 (valid) 0x9-0x9.7 (1)
+    |                                               |                |      content{}: 0xa-0x13.7 (10)
+    |                                               |                |        seg{}: 0xa-0x13.7 (10)
+0x00|                              01               |          .     |          n: 1 (valid) 0xa-0xa.7 (1)
+    |                                               |                |          x[0:1]: 0xb-0x13.7 (9)
+    |                                               |                |            [0]{}: seg 0xb-0x13.7 (9)
+0x00|                                 01            |           .    |              tag: 1 (valid) 0xb-0xb.7 (1)
+    |                                               |                |              b{}: 0xc-0x13.7 (8)
+0x00|                                    07         |            .   |                n: 7 (valid) 0xc-0xc.7 (1)
+0x00|                                       20 ef 98|              ..|                x: raw bits 0xd-0x13.7 (7)
+0x10|9a ef 92 a9|                                   |....|           |

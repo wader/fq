@@ -1,8 +1,5 @@
 # appendix_a.json from https://github.com/cbor/test-vectors
 # TODO: "w0kBAAAAAAAAAAA=" "wkkBAAAAAAAAAAA=" semantic bigint
-# NOTE: "O///////////" test uses bigint and is correct but test success currently relay on -18446744073709551616
-# in input json being turned into a float as it can't be represented in json and cbor decoded bigint will also be
-# converted to a float when comparing.
 $ fq -i -d json . appendix_a.json
 json> length
 82
@@ -16,7 +13,7 @@ json> map(select(.decoded) | (.cbor | frombase64 | cbor | torepr) as $a | select
     },
     "test": {
       "cbor": "wkkBAAAAAAAAAAA=",
-      "decoded": 18446744073709552000,
+      "decoded": 18446744073709551616,
       "hex": "c249010000000000000000",
       "roundtrip": true
     }
@@ -29,7 +26,7 @@ json> map(select(.decoded) | (.cbor | frombase64 | cbor | torepr) as $a | select
     },
     "test": {
       "cbor": "w0kBAAAAAAAAAAA=",
-      "decoded": -18446744073709552000,
+      "decoded": -18446744073709551617,
       "hex": "c349010000000000000000",
       "roundtrip": true
     }

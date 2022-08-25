@@ -26,8 +26,8 @@ func init() {
 		Groups:      []string{format.PROBE},
 		DecodeFn:    decodeAvroOCF,
 		Functions:   []string{"_help"},
-		Files:       avroOcfFS,
 	})
+	interp.RegisterFS(avroOcfFS)
 }
 
 type HeaderData struct {
@@ -70,7 +70,12 @@ func decodeHeader(d *decode.D) HeaderData {
 		d.Fatalf("header.meta is not a map")
 	}
 
-	headerData.Schema, err = schema.FromSchemaString(meta["avro.schema"].(string))
+	metaSchema, ok := meta["avro.schema"].(string)
+	if !ok {
+		d.Fatalf("missing meta avro.schema")
+	}
+
+	headerData.Schema, err = schema.FromSchemaString(metaSchema)
 	if err != nil {
 		d.Fatalf("failed to parse schema: %v", err)
 	}
@@ -124,7 +129,7 @@ func decodeBlockCodec(d *decode.D, dataSize int64, codec string) *bytes.Buffer {
 	return bb
 }
 
-func decodeAvroOCF(d *decode.D, in any) any {
+func decodeAvroOCF(d *decode.D, _ any) any {
 	header := decodeHeader(d)
 
 	decodeFn, err := decoders.DecodeFnForSchema(header.Schema)

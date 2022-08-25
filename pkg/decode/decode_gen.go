@@ -19246,6 +19246,100 @@ func (d *D) FieldUnary(name string, ov uint64, sms ...scalar.Mapper) uint64 {
 	return d.FieldScalarUnary(name, ov, sms...).ActualU()
 }
 
+// Reader ULEB128
+
+// TryULEB128 tries to read unsigned LEB128 integer
+func (d *D) TryULEB128() (uint64, error) { return d.tryULEB128() }
+
+// ULEB128 reads unsigned LEB128 integer
+func (d *D) ULEB128() uint64 {
+	v, err := d.tryULEB128()
+	if err != nil {
+		panic(IOError{Err: err, Op: "ULEB128", Pos: d.Pos()})
+	}
+	return v
+}
+
+// TryFieldScalarULEB128 tries to add a field and read unsigned LEB128 integer
+func (d *D) TryFieldScalarULEB128(name string, sms ...scalar.Mapper) (*scalar.S, error) {
+	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
+		v, err := d.tryULEB128()
+		s.Actual = v
+		return s, err
+	}, sms...)
+	if err != nil {
+		return nil, err
+	}
+	return s, err
+}
+
+// FieldScalarULEB128 adds a field and reads unsigned LEB128 integer
+func (d *D) FieldScalarULEB128(name string, sms ...scalar.Mapper) *scalar.S {
+	s, err := d.TryFieldScalarULEB128(name, sms...)
+	if err != nil {
+		panic(IOError{Err: err, Name: name, Op: "ULEB128", Pos: d.Pos()})
+	}
+	return s
+}
+
+// TryFieldULEB128 tries to add a field and read unsigned LEB128 integer
+func (d *D) TryFieldULEB128(name string, sms ...scalar.Mapper) (uint64, error) {
+	s, err := d.TryFieldScalarULEB128(name, sms...)
+	return s.ActualU(), err
+}
+
+// FieldULEB128 adds a field and reads unsigned LEB128 integer
+func (d *D) FieldULEB128(name string, sms ...scalar.Mapper) uint64 {
+	return d.FieldScalarULEB128(name, sms...).ActualU()
+}
+
+// Reader SLEB128
+
+// TrySLEB128 tries to read signed LEB128 integer
+func (d *D) TrySLEB128() (int64, error) { return d.trySLEB128() }
+
+// SLEB128 reads signed LEB128 integer
+func (d *D) SLEB128() int64 {
+	v, err := d.trySLEB128()
+	if err != nil {
+		panic(IOError{Err: err, Op: "SLEB128", Pos: d.Pos()})
+	}
+	return v
+}
+
+// TryFieldScalarSLEB128 tries to add a field and read signed LEB128 integer
+func (d *D) TryFieldScalarSLEB128(name string, sms ...scalar.Mapper) (*scalar.S, error) {
+	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
+		v, err := d.trySLEB128()
+		s.Actual = v
+		return s, err
+	}, sms...)
+	if err != nil {
+		return nil, err
+	}
+	return s, err
+}
+
+// FieldScalarSLEB128 adds a field and reads signed LEB128 integer
+func (d *D) FieldScalarSLEB128(name string, sms ...scalar.Mapper) *scalar.S {
+	s, err := d.TryFieldScalarSLEB128(name, sms...)
+	if err != nil {
+		panic(IOError{Err: err, Name: name, Op: "SLEB128", Pos: d.Pos()})
+	}
+	return s
+}
+
+// TryFieldSLEB128 tries to add a field and read signed LEB128 integer
+func (d *D) TryFieldSLEB128(name string, sms ...scalar.Mapper) (int64, error) {
+	s, err := d.TryFieldScalarSLEB128(name, sms...)
+	return s.ActualS(), err
+}
+
+// FieldSLEB128 adds a field and reads signed LEB128 integer
+func (d *D) FieldSLEB128(name string, sms ...scalar.Mapper) int64 {
+	return d.FieldScalarSLEB128(name, sms...).ActualS()
+}
+
 // Reader UTF8
 
 // TryUTF8 tries to read nBytes bytes UTF8 string
@@ -19575,6 +19669,147 @@ func (d *D) TryFieldUTF8Null(name string, sms ...scalar.Mapper) (string, error) 
 // FieldUTF8Null adds a field and reads null terminated UTF8 string
 func (d *D) FieldUTF8Null(name string, sms ...scalar.Mapper) string {
 	return d.FieldScalarUTF8Null(name, sms...).ActualStr()
+}
+
+// Reader UTF16Null
+
+// TryUTF16Null tries to read null terminated UTF16 string, default big-endian and accepts BOM
+func (d *D) TryUTF16Null() (string, error) { return d.tryTextNull(2, UTF16BOM) }
+
+// UTF16Null reads null terminated UTF16 string, default big-endian and accepts BOM
+func (d *D) UTF16Null() string {
+	v, err := d.tryTextNull(2, UTF16BOM)
+	if err != nil {
+		panic(IOError{Err: err, Op: "UTF16Null", Pos: d.Pos()})
+	}
+	return v
+}
+
+// TryFieldScalarUTF16Null tries to add a field and read null terminated UTF16 string, default big-endian and accepts BOM
+func (d *D) TryFieldScalarUTF16Null(name string, sms ...scalar.Mapper) (*scalar.S, error) {
+	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
+		v, err := d.tryTextNull(2, UTF16BOM)
+		s.Actual = v
+		return s, err
+	}, sms...)
+	if err != nil {
+		return nil, err
+	}
+	return s, err
+}
+
+// FieldScalarUTF16Null adds a field and reads null terminated UTF16 string, default big-endian and accepts BOM
+func (d *D) FieldScalarUTF16Null(name string, sms ...scalar.Mapper) *scalar.S {
+	s, err := d.TryFieldScalarUTF16Null(name, sms...)
+	if err != nil {
+		panic(IOError{Err: err, Name: name, Op: "UTF16Null", Pos: d.Pos()})
+	}
+	return s
+}
+
+// TryFieldUTF16Null tries to add a field and read null terminated UTF16 string, default big-endian and accepts BOM
+func (d *D) TryFieldUTF16Null(name string, sms ...scalar.Mapper) (string, error) {
+	s, err := d.TryFieldScalarUTF16Null(name, sms...)
+	return s.ActualStr(), err
+}
+
+// FieldUTF16Null adds a field and reads null terminated UTF16 string, default big-endian and accepts BOM
+func (d *D) FieldUTF16Null(name string, sms ...scalar.Mapper) string {
+	return d.FieldScalarUTF16Null(name, sms...).ActualStr()
+}
+
+// Reader UTF16LENull
+
+// TryUTF16LENull tries to read null terminated UTF16LE string
+func (d *D) TryUTF16LENull() (string, error) { return d.tryTextNull(2, UTF16LE) }
+
+// UTF16LENull reads null terminated UTF16LE string
+func (d *D) UTF16LENull() string {
+	v, err := d.tryTextNull(2, UTF16LE)
+	if err != nil {
+		panic(IOError{Err: err, Op: "UTF16LENull", Pos: d.Pos()})
+	}
+	return v
+}
+
+// TryFieldScalarUTF16LENull tries to add a field and read null terminated UTF16LE string
+func (d *D) TryFieldScalarUTF16LENull(name string, sms ...scalar.Mapper) (*scalar.S, error) {
+	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
+		v, err := d.tryTextNull(2, UTF16LE)
+		s.Actual = v
+		return s, err
+	}, sms...)
+	if err != nil {
+		return nil, err
+	}
+	return s, err
+}
+
+// FieldScalarUTF16LENull adds a field and reads null terminated UTF16LE string
+func (d *D) FieldScalarUTF16LENull(name string, sms ...scalar.Mapper) *scalar.S {
+	s, err := d.TryFieldScalarUTF16LENull(name, sms...)
+	if err != nil {
+		panic(IOError{Err: err, Name: name, Op: "UTF16LENull", Pos: d.Pos()})
+	}
+	return s
+}
+
+// TryFieldUTF16LENull tries to add a field and read null terminated UTF16LE string
+func (d *D) TryFieldUTF16LENull(name string, sms ...scalar.Mapper) (string, error) {
+	s, err := d.TryFieldScalarUTF16LENull(name, sms...)
+	return s.ActualStr(), err
+}
+
+// FieldUTF16LENull adds a field and reads null terminated UTF16LE string
+func (d *D) FieldUTF16LENull(name string, sms ...scalar.Mapper) string {
+	return d.FieldScalarUTF16LENull(name, sms...).ActualStr()
+}
+
+// Reader UTF16BENull
+
+// TryUTF16BENull tries to read null terminated UTF16BE string
+func (d *D) TryUTF16BENull() (string, error) { return d.tryTextNull(2, UTF16BE) }
+
+// UTF16BENull reads null terminated UTF16BE string
+func (d *D) UTF16BENull() string {
+	v, err := d.tryTextNull(2, UTF16BE)
+	if err != nil {
+		panic(IOError{Err: err, Op: "UTF16BENull", Pos: d.Pos()})
+	}
+	return v
+}
+
+// TryFieldScalarUTF16BENull tries to add a field and read null terminated UTF16BE string
+func (d *D) TryFieldScalarUTF16BENull(name string, sms ...scalar.Mapper) (*scalar.S, error) {
+	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
+		v, err := d.tryTextNull(2, UTF16BE)
+		s.Actual = v
+		return s, err
+	}, sms...)
+	if err != nil {
+		return nil, err
+	}
+	return s, err
+}
+
+// FieldScalarUTF16BENull adds a field and reads null terminated UTF16BE string
+func (d *D) FieldScalarUTF16BENull(name string, sms ...scalar.Mapper) *scalar.S {
+	s, err := d.TryFieldScalarUTF16BENull(name, sms...)
+	if err != nil {
+		panic(IOError{Err: err, Name: name, Op: "UTF16BENull", Pos: d.Pos()})
+	}
+	return s
+}
+
+// TryFieldUTF16BENull tries to add a field and read null terminated UTF16BE string
+func (d *D) TryFieldUTF16BENull(name string, sms ...scalar.Mapper) (string, error) {
+	s, err := d.TryFieldScalarUTF16BENull(name, sms...)
+	return s.ActualStr(), err
+}
+
+// FieldUTF16BENull adds a field and reads null terminated UTF16BE string
+func (d *D) FieldUTF16BENull(name string, sms ...scalar.Mapper) string {
+	return d.FieldScalarUTF16BENull(name, sms...).ActualStr()
 }
 
 // Reader UTF8NullFixedLen

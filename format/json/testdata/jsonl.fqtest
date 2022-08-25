@@ -1,0 +1,43 @@
+/probe1.jsonl:
+{"a": 123} [123]
+/probe2.jsonl:
+{"a": 123}
+[123]
+/single.jsonl:
+{"a": 123}
+/error.jsonl:
+{"a": 123} asd
+$ fq . probe1.jsonl
+[
+  {
+    "a": 123
+  },
+  [
+    123
+  ]
+]
+$ fq . probe2.jsonl
+[
+  {
+    "a": 123
+  },
+  [
+    123
+  ]
+]
+$ fq -d jsonl . single.jsonl
+[
+  {
+    "a": 123
+  }
+]
+$ fq -d jsonl . error.jsonl
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: error.jsonl (jsonl)
+   |                                               |                |  error: jsonl: error at position 0xf: invalid character 'a' looking for beginning of value
+0x0|7b 22 61 22 3a 20 31 32 33 7d 20 61 73 64 0a|  |{"a": 123} asd.||  unknown0: raw bits
+$ fq -n '[{"a":123}, [123]] | tojsonl'
+"{\"a\":123}\n[123]\n"
+$ fq -n '123 | tojsonl'
+exitcode: 5
+stderr:
+error: tojsonl cannot be applied to: number (123)

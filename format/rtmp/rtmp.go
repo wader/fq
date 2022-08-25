@@ -37,8 +37,8 @@ func init() {
 			{Names: []string{format.MPEG_ASC}, Group: &rtmpMpegASCFormat},
 		},
 		Functions: []string{"_help"},
-		Files:     rtmpFS,
 	})
+	interp.RegisterFS(rtmpFS)
 }
 
 // from RTMP spec
@@ -195,7 +195,8 @@ var videoMessageH264PacketTypeNames = scalar.UToSymStr{
 }
 
 // TODO: invalid warning that timestampDelta is unused
-//nolint: unused
+
+//nolint:unused
 type messageHeader struct {
 	timestamp       uint64
 	timestampDelta  uint64

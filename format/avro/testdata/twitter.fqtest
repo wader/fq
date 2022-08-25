@@ -14,7 +14,7 @@ $ fq dv twitter.avro
 0x010|61                                             |a               |
      |                                               |                |            value{}: 0x11-0x186.7 (374)
 0x010|   e8 05                                       | ..             |              length: 372 0x11-0x12.7 (2)
-0x010|         7b 22 74 79 70 65 22 3a 22 72 65 63 6f|   {"type":"reco|              data: "{\"type\":\"record\",\"name\":\"twitter_schema\",\"namespac"... 0x13-0x186.7 (372)
+0x010|         7b 22 74 79 70 65 22 3a 22 72 65 63 6f|   {"type":"reco|              data: "{\"type\":\"record\",\"name\":\"twitter_schema\",\"names..." 0x13-0x186.7 (372)
 0x020|72 64 22 2c 22 6e 61 6d 65 22 3a 22 74 77 69 74|rd","name":"twit|
 *    |until 0x186.7 (372)                            |                |
      |                                               |                |          [1]{}: entry 0x187-0x196.7 (16)

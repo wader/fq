@@ -15,7 +15,7 @@ test: testgo testjq testcli
 # figure out all go pakges with test files
 testgo: PKGS=$(shell find . -name "*_test.go" | xargs -n 1 dirname | sort | uniq)
 testgo:
-	go test ${GO_TEST_RACE_FLAGS} ${VERBOSE} ${COVER} ${PKGS}
+	go test -timeout 20m ${GO_TEST_RACE_FLAGS} ${VERBOSE} ${COVER} ${PKGS}
 
 .PHONY: testjq
 testjq: fq
@@ -62,7 +62,8 @@ gogenerate:
 .PHONY: lint
 lint:
 # bump: make-golangci-lint /golangci-lint@v([\d.]+)/ git:https://github.com/golangci/golangci-lint.git|^1
-	go run github.com/golangci/golangci-lint/cmd/golangci-lint@v1.46.2 run
+# bump: make-golangci-lint link "Release notes" https://github.com/golangci/golangci-lint/releases/tag/v$LATEST
+	go run github.com/golangci/golangci-lint/cmd/golangci-lint@v1.49.0 run
 
 .PHONY: depgraph.svg
 depgraph.svg:
@@ -90,10 +91,14 @@ update-gomod:
 
 # TODO: as decode recovers panic and "repanics" unrecoverable errors this is a bit hacky at the moment
 # fuzz code is not suppose to print to stderr so log to file
+# Retrigger:
+# cat format/testdata/fuzz/FuzzFormats/... | go run dev/fuzzbytes.go | go run . -d raw '. as $b | formats | keys[] as $f | $b | decode($f)'
+# cat format/testdata/fuzz/FuzzFormats/... | go run dev/fuzzbytes.go | fq -d raw 'tobytes | tobase64'
+# fq -n '"..." | frombase64 | ...'
 .PHONY: fuzz
 fuzz:
 # in other terminal: tail -f /tmp/repanic
-	REPANIC_LOG=/tmp/repanic gotip test -tags fuzz -v -run Fuzz -fuzz=Fuzz ./format/
+	FUZZTEST=1 REPANIC_LOG=/tmp/repanic gotip test -v -run Fuzz -fuzz=Fuzz ./format/
 
 # usage: make release VERSION=0.0.1
 # tag forked dependeces for history and to make then stay around

@@ -25,10 +25,10 @@ func init() {
 	})
 }
 
-func decodeChunk(d *decode.D, expectedChunkID string, fn func(d *decode.D)) bool {
+func decodeChunk(d *decode.D, expectedChunkID string, fn func(d *decode.D)) {
 	trimChunkID := d.FieldUTF8("id", 4, scalar.ActualTrimSpace)
 	if expectedChunkID != "" && trimChunkID != expectedChunkID {
-		return false
+		return
 	}
 	chunkLen := int64(d.FieldU32("size"))
 
@@ -37,11 +37,9 @@ func decodeChunk(d *decode.D, expectedChunkID string, fn func(d *decode.D)) bool
 	} else {
 		d.FieldRawLen("data", chunkLen*8)
 	}
-
-	return true
 }
 
-func webpDecode(d *decode.D, in any) any {
+func webpDecode(d *decode.D, _ any) any {
 	d.Endian = decode.LittleEndian
 
 	d.FieldUTF8("riff_id", 4, d.AssertStr("RIFF"))

@@ -4,7 +4,7 @@ stderr:
 Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 $ fq -h
 fq - jq for binary formats
-Tool, language and decoders for inspecting binary data.
+Tool, language and decoders for working with binary data.
 For more information see https://github.com/wader/fq
 
 Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
@@ -13,9 +13,12 @@ Example usages:
   fq . file
   fq d file
   fq tovalue file
+  fq -r totoml file.yml
+  fq -s -d html 'map(.html.head.title?)' *.html
   cat file.cbor | fq -d cbor torepr
   fq 'grep("^main$") | parent' /bin/ls
-  fq 'grep_by(format == "exif") | d' *.png *.jpeg
+  fq -r 'grep_by(.protocol=="icmp").source_ip | tovalue' *.pcap
+  fq -i
 
 --arg NAME VALUE        Set variable $NAME to string VALUE
 --argdecode NAME PATH   Set variable $NAME to decode of PATH
@@ -35,7 +38,8 @@ Example usages:
 --raw-input,-R          Read raw input strings (don't decode)
 --raw-output,-r         Raw string output (without quotes)
 --repl,-i               Interactive REPL
---slurp,-s              Read (slurp) all inputs into an array
+--slurp,-s              Slurp all inputs into an array or string (-Rs)
+--unicode-output,-U     Force unicode output
 --version,-v            Show version
 $ fq -i
 null> ^D
@@ -122,6 +126,7 @@ bsd_loopback_frame   BSD loopback frame
 bson                 Binary JSON
 bzip2                bzip2 compression
 cbor                 Concise Binary Object Representation
+csv                  Comma separated values
 dns                  DNS packet
 dns_tcp              DNS packet (TCP)
 elf                  Executable and Linkable Format
@@ -143,6 +148,7 @@ hevc_nalu            H.265/HEVC Network Access Layer Unit
 hevc_pps             H.265/HEVC Picture Parameter Set
 hevc_sps             H.265/HEVC Sequence Parameter Set
 hevc_vps             H.265/HEVC Video Parameter Set
+html                 HyperText Markup Language
 icc_profile          International Color Consortium profile
 icmp                 Internet Control Message Protocol
 icmpv6               Internet Control Message Protocol v6
@@ -152,8 +158,10 @@ id3v2                ID3v2 metadata
 ipv4_packet          Internet protocol v4 packet
 ipv6_packet          Internet protocol v6 packet
 jpeg                 Joint Photographic Experts Group file
-json                 JSON
+json                 JavaScript Object Notation
+jsonl                JavaScript Object Notation Lines
 macho                Mach-O macOS executable
+macho_fat            Fat Mach-O macOS executable (multi-architecture)
 matroska             Matroska file
 mp3                  MP3 file
 mp3_frame            MPEG audio layer 3 frame
@@ -171,6 +179,7 @@ opus_packet          Opus packet
 pcap                 PCAP packet capture
 pcapng               PCAPNG packet capture
 png                  Portable Network Graphics file
+prores_frame         Apple ProRes frame
 protobuf             Protobuf
 protobuf_widevine    Widevine protobuf
 pssh_playready       PlayReady PSSH
@@ -181,6 +190,7 @@ sll_packet           Linux cooked capture encapsulation
 tar                  Tar archive
 tcp_segment          Transmission control protocol segment
 tiff                 Tag Image File Format
+toml                 Tom's Obvious, Minimal Language
 udp_datagram         User datagram protocol
 vorbis_comment       Vorbis comment
 vorbis_packet        Vorbis packet
@@ -188,9 +198,12 @@ vp8_frame            VP8 frame
 vp9_cfm              VP9 Codec Feature Metadata
 vp9_frame            VP9 frame
 vpx_ccr              VPX Codec Configuration Record
+wasm                 WebAssembly Binary Format
 wav                  WAV file
 webp                 WebP image
 xing                 Xing header
+xml                  Extensible Markup Language
+yaml                 YAML Ain't Markup Language
 zip                  ZIP archive
 $ fq -X
 exitcode: 2

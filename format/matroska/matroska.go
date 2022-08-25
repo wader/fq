@@ -79,8 +79,8 @@ func init() {
 			{Names: []string{format.VP9_FRAME}, Group: &vp9FrameFormat},
 		},
 		Functions: []string{"_help"},
-		Files:     matroskaFS,
 	})
+	interp.RegisterFS(matroskaFS)
 
 	codecToFormat = map[string]*decode.Group{
 		"A_VORBIS":         &vorbisPacketFormat,
@@ -301,14 +301,14 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 		// 	crcValue := crcD.FieldMustRemove("value")
 		// 	elementCRC := &crc.CRC{Bits: 32, Current: 0xffff_ffff, Table: crc.IEEELETable}
 		// 	//log.Printf("crc: %x-%x %d\n", crcStart/8, d.Pos()/8, (d.Pos()-crcStart)/8)
-		// 	ioextra.MustCopy(elementCRC, d.BitBufRange(crcStart, d.Pos()-crcStart))
+		// 	ioex.MustCopy(elementCRC, d.BitBufRange(crcStart, d.Pos()-crcStart))
 		// 	crcD.FieldChecksumRange("value", crcValue.Range.Start, crcValue.Range.Len, elementCRC.Sum(nil), decode.LittleEndian)
 		// }
 	})
 
 }
 
-func matroskaDecode(d *decode.D, in any) any {
+func matroskaDecode(d *decode.D, _ any) any {
 	ebmlHeaderID := uint64(0x1a45dfa3)
 	if d.PeekBits(32) != ebmlHeaderID {
 		d.Errorf("no EBML header found")

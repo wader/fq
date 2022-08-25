@@ -14,4 +14,4 @@ $ fq -o decode_samples=false -d mp4 '.tracks | dv' aac.mp4
 0x280|                                       01 18 81|             ...|      [3]: raw bits sample 0x28d-0x291.7 (5)
 0x290|b4 70                                          |.p              |
      |                                               |                |    id: 1 0x59d-NA (0)
-     |                                               |                |    data_foramt: "mp4a" 0x59d-NA (0)
+     |                                               |                |    data_foramt: "mp4a" (MPEG Audio) 0x59d-NA (0)

@@ -5,6 +5,7 @@ import (
 )
 
 // based on ffmpeg libavformat/isom.c ff_mp4_obj_type
+//
 //nolint:revive
 const (
 	MPEGObjectTypeMOV_TEXT          = 0x08
@@ -191,6 +192,7 @@ var MPEGAudioObjectTypeNames = scalar.UToScalar{
 }
 
 // based on ffmpeg/libavutil/pixfmt.h
+//
 //nolint:revive
 var ISO_23091_2_ColourPrimariesMap = scalar.UToScalar{
 	1:  {Sym: "bt709", Description: "ITU-R BT1361 / IEC 61966-2-4 / SMPTE RP 177 Annex B"},

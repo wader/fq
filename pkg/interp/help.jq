@@ -93,13 +93,16 @@ def _help($arg0; $topic):
       , "  fq . file"
       , "  fq d file"
       , "  fq tovalue file"
+      , "  fq -r totoml file.yml"
+      , "  fq -s -d html 'map(.html.head.title?)' *.html"
       , "  cat file.cbor | fq -d cbor torepr"
       , "  fq 'grep(\"^main$\") | parent' /bin/ls"
-      , "  fq 'grep_by(format == \"exif\") | d' *.png *.jpeg"
+      , "  fq -r 'grep_by(.protocol==\"icmp\").source_ip | tovalue' *.pcap"
+      , "  fq -i"
       )
     elif . == "banner" then
       ( "fq - jq for binary formats"
-      , "Tool, language and decoders for inspecting binary data."
+      , "Tool, language and decoders for working with binary data."
       , "For more information see https://github.com/wader/fq"
       )
     elif . == "args" then

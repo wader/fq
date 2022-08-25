@@ -19,7 +19,7 @@ func init() {
 	})
 }
 
-func ccrDecode(d *decode.D, in any) any {
+func ccrDecode(d *decode.D, _ any) any {
 	d.FieldU1("marker")
 	d.FieldU7("version")
 	d.FieldU3("seq_profile")

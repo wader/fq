@@ -11,34 +11,38 @@ ffmpeg \
     -t 100ms -f lavfi -i anoisesrc=sample_rate=44100:seed=3 \
     -t 100ms -f lavfi -i sine=sample_rate=44100:frequency=20 \
     -filter_complex \
-'[0:0][1:0]amerge=inputs=2[merge0];
+    '[0:0][1:0]amerge=inputs=2[merge0];
 [2:0][3:0]amerge=inputs=2[merge1];
 [4:0][5:0]amerge=inputs=2[merge2];
 [6:0][7:0]amerge=inputs=2[merge3];
 [8:0][9:0]amerge=inputs=2[merge4];
 [merge0][merge1][merge2][merge3][merge4]concat=n=5:v=0:a=1[concat0];
-[concat0]asplit=outputs=6[out0][out1][out2][out3][out4][out5]' \
+[concat0]aresample=48000[resample0];[resample0]aresample=44100[resample1];
+[resample1]asplit=outputs=8[out0][out1][out2][out3][out4][out5][out6][out7]' \
     -map '[out0]' -ar 44100 -ac 1 -c:a pcm_u8 -f wav mono8.wav \
     -map '[out1]' -ar 44100 -ac 1 -c:a pcm_s16le -f wav mono16.wav \
     -map '[out2]' -ar 44100 -ac 1 -c:a pcm_s24le -f wav mono24.wav \
-    -map '[out3]' -ar 44100 -ac 2 -c:a pcm_u8 -f wav stereo8.wav \
-    -map '[out4]' -ar 44100 -ac 2 -c:a pcm_s16le -f wav stereo16.wav \
-    -map '[out5]' -ar 44100 -ac 2 -c:a pcm_s24le -f wav stereo24.wav
-flac -fo mono8.flac mono8.wav
-flac -fo mono16.flac mono16.wav
-flac -fo mono24.flac mono24.wav
-flac -fo stereo8.flac stereo8.wav
-flac -fo stereo16.flac stereo16.wav
-flac -fo stereo24.flac stereo24.wav
-rm -f mono8.wav mono16.wav mono24.wav
-rm -f stereo8.wav stereo16.wav stereo24.wav
+    -map '[out3]' -ar 44100 -ac 1 -c:a pcm_s32le -f wav mono32.wav \
+    -map '[out4]' -ar 44100 -ac 2 -c:a pcm_u8 -f wav stereo8.wav \
+    -map '[out5]' -ar 44100 -ac 2 -c:a pcm_s16le -f wav stereo16.wav \
+    -map '[out6]' -ar 44100 -ac 2 -c:a pcm_s24le -f wav stereo24.wav \
+    -map '[out7]' -ar 44100 -ac 2 -c:a pcm_s32le -f wav stereo32.wav
+~/bin/flac-ktmf01/src/flac/flac -fo mono8.flac mono8.wav
+~/bin/flac-ktmf01/src/flac/flac -fo mono16.flac mono16.wav
+~/bin/flac-ktmf01/src/flac/flac -fo mono24.flac mono24.wav
+~/bin/flac-ktmf01/src/flac/flac -fo mono32.flac mono32.wav
+~/bin/flac-ktmf01/src/flac/flac -fo stereo8.flac stereo8.wav
+~/bin/flac-ktmf01/src/flac/flac -fo stereo16.flac stereo16.wav
+~/bin/flac-ktmf01/src/flac/flac -fo stereo24.flac stereo24.wav
+~/bin/flac-ktmf01/src/flac/flac -fo stereo32.flac stereo32.wav
+rm -f mono8.wav mono16.wav mono24.wav mono32.wav
+rm -f stereo8.wav stereo16.wav stereo24.wav stereo32.wav
 
 ffmpeg -y -t 10ms -f lavfi -i sine picture_seek_gain.flac
-convert -size 4x4 "xc:#000" 4x4.png
+gm convert -size 4x4 "xc:#000" 4x4.png
 metaflac --add-replay-gain --add-seekpoint=10 --import-picture-from 4x4.png picture_seek_gain.flac
-rm 4x4.png
+rm -f 4x4.png
 
-for i in mono8 mono16 mono24 stereo8 stereo16 stereo24 picture_seek_gain ; do
-    echo "/$i.flac:" > $i.fqtest
-    echo "> fq -d flac $i.flac verbose" >> $i.fqtest
+for i in mono8 mono16 mono24 mono32 stereo8 stereo16 stereo24 stereo32 picture_seek_gain; do
+    echo "\$ fq -d flac dv $i.flac" >$i.fqtest
 done

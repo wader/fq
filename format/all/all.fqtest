@@ -11,6 +11,7 @@ $ fq -n _registry.groups.probe
   "gzip",
   "jpeg",
   "macho",
+  "macho_fat",
   "matroska",
   "mp4",
   "ogg",
@@ -19,10 +20,15 @@ $ fq -n _registry.groups.probe
   "png",
   "tar",
   "tiff",
+  "wasm",
   "webp",
   "zip",
+  "mp3",
   "mpeg_ts",
   "wav",
-  "mp3",
-  "json"
+  "json",
+  "jsonl",
+  "toml",
+  "xml",
+  "yaml"
 ]

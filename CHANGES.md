@@ -1,3 +1,278 @@
+# 0.0.8
+
+## Changes
+
+- Add support for some common structured serialization formats: #284 #335
+  - XML, `toxml`, `fromxml` options for indent, jq mapping variants (object or array) and order preservation
+  - HTML, `fromhtml` options for indent, jq mapping variants (object or array) and order preservation
+  - TOML, `totoml`, `fromtoml`
+  - YAML, `toyaml`, `fromyaml`
+  - jq-flavored JSON (optional key quotes and trailing comma) `tojq`, `fromjq` options for indent #284
+    ```sh
+    # query a YAML file
+    $ fq '...' file.yml
+
+    # convert YAML to JSON
+    # note -r for raw string output, without a JSON string with JSON would outputted
+    $ fq -r 'tojson({indent:2})' file.yml
+
+    $ fq -nr '{hello: {world: "test"}} | toyaml, totoml, toxml, tojq({indent: 2})'
+    hello:
+        world: test
+
+    [hello]
+      world = "test"
+
+    <hello>
+      <world>test</world>
+    </hello>
+    {
+      hello: {
+        world: "test"
+      }
+    }
+    $ echo '<doc><element a="b"></doc>' | fq -r '.doc.element."-a"'
+    b
+    $ echo '<doc><element a="b"></doc>' | fq -r '.doc.element."-a" = "<test>" | toxml({indent: 2})'
+    <doc>
+      <element a="&lt;test&gt;"></element>
+    </doc>
+    ```
+  - CSV, `tocsv`, `fromcsv` options for separator and comment character
+    ```sh
+    $ echo -e  '1,2\n3,4' | fq -rRs 'fromcsv | . + [["a","b"]] | tocsv'
+    1,2
+    3,4
+    a,b
+    ```
+- Add support for binary encodings
+  - Base64. `tobase64`, `frombase64` options for encoding variants.
+    ```sh
+    $ echo -n hello | base64 | fq -rRs 'frombase64 | tostring'
+    hello
+    ```
+  - Hex string. `tohex`, `fromhex`
+- Add support for text formats
+  - XML entities `toxmlentities`, `fromxmlentities`
+  - URL `tourl`, `fromurl`
+    ```sh
+    $ echo -n 'https://host/path/?key=value#fragment' | fq -Rs 'fromurl | ., (.host = "changed" | tourl)'
+    {
+      "fragment": "fragment",
+      "host": "host",
+      "path": "/path/",
+      "query": {
+        "key": "value"
+      },
+      "rawquery": "key=value",
+      "scheme": "https"
+    }
+    "https://changed/path/?key=value#fragment"
+    ```
+  - URL path encoding `tourlpath`, `fromurlpath`
+  - URL encoding `tourlencode`, `fromurlencode`
+  - URL query `tourlquery`, `fromurlquery`
+- Add support for common hash functions:
+  - MD4 `tomd4`
+  - MD5 `tomd5`
+    ```sh
+    $ echo -n hello | fq -rRs 'tomd5 | tohex'
+    5d41402abc4b2a76b9719d911017c592
+    ```
+  - SHA1 `tosha1`
+  - SHA256 `tosha256`
+  - SHA512 `tosha512`
+  - SHA3 224 `tosha3_224`
+  - SHA3 256 `tosha3_256`
+  - SHA3 384 `tosha3_384`
+  - SHA3 512 `tosha3_512`
+- Add support for common text encodings:
+  - ISO8859-1 `toiso8859_1`, `fromiso8859_1`
+  - UTF8 `tutf8`, `fromutf8`
+  - UTF16 `toutf16`, `fromutf16`
+  - UTF16LE `toutf16le`, `fromutf16le`
+  - UTF16BE `toutf16be`, `fromutf16be`
+    ```sh
+    $ echo -n 00680065006c006c006f | fq -rRs 'fromhex | fromutf16be'
+    hello
+    ```
+- Add `group` function, same as `group_by(.)` #299
+- Update/rebase readline dependency (based on @tpodowd  https://github.com/chzyer/readline/pull/207) #305 #308
+  - Less blinking/redraw in REPL
+  - Lots of small bug fixes
+- Update/rebase gojq dependency #247
+  - Fixes JQValue destructing issue (ex: `<some object JQValue> as {$key}`)
+- Major rewrite/refactor how native function are implemented. Less verbose and less error-prone as now shared code takes care of type casting and some argument errors. #316
+- Add `tojson($opts)` that support indent option. `tojson` still works as before (no indent).
+  ```sh
+  $ echo '{a: 1}' | fq -r 'tojson({indent: 2})'
+  {
+    "a": 1
+  }
+  ```
+- Rename `--decode-file` (will still work) to `--argdecode` be be more consistent with existing `--arg*` arguments. #309
+- On some decode error cases fq can now keep more of partial tree making it easier to know where it stopped #245
+- Build with go 1.18 #272
+
+## Decoder changes
+
+- `bitcoin` Add Bitcoin blkdat, block, transcation and script decoders #239
+- `elf` Use correct offset to dynamic linking string table #304
+- `tcp` Restructure into separate client/server objects and add `skipped_bytes` (number of bytes with known missing ACK), `has_start` (has first byte in stream) and `has_end` (has last byte in stream) per direction #251
+  - Old:
+  ```
+        │00 01 02 03 04 05 06 07│01234567│.tcp_connections[0]{}: tcp_connection
+        │                       │        │  source_ip: "192.168.69.2"
+        │                       │        │  source_port: 34059
+        │                       │        │  destination_ip: "192.168.69.1"
+        │                       │        │  destination_port: "http" (80) (World Wide Web HTTP)
+        │                       │        │  has_start: true
+        │                       │        │  has_end: true
+   0x000│47 45 54 20 2f 74 65 73│GET /tes│  client_stream: raw bits
+   0x008│74 2f 65 74 68 65 72 65│t/ethere│
+   *    │until 0x1bc.7 (end) (44│        │
+   0x000│48 54 54 50 2f 31 2e 31│HTTP/1.1│  server_stream: raw bits
+   0x008│20 32 30 30 20 4f 4b 0d│ 200 OK.│
+   *    │until 0x191.7 (end) (40│        │
+  ```
+  - New:
+  ```
+        │00 01 02 03 04 05 06 07│01234567│.tcp_connections[0]{}: tcp_connection
+        │                       │        │  client{}:
+        │                       │        │    ip: "192.168.69.2"
+        │                       │        │    port: 34059
+        │                       │        │    has_start: true
+        │                       │        │    has_end: true
+        │                       │        │    skipped_bytes: 0
+   0x000│47 45 54 20 2f 74 65 73│GET /tes│    stream: raw bits
+   0x008│74 2f 65 74 68 65 72 65│t/ethere│
+   *    │until 0x1bc.7 (end) (44│        │
+        │                       │        │  server{}:
+        │                       │        │    ip: "192.168.69.1"
+        │                       │        │    port: "http" (80) (World Wide Web HTTP)
+        │                       │        │    has_start: true
+        │                       │        │    has_end: true
+        │                       │        │    skipped_bytes: 0
+   0x000│48 54 54 50 2f 31 2e 31│HTTP/1.1│    stream: raw bits
+   0x008│20 32 30 30 20 4f 4b 0d│ 200 OK.│
+   *    │until 0x191.7 (end) (40│        │
+  ```
+- `zip` Add 64-bit support and add `uncompress` option #278
+- `matroska` Update and regenerate based on latest spec and also handle unknown ids better #291
+- `mp4` Changes:
+  - Fix PSSH decode issue #283
+  - Add track for track_id references without tfhd box
+  - Makes it possible to see samples in fragments without having an init segment.
+    Note it is possible to decode samples in a fragment file by concatenating the init and fragment file ex: `cat init frag | fq ...`.
+  - Add `senc` box support #290
+  - Don't decode encrypted samples #311
+  - Add `track_id` to tracks #254
+  - Add fairplay PSSH system ID #310
+  - Properly handle `trun` data offset #294
+  - Skip decoding of individual PCM samples for now #268
+  - Add `mvhd`, `tkhd`, `mdhd` and `mehd` version 1 support #258
+  - Make sure to preserve sample table order #330
+- `fairplay_spc` Add basic FairPlay Server Playback Context decoder #310
+- `avc_pps` Correctly check for more rbsp data
+
+## Changelog
+
+* 210940a4 Update docker-golang from 1.18.1 to 1.18.2
+* fbeabdc3 Update docker-golang from 1.18.2 to 1.18.3
+* 51a414db Update docker-golang from 1.18.3 to 1.18.4
+* 3017e8b4 Update github-go-version from 1.18.1, 1.18.1, 1.18.1 to 1.18.2
+* c597f7f7 Update github-go-version from 1.18.2, 1.18.2, 1.18.2 to 1.18.3
+* dd283923 Update github-go-version from 1.18.3, 1.18.3, 1.18.3 to 1.18.4
+* d10a3616 Update github-golangci-lint from 1.45.2 to 1.46.0
+* 75b5946c Update github-golangci-lint from 1.46.0 to 1.46.1
+* 3ffa9efb Update github-golangci-lint from 1.46.1 to 1.46.2
+* 4be8cb91 Update github-golangci-lint from 1.46.2 to 1.47.0
+* 1b8f4be8 Update github-golangci-lint from 1.47.0 to 1.47.1
+* fc596a7a Update github-golangci-lint from 1.47.1 to 1.47.2
+* 62be9223 Update gomod-BurntSushi/toml from 1.1.0 to 1.2.0
+* 5db7397a Update make-golangci-lint from 1.45.2 to 1.46.0
+* 456742ea Update make-golangci-lint from 1.46.0 to 1.46.1
+* 06757119 Update make-golangci-lint from 1.46.1 to 1.46.2
+* 3d69e9d0 Update make-golangci-lint from 1.46.2 to 1.47.0
+* 2170925d Update make-golangci-lint from 1.47.0 to 1.47.1
+* c4199c0f Update make-golangci-lint from 1.47.1 to 1.47.2
+* 02f00be9 Update usage.md
+* 75169a65 asn1: Add regression test for range decode fix ##330
+* b0096bc1 avc_pps: Correct check if there is more rbsp data
+* 5d67df47 avro_ocf: Fix panic on missing meta schema
+* 417255b7 bitcoin: Add blkdat, block, transcation and script decoder
+* a6a97136 decode: Cleanup Try<f>/<f> pairs
+* 3ce660a2 decode: Keep decode tree on RangeFn error
+* c4dd518e decode: Make compound range sort optional
+* 8bb4a6d2 decode: Range decode with new decoder to preserve bit reader
+* 342612eb dev: Cleanup linters and fix some unused args
+* 78aa96b0 dev: Cleanup some code to fix a bunch of new linter warnings
+* 3570f1f0 doc: Add more related tools
+* 7aff654a doc: Clarify decode, slurp and spew args
+* 0863374f doc: Correct bencode spec URL
+* 10cc5518 doc: Improve and cleanup text formats
+* b1006119 doc: Typos and add note about Try* functions
+* c27646a6 doc: Update and shorten README.md a bit
+* b0388722 doc: Use singular jq value to refer to jq value
+* a980656c doc: go 1.18 and improve intro text a bit
+* a64c28d9 dump: Skip JQValueEx if there are not options
+* 40481f66 elf,fuzz: Error on too large string table
+* f66a359c elf: Use correct offset to dynamic linking string table
+* 64f3e5c7 fairplay: Add basic SPC decoder and PSSH system id
+* cae288e6 format,intepr: Refactor json, yaml, etc into formats also move out related functions
+* e9d9f8ae fq: Use go 1.18
+* 377af133 fqtest: Cleanup path usage
+* 2464ebc2 fuzz: Replace built tag with FUZZTEST env and use new interp api
+* 0f78687b gojq: Fix JQValue index and destructuring issue and rebase fq fork
+* 59c7d0df gojq: Rebase fq fork
+* c57dc17d gojq: Rebase fq fork
+* 9a7ce148 gojq: Update rebased fq fork
+* c1a0cda5 gojq: Update rebased fq fork
+* 32361dee gojqextra: Cleanup gojq type cast code
+* 9b2e474e gojqextra: Simplify function type helpers
+* fd302093 hevc_vps,fuzz: Error on too many vps layers
+* efa5e23a icc_profile: Correctly clamp align padding on EOF
+* 1ddea1ad interp,format: Refactor registry usage and use function helpers
+* a3c33fc1 interp: Add group/0
+* 95e61965 interp: Add internal _is_<type> helpers
+* 3b717c3b interp: Add to/from<encoding> for some common serialzations, encodings and hashes
+* 6b088000 interp: Cast jq value to go value properly for encoding functions
+* f5be5180 interp: Cleanup and clarify some format naming
+* c7701851 interp: Extract to/from map/struct to own package
+* 8dde3ef5 interp: Fix crash when including relatve path when no search paths are set
+* 735c443b interp: Improve type normalization and use it for toyaml and totoml
+* 81a014ce interp: Make empty _finally fin error on error
+* 2dc509ab interp: Refactor dump and revert #259 for now
+* ab8c728a interp: Rename --decode-file to --argdecode to be more consistent
+* dff3cc11 interp: dump: Fix column truncate issue with unicode bars
+* 5109df4a interp: dump: Show address bar for nested roots
+* 80214921 interp: help: Fix incorrect options example
+* 76714349 mapstruct: Handle nested values when converting to camel case
+* c92f4f13 matroska: Update ebml_matroska.xml and allow unknown ids
+* c2a359bd mod: Update golang.org/x/{crypto,net}
+* 3780375d mp3: Use d.FieldValueU and some cleanup
+* 7b27e506 mp4,bitio: Fix broken pssh decoding and add proper reader cloning to bitio
+* 6b00297e mp4,senc: Refactor current track/moof tracking and add senc box support
+* 8228ecae mp4: Add track id field and add track for tfhd with unseen track_id
+* ea2cc3c2 mp4: Don't  decode encrypted samples
+* c6d0d89c mp4: Don't range sort samples, keep sample table order
+* 7d25fbfd mp4: Properly use trun data offset
+* ba844eb0 mp4: Skip fields for pcm samples for now
+* 0e02bb66 mp4: iinf: Only assume sub boxes for version 0
+* 2e328180 mp4: mvhd,tkhd,mdhd,mehd: Add version 1 support
+* 44bab274 readline: Rebase on top of tpodowd's redraw/completion fixes PR
+* a5122690 readline: Rebase on top of tpodowd's update PR
+* 54dcdce9 readline: Update fq fork
+* 6e7267d2 readme: add MacPorts install details
+* 76161a1b scalar,mp4,gzip,tar: Add timestamp to description
+* 9133f0e5 scalar: Add *Fn type to map value and clearer naming
+* 34cf5442 tcp: Split into client/server structs and add skipped_bytes and has_start/end per direction
+* 1aaaefb0 wav,bencode,mpeg_ps_packet,id3v1: Random fixes
+* 47350e46 zip: Add uncompress=false test and some docs
+* e6412744 zip: Add zip64 support and uncompress option
+* aa694e3f zip: s/Decompress/Uncompress/
+
+
 # 0.0.7
 
 ## Changes
@@ -457,8 +732,6 @@ Also thanks to @Doctor-love @mathieu-aubin for keeping things tidy.
 * bf9e13c windows: Unbreak tests
 
 (Some commits have been removed from list for clarity)
-
-
 
 # 0.0.2
 

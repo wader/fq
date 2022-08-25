@@ -5,7 +5,7 @@ import (
 	"math/bits"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/internal/mathextra"
+	"github.com/wader/fq/internal/mathex"
 	"github.com/wader/fq/pkg/checksum"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
@@ -18,7 +18,7 @@ func init() {
 		Description: "FLAC frame",
 		DecodeFn:    frameDecode,
 		DecodeInArg: format.FlacFrameIn{
-			BitsPerSample: 16,
+			BitsPerSample: 16, // TODO: maybe should not have a default value?
 		},
 	})
 }
@@ -261,7 +261,7 @@ func frameDecode(d *decode.D, in any) any {
 			0b100: {Sym: uint64(16)},
 			0b101: {Sym: uint64(20)},
 			0b110: {Sym: uint64(24)},
-			0b111: {Description: "reserved"},
+			0b111: {Sym: uint64(32)},
 		}
 		sampleSizeS := d.FieldScalarU3("sample_size", sampleSizeMap, scalar.ActualBin)
 		switch sampleSizeS.ActualU() {
@@ -455,15 +455,19 @@ func frameDecode(d *decode.D, in any) any {
 
 								if riceParameter == riceEscape {
 									escapeSampleSize := int(d.FieldU5("escape_sample_size"))
-									d.FieldRawLen("samples", int64(count*escapeSampleSize))
+									d.RangeFn(d.Pos(), int64(count*escapeSampleSize), func(d *decode.D) {
+										d.FieldRawLen("samples", int64(count*escapeSampleSize))
+									})
+									for j := 0; j < count; j++ {
+										samples[n] = d.S(escapeSampleSize)
+										n++
+									}
 								} else {
 									samplesStart := d.Pos()
 									for j := 0; j < count; j++ {
 										high := d.Unary(0)
-										_ = high
 										low := d.U(riceParameter)
-										_ = low
-										samples[n] = mathextra.ZigZag(high<<riceParameter | low)
+										samples[n] = mathex.ZigZag(high<<riceParameter | low)
 										n++
 									}
 									samplesStop := d.Pos()
@@ -608,7 +612,7 @@ func frameDecode(d *decode.D, in any) any {
 	interleavedSamplesBuf := ffi.SamplesBuf
 	interleavedSamplesBufLen := len(channelSamples) * streamSamples * bytesPerSample
 	// TODO: decode read buffer?
-	// reuse buffer if possible
+	// TODO: reuse buffer if possible
 	if interleavedSamplesBuf == nil || len(interleavedSamplesBuf) < interleavedSamplesBufLen {
 		interleavedSamplesBuf = make([]byte, interleavedSamplesBufLen)
 	}

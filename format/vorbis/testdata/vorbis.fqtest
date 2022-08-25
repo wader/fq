@@ -18,7 +18,7 @@ $ fq -d vorbis_packet dv vorbis-comment
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: vorbis-comment (vorbis_packet) 0x0-0x3f.7 (64)
 0x00|03                                             |.               |  packet_type: "Comment" (3) 0x0-0x0.7 (1)
 0x00|   76 6f 72 62 69 73                           | vorbis         |  magic: "vorbis" (valid) 0x1-0x6.7 (6)
-    |                                               |                |  comment{}: (vorbis_comment) 0x7-0x3e.7 (56)
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|  comment{}: (vorbis_comment) 0x7-0x3e.7 (56)
 0x00|                     0d 00 00 00               |       ....     |    vendor_length: 13 0x7-0xa.7 (4)
 0x00|                                 4c 61 76 66 35|           Lavf5|    vendor: "Lavf58.29.100" 0xb-0x17.7 (13)
 0x10|38 2e 32 39 2e 31 30 30                        |8.29.100        |

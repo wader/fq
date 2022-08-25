@@ -1,8 +1,8 @@
 $ fq -d flac dv stereo8.flac
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: stereo8.flac (flac) 0x0-0x6d5c.7 (27997)
 0x0000|66 4c 61 43                                    |fLaC            |  magic: "fLaC" (valid) 0x0-0x3.7 (4)
-      |                                               |                |  metadatablocks[0:4]: (flac_metadatablocks) 0x4-0x206f.7 (8300)
-      |                                               |                |    [0]{}: metadatablock (flac_metadatablock) 0x4-0x29.7 (38)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|  metadatablocks[0:4]: (flac_metadatablocks) 0x4-0x206f.7 (8300)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [0]{}: metadatablock (flac_metadatablock) 0x4-0x29.7 (38)
 0x0000|            00                                 |    .           |      last_block: false 0x4-0x4 (0.1)
 0x0000|            00                                 |    .           |      type: "streaminfo" (0) 0x4.1-0x4.7 (0.7)
 0x0000|               00 00 22                        |     .."        |      length: 34 0x5-0x7.7 (3)
@@ -17,7 +17,7 @@ $ fq -d flac dv stereo8.flac
 0x0010|               70 00 00 56 22                  |     p..V"      |      total_samples_in_stream: 22050 0x15.4-0x19.7 (4.4)
 0x0010|                              ef 79 00 9c ce 3b|          .y...;|      md5: "ef79009cce3bd79ef4b5668ebb98d113" (raw bits) 0x1a-0x29.7 (16)
 0x0020|d7 9e f4 b5 66 8e bb 98 d1 13                  |....f.....      |
-      |                                               |                |    [1]{}: metadatablock (flac_metadatablock) 0x2a-0x3f.7 (22)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [1]{}: metadatablock (flac_metadatablock) 0x2a-0x3f.7 (22)
 0x0020|                              03               |          .     |      last_block: false 0x2a-0x2a (0.1)
 0x0020|                              03               |          .     |      type: "seektable" (3) 0x2a.1-0x2a.7 (0.7)
 0x0020|                                 00 00 12      |           ...  |      length: 18 0x2b-0x2d.7 (3)
@@ -27,25 +27,25 @@ $ fq -d flac dv stereo8.flac
 0x0030|00 00 00 00 00 00                              |......          |
 0x0030|                  00 00 00 00 00 00 00 00      |      ........  |          offset: 0 0x36-0x3d.7 (8)
 0x0030|                                          10 00|              ..|          number_of_samples: 4096 0x3e-0x3f.7 (2)
-      |                                               |                |    [2]{}: metadatablock (flac_metadatablock) 0x40-0x6b.7 (44)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [2]{}: metadatablock (flac_metadatablock) 0x40-0x6b.7 (44)
 0x0040|04                                             |.               |      last_block: false 0x40-0x40 (0.1)
 0x0040|04                                             |.               |      type: "vorbis_comment" (4) 0x40.1-0x40.7 (0.7)
 0x0040|   00 00 28                                    | ..(            |      length: 40 0x41-0x43.7 (3)
-      |                                               |                |      comment{}: (vorbis_comment) 0x44-0x6b.7 (40)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      comment{}: (vorbis_comment) 0x44-0x6b.7 (40)
 0x0040|            20 00 00 00                        |     ...        |        vendor_length: 32 0x44-0x47.7 (4)
-0x0040|                        72 65 66 65 72 65 6e 63|        referenc|        vendor: "reference libFLAC 1.3.3 20190804" 0x48-0x67.7 (32)
-0x0050|65 20 6c 69 62 46 4c 41 43 20 31 2e 33 2e 33 20|e libFLAC 1.3.3 |
-0x0060|32 30 31 39 30 38 30 34                        |20190804        |
+0x0040|                        72 65 66 65 72 65 6e 63|        referenc|        vendor: "reference libFLAC 1.3.4 20220220" 0x48-0x67.7 (32)
+0x0050|65 20 6c 69 62 46 4c 41 43 20 31 2e 33 2e 34 20|e libFLAC 1.3.4 |
+0x0060|32 30 32 32 30 32 32 30                        |20220220        |
 0x0060|                        00 00 00 00            |        ....    |        user_comment_list_length: 0 0x68-0x6b.7 (4)
       |                                               |                |        user_comments[0:0]: 0x6c-NA (0)
-      |                                               |                |    [3]{}: metadatablock (flac_metadatablock) 0x6c-0x206f.7 (8196)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [3]{}: metadatablock (flac_metadatablock) 0x6c-0x206f.7 (8196)
 0x0060|                                    81         |            .   |      last_block: true 0x6c-0x6c (0.1)
 0x0060|                                    81         |            .   |      type: "padding" (1) 0x6c.1-0x6c.7 (0.7)
 0x0060|                                       00 20 00|             . .|      length: 8192 0x6d-0x6f.7 (3)
 0x0070|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|      data: raw bits 0x70-0x206f.7 (8192)
 *     |until 0x206f.7 (8192)                          |                |
       |                                               |                |  frames[0:6]: 0x2070-0x6d5c.7 (19693)
-      |                                               |                |    [0]{}: frame (flac_frame) 0x2070-0x207b.7 (12)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [0]{}: frame (flac_frame) 0x2070-0x207b.7 (12)
       |                                               |                |      header{}: 0x2070-0x2075.7 (6)
 0x2070|ff f8                                          |..              |        sync: 0b11111111111110 (valid) 0x2070-0x2071.5 (1.6)
 0x2070|   f8                                          | .              |        reserved0: 0 (valid) 0x2071.6-0x2071.6 (0.1)
@@ -73,7 +73,7 @@ $ fq -d flac dv stereo8.flac
 0x2070|                           00                  |         .      |          value: 0 0x2079-0x2079.7 (1)
       |                                               |                |      byte_align: 0 (valid) 0x207a-NA (0)
 0x2070|                              82 7e            |          .~    |      footer_crc: "827e" (raw bits) (valid) 0x207a-0x207b.7 (2)
-      |                                               |                |    [1]{}: frame (flac_frame) 0x207c-0x261a.7 (1439)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [1]{}: frame (flac_frame) 0x207c-0x261a.7 (1439)
       |                                               |                |      header{}: 0x207c-0x2081.7 (6)
 0x2070|                                    ff f8      |            ..  |        sync: 0b11111111111110 (valid) 0x207c-0x207d.5 (1.6)
 0x2070|                                       f8      |             .  |        reserved0: 0 (valid) 0x207d.6-0x207d.6 (0.1)
@@ -138,7 +138,7 @@ $ fq -d flac dv stereo8.flac
 *     |until 0x2618.2 (418)                           |                |
 0x2610|                        20                     |                |      byte_align: 0 (valid) 0x2618.3-0x2618.7 (0.5)
 0x2610|                           99 e9               |         ..     |      footer_crc: "99e9" (raw bits) (valid) 0x2619-0x261a.7 (2)
-      |                                               |                |    [2]{}: frame (flac_frame) 0x261b-0x4628.7 (8206)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [2]{}: frame (flac_frame) 0x261b-0x4628.7 (8206)
       |                                               |                |      header{}: 0x261b-0x2620.7 (6)
 0x2610|                                 ff f8         |           ..   |        sync: 0b11111111111110 (valid) 0x261b-0x261c.5 (1.6)
 0x2610|                                    f8         |            .   |        reserved0: 0 (valid) 0x261c.6-0x261c.6 (0.1)
@@ -567,7 +567,7 @@ $ fq -d flac dv stereo8.flac
 *     |until 0x4626.5 (142)                           |                |
 0x4620|                  40                           |      @         |      byte_align: 0 (valid) 0x4626.6-0x4626.7 (0.2)
 0x4620|                     83 11                     |       ..       |      footer_crc: "8311" (raw bits) (valid) 0x4627-0x4628.7 (2)
-      |                                               |                |    [3]{}: frame (flac_frame) 0x4629-0x541f.7 (3575)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [3]{}: frame (flac_frame) 0x4629-0x541f.7 (3575)
       |                                               |                |      header{}: 0x4629-0x462e.7 (6)
 0x4620|                           ff f8               |         ..     |        sync: 0b11111111111110 (valid) 0x4629-0x462a.5 (1.6)
 0x4620|                              f8               |          .     |        reserved0: 0 (valid) 0x462a.6-0x462a.6 (0.1)
@@ -729,7 +729,7 @@ $ fq -d flac dv stereo8.flac
 *     |until 0x541d.5 (142)                           |                |
 0x5410|                                       dc      |             .  |      byte_align: 0 (valid) 0x541d.6-0x541d.7 (0.2)
 0x5410|                                          8b 83|              ..|      footer_crc: "8b83" (raw bits) (valid) 0x541e-0x541f.7 (2)
-      |                                               |                |    [4]{}: frame (flac_frame) 0x5420-0x65a1.7 (4482)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [4]{}: frame (flac_frame) 0x5420-0x65a1.7 (4482)
       |                                               |                |      header{}: 0x5420-0x5425.7 (6)
 0x5420|ff f8                                          |..              |        sync: 0b11111111111110 (valid) 0x5420-0x5421.5 (1.6)
 0x5420|   f8                                          | .              |        reserved0: 0 (valid) 0x5421.6-0x5421.6 (0.1)
@@ -881,7 +881,7 @@ $ fq -d flac dv stereo8.flac
 *     |until 0x659f (268)                             |                |
 0x6590|                                             80|               .|      byte_align: 0 (valid) 0x659f.1-0x659f.7 (0.7)
 0x65a0|3a a5                                          |:.              |      footer_crc: "3aa5" (raw bits) (valid) 0x65a0-0x65a1.7 (2)
-      |                                               |                |    [5]{}: frame (flac_frame) 0x65a2-0x6d5c.7 (1979)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [5]{}: frame (flac_frame) 0x65a2-0x6d5c.7 (1979)
       |                                               |                |      header{}: 0x65a2-0x65a9.7 (8)
 0x65a0|      ff f8                                    |  ..            |        sync: 0b11111111111110 (valid) 0x65a2-0x65a3.5 (1.6)
 0x65a0|         f8                                    |   .            |        reserved0: 0 (valid) 0x65a3.6-0x65a3.6 (0.1)
@@ -925,5 +925,6 @@ $ fq -d flac dv stereo8.flac
 *     |until 0x6d5a.2 (395)                           |                |
 0x6d50|                              40               |          @     |      byte_align: 0 (valid) 0x6d5a.3-0x6d5a.7 (0.5)
 0x6d50|                                 ee 38|        |           .8|  |      footer_crc: "ee38" (raw bits) (valid) 0x6d5b-0x6d5c.7 (2)
- 0x000|ef 79 00 9c ce 3b d7 9e f4 b5 66 8e bb 98 d1 13|.y...;....f.....|  md5_calculated: "ef79009cce3bd79ef4b5668ebb98d113" (raw bits) (valid) 0x0-0xf.7 (16)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+  0x00|ef 79 00 9c ce 3b d7 9e f4 b5 66 8e bb 98 d1 13|.y...;....f.....|  md5_calculated: "ef79009cce3bd79ef4b5668ebb98d113" (raw bits) (valid) 0x0-0xf.7 (16)
       |                                               |                |  decoded_samples: 22050 0x6d5d-NA (0)

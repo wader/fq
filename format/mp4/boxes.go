@@ -61,6 +61,24 @@ var subTypeNames = scalar.StrToDescription{
 	"vide": "Video Track",
 }
 
+var dataFormatNames = scalar.StrToDescription{
+	"apch": "Apple ProRes 422 High Quality",
+	"apcn": "Apple ProRes 422 Standard Definition",
+	"apcs": "Apple ProRes 422 LT",
+	"apco": "Apple ProRes 422 Proxy",
+	"ap4h": "Apple ProRes 4444",
+	"fLaC": "Fres Lossless Audio Codec",
+	"Opus": "Xiph Opus",
+	"vp09": "VP9",
+	"avc1": "Advanced Video Coding / H.264 / MPEG-4 Part 10",
+	"hev1": "High Efficiency Video Coding / H.265 / MPEG-H Part 2",
+	"hvc1": "High Efficiency Video Coding / H.265 / MPEG-H Part 2",
+	"av01": "AV1",
+	"mp4a": "MPEG Audio",
+	"mp4v": "MPEG Video",
+	"jpeg": "JPEG Image",
+}
+
 var (
 	uuidIsmlManifestBytes = [16]byte{0xa5, 0xd4, 0x0b, 0x30, 0xe8, 0x14, 0x11, 0xdd, 0xba, 0x2f, 0x08, 0x00, 0x20, 0x0c, 0x9a, 0x66}
 	uuidXmpBytes          = [16]byte{0xbe, 0x7a, 0xcf, 0xcb, 0x97, 0xa9, 0x42, 0xe8, 0x9c, 0x71, 0x99, 0x94, 0x91, 0xe3, 0xaf, 0xac}
@@ -403,7 +421,7 @@ func init() {
 			d.FieldArrayLoop("boxes", func() bool { return i < entryCount }, func(d *decode.D) {
 				d.FieldStruct("box", func(d *decode.D) {
 					size := d.FieldU32("size")
-					dataFormat := d.FieldUTF8("type", 4)
+					dataFormat := d.FieldUTF8("type", 4, dataFormatNames)
 					subType := ""
 					if t := ctx.currentTrack(); t != nil {
 						t.sampleDescriptions = append(t.sampleDescriptions, sampleDescription{

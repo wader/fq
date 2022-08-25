@@ -1,0 +1,8 @@
+$ fq -n '"123 trailing" | fromjson._error.error'
+exitcode: 5
+stderr:
+error: error at position 0xc: trialing data after top-level value
+$ fq -n '`{"a":123}{"b":444}` | fromjson'
+exitcode: 5
+stderr:
+error: error at position 0x12: trialing data after top-level value

@@ -4,6 +4,7 @@ import "github.com/wader/fq/pkg/scalar"
 
 // from https://www.tcpdump.org/linktypes.html
 // TODO cleanup
+//
 //nolint:revive
 const (
 	LinkTypeNULL                       = 0

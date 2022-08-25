@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/wader/fq/internal/columnwriter"
-	"github.com/wader/fq/internal/mathextra"
+	"github.com/wader/fq/internal/mathex"
 	"github.com/wader/fq/pkg/bitio"
 )
 
@@ -39,7 +39,16 @@ func New(w io.Writer, startOffset int64, addrLen int, addrBase int, lineBytes in
 	dumpHeaderFn func(s string) string,
 	dumpAddrFn func(s string) string,
 	column string) *Dumper {
-	cw := columnwriter.New(w, []int{addrLen, 1, lineBytes*3 - 1, 1, lineBytes, 1})
+	cw := columnwriter.New(
+		w,
+		&columnwriter.MultiLineColumn{Width: addrLen},
+		columnwriter.BarColumn(column),
+		&columnwriter.MultiLineColumn{Width: lineBytes * 3},
+		columnwriter.BarColumn(column),
+		&columnwriter.MultiLineColumn{Width: lineBytes},
+		columnwriter.BarColumn(column),
+	)
+
 	return &Dumper{
 		addrLen:          addrLen,
 		addrBase:         addrBase,
@@ -60,7 +69,7 @@ func New(w io.Writer, startOffset int64, addrLen int, addrBase int, lineBytes in
 
 func (d *Dumper) flush() error {
 	if _, err := d.columnW.Columns[0].Write([]byte(
-		d.dumpAddrFn(mathextra.PadFormatInt(((d.offset-1)/d.lineBytes)*d.lineBytes, d.addrBase, true, d.addrLen)))); err != nil {
+		d.dumpAddrFn(mathex.PadFormatInt(((d.offset-1)/d.lineBytes)*d.lineBytes, d.addrBase, true, d.addrLen)))); err != nil {
 		return err
 	}
 	if _, err := d.separatorsW.Write([]byte(d.column)); err != nil {
@@ -76,7 +85,7 @@ func (d *Dumper) WriteBits(p []byte, nBits int64) (n int64, err error) {
 	pos := int64(0)
 	rBits := nBits
 	if d.bitsBufN > 0 {
-		r := mathextra.MinInt64(8-d.bitsBufN, nBits)
+		r := mathex.Min(8-d.bitsBufN, nBits)
 		v := bitio.Read64(p, 0, r)
 		bitio.Write64(v, r, d.bitsBuf, d.bitsBufN)
 
@@ -122,7 +131,7 @@ func (d *Dumper) Write(p []byte) (n int, err error) {
 		}
 		for i := int64(0); i < d.lineBytes; i++ {
 			headerSB := &strings.Builder{}
-			if _, err := headerSB.Write([]byte(mathextra.PadFormatInt(i, d.addrBase, false, 2))); err != nil {
+			if _, err := headerSB.Write([]byte(mathex.PadFormatInt(i, d.addrBase, false, 2))); err != nil {
 				return 0, err
 			}
 			if i < d.lineBytes-1 {

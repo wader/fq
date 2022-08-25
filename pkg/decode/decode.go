@@ -5,10 +5,11 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math/big"
+	"regexp"
 
-	"github.com/wader/fq/internal/bitioextra"
+	"github.com/wader/fq/internal/bitioex"
+	"github.com/wader/fq/internal/ioex"
 	"github.com/wader/fq/internal/recoverfn"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/ranges"
@@ -44,7 +45,7 @@ func Decode(ctx context.Context, br bitio.ReaderAtSeeker, group Group, opts Opti
 }
 
 func decode(ctx context.Context, br bitio.ReaderAtSeeker, group Group, opts Options) (*Value, any, error) {
-	brLen, err := bitioextra.Len(br)
+	brLen, err := bitioex.Len(br)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -75,7 +76,7 @@ func decode(ctx context.Context, br bitio.ReaderAtSeeker, group Group, opts Opti
 			}
 		}
 
-		cBR, err := bitioextra.Range(br, decodeRange.Start, decodeRange.Len)
+		cBR, err := bitioex.Range(br, decodeRange.Start, decodeRange.Len)
 		if err != nil {
 			return nil, nil, IOError{Err: err, Op: "BitBufRange", ReadSize: decodeRange.Len, Pos: decodeRange.Start}
 		}
@@ -104,8 +105,8 @@ func decode(ctx context.Context, br bitio.ReaderAtSeeker, group Group, opts Opti
 				switch vv := d.Value.V.(type) {
 				case *Compound:
 					// TODO: hack, changes V
-					vv.Err = formatErr
 					d.Value.V = vv
+					d.Value.Err = formatErr
 				}
 
 				if len(group) != 1 {
@@ -122,7 +123,7 @@ func decode(ctx context.Context, br bitio.ReaderAtSeeker, group Group, opts Opti
 		}
 
 		var minMaxRange ranges.Range
-		if err := d.Value.WalkRootPreOrder(func(v *Value, rootV *Value, depth int, rootDepth int) error {
+		if err := d.Value.WalkRootPreOrder(func(v *Value, _ *Value, _ int, _ int) error {
 			minMaxRange = ranges.MinMax(minMaxRange, v.Range)
 			v.Range.Start += decodeRange.Start
 			v.RootReader = br
@@ -148,11 +149,10 @@ func decode(ctx context.Context, br bitio.ReaderAtSeeker, group Group, opts Opti
 }
 
 type D struct {
-	Ctx         context.Context
-	Endian      Endian
-	RangeSorted bool
-	Value       *Value
-	Options     Options
+	Ctx     context.Context
+	Endian  Endian
+	Value   *Value
+	Options Options
 
 	bitBuf bitio.ReaderAtSeeker
 
@@ -168,22 +168,21 @@ func newDecoder(ctx context.Context, format Format, br bitio.ReaderAtSeeker, opt
 	}
 	rootV := &Compound{
 		IsArray:     format.RootArray,
-		RangeSorted: true,
+		RangeSorted: !format.RootArray,
 		Children:    nil,
 		Description: opts.Description,
-		Format:      &format,
 	}
 
 	return &D{
-		Ctx:         ctx,
-		Endian:      BigEndian,
-		RangeSorted: true,
+		Ctx:    ctx,
+		Endian: BigEndian,
 		Value: &Value{
 			Name:       name,
 			V:          rootV,
 			RootReader: br,
 			Range:      ranges.Range{Start: 0, Len: 0},
 			IsRoot:     opts.IsRoot,
+			Format:     &format,
 		},
 		Options: opts,
 
@@ -192,11 +191,10 @@ func newDecoder(ctx context.Context, format Format, br bitio.ReaderAtSeeker, opt
 	}
 }
 
-func (d *D) FieldDecoder(name string, bitBuf bitio.ReaderAtSeeker, v any) *D {
+func (d *D) fieldDecoder(name string, bitBuf bitio.ReaderAtSeeker, v any) *D {
 	return &D{
-		Ctx:         d.Ctx,
-		Endian:      d.Endian,
-		RangeSorted: true,
+		Ctx:    d.Ctx,
+		Endian: d.Endian,
 		Value: &Value{
 			Name:       name,
 			V:          v,
@@ -213,7 +211,7 @@ func (d *D) FieldDecoder(name string, bitBuf bitio.ReaderAtSeeker, v any) *D {
 func (d *D) TryCopyBits(w io.Writer, r bitio.Reader) (int64, error) {
 	// TODO: what size? now same as io.Copy
 	buf := d.SharedReadBuf(32 * 1024)
-	return bitioextra.CopyBitsBuffer(w, r, buf)
+	return bitioex.CopyBitsBuffer(w, r, buf)
 }
 
 func (d *D) CopyBits(w io.Writer, r bitio.Reader) int64 {
@@ -255,7 +253,7 @@ func (d *D) NewBitBufFromReader(r io.Reader) bitio.ReaderAtSeeker {
 func (d *D) TryReadAllBits(r bitio.Reader) ([]byte, error) {
 	bb := &bytes.Buffer{}
 	buf := d.SharedReadBuf(32 * 1024)
-	if _, err := bitioextra.CopyBitsBuffer(bb, r, buf); err != nil {
+	if _, err := bitioex.CopyBitsBuffer(bb, r, buf); err != nil {
 		return nil, err
 	}
 	return bb.Bytes(), nil
@@ -281,7 +279,7 @@ func (d *D) SharedReadBuf(n int) []byte {
 
 func (d *D) FillGaps(r ranges.Range, namePrefix string) {
 	makeWalkFn := func(fn func(iv *Value)) func(iv *Value, rootV *Value, depth int, rootDepth int) error {
-		return func(iv *Value, rootV *Value, depth int, rootDepth int) error {
+		return func(iv *Value, _ *Value, _ int, _ int) error {
 			switch iv.V.(type) {
 			case *Compound:
 			default:
@@ -294,7 +292,7 @@ func (d *D) FillGaps(r ranges.Range, namePrefix string) {
 	// TODO: redo this, tries to get rid of slice grow
 	// TODO: pre-sorted somehow?
 	n := 0
-	_ = d.Value.WalkRootPreOrder(makeWalkFn(func(iv *Value) { n++ }))
+	_ = d.Value.WalkRootPreOrder(makeWalkFn(func(_ *Value) { n++ }))
 	valueRanges := make([]ranges.Range, n)
 	i := 0
 	_ = d.Value.WalkRootPreOrder(makeWalkFn(func(iv *Value) {
@@ -304,7 +302,7 @@ func (d *D) FillGaps(r ranges.Range, namePrefix string) {
 
 	gaps := ranges.Gaps(r, valueRanges)
 	for i, gap := range gaps {
-		br, err := bitioextra.Range(d.bitBuf, gap.Start, gap.Len)
+		br, err := bitioex.Range(d.bitBuf, gap.Start, gap.Len)
 		if err != nil {
 			d.IOPanic(err, "FillGaps: Range")
 		}
@@ -319,6 +317,7 @@ func (d *D) FillGaps(r ranges.Range, namePrefix string) {
 			Range:      gap,
 		}
 
+		// TODO: for arrays not great that we just append unknown fields
 		d.AddChild(v)
 	}
 }
@@ -521,11 +520,11 @@ func (d *D) BytesLen(nBytes int) []byte {
 
 // TODO: rename/remove BitBuf name?
 func (d *D) TryBitBufRange(firstBit int64, nBits int64) (bitio.ReaderAtSeeker, error) {
-	return bitioextra.Range(d.bitBuf, firstBit, nBits)
+	return bitioex.Range(d.bitBuf, firstBit, nBits)
 }
 
 func (d *D) BitBufRange(firstBit int64, nBits int64) bitio.ReaderAtSeeker {
-	br, err := bitioextra.Range(d.bitBuf, firstBit, nBits)
+	br, err := bitioex.Range(d.bitBuf, firstBit, nBits)
 	if err != nil {
 		panic(IOError{Err: err, Op: "BitBufRange", ReadSize: nBits, Pos: firstBit})
 	}
@@ -545,7 +544,7 @@ func (d *D) Pos() int64 {
 }
 
 func (d *D) TryLen() (int64, error) {
-	return bitioextra.Len(d.bitBuf)
+	return bitioex.Len(d.bitBuf)
 }
 
 func (d *D) Len() int64 {
@@ -753,28 +752,30 @@ func (d *D) FieldMustGet(name string) *Value {
 	panic(fmt.Sprintf("%s not found in struct %s", name, d.Value.Name))
 }
 
+// FieldArray decode array of fields. Will not be range sorted.
 func (d *D) FieldArray(name string, fn func(d *D), sms ...scalar.Mapper) *D {
-	c := &Compound{IsArray: true, RangeSorted: true}
-	cd := d.FieldDecoder(name, d.bitBuf, c)
+	c := &Compound{IsArray: true, RangeSorted: false}
+	cd := d.fieldDecoder(name, d.bitBuf, c)
 	d.AddChild(cd.Value)
 	fn(cd)
-	c.RangeSorted = cd.RangeSorted
 	return cd
 }
 
+// FieldArrayValue decode array of fields. Will not be range sorted.
 func (d *D) FieldArrayValue(name string) *D {
 	return d.FieldArray(name, func(d *D) {})
 }
 
+// FieldStruct decode array of fields. Will be range sorted.
 func (d *D) FieldStruct(name string, fn func(d *D)) *D {
 	c := &Compound{IsArray: false, RangeSorted: true}
-	cd := d.FieldDecoder(name, d.bitBuf, c)
+	cd := d.fieldDecoder(name, d.bitBuf, c)
 	d.AddChild(cd.Value)
 	fn(cd)
-	c.RangeSorted = cd.RangeSorted
 	return cd
 }
 
+// FieldStructValue decode array of fields. Will be range sorted.
 func (d *D) FieldStructValue(name string) *D {
 	return d.FieldStruct(name, func(d *D) {})
 }
@@ -880,7 +881,7 @@ func (d *D) FramedFn(nBits int64, fn func(d *D)) int64 {
 	return decodeLen
 }
 
-// LimitedFn decode from current position nBits forward. When done position will be set to last bit decoded.
+// LimitedFn decode from current position nBits forward. When done position will after last bit decoded.
 func (d *D) LimitedFn(nBits int64, fn func(d *D)) int64 {
 	if nBits < 0 {
 		d.Fatalf("%d nBits < 0", nBits)
@@ -890,9 +891,8 @@ func (d *D) LimitedFn(nBits int64, fn func(d *D)) int64 {
 	return decodeLen
 }
 
-// RangeFn decode from current position nBits forward. Position will not be changed.
+// RangeFn decode from firstBit position nBits forward. Position will not change.
 func (d *D) RangeFn(firstBit int64, nBits int64, fn func(d *D)) int64 {
-
 	startPos := d.Pos()
 
 	// TODO: do some kind of DecodeLimitedLen/RangeFn?
@@ -901,11 +901,14 @@ func (d *D) RangeFn(firstBit int64, nBits int64, fn func(d *D)) int64 {
 		d.IOPanic(err, "RangeFn: SeekAbs")
 	}
 
-	pbr := d.bitBuf
-	d.bitBuf = br
-	fn(d)
-	endPos := d.Pos()
-	d.bitBuf = pbr
+	nd := *d
+	nd.bitBuf = br
+
+	fn(&nd)
+
+	d.Value = nd.Value
+
+	endPos := nd.Pos()
 
 	return endPos - startPos
 }
@@ -1076,7 +1079,7 @@ func (d *D) FieldFormatBitBuf(name string, br bitio.ReaderAtSeeker, group Group,
 // TODO: rethink these
 
 func (d *D) FieldRootBitBuf(name string, br bitio.ReaderAtSeeker, sms ...scalar.Mapper) *Value {
-	brLen, err := bitioextra.Len(br)
+	brLen, err := bitioex.Len(br)
 	if err != nil {
 		d.IOPanic(err, "br Len")
 	}
@@ -1098,12 +1101,11 @@ func (d *D) FieldRootBitBuf(name string, br bitio.ReaderAtSeeker, sms ...scalar.
 }
 
 func (d *D) FieldArrayRootBitBufFn(name string, br bitio.ReaderAtSeeker, fn func(d *D)) *Value {
-	c := &Compound{IsArray: true, RangeSorted: true}
-	cd := d.FieldDecoder(name, br, c)
+	c := &Compound{IsArray: true, RangeSorted: false}
+	cd := d.fieldDecoder(name, br, c)
 	cd.Value.IsRoot = true
 	d.AddChild(cd.Value)
 	fn(cd)
-	c.RangeSorted = cd.RangeSorted
 
 	cd.Value.postProcess()
 
@@ -1112,11 +1114,10 @@ func (d *D) FieldArrayRootBitBufFn(name string, br bitio.ReaderAtSeeker, fn func
 
 func (d *D) FieldStructRootBitBufFn(name string, br bitio.ReaderAtSeeker, fn func(d *D)) *Value {
 	c := &Compound{IsArray: false, RangeSorted: true}
-	cd := d.FieldDecoder(name, br, c)
+	cd := d.fieldDecoder(name, br, c)
 	cd.Value.IsRoot = true
 	d.AddChild(cd.Value)
 	fn(cd)
-	c.RangeSorted = cd.RangeSorted
 
 	cd.Value.postProcess()
 
@@ -1135,7 +1136,7 @@ func (d *D) FieldFormatReaderLen(name string, nBits int64, fn func(r io.Reader) 
 	if err != nil {
 		d.IOPanic(err, "FieldFormatReaderLen: fn")
 	}
-	rBuf, err := ioutil.ReadAll(r)
+	rBuf, err := io.ReadAll(r)
 	if err != nil {
 		d.IOPanic(err, "FieldFormatReaderLen: ReadAll")
 	}
@@ -1155,7 +1156,7 @@ func (d *D) TryFieldReaderRangeFormat(name string, startBit int64, nBits int64, 
 		return 0, nil, nil, nil, err
 	}
 	r := bitio.NewIOReadSeeker(br)
-	rb, err := ioutil.ReadAll(fn(r))
+	rb, err := io.ReadAll(fn(r))
 	if err != nil {
 		return 0, nil, nil, nil, err
 	}
@@ -1231,4 +1232,57 @@ func (d *D) FieldScalarFn(name string, sfn scalar.Fn, sms ...scalar.Mapper) *sca
 		d.IOPanic(err, "FieldScalarFn: TryFieldScalarFn")
 	}
 	return v
+}
+
+func (d *D) RE(reRef **regexp.Regexp, reStr string) []ranges.Range {
+	if *reRef == nil {
+		*reRef = regexp.MustCompile(reStr)
+	}
+
+	startPos := d.Pos()
+
+	rr := ioex.ByteRuneReader{RS: bitio.NewIOReadSeeker(d.bitBuf)}
+	locs := (*reRef).FindReaderSubmatchIndex(rr)
+	if locs == nil {
+		return nil
+	}
+	d.SeekAbs(startPos)
+
+	var rs []ranges.Range
+	l := len(locs) / 2
+	for i := 0; i < l; i++ {
+		loc := locs[i*2 : i*2+2]
+		if loc[0] == -1 {
+			rs = append(rs, ranges.Range{Start: -1})
+		} else {
+			rs = append(rs, ranges.Range{
+				Start: startPos + int64(loc[0]*8),
+				Len:   int64((loc[1] - loc[0]) * 8)},
+			)
+		}
+	}
+
+	return rs
+}
+
+func (d *D) FieldRE(reRef **regexp.Regexp, reStr string, mRef *map[string]string, sms ...scalar.Mapper) {
+	if *reRef == nil {
+		*reRef = regexp.MustCompile(reStr)
+	}
+	subexpNames := (*reRef).SubexpNames()
+
+	rs := d.RE(reRef, reStr)
+	for i, r := range rs {
+		if i == 0 || r.Start == -1 {
+			continue
+		}
+		d.SeekAbs(r.Start)
+		name := subexpNames[i]
+		value := d.FieldUTF8(name, int(r.Len/8), sms...)
+		if mRef != nil {
+			(*mRef)[name] = value
+		}
+	}
+
+	d.SeekAbs(rs[0].Stop())
 }

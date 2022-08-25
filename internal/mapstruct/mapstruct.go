@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/creasty/defaults"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -21,6 +22,7 @@ func CamelToSnake(s string) string {
 }
 
 func ToStruct(m any, v any) error {
+	_ = defaults.Set(v)
 	ms, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
 		MatchName: func(mapKey, fieldName string) bool {
 			return CamelToSnake(fieldName) == mapKey

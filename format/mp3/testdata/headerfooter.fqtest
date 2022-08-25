@@ -2,7 +2,7 @@
 $ fq -d mp3 dv headerfooter.mp3
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: headerfooter.mp3 (mp3) 0x0-0x25d.7 (606)
      |                                               |                |  headers[0:1]: 0x0-0x3c.7 (61)
-     |                                               |                |    [0]{}: header (id3v2) 0x0-0x3c.7 (61)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [0]{}: header (id3v2) 0x0-0x3c.7 (61)
 0x000|49 44 33                                       |ID3             |      magic: "ID3" (valid) 0x0-0x2.7 (3)
 0x000|         04                                    |   .            |      version: 4 0x3-0x3.7 (1)
 0x000|            00                                 |    .           |      revision: 0 0x4-0x4.7 (1)
@@ -52,7 +52,7 @@ $ fq -d mp3 dv headerfooter.mp3
 0x030|30 30 00                                       |00.             |
 0x030|         00 00 00 00 00 00 00 00 00 00         |   ..........   |      padding: raw bits (all zero) 0x33-0x3c.7 (10)
      |                                               |                |  frames[0:2]: 0x3d-0x1dd.7 (417)
-     |                                               |                |    [0]{}: frame (mp3_frame) 0x3d-0x10c.7 (208)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [0]{}: frame (mp3_frame) 0x3d-0x10c.7 (208)
      |                                               |                |      header{}: 0x3d-0x40.7 (4)
 0x030|                                       ff fb   |             .. |        sync: 0b11111111111 (valid) 0x3d-0x3e.2 (1.3)
 0x030|                                          fb   |              . |        mpeg_version: "1" (3) (MPEG Version 1) 0x3e.3-0x3e.4 (0.2)
@@ -69,9 +69,9 @@ $ fq -d mp3 dv headerfooter.mp3
 0x040|c4                                             |.               |        original: 1 0x40.5-0x40.5 (0.1)
 0x040|c4                                             |.               |        emphasis: "none" (0b0) 0x40.6-0x40.7 (0.2)
      |                                               |                |      side_info{}: 0x41-0x51.7 (17)
-0x040|   00 00                                       | ..             |        main_data_end: 0 0x41-0x42 (1.1)
-0x040|      00                                       |  .             |        private_bits: 0 0x42.1-0x42.5 (0.5)
-0x040|      00 09                                    |  ..            |        share0: 0 0x42.6-0x43.1 (0.4)
+0x040|   00 00                                       | ..             |        main_data_begin: 0 0x41-0x42 (1.1)
+0x040|      00                                       |  .             |        share: 0 0x42.1-0x42.5 (0.5)
+0x040|      00 09                                    |  ..            |        scfsi0: 0 0x42.6-0x43.1 (0.4)
      |                                               |                |        granules[0:2]: 0x43.2-0x51.7 (14.6)
      |                                               |                |          [0][0:1]: granule 0x43.2-0x4a.4 (7.3)
      |                                               |                |            [0]{}: channel 0x43.2-0x4a.4 (7.3)
@@ -104,12 +104,11 @@ $ fq -d mp3 dv headerfooter.mp3
 0x050|   c4                                          | .              |              preflag: 1 0x51.5-0x51.5 (0.1)
 0x050|   c4                                          | .              |              scalefac_scale: 0 0x51.6-0x51.6 (0.1)
 0x050|   c4                                          | .              |              count1table_select: 0 0x51.7-0x51.7 (0.1)
-0x050|      00 5a b0 55 89 9a ad 48 5b 05 b0 42 03 50|  .Z.U...H[..B.P|      data: raw bits 0x52-0x10c.7 (187)
+0x050|      00 5a b0 55 89 9a ad 48 5b 05 b0 42 03 50|  .Z.U...H[..B.P|      audio_data: raw bits 0x52-0x10c.7 (187)
 0x060|26 02 66 42 ce b0 b4 da 23 1a 08 10 20 84 2c 10|&.fB....#... .,.|
 *    |until 0x10c.7 (187)                            |                |
-     |                                               |                |      other_data: raw bits 0x10d-NA (0)
      |                                               |                |      crc_calculated: "3c54" (raw bits) 0x10d-NA (0)
-     |                                               |                |    [1]{}: frame (mp3_frame) 0x10d-0x1dd.7 (209)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [1]{}: frame (mp3_frame) 0x10d-0x1dd.7 (209)
      |                                               |                |      header{}: 0x10d-0x110.7 (4)
 0x100|                                       ff fb   |             .. |        sync: 0b11111111111 (valid) 0x10d-0x10e.2 (1.3)
 0x100|                                          fb   |              . |        mpeg_version: "1" (3) (MPEG Version 1) 0x10e.3-0x10e.4 (0.2)
@@ -126,9 +125,9 @@ $ fq -d mp3 dv headerfooter.mp3
 0x110|c4                                             |.               |        original: 1 0x110.5-0x110.5 (0.1)
 0x110|c4                                             |.               |        emphasis: "none" (0b0) 0x110.6-0x110.7 (0.2)
      |                                               |                |      side_info{}: 0x111-0x121.7 (17)
-0x110|   0d 03                                       | ..             |        main_data_end: 26 0x111-0x112 (1.1)
-0x110|      03                                       |  .             |        private_bits: 0 0x112.1-0x112.5 (0.5)
-0x110|      03 c0                                    |  ..            |        share0: 15 0x112.6-0x113.1 (0.4)
+0x110|   0d 03                                       | ..             |        main_data_begin: 26 0x111-0x112 (1.1)
+0x110|      03                                       |  .             |        share: 0 0x112.1-0x112.5 (0.5)
+0x110|      03 c0                                    |  ..            |        scfsi0: 15 0x112.6-0x113.1 (0.4)
      |                                               |                |        granules[0:2]: 0x113.2-0x121.7 (14.6)
      |                                               |                |          [0][0:1]: granule 0x113.2-0x11a.4 (7.3)
      |                                               |                |            [0]{}: channel 0x113.2-0x11a.4 (7.3)
@@ -161,15 +160,12 @@ $ fq -d mp3 dv headerfooter.mp3
 0x120|   04                                          | .              |              preflag: 1 0x121.5-0x121.5 (0.1)
 0x120|   04                                          | .              |              scalefac_scale: 0 0x121.6-0x121.6 (0.1)
 0x120|   04                                          | .              |              count1table_select: 0 0x121.7-0x121.7 (0.1)
-0x120|      55 55 55 55 55 55 55 55 55 55 55 55 55 55|  UUUUUUUUUUUUUU|      data: raw bits 0x122-0x1c2.7 (161)
+0x120|      55 55 55 55 55 55 55 55 55 55 55 55 55 55|  UUUUUUUUUUUUUU|      audio_data: raw bits 0x122-0x1dd.7 (188)
 0x130|55 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55|UUUUUUUUUUUUUUUU|
-*    |until 0x1c2.7 (161)                            |                |
-0x1c0|         55                                    |   U            |      padding_byte: raw bits 0x1c3-0x1c3.7 (1)
-0x1c0|            55 55 55 55 55 55 55 55 55 55 55 55|    UUUUUUUUUUUU|      other_data: raw bits 0x1c4-0x1dd.7 (26)
-0x1d0|55 55 55 55 55 55 55 55 55 55 55 55 55 55      |UUUUUUUUUUUUUU  |
+*    |until 0x1dd.7 (188)                            |                |
      |                                               |                |      crc_calculated: "ea58" (raw bits) 0x1de-NA (0)
      |                                               |                |  footers[0:1]: 0x1de-0x25d.7 (128)
-     |                                               |                |    [0]{}: footer (id3v1) 0x1de-0x25d.7 (128)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [0]{}: footer (id3v1) 0x1de-0x25d.7 (128)
 0x1d0|                                          54 41|              TA|      magic: "TAG" (valid) 0x1de-0x1e0.7 (3)
 0x1e0|47                                             |G               |
 0x1e0|   74 65 73 74 00 00 00 00 00 00 00 00 00 00 00| test...........|      song_name: "test" 0x1e1-0x1fe.7 (30)
