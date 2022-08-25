@@ -34,10 +34,10 @@ jobs:
             go_test_race_flags: ""
           - os: macos-latest
             goarch: amd64
-            go_test_race_flags: -race
+            go_test_race_flags: ""
           - os: windows-latest
             goarch: amd64
-            go_test_race_flags: -race
+            go_test_race_flags: ""
     runs-on: ${{ matrix.os }}
     steps:
       # only run cli binary tests on linux
