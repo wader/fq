@@ -21,6 +21,9 @@ func init() {
 			{Names: []string{format.BITCOIN_TRANSACTION}, Group: &bitcoinTranscationFormat},
 		},
 		DecodeFn: decodeBitcoinBlock,
+		DecodeInArg: format.BitCoinBlockIn{
+			HasHeader: false,
+		},
 	})
 }
 
@@ -32,19 +35,24 @@ var rawHexReverse = scalar.Fn(func(s scalar.S) (scalar.S, error) {
 })
 
 func decodeBitcoinBlock(d *decode.D, in interface{}) interface{} {
+	bbi, _ := in.(format.BitCoinBlockIn)
 	size := d.BitsLeft()
 
-	// TODO: move to blkdat but how to model it?
-	switch d.PeekBits(32) {
-	case 0xf9beb4d9,
-		0x0b110907,
-		0xfabfb5da:
-		d.FieldU32("magic", scalar.UToSymStr{
-			0xf9beb4d9: "mainnet",
-			0x0b110907: "testnet3",
-			0xfabfb5da: "regtest",
-		}, scalar.ActualHex)
-		size = int64(d.FieldU32LE("size")) * 8
+	if bbi.HasHeader {
+		magic := d.PeekBits(32)
+		switch magic {
+		case 0xf9beb4d9,
+			0x0b110907,
+			0xfabfb5da:
+			d.FieldU32("magic", scalar.UToSymStr{
+				0xf9beb4d9: "mainnet",
+				0x0b110907: "testnet3",
+				0xfabfb5da: "regtest",
+			}, scalar.ActualHex)
+			size = int64(d.FieldU32LE("size")) * 8
+		default:
+			d.Fatalf("unknown magic %x", magic)
+		}
 	}
 
 	d.Endian = decode.LittleEndian

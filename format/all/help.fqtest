@@ -188,11 +188,17 @@ out   # Decode value as bitcoin_blkdat
 out   ... | bitcoin_blkdat
 "help(bitcoin_block)"
 out bitcoin_block: Bitcoin block decoder
+out Options:
+out   has_header=false  Has blkdat header
 out Examples:
 out   # Decode file as bitcoin_block
 out   $ fq -d bitcoin_block . file
 out   # Decode value as bitcoin_block
 out   ... | bitcoin_block
+out   # Decode file using bitcoin_block options
+out   $ fq -d bitcoin_block -o has_header=false . file
+out   # Decode value as bitcoin_block
+out   ... | bitcoin_block({has_header:false})
 "help(bitcoin_script)"
 out bitcoin_script: Bitcoin script decoder
 out Examples:
