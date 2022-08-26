@@ -310,3 +310,7 @@ type CSVLIn struct {
 	Comma   string `doc:"Separator character"`
 	Comment string `doc:"Comment line character"`
 }
+
+type BitCoinBlockIn struct {
+	HasHeader bool `doc:"Has blkdat header"`
+}
