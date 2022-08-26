@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/postgres/flavours/pgpro13"
 	"github.com/wader/fq/format/postgres/flavours/pgpro14"
 	"github.com/wader/fq/format/postgres/flavours/pgproee10"
 	"github.com/wader/fq/format/postgres/flavours/pgproee11"
@@ -40,6 +41,7 @@ const (
 	PG_FLAVOUR_POSTGRES12 = "postgres12"
 	PG_FLAVOUR_POSTGRES13 = "postgres13"
 	PG_FLAVOUR_POSTGRES14 = "postgres14"
+	PG_FLAVOUR_PGPRO13    = "pgpro13"
 	PG_FLAVOUR_PGPRO14    = "pgpro14"
 	PG_FLAVOUR_PGPROEE10  = "pgproee10"
 	PG_FLAVOUR_PGPROEE11  = "pgproee11"
@@ -61,6 +63,8 @@ func decodePgControl(d *decode.D, in any) any {
 		return postgres13.DecodePgControl(d, in)
 	case PG_FLAVOUR_POSTGRES14, PG_FLAVOUR_POSTGRES:
 		return postgres14.DecodePgControl(d, in)
+	case PG_FLAVOUR_PGPRO13:
+		return pgpro13.DecodePgControl(d, in)
 	case PG_FLAVOUR_PGPRO14:
 		return pgpro14.DecodePgControl(d, in)
 	case PG_FLAVOUR_PGPROEE10:
