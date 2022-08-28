@@ -195,9 +195,13 @@ func pesPacketDecode(d *decode.D, _ any) any {
 				})
 			})
 		default:
-			d.FieldRawLen("data", dataLen)
+			d.FieldRawLen("stream_data", dataLen)
 		}
 	default:
+		// nop
+	}
+
+	if d.BitsLeft() > 0 {
 		d.FieldRawLen("data", d.BitsLeft())
 	}
 

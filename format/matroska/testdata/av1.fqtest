@@ -366,7 +366,7 @@ $ fq -d matroska dv av1.mkv
 0x0230|                  80                           |      .         |                key_frame: true 0x236-0x236 (0.1)
 0x0230|                  80                           |      .         |                reserved: 0 0x236.1-0x236.3 (0.3)
 0x0230|                  80                           |      .         |                invisible: false 0x236.4-0x236.4 (0.1)
-0x0230|                  80                           |      .         |                lacing: 0 0x236.5-0x236.6 (0.2)
+0x0230|                  80                           |      .         |                lacing: "none" (0) 0x236.5-0x236.6 (0.2)
 0x0230|                  80                           |      .         |                discardable: false 0x236.7-0x236.7 (0.1)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|              packet[0:3]: (av1_frame) 0x237-0x13ca.7 (4500)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|                [0]{}: obu (av1_obu) 0x237-0x245.7 (15)

@@ -660,7 +660,7 @@ $ fq -d matroska dv hevc.mkv
 0x0b70|                           80                  |         .      |                key_frame: true 0xb79-0xb79 (0.1)
 0x0b70|                           80                  |         .      |                reserved: 0 0xb79.1-0xb79.3 (0.3)
 0x0b70|                           80                  |         .      |                invisible: false 0xb79.4-0xb79.4 (0.1)
-0x0b70|                           80                  |         .      |                lacing: 0 0xb79.5-0xb79.6 (0.2)
+0x0b70|                           80                  |         .      |                lacing: "none" (0) 0xb79.5-0xb79.6 (0.2)
 0x0b70|                           80                  |         .      |                discardable: false 0xb79.7-0xb79.7 (0.1)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|              packet[0:1]: (hevc_au) 0xb7a-0x13ce.7 (2133)
       |                                               |                |                [0]{}: nalu 0xb7a-0x13ce.7 (2133)

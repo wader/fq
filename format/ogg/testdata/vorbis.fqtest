@@ -161,24 +161,24 @@ $ fq -d ogg dv vorbis.ogg
   0x000|                        42 43 56               |        BCV     |          codecooke_sync: 0x564342 (valid) 0x8-0xa.7 (3)
   0x000|                                 01 00         |           ..   |          codebook_dimensions: 1 0xb-0xc.7 (2)
   0x000|                                       40 00 00|             @..|          codebook_entries: 64 0xd-0xf.7 (3)
-  0x001|24 73 18 2a 46 a5 73 16 84 10 1a 42 50 19 e3 1c|$s.*F.s....BP...|          unknown0: raw bits 0x10-0xc74.7 (3173)
+  0x001|24 73 18 2a 46 a5 73 16 84 10 1a 42 50 19 e3 1c|$s.*F.s....BP...|          data: raw bits 0x10-0xc74.7 (3173)
   *    |until 0xc74.7 (end) (3173)                     |                |
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [3]{}: packet (vorbis_packet) 0x0-0x1e.7 (31)
   0x000|5c                                             |\               |          packet_type: "Audio" (0) 0x0-0x0.7 (1)
-  0x000|   dd ab 3a ab ba b0 ff 5a 02 04 10 00 c0 8c da| ..:....Z.......|          unknown0: raw bits 0x1-0x1e.7 (30)
+  0x000|   dd ab 3a ab ba b0 ff 5a 02 04 10 00 c0 8c da| ..:....Z.......|          data: raw bits 0x1-0x1e.7 (30)
   0x001|2d b6 37 df 7c f3 cd 30 0c c3 30 0c c3 7a 00|  |-.7.|..0..0..z.||
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [4]{}: packet (vorbis_packet) 0x0-0x3b.7 (60)
   0x000|9a                                             |.               |          packet_type: "Audio" (0) 0x0-0x0.7 (1)
-  0x000|   d8 3d 07 6f d2 9e 5b 5c 05 66 22 40 2a 00 00| .=.o..[\.f"@*..|          unknown0: raw bits 0x1-0x3b.7 (59)
+  0x000|   d8 3d 07 6f d2 9e 5b 5c 05 66 22 40 2a 00 00| .=.o..[\.f"@*..|          data: raw bits 0x1-0x3b.7 (59)
   0x001|00 00 00 00 00 00 00 00 00 fa fd 60 9f ce 01 d1|...........`....|
   *    |until 0x3b.7 (end) (59)                        |                |
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [5]{}: packet (vorbis_packet) 0x0-0x33.7 (52)
   0x000|be                                             |.               |          packet_type: "Audio" (0) 0x0-0x0.7 (1)
-  0x000|   d8 dd e6 ae 92 f7 23 3e 6f cc 0d 80 7a 00 00| ......#>o...z..|          unknown0: raw bits 0x1-0x33.7 (51)
+  0x000|   d8 dd e6 ae 92 f7 23 3e 6f cc 0d 80 7a 00 00| ......#>o...z..|          data: raw bits 0x1-0x33.7 (51)
   0x001|00 00 01 06 00 00 00 00 00 00 e0 b9 05 42 5c 27|.............B\'|
   *    |until 0x33.7 (end) (51)                        |                |
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [6]{}: packet (vorbis_packet) 0x0-0x7f.7 (128)
   0x000|3e                                             |>               |          packet_type: "Audio" (0) 0x0-0x0.7 (1)
-  0x000|   37 dd 37 fe ee 85 47 7c 3c 61 02 9b 31 06 f6| 7.7...G|<a..1..|          unknown0: raw bits 0x1-0x7f.7 (127)
+  0x000|   37 dd 37 fe ee 85 47 7c 3c 61 02 9b 31 06 f6| 7.7...G|<a..1..|          data: raw bits 0x1-0x7f.7 (127)
   0x001|bb ef 9f 04 62 46 41 04 c0 c0 00 00 f0 3d f4 1d|....bFA......=..|
   *    |until 0x7f.7 (end) (127)                       |                |
