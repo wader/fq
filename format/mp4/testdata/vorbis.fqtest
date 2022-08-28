@@ -270,7 +270,7 @@ $ fq -d mp4 dv vorbis.mp4
 0x0400|                                       02 00   |             .. |                                            codebook_dimensions: 2 0x40d-0x40e.7 (2)
 0x0400|                                             10|               .|                                            codebook_entries: 16 0x40f-0x411.7 (3)
 0x0410|00 00                                          |..              |
-0x0410|      84 74 9a 59 aa 01 22 cc 40 86 81 d0 90 95|  .t.Y..".@.....|                                            unknown0: raw bits 0x412-0x10b0.7 (3231)
+0x0410|      84 74 9a 59 aa 01 22 cc 40 86 81 d0 90 95|  .t.Y..".@.....|                                            data: raw bits 0x412-0x10b0.7 (3231)
 0x0420|00 00 02 00 00 60 84 22 0c 31 20 34 64 25 00 00|.....`.".1 4d%..|
 *     |until 0x10b0.7 (3231)                          |                |
       |                                               |                |                                    sl_config_descr{}: 0x10b1-0x10b6.7 (6)
@@ -369,17 +369,17 @@ $ fq -d mp4 dv vorbis.mp4
       |                                               |                |      samples[0:3]: 0x2c-0x1dc.7 (433)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [0]{}: sample (vorbis_packet) 0x2c-0xe1.7 (182)
 0x0020|                                    be         |            .   |          packet_type: "Audio" (0) 0x2c-0x2c.7 (1)
-0x0020|                                       b7 f2 81|             ...|          unknown0: raw bits 0x2d-0xe1.7 (181)
+0x0020|                                       b7 f2 81|             ...|          data: raw bits 0x2d-0xe1.7 (181)
 0x0030|46 74 15 42 0b 52 08 17 32 8e 43 08 65 84 84 f6|Ft.B.R..2.C.e...|
 *     |until 0xe1.7 (181)                             |                |
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [1]{}: sample (vorbis_packet) 0xe2-0x12d.7 (76)
 0x00e0|      be                                       |  .             |          packet_type: "Audio" (0) 0xe2-0xe2.7 (1)
-0x00e0|         13 a2 9b 06 0a b6 ff 13 10 ff 25 62 ec|   ..........%b.|          unknown0: raw bits 0xe3-0x12d.7 (75)
+0x00e0|         13 a2 9b 06 0a b6 ff 13 10 ff 25 62 ec|   ..........%b.|          data: raw bits 0xe3-0x12d.7 (75)
 0x00f0|8f d9 f7 a2 11 72 ca 44 3b 21 ba 69 a0 60 fb 3f|.....r.D;!.i.`.?|
 *     |until 0x12d.7 (75)                             |                |
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [2]{}: sample (vorbis_packet) 0x12e-0x1dc.7 (175)
 0x0120|                                          be   |              . |          packet_type: "Audio" (0) 0x12e-0x12e.7 (1)
-0x0120|                                             a7|               .|          unknown0: raw bits 0x12f-0x1dc.7 (174)
+0x0120|                                             a7|               .|          data: raw bits 0x12f-0x1dc.7 (174)
 0x0130|f2 81 46 bb c2 48 52 08 27 b8 83 10 ca 08 b1 a7|..F..HR.'.......|
 *     |until 0x1dc.7 (174)                            |                |
       |                                               |                |      id: 1 0x1189-NA (0)
