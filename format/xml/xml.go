@@ -14,13 +14,12 @@ import (
 	"html"
 	"io"
 	"regexp"
-	"sort"
 	"strconv"
 	"strings"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/internal/gojqex"
-	"github.com/wader/fq/internal/proxysort"
+	"github.com/wader/fq/internal/sortex"
 	"github.com/wader/fq/internal/stringsex"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
@@ -392,14 +391,12 @@ func toXMLFromObject(c any, opts ToXMLOpts) any {
 
 		// if one #seq was found, assume all have them, otherwise sort by name
 		if orderHasSeq {
-			proxysort.Sort(orderSeqs, n.Nodes, func(ss []int, i, j int) bool { return ss[i] < ss[j] })
+			sortex.ProxySort(orderSeqs, n.Nodes, func(a, b int) bool { return a < b })
 		} else {
-			proxysort.Sort(orderNames, n.Nodes, func(ss []string, i, j int) bool { return ss[i] < ss[j] })
+			sortex.ProxySort(orderNames, n.Nodes, func(a, b string) bool { return a < b })
 		}
 
-		sort.Slice(n.Attrs, func(i, j int) bool {
-			return xmlNameSort(n.Attrs[i].Name, n.Attrs[j].Name)
-		})
+		sortex.Slice(n.Attrs, func(a, b xml.Attr) bool { return xmlNameSort(a.Name, b.Name) })
 
 		return n, seq, hasSeq
 	}
@@ -472,9 +469,7 @@ func toXMLFromArray(c any, opts ToXMLOpts) any {
 			}
 		}
 
-		sort.Slice(n.Attrs, func(i, j int) bool {
-			return xmlNameSort(n.Attrs[i].Name, n.Attrs[j].Name)
-		})
+		sortex.Slice(n.Attrs, func(a, b xml.Attr) bool { return xmlNameSort(a.Name, b.Name) })
 
 		for _, c := range children {
 			c, ok := c.([]any)

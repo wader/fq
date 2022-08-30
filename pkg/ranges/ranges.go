@@ -2,9 +2,10 @@ package ranges
 
 import (
 	"fmt"
-	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/wader/fq/internal/sortex"
 )
 
 func max(a, b int64) int64 {
@@ -62,9 +63,7 @@ func Gaps(total Range, ranges []Range) []Range {
 		return []Range{total}
 	}
 
-	sort.Slice(ranges, func(i, j int) bool {
-		return ranges[i].Start < ranges[j].Start
-	})
+	sortex.Slice(ranges, func(a, b Range) bool { return a.Start < b.Start })
 
 	// worst case ranges+1 gaps
 	merged := make([]Range, 0, len(ranges)+1)
