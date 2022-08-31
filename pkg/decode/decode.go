@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"github.com/wader/fq/pkg/build"
 	"io"
 	"math/big"
 	"regexp"
@@ -720,7 +721,7 @@ func (d *D) AddChild(v *Value) {
 
 	switch fv := d.Value.V.(type) {
 	case *Compound:
-		if !fv.IsArray {
+		if build.CheckChildAlreadyExists && !fv.IsArray {
 			for _, ff := range fv.Children {
 				if ff.Name == v.Name {
 					d.Fatalf("%q already exist in struct %s", v.Name, d.Value.Name)
