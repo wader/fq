@@ -37,7 +37,7 @@ import (
 	"strconv"
 	"unicode/utf8"
 
-	"github.com/wader/fq/internal/sortex"
+	"golang.org/x/exp/slices"
 )
 
 type Colors struct {
@@ -239,7 +239,7 @@ func (e *Encoder) encodeMap(vs map[string]any) {
 		kvs[i] = keyVal{k, v}
 		i++
 	}
-	sortex.Slice(kvs, func(a, b keyVal) bool { return a.key < b.key })
+	slices.SortFunc(kvs, func(a, b keyVal) bool { return a.key < b.key })
 	for i, kv := range kvs {
 		if e.wErr != nil {
 			return

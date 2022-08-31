@@ -2,9 +2,10 @@ package ranges
 
 import (
 	"fmt"
-	"sort"
 	"strconv"
 	"strings"
+
+	"golang.org/x/exp/slices"
 )
 
 func max(a, b int64) int64 {
@@ -31,14 +32,6 @@ func (r Range) Stop() int64 { return r.Start + r.Len }
 func (r Range) String() string { return fmt.Sprintf("%d:%d", r.Start, r.Len) }
 
 func (r Range) IsZero() bool { return r.Start == 0 && r.Len == 0 }
-
-type rangeStartSort []Range
-
-func (p rangeStartSort) Len() int           { return len(p) }
-func (p rangeStartSort) Less(i, j int) bool { return p[i].Start < p[j].Start }
-func (p rangeStartSort) Swap(i, j int) {
-	p[i], p[j] = p[j], p[i]
-}
 
 func RangeFromString(s string) Range {
 	ps := strings.Split(s, ":")
@@ -70,7 +63,7 @@ func Gaps(total Range, ranges []Range) []Range {
 		return []Range{total}
 	}
 
-	sort.Sort(rangeStartSort(ranges))
+	slices.SortFunc(ranges, func(a, b Range) bool { return a.Start < b.Start })
 
 	// worst case ranges+1 gaps
 	merged := make([]Range, 0, len(ranges)+1)
