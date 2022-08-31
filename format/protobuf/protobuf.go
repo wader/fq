@@ -70,7 +70,7 @@ func protobufDecodeField(d *decode.D, pbm *format.ProtoBufMessage) {
 
 				switch pbf.Type {
 				case format.ProtoBufTypeInt32, format.ProtoBufTypeInt64:
-					v := mathex.ZigZag(value)
+					v := mathex.ZigZag[uint64, int64](value)
 					d.FieldValueS("value", v)
 					if len(pbf.Enums) > 0 {
 						d.FieldValueStr("enum", pbf.Enums[uint64(v)])

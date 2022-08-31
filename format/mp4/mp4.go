@@ -20,9 +20,9 @@ import (
 	"fmt"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/internal/sortex"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
+	"golang.org/x/exp/slices"
 )
 
 //go:embed mp4.jq
@@ -210,7 +210,7 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 	for _, t := range ctx.tracks {
 		sortedTracks = append(sortedTracks, t)
 	}
-	sortex.Slice(sortedTracks, func(a, b *track) bool { return a.id < b.id })
+	slices.SortFunc(sortedTracks, func(a, b *track) bool { return a.id < b.id })
 
 	d.FieldArray("tracks", func(d *decode.D) {
 		for _, t := range sortedTracks {

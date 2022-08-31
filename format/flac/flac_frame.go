@@ -467,7 +467,7 @@ func frameDecode(d *decode.D, in any) any {
 									for j := 0; j < count; j++ {
 										high := d.Unary(0)
 										low := d.U(riceParameter)
-										samples[n] = mathex.ZigZag(high<<riceParameter | low)
+										samples[n] = mathex.ZigZag[uint64, int64](high<<riceParameter | low)
 										n++
 									}
 									samplesStop := d.Pos()

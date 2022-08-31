@@ -49,7 +49,7 @@ func uEV(d *decode.D) uint64 { return expGolomb(d) }
 
 func sEV(d *decode.D) int64 {
 	v := expGolomb(d) + 1
-	return mathex.ZigZag(v) - -int64(v&1)
+	return mathex.ZigZag[uint64, int64](v) - -int64(v&1)
 }
 
 const (
