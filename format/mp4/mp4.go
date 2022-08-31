@@ -18,9 +18,9 @@ package mp4
 import (
 	"embed"
 	"fmt"
-	"sort"
 
 	"github.com/wader/fq/format"
+	"github.com/wader/fq/internal/sortex"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
 )
@@ -210,7 +210,7 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 	for _, t := range ctx.tracks {
 		sortedTracks = append(sortedTracks, t)
 	}
-	sort.Slice(sortedTracks, func(i, j int) bool { return sortedTracks[i].id < sortedTracks[j].id })
+	sortex.Slice(sortedTracks, func(a, b *track) bool { return a.id < b.id })
 
 	d.FieldArray("tracks", func(d *decode.D) {
 		for _, t := range sortedTracks {

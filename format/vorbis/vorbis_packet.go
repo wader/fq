@@ -121,5 +121,9 @@ func vorbisDecode(d *decode.D, _ any) any {
 		d.FieldU1("frame_bit", d.ValidateU(1))
 	}
 
+	if d.BitsLeft() > 0 {
+		d.FieldRawLen("data", d.BitsLeft())
+	}
+
 	return nil
 }

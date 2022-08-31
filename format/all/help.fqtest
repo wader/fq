@@ -188,11 +188,17 @@ out   # Decode value as bitcoin_blkdat
 out   ... | bitcoin_blkdat
 "help(bitcoin_block)"
 out bitcoin_block: Bitcoin block decoder
+out Options:
+out   has_header=false  Has blkdat header
 out Examples:
 out   # Decode file as bitcoin_block
 out   $ fq -d bitcoin_block . file
 out   # Decode value as bitcoin_block
 out   ... | bitcoin_block
+out   # Decode file using bitcoin_block options
+out   $ fq -d bitcoin_block -o has_header=false . file
+out   # Decode value as bitcoin_block
+out   ... | bitcoin_block({has_header:false})
 "help(bitcoin_script)"
 out bitcoin_script: Bitcoin script decoder
 out Examples:
@@ -426,17 +432,18 @@ out   ... | hevc_vps
 "help(html)"
 out html: HyperText Markup Language decoder
 out Options:
-out   array=false  Decode as nested arrays
-out   seq=false    Use seq attribute to preserve element order
+out   array=false         Decode as nested arrays
+out   attribute_prefix=@  Prefix for attribute keys
+out   seq=false           Use seq attribute to preserve element order
 out Examples:
 out   # Decode file as html
 out   $ fq -d html . file
 out   # Decode value as html
 out   ... | html
 out   # Decode file using html options
-out   $ fq -d html -o array=false -o seq=false . file
+out   $ fq -d html -o array=false -o attribute_prefix="@" -o seq=false . file
 out   # Decode value as html
-out   ... | html({array:false,seq:false})
+out   ... | html({array:false,attribute_prefix:"@",seq:false})
 "help(icc_profile)"
 out icc_profile: International Color Consortium profile decoder
 out Examples:
@@ -862,17 +869,20 @@ out   ... | xing
 "help(xml)"
 out xml: Extensible Markup Language decoder
 out Options:
-out   array=false  Decode as nested arrays
-out   seq=false    Use seq attribute to preserve element order
+out   array=false         Decode as nested arrays
+out   attribute_prefix=@  Prefix for attribute keys
+out   seq=false           Use seq attribute to preserve element order
 out Examples:
 out   # Decode file as xml
 out   $ fq -d xml . file
 out   # Decode value as xml
 out   ... | xml
 out   # Decode file using xml options
-out   $ fq -d xml -o array=false -o seq=false . file
+out   $ fq -d xml -o array=false -o attribute_prefix="@" -o seq=false . file
 out   # Decode value as xml
-out   ... | xml({array:false,seq:false})
+out   ... | xml({array:false,attribute_prefix:"@",seq:false})
+out References and links
+out   xml.com's Converting Between XML and JSON https://www.xml.com/pub/a/2006/05/31/converting-between-xml-and-json.html
 "help(yaml)"
 out yaml: YAML Ain't Markup Language decoder
 out Examples:

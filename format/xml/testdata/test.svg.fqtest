@@ -1,28 +1,56 @@
-$ fq . test.svg
+$ fq -r '. as $a | ., (toxml({indent: 2}) | ., (fromxml | ., (diff($a; .) // "no diff")))' test.svg
 {
   "svg": {
-    "-height": "2500",
-    "-inkscape:version": "1.0 (4035a4f, 2020-05-01)",
-    "-sodipodi:docname": "ffclippy.svg",
-    "-version": "1.1",
-    "-viewBox": "0 0 192.756 192.756",
-    "-width": "2500",
-    "-xmlns": "http://www.w3.org/2000/svg",
-    "-xmlns:inkscape": "http://www.inkscape.org/namespaces/inkscape",
-    "-xmlns:sodipodi": "http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd",
-    "-xmlns:svg": "http://www.w3.org/2000/svg",
+    "@height": "2500",
+    "@inkscape:version": "1.0 (4035a4f, 2020-05-01)",
+    "@sodipodi:docname": "ffclippy.svg",
+    "@version": "1.1",
+    "@viewBox": "0 0 192.756 192.756",
+    "@width": "2500",
+    "@xmlns": "http://www.w3.org/2000/svg",
+    "@xmlns:inkscape": "http://www.inkscape.org/namespaces/inkscape",
+    "@xmlns:sodipodi": "http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd",
+    "@xmlns:svg": "http://www.w3.org/2000/svg",
     "g": {
-      "-clip-rule": "evenodd",
-      "-fill-rule": "evenodd",
-      "-id": "g863"
+      "@clip-rule": "evenodd",
+      "@fill-rule": "evenodd",
+      "@id": "g863"
     },
     "sodipodi:namedview": {
-      "-pagecolor": "#ffffff",
-      "-showgrid": "false"
+      "@pagecolor": "#ffffff",
+      "@showgrid": "false"
     }
   }
 }
-$ fq -o array=true . test.svg
+<svg height="2500" inkscape:version="1.0 (4035a4f, 2020-05-01)" sodipodi:docname="ffclippy.svg" version="1.1" viewBox="0 0 192.756 192.756" width="2500" xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:svg="http://www.w3.org/2000/svg">
+  <g clip-rule="evenodd" fill-rule="evenodd" id="g863"></g>
+  <sodipodi:namedview pagecolor="#ffffff" showgrid="false"></sodipodi:namedview>
+</svg>
+{
+  "svg": {
+    "@height": "2500",
+    "@inkscape:version": "1.0 (4035a4f, 2020-05-01)",
+    "@sodipodi:docname": "ffclippy.svg",
+    "@version": "1.1",
+    "@viewBox": "0 0 192.756 192.756",
+    "@width": "2500",
+    "@xmlns": "http://www.w3.org/2000/svg",
+    "@xmlns:inkscape": "http://www.inkscape.org/namespaces/inkscape",
+    "@xmlns:sodipodi": "http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd",
+    "@xmlns:svg": "http://www.w3.org/2000/svg",
+    "g": {
+      "@clip-rule": "evenodd",
+      "@fill-rule": "evenodd",
+      "@id": "g863"
+    },
+    "sodipodi:namedview": {
+      "@pagecolor": "#ffffff",
+      "@showgrid": "false"
+    }
+  }
+}
+no diff
+$ fq -r -o array=true '. as $a | ., (toxml({indent: 2}) | ., (fromxml | ., (diff($a; .) // "no diff")))' test.svg
 [
   "svg",
   {
@@ -57,3 +85,42 @@ $ fq -o array=true . test.svg
     ]
   ]
 ]
+<svg height="2500" inkscape:version="1.0 (4035a4f, 2020-05-01)" sodipodi:docname="ffclippy.svg" version="1.1" viewBox="0 0 192.756 192.756" width="2500" xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview pagecolor="#ffffff" showgrid="false"></sodipodi:namedview>
+  <g clip-rule="evenodd" fill-rule="evenodd" id="g863"></g>
+</svg>
+[
+  "svg",
+  {
+    "height": "2500",
+    "inkscape:version": "1.0 (4035a4f, 2020-05-01)",
+    "sodipodi:docname": "ffclippy.svg",
+    "version": "1.1",
+    "viewBox": "0 0 192.756 192.756",
+    "width": "2500",
+    "xmlns": "http://www.w3.org/2000/svg",
+    "xmlns:inkscape": "http://www.inkscape.org/namespaces/inkscape",
+    "xmlns:sodipodi": "http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd",
+    "xmlns:svg": "http://www.w3.org/2000/svg"
+  },
+  [
+    [
+      "sodipodi:namedview",
+      {
+        "pagecolor": "#ffffff",
+        "showgrid": "false"
+      },
+      []
+    ],
+    [
+      "g",
+      {
+        "clip-rule": "evenodd",
+        "fill-rule": "evenodd",
+        "id": "g863"
+      },
+      []
+    ]
+  ]
+]
+no diff

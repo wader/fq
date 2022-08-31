@@ -371,7 +371,7 @@ $ fq -d matroska dv flac.mkv
 0x250|            80                                 |    .           |                key_frame: true 0x254-0x254 (0.1)
 0x250|            80                                 |    .           |                reserved: 0 0x254.1-0x254.3 (0.3)
 0x250|            80                                 |    .           |                invisible: false 0x254.4-0x254.4 (0.1)
-0x250|            80                                 |    .           |                lacing: 0 0x254.5-0x254.6 (0.2)
+0x250|            80                                 |    .           |                lacing: "none" (0) 0x254.5-0x254.6 (0.2)
 0x250|            80                                 |    .           |                discardable: false 0x254.7-0x254.7 (0.1)
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|              packet{}: (flac_frame) 0x255-0x4b2.7 (606)
      |                                               |                |                header{}: 0x255-0x25c.7 (8)

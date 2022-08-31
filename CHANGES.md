@@ -1,3 +1,214 @@
+# 0.0.9
+
+## Changes
+
+- New `wasm` WebAssembly Binary Format decoder by Takashi Oguma @bitbears-dev<br>
+  ```sh
+  # show part of code_section
+  $ fq '.sections[4].content.code.x[0].code.e | d' add.wasm
+      │00 01 02 03 04 05 06 07 08 09│0123456789│.sections[4].content.code.x[0].code.e[0:4]:
+      │                             │          │  [0]{}: in
+  0x3c│                           20│          │    opcode: "local.get" (0x20)
+  0x46│01                           │.         │    x: 1 (valid)
+      │                             │          │  [1]{}: in
+  0x46│   20                        │          │    opcode: "local.get" (0x20)
+  0x46│      00                     │  .       │    x: 0 (valid)
+      │                             │          │  [2]{}: in
+  0x46│         6a                  │   j      │    opcode: "i32.add" (0x6a)
+      │                             │          │  [3]{}: in
+  0x46│            0b               │    .     │    opcode: "end" (0xb)
+  ```
+  ```sh
+  # count opcode usage
+  $ fq '.sections[] | select(.id == "code_section") | [.. | .opcode? // empty] | count | map({key: .[0], value: .[1]}) | from_entries' add.wasm
+  {
+    "end": 1,
+    "i32.add": 1,
+    "local.get": 2
+  }
+  ```
+  ```sh
+  # list exports and imports
+  $ fq '.sections | {import: map(select(.id == "import_section").content.im.x[].nm.b), export: map(select(.id == "export_section").content.ex.x[].nm.b)}' add.wasm
+  {
+    "export": [
+      "memory",
+      "add"
+    ],
+    "import": []
+  }
+  ```
+- Decode value display now shows address bar on new format or buffer. Should make it easier to spot changes and read hex and ASCII view. #365<br>
+  Examples of PCAP with different formats and TCP stream buffers:
+  <pre>
+  ...
+         │<ins>00 01 02 03 04 05 06 07 08 09</ins>│0123456789</ins>│      packet{}: (ether8023_frame)
+  0x00668│   00 0a 95 67 49 3c         │ ...gI<   │        destination: "00:0a:95:67:49:3c" (0xa9567493c)
+  0x00668│                     00 c0 f0│       ...│        source: "00:c0:f0:2d:4a:a3" (0xc0f02d4aa3)
+  0x00672│2d 4a a3                     │-J.       │
+  0x00672│         08 00               │   ..     │        ether_type: "ipv4" (0x800) (Internet Prot...
+         │<ins>00 01 02 03 04 05 06 07 08 09</ins>│0123456789</ins>│        payload{}: (ipv4_packet)
+  0x00672│               45            │     E    │          version: 4
+  ...
+         │<ins>00 01 02 03 04 05 06 07 08 09</ins>│0123456789</ins>│          payload{}: (tcp_segment)
+  0x00686│               00 50         │     .P   │            source_port: "http" (80) (World Wide ...
+  ...
+         │                             │          │  ipv4_reassembled[0:0]:
+         │                             │          │  tcp_connections[0:1]:
+         │                             │          │    [0]{}: tcp_connection
+         │                             │          │      client{}:
+         │                             │          │        ip: "192.168.69.2"
+         │                             │          │        port: 34059
+         │                             │          │        has_start: true
+         │                             │          │        has_end: true
+         │                             │          │        skipped_bytes: 0
+         │<ins>00 01 02 03 04 05 06 07 08 09</ins>│<ins>0123456789</ins>│
+    0x000│47 45 54 20 2f 74 65 73 74 2f│GET /test/│        stream: raw bits
+    0x000│65 74 68 65 72 65 61 6c 2e 68│ethereal.h│
+    *    │until 0x1bc.7 (end) (445)    │          │
+  ...
+  </pre>
+- Add `--unicode-output`/`-U` argument to force use of Unicode characters to improve output readability. #377
+  - For example useful when piping to less and you want fancy unicode and colors:<br>
+  `fq -cU d file | less -r`
+- `to_entries` now preserves struct field order. #340
+- Experimental <code>&#96;raw string&#96;</code> literal support. Work the same as golang raw string literals. Useful in REPL when pasting things etc but should probably be avoided in jq scripts. #371
+- Properly fail lexing of invalid binary, octal and hex number literals. #371
+- REPL completion now include all functions. Before some functions with multiple argument counts were skipped. #375
+- Switch to new gopacket fork with speedup and bug fixes. Remove SLL2 workarounds in fq. #386
+
+## Decoder changes
+
+- `csv` Correctly handle decode values when `tocsv` normalize to strings. Before array and object ended up being JSON serialized to strings. #341
+  - Normalize to strings is done so that non-string scalars can be used:
+    ```
+    $ fq -n '[[1,true,null,"a"]] | tocsv'
+    "1,true,,a\n"
+    ```
+- `dns` DNS over UDP format was accidentally used to probe TCP streams #366
+- `elf` Remove redundant `program_header` struct
+- `flac`
+  - Add 32 bit samples support. #378 Thanks @ktmf01
+  - Properly decode/checksum samples in partitions with raw samples. #379 Thanks @ktmf01<br>
+    Now successfully decodes all test cases from https://github.com/ietf-wg-cellar/flac-test-files
+- `jsonl` Add decoder. Decodes JSON lines. There is also `fromjsonl` and `tojsonl`. #374
+- `macho`
+  - Split FAT Macho decoding into `macho_fat` format which also fixed handling of file offsets in sections. #362
+  - Decode symbol and string sections. #352
+- `matroska` Remove new lines in descriptions. Messes up tree. #369
+- `mp3_frame`
+  - Support LSF (low sampling frequency) frames. #376
+  - Skip trying to figure out what main data is for current frame and not. Was incorrect and doing it properly probably requires hoffman decoding. #376
+- `pcap` Support files with nanosecond precision. Has a different magic. #382
+- `prores_frame` Add basic decoder. Decodes container and fram header. #396 Thanks @Doctor-love for test files
+- `tar` Fix regression when decoding number fields. Now ok again to be empty string. #372
+- `wasm` Add WebAssembly Binary Format decoder. #383 Thanks to Takashi Oguma @bitbears-dev
+  - Decodes to a tree following the [WASM binary grammar specification](https://webassembly.github.io/spec/core/binary/index.html)
+- `yaml` Fail on trailing data. Before it succeeded with the last value. #373
+- `zip`
+  - Don't require PK header as there seems to be zip files with prepended data. #359
+  - Correctly limit amount of backwards search for EOCD (end of content directory). #363
+- `xml` Correctly handle decode values when `toxml` normalize to strings. Before array and object ended up being JSON serialized to strings. #341
+- `xml`
+  - Change attribute prefix to `@` instead of `-` and make it an option `attribute_prefix`. #401
+  - Skip default namespace in element names. #389
+  - Always include attributes and children even when empty in array mode. Makes it a lot easer to work with as you can assume `.[1]` will be attributes and so on. #357
+  - Normalize to strings is done so that non-string scalars can be used:
+    ```
+    $ fq -nr '{a: {"-boolean": true, "-number": 123, "-null": null}} | toxml'
+    <a boolean="true" null="" number="123"></a>
+    ```
+  - Allow and ignore trailing `<?procinstr?>` and improve trailing data error message. #368
+  - Correctly sort if any `#seq` is found and also properly sort negative `#seq`. #384
+
+## Changelog
+
+* 0cd846a1 *extra: Rename <pkg>extra to just <pkg>ex and refactor to use generics
+* fb583e2c Add 32 bps FLAC to test
+* c1d5b2b1 Add sample size entry to list for 32bps flac streams
+* 3f209c46 Fix decoding of FLAC raw entropy partition
+* 25061aca Update docker-golang from 1.18.4 to 1.18.5
+* 0de2c906 Update docker-golang from 1.18.5 to 1.19.0
+* 7b8d95bf Update github-go-version from 1.18.4, 1.18.4, 1.18.4 to 1.18.5
+* 103991f7 Update github-go-version from 1.18.5, 1.18.5, 1.18.5 to 1.19.0
+* 4255b87a Update github-golangci-lint from 1.47.2 to 1.47.3
+* 198305ec Update github-golangci-lint from 1.47.3 to 1.48.0
+* fa9fec30 Update github-golangci-lint from 1.48.0 to 1.49.0
+* f579e9c3 Update make-golangci-lint from 1.47.2 to 1.47.3
+* c8069d22 Update make-golangci-lint from 1.47.3 to 1.48.0
+* 004eb564 Update make-golangci-lint from 1.48.0 to 1.49.0
+* abcc7366 add ULEB and SLEB to known words for spell check
+* 9238251b ci: Skip -race for windows and macos
+* 913f5780 columnwriter,dump: Add Column interface and refactor into BarColumn and MultiLineColumn
+* 5d9ffead decode,scalar: Map empty string also else sym might ends up nil
+* 326dada7 decode: Add LEB128 readers
+* 502f451c decode: Refactor to use scalar type assert helper
+* 840292ba decode: Simplify compound range sort behaviour
+* 15f7c67a dev,fuzz: Add some useful retrigger snippets
+* 46dca8cd dns: Don't use dns (udp) format for tcp also
+* c233215a dns: Rename isTCP to hasLengthHeader
+* ed424783 doc,interp: Update and add more examples
+* f247edb5 doc: Update README demo a bit with new features
+* 3613b6d4 elf: Remove redundant program_header struct
+* 8a19978b flac: Make gen script generate correct fqtest files
+* 2bfbe9a9 flac_frame: Cleanup some dev lefterovers and todos
+* 64b23659 fqtest: Run tests in parallell
+* af35b284 gojq: Preserve keys order for to_entries when used with JQValue
+* 804ad1e2 gojq: Update fq fork
+* add3dcfd gojq: Update fq fork, fix scope argcount issue
+* d898732c gojq: Update fq fork, new scope function, rawstring, stricter integers
+* 394717ca gopacket: Switch/update to new fork, remove SLL2 hack
+* 4eae7ffd interp,doc: Add -R raw string slurp hint to -s help
+* d8792fd1 interp,dump: Correctly flush columns if data will be shown
+* 29005c70 interp,dump: Show address bar for root, nested roots and on format change
+* c7559b59 interp: Add --unicode-output/-U to force use of unicode
+* 9e447c9a interp: Use RegisterFS instead of format files
+* 701c67c1 jsonl: Add decoder, also tojsonl encoder
+* bc6cffde lint,decode,fuzz:: Fix nilerr warnings, one real one should be ignored for now
+* 3c21b058 lint: Fix ioutil deprecation, reformat for new doc standard
+* b2d4e6d9 macho: Decode cmd symtab symbols
+* 725c8e83 macho: Split into macho/macho_fat, fix offset issue and add string decoding
+* 2e407386 matroska: Strip newlines in description
+* cf15661e mp3_frame: Add LSF support and fix incorrect main data handling
+* 74c7dc4e pcap: Add ns support and add header field
+* 8fc43533 prores_frame: Add basic container and frame header decoder
+* dc32ac08 script: Use strings.Builder to collect output
+* 0d44b937 tar: Some number fields can be empty
+* 545dac8c test: Update tests, go 1.19 uses \xff instead of \u00ff
+* ce438872 wasm: `make doc`
+* 074c22c9 wasm: add `-timeout 20m` for go test to workaround ci test fail
+* cd037c51 wasm: add comment to clarify lazy initialization
+* f73965d2 wasm: add wasm to probe list
+* 00869b37 wasm: avoid race condition
+* db8021c9 wasm: define and use constants for some insturctions
+* bcc0dfd9 wasm: fix comment format
+* 289ddf59 wasm: fix lint issues
+* 3fca7cc0 wasm: fix lint issues
+* cbb5a8ed wasm: further simplification
+* 934ed9a8 wasm: initial version
+* e5cf1731 wasm: make the godoc formatter happy
+* b0f3fec8 wasm: remove nolint:unparam which is no longer needed
+* e1691dec wasm: remove unused function
+* ae4529c4 wasm: run `golangci-lint run --fix`
+* fead68de wasm: tidy up
+* 3298d181 wasm: to be able to probe
+* 2eb17505 wasm: update tests
+* d5d9e738 wasm: use FieldULEB128() / FieldSLEB128() defined in the upstream
+* 7401d141 wasm: use WRITE_ACTUAL=1 to generate .fqtest files
+* 2037b86a wasm: use map, not switch
+* ae08bf70 wasm: use s.ActualU() instead of s.Actual.(uint64)
+* 63f4a726 wasm: use scalar.UToSymStr for simplicity
+* 0ad5a8ec wasm: use underscores for symbol values
+* fa20c74c xml,csv,interp: Handle JQValue when string normalizing
+* f4e01372 xml,html: Always include attrs and children in array mode
+* 9a5fcc89 xml: Allow trailing <?procinstr?>
+* 71900c2a xml: Correctly sort if one #seq is found and allow negative seq numbers
+* 716323ce xml: Even more namespace fixes
+* f24d685a xml: Keep track of default namespace and skip it element names
+* 095e1161 xml: Switch from "-" to "@" as attribute prefix and make it an option
+* 3623eac3 yaml: Error on trailing yaml/json
+* d607bee1 zip: Correctly limit max EOCD find
+* 19b70899 zip: Skip header assert as there are zip files with other things appended
 # 0.0.8
 
 ## Changes

@@ -301,18 +301,24 @@ type ZipIn struct {
 }
 
 type XMLIn struct {
-	Seq   bool `doc:"Use seq attribute to preserve element order"`
-	Array bool `doc:"Decode as nested arrays"`
+	Seq             bool   `doc:"Use seq attribute to preserve element order"`
+	Array           bool   `doc:"Decode as nested arrays"`
+	AttributePrefix string `doc:"Prefix for attribute keys"`
 }
 
 type HTMLIn struct {
-	Seq   bool `doc:"Use seq attribute to preserve element order"`
-	Array bool `doc:"Decode as nested arrays"`
+	Seq             bool   `doc:"Use seq attribute to preserve element order"`
+	Array           bool   `doc:"Decode as nested arrays"`
+	AttributePrefix string `doc:"Prefix for attribute keys"`
 }
 
 type CSVLIn struct {
 	Comma   string `doc:"Separator character"`
 	Comment string `doc:"Comment line character"`
+}
+
+type BitCoinBlockIn struct {
+	HasHeader bool `doc:"Has blkdat header"`
 }
 
 type PostgresIn struct {

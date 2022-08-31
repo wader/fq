@@ -25,7 +25,7 @@ func init() {
 func decodeBlkDat(d *decode.D, in interface{}) interface{} {
 	validBlocks := 0
 	for !d.End() {
-		d.FieldFormat("block", bitcoinBlockFormat, nil)
+		d.FieldFormat("block", bitcoinBlockFormat, format.BitCoinBlockIn{HasHeader: true})
 		validBlocks++
 	}
 

@@ -431,7 +431,7 @@ In an addition to binary formats fq also support reading to and from encodings a
 
 At the moment fq does not have any dedicated argument for serialization formats but raw string input `-R` slurp `-s` and raw string output `-r` can make things easier. The combination `-Rs` will read all inputs into one string (same as jq).
 
-Note that `from*` functions output jq values and `to*` takes jq values as input so in some cases not all information will properly preserved, for example for XML element and attribute order might change and text and comment nodes might move and will be merged. [yq](https://github.com/mikefarah/yq) might be a better tool if that is needed.
+Note that `from*` functions output jq values and `to*` takes jq values as input so in some cases not all information will be properly preserved. For example for the element and attribute order might change and text and comment nodes might move or be merged. [yq](https://github.com/mikefarah/yq) might be a better tool if that is needed.
 
 Some example usages:
 
@@ -450,13 +450,13 @@ https://token@host.org
 # top 3 hosts in src or href attributes:
 # -d to decode as html, can't be probed as html5 parsers always produce some parse tree
 # [...] to start collect values into an array
-# .. | ."-src"?, ."-href"? | values, recurse and try (?) to get src and href attributes and filter out nulls
+# .. | ."@src"?, ."@href"? | values, recurse and try (?) to get src and href attributes and filter out nulls
 # fromurl.host | values, parse as url and filter out those without a host
 # count to count unique values, returns [[key, count], ...]
 # reverse sort by count and pick first 3
 # map [key, count] tuples into {key: key, values: count}
 # from_entries, convert into object
-$ curl -s https://www.discogs.com/ | fq -d html '[.. | ."-src"?, ."-href"? | values | fromurl.host | values] | count | sort_by(-.[1])[0:3] | map({key: .[0], value: .[1]}) | from_entries'
+$ curl -s https://www.discogs.com/ | fq -d html '[.. | ."@src"?, ."@href"? | values | fromurl.host | values] | count | sort_by(-.[1])[0:3] | map({key: .[0], value: .[1]}) | from_entries'
 {
   "blog.discogs.com": 9,
   "st.discogs.com": 10,
@@ -471,16 +471,16 @@ zip> .local_files[] | select(.file_name == "world_countries-master/data/countrie
 # convert xml into jq value
 > .local_files[95].uncompressed string> fromxml | repl
 # sort countries by and select the first one
->> object> .countries.country | sort_by(."-name") | first | repl
+>> object> .countries.country | sort_by(."@name") | first | repl
 # see what current input is
 >>> object> .
 {
-  "-alpha2": "af",
-  "-alpha3": "afg",
-  "-id": "4",
-  "-name": "Afghanistan"
+  "@alpha2": "af",
+  "@alpha3": "afg",
+  "@id": "4",
+  "@name": "Afghanistan"
 }
-# remove "-" prefix from keys and convert to YAML and print it
+# remove "@" prefix from keys and convert to YAML and print it
 >>> object> with_entries(.key |= .[1:]) | toyaml | print
 alpha2: af
 alpha3: afg
@@ -521,7 +521,7 @@ zip> ^D
   ```
 
   With object representation an element is represented as:
-  - Attributes as dash prefixed `-<key>` keys.
+  - Attributes as `@` prefixed `@<key>` keys.
   - Text nodes as `#text`.
   - Comment nodes as `#comment` keys.
   - For explicit sibling ordering `#seq` keys with a number, can be negative, assumed zero if missing.
@@ -534,11 +534,11 @@ zip> ^D
     "doc": {
       "child": [
         {
-          "-attr": "1"
+          "@attr": "1"
         },
         {
           "#text": "text",
-          "-attr": "2"
+          "@attr": "2"
         }
       ],
       "other": "text"
@@ -547,9 +547,9 @@ zip> ^D
   ```
 
   With nested array representation, an array with these values `["<name>", {attributes...}, [children...]]`
-  - Index zero is element name.
-  - Optional first object attributes (including `#text` and `#comment` keys).
-  - Optional first array are child elements.
+  - Index 0 is element name.
+  - Index 1 object attributes (including `#text` and `#comment` keys).
+  - Index 2 array of child elements.
   #
   ```jq
   > $xml | fromxml({array: true})
@@ -586,12 +586,12 @@ zip> ^D
       "child": [
         {
           "#seq": 0,
-          "-attr": "1"
+          "@attr": "1"
         },
         {
           "#seq": 1,
           "#text": "text",
-          "-attr": "2"
+          "@attr": "2"
         }
       ],
       "other": {

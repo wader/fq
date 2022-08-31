@@ -39,12 +39,12 @@ $ fq -d vorbis_packet dv vorbis-setup
 0x000|                        42 43 56               |        BCV     |  codecooke_sync: 0x564342 (valid) 0x8-0xa.7 (3)
 0x000|                                 01 00         |           ..   |  codebook_dimensions: 1 0xb-0xc.7 (2)
 0x000|                                       40 00 00|             @..|  codebook_entries: 64 0xd-0xf.7 (3)
-0x010|24 73 18 2a 46 a5 73 16 84 10 1a 42 50 19 e3 1c|$s.*F.s....BP...|  unknown0: raw bits 0x10-0xc74.7 (3173)
+0x010|24 73 18 2a 46 a5 73 16 84 10 1a 42 50 19 e3 1c|$s.*F.s....BP...|  data: raw bits 0x10-0xc74.7 (3173)
 *    |until 0xc74.7 (end) (3173)                     |                |
 # ffmpeg -f lavfi -i sine -t 10ms -f ogg pipe:1 | fq - '.packet[3] | tobits' > vorbis-audio
 $ fq -d vorbis_packet dv vorbis-audio
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: vorbis-audio (vorbis_packet) 0x0-0x20.7 (33)
 0x00|54                                             |T               |  packet_type: "Audio" (0) 0x0-0x0.7 (1)
-0x00|   dd cb ce aa 5e d8 7f 2d 01 42 00 a0 dd 71 77| ....^..-.B...qw|  unknown0: raw bits 0x1-0x20.7 (32)
+0x00|   dd cb ce aa 5e d8 7f 2d 01 42 00 a0 dd 71 77| ....^..-.B...qw|  data: raw bits 0x1-0x20.7 (32)
 0x10|8b ed cd 37 df 7c 33 3a 0c c3 30 0c c3 30 d4 50|...7.|3:..0..0.P|
 0x20|02|                                            |.|              |

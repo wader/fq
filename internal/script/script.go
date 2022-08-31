@@ -10,11 +10,11 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"sort"
 	"strconv"
 	"strings"
 
 	"github.com/wader/fq/internal/shquote"
+	"github.com/wader/fq/internal/sortex"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/interp"
 )
@@ -273,9 +273,7 @@ type Case struct {
 func (c *Case) ToActual() string {
 	var partsLineSorted []part
 	partsLineSorted = append(partsLineSorted, c.Parts...)
-	sort.Slice(partsLineSorted, func(i, j int) bool {
-		return partsLineSorted[i].Line() < partsLineSorted[j].Line()
-	})
+	sortex.Slice(partsLineSorted, func(a, b part) bool { return a.Line() < b.Line() })
 
 	sb := &strings.Builder{}
 	for _, p := range partsLineSorted {

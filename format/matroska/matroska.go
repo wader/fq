@@ -99,6 +99,96 @@ func init() {
 	}
 }
 
+const (
+	lacingTypeNone  = 0b00
+	lacingTypeXiph  = 0b01
+	lacingTypeFixed = 0b10
+	lacingTypeEBML  = 0b11
+)
+
+var lacingTypeNames = scalar.UToSymStr{
+	lacingTypeNone:  "none",
+	lacingTypeXiph:  "xiph",
+	lacingTypeFixed: "fixed",
+	lacingTypeEBML:  "ebml",
+}
+
+func decodeLacingFn(d *decode.D, lacingType int, fn func(d *decode.D)) {
+	if lacingType == lacingTypeNone {
+		fn(d)
+		return
+	}
+
+	// -1 size means rest of buffer, used last sometimes
+	var laceSizes []int64
+
+	switch lacingType {
+	case lacingTypeXiph:
+		numLaces := int(d.FieldU8("num_laces"))
+		d.FieldArray("lace_sizes", func(d *decode.D) {
+			for i := 0; i < numLaces; i++ {
+				s := int64(d.FieldUFn("lace_size", decodeXiphLaceSize))
+				laceSizes = append(laceSizes, s)
+			}
+			laceSizes = append(laceSizes, -1)
+		})
+	case lacingTypeEBML:
+		numLaces := int(d.FieldU8("num_laces"))
+		d.FieldArray("lace_sizes", func(d *decode.D) {
+			s := int64(d.FieldUFn("lace_size", decodeVint)) // first is unsigned, not ranged shifted
+			laceSizes = append(laceSizes, s)
+			for i := 0; i < numLaces-1; i++ {
+				d := int64(d.FieldUFn("lace_size_delta", decodeRawVint))
+				// range shifting
+				switch {
+				case d&0b1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1000_0000 == 0b0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1000_0000:
+					// value -(2^6^-1) to 2^6^-1 (ie 0_to 2^7^-2 minus 2^6^-1, half of the range)
+					d -= 0b0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1011_1111
+				case d&0b1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1100_0000_0000_0000 == 0b0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0100_0000_0000_0000:
+					// value -(2^13^-1) to 2^13^-1
+					d -= 0b0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0101_1111_1111_1111
+				case d&0b1111_1111_1111_1111_1111_1111_1111_1111_1110_0000_0000_0000_0000_0000 == 0b0000_0000_0000_0000_0000_0000_0000_0000_0010_0000_0000_0000_0000_0000:
+					// value -(2^20^-1) to 2^20^-1
+					d -= 0b0000_0000_0000_0000_0000_0000_0000_0000_0010_1111_1111_1111_1111_1111
+				case d&0b1111_1111_1111_1111_1111_1111_1111_0000_0000_0000_0000_0000_0000_0000 == 0b0000_0000_0000_0000_0000_0000_0001_0000_0000_0000_0000_0000_0000_0000:
+					// value -(2^27^-1) to 2^27^-1
+					d -= 0b0000_0000_0000_0000_0000_0000_0001_0111_1111_1111_1111_1111_1111_1111
+				case d&0b1111_1111_1111_1111_1111_1000_0000_0000_0000_0000_0000_0000_0000_0000 == 0b0000_0000_0000_0000_0000_1000_0000_0000_0000_0000_0000_0000_0000_0000:
+					// value -(2^34^-1) to 2^34^-1
+					d -= 0b0000_0000_0000_0000_0000_1011_1111_1111_1111_1111_1111_1111_1111_1111
+				case d&0b1111_1111_1111_1100_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000 == 0b0000_0000_0000_0100_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000:
+					// value -(2^41^-1) to 2^41^-1
+					d -= 0b0000_0000_0000_0101_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111
+				case d&0b1111_1110_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000 == 0b0000_0010_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000:
+					// value -(2^48^-1) to 2^48^-1
+					d -= 0b0000_0010_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111
+				}
+				s += d
+				laceSizes = append(laceSizes, s)
+			}
+			laceSizes = append(laceSizes, -1)
+		})
+	case lacingTypeFixed:
+		numLaces := int(d.FieldU8("num_laces"))
+		fixedSize := (d.BitsLeft() / 8) / int64(numLaces+1)
+		for i := 0; i < numLaces+1; i++ {
+			laceSizes = append(laceSizes, fixedSize)
+		}
+	default:
+		panic("unreachable")
+	}
+
+	d.FieldArray("laces", func(d *decode.D) {
+		for _, laceSize := range laceSizes {
+			s := laceSize * 8
+			if laceSize == -1 {
+				s = d.BitsLeft()
+			}
+			d.FramedFn(s, fn)
+		}
+	})
+}
+
 // TODO: smarter?
 func decodeRawVintWidth(d *decode.D) (uint64, int) {
 	n := d.U8()
@@ -121,6 +211,17 @@ func decodeVint(d *decode.D) uint64 {
 	n, w := decodeRawVintWidth(d)
 	m := (uint64(1<<((w-1)*8+(8-w))) - 1)
 	return n & m
+}
+
+func decodeXiphLaceSize(d *decode.D) uint64 {
+	var s uint64
+	for {
+		n := d.U8()
+		s += n
+		if n < 255 {
+			return s
+		}
+	}
 }
 
 type track struct {
@@ -332,30 +433,8 @@ func matroskaDecode(d *decode.D, _ any) any {
 		switch t.codec {
 		case "A_VORBIS":
 			t.parentD.RangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
-				numPackets := d.FieldU8("num_packets")
-				// TODO: lacing
-				packetLengths := []int64{}
-				// Xiph-style lacing (similar to ogg) of n-1 packets, last is reset of block
-				d.FieldArray("laces", func(d *decode.D) {
-					for i := uint64(0); i < numPackets; i++ {
-						l := d.FieldUFn("lace", func(d *decode.D) uint64 {
-							var l uint64
-							for {
-								n := d.U8()
-								l += n
-								if n < 255 {
-									return l
-								}
-							}
-						})
-						packetLengths = append(packetLengths, int64(l))
-					}
-				})
-				d.FieldArray("packets", func(d *decode.D) {
-					for _, l := range packetLengths {
-						d.FieldFormatLen("packet", l*8, vorbisPacketFormat, nil)
-					}
-					d.FieldFormatLen("packet", d.BitsLeft(), vorbisPacketFormat, nil)
+				decodeLacingFn(d, lacingTypeXiph, func(d *decode.D) {
+					d.FieldFormat("packet", vorbisPacketFormat, nil)
 				})
 			})
 		case "A_AAC":
@@ -409,6 +488,7 @@ func matroskaDecode(d *decode.D, _ any) any {
 
 	for _, b := range dc.blocks {
 		b.d.RangeFn(b.r.Start, b.r.Len, func(d *decode.D) {
+			var lacing uint64
 			trackNumber := d.FieldUFn("track_number", decodeVint)
 			d.FieldU16("timestamp")
 			if b.simple {
@@ -416,29 +496,32 @@ func matroskaDecode(d *decode.D, _ any) any {
 					d.FieldBool("key_frame")
 					d.FieldU3("reserved")
 					d.FieldBool("invisible")
-					d.FieldU2("lacing")
+					lacing = d.FieldU2("lacing", lacingTypeNames)
 					d.FieldBool("discardable")
 				})
 			} else {
 				d.FieldStruct("flags", func(d *decode.D) {
 					d.FieldU4("reserved")
 					d.FieldBool("invisible")
-					d.FieldU2("lacing")
+					lacing = d.FieldU2("lacing", lacingTypeNames)
 					d.FieldBool("not_used")
 				})
 			}
-			// TODO: lacing etc
 
-			// TODO: fixed/unknown?
-			if t, ok := trackNumberToTrack[int(trackNumber)]; ok {
-				if f, ok := codecToFormat[t.codec]; ok {
-					d.FieldFormat("packet", *f, t.formatInArg)
+			var f *decode.Group
+			var track *track
+			track, trackOk := trackNumberToTrack[int(trackNumber)]
+			if trackOk {
+				f = codecToFormat[track.codec]
+			}
+
+			decodeLacingFn(d, int(lacing), func(d *decode.D) {
+				if f != nil {
+					d.FieldFormat("packet", *f, track.formatInArg)
+				} else {
+					d.FieldRawLen("packet", d.BitsLeft())
 				}
-			}
-
-			if d.BitsLeft() > 0 {
-				d.FieldRawLen("data", d.BitsLeft())
-			}
+			})
 		})
 	}
 

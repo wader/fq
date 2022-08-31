@@ -32,6 +32,14 @@ func (r Range) String() string { return fmt.Sprintf("%d:%d", r.Start, r.Len) }
 
 func (r Range) IsZero() bool { return r.Start == 0 && r.Len == 0 }
 
+type rangeStartSort []Range
+
+func (p rangeStartSort) Len() int           { return len(p) }
+func (p rangeStartSort) Less(i, j int) bool { return p[i].Start < p[j].Start }
+func (p rangeStartSort) Swap(i, j int) {
+	p[i], p[j] = p[j], p[i]
+}
+
 func RangeFromString(s string) Range {
 	ps := strings.Split(s, ":")
 	start, _ := strconv.Atoi(ps[0])
@@ -62,9 +70,7 @@ func Gaps(total Range, ranges []Range) []Range {
 		return []Range{total}
 	}
 
-	sort.Slice(ranges, func(i, j int) bool {
-		return ranges[i].Start < ranges[j].Start
-	})
+	sort.Sort(rangeStartSort(ranges))
 
 	// worst case ranges+1 gaps
 	merged := make([]Range, 0, len(ranges)+1)

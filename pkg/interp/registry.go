@@ -4,10 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
-	"sort"
 	"sync"
 
 	"github.com/wader/fq/internal/gojqex"
+	"github.com/wader/fq/internal/sortex"
 	"github.com/wader/fq/pkg/decode"
 )
 
@@ -67,11 +67,11 @@ func (r *Registry) Func(funcFn EnvFuncFn) {
 }
 
 func sortFormats(g decode.Group) {
-	sort.Slice(g, func(i, j int) bool {
-		if g[i].ProbeOrder == g[j].ProbeOrder {
-			return g[i].Name < g[j].Name
+	sortex.Slice(g, func(a, b decode.Format) bool {
+		if a.ProbeOrder == b.ProbeOrder {
+			return a.Name < b.Name
 		}
-		return g[i].ProbeOrder < g[j].ProbeOrder
+		return a.ProbeOrder < b.ProbeOrder
 	})
 }
 
