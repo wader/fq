@@ -721,13 +721,13 @@ func (d *D) AddChild(v *Value) {
 	switch fv := d.Value.V.(type) {
 	case *Compound:
 		if !fv.IsArray {
-			if fv.Keys == nil {
-				fv.Keys = make(map[string]struct{})
+			if fv.ByName == nil {
+				fv.ByName = make(map[string]*Value)
 			}
-			if _, ok := fv.Keys[v.Name]; ok {
+			if _, ok := fv.ByName[v.Name]; ok {
 				d.Fatalf("%q already exist in struct %s", v.Name, d.Value.Name)
 			}
-			fv.Keys[v.Name] = struct{}{}
+			fv.ByName[v.Name] = v
 		}
 		fv.Children = append(fv.Children, v)
 	}
@@ -736,10 +736,19 @@ func (d *D) AddChild(v *Value) {
 func (d *D) FieldGet(name string) *Value {
 	switch fv := d.Value.V.(type) {
 	case *Compound:
-		for _, ff := range fv.Children {
-			if ff.Name == name {
-				return ff
+		if fv.IsArray {
+			for _, ff := range fv.Children {
+				if ff.Name == name {
+					return ff
+				}
 			}
+		} else {
+			if fv.ByName != nil {
+				if ff, ok := fv.ByName[name]; ok {
+					return ff
+				}
+			}
+			return nil
 		}
 	default:
 		panic(fmt.Sprintf("%s is not a struct", d.Value.Name))

@@ -709,12 +709,12 @@ func (v StructDecodeValue) JQValueKey(name string) any {
 	if strings.HasPrefix(name, "_") {
 		return v.decodeValueBase.JQValueKey(name)
 	}
-
-	for _, f := range v.Compound.Children {
-		if f.Name == name {
+	if v.Compound.ByName != nil {
+		if f, ok := v.Compound.ByName[name]; ok {
 			return makeDecodeValue(f)
 		}
 	}
+
 	return nil
 }
 func (v StructDecodeValue) JQValueEach() any {
