@@ -721,11 +721,13 @@ func (d *D) AddChild(v *Value) {
 	switch fv := d.Value.V.(type) {
 	case *Compound:
 		if !fv.IsArray {
-			for _, ff := range fv.Children {
-				if ff.Name == v.Name {
-					d.Fatalf("%q already exist in struct %s", v.Name, d.Value.Name)
-				}
+			if fv.Keys == nil {
+				fv.Keys = make(map[string]struct{})
 			}
+			if _, ok := fv.Keys[v.Name]; ok {
+				d.Fatalf("%q already exist in struct %s", v.Name, d.Value.Name)
+			}
+			fv.Keys[v.Name] = struct{}{}
 		}
 		fv.Children = append(fv.Children, v)
 	}

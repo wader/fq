@@ -13,6 +13,7 @@ type Compound struct {
 	IsArray     bool
 	RangeSorted bool
 	Children    []*Value
+	Keys        map[string]struct{}
 	Description string
 }
 
