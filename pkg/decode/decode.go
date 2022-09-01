@@ -168,7 +168,6 @@ func newDecoder(ctx context.Context, format Format, br bitio.ReaderAtSeeker, opt
 	}
 	rootV := &Compound{
 		IsArray:     format.RootArray,
-		RangeSorted: !format.RootArray,
 		Children:    nil,
 		Description: opts.Description,
 	}
@@ -765,7 +764,7 @@ func (d *D) FieldMustGet(name string) *Value {
 
 // FieldArray decode array of fields. Will not be range sorted.
 func (d *D) FieldArray(name string, fn func(d *D), sms ...scalar.Mapper) *D {
-	c := &Compound{IsArray: true, RangeSorted: false}
+	c := &Compound{IsArray: true}
 	cd := d.fieldDecoder(name, d.bitBuf, c)
 	d.AddChild(cd.Value)
 	fn(cd)
@@ -779,7 +778,7 @@ func (d *D) FieldArrayValue(name string) *D {
 
 // FieldStruct decode array of fields. Will be range sorted.
 func (d *D) FieldStruct(name string, fn func(d *D)) *D {
-	c := &Compound{IsArray: false, RangeSorted: true}
+	c := &Compound{IsArray: false}
 	cd := d.fieldDecoder(name, d.bitBuf, c)
 	d.AddChild(cd.Value)
 	fn(cd)
@@ -1104,7 +1103,7 @@ func (d *D) FieldRootBitBuf(name string, br bitio.ReaderAtSeeker, sms ...scalar.
 }
 
 func (d *D) FieldArrayRootBitBufFn(name string, br bitio.ReaderAtSeeker, fn func(d *D)) *Value {
-	c := &Compound{IsArray: true, RangeSorted: false}
+	c := &Compound{IsArray: true}
 	cd := d.fieldDecoder(name, br, c)
 	cd.Value.IsRoot = true
 	d.AddChild(cd.Value)
@@ -1116,7 +1115,7 @@ func (d *D) FieldArrayRootBitBufFn(name string, br bitio.ReaderAtSeeker, fn func
 }
 
 func (d *D) FieldStructRootBitBufFn(name string, br bitio.ReaderAtSeeker, fn func(d *D)) *Value {
-	c := &Compound{IsArray: false, RangeSorted: true}
+	c := &Compound{IsArray: false}
 	cd := d.fieldDecoder(name, br, c)
 	cd.Value.IsRoot = true
 	d.AddChild(cd.Value)
