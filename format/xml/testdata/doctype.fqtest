@@ -1,0 +1,62 @@
+$ fq -d html . doctype.xml
+{
+  "html": {
+    "body": "",
+    "head": {
+      "title": "aaa"
+    }
+  }
+}
+$ fq -o array=true -d html . doctype.xml
+[
+  "html",
+  null,
+  [
+    [
+      "head",
+      null,
+      [
+        [
+          "title",
+          {
+            "#text": "aaa"
+          },
+          []
+        ]
+      ]
+    ],
+    [
+      "body",
+      null,
+      []
+    ]
+  ]
+]
+$ fq . doctype.xml
+{
+  "html": {
+    "head": {
+      "title": "aaa"
+    }
+  }
+}
+$ fq -o array=true . doctype.xml
+[
+  "html",
+  null,
+  [
+    [
+      "head",
+      null,
+      [
+        [
+          "title",
+          {
+            "#text": "aaa"
+          },
+          []
+        ]
+      ]
+    ]
+  ]
+]
