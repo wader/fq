@@ -1,0 +1,16 @@
+$ fq -d pg_heap -o flavour=postgres14 ".[0].PageHeaderData.pd_linp[0, 1, -1] | tovalue" 33233
+{
+  "lp_flags": "LP_REDIRECT",
+  "lp_len": 0,
+  "lp_off": 77
+}
+{
+  "lp_flags": "LP_REDIRECT",
+  "lp_len": 0,
+  "lp_off": 106
+}
+{
+  "lp_flags": "LP_NORMAL",
+  "lp_len": 121,
+  "lp_off": 640
+}

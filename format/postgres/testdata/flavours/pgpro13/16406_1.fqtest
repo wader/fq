@@ -1,0 +1,11 @@
+$ fq -d pg_heap -o flavour=pgpro13 ".[0].PageHeaderData.pd_linp[0,-1] | tovalue" 16406
+{
+  "lp_flags": "LP_NORMAL",
+  "lp_len": 48,
+  "lp_off": 8144
+}
+{
+  "lp_flags": "LP_NORMAL",
+  "lp_len": 48,
+  "lp_off": 656
+}

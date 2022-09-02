@@ -1,0 +1,105 @@
+$ fq -d pg_heap -o flavour=pgpro12 ".[0].Tuples[0,-1] | tovalue" 16406
+{
+  "Infomask": {
+    "HEAP_COMBOCID": 0,
+    "HEAP_HASEXTERNAL": 0,
+    "HEAP_HASNULL": 1,
+    "HEAP_HASOID_OLD": 0,
+    "HEAP_HASVARWIDTH": 0,
+    "HEAP_LOCK_MASK": 0,
+    "HEAP_MOVED": 0,
+    "HEAP_MOVED_IN": 0,
+    "HEAP_MOVED_OFF": 0,
+    "HEAP_UPDATED": 0,
+    "HEAP_XMAX_COMMITTED": 0,
+    "HEAP_XMAX_EXCL_LOCK": 0,
+    "HEAP_XMAX_INVALID": 1,
+    "HEAP_XMAX_IS_MULTI": 0,
+    "HEAP_XMAX_KEYSHR_LOCK": 0,
+    "HEAP_XMAX_LOCK_ONLY": 0,
+    "HEAP_XMAX_SHR_LOCK": 0,
+    "HEAP_XMIN_COMMITTED": 1,
+    "HEAP_XMIN_FROZEN": 0,
+    "HEAP_XMIN_INVALID": 0
+  },
+  "Infomask2": {
+    "HEAP_HOT_UPDATED": 0,
+    "HEAP_KEYS_UPDATED": 0,
+    "HEAP_ONLY_TUPLE": 0
+  },
+  "t_bits": "61000000080000003aaa080009040000d1b3823d1f8a0200",
+  "t_choice": {
+    "t_datum": {
+      "datum_len_": 499,
+      "datum_typeid": 3,
+      "datum_typmod": 0
+    },
+    "t_heap": {
+      "t_field3": {
+        "t_cid": 3,
+        "t_xvac": 3
+      },
+      "t_xmax": 0,
+      "t_xmin": 499
+    }
+  },
+  "t_ctid": {
+    "ip_blkid": 0,
+    "ip_posid": 1
+  },
+  "t_hoff": 24,
+  "t_infomask": 2305,
+  "t_infomask2": 6
+}
+{
+  "Infomask": {
+    "HEAP_COMBOCID": 0,
+    "HEAP_HASEXTERNAL": 0,
+    "HEAP_HASNULL": 1,
+    "HEAP_HASOID_OLD": 0,
+    "HEAP_HASVARWIDTH": 0,
+    "HEAP_LOCK_MASK": 0,
+    "HEAP_MOVED": 0,
+    "HEAP_MOVED_IN": 0,
+    "HEAP_MOVED_OFF": 0,
+    "HEAP_UPDATED": 0,
+    "HEAP_XMAX_COMMITTED": 0,
+    "HEAP_XMAX_EXCL_LOCK": 0,
+    "HEAP_XMAX_INVALID": 1,
+    "HEAP_XMAX_IS_MULTI": 0,
+    "HEAP_XMAX_KEYSHR_LOCK": 0,
+    "HEAP_XMAX_LOCK_ONLY": 0,
+    "HEAP_XMAX_SHR_LOCK": 0,
+    "HEAP_XMIN_COMMITTED": 1,
+    "HEAP_XMIN_FROZEN": 0,
+    "HEAP_XMIN_INVALID": 0
+  },
+  "Infomask2": {
+    "HEAP_HOT_UPDATED": 0,
+    "HEAP_KEYS_UPDATED": 0,
+    "HEAP_ONLY_TUPLE": 0
+  },
+  "t_bits": "2600000001000000c5900800c5f6ffffe658893d1f8a0200",
+  "t_choice": {
+    "t_datum": {
+      "datum_len_": 655,
+      "datum_typeid": 3,
+      "datum_typmod": 0
+    },
+    "t_heap": {
+      "t_field3": {
+        "t_cid": 3,
+        "t_xvac": 3
+      },
+      "t_xmax": 0,
+      "t_xmin": 655
+    }
+  },
+  "t_ctid": {
+    "ip_blkid": 0,
+    "ip_posid": 157
+  },
+  "t_hoff": 24,
+  "t_infomask": 2305,
+  "t_infomask2": 6
+}
