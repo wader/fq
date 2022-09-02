@@ -7,9 +7,12 @@ import (
 	"github.com/wader/fq/pkg/interp"
 )
 
+// TO DO
+// not ready yet
+
 func init() {
 	interp.RegisterFormat(decode.Format{
-		Name:        format.PGWAL,
+		Name:        format.PG_WAL,
 		Description: "PostgreSQL write-ahead log file",
 		DecodeFn:    decodePgwal,
 		DecodeInArg: format.PostgresIn{

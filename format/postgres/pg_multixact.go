@@ -7,16 +7,19 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
+// TO DO
+// actualize
+
 const BLCKSZ = 8192
 
 func init() {
 	interp.RegisterFormat(decode.Format{
-		Name:        format.PGMULTIXACTOFF,
+		Name:        format.PG_MULTIXACTOFF,
 		Description: "PostgreSQL multixact offset file",
 		DecodeFn:    mxOffsetDecode,
 	})
 	interp.RegisterFormat(decode.Format{
-		Name:        format.PGMULTIXACTMEM,
+		Name:        format.PG_MULTIXACTMEM,
 		Description: "PostgreSQL multixact members file",
 		DecodeFn:    mxMembersDecode,
 	})

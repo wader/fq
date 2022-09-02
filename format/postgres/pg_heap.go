@@ -19,9 +19,12 @@ import (
 	"github.com/wader/fq/pkg/interp"
 )
 
+// TO DO
+// oom kill on 1 GB file
+
 func init() {
 	interp.RegisterFormat(decode.Format{
-		Name:        format.PGHEAP,
+		Name:        format.PG_HEAP,
 		Description: "PostgreSQL heap file",
 		DecodeFn:    decodePgheap,
 		DecodeInArg: format.PostgresIn{

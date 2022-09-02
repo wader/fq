@@ -99,6 +99,7 @@ func probeForDecode(d *decode.D, in any) any {
 	d.U64()
 	pgControlVersion := d.U32()
 
+	// try to guess version
 	switch pgControlVersion {
 	case PG_CONTROL_VERSION_11:
 		return postgres11.DecodePgControl(d, in)

@@ -1,5 +1,8 @@
 package postgres
 
+// TO DO
+// remove
+
 //import (
 //	"github.com/wader/fq/format"
 //	"github.com/wader/fq/pkg/decode"
