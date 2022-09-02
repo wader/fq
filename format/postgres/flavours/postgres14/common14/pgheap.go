@@ -176,7 +176,7 @@ func DecodeHeap(d *decode.D, heap *HeapD) any {
 	d.Ctx = ctx
 
 	d.SeekAbs(0)
-	d.FieldArray("Pages", decodeHeapPages)
+	decodeHeapPages(d)
 
 	return nil
 }

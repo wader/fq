@@ -27,6 +27,8 @@ func init() {
 		DecodeInArg: format.PostgresIn{
 			Flavour: "default",
 		},
+		RootArray: true,
+		RootName:  "Pages",
 	})
 }
 
