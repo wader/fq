@@ -14,9 +14,9 @@ import (
 	"strings"
 
 	"github.com/wader/fq/internal/shquote"
-	"github.com/wader/fq/internal/sortex"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/interp"
+	"golang.org/x/exp/slices"
 )
 
 var unescapeRe = regexp.MustCompile(`\\(?:t|b|n|r|0(?:b[01]{8}|x[0-f]{2}))`)
@@ -273,7 +273,7 @@ type Case struct {
 func (c *Case) ToActual() string {
 	var partsLineSorted []part
 	partsLineSorted = append(partsLineSorted, c.Parts...)
-	sortex.Slice(partsLineSorted, func(a, b part) bool { return a.Line() < b.Line() })
+	slices.SortFunc(partsLineSorted, func(a, b part) bool { return a.Line() < b.Line() })
 
 	sb := &strings.Builder{}
 	for _, p := range partsLineSorted {

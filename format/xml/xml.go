@@ -25,6 +25,7 @@ import (
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
+	"golang.org/x/exp/slices"
 )
 
 //go:embed xml.jq
@@ -396,7 +397,7 @@ func toXMLFromObject(c any, opts ToXMLOpts) any {
 			sortex.ProxySort(orderNames, n.Nodes, func(a, b string) bool { return a < b })
 		}
 
-		sortex.Slice(n.Attrs, func(a, b xml.Attr) bool { return xmlNameSort(a.Name, b.Name) })
+		slices.SortFunc(n.Attrs, func(a, b xml.Attr) bool { return xmlNameSort(a.Name, b.Name) })
 
 		return n, seq, hasSeq
 	}
@@ -469,7 +470,7 @@ func toXMLFromArray(c any, opts ToXMLOpts) any {
 			}
 		}
 
-		sortex.Slice(n.Attrs, func(a, b xml.Attr) bool { return xmlNameSort(a.Name, b.Name) })
+		slices.SortFunc(n.Attrs, func(a, b xml.Attr) bool { return xmlNameSort(a.Name, b.Name) })
 
 		for _, c := range children {
 			c, ok := c.([]any)
