@@ -32,6 +32,7 @@ func init() {
 
 func decodePgheap(d *decode.D, in any) any {
 	d.Endian = decode.LittleEndian
+	d.Options.FillGaps = false
 
 	flavour := in.(format.PostgresIn).Flavour
 	switch flavour {
