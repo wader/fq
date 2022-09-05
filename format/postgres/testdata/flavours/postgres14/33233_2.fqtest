@@ -1,5 +1,5 @@
 $ fq -d pg_heap -o flavour=postgres14 ".[0].Tuples[0,-1] | dv" 33233
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].Tuples[0]{}: HeapTupleHeaderData 0x1f80-0x1ff8.7 (121)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].Tuples[0]{}: HeapTupleHeaderData 0x1f80-0x1fff.7 (128)
       |                                               |                |  t_choice{}: 0x1f80-0x1f8b.7 (12)
       |                                               |                |    t_heap{}: 0x1f80-0x1f8b.7 (12)
 0x1f80|86 10 18 00                                    |....            |      t_xmin: 1577094 0x1f80-0x1f83.7 (4)
@@ -46,7 +46,8 @@ $ fq -d pg_heap -o flavour=postgres14 ".[0].Tuples[0,-1] | dv" 33233
 0x1f90|                        15 00 00 00 01 00 00 00|        ........|  t_bits: "150000000100000000000000ab202020202020202020202..." (raw bits) 0x1f98-0x1ff8.7 (97)
 0x1fa0|00 00 00 00 ab 20 20 20 20 20 20 20 20 20 20 20|.....           |
 *     |until 0x1ff8.7 (97)                            |                |
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].Tuples[58]{}: HeapTupleHeaderData 0x280-0x2f8.7 (121)
+0x1ff0|                           00 00 00 00 00 00 00|         .......|  padding1: "00000000000000" (raw bits) 0x1ff9-0x1fff.7 (7)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].Tuples[58]{}: HeapTupleHeaderData 0x280-0x2ff.7 (128)
      |                                               |                |  t_choice{}: 0x280-0x28b.7 (12)
      |                                               |                |    t_heap{}: 0x280-0x28b.7 (12)
 0x280|96 58 1c 00                                    |.X..            |      t_xmin: 1857686 0x280-0x283.7 (4)
@@ -93,3 +94,4 @@ $ fq -d pg_heap -o flavour=postgres14 ".[0].Tuples[0,-1] | dv" 33233
 0x290|                        21 00 00 00 01 00 00 00|        !.......|  t_bits: "210000000100000053fdffffab202020202020202020202..." (raw bits) 0x298-0x2f8.7 (97)
 0x2a0|53 fd ff ff ab 20 20 20 20 20 20 20 20 20 20 20|S....           |
 *    |until 0x2f8.7 (97)                             |                |
+0x2f0|                           00 00 00 00 00 00 00|         .......|  padding1: "00000000000000" (raw bits) 0x2f9-0x2ff.7 (7)

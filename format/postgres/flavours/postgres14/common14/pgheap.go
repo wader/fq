@@ -80,7 +80,7 @@ const (
 //
 /* total size (bytes):   12  */
 /* } t_choice;             //
-/*   12      |     6 */ // ItemPointerData t_ctid;
+/*   12      |     6 */// ItemPointerData t_ctid;
 /*   18      |     2 */ // uint16 t_infomask2;
 /*   20      |     2 */ // uint16 t_infomask;
 /*   22      |     1 */ // uint8 t_hoff;
@@ -160,9 +160,9 @@ type itemIdDataD struct {
 	/*    0: 0   |     4 */ // unsigned int lp_off: 15
 	/*    1: 7   |     4 */ // unsigned int lp_flags: 2
 	/*    2: 1   |     4 */ // unsigned int lp_len: 15
-	lpOff                   uint32
-	lpFlags                 uint32
-	lpLen                   uint32
+	lpOff   uint32
+	lpFlags uint32
+	lpLen   uint32
 }
 
 func GetHeapD(d *decode.D) *HeapD {
@@ -358,7 +358,21 @@ func decodeTuples(d *decode.D) {
 
 			d.FieldRawLen("t_bits", int64(tupleDataLen*8), scalar.RawHex)
 
+			// data alignment
+			pos2 := uint64(d.Pos() / 8)
+			pos1Aligned := common.TypeAlign8(pos2)
+			if pos2 != pos1Aligned {
+				alignedLen := (pos1Aligned - pos2) * 8
+				d.FieldRawLen("padding1", int64(alignedLen), scalar.RawHex)
+			}
+			pos3 := uint64(d.Pos() / 8)
+			pos2Aligned := common.TypeAlign8(pos3)
+			if pos3 != pos2Aligned {
+				d.Fatalf("pos3 isn't aligned, pos2 = %d, pos3 = %d\n", pos2, pos3)
+			}
+
 		}) // HeapTupleHeaderData
+
 	} // for ItemsIds
 }
 

@@ -1,5 +1,5 @@
 $ fq -d pg_heap -o flavour=postgres13 ".[0].Tuples[0,-1] | dv" 16396
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].Tuples[0]{}: HeapTupleHeaderData 0x1f80-0x1ff8.7 (121)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].Tuples[0]{}: HeapTupleHeaderData 0x1f80-0x1fff.7 (128)
       |                                               |                |  t_choice{}: 0x1f80-0x1f8b.7 (12)
       |                                               |                |    t_heap{}: 0x1f80-0x1f8b.7 (12)
 0x1f80|e9 01 00 00                                    |....            |      t_xmin: 489 0x1f80-0x1f83.7 (4)
@@ -46,7 +46,8 @@ $ fq -d pg_heap -o flavour=postgres13 ".[0].Tuples[0,-1] | dv" 16396
 0x1f90|                        01 00 00 00 01 00 00 00|        ........|  t_bits: "010000000100000000000000ab202020202020202020202..." (raw bits) 0x1f98-0x1ff8.7 (97)
 0x1fa0|00 00 00 00 ab 20 20 20 20 20 20 20 20 20 20 20|.....           |
 *     |until 0x1ff8.7 (97)                            |                |
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].Tuples[60]{}: HeapTupleHeaderData 0x180-0x1f8.7 (121)
+0x1ff0|                           00 00 00 00 00 00 00|         .......|  padding1: "00000000000000" (raw bits) 0x1ff9-0x1fff.7 (7)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].Tuples[60]{}: HeapTupleHeaderData 0x180-0x1ff.7 (128)
      |                                               |                |  t_choice{}: 0x180-0x18b.7 (12)
      |                                               |                |    t_heap{}: 0x180-0x18b.7 (12)
 0x180|e2 2f 00 00                                    |./..            |      t_xmin: 12258 0x180-0x183.7 (4)
@@ -93,3 +94,4 @@ $ fq -d pg_heap -o flavour=postgres13 ".[0].Tuples[0,-1] | dv" 16396
 0x190|                        20 00 00 00 01 00 00 00|         .......|  t_bits: "20000000010000003efbffffab202020202020202020202..." (raw bits) 0x198-0x1f8.7 (97)
 0x1a0|3e fb ff ff ab 20 20 20 20 20 20 20 20 20 20 20|>....           |
 *    |until 0x1f8.7 (97)                             |                |
+0x1f0|                           00 00 00 00 00 00 00|         .......|  padding1: "00000000000000" (raw bits) 0x1f9-0x1ff.7 (7)
