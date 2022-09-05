@@ -1,105 +1,93 @@
-$ fq -d pg_heap -o flavour=postgres11 ".[0].Tuples[0,-1] | tovalue" 16406
-{
-  "Infomask": {
-    "HEAP_COMBOCID": 0,
-    "HEAP_HASEXTERNAL": 0,
-    "HEAP_HASNULL": 1,
-    "HEAP_HASOID_OLD": 0,
-    "HEAP_HASVARWIDTH": 0,
-    "HEAP_LOCK_MASK": 0,
-    "HEAP_MOVED": 0,
-    "HEAP_MOVED_IN": 0,
-    "HEAP_MOVED_OFF": 0,
-    "HEAP_UPDATED": 0,
-    "HEAP_XMAX_COMMITTED": 0,
-    "HEAP_XMAX_EXCL_LOCK": 0,
-    "HEAP_XMAX_INVALID": 1,
-    "HEAP_XMAX_IS_MULTI": 0,
-    "HEAP_XMAX_KEYSHR_LOCK": 0,
-    "HEAP_XMAX_LOCK_ONLY": 0,
-    "HEAP_XMAX_SHR_LOCK": 0,
-    "HEAP_XMIN_COMMITTED": 1,
-    "HEAP_XMIN_FROZEN": 0,
-    "HEAP_XMIN_INVALID": 0
-  },
-  "Infomask2": {
-    "HEAP_HOT_UPDATED": 0,
-    "HEAP_KEYS_UPDATED": 0,
-    "HEAP_ONLY_TUPLE": 0
-  },
-  "t_bits": "07000000010000007419010097f5ffffb55804f053880200",
-  "t_choice": {
-    "t_datum": {
-      "datum_len_": 581,
-      "datum_typeid": 3,
-      "datum_typmod": 0
-    },
-    "t_heap": {
-      "t_field3": {
-        "t_cid": 3,
-        "t_xvac": 3
-      },
-      "t_xmax": 0,
-      "t_xmin": 581
-    }
-  },
-  "t_ctid": {
-    "ip_blkid": 0,
-    "ip_posid": 1
-  },
-  "t_hoff": 24,
-  "t_infomask": 2305,
-  "t_infomask2": 6
-}
-{
-  "Infomask": {
-    "HEAP_COMBOCID": 0,
-    "HEAP_HASEXTERNAL": 0,
-    "HEAP_HASNULL": 1,
-    "HEAP_HASOID_OLD": 0,
-    "HEAP_HASVARWIDTH": 0,
-    "HEAP_LOCK_MASK": 0,
-    "HEAP_MOVED": 0,
-    "HEAP_MOVED_IN": 0,
-    "HEAP_MOVED_OFF": 0,
-    "HEAP_UPDATED": 0,
-    "HEAP_XMAX_COMMITTED": 0,
-    "HEAP_XMAX_EXCL_LOCK": 0,
-    "HEAP_XMAX_INVALID": 1,
-    "HEAP_XMAX_IS_MULTI": 0,
-    "HEAP_XMAX_KEYSHR_LOCK": 0,
-    "HEAP_XMAX_LOCK_ONLY": 0,
-    "HEAP_XMAX_SHR_LOCK": 0,
-    "HEAP_XMIN_COMMITTED": 1,
-    "HEAP_XMIN_FROZEN": 0,
-    "HEAP_XMIN_INVALID": 0
-  },
-  "Infomask2": {
-    "HEAP_HOT_UPDATED": 0,
-    "HEAP_KEYS_UPDATED": 0,
-    "HEAP_ONLY_TUPLE": 0
-  },
-  "t_bits": "0900000001000000feda000081050000e36412f053880200",
-  "t_choice": {
-    "t_datum": {
-      "datum_len_": 739,
-      "datum_typeid": 3,
-      "datum_typmod": 0
-    },
-    "t_heap": {
-      "t_field3": {
-        "t_cid": 3,
-        "t_xvac": 3
-      },
-      "t_xmax": 0,
-      "t_xmin": 739
-    }
-  },
-  "t_ctid": {
-    "ip_blkid": 0,
-    "ip_posid": 157
-  },
-  "t_hoff": 24,
-  "t_infomask": 2305,
-  "t_infomask2": 6
-}
+$ fq -d pg_heap -o flavour=postgres11 ".[0].Tuples[0,-1] | dv" 16406
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].Tuples[0]{}: HeapTupleHeaderData 0x1fd0-0x1fff.7 (48)
+      |                                               |                |  t_choice{}: 0x1fd0-0x1fdb.7 (12)
+      |                                               |                |    t_heap{}: 0x1fd0-0x1fdb.7 (12)
+0x1fd0|45 02 00 00                                    |E...            |      t_xmin: 581 0x1fd0-0x1fd3.7 (4)
+0x1fd0|            00 00 00 00                        |    ....        |      t_xmax: 0 0x1fd4-0x1fd7.7 (4)
+      |                                               |                |      t_field3{}: 0x1fd8-0x1fdb.7 (4)
+0x1fd0|                        03 00 00 00            |        ....    |        t_cid: 3 0x1fd8-0x1fdb.7 (4)
+0x1fd0|                        03 00 00 00            |        ....    |        t_xvac: 3 0x1fd8-0x1fdb.7 (4)
+      |                                               |                |    t_datum{}: 0x1fd0-0x1fdb.7 (12)
+0x1fd0|45 02 00 00                                    |E...            |      datum_len_: 581 0x1fd0-0x1fd3.7 (4)
+0x1fd0|            00 00 00 00                        |    ....        |      datum_typmod: 0 0x1fd4-0x1fd7.7 (4)
+0x1fd0|                        03 00 00 00            |        ....    |      datum_typeid: 3 0x1fd8-0x1fdb.7 (4)
+      |                                               |                |  t_ctid{}: 0x1fdc-0x1fe1.7 (6)
+0x1fd0|                                    00 00 00 00|            ....|    ip_blkid: 0 0x1fdc-0x1fdf.7 (4)
+0x1fe0|01 00                                          |..              |    ip_posid: 1 0x1fe0-0x1fe1.7 (2)
+0x1fe0|      06 00                                    |  ..            |  t_infomask2: 6 0x1fe2-0x1fe3.7 (2)
+      |                                               |                |  Infomask2{}: 0x1fe2-0x1fe3.7 (2)
+0x1fe0|      06 00                                    |  ..            |    HEAP_KEYS_UPDATED: 0 0x1fe2-0x1fe3.7 (2)
+0x1fe0|      06 00                                    |  ..            |    HEAP_HOT_UPDATED: 0 0x1fe2-0x1fe3.7 (2)
+0x1fe0|      06 00                                    |  ..            |    HEAP_ONLY_TUPLE: 0 0x1fe2-0x1fe3.7 (2)
+0x1fe0|            01 09                              |    ..          |  t_infomask: 2305 0x1fe4-0x1fe5.7 (2)
+      |                                               |                |  Infomask{}: 0x1fe4-0x1fe5.7 (2)
+0x1fe0|            01 09                              |    ..          |    HEAP_HASNULL: 1 0x1fe4-0x1fe5.7 (2)
+0x1fe0|            01 09                              |    ..          |    HEAP_HASVARWIDTH: 0 0x1fe4-0x1fe5.7 (2)
+0x1fe0|            01 09                              |    ..          |    HEAP_HASEXTERNAL: 0 0x1fe4-0x1fe5.7 (2)
+0x1fe0|            01 09                              |    ..          |    HEAP_HASOID_OLD: 0 0x1fe4-0x1fe5.7 (2)
+0x1fe0|            01 09                              |    ..          |    HEAP_XMAX_KEYSHR_LOCK: 0 0x1fe4-0x1fe5.7 (2)
+0x1fe0|            01 09                              |    ..          |    HEAP_COMBOCID: 0 0x1fe4-0x1fe5.7 (2)
+0x1fe0|            01 09                              |    ..          |    HEAP_XMAX_EXCL_LOCK: 0 0x1fe4-0x1fe5.7 (2)
+0x1fe0|            01 09                              |    ..          |    HEAP_XMAX_LOCK_ONLY: 0 0x1fe4-0x1fe5.7 (2)
+0x1fe0|            01 09                              |    ..          |    HEAP_XMAX_SHR_LOCK: 0 0x1fe4-0x1fe5.7 (2)
+0x1fe0|            01 09                              |    ..          |    HEAP_LOCK_MASK: 0 0x1fe4-0x1fe5.7 (2)
+0x1fe0|            01 09                              |    ..          |    HEAP_XMIN_COMMITTED: 1 0x1fe4-0x1fe5.7 (2)
+0x1fe0|            01 09                              |    ..          |    HEAP_XMIN_INVALID: 0 0x1fe4-0x1fe5.7 (2)
+0x1fe0|            01 09                              |    ..          |    HEAP_XMIN_FROZEN: 0 0x1fe4-0x1fe5.7 (2)
+0x1fe0|            01 09                              |    ..          |    HEAP_XMAX_COMMITTED: 0 0x1fe4-0x1fe5.7 (2)
+0x1fe0|            01 09                              |    ..          |    HEAP_XMAX_INVALID: 1 0x1fe4-0x1fe5.7 (2)
+0x1fe0|            01 09                              |    ..          |    HEAP_XMAX_IS_MULTI: 0 0x1fe4-0x1fe5.7 (2)
+0x1fe0|            01 09                              |    ..          |    HEAP_UPDATED: 0 0x1fe4-0x1fe5.7 (2)
+0x1fe0|            01 09                              |    ..          |    HEAP_MOVED_OFF: 0 0x1fe4-0x1fe5.7 (2)
+0x1fe0|            01 09                              |    ..          |    HEAP_MOVED_IN: 0 0x1fe4-0x1fe5.7 (2)
+0x1fe0|            01 09                              |    ..          |    HEAP_MOVED: 0 0x1fe4-0x1fe5.7 (2)
+0x1fe0|                  18                           |      .         |  t_hoff: 24 0x1fe6-0x1fe6.7 (1)
+0x1fe0|                     1f                        |       .        |  padding0: 31 0x1fe7-0x1fe7.7 (1)
+0x1fe0|                        07 00 00 00 01 00 00 00|        ........|  t_bits: "07000000010000007419010097f5ffffb55804f05388020..." (raw bits) 0x1fe8-0x1fff.7 (24)
+0x1ff0|74 19 01 00 97 f5 ff ff b5 58 04 f0 53 88 02 00|t........X..S...|
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].Tuples[156]{}: HeapTupleHeaderData 0x290-0x2bf.7 (48)
+     |                                               |                |  t_choice{}: 0x290-0x29b.7 (12)
+     |                                               |                |    t_heap{}: 0x290-0x29b.7 (12)
+0x290|e3 02 00 00                                    |....            |      t_xmin: 739 0x290-0x293.7 (4)
+0x290|            00 00 00 00                        |    ....        |      t_xmax: 0 0x294-0x297.7 (4)
+     |                                               |                |      t_field3{}: 0x298-0x29b.7 (4)
+0x290|                        03 00 00 00            |        ....    |        t_cid: 3 0x298-0x29b.7 (4)
+0x290|                        03 00 00 00            |        ....    |        t_xvac: 3 0x298-0x29b.7 (4)
+     |                                               |                |    t_datum{}: 0x290-0x29b.7 (12)
+0x290|e3 02 00 00                                    |....            |      datum_len_: 739 0x290-0x293.7 (4)
+0x290|            00 00 00 00                        |    ....        |      datum_typmod: 0 0x294-0x297.7 (4)
+0x290|                        03 00 00 00            |        ....    |      datum_typeid: 3 0x298-0x29b.7 (4)
+     |                                               |                |  t_ctid{}: 0x29c-0x2a1.7 (6)
+0x290|                                    00 00 00 00|            ....|    ip_blkid: 0 0x29c-0x29f.7 (4)
+0x2a0|9d 00                                          |..              |    ip_posid: 157 0x2a0-0x2a1.7 (2)
+0x2a0|      06 00                                    |  ..            |  t_infomask2: 6 0x2a2-0x2a3.7 (2)
+     |                                               |                |  Infomask2{}: 0x2a2-0x2a3.7 (2)
+0x2a0|      06 00                                    |  ..            |    HEAP_KEYS_UPDATED: 0 0x2a2-0x2a3.7 (2)
+0x2a0|      06 00                                    |  ..            |    HEAP_HOT_UPDATED: 0 0x2a2-0x2a3.7 (2)
+0x2a0|      06 00                                    |  ..            |    HEAP_ONLY_TUPLE: 0 0x2a2-0x2a3.7 (2)
+0x2a0|            01 09                              |    ..          |  t_infomask: 2305 0x2a4-0x2a5.7 (2)
+     |                                               |                |  Infomask{}: 0x2a4-0x2a5.7 (2)
+0x2a0|            01 09                              |    ..          |    HEAP_HASNULL: 1 0x2a4-0x2a5.7 (2)
+0x2a0|            01 09                              |    ..          |    HEAP_HASVARWIDTH: 0 0x2a4-0x2a5.7 (2)
+0x2a0|            01 09                              |    ..          |    HEAP_HASEXTERNAL: 0 0x2a4-0x2a5.7 (2)
+0x2a0|            01 09                              |    ..          |    HEAP_HASOID_OLD: 0 0x2a4-0x2a5.7 (2)
+0x2a0|            01 09                              |    ..          |    HEAP_XMAX_KEYSHR_LOCK: 0 0x2a4-0x2a5.7 (2)
+0x2a0|            01 09                              |    ..          |    HEAP_COMBOCID: 0 0x2a4-0x2a5.7 (2)
+0x2a0|            01 09                              |    ..          |    HEAP_XMAX_EXCL_LOCK: 0 0x2a4-0x2a5.7 (2)
+0x2a0|            01 09                              |    ..          |    HEAP_XMAX_LOCK_ONLY: 0 0x2a4-0x2a5.7 (2)
+0x2a0|            01 09                              |    ..          |    HEAP_XMAX_SHR_LOCK: 0 0x2a4-0x2a5.7 (2)
+0x2a0|            01 09                              |    ..          |    HEAP_LOCK_MASK: 0 0x2a4-0x2a5.7 (2)
+0x2a0|            01 09                              |    ..          |    HEAP_XMIN_COMMITTED: 1 0x2a4-0x2a5.7 (2)
+0x2a0|            01 09                              |    ..          |    HEAP_XMIN_INVALID: 0 0x2a4-0x2a5.7 (2)
+0x2a0|            01 09                              |    ..          |    HEAP_XMIN_FROZEN: 0 0x2a4-0x2a5.7 (2)
+0x2a0|            01 09                              |    ..          |    HEAP_XMAX_COMMITTED: 0 0x2a4-0x2a5.7 (2)
+0x2a0|            01 09                              |    ..          |    HEAP_XMAX_INVALID: 1 0x2a4-0x2a5.7 (2)
+0x2a0|            01 09                              |    ..          |    HEAP_XMAX_IS_MULTI: 0 0x2a4-0x2a5.7 (2)
+0x2a0|            01 09                              |    ..          |    HEAP_UPDATED: 0 0x2a4-0x2a5.7 (2)
+0x2a0|            01 09                              |    ..          |    HEAP_MOVED_OFF: 0 0x2a4-0x2a5.7 (2)
+0x2a0|            01 09                              |    ..          |    HEAP_MOVED_IN: 0 0x2a4-0x2a5.7 (2)
+0x2a0|            01 09                              |    ..          |    HEAP_MOVED: 0 0x2a4-0x2a5.7 (2)
+0x2a0|                  18                           |      .         |  t_hoff: 24 0x2a6-0x2a6.7 (1)
+0x2a0|                     1f                        |       .        |  padding0: 31 0x2a7-0x2a7.7 (1)
+0x2a0|                        09 00 00 00 01 00 00 00|        ........|  t_bits: "0900000001000000feda000081050000e36412f05388020..." (raw bits) 0x2a8-0x2bf.7 (24)
+0x2b0|fe da 00 00 81 05 00 00 e3 64 12 f0 53 88 02 00|.........d..S...|

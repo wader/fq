@@ -1,11 +1,9 @@
-$ fq -d pg_heap -o flavour=pgpro12 ".[0].PageHeaderData.pd_linp[0,-1] | tovalue" 16396
-{
-  "lp_flags": "LP_NORMAL",
-  "lp_len": 121,
-  "lp_off": 8064
-}
-{
-  "lp_flags": "LP_NORMAL",
-  "lp_len": 121,
-  "lp_off": 384
-}
+$ fq -d pg_heap -o flavour=pgpro12 ".[0].PageHeaderData.pd_linp[0,-1] | dv" 16396
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].PageHeaderData.pd_linp[0]{}: ItemIdData 0x18-0x1b.7 (4)
+0x10|                        80 9f f2 00            |        ....    |  lp_off: 8064 0x18-0x1b.7 (4)
+0x10|                        80 9f f2 00            |        ....    |  lp_flags: "LP_NORMAL" (1) 0x18-0x1b.7 (4)
+0x10|                        80 9f f2 00            |        ....    |  lp_len: 121 0x18-0x1b.7 (4)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].PageHeaderData.pd_linp[60]{}: ItemIdData 0x108-0x10b.7 (4)
+0x100|                        80 81 f2 00            |        ....    |  lp_off: 384 0x108-0x10b.7 (4)
+0x100|                        80 81 f2 00            |        ....    |  lp_flags: "LP_NORMAL" (1) 0x108-0x10b.7 (4)
+0x100|                        80 81 f2 00            |        ....    |  lp_len: 121 0x108-0x10b.7 (4)

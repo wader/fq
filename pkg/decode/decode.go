@@ -118,7 +118,7 @@ func decode(ctx context.Context, br bitio.ReaderAtSeeker, group Group, opts Opti
 		}
 
 		// TODO: maybe move to Format* funcs?
-		if d.Options.FillGaps {
+		if opts.FillGaps {
 			d.FillGaps(ranges.Range{Start: 0, Len: decodeRange.Len}, "unknown")
 		}
 

@@ -89,7 +89,7 @@ func DecodePgControl(d *decode.D, in any) any {
 	d.FieldU32("pg_control_version", common.VersionMapper)
 	d.FieldU32("catalog_version_no")
 	d.FieldU32("state", common.DBState)
-	d.U32()
+	d.FieldU32("hole0")
 
 	/*   24      |     8 */ // pg_time_t time;
 	/*   32      |     8 */ // XLogRecPtr checkPoint;
@@ -106,14 +106,14 @@ func DecodePgControl(d *decode.D, in any) any {
 		d.FieldU32("ThisTimeLineID")
 		d.FieldU32("PrevTimeLineID")
 		d.FieldU8("fullPageWrites")
-		d.U56()
+		d.FieldU56("hole1")
 
 		/*   24      |     8 */ // FullTransactionId nextXid;
 		/*   32      |     4 */ // Oid nextOid;
 		/* XXX  4-byte hole  */
 		d.FieldU64("nextXid")
 		d.FieldU32("nextOid")
-		d.U32()
+		d.FieldU32("hole2")
 
 		/*   40      |     8 */ // MultiXactId nextMulti;
 		/*   48      |     8 */ // MultiXactOffset nextMultiOffset;
@@ -124,14 +124,14 @@ func DecodePgControl(d *decode.D, in any) any {
 		d.FieldU64("nextMultiOffset")
 		d.FieldU64("oldestXid")
 		d.FieldU32("oldestXidDB")
-		d.U32()
+		d.FieldU32("hole3")
 
 		/*   72      |     8 */ // MultiXactId oldestMulti;
 		/*   80      |     4 */ // Oid oldestMultiDB;
 		/* XXX  4-byte hole  */
 		d.FieldU64("oldestMulti")
 		d.FieldU32("oldestMultiDB")
-		d.U32()
+		d.FieldU32("hole4")
 
 		/*   88      |     8 */ // pg_time_t time;
 		/*   96      |     8 */ // TransactionId oldestCommitTsXid;
@@ -150,7 +150,7 @@ func DecodePgControl(d *decode.D, in any) any {
 	d.FieldU64("unloggedLSN", common.LocPtrMapper)
 	d.FieldU64("minRecoveryPoint", common.LocPtrMapper)
 	d.FieldU32("minRecoveryPointTLI")
-	d.U32()
+	d.FieldU32("hole5")
 
 	/*  184      |     8 */ // XLogRecPtr backupStartPoint;
 	/*  192      |     8 */ // XLogRecPtr backupEndPoint;
@@ -159,14 +159,14 @@ func DecodePgControl(d *decode.D, in any) any {
 	d.FieldU64("backupStartPoint", common.LocPtrMapper)
 	d.FieldU64("backupEndPoint", common.LocPtrMapper)
 	d.FieldU8("backupEndRequired")
-	d.U24()
+	d.FieldU24("hole6")
 
 	/*  204      |     4 */ // int wal_level;
 	/*  208      |     1 */ // _Bool wal_log_hints;
 	/* XXX  3-byte hole  */
 	d.FieldS32("wal_level", common.WalLevel)
 	d.FieldU8("wal_log_hints")
-	d.U24()
+	d.FieldU24("hole7")
 
 	/*  212      |     4 */ // int MaxConnections;
 	/*  216      |     4 */ // int max_worker_processes;
@@ -181,7 +181,7 @@ func DecodePgControl(d *decode.D, in any) any {
 	d.FieldS32("max_prepared_xacts")
 	d.FieldS32("max_locks_per_xact")
 	d.FieldU8("track_commit_timestamp")
-	d.U24()
+	d.FieldU24("hole8")
 
 	/*  236      |     4 */ // uint32 maxAlign;
 	/*  240      |     8 */ // double floatFormat;
@@ -206,7 +206,7 @@ func DecodePgControl(d *decode.D, in any) any {
 	d.FieldU32("toast_max_chunk_size")
 	d.FieldU32("loblksize")
 	d.FieldU8("float8ByVal")
-	d.U24()
+	d.FieldU24("hole9")
 
 	/*  284      |     4 */ // uint32 data_checksum_version;
 	/*  288      |    32 */ // char mock_authentication_nonce[32];
@@ -219,10 +219,11 @@ func DecodePgControl(d *decode.D, in any) any {
 	d.FieldU32("icu_version", common.IcuVersionMapper)
 	d.FieldU32("pg_old_version")
 	d.FieldU32("crc")
-	d.U32()
+	d.FieldU32("padding0")
 	/* total size (bytes):  336 */
 
 	d.AssertPosBytes(336)
+	d.FieldRawLen("unused", d.BitsLeft())
 
 	return nil
 }

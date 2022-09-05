@@ -1,57 +1,68 @@
-$ fq -d pg_control -o flavour=pgpro11 tovalue pg_control
-{
-  "MaxConnections": 194,
-  "backupEndPoint": "0/0",
-  "backupEndRequired": 0,
-  "backupStartPoint": "0/0",
-  "blcksz": 8192,
-  "catalog_version_no": 201809181,
-  "checkPoint": "0/3F2D858",
-  "checkPointCopy": {
-    "PrevTimeLineID": 1,
-    "ThisTimeLineID": 1,
-    "fullPageWrites": 1,
-    "newestCommitTsXid": 0,
-    "nextMulti": 1,
-    "nextMultiOffset": 0,
-    "nextOid": 24576,
-    "nextXid": 3598,
-    "nextXidEpoch": 0,
-    "oldestActiveXid": 3598,
-    "oldestCommitTsXid": 0,
-    "oldestMulti": 1,
-    "oldestMultiDB": 1,
-    "oldestXid": 564,
-    "oldestXidDB": 1,
-    "redo": "0/3F2D820",
-    "time": "Fri, 26 Aug 2022 11:08:04 UTC"
-  },
-  "crc": 3527299760,
-  "data_checksum_version": 1,
-  "float4ByVal": 1,
-  "float8ByVal": 1,
-  "floatFormat": 1234567,
-  "icu_version": 828,
-  "indexMaxKeys": 32,
-  "loblksize": 2048,
-  "maxAlign": 8,
-  "max_locks_per_xact": 64,
-  "max_prepared_xacts": 0,
-  "max_worker_processes": 8,
-  "minRecoveryPoint": "0/0",
-  "minRecoveryPointTLI": 0,
-  "mock_authentication_nonce": "f6a253c768b8813567e90b7670f403b446b7807d992f1c9bcb859174a5e67551",
-  "nameDataLen": 64,
-  "pg_control_version": 1347421260,
-  "relseg_size": 131072,
-  "state": "DB_IN_PRODUCTION",
-  "system_identifier": 7136138803012192656,
-  "time": "Fri, 26 Aug 2022 11:08:04 UTC",
-  "toast_max_chunk_size": 1996,
-  "track_commit_timestamp": 0,
-  "unloggedLSN": "0/1",
-  "wal_level": "WAL_LEVEL_REPLICA",
-  "wal_log_hints": 0,
-  "xlog_blcksz": 8192,
-  "xlog_seg_size": 16777216
-}
+$ fq -d pg_control -o flavour=pgpro11 dv pg_control
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: pg_control (pg_control) 0x0-0x1fff.7 (8192)
+0x0000|90 49 6c b5 6e a8 08 63                        |.Il.n..c        |  system_identifier: 7136138803012192656 0x0-0x7.7 (8)
+0x0000|                        4c 04 50 50            |        L.PP    |  pg_control_version: 1347421260 0x8-0xb.7 (4)
+0x0000|                                    1d 5d 07 0c|            .]..|  catalog_version_no: 201809181 0xc-0xf.7 (4)
+0x0010|06 00 00 00                                    |....            |  state: "DB_IN_PRODUCTION" (6) 0x10-0x13.7 (4)
+0x0010|            00 00 00 00                        |    ....        |  hole0: 0 0x14-0x17.7 (4)
+0x0010|                        94 a9 08 63 00 00 00 00|        ...c....|  time: "Fri, 26 Aug 2022 11:08:04 UTC" (1661512084) 0x18-0x1f.7 (8)
+0x0020|58 d8 f2 03 00 00 00 00                        |X.......        |  checkPoint: "0/3F2D858" (66246744) 0x20-0x27.7 (8)
+      |                                               |                |  checkPointCopy{}: 0x28-0x77.7 (80)
+0x0020|                        20 d8 f2 03 00 00 00 00|         .......|    redo: "0/3F2D820" (66246688) 0x28-0x2f.7 (8)
+0x0030|01 00 00 00                                    |....            |    ThisTimeLineID: 1 0x30-0x33.7 (4)
+0x0030|            01 00 00 00                        |    ....        |    PrevTimeLineID: 1 0x34-0x37.7 (4)
+0x0030|                        01                     |        .       |    fullPageWrites: 1 0x38-0x38.7 (1)
+0x0030|                           00 00 00            |         ...    |    hole1: 0 0x39-0x3b.7 (3)
+0x0030|                                    00 00 00 00|            ....|    nextXidEpoch: 0 0x3c-0x3f.7 (4)
+0x0040|0e 0e 00 00                                    |....            |    nextXid: 3598 0x40-0x43.7 (4)
+0x0040|            00 60 00 00                        |    .`..        |    nextOid: 24576 0x44-0x47.7 (4)
+0x0040|                        01 00 00 00            |        ....    |    nextMulti: 1 0x48-0x4b.7 (4)
+0x0040|                                    00 00 00 00|            ....|    nextMultiOffset: 0 0x4c-0x4f.7 (4)
+0x0050|34 02 00 00                                    |4...            |    oldestXid: 564 0x50-0x53.7 (4)
+0x0050|            01 00 00 00                        |    ....        |    oldestXidDB: 1 0x54-0x57.7 (4)
+0x0050|                        01 00 00 00            |        ....    |    oldestMulti: 1 0x58-0x5b.7 (4)
+0x0050|                                    01 00 00 00|            ....|    oldestMultiDB: 1 0x5c-0x5f.7 (4)
+0x0060|94 a9 08 63 00 00 00 00                        |...c....        |    time: "Fri, 26 Aug 2022 11:08:04 UTC" (1661512084) 0x60-0x67.7 (8)
+0x0060|                        00 00 00 00            |        ....    |    oldestCommitTsXid: 0 0x68-0x6b.7 (4)
+0x0060|                                    00 00 00 00|            ....|    newestCommitTsXid: 0 0x6c-0x6f.7 (4)
+0x0070|0e 0e 00 00                                    |....            |    oldestActiveXid: 3598 0x70-0x73.7 (4)
+0x0070|            00 00 00 00                        |    ....        |    padding1: 0 0x74-0x77.7 (4)
+0x0070|                        01 00 00 00 00 00 00 00|        ........|  unloggedLSN: "0/1" (1) 0x78-0x7f.7 (8)
+0x0080|00 00 00 00 00 00 00 00                        |........        |  minRecoveryPoint: "0/0" (0) 0x80-0x87.7 (8)
+0x0080|                        00 00 00 00            |        ....    |  minRecoveryPointTLI: 0 0x88-0x8b.7 (4)
+0x0080|                                    00 00 00 00|            ....|  hole2: 0 0x8c-0x8f.7 (4)
+0x0090|00 00 00 00 00 00 00 00                        |........        |  backupStartPoint: "0/0" (0) 0x90-0x97.7 (8)
+0x0090|                        00 00 00 00 00 00 00 00|        ........|  backupEndPoint: "0/0" (0) 0x98-0x9f.7 (8)
+0x00a0|00                                             |.               |  backupEndRequired: 0 0xa0-0xa0.7 (1)
+0x00a0|   00 00 00                                    | ...            |  hole3: 0 0xa1-0xa3.7 (3)
+0x00a0|            01 00 00 00                        |    ....        |  wal_level: "WAL_LEVEL_REPLICA" (1) 0xa4-0xa7.7 (4)
+0x00a0|                        00                     |        .       |  wal_log_hints: 0 0xa8-0xa8.7 (1)
+0x00a0|                           00 00 00            |         ...    |  hole4: 0 0xa9-0xab.7 (3)
+0x00a0|                                    c2 00 00 00|            ....|  MaxConnections: 194 0xac-0xaf.7 (4)
+0x00b0|08 00 00 00                                    |....            |  max_worker_processes: 8 0xb0-0xb3.7 (4)
+0x00b0|            00 00 00 00                        |    ....        |  max_prepared_xacts: 0 0xb4-0xb7.7 (4)
+0x00b0|                        40 00 00 00            |        @...    |  max_locks_per_xact: 64 0xb8-0xbb.7 (4)
+0x00b0|                                    00         |            .   |  track_commit_timestamp: 0 0xbc-0xbc.7 (1)
+0x00b0|                                       00 00 00|             ...|  hole5: 0 0xbd-0xbf.7 (3)
+0x00c0|08 00 00 00                                    |....            |  maxAlign: 8 0xc0-0xc3.7 (4)
+0x00c0|            00 00 00 00                        |    ....        |  hole6: 0 0xc4-0xc7.7 (4)
+0x00c0|                        00 00 00 00 87 d6 32 41|        ......2A|  floatFormat: 1.234567e+06 0xc8-0xcf.7 (8)
+0x00d0|00 20 00 00                                    |. ..            |  blcksz: 8192 0xd0-0xd3.7 (4)
+0x00d0|            00 00 02 00                        |    ....        |  relseg_size: 131072 0xd4-0xd7.7 (4)
+0x00d0|                        00 20 00 00            |        . ..    |  xlog_blcksz: 8192 0xd8-0xdb.7 (4)
+0x00d0|                                    00 00 00 01|            ....|  xlog_seg_size: 16777216 0xdc-0xdf.7 (4)
+0x00e0|40 00 00 00                                    |@...            |  nameDataLen: 64 0xe0-0xe3.7 (4)
+0x00e0|            20 00 00 00                        |     ...        |  indexMaxKeys: 32 0xe4-0xe7.7 (4)
+0x00e0|                        cc 07 00 00            |        ....    |  toast_max_chunk_size: 1996 0xe8-0xeb.7 (4)
+0x00e0|                                    00 08 00 00|            ....|  loblksize: 2048 0xec-0xef.7 (4)
+0x00f0|01                                             |.               |  float4ByVal: 1 0xf0-0xf0.7 (1)
+0x00f0|   01                                          | .              |  float8ByVal: 1 0xf1-0xf1.7 (1)
+0x00f0|      00 00                                    |  ..            |  hole7: 0 0xf2-0xf3.7 (2)
+0x00f0|            01 00 00 00                        |    ....        |  data_checksum_version: 1 0xf4-0xf7.7 (4)
+0x00f0|                        f6 a2 53 c7 68 b8 81 35|        ..S.h..5|  mock_authentication_nonce: "f6a253c768b8813567e90b7670f403b446b7807d992f1c9..." (raw bits) 0xf8-0x117.7 (32)
+0x0100|67 e9 0b 76 70 f4 03 b4 46 b7 80 7d 99 2f 1c 9b|g..vp...F..}./..|
+0x0110|cb 85 91 74 a5 e6 75 51                        |...t..uQ        |
+0x0110|                        3c 03 00 00            |        <...    |  icu_version: 828 0x118-0x11b.7 (4)
+0x0110|                                    b0 52 3e d2|            .R>.|  crc: 3527299760 0x11c-0x11f.7 (4)
+0x0120|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|  unused: raw bits 0x120-0x1fff.7 (7904)
+*     |until 0x1fff.7 (end) (7904)                    |                |

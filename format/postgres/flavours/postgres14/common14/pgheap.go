@@ -354,7 +354,7 @@ func decodeTuples(d *decode.D) {
 			d.SeekRel(32)
 
 			d.FieldU8("t_hoff")
-			d.U8()
+			d.FieldU8("padding0")
 
 			d.FieldRawLen("t_bits", int64(tupleDataLen*8), scalar.RawHex)
 
