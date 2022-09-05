@@ -80,7 +80,7 @@ const (
 //
 /* total size (bytes):   12  */
 /* } t_choice;             //
-/*   12      |     6 */// ItemPointerData t_ctid;
+/*   12      |     6 */ // ItemPointerData t_ctid;
 /*   18      |     2 */ // uint16 t_infomask2;
 /*   20      |     2 */ // uint16 t_infomask;
 /*   22      |     1 */ // uint8 t_hoff;
@@ -160,9 +160,9 @@ type itemIdDataD struct {
 	/*    0: 0   |     4 */ // unsigned int lp_off: 15
 	/*    1: 7   |     4 */ // unsigned int lp_flags: 2
 	/*    2: 1   |     4 */ // unsigned int lp_len: 15
-	lpOff   uint32
-	lpFlags uint32
-	lpLen   uint32
+	lpOff                   uint32
+	lpFlags                 uint32
+	lpLen                   uint32
 }
 
 func GetHeapD(d *decode.D) *HeapD {
@@ -321,42 +321,46 @@ func decodeTuples(d *decode.D) {
 		/* XXX  1-byte padding  */
 		//
 		/* total size (bytes):   24 */
-		d.FieldStruct("HeapTupleHeaderData", func(d *decode.D) {
+		d.FieldStruct("Tuple", func(d *decode.D) {
+			d.FieldStruct("HeapTupleHeaderData", func(d *decode.D) {
 
-			pos1 := d.Pos()
-			// we need infomask before t_xmin, t_xmax
-			d.SeekAbs(pos1 + 18*8)
-			d.FieldU16("t_infomask2")
-			d.FieldStruct("Infomask2", decodeInfomask2)
-			d.FieldU16("t_infomask")
-			d.FieldStruct("Infomask", decodeInfomask)
+				pos1 := d.Pos()
+				// we need infomask before t_xmin, t_xmax
+				d.SeekAbs(pos1 + 18*8)
+				d.FieldU16("t_infomask2")
+				d.FieldStruct("Infomask2", decodeInfomask2)
+				d.FieldU16("t_infomask")
+				d.FieldStruct("Infomask", decodeInfomask)
 
-			// restore pos and continue
-			d.SeekAbs(pos1)
-			d.FieldStruct("t_choice", decodeTChoice)
-			d.FieldStruct("t_ctid", func(d *decode.D) {
-				/*    0      |     4 */ // BlockIdData ip_blkid;
-				/*    4      |     2 */ // OffsetNumber ip_posid;
-				d.FieldU32("ip_blkid")
-				d.FieldU16("ip_posid")
-			}) // ItemPointerData t_ctid
+				// restore pos and continue
+				d.SeekAbs(pos1)
+				d.FieldStruct("t_choice", decodeTChoice)
+				d.FieldStruct("t_ctid", func(d *decode.D) {
+					/*    0      |     4 */ // BlockIdData ip_blkid;
+					/*    4      |     2 */ // OffsetNumber ip_posid;
+					d.FieldU32("ip_blkid")
+					d.FieldU16("ip_posid")
+				}) // ItemPointerData t_ctid
 
-			/*   18      |     2 */ // uint16 t_infomask2;
-			/*   20      |     2 */ // uint16 t_infomask;
-			/*   22      |     1 */ // uint8 t_hoff;
-			/*   23      |     0 */ // bits8 t_bits[];
-			/* XXX  1-byte padding  */
-			//d.FieldU16("t_infomask2")
-			//d.FieldStruct("Infomask2", decodeInfomask2)
-			//d.FieldU16("t_infomask")
-			//d.FieldStruct("Infomask", decodeInfomask)
-			// already done
-			d.SeekRel(32)
+				/*   18      |     2 */ // uint16 t_infomask2;
+				/*   20      |     2 */ // uint16 t_infomask;
+				/*   22      |     1 */ // uint8 t_hoff;
+				/*   23      |     0 */ // bits8 t_bits[];
+				/* XXX  1-byte padding  */
+				//d.FieldU16("t_infomask2")
+				//d.FieldStruct("Infomask2", decodeInfomask2)
+				//d.FieldU16("t_infomask")
+				//d.FieldStruct("Infomask", decodeInfomask)
+				// already done
+				d.SeekRel(32)
 
-			d.FieldU8("t_hoff")
-			d.FieldU8("padding0")
+				d.FieldU8("t_hoff")
+				d.FieldU8("padding0")
 
-			d.FieldRawLen("t_bits", int64(tupleDataLen*8), scalar.RawHex)
+				//d.FieldRawLen("t_bits", int64(tupleDataLen*8), scalar.RawHex)
+			}) // HeapTupleHeaderData
+
+			d.FieldRawLen("Data", int64(tupleDataLen*8), scalar.RawHex)
 
 			// data alignment
 			pos2 := uint64(d.Pos() / 8)
@@ -371,7 +375,7 @@ func decodeTuples(d *decode.D) {
 				d.Fatalf("pos3 isn't aligned, pos2 = %d, pos3 = %d\n", pos2, pos3)
 			}
 
-		}) // HeapTupleHeaderData
+		})
 
 	} // for ItemsIds
 }
