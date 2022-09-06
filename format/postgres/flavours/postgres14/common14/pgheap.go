@@ -1,7 +1,6 @@
 package common14
 
 import (
-	"context"
 	"fmt"
 	"github.com/wader/fq/format/postgres/common"
 	"github.com/wader/fq/pkg/decode"
@@ -122,8 +121,8 @@ type HeapD struct {
 	// current tuple
 	Tuple *TupleD
 
-	DecodePageHeaderDataFn func(d *decode.D)
-	DecodePageSpecialFn    func(d *decode.D)
+	DecodePageHeaderDataFn func(heap *HeapD, d *decode.D)
+	DecodePageSpecialFn    func(heap *HeapD, d *decode.D)
 }
 
 type HeapPageD struct {
@@ -165,25 +164,14 @@ type itemIdDataD struct {
 	lpLen                   uint32
 }
 
-func GetHeapD(d *decode.D) *HeapD {
-	val := d.Ctx.Value("heap")
-	return val.(*HeapD)
-}
-
 func DecodeHeap(d *decode.D, heap *HeapD) any {
-	parentCtx := d.Ctx
-	ctx := context.WithValue(parentCtx, "heap", heap)
-	d.Ctx = ctx
-
 	d.SeekAbs(0)
-	decodeHeapPages(d)
+	decodeHeapPages(heap, d)
 
 	return nil
 }
 
-func decodeHeapPages(d *decode.D) {
-	heap := GetHeapD(d)
-
+func decodeHeapPages(heap *HeapD, d *decode.D) {
 	for {
 		if end, _ := d.TryEnd(); end {
 			return
@@ -192,7 +180,9 @@ func decodeHeapPages(d *decode.D) {
 		page := &HeapPageD{}
 		heap.Page = page
 
-		d.FieldStruct("HeapPage", decodeHeapPage)
+		d.FieldStruct("HeapPage", func(d *decode.D) {
+			decodeHeapPage(heap, d)
+		})
 
 		// end of Page
 		endLen := uint64(d.Pos() / 8)
@@ -201,9 +191,7 @@ func decodeHeapPages(d *decode.D) {
 	}
 }
 
-func decodeHeapPage(d *decode.D) {
-	heap := GetHeapD(d)
-
+func decodeHeapPage(heap *HeapD, d *decode.D) {
 	page := &HeapPageD{}
 	heap.Page = page
 
@@ -211,7 +199,9 @@ func decodeHeapPage(d *decode.D) {
 	page.PagePosBegin = pagePosBegin
 
 	// PageHeader
-	d.FieldStruct("PageHeaderData", heap.DecodePageHeaderDataFn)
+	d.FieldStruct("PageHeaderData", func(d *decode.D) {
+		heap.DecodePageHeaderDataFn(heap, d)
+	})
 
 	// free space
 	freeSpaceEnd := int64(pagePosBegin*8) + int64(page.PdUpper*8)
@@ -221,11 +211,13 @@ func decodeHeapPage(d *decode.D) {
 	}
 
 	if uint64(page.PdSpecial) != heap.PageSize && heap.DecodePageSpecialFn != nil {
-		heap.DecodePageSpecialFn(d)
+		heap.DecodePageSpecialFn(heap, d)
 	}
 
 	// Tuples
-	d.FieldArray("Tuples", decodeTuples)
+	d.FieldArray("Tuples", func(d *decode.D) {
+		decodeTuples(heap, d)
+	})
 }
 
 /*    0      |     8 */ // PageXLogRecPtr pd_lsn;
@@ -237,8 +229,7 @@ func decodeHeapPage(d *decode.D) {
 /*   18      |     2 */ // uint16 PdPagesizeVersion;
 /*   20      |     4 */ // TransactionId pd_prune_xid;
 /*   24      |     0 */ // ItemIdData pd_linp[];
-func DecodePageHeaderData(d *decode.D) {
-	heap := GetHeapD(d)
+func DecodePageHeaderData(heap *HeapD, d *decode.D) {
 	page := heap.Page
 
 	d.FieldStruct("pd_lsn", func(d *decode.D) {
@@ -257,11 +248,12 @@ func DecodePageHeaderData(d *decode.D) {
 
 	// ItemIdData pd_linp[];
 	page.ItemsEnd = int64(page.PagePosBegin*8) + int64(page.PdLower*8)
-	d.FieldArray("pd_linp", DecodeItemIds)
+	d.FieldArray("pd_linp", func(d *decode.D) {
+		DecodeItemIds(heap, d)
+	})
 }
 
-func DecodeItemIds(d *decode.D) {
-	heap := GetHeapD(d)
+func DecodeItemIds(heap *HeapD, d *decode.D) {
 	page := heap.Page
 
 	for {
@@ -287,10 +279,8 @@ func DecodeItemIds(d *decode.D) {
 	} // for pd_linp
 }
 
-func decodeTuples(d *decode.D) {
-	heap := GetHeapD(d)
+func decodeTuples(heap *HeapD, d *decode.D) {
 	page := heap.Page
-
 	for i := 0; i < len(page.ItemIds); i++ {
 		id := page.ItemIds[i]
 		if id.lpOff == 0 || id.lpLen == 0 {
@@ -328,13 +318,19 @@ func decodeTuples(d *decode.D) {
 				// we need infomask before t_xmin, t_xmax
 				d.SeekAbs(pos1 + 18*8)
 				d.FieldU16("t_infomask2")
-				d.FieldStruct("Infomask2", decodeInfomask2)
+				d.FieldStruct("Infomask2", func(d *decode.D) {
+					decodeInfomask2(heap, d)
+				})
 				d.FieldU16("t_infomask")
-				d.FieldStruct("Infomask", decodeInfomask)
+				d.FieldStruct("Infomask", func(d *decode.D) {
+					decodeInfomask(heap, d)
+				})
 
 				// restore pos and continue
 				d.SeekAbs(pos1)
-				d.FieldStruct("t_choice", decodeTChoice)
+				d.FieldStruct("t_choice", func(d *decode.D) {
+					decodeTChoice(heap, d)
+				})
 				d.FieldStruct("t_ctid", func(d *decode.D) {
 					/*    0      |     4 */ // BlockIdData ip_blkid;
 					/*    4      |     2 */ // OffsetNumber ip_posid;
@@ -380,8 +376,7 @@ func decodeTuples(d *decode.D) {
 	} // for ItemsIds
 }
 
-func decodeInfomask2(d *decode.D) {
-	heap := GetHeapD(d)
+func decodeInfomask2(heap *HeapD, d *decode.D) {
 	tuple := &TupleD{}
 	heap.Tuple = tuple
 
@@ -394,8 +389,7 @@ func decodeInfomask2(d *decode.D) {
 	d.FieldU16("HEAP_ONLY_TUPLE", common.Mask{Mask: HEAP_ONLY_TUPLE})
 }
 
-func decodeInfomask(d *decode.D) {
-	heap := GetHeapD(d)
+func decodeInfomask(heap *HeapD, d *decode.D) {
 	tuple := heap.Tuple
 
 	pos := d.Pos() - 16
@@ -445,8 +439,7 @@ func decodeInfomask(d *decode.D) {
 /*                12 */ //     HeapTupleFields t_heap;
 /*                12 */ //     DatumTupleFields t_datum;
 //						} t_choice;
-func decodeTChoice(d *decode.D) {
-	heap := GetHeapD(d)
+func decodeTChoice(heap *HeapD, d *decode.D) {
 	page := heap.Page
 	tuple := heap.Tuple
 
