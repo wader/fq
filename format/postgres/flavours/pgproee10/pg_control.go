@@ -81,7 +81,6 @@ import (
 /* total size (bytes):  120 */
 
 func DecodePgControl(d *decode.D, in any) any {
-	d.SeekAbs(0)
 	/*    0      |     8 */ // uint64 system_identifier;
 	/*    8      |     4 */ // uint32 pg_control_version;
 	/*   12      |     4 */ // uint32 catalog_version_no;

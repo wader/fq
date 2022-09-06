@@ -100,6 +100,7 @@ func probeForDecode(d *decode.D, in any) any {
 	/*    8      |     4 */ // uint32 pg_control_version;
 	d.U64()
 	pgControlVersion := d.U32()
+	d.SeekAbs(0)
 
 	pgProVersion, oriVersion := common.ParsePgProVersion(uint32(pgControlVersion))
 
