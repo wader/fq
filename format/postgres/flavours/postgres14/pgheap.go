@@ -24,5 +24,5 @@ func DecodeHeap(d *decode.D) any {
 		PageSize:               common.HeapPageSize,
 		DecodePageHeaderDataFn: common14.DecodePageHeaderData,
 	}
-	return common14.DecodeHeap(d, heap)
+	return common14.DecodeHeap(heap, d)
 }

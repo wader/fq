@@ -60,5 +60,5 @@ func DecodeHeap(d *decode.D) any {
 		DecodePageHeaderDataFn: ee14.DecodePageHeaderData,
 		DecodePageSpecialFn:    ee14.DecodePageSpecial,
 	}
-	return common14.DecodeHeap(d, heap)
+	return common14.DecodeHeap(heap, d)
 }

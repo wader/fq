@@ -164,7 +164,7 @@ type itemIdDataD struct {
 	lpLen                   uint32
 }
 
-func DecodeHeap(d *decode.D, heap *HeapD) any {
+func DecodeHeap(heap *HeapD, d *decode.D) any {
 	d.SeekAbs(0)
 	decodeHeapPages(heap, d)
 
