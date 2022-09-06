@@ -107,8 +107,7 @@ type versionMapper struct{}
 
 func (m versionMapper) MapScalar(s scalar.S) (scalar.S, error) {
 	v := s.ActualU()
-	v1 := uint32(v >> 16)
-	v2 := uint32(v & 0xffff)
+	v1, v2 := ParsePgProVersion(uint32(v))
 	switch v1 {
 	case PG_UNKNOWN:
 		s.Sym = fmt.Sprintf("%s %d", PG_UNKNOWN_STR, v2)
@@ -123,6 +122,12 @@ func (m versionMapper) MapScalar(s scalar.S) (scalar.S, error) {
 }
 
 var VersionMapper = versionMapper{}
+
+func ParsePgProVersion(v uint32) (pgProVersion uint32, oriVer uint32) {
+	pgProVersion = v >> 16
+	oriVer = v & 0xffff
+	return
+}
 
 type hexMapper struct{}
 

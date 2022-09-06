@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/postgres/common"
 	"github.com/wader/fq/format/postgres/flavours/pgpro11"
 	"github.com/wader/fq/format/postgres/flavours/pgpro12"
 	"github.com/wader/fq/format/postgres/flavours/pgpro13"
@@ -31,8 +32,10 @@ func init() {
 }
 
 const (
-	PG_CONTROL_VERSION_11 = 1100
-	PG_CONTROL_VERSION_12 = 1201
+	PG_CONTROL_VERSION_10    = 1002
+	PG_CONTROL_VERSION_11    = 1100
+	PGPRO_CONTROL_VERSION_11 = 1200
+	PG_CONTROL_VERSION_12    = 1201
 	//PG_CONTROL_VERSION_13 = 1300
 	PG_CONTROL_VERSION_14 = 1300
 )
@@ -98,16 +101,43 @@ func probeForDecode(d *decode.D, in any) any {
 	d.U64()
 	pgControlVersion := d.U32()
 
-	// try to guess version
-	switch pgControlVersion {
-	case PG_CONTROL_VERSION_11:
-		return postgres11.DecodePgControl(d, in)
-	case PG_CONTROL_VERSION_12:
-		return postgres12.DecodePgControl(d, in)
-	case PG_CONTROL_VERSION_14:
-		return postgres14.DecodePgControl(d, in)
-	default:
-		d.Fatalf("unsupported PG_CONTROL_VERSION = %d\n", pgControlVersion)
+	pgProVersion, oriVersion := common.ParsePgProVersion(uint32(pgControlVersion))
+
+	if pgProVersion == common.PG_ORIGINAL {
+		switch oriVersion {
+		case PG_CONTROL_VERSION_11:
+			return postgres11.DecodePgControl(d, in)
+		case PG_CONTROL_VERSION_12:
+			return postgres12.DecodePgControl(d, in)
+		case PG_CONTROL_VERSION_14:
+			return postgres14.DecodePgControl(d, in)
+		}
 	}
+
+	if pgProVersion == common.PGPRO_STANDARD {
+		switch oriVersion {
+		case PG_CONTROL_VERSION_11:
+			return pgpro11.DecodePgControl(d, in)
+		case PG_CONTROL_VERSION_12:
+			return pgpro12.DecodePgControl(d, in)
+		case PG_CONTROL_VERSION_14:
+			return pgpro14.DecodePgControl(d, in)
+		}
+	}
+
+	if pgProVersion == common.PGPRO_ENTERPRISE {
+		switch oriVersion {
+		case PG_CONTROL_VERSION_10:
+			return pgproee10.DecodePgControl(d, in)
+		case PGPRO_CONTROL_VERSION_11:
+			return pgproee11.DecodePgControl(d, in)
+		case PG_CONTROL_VERSION_12:
+			return pgproee12.DecodePgControl(d, in)
+		case PG_CONTROL_VERSION_14:
+			return pgproee14.DecodePgControl(d, in)
+		}
+	}
+
+	d.Fatalf("unsupported PG_CONTROL_VERSION = %d\n", pgControlVersion)
 	return nil
 }

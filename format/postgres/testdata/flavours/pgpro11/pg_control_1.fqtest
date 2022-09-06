@@ -1,4 +1,4 @@
-$ fq -d pg_control -o flavour=pgpro11 dv pg_control
+$ fq -d pg_control dv pg_control
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: pg_control (pg_control) 0x0-0x1fff.7 (8192)
 0x0000|90 49 6c b5 6e a8 08 63                        |.Il.n..c        |  system_identifier: 7136138803012192656 0x0-0x7.7 (8)
 0x0000|                        4c 04 50 50            |        L.PP    |  pg_control_version: "Postgres Pro Standard 1100" (1347421260) 0x8-0xb.7 (4)

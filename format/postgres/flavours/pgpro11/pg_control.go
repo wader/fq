@@ -84,7 +84,7 @@ func DecodePgControl(d *decode.D, in any) any {
 	/*   16      |     4 */ // DBState state;
 	/* XXX  4-byte hole  */
 	d.FieldU64("system_identifier")
-	d.FieldU32("pg_control_version")
+	d.FieldU32("pg_control_version", common.VersionMapper)
 	d.FieldU32("catalog_version_no")
 	d.FieldU32("state", common.DBState)
 	d.FieldU32("hole0")
@@ -210,7 +210,7 @@ func DecodePgControl(d *decode.D, in any) any {
 	/*  284      |     4 */ // pg_crc32c crc
 	d.FieldU32("data_checksum_version")
 	d.FieldRawLen("mock_authentication_nonce", 32*8, scalar.RawHex)
-	d.FieldU32("icu_version")
+	d.FieldU32("icu_version", common.IcuVersionMapper)
 	d.FieldU32("crc")
 	/* total size (bytes):  288 */
 

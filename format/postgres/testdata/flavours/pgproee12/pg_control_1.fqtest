@@ -1,4 +1,4 @@
-$ fq -d pg_control -o flavour=pgproee12 dv pg_control
+$ fq -d pg_control dv pg_control
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: pg_control (pg_control) 0x0-0x1fff.7 (8192)
 0x0000|d8 09 ef 93 89 69 eb 62                        |.....i.b        |  system_identifier: 7127906874857294296 0x0-0x7.7 (8)
 0x0000|                        b1 04 45 50            |        ..EP    |  pg_control_version: "Postgres Pro Enterprise 1201" (1346700465) 0x8-0xb.7 (4)
