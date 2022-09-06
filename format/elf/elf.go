@@ -580,19 +580,23 @@ func elfReadSectionHeaders(d *decode.D, ec *elfContext) {
 		}
 	}
 
-	ec.strTabMap = map[string]string{}
-	var shStrTab string
-	if ec.shStrNdx >= len(ec.sections) {
-		d.Fatalf("can't find shStrNdx %d", ec.shStrNdx)
+	// provide default empty string tables to be more robust
+	ec.strTabMap = map[string]string{
+		STRTAB_DYNSTR:   "",
+		STRTAB_SHSTRTAB: "",
+		STRTAB_STRTAB:   "",
 	}
-	sh := ec.sections[ec.shStrNdx]
+	var shStrTab string
+	if ec.shStrNdx < len(ec.sections) {
+		shStr := ec.sections[ec.shStrNdx]
+		shStrTab = readStrTab(d, shStr.offset, shStr.size/8)
 
-	shStrTab = readStrTab(d, sh.offset, sh.size/8)
-	for _, sh := range ec.sections {
-		if sh.typ != SHT_STRTAB {
-			continue
+		for _, sh := range ec.sections {
+			if sh.typ != SHT_STRTAB {
+				continue
+			}
+			ec.strTabMap[strIndexNull(sh.name, shStrTab)] = readStrTab(d, sh.offset, sh.size/8)
 		}
-		ec.strTabMap[strIndexNull(sh.name, shStrTab)] = readStrTab(d, sh.offset, sh.size/8)
 	}
 }
 
