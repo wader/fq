@@ -2,11 +2,14 @@ package common14
 
 import (
 	"fmt"
+
 	"github.com/wader/fq/format/postgres/common"
+
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
 )
 
+//nolint:revive
 const (
 	HEAP_HASNULL          = 0x0001 /* has null attribute(s) */
 	HEAP_HASVARWIDTH      = 0x0002 /* has variable-width attribute(s) */
@@ -37,6 +40,7 @@ const (
 	HEAP_MOVED = HEAP_MOVED_OFF | HEAP_MOVED_IN
 )
 
+//nolint:revive
 const (
 	HEAP_KEYS_UPDATED = 0x2000 /* tuple was updated and key cols modified, or tuple deleted */
 	HEAP_HOT_UPDATED  = 0x4000 /* tuple was HOT-updated */
@@ -131,7 +135,7 @@ type HeapPageD struct {
 	PdSpecial         uint16
 	PdPagesizeVersion uint16
 
-	ItemIds      []itemIdDataD
+	ItemIds      []itemIDDataD
 	PagePosBegin uint64
 	ItemsEnd     int64
 
@@ -146,16 +150,7 @@ type TupleD struct {
 	IsMulti uint64
 }
 
-func (hp *HeapPageD) getItemId(offset uint32) (bool, itemIdDataD) {
-	for _, id := range hp.ItemIds {
-		if id.lpOff == offset {
-			return true, id
-		}
-	}
-	return false, itemIdDataD{}
-}
-
-type itemIdDataD struct {
+type itemIDDataD struct {
 	/*    0: 0   |     4 */ // unsigned int lp_off: 15
 	/*    1: 7   |     4 */ // unsigned int lp_flags: 2
 	/*    2: 1   |     4 */ // unsigned int lp_len: 15
@@ -265,16 +260,16 @@ func DecodeItemIds(heap *HeapD, d *decode.D) {
 		/*    1: 7   |     4 */ // unsigned int lp_flags: 2
 		/*    2: 1   |     4 */ // unsigned int lp_len: 15
 		d.FieldStruct("ItemIdData", func(d *decode.D) {
-			itemId := itemIdDataD{}
+			itemID := itemIDDataD{}
 
 			itemPos := d.Pos()
-			itemId.lpOff = uint32(d.FieldU32("lp_off", common.LpOffMapper))
+			itemID.lpOff = uint32(d.FieldU32("lp_off", common.LpOffMapper))
 			d.SeekAbs(itemPos)
-			itemId.lpFlags = uint32(d.FieldU32("lp_flags", common.LpFlagsMapper))
+			itemID.lpFlags = uint32(d.FieldU32("lp_flags", common.LpFlagsMapper))
 			d.SeekAbs(itemPos)
-			itemId.lpLen = uint32(d.FieldU32("lp_len", common.LpLenMapper))
+			itemID.lpLen = uint32(d.FieldU32("lp_len", common.LpLenMapper))
 
-			page.ItemIds = append(page.ItemIds, itemId)
+			page.ItemIds = append(page.ItemIds, itemID)
 		})
 	} // for pd_linp
 }
@@ -489,12 +484,12 @@ type TransactionMapper struct {
 func (m TransactionMapper) MapScalar(s scalar.S) (scalar.S, error) {
 	xid := s.ActualU()
 
-	if m.Page.PdXidBase != 0 && m.Tuple.IsMulti == 0 && common.TransactionIdIsNormal(xid) {
+	if m.Page.PdXidBase != 0 && m.Tuple.IsMulti == 0 && common.TransactionIDIsNormal(xid) {
 		xid64 := xid + m.Page.PdXidBase
 		s.Sym = fmt.Sprintf("%d", xid64)
 	}
 
-	if m.Page.PdMultiBase != 0 && m.Tuple.IsMulti != 0 && common.TransactionIdIsNormal(xid) {
+	if m.Page.PdMultiBase != 0 && m.Tuple.IsMulti != 0 && common.TransactionIDIsNormal(xid) {
 		xid64 := xid + m.Page.PdMultiBase
 		s.Sym = fmt.Sprintf("%d", xid64)
 	}

@@ -1,8 +1,8 @@
 package postgres14
 
 import (
-	"context"
 	"fmt"
+
 	"github.com/wader/fq/format/postgres/common"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
@@ -10,16 +10,19 @@ import (
 
 //func init() {
 //	interp.RegisterFormat(decode.Format{
-//		Name:        format.PGWAL,
+//		Name:        format.PG_WAL,
 //		Description: "PostgreSQL write-ahead log file",
-//		DecodeFn:    pgwalDecode,
+//		DecodeFn:    DecodePgwal,
 //	})
 //}
 
-const XLOG_BLCKSZ = 8192
+//nolint:revive
+const (
+	XLOG_BLCKSZ     = 8192
+	XLP_LONG_HEADER = 2
+)
 
-const XLP_LONG_HEADER = 2
-
+//nolint:revive
 const (
 	BKPBLOCK_FORK_MASK = 0x0F
 	/* block data is an XLogRecordBlockImage */
@@ -32,6 +35,7 @@ const (
 )
 
 /* Information stored in bimg_info */
+//nolint:revive
 const (
 	/* page image has "hole" */
 	BKPIMAGE_HAS_HOLE = 0x01
@@ -40,8 +44,6 @@ const (
 	/* page image should be restored during replay */
 	BKPIMAGE_APPLY = 0x04
 )
-
-var expected_rem_len uint64 = 0
 
 var rmgrIds = scalar.UToScalar{
 	0:  {Sym: "XLOG", Description: "RM_XLOG_ID"},
@@ -132,30 +134,21 @@ type walD struct {
 	record *decode.D
 }
 
-func getWalD(d *decode.D) *walD {
-	val := d.Ctx.Value("wald")
-	return val.(*walD)
-}
-
 func DecodePgwal(d *decode.D, in any) any {
 	walD := &walD{
 		pages:   d.FieldArrayValue("pages"),
 		records: d.FieldArrayValue("records"),
 	}
-	parentCtx := d.Ctx
-	ctx := context.WithValue(parentCtx, "wald", walD)
-	d.Ctx = ctx
 
 	d.SeekAbs(0)
-	d.FieldArray("XLogPages", decodeXLogPage)
+	d.FieldArray("XLogPages", func(d *decode.D) {
+		decodeXLogPage(walD, d)
+	})
 
 	return nil
 }
 
-func decodeXLogPage(d *decode.D) {
-
-	wal := getWalD(d)
-
+func decodeXLogPage(wal *walD, d *decode.D) {
 	// type = struct XLogPageHeaderData {
 	/*    0      |     2 */ // uint16 xlp_magic;
 	/*    2      |     2 */ // uint16 xlp_info;
@@ -169,7 +162,7 @@ func decodeXLogPage(d *decode.D) {
 	xlpInfo := page.FieldU16("xlp_info")
 	page.FieldU32("xlp_tli")
 	page.FieldU64("xlp_pageaddr")
-	remLen := page.FieldU32("xlp_rem_len")
+	page.FieldU32("xlp_rem_len")
 	page.U32()
 
 	if xlpInfo&XLP_LONG_HEADER != 0 {
@@ -181,19 +174,19 @@ func decodeXLogPage(d *decode.D) {
 		})
 	}
 
-	remLen = 40
+	remLen := 40
 	wal.remLen = uint32(remLen)
 
 	record := wal.record
 	if record == nil {
-		rawLen := int64(common.TypeAlign8(remLen))
+		rawLen := int64(common.TypeAlign8(uint64(remLen)))
 		page.FieldRawLen("prev_file_rec", rawLen*8)
 	}
 
 	pageRecords := page.FieldArrayValue("records")
 	wal.pageRecords = pageRecords
 
-	decodeXLogRecords(d)
+	decodeXLogRecords(wal, d)
 
 	//page.Pos()
 	//for {
@@ -202,8 +195,7 @@ func decodeXLogPage(d *decode.D) {
 	//fmt.Printf("d pos = %d\n", d.Pos())
 }
 
-func decodeXLogRecords(d *decode.D) {
-	wal := getWalD(d)
+func decodeXLogRecords(wal *walD, d *decode.D) {
 	pageRecords := wal.pageRecords
 
 	pos := d.Pos() / 8
@@ -279,16 +271,21 @@ func DecodePgwalOri(d *decode.D, in any) any {
 	pageHeaders := d.FieldArrayValue("XLogPageHeaders")
 	header := pageHeaders.FieldStruct("XLogPageHeaderData", decodeXLogPageHeaderData)
 
-	d.FieldRawLen("prev_file_rec", int64(header.FieldGet("xlp_rem_len").V.(uint32)*8))
+	xlpRemLen, ok := header.FieldGet("xlp_rem_len").V.(uint32)
+	if !ok {
+		d.Fatalf("can't get xlp_rem_len\n")
+	}
+
+	d.FieldRawLen("prev_file_rec", int64(xlpRemLen*8))
 	d.FieldRawLen("prev_file_rec_padding", int64(d.AlignBits(64)))
 
 	d.FieldArray("XLogRecords", func(d *decode.D) {
 		for {
 			d.FieldStruct("XLogRecord", func(d *decode.D) {
-				record_pos := uint64(d.Pos()) >> 3
-				record_len := d.FieldU32("xl_tot_len")
-				record_end := record_pos + record_len
-				header_pos := record_end - record_end%XLOG_BLCKSZ
+				recordPos := uint64(d.Pos()) >> 3
+				recordLen := d.FieldU32("xl_tot_len")
+				recordEnd := recordPos + recordLen
+				headerPos := recordEnd - recordEnd%XLOG_BLCKSZ
 				d.FieldU32("xl_xid")
 				d.FieldU64("xl_prev", scalar.ActualHex)
 				d.FieldU8("xl_info")
@@ -296,7 +293,7 @@ func DecodePgwalOri(d *decode.D, in any) any {
 				d.FieldRawLen("padding", int64(d.AlignBits(32)))
 				d.FieldU32("xl_crc", scalar.ActualHex)
 
-				var lenghts []uint64 = []uint64{}
+				var lengths []uint64
 
 				d.FieldArray("XLogRecordBlockHeader", func(d *decode.D) {
 					for blkheaderid := uint64(0); d.PeekBits(8) == blkheaderid; blkheaderid++ {
@@ -304,25 +301,25 @@ func DecodePgwalOri(d *decode.D, in any) any {
 							/* block reference ID */
 							d.FieldU8("id", d.AssertU(blkheaderid))
 							/* fork within the relation, and flags */
-							fork_flags := d.FieldU8("fork_flags")
+							forkFlags := d.FieldU8("fork_flags")
 							/* number of payload bytes (not including page image) */
-							lenghts = append(lenghts, d.FieldU16("data_length"))
-							if fork_flags&BKPBLOCK_HAS_IMAGE != 0 {
+							lengths = append(lengths, d.FieldU16("data_length"))
+							if forkFlags&BKPBLOCK_HAS_IMAGE != 0 {
 								d.FieldStruct("XLogRecordBlockImageHeader", func(d *decode.D) {
 									/* number of page image bytes */
 									d.FieldU16("length")
 									/* number of bytes before "hole" */
 									d.FieldU16("hole_offset")
 									/* flag bits, see below */
-									bimg_info := d.FieldU8("bimg_info")
+									bimgInfo := d.FieldU8("bimg_info")
 									d.FieldRawLen("padding", int64(d.AlignBits(16)))
-									if bimg_info&BKPIMAGE_HAS_HOLE != 0 &&
-										bimg_info&BKPIMAGE_IS_COMPRESSED != 0 {
+									if bimgInfo&BKPIMAGE_HAS_HOLE != 0 &&
+										bimgInfo&BKPIMAGE_IS_COMPRESSED != 0 {
 										d.FieldU16("hole_length")
 									}
 								})
 							}
-							if fork_flags&BKPBLOCK_SAME_REL == 0 {
+							if forkFlags&BKPBLOCK_SAME_REL == 0 {
 								d.FieldStruct("RelFileNode", func(d *decode.D) {
 									/* tablespace */
 									d.FieldU32("spcNode")
@@ -339,18 +336,18 @@ func DecodePgwalOri(d *decode.D, in any) any {
 				if d.PeekBits(8) == 0xff {
 					d.FieldStruct("XLogRecordDataHeaderShort", func(d *decode.D) {
 						d.FieldU8("id", d.AssertU(0xff))
-						lenghts = append(lenghts, d.FieldU8("data_length"))
+						lengths = append(lengths, d.FieldU8("data_length"))
 					})
 				}
 
 				d.FieldArray("data", func(d *decode.D) {
-					for _, x := range lenghts {
+					for _, x := range lengths {
 						pos := uint64(d.Pos()) >> 3
-						if pos < header_pos && (header_pos < pos+x) {
-							d.FieldRawLen("data", int64((header_pos-pos)*8))
+						if pos < headerPos && (headerPos < pos+x) {
+							d.FieldRawLen("data", int64((headerPos-pos)*8))
 							header := pageHeaders.FieldStruct("XLogPageHeaderData", decodeXLogPageHeaderData)
-							header.FieldGet("xlp_rem_len").TryScalarFn(d.ValidateU(record_end - header_pos))
-							d.FieldRawLen("data", int64((x+pos-header_pos)*8))
+							_ = header.FieldGet("xlp_rem_len").TryScalarFn(d.ValidateU(recordEnd - headerPos))
+							d.FieldRawLen("data", int64((x+pos-headerPos)*8))
 						} else {
 							d.FieldRawLen("data", int64(x*8))
 						}

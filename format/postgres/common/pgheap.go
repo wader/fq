@@ -4,9 +4,10 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
+//nolint:revive
 const (
 	HeapPageSize             = 8192
-	FirstNormalTransactionId = 3
+	FirstNormalTransactionID = 3
 
 	LP_UNUSED   = 0 /* unused (should always have lp_len=0) */
 	LP_NORMAL   = 1 /* used (should always have lp_len>0) */
@@ -14,8 +15,8 @@ const (
 	LP_DEAD     = 3
 )
 
-func TransactionIdIsNormal(xid uint64) bool {
-	return xid >= FirstNormalTransactionId
+func TransactionIDIsNormal(xid uint64) bool {
+	return xid >= FirstNormalTransactionID
 }
 
 type lpOffMapper struct{}

@@ -38,8 +38,12 @@ func init() {
 func decodePgheap(d *decode.D, in any) any {
 	d.Endian = decode.LittleEndian
 
-	flavour := in.(format.PostgresIn).Flavour
-	switch flavour {
+	pgIn, ok := in.(format.PostgresIn)
+	if !ok {
+		d.Fatalf("DecodeInArg must be PostgresIn!\n")
+	}
+
+	switch pgIn.Flavour {
 	case PG_FLAVOUR_POSTGRES11:
 		return postgres11.DecodeHeap(d)
 	case PG_FLAVOUR_POSTGRES12:

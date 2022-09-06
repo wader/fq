@@ -1,8 +1,9 @@
 package common_test
 
 import (
-	"github.com/wader/fq/format/postgres/common"
 	"testing"
+
+	"github.com/wader/fq/format/postgres/common"
 )
 
 func TestTypeAlign8(t *testing.T) {

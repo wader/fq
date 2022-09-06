@@ -31,6 +31,7 @@ func init() {
 	})
 }
 
+//nolint:revive
 const (
 	PG_CONTROL_VERSION_10    = 1002
 	PG_CONTROL_VERSION_11    = 1100
@@ -40,6 +41,7 @@ const (
 	PG_CONTROL_VERSION_14 = 1300
 )
 
+//nolint:revive
 const (
 	PG_FLAVOUR_POSTGRES   = "postgres"
 	PG_FLAVOUR_POSTGRES11 = "postgres11"
@@ -60,8 +62,12 @@ const (
 func decodePgControl(d *decode.D, in any) any {
 	d.Endian = decode.LittleEndian
 
-	flavour := in.(format.PostgresIn).Flavour
-	switch flavour {
+	pgIn, ok := in.(format.PostgresIn)
+	if !ok {
+		d.Fatalf("DecodeInArg must be PostgresIn!\n")
+	}
+
+	switch pgIn.Flavour {
 	case PG_FLAVOUR_POSTGRES11:
 		return postgres11.DecodePgControl(d, in)
 	case PG_FLAVOUR_POSTGRES12:
