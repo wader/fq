@@ -9,9 +9,9 @@ import (
 
 	"github.com/wader/fq/internal/ansi"
 	"github.com/wader/fq/internal/asciiwriter"
+	"github.com/wader/fq/internal/binwriter"
 	"github.com/wader/fq/internal/bitioex"
 	"github.com/wader/fq/internal/columnwriter"
-	"github.com/wader/fq/internal/hexpairwriter"
 	"github.com/wader/fq/internal/mathex"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
@@ -258,9 +258,15 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 	if displaySizeBits > maxDisplaySizeBits {
 		displaySizeBits = maxDisplaySizeBits
 	}
+	if displaySizeBits > stopBit-startBit {
+		displaySizeBits = stopBit - startBit + 1 // TODO: -1 hmm
+	}
 
 	startLine := startByte / int64(opts.LineBytes)
 	startLineByteOffset := startByte % int64(opts.LineBytes)
+
+	startLineBitOffset := startBit % int64(opts.LineBytes*8)
+
 	startLineByte := startLine * int64(opts.LineBytes)
 	lastDisplayLine := lastDisplayByte / int64(opts.LineBytes)
 
@@ -269,21 +275,34 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 		cfmt(colAddr, "%s%s\n",
 			rootIndent, deco.DumpAddr.F(mathex.PadFormatInt(startLineByte, opts.Addrbase, true, addrWidth)))
 
-		vBR, err := bitioex.Range(rootV.RootReader, startByte*8, displaySizeBits)
+		vBR, err := bitioex.Range(rootV.RootReader, startByte*4, displaySizeBits)
+		if err != nil {
+			return err
+		}
+
+		vBR2, err := bitioex.Range(rootV.RootReader, startBit, displaySizeBits)
 		if err != nil {
 			return err
 		}
 
 		addrLines := lastDisplayLine - startLine + 1
-		hexpairFn := func(b byte) string { return deco.ByteColor(b).Wrap(hexpairwriter.Pair(b)) }
+		// hexpairFn := func(b byte) string { return deco.ByteColor(b).Wrap(hexpairwriter.Pair(b)) }
+		binFn := func(b byte) string { return deco.ByteColor(b).Wrap(string("01"[int(b)])) }
 		asciiFn := func(b byte) string { return deco.ByteColor(b).Wrap(asciiwriter.SafeASCII(b)) }
 
-		hexBR, err := bitio.CloneReadSeeker(vBR)
+		hexBR, err := bitio.CloneReadSeeker(vBR2)
 		if err != nil {
 			return err
 		}
-		if _, err := bitioex.CopyBitsBuffer(
-			hexpairwriter.New(cw.Columns[colHex], opts.LineBytes, int(startLineByteOffset), hexpairFn),
+		// if _, err := bitioex.CopyBitsBuffer(
+		// 	hexpairwriter.New(cw.Columns[colHex], opts.LineBytes, int(startLineByteOffset), hexpairFn),
+		// 	hexBR,
+		// 	buf); err != nil {
+		// 	return err
+		// }
+
+		if _, err := bitio.CopyBuffer(
+			binwriter.New(cw.Columns[colHex], opts.LineBytes*8, int(startLineBitOffset), binFn),
 			hexBR,
 			buf); err != nil {
 			return err
@@ -364,7 +383,7 @@ func dump(v *decode.Value, w io.Writer, opts *Options) error {
 	}
 
 	addrColumnWidth := maxAddrIndentWidth
-	hexColumnWidth := opts.LineBytes*3 - 1
+	hexColumnWidth := opts.LineBytes * 8
 	asciiColumnWidth := opts.LineBytes
 	treeColumnWidth := -1
 	// TODO: set with and truncate/wrap properly
