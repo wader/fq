@@ -4,6 +4,7 @@ package elf
 // https://refspecs.linuxbase.org/elf/gabi4+/contents.html
 // https://man7.org/linux/man-pages/man5/elf.5.html
 // https://github.com/torvalds/linux/blob/master/include/uapi/linux/elf.h
+// https://sourceware.org/git/?p=binutils-gdb.git;a=blob;f=include/elf/external.h;hb=HEAD
 
 // TODO: dwarf
 
@@ -63,12 +64,20 @@ var osABINames = scalar.UToSymStr{
 	255: "standalone",
 }
 
+const (
+	ET_NONE = 0
+	ET_REL  = 1
+	ET_EXEC = 2
+	ET_DYN  = 3
+	ET_CORE = 4
+)
+
 var typeNames = scalar.URangeToScalar{
-	{Range: [2]uint64{0x00, 0x00}, S: scalar.S{Sym: "none"}},
-	{Range: [2]uint64{0x01, 0x01}, S: scalar.S{Sym: "rel"}},
-	{Range: [2]uint64{0x02, 0x02}, S: scalar.S{Sym: "exec"}},
-	{Range: [2]uint64{0x03, 0x03}, S: scalar.S{Sym: "dyn"}},
-	{Range: [2]uint64{0x04, 0x04}, S: scalar.S{Sym: "core"}},
+	{Range: [2]uint64{ET_NONE, ET_NONE}, S: scalar.S{Sym: "none"}},
+	{Range: [2]uint64{ET_REL, ET_REL}, S: scalar.S{Sym: "rel"}},
+	{Range: [2]uint64{ET_EXEC, ET_EXEC}, S: scalar.S{Sym: "exec"}},
+	{Range: [2]uint64{ET_DYN, ET_DYN}, S: scalar.S{Sym: "dyn"}},
+	{Range: [2]uint64{ET_CORE, ET_CORE}, S: scalar.S{Sym: "core"}},
 	{Range: [2]uint64{0xfe00, 0xfeff}, S: scalar.S{Sym: "os"}},
 	{Range: [2]uint64{0xff00, 0xffff}, S: scalar.S{Sym: "proc"}},
 }
@@ -131,20 +140,168 @@ var machineNames = scalar.UToScalar{
 	0x101:     {Sym: "wdc_65C816", Description: "WDC 65C816"},
 }
 
+const (
+	PT_NULL    = 0
+	PT_LOAD    = 1
+	PT_DYNAMIC = 2
+	PT_INTERP  = 3
+	PT_NOTE    = 4
+	PT_SHLIB   = 5
+	PT_PHDR    = 6
+	PT_TLS     = 7
+)
+
 var phTypeNames = scalar.URangeToScalar{
-	{Range: [2]uint64{0x00000000, 0x00000000}, S: scalar.S{Sym: "null", Description: "Unused element"}},
-	{Range: [2]uint64{0x00000001, 0x00000001}, S: scalar.S{Sym: "load", Description: "Loadable segment"}},
-	{Range: [2]uint64{0x00000002, 0x00000002}, S: scalar.S{Sym: "dynamic", Description: "Dynamic linking information"}},
-	{Range: [2]uint64{0x00000003, 0x00000003}, S: scalar.S{Sym: "interp", Description: "Interpreter to invoke"}},
-	{Range: [2]uint64{0x00000004, 0x00000004}, S: scalar.S{Sym: "note", Description: "Auxiliary information"}},
-	{Range: [2]uint64{0x00000005, 0x00000005}, S: scalar.S{Sym: "shlib", Description: "Reserved but has unspecified"}},
-	{Range: [2]uint64{0x00000006, 0x00000006}, S: scalar.S{Sym: "phdr", Description: "Program header location and size"}},
-	{Range: [2]uint64{0x00000007, 0x00000007}, S: scalar.S{Sym: "tls", Description: "Thread-Local Storage template"}},
+	{Range: [2]uint64{PT_NULL, PT_NULL}, S: scalar.S{Sym: "null", Description: "Unused element"}},
+	{Range: [2]uint64{PT_LOAD, PT_LOAD}, S: scalar.S{Sym: "load", Description: "Loadable segment"}},
+	{Range: [2]uint64{PT_DYNAMIC, PT_DYNAMIC}, S: scalar.S{Sym: "dynamic", Description: "Dynamic linking information"}},
+	{Range: [2]uint64{PT_INTERP, PT_INTERP}, S: scalar.S{Sym: "interp", Description: "Interpreter to invoke"}},
+	{Range: [2]uint64{PT_NOTE, PT_NOTE}, S: scalar.S{Sym: "note", Description: "Auxiliary information"}},
+	{Range: [2]uint64{PT_SHLIB, PT_SHLIB}, S: scalar.S{Sym: "shlib", Description: "Reserved but has unspecified"}},
+	{Range: [2]uint64{PT_PHDR, PT_PHDR}, S: scalar.S{Sym: "phdr", Description: "Program header location and size"}},
+	{Range: [2]uint64{PT_TLS, PT_TLS}, S: scalar.S{Sym: "tls", Description: "Thread-Local Storage template"}},
 	{Range: [2]uint64{0x6474e550, 0x6474e550}, S: scalar.S{Sym: "gnu_eh_frame", Description: "GNU frame unwind information"}},
 	{Range: [2]uint64{0x6474e551, 0x6474e551}, S: scalar.S{Sym: "gnu_stack", Description: "GNU stack permission"}},
 	{Range: [2]uint64{0x6474e552, 0x6474e552}, S: scalar.S{Sym: "gnu_relro", Description: "GNU read-only after relocation"}},
 	{Range: [2]uint64{0x60000000, 0x6fffffff}, S: scalar.S{Sym: "os", Description: "Operating system-specific"}},
 	{Range: [2]uint64{0x70000000, 0x7fffffff}, S: scalar.S{Sym: "proc", Description: "Processor-specific"}},
+}
+
+const (
+	NT_PRSTATUS             = 1
+	NT_PRFPREG              = 2
+	NT_PRPSINFO             = 3
+	NT_TASKSTRUCT           = 4
+	NT_AUXV                 = 6
+	NT_SIGINFO              = 0x53494749 // "SIGI"
+	NT_FILE                 = 0x46494c45 // "FILE"
+	NT_PRXFPREG             = 0x46e62b7f
+	NT_PPC_VMX              = 0x100
+	NT_PPC_SPE              = 0x101
+	NT_PPC_VSX              = 0x102
+	NT_PPC_TAR              = 0x103
+	NT_PPC_PPR              = 0x104
+	NT_PPC_DSCR             = 0x105
+	NT_PPC_EBB              = 0x106
+	NT_PPC_PMU              = 0x107
+	NT_PPC_TM_CGPR          = 0x108
+	NT_PPC_TM_CFPR          = 0x109
+	NT_PPC_TM_CVMX          = 0x10a
+	NT_PPC_TM_CVSX          = 0x10b
+	NT_PPC_TM_SPR           = 0x10c
+	NT_PPC_TM_CTAR          = 0x10d
+	NT_PPC_TM_CPPR          = 0x10e
+	NT_PPC_TM_CDSCR         = 0x10f
+	NT_PPC_PKEY             = 0x110
+	NT_386_TLS              = 0x200
+	NT_386_IOPERM           = 0x201
+	NT_X86_XSTATE           = 0x202
+	NT_S390_HIGH_GPRS       = 0x300
+	NT_S390_TIMER           = 0x301
+	NT_S390_TODCMP          = 0x302
+	NT_S390_TODPREG         = 0x303
+	NT_S390_CTRS            = 0x304
+	NT_S390_PREFIX          = 0x305
+	NT_S390_LAST_BREAK      = 0x306
+	NT_S390_SYSTEM_CALL     = 0x307
+	NT_S390_TDB             = 0x308
+	NT_S390_VXRS_LOW        = 0x309
+	NT_S390_VXRS_HIGH       = 0x30a
+	NT_S390_GS_CB           = 0x30b
+	NT_S390_GS_BC           = 0x30c
+	NT_S390_RI_CB           = 0x30d
+	NT_S390_PV_CPU_DATA     = 0x30e
+	NT_ARM_VFP              = 0x400
+	NT_ARM_TLS              = 0x401
+	NT_ARM_HW_BREAK         = 0x402
+	NT_ARM_HW_WATCH         = 0x403
+	NT_ARM_SYSTEM_CALL      = 0x404
+	NT_ARM_SVE              = 0x405
+	NT_ARM_PAC_MASK         = 0x406
+	NT_ARM_PACA_KEYS        = 0x407
+	NT_ARM_PACG_KEYS        = 0x408
+	NT_ARM_TAGGED_ADDR_CTRL = 0x409
+	NT_ARM_PAC_ENABLED_KEYS = 0x40a
+	NT_ARM_SSVE             = 0x40b
+	NT_ARM_ZA               = 0x40c
+	NT_ARC_V2               = 0x600
+	NT_VMCOREDD             = 0x700
+	NT_MIPS_DSP             = 0x800
+	NT_MIPS_FP_MODE         = 0x801
+	NT_MIPS_MSA             = 0x802
+	NT_LOONGARCH_CPUCFG     = 0xa00
+	NT_LOONGARCH_CSR        = 0xa01
+	NT_LOONGARCH_LSX        = 0xa02
+	NT_LOONGARCH_LASX       = 0xa03
+	NT_LOONGARCH_LBT        = 0xa04
+)
+
+var coreNoteNames = scalar.UToScalar{
+	NT_PRSTATUS:             {Sym: "prstatus"},
+	NT_PRFPREG:              {Sym: "prfpreg"},
+	NT_PRPSINFO:             {Sym: "prpsinfo"},
+	NT_TASKSTRUCT:           {Sym: "taskstruct"},
+	NT_AUXV:                 {Sym: "auxv"},
+	NT_SIGINFO:              {Sym: "siginfo", Description: "Signal info"},
+	NT_FILE:                 {Sym: "file", Description: "File info"},
+	NT_PRXFPREG:             {Sym: "prxfpreg"},
+	NT_PPC_SPE:              {Sym: "ppc_spe", Description: "PowerPC SPE/EVR registers"},
+	NT_PPC_VSX:              {Sym: "ppc_vsx", Description: "PowerPC VSX registers"},
+	NT_PPC_TAR:              {Sym: "ppc_tar", Description: "Target Address Register"},
+	NT_PPC_PPR:              {Sym: "ppc_ppr", Description: "Program Priority Register"},
+	NT_PPC_DSCR:             {Sym: "ppc_dscr", Description: "Data Stream Control Register"},
+	NT_PPC_EBB:              {Sym: "ppc_ebb", Description: "Event Based Branch Registers"},
+	NT_PPC_PMU:              {Sym: "ppc_pmu", Description: "Performance Monitor Registers"},
+	NT_PPC_TM_CGPR:          {Sym: "ppc_tm_cgpr", Description: "TM checkpointed GPR Registers"},
+	NT_PPC_TM_CFPR:          {Sym: "ppc_tm_cfpr", Description: "TM checkpointed FPR Registers"},
+	NT_PPC_TM_CVMX:          {Sym: "ppc_tm_cvmx", Description: "TM checkpointed VMX Registers"},
+	NT_PPC_TM_CVSX:          {Sym: "ppc_tm_cvsx", Description: "TM checkpointed VSX Registers"},
+	NT_PPC_TM_SPR:           {Sym: "ppc_tm_spr", Description: "TM Special Purpose Registers"},
+	NT_PPC_TM_CTAR:          {Sym: "ppc_tm_ctar", Description: "TM checkpointed Target Address Register"},
+	NT_PPC_TM_CPPR:          {Sym: "ppc_tm_cppr", Description: "TM checkpointed Program Priority Register"},
+	NT_PPC_TM_CDSCR:         {Sym: "ppc_tm_cdscr", Description: "TM checkpointed Data Stream Control Register"},
+	NT_PPC_PKEY:             {Sym: "ppc_pkey", Description: "Memory Protection Keys registers"},
+	NT_386_TLS:              {Sym: "386_tls", Description: "i386 TLS slots (struct user_desc)"},
+	NT_386_IOPERM:           {Sym: "386_ioperm", Description: "x86 io permission bitmap (1=deny)"},
+	NT_X86_XSTATE:           {Sym: "x86_xstate", Description: "x86 extended state using xsave"},
+	NT_S390_HIGH_GPRS:       {Sym: "s390_high_gprs", Description: "s390 upper register halves"},
+	NT_S390_TIMER:           {Sym: "s390_timer", Description: "s390 timer register"},
+	NT_S390_TODCMP:          {Sym: "s390_todcmp", Description: "s390 TOD clock comparator register"},
+	NT_S390_TODPREG:         {Sym: "s390_todpreg", Description: "s390 TOD programmable register"},
+	NT_S390_CTRS:            {Sym: "s390_ctrs", Description: "s390 control registers"},
+	NT_S390_PREFIX:          {Sym: "s390_prefix", Description: "s390 prefix register"},
+	NT_S390_LAST_BREAK:      {Sym: "s390_last_break", Description: "s390 breaking event address"},
+	NT_S390_SYSTEM_CALL:     {Sym: "s390_system_call", Description: "s390 system call restart data"},
+	NT_S390_TDB:             {Sym: "s390_tdb", Description: "s390 transaction diagnostic block"},
+	NT_S390_VXRS_LOW:        {Sym: "s390_vxrs_low", Description: "s390 vector registers 0-15 upper half"},
+	NT_S390_VXRS_HIGH:       {Sym: "s390_vxrs_high", Description: "s390 vector registers 16-31"},
+	NT_S390_GS_CB:           {Sym: "s390_gs_cb", Description: "s390 guarded storage registers"},
+	NT_S390_GS_BC:           {Sym: "s390_gs_bc", Description: "s390 guarded storage broadcast control block"},
+	NT_S390_RI_CB:           {Sym: "s390_ri_cb", Description: "s390 runtime instrumentation"},
+	NT_S390_PV_CPU_DATA:     {Sym: "s390_pv_cpu_data", Description: "s390 protvirt cpu dump data"},
+	NT_ARM_VFP:              {Sym: "arm_vfp", Description: "ARM VFP/NEON registers"},
+	NT_ARM_TLS:              {Sym: "arm_tls", Description: "ARM TLS register"},
+	NT_ARM_HW_BREAK:         {Sym: "arm_hw_break", Description: "ARM hardware breakpoint registers"},
+	NT_ARM_HW_WATCH:         {Sym: "arm_hw_watch", Description: "ARM hardware watchpoint registers"},
+	NT_ARM_SYSTEM_CALL:      {Sym: "arm_system_call", Description: "ARM system call number"},
+	NT_ARM_SVE:              {Sym: "arm_sve", Description: "ARM Scalable Vector Extension registers"},
+	NT_ARM_PAC_MASK:         {Sym: "arm_pac_mask", Description: "ARM pointer authentication code masks"},
+	NT_ARM_PACA_KEYS:        {Sym: "arm_paca_keys", Description: "ARM pointer authentication address keys"},
+	NT_ARM_PACG_KEYS:        {Sym: "arm_pacg_keys", Description: "ARM pointer authentication generic key"},
+	NT_ARM_TAGGED_ADDR_CTRL: {Sym: "arm_tagged_addr_ctrl", Description: "arm64 tagged address control (prctl())"},
+	NT_ARM_PAC_ENABLED_KEYS: {Sym: "arm_pac_enabled_keys", Description: "arm64 ptr auth enabled keys (prctl())"},
+	NT_ARM_SSVE:             {Sym: "arm_ssve", Description: "ARM Streaming SVE registers"},
+	NT_ARM_ZA:               {Sym: "arm_za", Description: "ARM SME ZA registers"},
+	NT_ARC_V2:               {Sym: "arc_v2", Description: "ARCv2 accumulator/extra registers"},
+	NT_VMCOREDD:             {Sym: "vmcoredd", Description: "Vmcore Device Dump Note"},
+	NT_MIPS_DSP:             {Sym: "mips_dsp", Description: "MIPS DSP ASE registers"},
+	NT_MIPS_FP_MODE:         {Sym: "mips_fp_mode", Description: "MIPS floating-point mode"},
+	NT_MIPS_MSA:             {Sym: "mips_msa", Description: "MIPS SIMD registers"},
+	NT_LOONGARCH_CPUCFG:     {Sym: "loongarch_cpucfg", Description: "LoongArch CPU config registers"},
+	NT_LOONGARCH_CSR:        {Sym: "loongarch_csr", Description: "LoongArch control and status registers"},
+	NT_LOONGARCH_LSX:        {Sym: "loongarch_lsx", Description: "LoongArch Loongson SIMD Extension registers"},
+	NT_LOONGARCH_LASX:       {Sym: "loongarch_lasx", Description: "LoongArch Loongson Advanced SIMD Extension registers"},
+	NT_LOONGARCH_LBT:        {Sym: "loongarch_lbt", Description: "LoongArch Loongson Binary Translation registers"},
 }
 
 const (
@@ -602,6 +759,7 @@ func elfReadSectionHeaders(d *decode.D, ec *elfContext) {
 
 type elfContext struct {
 	archBits int
+	typ      int
 	machine  int
 	endian   decode.Endian
 
@@ -661,7 +819,7 @@ func elfDecodeHeader(d *decode.D, ec *elfContext) {
 		d.Fatalf("unknown endian %d", endian)
 	}
 
-	d.FieldU16("type", typeNames, scalar.ActualHex)
+	typ := d.FieldU16("type", typeNames, scalar.ActualHex)
 	machine := d.FieldU16("machine", machineNames, scalar.ActualHex)
 	d.FieldU32("version")
 	d.FieldU("entry", archBits)
@@ -677,6 +835,7 @@ func elfDecodeHeader(d *decode.D, ec *elfContext) {
 
 	ec.archBits = archBits
 	ec.endian = d.Endian
+	ec.typ = int(typ)
 	ec.machine = int(machine)
 	ec.phOff = int64(phOff) * 8
 	ec.phNum = int(phNum)
@@ -705,12 +864,13 @@ func elfDecodeProgramHeader(d *decode.D, ec elfContext) {
 		})
 	}
 
+	var typ uint64
 	var offset uint64
 	var size uint64
 
 	switch ec.archBits {
 	case 32:
-		d.FieldU32("type", phTypeNames)
+		typ = d.FieldU32("type", phTypeNames)
 		offset = d.FieldU("offset", ec.archBits, scalar.ActualHex)
 		d.FieldU("vaddr", ec.archBits, scalar.ActualHex)
 		d.FieldU("paddr", ec.archBits, scalar.ActualHex)
@@ -719,7 +879,7 @@ func elfDecodeProgramHeader(d *decode.D, ec elfContext) {
 		pFlags(d)
 		d.FieldU32("align")
 	case 64:
-		d.FieldU32("type", phTypeNames)
+		typ = d.FieldU32("type", phTypeNames)
 		pFlags(d)
 		offset = d.FieldU("offset", ec.archBits, scalar.ActualHex)
 		d.FieldU("vaddr", ec.archBits, scalar.ActualHex)
@@ -730,7 +890,36 @@ func elfDecodeProgramHeader(d *decode.D, ec elfContext) {
 	}
 
 	d.RangeFn(int64(offset*8), int64(size*8), func(d *decode.D) {
-		d.FieldRawLen("data", d.BitsLeft())
+		switch {
+		case typ == PT_NOTE:
+			d.FieldArray("notes", func(d *decode.D) {
+				for !d.End() {
+					d.FieldStruct("note", func(d *decode.D) {
+						// elf manpage says this is 32 or 64 bit but it seems it is always 32
+						// and that is also what readelf external.h says
+						nameSz := d.FieldU32("n_namesz")
+						descSz := d.FieldU32("n_descsz")
+						if ec.typ == ET_CORE {
+							d.FieldU32("n_type", coreNoteNames, scalar.ActualHex)
+						} else {
+							d.FieldU32("n_type", scalar.ActualHex)
+						}
+						d.FieldUTF8NullFixedLen("name", int(nameSz))
+						nameAlign := d.AlignBits(4 * 8)
+						if nameAlign != 0 {
+							d.FieldRawLen("name_align", int64(nameAlign))
+						}
+						d.FieldRawLen("desc", int64(descSz)*8)
+						descAlign := d.AlignBits(4 * 8)
+						if descAlign != 0 {
+							d.FieldRawLen("decs_align", int64(descAlign))
+						}
+					})
+				}
+			})
+		default:
+			d.FieldRawLen("data", d.BitsLeft())
+		}
 	})
 }
 

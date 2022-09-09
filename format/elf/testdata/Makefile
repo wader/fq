@@ -1,4 +1,4 @@
-TARGETS=libbbb.o libbbb.so libbbb.a a.o a_dynamic a_stripped a_static
+TARGETS=libbbb.o libbbb.so libbbb.a a.o a_dynamic a_stripped a_static coredump
 
 all: $(TARGETS)
 
@@ -13,7 +13,7 @@ clean:
 	rm -f $(TARGETS)
 
 build:
-	docker run -ti --rm --platform $(PLATFORM) -v "$(PWD):$(PWD)" -w "$(PWD)" alpine:3.15.0 sh -c 'apk add build-base && make'
+	docker run -ti --rm --platform $(PLATFORM) -v "$(PWD):$(PWD)" -w "$(PWD)" alpine:3.15.0 sh -c 'apk add build-base && ulimit -c unlimited && make'
 	mkdir -p $(DIR)
 	mv $(TARGETS) $(DIR)
 	rm $(DIR)/*.o
@@ -23,9 +23,17 @@ libbbb.so: libbbb.o
 libbbb.a: libbbb.o
 	ar ru $@ $+
 	ranlib $@
+
 a_dynamic: a.o
 	$(CC) -o $@ $+ -L./ -lbbb
+
 a_stripped: a_dynamic
 	strip -o $@ $<
+
 a_static: a.o libbbb.a
 	$(CC) -o $@ $+ libbbb.a
+
+segfault: segfault.o
+	$(CC) -o $@ $<
+coredump: segfault
+	./segfault ; mv core coredump ; rm -f segfault segfault.o ; exit 0
