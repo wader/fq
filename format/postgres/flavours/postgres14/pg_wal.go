@@ -2,7 +2,6 @@ package postgres14
 
 import (
 	"fmt"
-
 	"github.com/wader/fq/format/postgres/common"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
@@ -126,6 +125,8 @@ func decodeXLogPageHeaderData(d *decode.D) {
 }
 
 type walD struct {
+	maxOffset int64
+
 	pages   *decode.D
 	records *decode.D
 
@@ -135,25 +136,31 @@ type walD struct {
 	recordRemLenBytes int64
 }
 
-func DecodePgwal(d *decode.D) any {
+func DecodePgwal(d *decode.D, maxOffset uint32) any {
 	pages := d.FieldArrayValue("Pages")
-	walD := &walD{
+	wal := &walD{
+		maxOffset:         int64(maxOffset),
 		pages:             pages,
 		records:           d.FieldArrayValue("Records"),
 		recordRemLenBytes: -1,
 	}
 
 	for {
-		decodeXLogPage(walD, pages)
-
-		posBytes := pages.Pos() / 8
-		remBytes := posBytes % XLOG_BLCKSZ
-		if remBytes != 0 {
-			d.Fatalf("invalid page remBytes = %d\n", remBytes)
-		}
+		decodeXLogPage(wal, pages)
 
 		if pages.End() {
 			break
+		}
+
+		posBytes := pages.Pos() / 8
+		if posBytes >= wal.maxOffset {
+			d.FieldRawLen("unused", d.BitsLeft())
+			break
+		}
+
+		remBytes := posBytes % XLOG_BLCKSZ
+		if remBytes != 0 {
+			d.Fatalf("invalid page remBytes = %d\n", remBytes)
 		}
 	}
 
@@ -233,75 +240,86 @@ func decodeXLogRecords(wal *walD, d *decode.D) {
 		/*   20      |     4 */ // pg_crc32c xl_crc
 
 		posBytes1 := d.Pos() / 8
-		posBytes1Aligned := common.TypeAlign8(uint64(posBytes1))
-		d.SeekAbs(int64(posBytes1Aligned * 8))
+		posBytes1Aligned := int64(common.TypeAlign8(uint64(posBytes1)))
+		// check aligned - this is correct
+		// record header is 8 byte aligned
+		if posBytes1Aligned >= wal.maxOffset {
+			d.FieldRawLen("unused", d.BitsLeft())
+			break
+		}
+
+		// check what we cat read xl_tot_len on this page
+		if posMaxOfPageBytes < posBytes1Aligned+4 {
+			remOnPage := posMaxOfPageBytes - posBytes1
+			d.FieldRawLen("page_padding0", remOnPage*8)
+			// can't read xl_tot_len on this page
+			// can't create row in this page
+			// continue on next page
+			wal.record = nil
+			wal.recordRemLenBytes = -1
+			return
+		}
+
+		d.SeekAbs(posBytes1Aligned * 8)
 
 		record := pageRecords.FieldStructValue("XLogRecord")
 		wal.record = record
 		wal.records.AddChild(record.Value)
 
-		xLogRecordBegin := record.Pos()
+		//xLogRecordBegin := record.Pos()
 		xlTotLen := record.FieldU32("xl_tot_len")
-		record.FieldU32("xl_xid")
-		record.FieldU64("xl_prev")
-		record.FieldU8("xl_info")
-		record.FieldU8("xl_rmid")
-		record.U16()
-		record.FieldU32("xl_crc")
-		xLogRecordEnd := record.Pos()
-		sizeOfXLogRecord := (xLogRecordEnd - xLogRecordBegin) / 8
 
-		xLogRecordBodyLen := xlTotLen - uint64(sizeOfXLogRecord)
+		xlTotLen1Bytes := xlTotLen - 4
+		//xlTotLen1 := xlTotLen1Bytes * 8
 
-		rawLen := int64(common.TypeAlign8(xLogRecordBodyLen))
-		pos1Bytes := d.Pos() / 8
+		//pos2 := d.Pos()
+		pos2Bytes := d.Pos() / 8
 
-		remOnPage := posMaxOfPageBytes - pos1Bytes
-		if remOnPage < rawLen {
+		remOnPage := posMaxOfPageBytes - pos2Bytes
+		if remOnPage <= 0 {
+			d.Fatalf("remOnPage is negative\n")
+		}
+
+		if remOnPage < int64(xlTotLen1Bytes) {
 			record.FieldRawLen("xLogBody", remOnPage*8)
-			wal.recordRemLenBytes = rawLen - remOnPage
+			wal.recordRemLenBytes = int64(xlTotLen1Bytes) - remOnPage
 			break
 		}
 
-		record.FieldRawLen("xLogBody", rawLen*8)
+		xLogBodyLen := int64(xlTotLen1Bytes) * 8
+		if xLogBodyLen <= 0 {
+			d.Fatalf("xlTotLen1Bytes is negative, xLogBodyLen = %d\n", xLogBodyLen)
+		}
+
+		record.FieldRawLen("xLogBody", xLogBodyLen)
 		wal.recordRemLenBytes = -1
 
+		//xLogRecordBegin := record.Pos()
+		//xlTotLen := record.FieldU32("xl_tot_len")
+		//record.FieldU32("xl_xid")
+		//record.FieldU64("xl_prev")
+		//record.FieldU8("xl_info")
+		//record.FieldU8("xl_rmid")
+		//record.U16()
+		//record.FieldU32("xl_crc")
+		//xLogRecordEnd := record.Pos()
+		//sizeOfXLogRecord := (xLogRecordEnd - xLogRecordBegin) / 8
+		//
+		//xLogRecordBodyLen := xlTotLen - uint64(sizeOfXLogRecord)
+		//
+		//rawLen := int64(common.TypeAlign8(xLogRecordBodyLen))
 		//pos1Bytes := d.Pos() / 8
-		//if pos1Bytes > posMaxOfPageBytes {
-		//	d.Fatalf("out of page, error in logic!")
-		//}
-
-		//pos := d.Pos() / 8
-		//if pos >= posMaxOfPage {
+		//
+		//remOnPage := posMaxOfPageBytes - pos1Bytes
+		//if remOnPage < rawLen {
+		//	record.FieldRawLen("xLogBody", remOnPage*8)
+		//	wal.recordRemLenBytes = rawLen - remOnPage
 		//	break
 		//}
 		//
-		//pageRecords.FieldStruct("XLogRecord", func(d *decode.D) {
-		//	record := d
-		//	wal.record = record
-		//	wal.records.AddChild(record.Value)
-		//
-		//	xLogRecordBegin := record.Pos()
-		//	xlTotLen := record.FieldU32("xl_tot_len")
-		//	record.FieldU32("xl_xid")
-		//	record.FieldU64("xl_prev")
-		//	record.FieldU8("xl_info")
-		//	record.FieldU8("xl_rmid")
-		//	record.U16()
-		//	record.FieldU32("xl_crc")
-		//	xLogRecordEnd := record.Pos()
-		//	sizeOfXLogRecord := (xLogRecordEnd - xLogRecordBegin) / 8
-		//
-		//	xLogRecordBodyLen := xlTotLen - uint64(sizeOfXLogRecord)
-		//
-		//	rawLen := int64(common.TypeAlign8(xLogRecordBodyLen))
-		//	record.FieldRawLen("xLogBody", rawLen*8)
-		//})
+		//record.FieldRawLen("xLogBody", rawLen*8)
+		//wal.recordRemLenBytes = -1
 
-		//pos := d.Pos()
-		//if pos >= (4000 * 8) {
-		//	break
-		//}
 	}
 }
 

@@ -31,6 +31,11 @@ func TestTypeAlign(t *testing.T) {
 	if expected4 != 8192*3 {
 		t.Errorf("must be 8192*3\n")
 	}
+
+	expected5 := common.TypeAlign(8192, 114720)
+	if expected5 != 122880 {
+		t.Errorf("must be 8192*3\n")
+	}
 }
 
 func TestTypeAlign8(t *testing.T) {

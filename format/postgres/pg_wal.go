@@ -1,10 +1,14 @@
 package postgres
 
 import (
+	"errors"
+	"fmt"
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/postgres/flavours/postgres14"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
+	"strconv"
+	"strings"
 )
 
 // TO DO
@@ -17,6 +21,7 @@ func init() {
 		DecodeFn:    decodePgwal,
 		DecodeInArg: format.PostgresIn{
 			Flavour: "default",
+			Lsn:     "",
 		},
 	})
 }
@@ -32,6 +37,29 @@ const (
 	XLOG_PAGE_MAGIC_96 = uint16(0xD093)
 )
 
+func ParseLsn(lsn string) (uint32, error) {
+	// check for 0/4E394440
+	str1 := lsn
+	if strings.Contains(lsn, "/") {
+		parts := strings.Split(lsn, "/")
+		if len(parts) != 2 {
+			return 0, errors.New(fmt.Sprintf("Invalid lsn = %s", lsn))
+		}
+		str1 = parts[1]
+	}
+	// parse hex to coded file name + file offset
+	r1, err := strconv.ParseInt(str1, 16, 64)
+	if err != nil {
+		return 0, err
+	}
+	return uint32(r1), err
+}
+
+func XLogSegmentOffset(xLogPtr uint32) uint32 {
+	const walSegSizeBytes = 16 * 1024 * 1024
+	return xLogPtr & (walSegSizeBytes - 1)
+}
+
 func decodePgwal(d *decode.D, in any) any {
 	d.Endian = decode.LittleEndian
 
@@ -40,19 +68,28 @@ func decodePgwal(d *decode.D, in any) any {
 		d.Fatalf("DecodeInArg must be PostgresIn!\n")
 	}
 
+	maxOffset := uint32(0xFFFFFFFF)
+	if pgIn.Lsn != "" {
+		lsn, err := ParseLsn(pgIn.Lsn)
+		if err != nil {
+			d.Fatalf("Failed to ParseLsn, err = %v\n", err)
+		}
+		maxOffset = XLogSegmentOffset(lsn)
+	}
+
 	switch pgIn.Flavour {
 	//case PG_FLAVOUR_POSTGRES11:
 	//	return postgres11.DecodePgControl(d, in)
 	case PG_FLAVOUR_POSTGRES14, PG_FLAVOUR_POSTGRES:
-		return postgres14.DecodePgwal(d)
+		return postgres14.DecodePgwal(d, maxOffset)
 		//case PG_FLAVOUR_PGPROEE14:
 		//	return pgproee14.DecodePgControl(d, in)
 	}
 
-	return probePgwal(d, in)
+	return probePgwal(d, maxOffset)
 }
 
-func probePgwal(d *decode.D, in any) any {
+func probePgwal(d *decode.D, maxOffset uint32) any {
 	// read version
 	xlpMagic := uint16(d.U16())
 
@@ -61,7 +98,7 @@ func probePgwal(d *decode.D, in any) any {
 
 	switch xlpMagic {
 	case XLOG_PAGE_MAGIC_14:
-		return postgres14.DecodePgwal(d)
+		return postgres14.DecodePgwal(d, maxOffset)
 	}
 
 	d.Fatalf("unsupported xlp_magic = %X\n", xlpMagic)

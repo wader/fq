@@ -323,4 +323,5 @@ type BitCoinBlockIn struct {
 
 type PostgresIn struct {
 	Flavour string `doc:"PostgreSQL flavour: postgres, postgres13, pgpro..."`
+	Lsn     string `doc:"Current LSN for WAL, use \"select pg_current_wal_lsn()\""`
 }
