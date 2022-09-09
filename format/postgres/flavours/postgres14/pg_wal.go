@@ -8,14 +8,6 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-//func init() {
-//	interp.RegisterFormat(decode.Format{
-//		Name:        format.PG_WAL,
-//		Description: "PostgreSQL write-ahead log file",
-//		DecodeFn:    DecodePgwal,
-//	})
-//}
-
 //nolint:revive
 const (
 	XLOG_BLCKSZ     = 8192
@@ -70,7 +62,16 @@ var rmgrIds = scalar.UToScalar{
 	21: {Sym: "LogicalMessage", Description: "RM_LOGICALMSG_ID"},
 }
 
-// type = struct XLogPageHeaderData {
+// struct XLogLongPageHeaderData {
+//	/*    0      |    24 */    XLogPageHeaderData std;
+//	/*   24      |     8 */    uint64 xlp_sysid;
+//	/*   32      |     4 */    uint32 xlp_seg_size;
+//	/*   36      |     4 */    uint32 xlp_xlog_blcksz;
+//
+//	/* total size (bytes):   40 */
+//}
+
+// struct XLogPageHeaderData {
 /*    0      |     2 */ // uint16 xlp_magic;
 /*    2      |     2 */ // uint16 xlp_info;
 /*    4      |     4 */ // TimeLineID xlp_tli;
@@ -80,7 +81,7 @@ var rmgrIds = scalar.UToScalar{
 //
 /* total size (bytes):   24 */
 
-// type = struct XLogRecord {
+// struct XLogRecord {
 /*    0      |     4 */ // uint32 xl_tot_len
 /*    4      |     4 */ // TransactionId xl_xid
 /*    8      |     8 */ // XLogRecPtr xl_prev
@@ -129,26 +130,40 @@ type walD struct {
 	records *decode.D
 
 	pageRecords *decode.D
-	remLen      uint32
 
-	record *decode.D
+	record            *decode.D
+	recordRemLenBytes int64
 }
 
-func DecodePgwal(d *decode.D, in any) any {
+func DecodePgwal(d *decode.D) any {
+	pages := d.FieldArrayValue("Pages")
 	walD := &walD{
-		pages:   d.FieldArrayValue("pages"),
-		records: d.FieldArrayValue("records"),
+		pages:             pages,
+		records:           d.FieldArrayValue("Records"),
+		recordRemLenBytes: -1,
 	}
 
-	d.SeekAbs(0)
-	d.FieldArray("XLogPages", func(d *decode.D) {
-		decodeXLogPage(walD, d)
-	})
+	for {
+		decodeXLogPage(walD, pages)
+
+		posBytes := pages.Pos() / 8
+		remBytes := posBytes % XLOG_BLCKSZ
+		if remBytes != 0 {
+			d.Fatalf("invalid page remBytes = %d\n", remBytes)
+		}
+
+		if pages.End() {
+			break
+		}
+	}
 
 	return nil
 }
 
 func decodeXLogPage(wal *walD, d *decode.D) {
+
+	xLogPage := d.FieldStructValue("Page")
+
 	// type = struct XLogPageHeaderData {
 	/*    0      |     2 */ // uint16 xlp_magic;
 	/*    2      |     2 */ // uint16 xlp_info;
@@ -156,51 +171,57 @@ func decodeXLogPage(wal *walD, d *decode.D) {
 	/*    8      |     8 */ // XLogRecPtr xlp_pageaddr;
 	/*   16      |     4 */ // uint32 xlp_rem_len;
 	/* XXX  4-byte padding  */
-	page := wal.pages.FieldStructValue("XLogPageHeaderData")
+	header := xLogPage.FieldStructValue("XLogPageHeaderData")
 
-	page.FieldU16("xlp_magic")
-	xlpInfo := page.FieldU16("xlp_info")
-	page.FieldU32("xlp_tli")
-	page.FieldU64("xlp_pageaddr")
-	page.FieldU32("xlp_rem_len")
-	page.U32()
+	header.FieldU16("xlp_magic")
+	xlpInfo := header.FieldU16("xlp_info")
+	header.FieldU32("xlp_tli")
+	header.FieldU64("xlp_pageaddr")
+	remLenBytes := header.FieldU32("xlp_rem_len")
+	header.FieldU32("padding0")
 
 	if xlpInfo&XLP_LONG_HEADER != 0 {
 		// Long header
-		d.FieldStruct("XLogLongPageHeaderData", func(d *decode.D) {
+		header.FieldStruct("XLogLongPageHeaderData", func(d *decode.D) {
 			d.FieldU64("xlp_sysid")
 			d.FieldU32("xlp_seg_size")
 			d.FieldU32("xlp_xlog_blcksz")
 		})
 	}
 
-	remLen := 40
-	wal.remLen = uint32(remLen)
-
-	record := wal.record
-	if record == nil {
-		rawLen := int64(common.TypeAlign8(uint64(remLen)))
-		page.FieldRawLen("prev_file_rec", rawLen*8)
+	if wal.recordRemLenBytes >= 0 {
+		if wal.recordRemLenBytes != int64(remLenBytes) {
+			d.Fatalf("incorrect wal.recordRemLenBytes = %d, remLenBytes = %d", wal.recordRemLenBytes, remLenBytes)
+		}
 	}
 
-	pageRecords := page.FieldArrayValue("records")
+	remLenBytesAligned := common.TypeAlign8(remLenBytes)
+	remLen := remLenBytesAligned * 8
+
+	pos1 := header.Pos()
+	xLogPage.SeekAbs(pos1)
+	// TODO
+	xLogPage.FieldRawLen("RecordOfPreviousPage", int64(remLen))
+	pos2 := xLogPage.Pos()
+
+	if wal.record != nil {
+		wal.record.SeekAbs(pos1)
+	}
+
+	xLogPage.SeekAbs(pos2)
+	pageRecords := xLogPage.FieldArrayValue("Records")
+
 	wal.pageRecords = pageRecords
 
 	decodeXLogRecords(wal, d)
-
-	//page.Pos()
-	//for {
-	//
-	//}
-	//fmt.Printf("d pos = %d\n", d.Pos())
 }
 
 func decodeXLogRecords(wal *walD, d *decode.D) {
 	pageRecords := wal.pageRecords
 
-	pos := d.Pos() / 8
-	posMaxOfPage := int64(common.TypeAlign(8192, uint64(pos)))
-	fmt.Printf("posMaxOfPage = %d\n", posMaxOfPage)
+	posBytes := d.Pos() / 8
+	posMaxOfPageBytes := int64(common.TypeAlign(8192, uint64(posBytes)))
+	fmt.Printf("posMaxOfPageBytes = %d\n", posMaxOfPageBytes)
 
 	for {
 		/*    0      |     4 */ // uint32 xl_tot_len
@@ -211,52 +232,71 @@ func decodeXLogRecords(wal *walD, d *decode.D) {
 		/* XXX  2-byte hole  */
 		/*   20      |     4 */ // pg_crc32c xl_crc
 
-		//record := page.FieldStructValue("XLogRecord")
-		//wal.record = record
-		//wal.records.AddChild(record.Value)
-		//
-		//xLogRecordBegin := record.Pos()
-		//xlTotLen := record.FieldU32("xl_tot_len")
-		//record.FieldU32("xl_xid")
-		//record.FieldU64("xl_prev")
-		//record.FieldU8("xl_info")
-		//record.FieldU8("xl_rmid")
-		//record.U16()
-		//record.FieldU32("xl_crc")
-		//xLogRecordEnd := record.Pos()
-		//sizeOfXLogRecord := (xLogRecordEnd - xLogRecordBegin) / 8
-		//
-		//xLogRecordBodyLen := xlTotLen - uint64(sizeOfXLogRecord)
-		//
-		//rawLen := int64(TypeAlign8(xLogRecordBodyLen))
-		//page.FieldRawLen("xLogBody", rawLen*8)
+		posBytes1 := d.Pos() / 8
+		posBytes1Aligned := common.TypeAlign8(uint64(posBytes1))
+		d.SeekAbs(int64(posBytes1Aligned * 8))
 
-		pos := d.Pos() / 8
-		if pos >= posMaxOfPage {
+		record := pageRecords.FieldStructValue("XLogRecord")
+		wal.record = record
+		wal.records.AddChild(record.Value)
+
+		xLogRecordBegin := record.Pos()
+		xlTotLen := record.FieldU32("xl_tot_len")
+		record.FieldU32("xl_xid")
+		record.FieldU64("xl_prev")
+		record.FieldU8("xl_info")
+		record.FieldU8("xl_rmid")
+		record.U16()
+		record.FieldU32("xl_crc")
+		xLogRecordEnd := record.Pos()
+		sizeOfXLogRecord := (xLogRecordEnd - xLogRecordBegin) / 8
+
+		xLogRecordBodyLen := xlTotLen - uint64(sizeOfXLogRecord)
+
+		rawLen := int64(common.TypeAlign8(xLogRecordBodyLen))
+		pos1Bytes := d.Pos() / 8
+
+		remOnPage := posMaxOfPageBytes - pos1Bytes
+		if remOnPage < rawLen {
+			record.FieldRawLen("xLogBody", remOnPage*8)
+			wal.recordRemLenBytes = rawLen - remOnPage
 			break
 		}
 
-		pageRecords.FieldStruct("XLogRecord", func(d *decode.D) {
-			record := d
-			wal.record = record
-			wal.records.AddChild(record.Value)
+		record.FieldRawLen("xLogBody", rawLen*8)
+		wal.recordRemLenBytes = -1
 
-			xLogRecordBegin := record.Pos()
-			xlTotLen := record.FieldU32("xl_tot_len")
-			record.FieldU32("xl_xid")
-			record.FieldU64("xl_prev")
-			record.FieldU8("xl_info")
-			record.FieldU8("xl_rmid")
-			record.U16()
-			record.FieldU32("xl_crc")
-			xLogRecordEnd := record.Pos()
-			sizeOfXLogRecord := (xLogRecordEnd - xLogRecordBegin) / 8
+		//pos1Bytes := d.Pos() / 8
+		//if pos1Bytes > posMaxOfPageBytes {
+		//	d.Fatalf("out of page, error in logic!")
+		//}
 
-			xLogRecordBodyLen := xlTotLen - uint64(sizeOfXLogRecord)
-
-			rawLen := int64(common.TypeAlign8(xLogRecordBodyLen))
-			record.FieldRawLen("xLogBody", rawLen*8)
-		})
+		//pos := d.Pos() / 8
+		//if pos >= posMaxOfPage {
+		//	break
+		//}
+		//
+		//pageRecords.FieldStruct("XLogRecord", func(d *decode.D) {
+		//	record := d
+		//	wal.record = record
+		//	wal.records.AddChild(record.Value)
+		//
+		//	xLogRecordBegin := record.Pos()
+		//	xlTotLen := record.FieldU32("xl_tot_len")
+		//	record.FieldU32("xl_xid")
+		//	record.FieldU64("xl_prev")
+		//	record.FieldU8("xl_info")
+		//	record.FieldU8("xl_rmid")
+		//	record.U16()
+		//	record.FieldU32("xl_crc")
+		//	xLogRecordEnd := record.Pos()
+		//	sizeOfXLogRecord := (xLogRecordEnd - xLogRecordBegin) / 8
+		//
+		//	xLogRecordBodyLen := xlTotLen - uint64(sizeOfXLogRecord)
+		//
+		//	rawLen := int64(common.TypeAlign8(xLogRecordBodyLen))
+		//	record.FieldRawLen("xLogBody", rawLen*8)
+		//})
 
 		//pos := d.Pos()
 		//if pos >= (4000 * 8) {

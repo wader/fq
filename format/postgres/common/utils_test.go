@@ -6,6 +6,33 @@ import (
 	"github.com/wader/fq/format/postgres/common"
 )
 
+func TestTypeAlign(t *testing.T) {
+	expected0 := common.TypeAlign(8192, 8192+0)
+	if expected0 != 8192 {
+		t.Errorf("must be 8192\n")
+	}
+
+	expected1 := common.TypeAlign(8192, 8192+100)
+	if expected1 != 8192*2 {
+		t.Errorf("must be 8192*2\n")
+	}
+
+	expected2 := common.TypeAlign(8192, 0)
+	if expected2 != 0 {
+		t.Errorf("must be 0\n")
+	}
+
+	expected3 := common.TypeAlign(8192, 700)
+	if expected3 != 8192 {
+		t.Errorf("must be 8192\n")
+	}
+
+	expected4 := common.TypeAlign(8192, 8192*2+5000)
+	if expected4 != 8192*3 {
+		t.Errorf("must be 8192*3\n")
+	}
+}
+
 func TestTypeAlign8(t *testing.T) {
 	expected39 := common.TypeAlign8(39)
 	if expected39 != 40 {
