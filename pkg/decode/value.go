@@ -11,8 +11,8 @@ import (
 
 type Compound struct {
 	IsArray     bool
-	RangeSorted bool
 	Children    []*Value
+	ByName      map[string]*Value
 	Description string
 }
 
@@ -197,10 +197,9 @@ func (v *Value) postProcess() {
 				}
 			}
 
-			// TODO: really sort array? if sort it needs to be stable to keep the order
-			// of value with same range start, think null values etc
-			if vv.RangeSorted {
-				slices.SortFunc(vv.Children, func(a, b *Value) bool { return a.Range.Start < b.Range.Start })
+			// sort struct fields and make sure to keep order if range is the same
+			if !vv.IsArray {
+				slices.SortStableFunc(vv.Children, func(a, b *Value) bool { return a.Range.Start < b.Range.Start })
 			}
 
 			v.Index = -1

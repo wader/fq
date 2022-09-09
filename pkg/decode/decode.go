@@ -168,7 +168,6 @@ func newDecoder(ctx context.Context, format Format, br bitio.ReaderAtSeeker, opt
 	}
 	rootV := &Compound{
 		IsArray:     format.RootArray,
-		RangeSorted: !format.RootArray,
 		Children:    nil,
 		Description: opts.Description,
 	}
@@ -721,11 +720,13 @@ func (d *D) AddChild(v *Value) {
 	switch fv := d.Value.V.(type) {
 	case *Compound:
 		if !fv.IsArray {
-			for _, ff := range fv.Children {
-				if ff.Name == v.Name {
-					d.Fatalf("%q already exist in struct %s", v.Name, d.Value.Name)
-				}
+			if fv.ByName == nil {
+				fv.ByName = make(map[string]*Value)
 			}
+			if _, ok := fv.ByName[v.Name]; ok {
+				d.Fatalf("%q already exist in struct %s", v.Name, d.Value.Name)
+			}
+			fv.ByName[v.Name] = v
 		}
 		fv.Children = append(fv.Children, v)
 	}
@@ -734,10 +735,19 @@ func (d *D) AddChild(v *Value) {
 func (d *D) FieldGet(name string) *Value {
 	switch fv := d.Value.V.(type) {
 	case *Compound:
-		for _, ff := range fv.Children {
-			if ff.Name == name {
-				return ff
+		if fv.IsArray {
+			for _, ff := range fv.Children {
+				if ff.Name == name {
+					return ff
+				}
 			}
+		} else {
+			if fv.ByName != nil {
+				if ff, ok := fv.ByName[name]; ok {
+					return ff
+				}
+			}
+			return nil
 		}
 	default:
 		panic(fmt.Sprintf("%s is not a struct", d.Value.Name))
@@ -754,7 +764,7 @@ func (d *D) FieldMustGet(name string) *Value {
 
 // FieldArray decode array of fields. Will not be range sorted.
 func (d *D) FieldArray(name string, fn func(d *D), sms ...scalar.Mapper) *D {
-	c := &Compound{IsArray: true, RangeSorted: false}
+	c := &Compound{IsArray: true}
 	cd := d.fieldDecoder(name, d.bitBuf, c)
 	d.AddChild(cd.Value)
 	fn(cd)
@@ -768,7 +778,7 @@ func (d *D) FieldArrayValue(name string) *D {
 
 // FieldStruct decode array of fields. Will be range sorted.
 func (d *D) FieldStruct(name string, fn func(d *D)) *D {
-	c := &Compound{IsArray: false, RangeSorted: true}
+	c := &Compound{IsArray: false}
 	cd := d.fieldDecoder(name, d.bitBuf, c)
 	d.AddChild(cd.Value)
 	fn(cd)
@@ -1101,7 +1111,7 @@ func (d *D) FieldRootBitBuf(name string, br bitio.ReaderAtSeeker, sms ...scalar.
 }
 
 func (d *D) FieldArrayRootBitBufFn(name string, br bitio.ReaderAtSeeker, fn func(d *D)) *Value {
-	c := &Compound{IsArray: true, RangeSorted: false}
+	c := &Compound{IsArray: true}
 	cd := d.fieldDecoder(name, br, c)
 	cd.Value.IsRoot = true
 	d.AddChild(cd.Value)
@@ -1113,7 +1123,7 @@ func (d *D) FieldArrayRootBitBufFn(name string, br bitio.ReaderAtSeeker, fn func
 }
 
 func (d *D) FieldStructRootBitBufFn(name string, br bitio.ReaderAtSeeker, fn func(d *D)) *Value {
-	c := &Compound{IsArray: false, RangeSorted: true}
+	c := &Compound{IsArray: false}
 	cd := d.fieldDecoder(name, br, c)
 	cd.Value.IsRoot = true
 	d.AddChild(cd.Value)

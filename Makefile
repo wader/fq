@@ -1,6 +1,5 @@
 GO_BUILD_FLAGS ?= -trimpath
 GO_BUILD_LDFLAGS ?= -s -w
-GO_TEST_RACE_FLAGS ?=-race
 
 all: test fq
 
@@ -11,11 +10,18 @@ fq:
 .PHONY: test
 test: testgo testjq testcli
 
+.PHONY: test-race
+test-race: testgo-race testjq testcli
+
 .PHONY: testgo
 # figure out all go pakges with test files
 testgo: PKGS=$(shell find . -name "*_test.go" | xargs -n 1 dirname | sort | uniq)
 testgo:
-	go test -timeout 20m ${GO_TEST_RACE_FLAGS} ${VERBOSE} ${COVER} ${PKGS}
+	go test -timeout 20m ${RACE} ${VERBOSE} ${COVER} ${PKGS}
+
+.PHONY: testgo-race
+testgo-race: RACE=-race
+testgo-race: testgo
 
 .PHONY: testjq
 testjq: fq

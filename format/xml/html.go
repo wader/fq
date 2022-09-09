@@ -175,7 +175,20 @@ func fromHTMLToArray(n *html.Node) any {
 		return elm
 	}
 
-	return f(n.FirstChild)
+	// find first element node, skip doctype etc, should be a "html" element
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		if c.Type == html.ElementNode {
+			n = c
+			break
+		}
+	}
+
+	// should not happen
+	if n == nil {
+		panic("unreachable")
+	}
+
+	return f(n)
 }
 
 func decodeHTML(d *decode.D, in any) any {
