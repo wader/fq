@@ -3,10 +3,10 @@ package decode
 import (
 	"errors"
 
-	"github.com/wader/fq/internal/sortex"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/ranges"
 	"github.com/wader/fq/pkg/scalar"
+	"golang.org/x/exp/slices"
 )
 
 type Compound struct {
@@ -200,7 +200,7 @@ func (v *Value) postProcess() {
 			// TODO: really sort array? if sort it needs to be stable to keep the order
 			// of value with same range start, think null values etc
 			if vv.RangeSorted {
-				sortex.SliceStable(vv.Children, func(a, b *Value) bool { return a.Range.Start < b.Range.Start })
+				slices.SortFunc(vv.Children, func(a, b *Value) bool { return a.Range.Start < b.Range.Start })
 			}
 
 			v.Index = -1

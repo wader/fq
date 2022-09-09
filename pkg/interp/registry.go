@@ -7,8 +7,8 @@ import (
 	"sync"
 
 	"github.com/wader/fq/internal/gojqex"
-	"github.com/wader/fq/internal/sortex"
 	"github.com/wader/fq/pkg/decode"
+	"golang.org/x/exp/slices"
 )
 
 type EnvFuncFn func(env *Interp) gojqex.Function
@@ -67,7 +67,7 @@ func (r *Registry) Func(funcFn EnvFuncFn) {
 }
 
 func sortFormats(g decode.Group) {
-	sortex.Slice(g, func(a, b decode.Format) bool {
+	slices.SortFunc(g, func(a, b decode.Format) bool {
 		if a.ProbeOrder == b.ProbeOrder {
 			return a.Name < b.Name
 		}

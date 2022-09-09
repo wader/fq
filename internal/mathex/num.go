@@ -12,10 +12,6 @@ import (
 	"github.com/wader/fq/pkg/ranges"
 )
 
-type Number interface {
-	constraints.Integer | constraints.Float
-}
-
 var BasePrefixMap = map[int]string{
 	2:  "0b",
 	8:  "0o",
@@ -59,7 +55,7 @@ func PadFormatBigInt(i *big.Int, base int, basePrefix bool, width int) string {
 	return padFormatNumber(i.Text(base), base, basePrefix, width)
 }
 
-func Max[T Number](v T, vs ...T) T {
+func Max[T constraints.Ordered](v T, vs ...T) T {
 	m := v
 	for _, v := range vs {
 		if v > m {
@@ -69,7 +65,7 @@ func Max[T Number](v T, vs ...T) T {
 	return m
 }
 
-func Min[T Number](v T, vs ...T) T {
+func Min[T constraints.Ordered](v T, vs ...T) T {
 	m := v
 	for _, v := range vs {
 		if v < m {
@@ -79,7 +75,7 @@ func Min[T Number](v T, vs ...T) T {
 	return m
 }
 
-func Clamp[T Number](min, max, v T) T {
+func Clamp[T constraints.Ordered](min, max, v T) T {
 	return Max(min, Min(max, v))
 }
 
@@ -111,6 +107,6 @@ func TwosComplement(nBits int, n uint64) int64 {
 
 // decode zigzag encoded integer
 // https://developers.google.com/protocol-buffers/docs/encoding
-func ZigZag(n uint64) int64 {
-	return int64(n>>1 ^ -(n & 1))
+func ZigZag[U constraints.Unsigned, S constraints.Signed](n U) S {
+	return S(n>>1 ^ -(n & 1))
 }
