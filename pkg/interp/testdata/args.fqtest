@@ -162,6 +162,7 @@ json                 JavaScript Object Notation
 jsonl                JavaScript Object Notation Lines
 macho                Mach-O macOS executable
 macho_fat            Fat Mach-O macOS executable (multi-architecture)
+markdown             Markdown
 matroska             Matroska file
 mp3                  MP3 file
 mp3_frame            MPEG audio layer 3 frame

@@ -28,6 +28,7 @@ import (
 	_ "github.com/wader/fq/format/jpeg"
 	_ "github.com/wader/fq/format/json"
 	_ "github.com/wader/fq/format/macho"
+	_ "github.com/wader/fq/format/markdown"
 	_ "github.com/wader/fq/format/math"
 	_ "github.com/wader/fq/format/matroska"
 	_ "github.com/wader/fq/format/mp3"

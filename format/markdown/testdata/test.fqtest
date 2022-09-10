@@ -1,0 +1,316 @@
+$ fq -d markdown . test.md
+{
+  "children": [
+    {
+      "children": [
+        "Before"
+      ],
+      "type": "paragraph"
+    },
+    {
+      "children": [
+        "header 1"
+      ],
+      "is_special": false,
+      "is_titleblock": false,
+      "level": 1,
+      "type": "heading"
+    },
+    {
+      "children": [
+        "Paragraph with ",
+        {
+          "children": [
+            "bold"
+          ],
+          "type": "strong"
+        },
+        " and ",
+        {
+          "children": [
+            "italic"
+          ],
+          "type": "em"
+        },
+        "\non\nmultiple\nlines."
+      ],
+      "type": "paragraph"
+    },
+    {
+      "children": [
+        {
+          "children": [
+            "Some citation"
+          ],
+          "type": "paragraph"
+        }
+      ],
+      "type": "blockquote"
+    },
+    {
+      "children": [
+        "A footnote",
+        {
+          "additional_attributes": [],
+          "children": [
+            "^1"
+          ],
+          "destination": "footnote1",
+          "note_id": 0,
+          "type": "link"
+        },
+        " and this also",
+        {
+          "additional_attributes": [],
+          "children": [
+            "^note"
+          ],
+          "destination": "footnote2",
+          "note_id": 0,
+          "type": "link"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "children": [
+        "header 2"
+      ],
+      "is_special": false,
+      "is_titleblock": false,
+      "level": 2,
+      "type": "heading"
+    },
+    {
+      "fence_length": 0,
+      "fence_offset": 0,
+      "info": "jq",
+      "is_fenced": true,
+      "literal": "code\nblock\n",
+      "type": "code_block"
+    },
+    {
+      "fence_length": 0,
+      "fence_offset": 0,
+      "is_fenced": false,
+      "literal": "also\ncode\n",
+      "type": "code_block"
+    },
+    {
+      "children": [
+        "header 3"
+      ],
+      "is_special": false,
+      "is_titleblock": false,
+      "level": 3,
+      "type": "heading"
+    },
+    {
+      "children": [
+        "Some text with ",
+        {
+          "literal": "code",
+          "type": "code"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "children": [
+        "header 4"
+      ],
+      "is_special": false,
+      "is_titleblock": false,
+      "level": 4,
+      "type": "heading"
+    },
+    {
+      "children": [
+        "Some text ",
+        {
+          "additional_attributes": [],
+          "children": [
+            "with a link"
+          ],
+          "destination": "http://host/path",
+          "note_id": 0,
+          "type": "link"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "children": [
+        "An image ",
+        {
+          "children": [
+            "img alt text"
+          ],
+          "destination": "path/image.png",
+          "type": "image"
+        }
+      ],
+      "type": "paragraph"
+    },
+    {
+      "children": [
+        "header 5"
+      ],
+      "is_special": false,
+      "is_titleblock": false,
+      "level": 5,
+      "type": "heading"
+    },
+    {
+      "children": [
+        {
+          "bullet_char": "-",
+          "children": [
+            {
+              "children": [
+                "list of"
+              ],
+              "type": "paragraph"
+            }
+          ],
+          "delimiter": ".",
+          "is_footnotes_list": false,
+          "list_flags": [],
+          "tight": false,
+          "type": "list_item"
+        },
+        {
+          "bullet_char": "-",
+          "children": [
+            {
+              "children": [
+                "things"
+              ],
+              "type": "paragraph"
+            }
+          ],
+          "delimiter": ".",
+          "is_footnotes_list": false,
+          "list_flags": [],
+          "tight": false,
+          "type": "list_item"
+        }
+      ],
+      "delimiter": ".",
+      "is_footnotes_list": false,
+      "list_flags": [],
+      "start": 0,
+      "tight": true,
+      "type": "list"
+    },
+    {
+      "children": [
+        "a table"
+      ],
+      "type": "paragraph"
+    },
+    {
+      "children": [
+        {
+          "children": [
+            {
+              "children": [
+                {
+                  "children": [
+                    "a"
+                  ],
+                  "col_span": 0,
+                  "is_header": true,
+                  "type": "table_cell"
+                },
+                {
+                  "children": [
+                    "b"
+                  ],
+                  "col_span": 0,
+                  "is_header": true,
+                  "type": "table_cell"
+                },
+                {
+                  "children": [
+                    "c"
+                  ],
+                  "col_span": 0,
+                  "is_header": true,
+                  "type": "table_cell"
+                }
+              ],
+              "type": "table_row"
+            }
+          ],
+          "type": "table_header"
+        },
+        {
+          "children": [
+            {
+              "children": [
+                {
+                  "children": [
+                    "1"
+                  ],
+                  "col_span": 0,
+                  "is_header": false,
+                  "type": "table_cell"
+                },
+                {
+                  "children": [
+                    "2"
+                  ],
+                  "col_span": 0,
+                  "is_header": false,
+                  "type": "table_cell"
+                },
+                {
+                  "children": [
+                    "3"
+                  ],
+                  "col_span": 0,
+                  "is_header": false,
+                  "type": "table_cell"
+                }
+              ],
+              "type": "table_row"
+            }
+          ],
+          "type": "table_body"
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "children": [
+        "header 6"
+      ],
+      "is_special": false,
+      "is_titleblock": false,
+      "level": 6,
+      "type": "heading"
+    },
+    {
+      "children": [
+        "Some text with line ",
+        {
+          "literal": "<br>",
+          "type": "html_span"
+        },
+        " break and ",
+        {
+          "literal": "<b>",
+          "type": "html_span"
+        },
+        "bold",
+        {
+          "literal": "</b>",
+          "type": "html_span"
+        }
+      ],
+      "type": "paragraph"
+    }
+  ],
+  "type": "document"
+}
