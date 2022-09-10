@@ -1,9 +1,12 @@
 $ fq -n '_registry.formats | keys[] | "help(\(.))", ([_help("fq"; .)] | join("\n") | split("\n")[] | ("out \(.)" | println))'
 "help(aac_frame)"
 out aac_frame: Advanced Audio Coding frame decoder
-out Options:
+out # Options
+out 
 out   object_type=1  Audio object type
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as aac_frame
 out   $ fq -d aac_frame . file
 out   # Decode value as aac_frame
@@ -12,101 +15,139 @@ out   # Decode file using aac_frame options
 out   $ fq -d aac_frame -o object_type=1 . file
 out   # Decode value as aac_frame
 out   ... | aac_frame({object_type:1})
+out 
 "help(adts)"
 out adts: Audio Data Transport Stream decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as adts
 out   $ fq -d adts . file
 out   # Decode value as adts
 out   ... | adts
+out 
 "help(adts_frame)"
 out adts_frame: Audio Data Transport Stream frame decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as adts_frame
 out   $ fq -d adts_frame . file
 out   # Decode value as adts_frame
 out   ... | adts_frame
+out 
 "help(amf0)"
 out amf0: Action Message Format 0 decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as amf0
 out   $ fq -d amf0 . file
 out   # Decode value as amf0
 out   ... | amf0
+out 
 "help(apev2)"
 out apev2: APEv2 metadata tag decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as apev2
 out   $ fq -d apev2 . file
 out   # Decode value as apev2
 out   ... | apev2
+out 
 "help(ar)"
 out ar: Unix archive decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as ar
 out   $ fq -d ar . file
 out   # Decode value as ar
 out   ... | ar
+out 
 "help(asn1_ber)"
 out asn1_ber: ASN1 BER (basic encoding rules, also CER and DER) decoder
+out 
+out # Decode examples
+out 
+out   # Decode file as asn1_ber
+out   $ fq -d asn1_ber . file
+out   # Decode value as asn1_ber
+out   ... | asn1_ber
+out 
 out Supports decoding BER, CER and DER (X.690).
 out 
 out - Currently no extra validation is done for CER and DER.
 out - Does not support specifying a schema.
 out - Supports torepr but without schema all sequences and sets will be arrays.
-out Examples:
-out   # frompem` and `topem can be used to work with PEM format
+out 
+out # frompem can be used to decode certificates etc
+out 
 out   $ fq -d raw 'frompem | asn1_ber | d' cert.pem
-out   # Can be used to decode nested parts
+out   
+out # Can decode nested values
+out 
 out   $ fq -d asn1_ber '.constructed[1].value | asn1_ber' file.ber
-out   # If schema is known and not complicated it can be reproduced
+out   
+out # Manual schema
+out 
 out   $ fq -d asn1_ber 'torepr as $r | ["version", "modulus", "private_exponent", "private_exponen", "prime1", "prime2", "exponent1", "exponent2", "coefficient"] | with_entries({key: .value, value: $r[.key]})' pkcs1.der
-out   # Decode file as asn1_ber
-out   $ fq -d asn1_ber . file
-out   # Decode value as asn1_ber
-out   ... | asn1_ber
-out   # Supports torepr
-out   $ fq -d asn1_ber torepr file
-out   # Supports torepr
-out   ... | asn1_ber | torepr
-out References and links
-out   https://www.itu.int/ITU-T/studygroups/com10/languages/X.690_1297.pdf
-out   https://en.wikipedia.org/wiki/X.690
-out   https://letsencrypt.org/docs/a-warm-welcome-to-asn1-and-der/
-out   https://lapo.it/asn1js/
+out   
+out # References
+out - https://www.itu.int/ITU-T/studygroups/com10/languages/X.690_1297.pdf
+out - https://en.wikipedia.org/wiki/X.690
+out - https://letsencrypt.org/docs/a-warm-welcome-to-asn1-and-der/
+out - https://lapo.it/asn1js/
+out 
 "help(av1_ccr)"
 out av1_ccr: AV1 Codec Configuration Record decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as av1_ccr
 out   $ fq -d av1_ccr . file
 out   # Decode value as av1_ccr
 out   ... | av1_ccr
+out 
 "help(av1_frame)"
 out av1_frame: AV1 frame decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as av1_frame
 out   $ fq -d av1_frame . file
 out   # Decode value as av1_frame
 out   ... | av1_frame
+out 
 "help(av1_obu)"
 out av1_obu: AV1 Open Bitstream Unit decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as av1_obu
 out   $ fq -d av1_obu . file
 out   # Decode value as av1_obu
 out   ... | av1_obu
+out 
 "help(avc_annexb)"
 out avc_annexb: H.264/AVC Annex B decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as avc_annexb
 out   $ fq -d avc_annexb . file
 out   # Decode value as avc_annexb
 out   ... | avc_annexb
+out 
 "help(avc_au)"
 out avc_au: H.264/AVC Access Unit decoder
-out Options:
+out # Options
+out 
 out   length_size=4  Length value size
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as avc_au
 out   $ fq -d avc_au . file
 out   # Decode value as avc_au
@@ -115,82 +156,114 @@ out   # Decode file using avc_au options
 out   $ fq -d avc_au -o length_size=4 . file
 out   # Decode value as avc_au
 out   ... | avc_au({length_size:4})
+out 
 "help(avc_dcr)"
 out avc_dcr: H.264/AVC Decoder Configuration Record decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as avc_dcr
 out   $ fq -d avc_dcr . file
 out   # Decode value as avc_dcr
 out   ... | avc_dcr
+out 
 "help(avc_nalu)"
 out avc_nalu: H.264/AVC Network Access Layer Unit decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as avc_nalu
 out   $ fq -d avc_nalu . file
 out   # Decode value as avc_nalu
 out   ... | avc_nalu
+out 
 "help(avc_pps)"
 out avc_pps: H.264/AVC Picture Parameter Set decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as avc_pps
 out   $ fq -d avc_pps . file
 out   # Decode value as avc_pps
 out   ... | avc_pps
+out 
 "help(avc_sei)"
 out avc_sei: H.264/AVC Supplemental Enhancement Information decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as avc_sei
 out   $ fq -d avc_sei . file
 out   # Decode value as avc_sei
 out   ... | avc_sei
+out 
 "help(avc_sps)"
 out avc_sps: H.264/AVC Sequence Parameter Set decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as avc_sps
 out   $ fq -d avc_sps . file
 out   # Decode value as avc_sps
 out   ... | avc_sps
+out 
 "help(avro_ocf)"
 out avro_ocf: Avro object container file decoder
+out 
+out # Decode examples
+out 
+out   # Decode file as avro_ocf
+out   $ fq -d avro_ocf . file
+out   # Decode value as avro_ocf
+out   ... | avro_ocf
+out 
 out Supports reading Avro Object Container Format (OCF) files based on the 1.11.0 specification.
 out 
 out Capable of handling null, deflate, and snappy codecs for data compression.
 out 
 out Limitations:
-out  - Schema does not support self-referential types, only built-in types.
-out  - Decimal logical types are not supported for decoding, will just be treated as their primitive type
-out Examples:
-out   # Decode file as avro_ocf
-out   $ fq -d avro_ocf . file
-out   # Decode value as avro_ocf
-out   ... | avro_ocf
-out References and links
-out   https://avro.apache.org/docs/current/spec.html#Object+Container+Files
+out 
+out - Schema does not support self-referential types, only built-in types.
+out - Decimal logical types are not supported for decoding, will just be treated as their primitive type
+out 
+out # References
+out - https://avro.apache.org/docs/current/spec.html#Object+Container+Files
+out 
 "help(bencode)"
 out bencode: BitTorrent bencoding decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as bencode
 out   $ fq -d bencode . file
 out   # Decode value as bencode
 out   ... | bencode
-out   # Supports torepr
-out   $ fq -d bencode torepr file
-out   # Supports torepr
-out   ... | bencode | torepr
-out References and links
-out   https://wiki.theory.org/BitTorrentSpecification#Bencoding
+out 
+out # Convert represented value to JSON
+out 
+out   $ fq -d bencode torepr file.torrent
+out   
+out # References
+out - https://wiki.theory.org/BitTorrentSpecification#Bencoding
+out 
 "help(bitcoin_blkdat)"
 out bitcoin_blkdat: Bitcoin blk.dat decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as bitcoin_blkdat
 out   $ fq -d bitcoin_blkdat . file
 out   # Decode value as bitcoin_blkdat
 out   ... | bitcoin_blkdat
+out 
 "help(bitcoin_block)"
 out bitcoin_block: Bitcoin block decoder
-out Options:
+out # Options
+out 
 out   has_header=false  Has blkdat header
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as bitcoin_block
 out   $ fq -d bitcoin_block . file
 out   # Decode value as bitcoin_block
@@ -199,69 +272,95 @@ out   # Decode file using bitcoin_block options
 out   $ fq -d bitcoin_block -o has_header=false . file
 out   # Decode value as bitcoin_block
 out   ... | bitcoin_block({has_header:false})
+out 
 "help(bitcoin_script)"
 out bitcoin_script: Bitcoin script decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as bitcoin_script
 out   $ fq -d bitcoin_script . file
 out   # Decode value as bitcoin_script
 out   ... | bitcoin_script
+out 
 "help(bitcoin_transaction)"
 out bitcoin_transaction: Bitcoin transaction decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as bitcoin_transaction
 out   $ fq -d bitcoin_transaction . file
 out   # Decode value as bitcoin_transaction
 out   ... | bitcoin_transaction
+out 
 "help(bsd_loopback_frame)"
 out bsd_loopback_frame: BSD loopback frame decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as bsd_loopback_frame
 out   $ fq -d bsd_loopback_frame . file
 out   # Decode value as bsd_loopback_frame
 out   ... | bsd_loopback_frame
+out 
 "help(bson)"
 out bson: Binary JSON decoder
-out Examples:
-out   # BSON as JSON
-out   $ fq -d bson torepr file
+out 
+out # Decode examples
+out 
 out   # Decode file as bson
 out   $ fq -d bson . file
 out   # Decode value as bson
 out   ... | bson
-out   # Supports torepr
-out   $ fq -d bson torepr file
-out   # Supports torepr
-out   ... | bson | torepr
-out References and links
-out   https://wiki.theory.org/BitTorrentSpecification#Bencoding
+out 
+out # Convert represented value to JSON
+out 
+out   $ fq -d bson torepr file.bson
+out   
+out  Filter represented value
+out 
+out   $ fq -d bson 'torepr | select(.name=="bob")' file.bson
+out   
+out # References
+out - https://bsonspec.org/spec.html
+out 
 "help(bzip2)"
 out bzip2: bzip2 compression decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as bzip2
 out   $ fq -d bzip2 . file
 out   # Decode value as bzip2
 out   ... | bzip2
+out 
 "help(cbor)"
 out cbor: Concise Binary Object Representation decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as cbor
 out   $ fq -d cbor . file
 out   # Decode value as cbor
 out   ... | cbor
-out   # Supports torepr
-out   $ fq -d cbor torepr file
-out   # Supports torepr
-out   ... | cbor | torepr
-out References and links
-out   https://en.wikipedia.org/wiki/CBOR
-out   https://www.rfc-editor.org/rfc/rfc8949.html
+out 
+out # Convert represented value to JSON
+out 
+out   $ fq -d cbor torepr file.cbor
+out   
+out # References
+out - https://en.wikipedia.org/wiki/CBOR
+out - https://www.rfc-editor.org/rfc/rfc8949.html
+out 
 "help(csv)"
 out csv: Comma separated values decoder
-out Options:
+out # Options
+out 
 out   comma=,    Separator character
 out   comment=#  Comment line character
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as csv
 out   $ fq -d csv . file
 out   # Decode value as csv
@@ -270,60 +369,85 @@ out   # Decode file using csv options
 out   $ fq -d csv -o comma="," -o comment="#" . file
 out   # Decode value as csv
 out   ... | csv({comma:",",comment:"#"})
+out 
 "help(dns)"
 out dns: DNS packet decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as dns
 out   $ fq -d dns . file
 out   # Decode value as dns
 out   ... | dns
+out 
 "help(dns_tcp)"
 out dns_tcp: DNS packet (TCP) decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as dns_tcp
 out   $ fq -d dns_tcp . file
 out   # Decode value as dns_tcp
 out   ... | dns_tcp
+out 
 "help(elf)"
 out elf: Executable and Linkable Format decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as elf
 out   $ fq -d elf . file
 out   # Decode value as elf
 out   ... | elf
+out 
 "help(ether8023_frame)"
 out ether8023_frame: Ethernet 802.3 frame decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as ether8023_frame
 out   $ fq -d ether8023_frame . file
 out   # Decode value as ether8023_frame
 out   ... | ether8023_frame
+out 
 "help(exif)"
 out exif: Exchangeable Image File Format decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as exif
 out   $ fq -d exif . file
 out   # Decode value as exif
 out   ... | exif
+out 
 "help(fairplay_spc)"
 out fairplay_spc: FairPlay Server Playback Context decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as fairplay_spc
 out   $ fq -d fairplay_spc . file
 out   # Decode value as fairplay_spc
 out   ... | fairplay_spc
+out 
 "help(flac)"
 out flac: Free Lossless Audio Codec file decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as flac
 out   $ fq -d flac . file
 out   # Decode value as flac
 out   ... | flac
+out 
 "help(flac_frame)"
 out flac_frame: FLAC frame decoder
-out Options:
+out # Options
+out 
 out   bits_per_sample=16  Bits per sample
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as flac_frame
 out   $ fq -d flac_frame . file
 out   # Decode value as flac_frame
@@ -332,60 +456,85 @@ out   # Decode file using flac_frame options
 out   $ fq -d flac_frame -o bits_per_sample=16 . file
 out   # Decode value as flac_frame
 out   ... | flac_frame({bits_per_sample:16})
+out 
 "help(flac_metadatablock)"
 out flac_metadatablock: FLAC metadatablock decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as flac_metadatablock
 out   $ fq -d flac_metadatablock . file
 out   # Decode value as flac_metadatablock
 out   ... | flac_metadatablock
+out 
 "help(flac_metadatablocks)"
 out flac_metadatablocks: FLAC metadatablocks decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as flac_metadatablocks
 out   $ fq -d flac_metadatablocks . file
 out   # Decode value as flac_metadatablocks
 out   ... | flac_metadatablocks
+out 
 "help(flac_picture)"
 out flac_picture: FLAC metadatablock picture decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as flac_picture
 out   $ fq -d flac_picture . file
 out   # Decode value as flac_picture
 out   ... | flac_picture
+out 
 "help(flac_streaminfo)"
 out flac_streaminfo: FLAC streaminfo decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as flac_streaminfo
 out   $ fq -d flac_streaminfo . file
 out   # Decode value as flac_streaminfo
 out   ... | flac_streaminfo
+out 
 "help(gif)"
 out gif: Graphics Interchange Format decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as gif
 out   $ fq -d gif . file
 out   # Decode value as gif
 out   ... | gif
+out 
 "help(gzip)"
 out gzip: gzip compression decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as gzip
 out   $ fq -d gzip . file
 out   # Decode value as gzip
 out   ... | gzip
+out 
 "help(hevc_annexb)"
 out hevc_annexb: H.265/HEVC Annex B decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as hevc_annexb
 out   $ fq -d hevc_annexb . file
 out   # Decode value as hevc_annexb
 out   ... | hevc_annexb
+out 
 "help(hevc_au)"
 out hevc_au: H.265/HEVC Access Unit decoder
-out Options:
+out # Options
+out 
 out   length_size=4  Length value size
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as hevc_au
 out   $ fq -d hevc_au . file
 out   # Decode value as hevc_au
@@ -394,48 +543,67 @@ out   # Decode file using hevc_au options
 out   $ fq -d hevc_au -o length_size=4 . file
 out   # Decode value as hevc_au
 out   ... | hevc_au({length_size:4})
+out 
 "help(hevc_dcr)"
 out hevc_dcr: H.265/HEVC Decoder Configuration Record decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as hevc_dcr
 out   $ fq -d hevc_dcr . file
 out   # Decode value as hevc_dcr
 out   ... | hevc_dcr
+out 
 "help(hevc_nalu)"
 out hevc_nalu: H.265/HEVC Network Access Layer Unit decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as hevc_nalu
 out   $ fq -d hevc_nalu . file
 out   # Decode value as hevc_nalu
 out   ... | hevc_nalu
+out 
 "help(hevc_pps)"
 out hevc_pps: H.265/HEVC Picture Parameter Set decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as hevc_pps
 out   $ fq -d hevc_pps . file
 out   # Decode value as hevc_pps
 out   ... | hevc_pps
+out 
 "help(hevc_sps)"
 out hevc_sps: H.265/HEVC Sequence Parameter Set decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as hevc_sps
 out   $ fq -d hevc_sps . file
 out   # Decode value as hevc_sps
 out   ... | hevc_sps
+out 
 "help(hevc_vps)"
 out hevc_vps: H.265/HEVC Video Parameter Set decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as hevc_vps
 out   $ fq -d hevc_vps . file
 out   # Decode value as hevc_vps
 out   ... | hevc_vps
+out 
 "help(html)"
 out html: HyperText Markup Language decoder
-out Options:
+out # Options
+out 
 out   array=false         Decode as nested arrays
 out   attribute_prefix=@  Prefix for attribute keys
 out   seq=false           Use seq attribute to preserve element order
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as html
 out   $ fq -d html . file
 out   # Decode value as html
@@ -444,125 +612,190 @@ out   # Decode file using html options
 out   $ fq -d html -o array=false -o attribute_prefix="@" -o seq=false . file
 out   # Decode value as html
 out   ... | html({array:false,attribute_prefix:"@",seq:false})
+out 
 "help(icc_profile)"
 out icc_profile: International Color Consortium profile decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as icc_profile
 out   $ fq -d icc_profile . file
 out   # Decode value as icc_profile
 out   ... | icc_profile
+out 
 "help(icmp)"
 out icmp: Internet Control Message Protocol decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as icmp
 out   $ fq -d icmp . file
 out   # Decode value as icmp
 out   ... | icmp
+out 
 "help(icmpv6)"
 out icmpv6: Internet Control Message Protocol v6 decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as icmpv6
 out   $ fq -d icmpv6 . file
 out   # Decode value as icmpv6
 out   ... | icmpv6
+out 
 "help(id3v1)"
 out id3v1: ID3v1 metadata decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as id3v1
 out   $ fq -d id3v1 . file
 out   # Decode value as id3v1
 out   ... | id3v1
+out 
 "help(id3v11)"
 out id3v11: ID3v1.1 metadata decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as id3v11
 out   $ fq -d id3v11 . file
 out   # Decode value as id3v11
 out   ... | id3v11
+out 
 "help(id3v2)"
 out id3v2: ID3v2 metadata decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as id3v2
 out   $ fq -d id3v2 . file
 out   # Decode value as id3v2
 out   ... | id3v2
+out 
 "help(ipv4_packet)"
 out ipv4_packet: Internet protocol v4 packet decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as ipv4_packet
 out   $ fq -d ipv4_packet . file
 out   # Decode value as ipv4_packet
 out   ... | ipv4_packet
+out 
 "help(ipv6_packet)"
 out ipv6_packet: Internet protocol v6 packet decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as ipv6_packet
 out   $ fq -d ipv6_packet . file
 out   # Decode value as ipv6_packet
 out   ... | ipv6_packet
+out 
 "help(jpeg)"
 out jpeg: Joint Photographic Experts Group file decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as jpeg
 out   $ fq -d jpeg . file
 out   # Decode value as jpeg
 out   ... | jpeg
+out 
 "help(json)"
 out json: JavaScript Object Notation decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as json
 out   $ fq -d json . file
 out   # Decode value as json
 out   ... | json
+out 
 "help(jsonl)"
 out jsonl: JavaScript Object Notation Lines decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as jsonl
 out   $ fq -d jsonl . file
 out   # Decode value as jsonl
 out   ... | jsonl
+out 
 "help(macho)"
 out macho: Mach-O macOS executable decoder
-out Supports decoding vanilla and FAT Mach-O binaries.
-out Examples:
-out   # Select 64bit load segments
-out   $ fq '.load_commands[] | select(.cmd=="segment_64")' file
+out 
+out # Decode examples
+out 
 out   # Decode file as macho
 out   $ fq -d macho . file
 out   # Decode value as macho
 out   ... | macho
-out References and links
-out   https://github.com/aidansteele/osx-abi-macho-file-format-reference
+out 
+out Supports decoding vanilla and FAT Mach-O binaries.
+out 
+out # Select 64bit load segments
+out 
+out   $ fq '.load_commands[] | select(.cmd=="segment_64")' file
+out   
+out # References
+out - https://github.com/aidansteele/osx-abi-macho-file-format-reference
+out 
 "help(macho_fat)"
 out macho_fat: Fat Mach-O macOS executable (multi-architecture) decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as macho_fat
 out   $ fq -d macho_fat . file
 out   # Decode value as macho_fat
 out   ... | macho_fat
+out 
+"help(markdown)"
+out markdown: Markdown decoder
+out 
+out # Decode examples
+out 
+out   # Decode file as markdown
+out   $ fq -d markdown . file
+out   # Decode value as markdown
+out   ... | markdown
+out 
 "help(matroska)"
 out matroska: Matroska file decoder
-out Examples:
-out   # Lookup element decode value using matroska_path
-out   ... | matroska_path(".Segment.Tracks[0)"
-out   # Return matroska_path string for a box decode value
-out   ... | grep_by(.id == "Tracks") | matroska_path
+out 
+out # Decode examples
+out 
 out   # Decode file as matroska
 out   $ fq -d matroska . file
 out   # Decode value as matroska
 out   ... | matroska
-out References and links
-out   https://tools.ietf.org/html/draft-ietf-cellar-ebml-00
-out   https://matroska.org/technical/specs/index.html
-out   https://www.matroska.org/technical/basics.html
-out   https://www.matroska.org/technical/codec_specs.html
-out   https://wiki.xiph.org/MatroskaOpus
+out 
+out # Lookup element path using matroska_path
+out 
+out   $ fq 'matroska_path(".Segment.Tracks[0)")' file.mkv
+out   
+out # Get element path using matroska_path
+out 
+out   $ fq 'grep_by(.id == "Tracks") | matroska_path' file.mkv
+out   
+out # References
+out - https://tools.ietf.org/html/draft-ietf-cellar-ebml-00
+out - https://matroska.org/technical/specs/index.html
+out - https://www.matroska.org/technical/basics.html
+out - https://www.matroska.org/technical/codec_specs.html
+out - https://wiki.xiph.org/MatroskaOpus
+out 
 "help(mp3)"
 out mp3: MP3 file decoder
-out Options:
+out # Options
+out 
 out   max_sync_seek=32768          Max byte distance to next sync
 out   max_unique_header_configs=5  Max number of unique frame header configs allowed
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as mp3
 out   $ fq -d mp3 . file
 out   # Decode value as mp3
@@ -571,24 +804,26 @@ out   # Decode file using mp3 options
 out   $ fq -d mp3 -o max_sync_seek=32768 -o max_unique_header_configs=5 . file
 out   # Decode value as mp3
 out   ... | mp3({max_sync_seek:32768,max_unique_header_configs:5})
+out 
 "help(mp3_frame)"
 out mp3_frame: MPEG audio layer 3 frame decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as mp3_frame
 out   $ fq -d mp3_frame . file
 out   # Decode value as mp3_frame
 out   ... | mp3_frame
+out 
 "help(mp4)"
-out mp4: ISOBMFF MPEG-4 part 12 and similar decoder
-out Support mp4_path
-out Options:
+out mp4: ISOBMFF, QuickTime and similar decoder
+out # Options
+out 
 out   allow_truncated=false  Allow box to be truncated
 out   decode_samples=true    Decode supported media samples
-out Examples:
-out   # Lookup box decode value using mp4_path
-out   ... | mp4_path(".moov.trak[1]")
-out   # Return mp4_path string for a box decode value
-out   ... | grep_by(.type == "trak") | mp4_path
+out 
+out # Decode examples
+out 
 out   # Decode file as mp4
 out   $ fq -d mp4 . file
 out   # Decode value as mp4
@@ -597,282 +832,423 @@ out   # Decode file using mp4 options
 out   $ fq -d mp4 -o allow_truncated=false -o decode_samples=true . file
 out   # Decode value as mp4
 out   ... | mp4({allow_truncated:false,decode_samples:true})
-out References and links
-out   ISO/IEC base media file format (MPEG-4 Part 12) https://en.wikipedia.org/wiki/ISO/IEC_base_media_file_format
-out   Quicktime file format https://developer.apple.com/standards/qtff-2001.pdf
+out 
+out # mp4_path($path) - Lookup mp4 box using a mp4 box path.
+out 
+out   # <decode value box> | mp4_path($path) -> <decode value box>
+out   $ fq 'mp4_path(".moov.trak[1]")' file.mp4
+out   
+out # mp4_path - Return mp4 box path for a decode value box.
+out 
+out   # <decode value box> | mp4_path -> string
+out   $ fq 'grep_by(.type == "trak") | mp4_path' file.mp4
+out   
+out # Force decode a single box
+out 
+out   $ fq -n '"AAAAHGVsc3QAAAAAAAAAAQAAADIAAAQAAAEAAA==" | frombase64 | mp4({force:true}) | d'
+out   
+out # Don't decode samples and manually decode first sample for first track as a aac_frame
+out 
+out   $ fq -o decode_samples=false '.tracks[0].samples[0] | aac_frame | d' file.mp4
+out   
+out # Entries for first edit list as values
+out 
+out   $ fq 'first(grep_by(.type=="elst").entries) | tovalue' file.mp4
+out   
+out # References
+out - ISO/IEC base media file format (MPEG-4 Part 12) (https://en.wikipedia.org/wiki/ISO/IEC_base_media_file_format)
+out - Quicktime file format (https://developer.apple.com/standards/qtff-2001.pdf)
+out 
 "help(mpeg_asc)"
 out mpeg_asc: MPEG-4 Audio Specific Config decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as mpeg_asc
 out   $ fq -d mpeg_asc . file
 out   # Decode value as mpeg_asc
 out   ... | mpeg_asc
+out 
 "help(mpeg_es)"
 out mpeg_es: MPEG Elementary Stream decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as mpeg_es
 out   $ fq -d mpeg_es . file
 out   # Decode value as mpeg_es
 out   ... | mpeg_es
+out 
 "help(mpeg_pes)"
 out mpeg_pes: MPEG Packetized elementary stream decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as mpeg_pes
 out   $ fq -d mpeg_pes . file
 out   # Decode value as mpeg_pes
 out   ... | mpeg_pes
+out 
 "help(mpeg_pes_packet)"
 out mpeg_pes_packet: MPEG Packetized elementary stream packet decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as mpeg_pes_packet
 out   $ fq -d mpeg_pes_packet . file
 out   # Decode value as mpeg_pes_packet
 out   ... | mpeg_pes_packet
+out 
 "help(mpeg_spu)"
 out mpeg_spu: Sub Picture Unit (DVD subtitle) decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as mpeg_spu
 out   $ fq -d mpeg_spu . file
 out   # Decode value as mpeg_spu
 out   ... | mpeg_spu
+out 
 "help(mpeg_ts)"
 out mpeg_ts: MPEG Transport Stream decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as mpeg_ts
 out   $ fq -d mpeg_ts . file
 out   # Decode value as mpeg_ts
 out   ... | mpeg_ts
+out 
 "help(msgpack)"
 out msgpack: MessagePack decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as msgpack
 out   $ fq -d msgpack . file
 out   # Decode value as msgpack
 out   ... | msgpack
-out   # Supports torepr
-out   $ fq -d msgpack torepr file
-out   # Supports torepr
-out   ... | msgpack | torepr
-out References and links
-out   https://github.com/msgpack/msgpack/blob/master/spec.md
+out 
+out # Convert represented value to JSON
+out 
+out   $ fq -d msgpack torepr file.msgpack
+out   
+out # References
+out - https://github.com/msgpack/msgpack/blob/master/spec.md
+out 
 "help(ogg)"
 out ogg: OGG file decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as ogg
 out   $ fq -d ogg . file
 out   # Decode value as ogg
 out   ... | ogg
+out 
 "help(ogg_page)"
 out ogg_page: OGG page decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as ogg_page
 out   $ fq -d ogg_page . file
 out   # Decode value as ogg_page
 out   ... | ogg_page
+out 
 "help(opus_packet)"
 out opus_packet: Opus packet decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as opus_packet
 out   $ fq -d opus_packet . file
 out   # Decode value as opus_packet
 out   ... | opus_packet
+out 
 "help(pcap)"
 out pcap: PCAP packet capture decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as pcap
 out   $ fq -d pcap . file
 out   # Decode value as pcap
 out   ... | pcap
+out 
 "help(pcapng)"
 out pcapng: PCAPNG packet capture decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as pcapng
 out   $ fq -d pcapng . file
 out   # Decode value as pcapng
 out   ... | pcapng
+out 
 "help(png)"
 out png: Portable Network Graphics file decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as png
 out   $ fq -d png . file
 out   # Decode value as png
 out   ... | png
+out 
 "help(prores_frame)"
 out prores_frame: Apple ProRes frame decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as prores_frame
 out   $ fq -d prores_frame . file
 out   # Decode value as prores_frame
 out   ... | prores_frame
+out 
 "help(protobuf)"
 out protobuf: Protobuf decoder
-out Examples:
-out   # Can be used to decode sub messages
-out   $ fq -d protobuf '.fields[6].wire_value | protobuf | d'
+out 
+out # Decode examples
+out 
 out   # Decode file as protobuf
 out   $ fq -d protobuf . file
 out   # Decode value as protobuf
 out   ... | protobuf
-out References and links
-out   https://developers.google.com/protocol-buffers/docs/encoding
+out 
+out # Can decode sub messages
+out 
+out   $ fq -d protobuf '.fields[6].wire_value | protobuf | d' file
+out   
+out # References
+out - https://developers.google.com/protocol-buffers/docs/encoding
+out 
 "help(protobuf_widevine)"
 out protobuf_widevine: Widevine protobuf decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as protobuf_widevine
 out   $ fq -d protobuf_widevine . file
 out   # Decode value as protobuf_widevine
 out   ... | protobuf_widevine
+out 
 "help(pssh_playready)"
 out pssh_playready: PlayReady PSSH decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as pssh_playready
 out   $ fq -d pssh_playready . file
 out   # Decode value as pssh_playready
 out   ... | pssh_playready
+out 
 "help(raw)"
 out raw: Raw bits decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as raw
 out   $ fq -d raw . file
 out   # Decode value as raw
 out   ... | raw
+out 
 "help(rtmp)"
 out rtmp: Real-Time Messaging Protocol decoder
-out Current only supports plain RTMP (not RTMPT or encrypted variants etc) with AMF0 (not AMF3).
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as rtmp
 out   $ fq -d rtmp . file
 out   # Decode value as rtmp
 out   ... | rtmp
-out References and links
-out   https://rtmp.veriskope.com/docs/spec/
-out   https://rtmp.veriskope.com/pdf/video_file_format_spec_v10.pdf
+out 
+out Current only supports plain RTMP (not RTMPT or encrypted variants etc) with AMF0 (not AMF3).
+out 
+out # References
+out - https://rtmp.veriskope.com/docs/spec/
+out - https://rtmp.veriskope.com/pdf/video_file_format_spec_v10.pdf
+out 
 "help(sll2_packet)"
 out sll2_packet: Linux cooked capture encapsulation v2 decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as sll2_packet
 out   $ fq -d sll2_packet . file
 out   # Decode value as sll2_packet
 out   ... | sll2_packet
+out 
 "help(sll_packet)"
 out sll_packet: Linux cooked capture encapsulation decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as sll_packet
 out   $ fq -d sll_packet . file
 out   # Decode value as sll_packet
 out   ... | sll_packet
+out 
 "help(tar)"
 out tar: Tar archive decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as tar
 out   $ fq -d tar . file
 out   # Decode value as tar
 out   ... | tar
+out 
 "help(tcp_segment)"
 out tcp_segment: Transmission control protocol segment decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as tcp_segment
 out   $ fq -d tcp_segment . file
 out   # Decode value as tcp_segment
 out   ... | tcp_segment
+out 
 "help(tiff)"
 out tiff: Tag Image File Format decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as tiff
 out   $ fq -d tiff . file
 out   # Decode value as tiff
 out   ... | tiff
+out 
 "help(toml)"
 out toml: Tom's Obvious, Minimal Language decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as toml
 out   $ fq -d toml . file
 out   # Decode value as toml
 out   ... | toml
+out 
 "help(udp_datagram)"
 out udp_datagram: User datagram protocol decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as udp_datagram
 out   $ fq -d udp_datagram . file
 out   # Decode value as udp_datagram
 out   ... | udp_datagram
+out 
 "help(vorbis_comment)"
 out vorbis_comment: Vorbis comment decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as vorbis_comment
 out   $ fq -d vorbis_comment . file
 out   # Decode value as vorbis_comment
 out   ... | vorbis_comment
+out 
 "help(vorbis_packet)"
 out vorbis_packet: Vorbis packet decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as vorbis_packet
 out   $ fq -d vorbis_packet . file
 out   # Decode value as vorbis_packet
 out   ... | vorbis_packet
+out 
 "help(vp8_frame)"
 out vp8_frame: VP8 frame decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as vp8_frame
 out   $ fq -d vp8_frame . file
 out   # Decode value as vp8_frame
 out   ... | vp8_frame
+out 
 "help(vp9_cfm)"
 out vp9_cfm: VP9 Codec Feature Metadata decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as vp9_cfm
 out   $ fq -d vp9_cfm . file
 out   # Decode value as vp9_cfm
 out   ... | vp9_cfm
+out 
 "help(vp9_frame)"
 out vp9_frame: VP9 frame decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as vp9_frame
 out   $ fq -d vp9_frame . file
 out   # Decode value as vp9_frame
 out   ... | vp9_frame
+out 
 "help(vpx_ccr)"
 out vpx_ccr: VPX Codec Configuration Record decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as vpx_ccr
 out   $ fq -d vpx_ccr . file
 out   # Decode value as vpx_ccr
 out   ... | vpx_ccr
+out 
 "help(wasm)"
 out wasm: WebAssembly Binary Format decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as wasm
 out   $ fq -d wasm . file
 out   # Decode value as wasm
 out   ... | wasm
+out 
 "help(wav)"
 out wav: WAV file decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as wav
 out   $ fq -d wav . file
 out   # Decode value as wav
 out   ... | wav
+out 
 "help(webp)"
 out webp: WebP image decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as webp
 out   $ fq -d webp . file
 out   # Decode value as webp
 out   ... | webp
+out 
 "help(xing)"
 out xing: Xing header decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as xing
 out   $ fq -d xing . file
 out   # Decode value as xing
 out   ... | xing
+out 
 "help(xml)"
 out xml: Extensible Markup Language decoder
-out Options:
+out # Options
+out 
 out   array=false         Decode as nested arrays
 out   attribute_prefix=@  Prefix for attribute keys
 out   seq=false           Use seq attribute to preserve element order
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as xml
 out   $ fq -d xml . file
 out   # Decode value as xml
@@ -881,21 +1257,28 @@ out   # Decode file using xml options
 out   $ fq -d xml -o array=false -o attribute_prefix="@" -o seq=false . file
 out   # Decode value as xml
 out   ... | xml({array:false,attribute_prefix:"@",seq:false})
-out References and links
-out   xml.com's Converting Between XML and JSON https://www.xml.com/pub/a/2006/05/31/converting-between-xml-and-json.html
+out 
+out # References
+out - xml.com's Converting Between XML and JSON (https://www.xml.com/pub/a/2006/05/31/converting-between-xml-and-json.html)
+out 
 "help(yaml)"
 out yaml: YAML Ain't Markup Language decoder
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as yaml
 out   $ fq -d yaml . file
 out   # Decode value as yaml
 out   ... | yaml
+out 
 "help(zip)"
 out zip: ZIP archive decoder
-out Supports ZIP64.
-out Options:
+out # Options
+out 
 out   uncompress=true  Uncompress and probe files
-out Examples:
+out 
+out # Decode examples
+out 
 out   # Decode file as zip
 out   $ fq -d zip . file
 out   # Decode value as zip
@@ -904,5 +1287,10 @@ out   # Decode file using zip options
 out   $ fq -d zip -o uncompress=true . file
 out   # Decode value as zip
 out   ... | zip({uncompress:true})
-out References and links
-out   https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
+out 
+out Supports ZIP64.
+out 
+out # References
+out - https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
+out - https://opensource.apple.com/source/zip/zip-6/unzip/unzip/proginfo/extra.fld
+out 

@@ -15,7 +15,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-//go:embed zip.jq
+//go:embed zip.md
 var zipFS embed.FS
 
 var probeFormat decode.Group
@@ -32,7 +32,6 @@ func init() {
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.PROBE}, Group: &probeFormat},
 		},
-		Functions: []string{"_help"},
 	})
 	interp.RegisterFS(zipFS)
 }

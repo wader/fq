@@ -64,14 +64,6 @@ def _help_format_enrich($arg0; $f; $include_basic):
         , {comment: "Decode value as \($f.name)", expr: "\($f.name)"}
         ]
     end
-  | (($f.functions // []) | map(select(startswith("_") | not))) as $public_functions
-  | if ($public_functions | length) > 0 then
-      .examples +=
-        [ $public_functions[]
-        | {comment: "Supports `\(.)`", shell: "fq -d \($f.name) torepr file"}
-        , {comment: "Supports `\(.)`", expr: "\($f.name) | torepr"}
-        ]
-    end
   | if $f.decode_in_arg then
       .examples +=
         [ { comment: "Decode file using \($f.name) options"
@@ -146,13 +138,14 @@ def _help($arg0; $topic):
     elif _registry.formats | has($topic) then
       ( _registry.formats[$topic] as $f
       | (_format_func($f.name; "_help")? // {} | _help_format_enrich($arg0; $f; true)) as $fhelp
+      | ((_registry.files[][] | select(.name=="\($topic).md").data) // false) as $doc
       | "\($f.name): \($f.description) decoder"
-      , ($fhelp.notes | if . then _markdown_to_text else empty end)
       , if $f.decode_in_arg then
           ( $f.decode_in_arg
           | to_entries
           | map(["  \(.key)=\(.value)  ", $f.decode_in_arg_doc[.key]])
-          | "Options:"
+          | "# Options"
+          , ""
           , table(
               .;
               map(
@@ -167,28 +160,19 @@ def _help($arg0; $topic):
           )
         else empty
         end
-      , "Examples:"
+      , ""
+      , "# Decode examples"
+      , ""
       , ( $fhelp.examples[]
-        | "  # \(.comment | _markdown_to_text)"
+        | "  # \(.comment)"
         , if .shell then "  $ \(.shell)"
           elif .expr then "  ... | \(.expr)"
           else empty
           end
         )
-      , if isempty($f.functions | select(. == "torepr")) | not then
-          ( "Supports torepr:"
-          , "  ... | \($f.name) | torepr"
-          )
-        else empty
-        end
-      , if $fhelp.links then
-          ( "References and links"
-          , ( $fhelp.links[]
-            | if .title then "  \(.title) \(.url)"
-              else "  \(.url)"
-              end
-            )
-          )
+      , ""
+      # TODO: [:-1] hack to remove extra newline as we use println later
+      , if $doc then $doc | markdown | _markdown_to_text(options.width; -3)[:-1]
         else empty
         end
       )

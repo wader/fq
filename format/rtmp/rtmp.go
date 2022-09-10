@@ -21,7 +21,7 @@ import (
 var rtmpAmf0Group decode.Group
 var rtmpMpegASCFormat decode.Group
 
-//go:embed rtmp.jq
+//go:embed rtmp.md
 var rtmpFS embed.FS
 
 func init() {
@@ -36,7 +36,6 @@ func init() {
 			{Names: []string{format.AMF0}, Group: &rtmpAmf0Group},
 			{Names: []string{format.MPEG_ASC}, Group: &rtmpMpegASCFormat},
 		},
-		Functions: []string{"_help"},
 	})
 	interp.RegisterFS(rtmpFS)
 }
