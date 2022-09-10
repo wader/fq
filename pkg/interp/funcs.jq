@@ -153,23 +153,6 @@ def paste:
     )
   end;
 
-# very simple markdown to text converter
-# assumes very basic markdown as input
-def _markdown_to_text:
-  ( .
-  # ```
-  # code
-  # ```
-  # -> code
-  | gsub("\\n```\\n"; "\n"; "m")
-  # #, ##, ###, ... -> #
-  | gsub("(?<line>\\n)?#+(?<title>.*)\\n"; "\(.line // "")#\(.title)\n"; "m")
-  # [title](url) -> title (url)
-  | gsub("\\[(?<title>.*)\\]\\((?<url>.*)\\)"; "\(.title) (\(.url))")
-  # `code` -> code
-  | gsub("`(?<code>.*)`"; .code)
-  );
-
 def expr_to_path: _expr_to_path;
 def path_to_expr: _path_to_expr;
 

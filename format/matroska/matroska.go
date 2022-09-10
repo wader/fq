@@ -27,6 +27,7 @@ import (
 )
 
 //go:embed matroska.jq
+//go:embed matroska.md
 var matroskaFS embed.FS
 
 var aacFrameFormat decode.Group
@@ -78,7 +79,6 @@ func init() {
 			{Names: []string{format.VP9_CFM}, Group: &vp9CFMFormat},
 			{Names: []string{format.VP9_FRAME}, Group: &vp9FrameFormat},
 		},
-		Functions: []string{"_help"},
 	})
 	interp.RegisterFS(matroskaFS)
 

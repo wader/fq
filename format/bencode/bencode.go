@@ -13,6 +13,7 @@ import (
 )
 
 //go:embed bencode.jq
+//go:embed bencode.md
 var bencodeFS embed.FS
 
 func init() {
@@ -20,7 +21,7 @@ func init() {
 		Name:        format.BENCODE,
 		Description: "BitTorrent bencoding",
 		DecodeFn:    decodeBencode,
-		Functions:   []string{"torepr", "_help"},
+		Functions:   []string{"torepr"},
 	})
 	interp.RegisterFS(bencodeFS)
 }

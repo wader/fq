@@ -21,6 +21,7 @@ import (
 )
 
 //go:embed cbor.jq
+//go:embed cbor.md
 var cborFS embed.FS
 
 func init() {
@@ -28,7 +29,7 @@ func init() {
 		Name:        format.CBOR,
 		Description: "Concise Binary Object Representation",
 		DecodeFn:    decodeCBOR,
-		Functions:   []string{"torepr", "_help"},
+		Functions:   []string{"torepr"},
 	})
 	interp.RegisterFS(cborFS)
 }

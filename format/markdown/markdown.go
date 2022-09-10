@@ -3,7 +3,7 @@ package markdown
 import (
 	"embed"
 	"fmt"
-	"io/ioutil"
+	"io"
 
 	"github.com/gomarkdown/markdown"
 	"github.com/gomarkdown/markdown/ast"
@@ -28,7 +28,7 @@ func init() {
 }
 
 func decodeMarkdown(d *decode.D, _ any) any {
-	b, err := ioutil.ReadAll(bitio.NewIOReader(d.RawLen(d.Len())))
+	b, err := io.ReadAll(bitio.NewIOReader(d.RawLen(d.Len())))
 	if err != nil {
 		panic(err)
 	}
