@@ -7,5 +7,5 @@ Limitations:
 - Schema does not support self-referential types, only built-in types.
 - Decimal logical types are not supported for decoding, will just be treated as their primitive type
 
-#### References
+### References
 - https://avro.apache.org/docs/current/spec.html#Object+Container+Files
