@@ -73,11 +73,11 @@ def formats_sections:
   | ((_registry.files[][] | select(.name=="\($f.name).md").data) // false) as $doc
   | ({} | _help_format_enrich("fq"; $f; false)) as $fhelp
   | select(has_section($f; $fhelp))
-  | "### \($f.name)"
+  | "## \($f.name)"
   , ""
   , ($fhelp.notes | if . then ., "" else empty end)
   , if $f.decode_in_arg then
-      ( "#### Options"
+      ( "### Options"
       , ""
       , ( [ { name: "Name"
             , default: "Default"
@@ -113,7 +113,7 @@ def formats_sections:
     else empty
     end
   , if $fhelp.examples then
-      ( "#### Examples"
+      ( "### Examples"
       , ""
       , ( $fhelp.examples[]
         | "\(.comment)"

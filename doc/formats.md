@@ -134,15 +134,15 @@ fq -d raw 'mp4({force: true})' file.mp4
 
 [fq -rn -L . 'include "formats"; formats_sections']: sh-start
 
-### aac_frame
+## aac_frame
 
-#### Options
+### Options
 
 |Name         |Default|Description|
 |-            |-      |-|
 |`object_type`|1      |Audio object type|
 
-#### Examples
+### Examples
 
 Decode file using aac_frame options
 ```
@@ -154,7 +154,7 @@ Decode value as aac_frame
 ... | aac_frame({object_type:1})
 ```
 
-### asn1_ber
+## asn1_ber
 
 Supports decoding BER, CER and DER (X.690).
 
@@ -162,39 +162,39 @@ Supports decoding BER, CER and DER (X.690).
 - Does not support specifying a schema.
 - Supports `torepr` but without schema all sequences and sets will be arrays.
 
-#### `frompem` can be used to decode certificates etc
+### `frompem` can be used to decode certificates etc
 
 ```sh
 $ fq -d raw 'frompem | asn1_ber | d' cert.pem
 ```
 
-#### Can decode nested values
+### Can decode nested values
 
 ```sh
 $ fq -d asn1_ber '.constructed[1].value | asn1_ber' file.ber
 ```
 
-#### Manual schema
+### Manual schema
 
 ```sh
 $ fq -d asn1_ber 'torepr as $r | ["version", "modulus", "private_exponent", "private_exponen", "prime1", "prime2", "exponent1", "exponent2", "coefficient"] | with_entries({key: .value, value: $r[.key]})' pkcs1.der
 ```
 
-#### References
+### References
 - https://www.itu.int/ITU-T/studygroups/com10/languages/X.690_1297.pdf
 - https://en.wikipedia.org/wiki/X.690
 - https://letsencrypt.org/docs/a-warm-welcome-to-asn1-and-der/
 - https://lapo.it/asn1js/
 
-### avc_au
+## avc_au
 
-#### Options
+### Options
 
 |Name         |Default|Description|
 |-            |-      |-|
 |`length_size`|4      |Length value size|
 
-#### Examples
+### Examples
 
 Decode file using avc_au options
 ```
@@ -206,7 +206,7 @@ Decode value as avc_au
 ... | avc_au({length_size:4})
 ```
 
-### avro_ocf
+## avro_ocf
 
 Supports reading Avro Object Container Format (OCF) files based on the 1.11.0 specification.
 
@@ -217,29 +217,29 @@ Limitations:
 - Schema does not support self-referential types, only built-in types.
 - Decimal logical types are not supported for decoding, will just be treated as their primitive type
 
-#### References
+### References
 - https://avro.apache.org/docs/current/spec.html#Object+Container+Files
 
-### bencode
+## bencode
 
-#### Convert represented value to JSON
+### Convert represented value to JSON
 
 ```
 $ fq -d bencode torepr file.torrent
 ```
 
-#### References
+### References
 - https://wiki.theory.org/BitTorrentSpecification#Bencoding
 
-### bitcoin_block
+## bitcoin_block
 
-#### Options
+### Options
 
 |Name        |Default|Description|
 |-           |-      |-|
 |`has_header`|false  |Has blkdat header|
 
-#### Examples
+### Examples
 
 Decode file using bitcoin_block options
 ```
@@ -251,9 +251,9 @@ Decode value as bitcoin_block
 ... | bitcoin_block({has_header:false})
 ```
 
-### bson
+## bson
 
-#### Convert represented value to JSON
+### Convert represented value to JSON
 
 ```
 $ fq -d bson torepr file.bson
@@ -265,31 +265,31 @@ $ fq -d bson torepr file.bson
 $ fq -d bson 'torepr | select(.name=="bob")' file.bson
 ```
 
-#### References
+### References
 - https://bsonspec.org/spec.html
 
-### cbor
+## cbor
 
-#### Convert represented value to JSON
+### Convert represented value to JSON
 
 ```
 $ fq -d cbor torepr file.cbor
 ```
 
-#### References
+### References
 - https://en.wikipedia.org/wiki/CBOR
 - https://www.rfc-editor.org/rfc/rfc8949.html
 
-### csv
+## csv
 
-#### Options
+### Options
 
 |Name     |Default|Description|
 |-        |-      |-|
 |`comma`  |,      |Separator character|
 |`comment`|#      |Comment line character|
 
-#### Examples
+### Examples
 
 Decode file using csv options
 ```
@@ -301,15 +301,15 @@ Decode value as csv
 ... | csv({comma:",",comment:"#"})
 ```
 
-### flac_frame
+## flac_frame
 
-#### Options
+### Options
 
 |Name             |Default|Description|
 |-                |-      |-|
 |`bits_per_sample`|16     |Bits per sample|
 
-#### Examples
+### Examples
 
 Decode file using flac_frame options
 ```
@@ -321,15 +321,15 @@ Decode value as flac_frame
 ... | flac_frame({bits_per_sample:16})
 ```
 
-### hevc_au
+## hevc_au
 
-#### Options
+### Options
 
 |Name         |Default|Description|
 |-            |-      |-|
 |`length_size`|4      |Length value size|
 
-#### Examples
+### Examples
 
 Decode file using hevc_au options
 ```
@@ -341,9 +341,9 @@ Decode value as hevc_au
 ... | hevc_au({length_size:4})
 ```
 
-### html
+## html
 
-#### Options
+### Options
 
 |Name              |Default|Description|
 |-                 |-      |-|
@@ -351,7 +351,7 @@ Decode value as hevc_au
 |`attribute_prefix`|@      |Prefix for attribute keys|
 |`seq`             |false  |Use seq attribute to preserve element order|
 
-#### Examples
+### Examples
 
 Decode file using html options
 ```
@@ -363,50 +363,50 @@ Decode value as html
 ... | html({array:false,attribute_prefix:"@",seq:false})
 ```
 
-### macho
+## macho
 
 Supports decoding vanilla and FAT Mach-O binaries.
 
-#### Select 64bit load segments
+### Select 64bit load segments
 
 ```sh
 $ fq '.load_commands[] | select(.cmd=="segment_64")' file
 ```
 
-#### References
+### References
 - https://github.com/aidansteele/osx-abi-macho-file-format-reference
 
-### matroska
+## matroska
 
-#### Lookup element path using `matroska_path`
+### Lookup element path using `matroska_path`
 
 ```sh
 $ fq 'matroska_path(".Segment.Tracks[0)")' file.mkv
 ```
 
-#### Get element path using `matroska_path`
+### Get element path using `matroska_path`
 
 ```sh
 $ fq 'grep_by(.id == "Tracks") | matroska_path' file.mkv
 ```
 
-#### References
+### References
 - https://tools.ietf.org/html/draft-ietf-cellar-ebml-00
 - https://matroska.org/technical/specs/index.html
 - https://www.matroska.org/technical/basics.html
 - https://www.matroska.org/technical/codec_specs.html
 - https://wiki.xiph.org/MatroskaOpus
 
-### mp3
+## mp3
 
-#### Options
+### Options
 
 |Name                       |Default|Description|
 |-                          |-      |-|
 |`max_sync_seek`            |32768  |Max byte distance to next sync|
 |`max_unique_header_configs`|5      |Max number of unique frame header configs allowed|
 
-#### Examples
+### Examples
 
 Decode file using mp3 options
 ```
@@ -418,16 +418,16 @@ Decode value as mp3
 ... | mp3({max_sync_seek:32768,max_unique_header_configs:5})
 ```
 
-### mp4
+## mp4
 
-#### Options
+### Options
 
 |Name             |Default|Description|
 |-                |-      |-|
 |`allow_truncated`|false  |Allow box to be truncated|
 |`decode_samples` |true   |Decode supported media samples|
 
-#### Examples
+### Examples
 
 Decode file using mp4 options
 ```
@@ -439,76 +439,76 @@ Decode value as mp4
 ... | mp4({allow_truncated:false,decode_samples:true})
 ```
 
-#### `mp4_path($path)` - Lookup mp4 box using a mp4 box path.
+### `mp4_path($path)` - Lookup mp4 box using a mp4 box path.
 
 ```sh
 # <decode value box> | mp4_path($path) -> <decode value box>
 $ fq 'mp4_path(".moov.trak[1]")' file.mp4
 ```
 
-#### `mp4_path` - Return mp4 box path for a decode value box.
+### `mp4_path` - Return mp4 box path for a decode value box.
 
 ```sh
 # <decode value box> | mp4_path -> string
 $ fq 'grep_by(.type == "trak") | mp4_path' file.mp4
 ```
 
-#### Force decode a single box
+### Force decode a single box
 
 ```sh
 $ fq -n '"AAAAHGVsc3QAAAAAAAAAAQAAADIAAAQAAAEAAA==" | frombase64 | mp4({force:true}) | d'
 ```
 
-#### Don't decode samples and manually decode first sample for first track as a `aac_frame`
+### Don't decode samples and manually decode first sample for first track as a `aac_frame`
 
 ```sh
 $ fq -o decode_samples=false '.tracks[0].samples[0] | aac_frame | d' file.mp4
 ```
 
-#### Entries for first edit list as values
+### Entries for first edit list as values
 
 ```sh
 $ fq 'first(grep_by(.type=="elst").entries) | tovalue' file.mp4
 ```
 
-#### References
+### References
 
 - [ISO/IEC base media file format (MPEG-4 Part 12)](https://en.wikipedia.org/wiki/ISO/IEC_base_media_file_format)
 - [Quicktime file format](https://developer.apple.com/standards/qtff-2001.pdf)
 
-### msgpack
+## msgpack
 
-#### Convert represented value to JSON
+### Convert represented value to JSON
 
 ```
 $ fq -d msgpack torepr file.msgpack
 ```
 
-#### References
+### References
 - https://github.com/msgpack/msgpack/blob/master/spec.md
 
-### protobuf
+## protobuf
 
-#### Can decode sub messages
+### Can decode sub messages
 
 ```sh
 $ fq -d protobuf '.fields[6].wire_value | protobuf | d' file
 ```
 
-#### References
+### References
 - https://developers.google.com/protocol-buffers/docs/encoding
 
-### rtmp
+## rtmp
 
 Current only supports plain RTMP (not RTMPT or encrypted variants etc) with AMF0 (not AMF3).
 
-#### References
+### References
 - https://rtmp.veriskope.com/docs/spec/
 - https://rtmp.veriskope.com/pdf/video_file_format_spec_v10.pdf
 
-### xml
+## xml
 
-#### Options
+### Options
 
 |Name              |Default|Description|
 |-                 |-      |-|
@@ -516,7 +516,7 @@ Current only supports plain RTMP (not RTMPT or encrypted variants etc) with AMF0
 |`attribute_prefix`|@      |Prefix for attribute keys|
 |`seq`             |false  |Use seq attribute to preserve element order|
 
-#### Examples
+### Examples
 
 Decode file using xml options
 ```
@@ -528,18 +528,18 @@ Decode value as xml
 ... | xml({array:false,attribute_prefix:"@",seq:false})
 ```
 
-#### References
+### References
 - [xml.com's Converting Between XML and JSON](https://www.xml.com/pub/a/2006/05/31/converting-between-xml-and-json.html)
 
-### zip
+## zip
 
-#### Options
+### Options
 
 |Name        |Default|Description|
 |-           |-      |-|
 |`uncompress`|true   |Uncompress and probe files|
 
-#### Examples
+### Examples
 
 Decode file using zip options
 ```
@@ -553,7 +553,7 @@ Decode value as zip
 
 Supports ZIP64.
 
-#### References
+### References
 - https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
 - https://opensource.apple.com/source/zip/zip-6/unzip/unzip/proginfo/extra.fld
 

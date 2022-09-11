@@ -1,8 +1,8 @@
-#### Convert represented value to JSON
+### Convert represented value to JSON
 
 ```
 $ fq -d bencode torepr file.torrent
 ```
 
-#### References
+### References
 - https://wiki.theory.org/BitTorrentSpecification#Bencoding

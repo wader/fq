@@ -317,7 +317,7 @@ out # Convert represented value to JSON
 out 
 out   $ fq -d bson torepr file.bson
 out   
-out  Filter represented value
+out # Filter represented value
 out 
 out   $ fq -d bson 'torepr | select(.name=="bob")' file.bson
 out   

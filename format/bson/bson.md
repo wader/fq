@@ -1,4 +1,4 @@
-#### Convert represented value to JSON
+### Convert represented value to JSON
 
 ```
 $ fq -d bson torepr file.bson
@@ -10,5 +10,5 @@ $ fq -d bson torepr file.bson
 $ fq -d bson 'torepr | select(.name=="bob")' file.bson
 ```
 
-#### References
+### References
 - https://bsonspec.org/spec.html
