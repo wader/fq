@@ -104,7 +104,7 @@
 |`vp9_cfm`                         |VP9&nbsp;Codec&nbsp;Feature&nbsp;Metadata                                                |<sub></sub>|
 |`vp9_frame`                       |VP9&nbsp;frame                                                                           |<sub></sub>|
 |`vpx_ccr`                         |VPX&nbsp;Codec&nbsp;Configuration&nbsp;Record                                            |<sub></sub>|
-|`wasm`                            |WebAssembly&nbsp;Binary&nbsp;Format                                                      |<sub></sub>|
+|[`wasm`](#wasm)                   |WebAssembly&nbsp;Binary&nbsp;Format                                                      |<sub></sub>|
 |`wav`                             |WAV&nbsp;file                                                                            |<sub>`id3v2` `id3v1` `id3v11`</sub>|
 |`webp`                            |WebP&nbsp;image                                                                          |<sub>`vp8_frame`</sub>|
 |`xing`                            |Xing&nbsp;header                                                                         |<sub></sub>|
@@ -505,6 +505,26 @@ Current only supports plain RTMP (not RTMPT or encrypted variants etc) with AMF0
 ### References
 - https://rtmp.veriskope.com/docs/spec/
 - https://rtmp.veriskope.com/pdf/video_file_format_spec_v10.pdf
+
+## wasm
+
+### Count opcode usage
+```sh
+$ fq '.sections[] | select(.id == "code_section") | [.. | .opcode? // empty] | count | map({key: .[0], value: .[1]}) | from_entries' file.wasm
+```
+
+### List exports and imports
+```sh
+$ fq '.sections | {import: map(select(.id == "import_section").content.im.x[].nm.b), export: map(select(.id == "export_section").content.ex.x[].nm.b)}' file.wasm
+```
+
+### Authors
+- Takashi Oguma
+[@bitbears-dev](https://github.com/bitbears-dev)
+[@0xb17bea125](https://twitter.com/0xb17bea125)
+
+### References
+- https://webassembly.github.io/spec/core/
 
 ## xml
 
