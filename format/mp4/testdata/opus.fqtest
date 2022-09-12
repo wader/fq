@@ -187,7 +187,7 @@ $ fq -d mp4 dv opus.mp4
      |                                               |                |                          boxes[0:1]: 0x33c-0x372.7 (55)
      |                                               |                |                            [0]{}: box 0x33c-0x372.7 (55)
 0x330|                                    00 00 00 37|            ...7|                              size: 55 0x33c-0x33f.7 (4)
-0x340|4f 70 75 73                                    |Opus            |                              type: "Opus" (Xiph Opus) 0x340-0x343.7 (4)
+0x340|4f 70 75 73                                    |Opus            |                              type: "Opus" (Opus audio coding) 0x340-0x343.7 (4)
 0x340|            00 00 00 00 00 00                  |    ......      |                              reserved: raw bits 0x344-0x349.7 (6)
 0x340|                              00 01            |          ..    |                              data_reference_index: 1 0x34a-0x34b.7 (2)
 0x340|                                    00 00      |            ..  |                              version: 0 0x34c-0x34d.7 (2)
@@ -353,4 +353,4 @@ $ fq -d mp4 dv opus.mp4
 0x120|02 cc 49 57 27 d4 a3 83 e9 53 33 fe 45 62 33 33|..IW'....S3.Eb33|
 *    |until 0x196.7 (120)                            |                |
      |                                               |                |      id: 1 0x439-NA (0)
-     |                                               |                |      data_foramt: "Opus" (Xiph Opus) 0x439-NA (0)
+     |                                               |                |      data_foramt: "Opus" (Opus audio coding) 0x439-NA (0)
