@@ -142,7 +142,7 @@ func DecodePgwal(d *decode.D, maxOffset uint32) any {
 		maxOffset:         int64(maxOffset),
 		pages:             pages,
 		records:           d.FieldArrayValue("Records"),
-		recordRemLenBytes: -1,
+		recordRemLenBytes: -1, // -1 means not initialized
 	}
 
 	for {
@@ -200,7 +200,7 @@ func decodeXLogPage(wal *walD, d *decode.D) {
 		})
 	}
 
-	if wal.recordRemLenBytes >= 0 {
+	if wal.recordRemLenBytes >= 0 { // check recordRemLenBytes is initialized
 		if wal.recordRemLenBytes != int64(remLenBytes) {
 			d.Fatalf("incorrect wal.recordRemLenBytes = %d, remLenBytes = %d", wal.recordRemLenBytes, remLenBytes)
 		}
@@ -211,11 +211,20 @@ func decodeXLogPage(wal *walD, d *decode.D) {
 
 	pos1 := header.Pos()
 	xLogPage.SeekAbs(pos1)
-	// TODO
-	if wal.record == nil {
-		xLogPage.FieldRawLen("RawBytesOfPreviousWalFile", remLen)
-	} else {
-		decodeXLogRecord(wal, remLenBytesAligned)
+
+	// parted XLogRecord
+	if remLen > 0 {
+		if wal.record == nil {
+			// record of previous file
+			checkPosBytes := xLogPage.Pos() / 8
+			if checkPosBytes >= XLOG_BLCKSZ {
+				d.Fatalf("invalid pos for RawBytesOfPreviousWalFile, it must be on first page only, pos = %d\n", checkPosBytes)
+			}
+			xLogPage.FieldRawLen("RawBytesOfPreviousWalFile", remLen)
+		} else {
+			// record of previous page
+			decodeXLogRecord(wal, remLenBytesAligned)
+		}
 	}
 
 	pos2 := xLogPage.Pos()
@@ -236,7 +245,7 @@ func decodeXLogRecords(wal *walD, d *decode.D) {
 	pageRecords := wal.pageRecords
 
 	posBytes := d.Pos() / 8
-	posMaxOfPageBytes := int64(common.TypeAlign(8192, uint64(posBytes)))
+	posMaxOfPageBytes := int64(common.TypeAlign(XLOG_BLCKSZ, uint64(posBytes)))
 	fmt.Printf("posMaxOfPageBytes = %d\n", posMaxOfPageBytes)
 
 	for {
@@ -265,7 +274,7 @@ func decodeXLogRecords(wal *walD, d *decode.D) {
 			// can't create row in this page
 			// continue on next page
 			wal.record = nil
-			wal.recordRemLenBytes = -1
+			wal.recordRemLenBytes = 0
 			return
 		}
 
@@ -291,7 +300,7 @@ func decodeXLogRecords(wal *walD, d *decode.D) {
 
 		if remOnPage < int64(xlTotLen1Bytes) {
 			//record.FieldRawLen("xLogBody", remOnPage*8)
-			decodeXLogRecord(wal, int64(remOnPage))
+			decodeXLogRecord(wal, remOnPage)
 			wal.recordRemLenBytes = int64(xlTotLen1Bytes) - remOnPage
 			break
 		}
@@ -303,7 +312,8 @@ func decodeXLogRecords(wal *walD, d *decode.D) {
 
 		//record.FieldRawLen("xLogBody", xLogBodyLen)
 		decodeXLogRecord(wal, int64(xlTotLen1Bytes))
-		wal.recordRemLenBytes = -1
+		wal.record = nil
+		wal.recordRemLenBytes = 0
 
 		//xLogRecordBegin := record.Pos()
 		//xlTotLen := record.FieldU32("xl_tot_len")
