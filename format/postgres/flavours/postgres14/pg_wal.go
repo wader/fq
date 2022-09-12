@@ -61,6 +61,11 @@ var rmgrIds = scalar.UToScalar{
 	21: {Sym: "LogicalMessage", Description: "RM_LOGICALMSG_ID"},
 }
 
+const (
+	XLOG_PAGE_MAGIC_MASK       = 0xD000
+	XLOG_PAGE_MAGIC_POSTGRES14 = 0xD10D
+)
+
 // struct XLogLongPageHeaderData {
 //	/*    0      |    24 */    XLogPageHeaderData std;
 //	/*   24      |     8 */    uint64 xlp_sysid;
@@ -92,29 +97,24 @@ var rmgrIds = scalar.UToScalar{
 /* total size (bytes):   24 */
 
 func decodeXLogPageHeaderData(d *decode.D) {
-	var info uint64
-
-	//pages := d.FieldArrayValue("pages")
-
-	//pages.SeekAbs()
-
-	//d.FieldStructValue()
-
 	/*    0      |     2 */ // uint16 xlp_magic;
 	/*    2      |     2 */ // uint16 xlp_info;
 	/*    4      |     4 */ // TimeLineID xlp_tli;
 	/*    8      |     8 */ // XLogRecPtr xlp_pageaddr;
 	/*   16      |     4 */ // uint32 xlp_rem_len;
-	d.FieldU16("xlp_magic")
-	d.FieldU16("xlp_info")
+	/* XXX  4-byte padding  */
+	xlpMagic := d.FieldU16("xlp_magic")
+	xlpInfo := d.FieldU16("xlp_info")
 	d.FieldU32("xlp_timeline")
 	d.FieldU64("xlp_pageaddr")
 	d.FieldU32("xlp_rem_len")
+	d.FieldU32("padding0")
 
-	//d.FieldRawLen("padding", int64(d.AlignBits(64)))
-	d.U32()
+	if (xlpMagic & XLOG_PAGE_MAGIC_MASK) == 0 {
+		d.Fatalf("invalid xlp_magic = %X\n", xlpMagic)
+	}
 
-	if info&XLP_LONG_HEADER != 0 {
+	if xlpInfo&XLP_LONG_HEADER != 0 {
 		// Long header
 		d.FieldStruct("XLogLongPageHeaderData", func(d *decode.D) {
 			d.FieldU64("xlp_sysid")
@@ -180,12 +180,16 @@ func decodeXLogPage(wal *walD, d *decode.D) {
 	/* XXX  4-byte padding  */
 	header := xLogPage.FieldStructValue("XLogPageHeaderData")
 
-	header.FieldU16("xlp_magic")
+	xlpMagic := header.FieldU16("xlp_magic")
 	xlpInfo := header.FieldU16("xlp_info")
 	header.FieldU32("xlp_tli")
 	header.FieldU64("xlp_pageaddr")
 	remLenBytes := header.FieldU32("xlp_rem_len")
 	header.FieldU32("padding0")
+
+	if (xlpMagic & XLOG_PAGE_MAGIC_MASK) == 0 {
+		d.Fatalf("invalid xlp_magic = %X\n", xlpMagic)
+	}
 
 	if xlpInfo&XLP_LONG_HEADER != 0 {
 		// Long header
