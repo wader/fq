@@ -202,13 +202,18 @@ func decodeXLogPage(wal *walD, d *decode.D) {
 		}
 	}
 
-	remLenBytesAligned := common.TypeAlign8(remLenBytes)
+	remLenBytesAligned := int64(common.TypeAlign8(remLenBytes))
 	remLen := remLenBytesAligned * 8
 
 	pos1 := header.Pos()
 	xLogPage.SeekAbs(pos1)
 	// TODO
-	xLogPage.FieldRawLen("RecordOfPreviousPage", int64(remLen))
+	if wal.record == nil {
+		xLogPage.FieldRawLen("RawBytesOfPreviousWalFile", remLen)
+	} else {
+		decodeXLogRecord(wal, remLenBytesAligned)
+	}
+
 	pos2 := xLogPage.Pos()
 
 	if wal.record != nil {
@@ -281,7 +286,8 @@ func decodeXLogRecords(wal *walD, d *decode.D) {
 		}
 
 		if remOnPage < int64(xlTotLen1Bytes) {
-			record.FieldRawLen("xLogBody", remOnPage*8)
+			//record.FieldRawLen("xLogBody", remOnPage*8)
+			decodeXLogRecord(wal, int64(remOnPage))
 			wal.recordRemLenBytes = int64(xlTotLen1Bytes) - remOnPage
 			break
 		}
@@ -291,7 +297,8 @@ func decodeXLogRecords(wal *walD, d *decode.D) {
 			d.Fatalf("xlTotLen1Bytes is negative, xLogBodyLen = %d\n", xLogBodyLen)
 		}
 
-		record.FieldRawLen("xLogBody", xLogBodyLen)
+		//record.FieldRawLen("xLogBody", xLogBodyLen)
+		decodeXLogRecord(wal, int64(xlTotLen1Bytes))
 		wal.recordRemLenBytes = -1
 
 		//xLogRecordBegin := record.Pos()
@@ -321,6 +328,92 @@ func decodeXLogRecords(wal *walD, d *decode.D) {
 		//wal.recordRemLenBytes = -1
 
 	}
+}
+
+// check that we can read bitsCount on page (with posMax?)
+func isEnd(d *decode.D, posMax int64, bitsCount int64) bool {
+	pos := d.Pos()
+	posRead := pos + bitsCount
+	result := posRead > posMax
+	if result {
+		// set reader at and position to continue reading
+		d.SeekAbs(posMax)
+	}
+	return result
+}
+
+func decodeXLogRecord(wal *walD, maxBytes int64) {
+	record := wal.record
+
+	pos0 := record.Pos()
+	maxLen := maxBytes * 8
+	if record.FieldGet("xLogBody0") == nil {
+		// body on first page
+		record.FieldRawLen("xLogBody0", maxLen)
+	} else {
+		// body on second page
+		record.FieldRawLen("xLogBody1", maxLen)
+	}
+	pos1 := record.Pos()
+	posMax := pos1
+	record.SeekAbs(pos0)
+
+	// struct XLogRecord {
+	/*    0      |     4 */ // uint32 xl_tot_len
+	/*    4      |     4 */ // TransactionId xl_xid
+	/*    8      |     8 */ // XLogRecPtr xl_prev
+	/*   16      |     1 */ // uint8 xl_info
+	/*   17      |     1 */ // RmgrId xl_rmid
+	/* XXX  2-byte hole  */
+	/*   20      |     4 */ // pg_crc32c xl_crc
+
+	// xl_tot_len already read
+
+	if record.FieldGet("xl_xid") == nil {
+		if isEnd(record, posMax, 32) {
+			return
+		}
+		record.FieldU32("xl_xid")
+	}
+
+	if record.FieldGet("xl_prev") == nil {
+		if isEnd(record, posMax, 64) {
+			return
+		}
+		record.FieldU64("xl_prev")
+	}
+
+	if record.FieldGet("xl_info") == nil {
+		if isEnd(record, posMax, 8) {
+			return
+		}
+		record.FieldU8("xl_info")
+	}
+
+	if record.FieldGet("xl_rmid") == nil {
+		if isEnd(record, posMax, 8) {
+			return
+		}
+		record.FieldU8("xl_rmid")
+	}
+
+	if record.FieldGet("hole1") == nil {
+		if isEnd(record, posMax, 16) {
+			return
+		}
+		record.FieldU16("hole1")
+	}
+
+	if record.FieldGet("xl_crc") == nil {
+		if isEnd(record, posMax, 32) {
+			return
+		}
+		record.FieldU32("xl_crc")
+	}
+
+	// TODO
+
+	record.SeekAbs(posMax)
 }
 
 func DecodePgwalOri(d *decode.D, in any) any {
