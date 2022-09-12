@@ -178,7 +178,7 @@ $ fq -d mp4 dv vp9.mp4
       |                                               |                |                            [0]{}: box 0x170d-0x1790.7 (132)
 0x1700|                                       00 00 00|             ...|                              size: 132 0x170d-0x1710.7 (4)
 0x1710|84                                             |.               |
-0x1710|   76 70 30 39                                 | vp09           |                              type: "vp09" (VP9) 0x1711-0x1714.7 (4)
+0x1710|   76 70 30 39                                 | vp09           |                              type: "vp09" (VP9 video) 0x1711-0x1714.7 (4)
 0x1710|               00 00 00 00 00 00               |     ......     |                              reserved: raw bits 0x1715-0x171a.7 (6)
 0x1710|                                 00 01         |           ..   |                              data_reference_index: 1 0x171b-0x171c.7 (2)
 0x1710|                                       00 00   |             .. |                              version: 0 0x171d-0x171e.7 (2)
@@ -336,4 +336,4 @@ $ fq -d mp4 dv vp9.mp4
 0x0040|f9 be 8f e7 71 ff 5f 97 ef c3 f9 7e 37 b0 7e ad|....q._....~7.~.|
 *     |until 0x1563.7 (5424)                          |                |
       |                                               |                |      id: 1 0x184f-NA (0)
-      |                                               |                |      data_foramt: "vp09" (VP9) 0x184f-NA (0)
+      |                                               |                |      data_foramt: "vp09" (VP9 video) 0x184f-NA (0)

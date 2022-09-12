@@ -194,7 +194,7 @@ $ fq -d mp4 dv vorbis.mp4
       |                                               |                |                          boxes[0:1]: 0x382-0x10b6.7 (3381)
       |                                               |                |                            [0]{}: box 0x382-0x10b6.7 (3381)
 0x0380|      00 00 0d 35                              |  ...5          |                              size: 3381 0x382-0x385.7 (4)
-0x0380|                  6d 70 34 61                  |      mp4a      |                              type: "mp4a" (MPEG Audio) 0x386-0x389.7 (4)
+0x0380|                  6d 70 34 61                  |      mp4a      |                              type: "mp4a" (MPEG-4 Audio) 0x386-0x389.7 (4)
 0x0380|                              00 00 00 00 00 00|          ......|                              reserved: raw bits 0x38a-0x38f.7 (6)
 0x0390|00 01                                          |..              |                              data_reference_index: 1 0x390-0x391.7 (2)
 0x0390|      00 00                                    |  ..            |                              version: 0 0x392-0x393.7 (2)
@@ -383,4 +383,4 @@ $ fq -d mp4 dv vorbis.mp4
 0x0130|f2 81 46 bb c2 48 52 08 27 b8 83 10 ca 08 b1 a7|..F..HR.'.......|
 *     |until 0x1dc.7 (174)                            |                |
       |                                               |                |      id: 1 0x1189-NA (0)
-      |                                               |                |      data_foramt: "mp4a" (MPEG Audio) 0x1189-NA (0)
+      |                                               |                |      data_foramt: "mp4a" (MPEG-4 Audio) 0x1189-NA (0)

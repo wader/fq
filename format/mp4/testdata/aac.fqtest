@@ -192,7 +192,7 @@ $ fq -d mp4 dv aac.mp4
      |                                               |                |                          boxes[0:1]: 0x437-0x490.7 (90)
      |                                               |                |                            [0]{}: box 0x437-0x490.7 (90)
 0x430|                     00 00 00 5a               |       ...Z     |                              size: 90 0x437-0x43a.7 (4)
-0x430|                                 6d 70 34 61   |           mp4a |                              type: "mp4a" (MPEG Audio) 0x43b-0x43e.7 (4)
+0x430|                                 6d 70 34 61   |           mp4a |                              type: "mp4a" (MPEG-4 Audio) 0x43b-0x43e.7 (4)
 0x430|                                             00|               .|                              reserved: raw bits 0x43f-0x444.7 (6)
 0x440|00 00 00 00 00                                 |.....           |
 0x440|               00 01                           |     ..         |                              data_reference_index: 1 0x445-0x446.7 (2)
@@ -429,4 +429,4 @@ $ fq -d mp4 dv aac.mp4
 0x290|b4                                             |.               |          [1]: raw bits byte_align 0x290.6-0x290.7 (0.2)
 0x290|   70                                          | p              |          [2]: raw bits data 0x291-0x291.7 (1)
      |                                               |                |      id: 1 0x59d-NA (0)
-     |                                               |                |      data_foramt: "mp4a" (MPEG Audio) 0x59d-NA (0)
+     |                                               |                |      data_foramt: "mp4a" (MPEG-4 Audio) 0x59d-NA (0)
