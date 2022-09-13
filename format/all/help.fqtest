@@ -1209,6 +1209,20 @@ out   $ fq -d wasm . file
 out   # Decode value as wasm
 out   ... | wasm
 out 
+out # Count opcode usage
+out 
+out   $ fq '.sections[] | select(.id == "code_section") | [.. | .opcode? // empty] | count | map({key: .[0], value: .[1]}) | from_entries' file.wasm
+out   
+out # List exports and imports
+out 
+out   $ fq '.sections | {import: map(select(.id == "import_section").content.im.x[].nm.b), export: map(select(.id == "export_section").content.ex.x[].nm.b)}' file.wasm
+out   
+out # Authors
+out - Takashi Oguma @bitbears-dev (https://github.com/bitbears-dev) @0xb17bea125 (https://twitter.com/0xb17bea125)
+out 
+out # References
+out - https://webassembly.github.io/spec/core/
+out 
 "help(wav)"
 out wav: WAV file decoder
 out 

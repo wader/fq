@@ -3,6 +3,7 @@ package wasm
 // https://webassembly.github.io/spec/core/
 
 import (
+	"embed"
 	"math"
 	"sync"
 
@@ -12,6 +13,9 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
+//go:embed wasm.md
+var wasmFS embed.FS
+
 func init() {
 	interp.RegisterFormat(decode.Format{
 		Name:        format.WASM,
@@ -19,6 +23,7 @@ func init() {
 		DecodeFn:    decodeWASM,
 		Groups:      []string{format.PROBE},
 	})
+	interp.RegisterFS(wasmFS)
 }
 
 const (
