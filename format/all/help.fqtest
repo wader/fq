@@ -370,6 +370,14 @@ out   $ fq -d csv -o comma="," -o comment="#" . file
 out   # Decode value as csv
 out   ... | csv({comma:",",comment:"#"})
 out 
+out # TSV to CSV
+out 
+out   $ fq -d csv -o comma="\t" tocsv file.tsv
+out   
+out # Convert rows to objects based on header row
+out 
+out   $ fq -d csv '.[0] as $t | .[1:] | map(with_entries(.key = $t[.key]))' file.csv
+out   
 "help(dns)"
 out dns: DNS packet decoder
 out 
