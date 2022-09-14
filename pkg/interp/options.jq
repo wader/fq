@@ -311,7 +311,11 @@ def _opt_from_csv_kv_obj:
 def _opt_to_fuzzy:
   ( . as $s
   | try fromjson
-    catch $s
+    catch
+      ( $s
+      | _opt_to_string
+      // $s
+      )
   );
 
 def _opt_to($type):
