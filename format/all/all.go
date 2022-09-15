@@ -11,6 +11,7 @@ import (
 	_ "github.com/wader/fq/format/avro"
 	_ "github.com/wader/fq/format/bencode"
 	_ "github.com/wader/fq/format/bitcoin"
+	_ "github.com/wader/fq/format/bplist"
 	_ "github.com/wader/fq/format/bson"
 	_ "github.com/wader/fq/format/bzip2"
 	_ "github.com/wader/fq/format/cbor"

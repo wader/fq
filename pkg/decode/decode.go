@@ -688,11 +688,15 @@ func (d *D) trySeekAbs(pos int64, fns ...func(d *D)) (int64, error) {
 	return pos, nil
 }
 
-// SeekRel seeks relative to current bit position
+// TrySeekRel seeks relative to current bit position. If one or more functions is
+// passed, the original seek position will be restored after decoding.
 func (d *D) TrySeekRel(delta int64, fns ...func(d *D)) (int64, error) {
 	return d.trySeekAbs(d.Pos()+delta, fns...)
 }
 
+// SeekRel seeks relative to current bit position. If one or more functions is
+// passed, the original seek position will be restored after decoding. Panics if
+// an error occurs while seeking.
 func (d *D) SeekRel(delta int64, fns ...func(d *D)) int64 {
 	n, err := d.trySeekAbs(d.Pos()+delta, fns...)
 	if err != nil {
@@ -701,7 +705,8 @@ func (d *D) SeekRel(delta int64, fns ...func(d *D)) int64 {
 	return n
 }
 
-// SeekAbs seeks to absolute position
+// TrySeekAbs seeks to absolute position. If one or more functions is passed,
+// the original seek position will be restored after decoding.
 func (d *D) TrySeekAbs(pos int64, fns ...func(d *D)) (int64, error) {
 	return d.trySeekAbs(pos, fns...)
 }
