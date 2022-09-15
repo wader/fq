@@ -755,6 +755,26 @@ func (d *D) FieldGet(name string) *Value {
 	return nil
 }
 
+func (d *D) FieldGetScalar(name string) *scalar.S {
+	v := d.FieldGet(name)
+	if v == nil {
+		return nil
+	}
+	sr, ok := v.V.(*scalar.S)
+	if !ok {
+		panic("not a scalar value")
+	}
+	return sr
+}
+
+func (d *D) FieldTryGetScalarActualU(name string) (bool, uint64) {
+	sr := d.FieldGetScalar(name)
+	if sr == nil {
+		return false, 0
+	}
+	return true, sr.ActualU()
+}
+
 func (d *D) FieldMustGet(name string) *Value {
 	if v := d.FieldGet(name); v != nil {
 		return v
