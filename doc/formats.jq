@@ -2,14 +2,13 @@
 
 def code: "`\(.)`";
 def nbsp: gsub(" "; "&nbsp;");
-def has_section($f; $fhelp): $fhelp.notes or $fhelp.examples or $fhelp.links or $f.decode_in_arg;
+def has_section($f; $fhelp): $fhelp.notes or $fhelp.examples or $f.decode_in_arg or ((_registry.files[][] | select(.name=="\($f.name).md").data) // false);
 
 def formats_list:
-  [ formats
-  | to_entries[] as {$key, $value}
-  | (_format_func($key; "_help")? // {}) as $fhelp
-  | if has_section($value; $fhelp) then "[\($key)](doc/formats.md#\($key))"
-    else $key
+  [ formats[] as $f
+  | ({} | _help_format_enrich("fq"; $f; false)) as $fhelp
+  | if has_section($f; $fhelp) then "[\($f.name)](doc/formats.md#\($f.name))"
+    else $f.name
     end
   ] | join(",\n");
 
@@ -71,13 +70,14 @@ def formats_table:
 
 def formats_sections:
   ( formats[] as $f
-  | (_format_func($f.name; "_help")? // {} | _help_format_enrich("fq"; $f; false)) as $fhelp
+  | ((_registry.files[][] | select(.name=="\($f.name).md").data) // false) as $doc
+  | ({} | _help_format_enrich("fq"; $f; false)) as $fhelp
   | select(has_section($f; $fhelp))
-  | "### \($f.name)"
+  | "## \($f.name)"
   , ""
   , ($fhelp.notes | if . then ., "" else empty end)
   , if $f.decode_in_arg then
-      ( "#### Options"
+      ( "### Options"
       , ""
       , ( [ { name: "Name"
             , default: "Default"
@@ -113,7 +113,7 @@ def formats_sections:
     else empty
     end
   , if $fhelp.examples then
-      ( "#### Examples"
+      ( "### Examples"
       , ""
       , ( $fhelp.examples[]
         | "\(.comment)"
@@ -134,16 +134,5 @@ def formats_sections:
     )
     else empty
     end
-  , if $fhelp.links then
-      ( "#### References and links"
-      , ""
-      , ( $fhelp.links[]
-        | if .title then "- [\(.title)](\(.url))"
-          else "- \(.url)"
-          end
-        )
-      , ""
-      )
-    else empty
-    end
+  , ($doc // empty)
   );

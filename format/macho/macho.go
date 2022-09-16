@@ -14,7 +14,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-//go:embed macho.jq
+//go:embed macho.md
 var machoFS embed.FS
 
 func init() {
@@ -23,7 +23,6 @@ func init() {
 		Description: "Mach-O macOS executable",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    machoDecode,
-		Functions:   []string{"_help"},
 	})
 	interp.RegisterFS(machoFS)
 }

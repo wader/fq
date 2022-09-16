@@ -29,6 +29,7 @@ import (
 )
 
 //go:embed asn1_ber.jq
+//go:embed asn1_ber.md
 var asn1FS embed.FS
 
 func init() {
@@ -36,7 +37,7 @@ func init() {
 		Name:        format.ASN1_BER,
 		Description: "ASN1 BER (basic encoding rules, also CER and DER)",
 		DecodeFn:    decodeASN1BER,
-		Functions:   []string{"torepr", "_help"},
+		Functions:   []string{"torepr"},
 	})
 	interp.RegisterFS(asn1FS)
 }

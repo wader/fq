@@ -9,8 +9,3 @@ def _msgpack_torepr:
   else .value | tovalue
   end;
 
-def _msgpack__help:
-  { links: [
-      {url: "https://github.com/msgpack/msgpack/blob/master/spec.md"}
-    ]
-  };

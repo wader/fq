@@ -86,6 +86,7 @@ const (
 	JSONL               = "jsonl"
 	MACHO               = "macho"
 	MACHO_FAT           = "macho_fat"
+	MARKDOWN            = "markdown"
 	MATROSKA            = "matroska"
 	MP3                 = "mp3"
 	MP3_FRAME           = "mp3_frame"

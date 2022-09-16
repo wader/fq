@@ -9,9 +9,3 @@ def _bencode_torepr:
     )
   else error("unknown type \(.type)")
   end;
-
-def _bencode__help:
-  { links: [
-      {url: "https://wiki.theory.org/BitTorrentSpecification#Bencoding"}
-    ]
-  };

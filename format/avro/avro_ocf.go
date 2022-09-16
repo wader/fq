@@ -16,7 +16,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-//go:embed avro_ocf.jq
+//go:embed avro_ocf.md
 var avroOcfFS embed.FS
 
 func init() {
@@ -25,7 +25,6 @@ func init() {
 		Description: "Avro object container file",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    decodeAvroOCF,
-		Functions:   []string{"_help"},
 	})
 	interp.RegisterFS(avroOcfFS)
 }

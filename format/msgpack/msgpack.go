@@ -14,6 +14,7 @@ import (
 )
 
 //go:embed msgpack.jq
+//go:embed msgpack.md
 var msgPackFS embed.FS
 
 func init() {
@@ -21,7 +22,7 @@ func init() {
 		Name:        format.MSGPACK,
 		Description: "MessagePack",
 		DecodeFn:    decodeMsgPack,
-		Functions:   []string{"torepr", "_help"},
+		Functions:   []string{"torepr"},
 	})
 	interp.RegisterFS(msgPackFS)
 }

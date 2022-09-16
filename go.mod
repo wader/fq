@@ -25,6 +25,10 @@ require (
 	// bump: gomod-golang-snappy link "Source diff $CURRENT..$LATEST" https://github.com/golang/snappy/compare/v$CURRENT..v$LATEST
 	github.com/golang/snappy v0.0.4
 
+	// has no tags
+	// go get -d github.com/gomarkdown/markdown@master && go mod tidy
+	github.com/gomarkdown/markdown v0.0.0-20220627144906-e9a81102ebeb
+
 	// has no tags yet
 	// bump-disabled: gomod-gopacket /github\.com\/gopacket\/gopacket v(.*)/ https://github.com/gopacket/gopacket.git|^1
 	// bump-disabled: gomod-gopacket command go get -d github.com/gopacket/gopacket@v$LATEST && go mod tidy
