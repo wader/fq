@@ -1,12 +1,13 @@
 package postgres
 
 import (
-	"errors"
 	"fmt"
+
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/postgres/flavours/postgres14"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
+
 	"strconv"
 	"strings"
 )
@@ -26,7 +27,8 @@ func init() {
 	})
 }
 
-//// https://pgpedia.info/x/XLOG_PAGE_MAGIC.html
+// https://pgpedia.info/x/XLOG_PAGE_MAGIC.html
+//nolint:revive
 const (
 	XLOG_PAGE_MAGIC_15 = uint16(0xD10F)
 	XLOG_PAGE_MAGIC_14 = uint16(0xD10D)
@@ -43,7 +45,7 @@ func ParseLsn(lsn string) (uint32, error) {
 	if strings.Contains(lsn, "/") {
 		parts := strings.Split(lsn, "/")
 		if len(parts) != 2 {
-			return 0, errors.New(fmt.Sprintf("Invalid lsn = %s", lsn))
+			return 0, fmt.Errorf("invalid lsn = %s", lsn)
 		}
 		str1 = parts[1]
 	}
