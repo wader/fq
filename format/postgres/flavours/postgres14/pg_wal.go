@@ -142,6 +142,10 @@ type walD struct {
 
 	pageRecords *decode.D
 
+	state *walState
+}
+
+type walState struct {
 	record            *decode.D
 	recordRemLenBytes int64
 }
@@ -149,10 +153,9 @@ type walD struct {
 func DecodePgwal(d *decode.D, maxOffset uint32) any {
 	pages := d.FieldArrayValue("Pages")
 	wal := &walD{
-		maxOffset:         int64(maxOffset),
-		pages:             pages,
-		records:           d.FieldArrayValue("Records"),
-		recordRemLenBytes: -1, // -1 means not initialized
+		maxOffset: int64(maxOffset),
+		pages:     pages,
+		records:   d.FieldArrayValue("Records"),
 	}
 
 	for {
@@ -210,9 +213,9 @@ func decodeXLogPage(wal *walD, d *decode.D) {
 		})
 	}
 
-	if wal.recordRemLenBytes >= 0 { // check recordRemLenBytes is initialized
-		if wal.recordRemLenBytes != int64(remLenBytes) {
-			d.Fatalf("incorrect wal.recordRemLenBytes = %d, remLenBytes = %d", wal.recordRemLenBytes, remLenBytes)
+	if wal.state != nil { // check recordRemLenBytes is initialized
+		if wal.state.recordRemLenBytes != int64(remLenBytes) {
+			d.Fatalf("recordRemLenBytes = %d != remLenBytes = %d", wal.state.recordRemLenBytes, remLenBytes)
 		}
 	}
 
@@ -224,7 +227,7 @@ func decodeXLogPage(wal *walD, d *decode.D) {
 
 	// parted XLogRecord
 	if remLen > 0 {
-		if wal.record == nil {
+		if wal.state == nil {
 			// record of previous file
 			checkPosBytes := xLogPage.Pos() / 8
 			if checkPosBytes >= XLOG_BLCKSZ {
@@ -239,8 +242,8 @@ func decodeXLogPage(wal *walD, d *decode.D) {
 
 	pos2 := xLogPage.Pos()
 
-	if wal.record != nil {
-		wal.record.SeekAbs(pos1)
+	if wal.state != nil && wal.state.record != nil {
+		wal.state.record.SeekAbs(pos1)
 	}
 
 	xLogPage.SeekAbs(pos2)
@@ -282,15 +285,16 @@ func decodeXLogRecords(wal *walD, d *decode.D) {
 			// can't read xl_tot_len on this page
 			// can't create row in this page
 			// continue on next page
-			wal.record = nil
-			wal.recordRemLenBytes = 0
+			wal.state = nil
 			return
 		}
 
 		d.SeekAbs(posBytes1Aligned * 8)
 
 		record := pageRecords.FieldStructValue("XLogRecord")
-		wal.record = record
+		wal.state = &walState{
+			record: record,
+		}
 		wal.records.AddChild(record.Value)
 
 		xlTotLen := record.FieldU32("xl_tot_len")
@@ -305,7 +309,7 @@ func decodeXLogRecords(wal *walD, d *decode.D) {
 		if remOnPage < int64(xlTotLen1Bytes) {
 			//record.FieldRawLen("xLogBody", remOnPage*8)
 			decodeXLogRecord(wal, remOnPage)
-			wal.recordRemLenBytes = int64(xlTotLen1Bytes) - remOnPage
+			wal.state.recordRemLenBytes = int64(xlTotLen1Bytes) - remOnPage
 			break
 		}
 
@@ -316,8 +320,7 @@ func decodeXLogRecords(wal *walD, d *decode.D) {
 
 		//record.FieldRawLen("xLogBody", xLogBodyLen)
 		decodeXLogRecord(wal, int64(xlTotLen1Bytes))
-		wal.record = nil
-		wal.recordRemLenBytes = 0
+		wal.state = nil
 	}
 }
 
@@ -359,7 +362,7 @@ func fieldTryGetScalarActualU(d *decode.D, name string, posMax int64, bitsCount 
 }
 
 func decodeXLogRecord(wal *walD, maxBytes int64) {
-	record := wal.record
+	record := wal.state.record
 
 	pos0 := record.Pos()
 	maxLen := maxBytes * 8
@@ -441,16 +444,6 @@ func decodeXLogRecord(wal *walD, maxBytes int64) {
 		return
 	}
 
-	if blockId == XLR_BLOCK_ID_DATA_SHORT {
-		//typedef struct XLogRecordDataHeaderShort
-		//{
-		//	uint8		id;				/* XLR_BLOCK_ID_DATA_SHORT */
-		//	uint8		data_length;	/* number of payload bytes */
-		//}
-		//
-		/* total size (bytes):   24 */
-	}
-
 	//XLR_BLOCK_ID_DATA_SHORT   = 255
 	//XLR_BLOCK_ID_DATA_LONG    = 254
 	//XLR_BLOCK_ID_ORIGIN       = 253
@@ -460,6 +453,12 @@ func decodeXLogRecord(wal *walD, maxBytes int64) {
 	recordOrigin := uint64(0)
 	toplevelXid := uint64(0)
 	if blockId == XLR_BLOCK_ID_DATA_SHORT {
+		//typedef struct XLogRecordDataHeaderShort
+		//{
+		//	uint8		id;				/* XLR_BLOCK_ID_DATA_SHORT */
+		//	uint8		data_length;	/* number of payload bytes */
+		//}
+		//
 		// COPY_HEADER_FIELD(&main_data_len, sizeof(uint8));
 		mainDataLen, end = fieldTryGetScalarActualU(record, "main_data_len", posMax, 8)
 		if end {
