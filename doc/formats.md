@@ -27,6 +27,7 @@
 |[`bitcoin_block`](#bitcoin_block) |Bitcoin&nbsp;block                                                                       |<sub>`bitcoin_transaction`</sub>|
 |`bitcoin_script`                  |Bitcoin&nbsp;script                                                                      |<sub></sub>|
 |`bitcoin_transaction`             |Bitcoin&nbsp;transaction                                                                 |<sub>`bitcoin_script`</sub>|
+|`bplist`                          |Apple&nbsp;Binary&nbsp;Property&nbsp;List                                                |<sub></sub>|
 |`bsd_loopback_frame`              |BSD&nbsp;loopback&nbsp;frame                                                             |<sub>`inet_packet`</sub>|
 |[`bson`](#bson)                   |Binary&nbsp;JSON                                                                         |<sub></sub>|
 |`bzip2`                           |bzip2&nbsp;compression                                                                   |<sub>`probe`</sub>|
@@ -115,7 +116,7 @@
 |`inet_packet`                     |Group                                                                                    |<sub>`ipv4_packet` `ipv6_packet`</sub>|
 |`ip_packet`                       |Group                                                                                    |<sub>`icmp` `icmpv6` `tcp_segment` `udp_datagram`</sub>|
 |`link_frame`                      |Group                                                                                    |<sub>`bsd_loopback_frame` `ether8023_frame` `sll2_packet` `sll_packet`</sub>|
-|`probe`                           |Group                                                                                    |<sub>`adts` `ar` `avro_ocf` `bitcoin_blkdat` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `jsonl` `macho` `macho_fat` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `toml` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
+|`probe`                           |Group                                                                                    |<sub>`adts` `ar` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `jsonl` `macho` `macho_fat` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `toml` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
 |`tcp_stream`                      |Group                                                                                    |<sub>`dns_tcp` `rtmp`</sub>|
 |`udp_payload`                     |Group                                                                                    |<sub>`dns`</sub>|
 

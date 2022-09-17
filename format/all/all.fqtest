@@ -4,6 +4,7 @@ $ fq -n _registry.groups.probe
   "ar",
   "avro_ocf",
   "bitcoin_blkdat",
+  "bplist",
   "bzip2",
   "elf",
   "flac",

@@ -249,6 +249,7 @@ func (m BytesToScalar) MapScalar(s S) (S, error) {
 // TODO: nicer api, use generics
 
 var unixTimeEpochDate = time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC)
+var cocoaTimeEpochDate = time.Date(2001, time.January, 1, 0, 0, 0, 0, time.UTC)
 
 func DescriptionActualUTime(epoch time.Time, format string) Mapper {
 	return Fn(func(s S) (S, error) {
@@ -284,11 +285,17 @@ func DescriptionSymSTime(epoch time.Time, format string) Mapper {
 var DescriptionActualSUnixTime = DescriptionActualSTime(unixTimeEpochDate, time.RFC3339)
 var DescriptionSymSUnixTime = DescriptionSymSTime(unixTimeEpochDate, time.RFC3339)
 
+// DescriptionActualFTime maps a float to a time.Time value, using the given epoch
+// as a base and interpreting the float as a number of seconds since the base time.
 func DescriptionActualFTime(epoch time.Time, format string) Mapper {
 	return Fn(func(s S) (S, error) {
-		s.Description = epoch.Add(time.Second + time.Duration(s.ActualF())).Format(format)
+		s.Description = epoch.Add(time.Duration(s.ActualF()) * time.Second).Format(format)
 		return s, nil
 	})
 }
 
+// DescriptionActualFUnixTime converts a float to a Unix timestamp
 var DescriptionActualFUnixTime = DescriptionActualFTime(unixTimeEpochDate, time.RFC3339)
+
+// DescriptionActualFCocoaDate converts a float to a Cocoa Date.
+var DescriptionActualFCocoaDate = DescriptionActualFTime(cocoaTimeEpochDate, time.RFC3339)

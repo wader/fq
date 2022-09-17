@@ -56,7 +56,7 @@ var elementTypeMap = scalar.UToScalar{
 	elementTypeNullOrBoolOrFill: {Sym: "singleton", Description: "Singleton value (null/bool)"},
 	elementTypeInt:              {Sym: "int", Description: "Integer"},
 	elementTypeReal:             {Sym: "real", Description: "Floating Point Number"},
-	elementTypeDate:             {Sym: "date", Description: "Date, 8-byte float"},
+	elementTypeDate:             {Sym: "date", Description: "Date, 4 or 8 byte float"},
 	elementTypeData:             {Sym: "data", Description: "Binary data"},
 	elementTypeASCIIString:      {Sym: "ascii_string", Description: "ASCII encoded string"},
 	elementTypeUnicodeString:    {Sym: "unicode_string", Description: "Unicode string"},
@@ -67,7 +67,7 @@ var elementTypeMap = scalar.UToScalar{
 }
 
 // decodes the number of bits required to store the following object
-func decodeSize(d *decode.D) uint64 {
+func decodeSize(d *decode.D, sms ...scalar.Mapper) uint64 {
 	n := d.FieldU4("size_bits")
 	if n != 0x0f {
 		return uint64(n)
@@ -82,10 +82,13 @@ func decodeSize(d *decode.D) uint64 {
 	n = 1 << n
 
 	// decode that many bytes as big endian
-	n = d.FieldUBigInt(
-		"size",
-		int(n*8),
-		d.AssertBigIntRange(big.NewInt(1), big.NewInt(math.MaxInt64))).Uint64()
+	n = d.FieldUFn(
+		"size_bigint",
+		func(d *decode.D) uint64 {
+			v := d.UBigInt(int(n * 8))
+			d.AssertBigIntRange(big.NewInt(1), big.NewInt(math.MaxInt64))
+			return v.Uint64()
+		}, sms...)
 
 	return n
 }
@@ -105,26 +108,35 @@ func decodeItem(d *decode.D, p *plist) any {
 		}
 	case elementTypeInt:
 		n := decodeSize(d)
+		d.FieldValueU("size", n)
 		d.FieldUBigInt("value", int(n))
 	case elementTypeReal:
 		n := decodeSize(d)
+		d.FieldValueU("size", n)
 		d.FieldF("value", int(n))
 	case elementTypeDate:
-		d.FieldF64("value", scalar.DescriptionActualFUnixTime)
+		n := 1 << decodeSize(d, d.AssertU(4, 8))
+		d.FieldValueU("size", uint64(n))
+		d.FieldF("value", int(n*8), scalar.DescriptionActualFCocoaDate)
 	case elementTypeData:
 		n := decodeSize(d)
+		d.FieldValueU("size", n)
 		d.FieldRawLen("value", int64(n*8))
 	case elementTypeASCIIString:
 		n := decodeSize(d)
+		d.FieldValueU("size", n)
 		d.FieldUTF8("value", int(n))
 	case elementTypeUnicodeString:
 		n := decodeSize(d)
+		d.FieldValueU("size", n)
 		d.FieldUTF16("value", int(n))
 	case elementTypeUID:
 		n := decodeSize(d)
+		d.FieldValueU("size", n)
 		d.FieldUBigInt("value", int(n)).Uint64()
 	case elementTypeArray:
 		n := decodeSize(d)
+		d.FieldValueU("size", n)
 		i := uint64(0)
 		d.FieldStructArrayLoop("entries", "entry",
 			func() bool { return i < n },
@@ -135,6 +147,7 @@ func decodeItem(d *decode.D, p *plist) any {
 			})
 	case elementTypeSet:
 		n := decodeSize(d)
+		d.FieldValueU("size", n)
 		i := uint64(0)
 		d.FieldStructArrayLoop("entries", "entry",
 			func() bool { return i < n },
@@ -144,14 +157,15 @@ func decodeItem(d *decode.D, p *plist) any {
 				i++
 			})
 	case elementTypeDict:
-		s := decodeSize(d)
+		n := decodeSize(d)
+		d.FieldValueU("size", n)
 		i := uint64(0)
 		d.FieldStructArrayLoop("entries", "entry",
-			func() bool { return i < s },
+			func() bool { return i < n },
 			func(d *decode.D) {
 				var ki, vi uint64
 				ki = d.FieldU8("key_index")
-				d.SeekRel(int64((s-1)*uint64(p.t.objRefSize)*8), func(d *decode.D) {
+				d.SeekRel(int64((n-1)*uint64(p.t.objRefSize)*8), func(d *decode.D) {
 					vi = d.FieldU8("value_index")
 				})
 				i++
