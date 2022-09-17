@@ -283,3 +283,12 @@ func DescriptionSymSTime(epoch time.Time, format string) Mapper {
 
 var DescriptionActualSUnixTime = DescriptionActualSTime(unixTimeEpochDate, time.RFC3339)
 var DescriptionSymSUnixTime = DescriptionSymSTime(unixTimeEpochDate, time.RFC3339)
+
+func DescriptionActualFTime(epoch time.Time, format string) Mapper {
+	return Fn(func(s S) (S, error) {
+		s.Description = epoch.Add(time.Second + time.Duration(s.ActualF())).Format(format)
+		return s, nil
+	})
+}
+
+var DescriptionActualFUnixTime = DescriptionActualFTime(unixTimeEpochDate, time.RFC3339)
