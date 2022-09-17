@@ -109,7 +109,11 @@ func decodeItem(d *decode.D, p *plist) any {
 	case elementTypeInt:
 		n := decodeSize(d)
 		d.FieldValueU("size", n)
-		d.FieldUBigInt("value", int(n))
+		if n*8 <= 64 {
+			d.FieldU("value", int(n*8))
+		} else {
+			d.FieldUBigInt("value", int(n))
+		}
 	case elementTypeReal:
 		n := decodeSize(d)
 		d.FieldValueU("size", n)
