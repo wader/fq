@@ -34,10 +34,6 @@ $ fq '. | torepr' com.apple.UIAutomation.plist
 {
   "UIAutomationEnabled": true
 }
-
-### Inspect trailer
-```sh
-$ fq '.sections | {import: map(select(.id == "import_section").content.im.x[].nm.b), export: map(select(.id == "export_section").content.ex.x[].nm.b)}' file.wasm
 ```
 
 ### Authors
