@@ -87,7 +87,7 @@ func decodeSize(d *decode.D, sms ...scalar.Mapper) uint64 {
 	return n
 }
 
-func decodeItem(d *decode.D, p *plist) any {
+func decodeItem(d *decode.D, p *plist) {
 	m := d.FieldU4("type", elementTypeMap)
 	switch m {
 	case elementTypeNullOrBoolOrFill:
@@ -177,8 +177,6 @@ func decodeItem(d *decode.D, p *plist) any {
 	default:
 		d.Errorf("unknown type marker: %d", m)
 	}
-
-	return nil
 }
 
 func decodeReference(d *decode.D, p *plist, idx uint64) {
