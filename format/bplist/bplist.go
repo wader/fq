@@ -46,12 +46,6 @@ const (
 	boolTrue  = 0x09
 )
 
-var singleByteElementMap = scalar.UToSymStr{
-	null:      "null",
-	boolFalse: "false",
-	boolTrue:  "true",
-}
-
 var elementTypeMap = scalar.UToScalar{
 	elementTypeNullOrBoolOrFill: {Sym: "singleton", Description: "Singleton value (null/bool)"},
 	elementTypeInt:              {Sym: "int", Description: "Integer"},
@@ -70,7 +64,7 @@ var elementTypeMap = scalar.UToScalar{
 func decodeSize(d *decode.D, sms ...scalar.Mapper) uint64 {
 	n := d.FieldU4("size_bits")
 	if n != 0x0f {
-		return uint64(n)
+		return n
 	}
 
 	d.FieldU4("large_size_marker", d.AssertU(0b0001))
@@ -121,7 +115,7 @@ func decodeItem(d *decode.D, p *plist) any {
 	case elementTypeDate:
 		n := 1 << decodeSize(d, d.AssertU(4, 8))
 		d.FieldValueU("size", uint64(n))
-		d.FieldF("value", int(n*8), scalar.DescriptionActualFCocoaDate)
+		d.FieldF("value", n*8, scalar.DescriptionActualFCocoaDate)
 	case elementTypeData:
 		n := decodeSize(d)
 		d.FieldValueU("size", n)
@@ -169,7 +163,7 @@ func decodeItem(d *decode.D, p *plist) any {
 			func(d *decode.D) {
 				var ki, vi uint64
 				ki = d.FieldU8("key_index")
-				d.SeekRel(int64((n-1)*uint64(p.t.objRefSize)*8), func(d *decode.D) {
+				d.SeekRel(int64((n-1)*p.t.objRefSize)*8, func(d *decode.D) {
 					vi = d.FieldU8("value_index")
 				})
 				i++
