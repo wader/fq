@@ -103,6 +103,7 @@ const (
 	OPUS_PACKET         = "opus_packet"
 	PCAP                = "pcap"
 	PCAPNG              = "pcapng"
+	PG_BTREE            = "pg_btree"
 	PG_WAL              = "pg_wal"
 	PG_WALPAGE          = "pg_wal_page"
 	PG_MULTIXACTOFF     = "pg_multixact_offsets"
