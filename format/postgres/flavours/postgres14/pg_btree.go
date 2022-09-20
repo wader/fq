@@ -22,6 +22,17 @@ const (
 	BTP_HAS_FULLXID      = 1 << 8 /* contains BTDeletedPageData */
 )
 
+const (
+	INDEX_SIZE_MASK       = 0x1FFF
+	INDEX_AM_RESERVED_BIT = 0x2000 /* reserved for index-AM specific usage */
+	INDEX_VAR_MASK        = 0x4000
+	INDEX_NULL_MASK       = 0x8000
+)
+
+const (
+	IndexTupleDataSize = 8
+)
+
 // struct BTMetaPageData {
 /*    0      |     4 */ // uint32 btm_magic
 /*    4      |     4 */ // uint32 btm_version
@@ -45,6 +56,13 @@ const (
 /*   14      |     2 */ // BTCycleId btpo_cycleid;
 //
 /* total size (bytes):   16 */
+
+// struct IndexTupleData {
+/*    0      |     6 */ // ItemPointerData t_tid;
+/*    6      |     2 */ // unsigned short t_info;
+//
+// IndexTupleData *IndexTuple;
+/* total size (bytes):    8 */
 
 func DecodePgBTree(d *decode.D) any {
 	d.SeekAbs(0)
@@ -260,6 +278,10 @@ func decodeBTreePage(btree *BTreeD, d *decode.D) {
 	d.FieldArray("pd_linp", func(d *decode.D) {
 		decodeItemIds(btree, d)
 	})
+
+	d.FieldArray("tuples", func(d *decode.D) {
+		decodeIndexTuples(btree, d)
+	})
 }
 
 func decodeItemIds(btree *BTreeD, d *decode.D) {
@@ -286,4 +308,58 @@ func decodeItemIds(btree *BTreeD, d *decode.D) {
 			page.ItemIds = append(page.ItemIds, itemID)
 		})
 	} // for pd_linp
+}
+
+func decodeIndexTuples(btree *BTreeD, d *decode.D) {
+	page := btree.page
+
+	for i := 0; i < len(page.ItemIds); i++ {
+		id := page.ItemIds[i]
+		if id.Off == 0 || id.Len == 0 {
+			continue
+		}
+		if id.Flags != common.LP_NORMAL {
+			continue
+		}
+
+		//pos := int64(page.PagePosBegin)*8 + int64(id.Off)*8
+		pos := int64(page.bytesPosBegin)*8 + int64(id.Off)*8
+		//tupleDataLen := id.Len - SizeOfHeapTupleHeaderData
+
+		// seek to tuple with ItemId offset
+		d.SeekAbs(pos)
+		d.FieldStruct("tuple", func(d *decode.D) {
+
+			// IndexTupleData
+			d.FieldStruct("index_tuple_data", func(d *decode.D) {
+				// struct IndexTupleData {
+				/*    0      |     6 */ // ItemPointerData t_tid;
+				/*    6      |     2 */ // unsigned short t_info;
+				//
+				d.FieldStruct("t_tid", func(d *decode.D) {
+					/*    0      |     4 */ // BlockIdData ip_blkid;
+					/*    4      |     2 */ // OffsetNumber ip_posid;
+					d.FieldU32("ip_blkid")
+					d.FieldU16("ip_posid")
+				})
+				tInfo := d.FieldU16("t_info")
+
+				size := tInfo & INDEX_SIZE_MASK
+				hasNulls := (tInfo & INDEX_NULL_MASK) != 0
+				hasVarWidths := (tInfo & INDEX_VAR_MASK) != 0
+				d.FieldStruct("flags", func(d *decode.D) {
+					d.FieldValueBool("has_nulls", hasNulls)
+					d.FieldValueBool("has_var_widths", hasVarWidths)
+				})
+				d.FieldValueU("size", size)
+				if size < IndexTupleDataSize {
+					d.Fatalf("invalid size of tuple = %d\n", size)
+				}
+				dataSize := size - IndexTupleDataSize
+				d.FieldRawLen("data", int64(dataSize*8))
+			})
+
+		})
+
+	}
 }
