@@ -103,9 +103,6 @@ type HeapPage struct {
 
 func decodeBTreePages(btree *BTreeD, d *decode.D) {
 	for i := 0; ; i++ {
-		if end, _ := d.TryEnd(); end {
-			return
-		}
 
 		page := &HeapPage{}
 		if btree.page != nil {
@@ -118,17 +115,16 @@ func decodeBTreePages(btree *BTreeD, d *decode.D) {
 		pos0 := page.bytesPosBegin * 8
 		d.SeekAbs(pos0)
 
+		if end, _ := d.TryEnd(); end {
+			return
+		}
+
 		if i == 0 {
 			// first page contains meta information
 			d.FieldStruct("page", func(d *decode.D) {
 				decodeBTreeMetaPage(btree, d)
 			})
 			continue
-		}
-
-		if i > 2 {
-			// limit for dev only
-			break
 		}
 
 		d.FieldStruct("page", func(d *decode.D) {
