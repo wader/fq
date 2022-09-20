@@ -2,6 +2,7 @@ package postgres14
 
 import (
 	"github.com/wader/fq/format/postgres/common"
+	"github.com/wader/fq/format/postgres/flavours/postgres14/common14"
 	"github.com/wader/fq/pkg/decode"
 )
 
@@ -58,21 +59,26 @@ func DecodePgBTree(d *decode.D) any {
 
 type BTreeD struct {
 	PageSize uint64
-	page     *BTreePage
-}
-
-type BTreePage struct {
-	heap            HeapPage
-	bytesPosBegin   int64 // bytes pos of page's beginning
-	bytesPosEnd     int64 // bytes pos of page's ending
-	bytesPosSpecial int64 // bytes pos of page's special
+	page     *HeapPage
 }
 
 type HeapPage struct {
+	// PageHeaderData fields
 	PdLower           uint16
 	PdUpper           uint16
 	PdSpecial         uint16
 	PdPagesizeVersion uint16
+
+	// calculated bytes positions
+	bytesPosBegin   int64 // bytes pos of page's beginning
+	bytesPosEnd     int64 // bytes pos of page's ending
+	bytesPosSpecial int64 // bytes pos of page's special
+
+	// calculated bits positions
+	posItemsEnd int64 // bits pos of items end
+
+	// parsed items positions
+	ItemIds []common14.ItemIdData
 }
 
 func decodeBTreePages(btree *BTreeD, d *decode.D) {
@@ -81,7 +87,7 @@ func decodeBTreePages(btree *BTreeD, d *decode.D) {
 			return
 		}
 
-		page := &BTreePage{}
+		page := &HeapPage{}
 		if btree.page != nil {
 			// use prev page
 			page.bytesPosBegin = btree.page.bytesPosEnd
@@ -89,17 +95,25 @@ func decodeBTreePages(btree *BTreeD, d *decode.D) {
 		page.bytesPosEnd = int64(common.TypeAlign(btree.PageSize, uint64(page.bytesPosBegin)+1))
 		btree.page = page
 
+		pos0 := page.bytesPosBegin * 8
+		d.SeekAbs(pos0)
+
 		if i == 0 {
 			// first page contains meta information
-			d.FieldStruct("heap_page", func(d *decode.D) {
+			d.FieldStruct("page", func(d *decode.D) {
 				decodeBTreeMetaPage(btree, d)
 			})
 			continue
 		}
 
-		if i > 0 {
-			return
+		if i > 2 {
+			// limit for dev only
+			break
 		}
+
+		d.FieldStruct("page", func(d *decode.D) {
+			decodeBTreePage(btree, d)
+		})
 	}
 }
 
@@ -115,22 +129,19 @@ func decodeBTreeMetaPage(btree *BTreeD, d *decode.D) {
 
 	pos0 := d.Pos()
 	pos1 := int64(btree.page.bytesPosSpecial) * 8
-	d.SeekAbs(pos1)
+	d.FieldRawLen("unused0", pos1-pos0)
 	d.FieldStruct("page_opaque_data", func(d *decode.D) {
 		decodeBTPageOpaqueData(btree, d)
 	})
 	pos2 := d.Pos()
 	bytesPos2 := pos2 / 8
 	if bytesPos2 != page.bytesPosEnd {
-		d.Fatalf("invalid pos after read page_opaque_data\n")
+		d.Fatalf("invalid pos after read page_opaque_data on meta page\n")
 	}
-
-	d.SeekAbs(pos0)
 }
 
 func decodePageHeader(btree *BTreeD, d *decode.D) {
 	page := btree.page
-	heap := page.heap
 
 	d.FieldStruct("pd_lsn", func(d *decode.D) {
 		/*    0      |     4 */ // uint32 xlogid;
@@ -140,13 +151,14 @@ func decodePageHeader(btree *BTreeD, d *decode.D) {
 	})
 	d.FieldU16("pd_checksum")
 	d.FieldU16("pd_flags")
-	heap.PdLower = uint16(d.FieldU16("pd_lower"))
-	heap.PdUpper = uint16(d.FieldU16("pd_upper"))
-	heap.PdSpecial = uint16(d.FieldU16("pd_special"))
-	heap.PdPagesizeVersion = uint16(d.FieldU16("pd_pagesize_version"))
+	page.PdLower = uint16(d.FieldU16("pd_lower"))
+	page.PdUpper = uint16(d.FieldU16("pd_upper"))
+	page.PdSpecial = uint16(d.FieldU16("pd_special"))
+	page.PdPagesizeVersion = uint16(d.FieldU16("pd_pagesize_version"))
 	d.FieldU32("pd_prune_xid")
 
-	page.bytesPosSpecial = page.bytesPosBegin + int64(heap.PdSpecial)
+	page.bytesPosSpecial = page.bytesPosBegin + int64(page.PdSpecial)
+	page.posItemsEnd = (page.bytesPosBegin * 8) + int64(page.PdLower*8)
 
 	// ItemIdData pd_linp[];
 	//page.ItemsEnd = int64(page.PagePosBegin*8) + int64(page.PdLower*8)
@@ -223,4 +235,55 @@ func decodeBTPageOpaqueData(btree *BTreeD, d *decode.D) {
 		d.FieldValueBool("is_incompleteSplit", isIncompleteSplit)
 		d.FieldValueBool("has_fullXid", hasFullXid)
 	})
+}
+
+func decodeBTreePage(btree *BTreeD, d *decode.D) {
+	page := btree.page
+
+	d.FieldStruct("page_header", func(d *decode.D) {
+		decodePageHeader(btree, d)
+	})
+
+	pos0 := d.Pos()
+	pos1 := int64(btree.page.bytesPosSpecial) * 8
+	d.SeekAbs(pos1)
+	d.FieldStruct("page_opaque_data", func(d *decode.D) {
+		decodeBTPageOpaqueData(btree, d)
+	})
+	pos2 := d.Pos()
+	bytesPos2 := pos2 / 8
+	if bytesPos2 != page.bytesPosEnd {
+		d.Fatalf("invalid pos after read page_opaque_data on btree page\n")
+	}
+
+	d.SeekAbs(pos0)
+	d.FieldArray("pd_linp", func(d *decode.D) {
+		decodeItemIds(btree, d)
+	})
+}
+
+func decodeItemIds(btree *BTreeD, d *decode.D) {
+	page := btree.page
+
+	for {
+		checkPos := d.Pos()
+		if checkPos >= page.posItemsEnd {
+			break
+		}
+		/*    0: 0   |     4 */ // unsigned int lp_off: 15
+		/*    1: 7   |     4 */ // unsigned int lp_flags: 2
+		/*    2: 1   |     4 */ // unsigned int lp_len: 15
+		d.FieldStruct("ItemIdData", func(d *decode.D) {
+			itemID := common14.ItemIdData{}
+
+			itemPos := d.Pos()
+			itemID.Off = uint32(d.FieldU32("lp_off", common.LpOffMapper))
+			d.SeekAbs(itemPos)
+			itemID.Flags = uint32(d.FieldU32("lp_flags", common.LpFlagsMapper))
+			d.SeekAbs(itemPos)
+			itemID.Len = uint32(d.FieldU32("lp_len", common.LpLenMapper))
+
+			page.ItemIds = append(page.ItemIds, itemID)
+		})
+	} // for pd_linp
 }

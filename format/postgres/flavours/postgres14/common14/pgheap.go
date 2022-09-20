@@ -66,13 +66,6 @@ const (
 
 /* total size (bytes):    8 */
 
-// type = struct ItemIdData {
-/*    0: 0   |     4 */ // unsigned int lp_off: 15
-/*    1: 7   |     4 */ // unsigned int lp_flags: 2
-/*    2: 1   |     4 */ // unsigned int lp_len: 15
-
-/* total size (bytes):    4 */
-
 // typedef uint16 LocationIndex;
 // #define SizeOfPageHeaderData (offsetof(PageHeaderData, pd_linp))
 
@@ -135,7 +128,7 @@ type HeapPageD struct {
 	PdSpecial         uint16
 	PdPagesizeVersion uint16
 
-	ItemIds      []itemIDDataD
+	ItemIds      []ItemIdData
 	PagePosBegin uint64
 	ItemsEnd     int64
 
@@ -148,15 +141,6 @@ type HeapPageD struct {
 
 type TupleD struct {
 	IsMulti uint64
-}
-
-type itemIDDataD struct {
-	/*    0: 0   |     4 */ // unsigned int lp_off: 15
-	/*    1: 7   |     4 */ // unsigned int lp_flags: 2
-	/*    2: 1   |     4 */ // unsigned int lp_len: 15
-	lpOff                   uint32
-	lpFlags                 uint32
-	lpLen                   uint32
 }
 
 func DecodeHeap(heap *HeapD, d *decode.D) any {
@@ -260,14 +244,14 @@ func DecodeItemIds(heap *HeapD, d *decode.D) {
 		/*    1: 7   |     4 */ // unsigned int lp_flags: 2
 		/*    2: 1   |     4 */ // unsigned int lp_len: 15
 		d.FieldStruct("ItemIdData", func(d *decode.D) {
-			itemID := itemIDDataD{}
+			itemID := ItemIdData{}
 
 			itemPos := d.Pos()
-			itemID.lpOff = uint32(d.FieldU32("lp_off", common.LpOffMapper))
+			itemID.Off = uint32(d.FieldU32("lp_off", common.LpOffMapper))
 			d.SeekAbs(itemPos)
-			itemID.lpFlags = uint32(d.FieldU32("lp_flags", common.LpFlagsMapper))
+			itemID.Flags = uint32(d.FieldU32("lp_flags", common.LpFlagsMapper))
 			d.SeekAbs(itemPos)
-			itemID.lpLen = uint32(d.FieldU32("lp_len", common.LpLenMapper))
+			itemID.Len = uint32(d.FieldU32("lp_len", common.LpLenMapper))
 
 			page.ItemIds = append(page.ItemIds, itemID)
 		})
@@ -278,15 +262,15 @@ func decodeTuples(heap *HeapD, d *decode.D) {
 	page := heap.Page
 	for i := 0; i < len(page.ItemIds); i++ {
 		id := page.ItemIds[i]
-		if id.lpOff == 0 || id.lpLen == 0 {
+		if id.Off == 0 || id.Len == 0 {
 			continue
 		}
-		if id.lpFlags != common.LP_NORMAL {
+		if id.Flags != common.LP_NORMAL {
 			continue
 		}
 
-		pos := int64(page.PagePosBegin)*8 + int64(id.lpOff)*8
-		tupleDataLen := id.lpLen - SizeOfHeapTupleHeaderData
+		pos := int64(page.PagePosBegin)*8 + int64(id.Off)*8
+		tupleDataLen := id.Len - SizeOfHeapTupleHeaderData
 
 		// seek to tuple with ItemId offset
 		d.SeekAbs(pos)
