@@ -13,6 +13,7 @@ import (
 )
 
 //go:embed html.jq
+//go:embed html.md
 var htmlFS embed.FS
 
 func init() {

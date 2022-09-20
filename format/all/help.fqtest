@@ -621,6 +621,65 @@ out   $ fq -d html -o array=false -o attribute_prefix="@" -o seq=false . file
 out   # Decode value as html
 out   ... | html({array:false,attribute_prefix:"@",seq:false})
 out 
+out HTML is decoded in HTML5 mode and will always include <html>, <body> and <head> element.
+out 
+out See xml format for more examples and how to preserve element order and how to encode to xml.
+out 
+out There is no tohtml function, see toxml instead.
+out 
+out # Element as object
+out 
+out   # decode as object is the default
+out   $ echo '<a href="url">text</a>' | fq -d html
+out   {
+out     "html": {
+out       "body": {
+out         "a": {
+out           "#text": "text",
+out           "@href": "url"
+out         }
+out       },
+out       "head": ""
+out     }
+out   }
+out   
+out # Element as array
+out 
+out   $ '<a href="url">text</a>' | fq -d html -o array=true
+out   [
+out     "html",
+out     null,
+out     [
+out       [
+out         "head",
+out         null,
+out         []
+out       ],
+out       [
+out         "body",
+out         null,
+out         [
+out           [
+out             "a",
+out             {
+out               "#text": "text",
+out               "href": "url"
+out             },
+out             []
+out           ]
+out         ]
+out       ]
+out     ]
+out   ]
+out   
+out 
+out   # Decode html files to a {file: "title", ...} object
+out   $ fq -n -d html '[inputs | {key: input_filename, value: .html.head.title?}] | from_entries' *.html
+out   
+out 
+out   # <a> href:s in file
+out   $ fq -r -o array=true -d html '.. | select(.[0] == "a" and .[1].href)?.[1].href' file.html
+out   
 "help(icc_profile)"
 out icc_profile: International Color Consortium profile decoder
 out 
@@ -1280,6 +1339,104 @@ out   $ fq -d xml -o array=false -o attribute_prefix="@" -o seq=false . file
 out   # Decode value as xml
 out   ... | xml({array:false,attribute_prefix:"@",seq:false})
 out 
+out XML can be decoded and encoded into jq values in two ways, elements as object or array. Which variant to use depends a bit what you want to do. The object variant
+out might be easier to query for a specific value but array might be easier to use to generate xml or to query after all elements of some kind etc.
+out 
+out Encoding is done using the toxml function and it will figure what variant that is used based on the input value. Is has two optional options indent and
+out attribute_prefix.
+out 
+out # Elements as object
+out Element can have different shapes depending on body text, attributes and children:
+out 
+out - <a key="value">text</a> is {"a":{"#text":"text","@key":"value"}}, has text (#text) and attributes (@key)
+out - <a>text</a> is {"a":"text"}
+out - <a><b>text</b></a> is {"a":{"b":"text"}} one child with only text and no attributes
+out - <a><b/><b>text</b></a> is {"a":{"b":["","text"]}} two children with same name end up in an array
+out - <a><b/><b key="value">text</b></a> is {"a":{"b":["",{"#text":"text","@key":"value"}]}}
+out 
+out If there is #seq attribute it encodes the child element order. Use -o seq=true to include sequence number when decoding, otherwise order might be lost.
+out 
+out 
+out   # decode as object is the default
+out   $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -d xml -o seq=true
+out   {
+out     "a": {
+out       "b": [
+out         {
+out           "#seq": 0
+out         },
+out         {
+out           "#seq": 1,
+out           "#text": "bbb"
+out         }
+out       ],
+out       "c": {
+out         "#seq": 2,
+out         "#text": "ccc",
+out         "@attr": "value"
+out       }
+out     }
+out   }
+out   
+out   # access text of the <c> element
+out   $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq '.a.c["#text"]'
+out   "ccc"
+out   
+out 
+out   # decode to object and encode to xml
+out   $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -r -d xml -o seq=true 'toxml({indent:2})'
+out   <a>
+out     <b></b>
+out     <b>bbb</b>
+out     <c attr="value">ccc</c>
+out   </a>
+out   
+out # Elements as array
+out Elements are arrays of the shape ["#text": "body text", "attr_name", {key: "attr value"}|null, [<child element>, ...]].
+out 
+out 
+out   # decode as array
+out   ✗ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -d xml -o array=true
+out   [
+out     "a",
+out     null,
+out     [
+out       [
+out         "b",
+out         null,
+out         []
+out       ],
+out       [
+out         "b",
+out         {
+out           "#text": "bbb"
+out         },
+out         []
+out       ],
+out       [
+out         "c",
+out         {
+out           "#text": "ccc",
+out           "attr": "value"
+out         },
+out         []
+out       ]
+out     ]
+out   ]
+out   
+out 
+out   # decode to array and encode to xml
+out   ✗ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -r -d xml -o array=true -o seq=true 'toxml({indent:2})'
+out   <a>
+out     <b></b>
+out     <b>bbb</b>
+out     <c attr="value">ccc</c>
+out   </a>
+out   
+out   # access text of the <c> element, the object variant above is probably easier to use
+out   $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -o array=true '.[2][2][1]["#text"]'
+out   "ccc"
+out   
 out # References
 out - xml.com's Converting Between XML and JSON (https://www.xml.com/pub/a/2006/05/31/converting-between-xml-and-json.html)
 out 
