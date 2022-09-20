@@ -4,6 +4,7 @@ import (
 	"github.com/wader/fq/format/postgres/common"
 	"github.com/wader/fq/format/postgres/flavours/postgres14/common14"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 const (
@@ -93,7 +94,8 @@ type HeapPage struct {
 	bytesPosSpecial int64 // bytes pos of page's special
 
 	// calculated bits positions
-	posItemsEnd int64 // bits pos of items end
+	posItemsEnd     int64 // bits pos of items end
+	posFreeSpaceEnd int64 // bits pos free space end
 
 	// parsed items positions
 	ItemIds []common14.ItemIdData
@@ -177,12 +179,7 @@ func decodePageHeader(btree *BTreeD, d *decode.D) {
 
 	page.bytesPosSpecial = page.bytesPosBegin + int64(page.PdSpecial)
 	page.posItemsEnd = (page.bytesPosBegin * 8) + int64(page.PdLower*8)
-
-	// ItemIdData pd_linp[];
-	//page.ItemsEnd = int64(page.PagePosBegin*8) + int64(page.PdLower*8)
-	//d.FieldArray("pd_linp", func(d *decode.D) {
-	//	DecodeItemIds(heap, d)
-	//})
+	page.posFreeSpaceEnd = (page.bytesPosBegin * 8) + int64(page.PdUpper*8)
 }
 
 func decodeBTMetaPageData(btree *BTreeD, d *decode.D) {
@@ -242,7 +239,7 @@ func decodeBTPageOpaqueData(btree *BTreeD, d *decode.D) {
 
 	d.FieldStruct("flags", func(d *decode.D) {
 		d.FieldValueBool("is_leftmost", isLeftMost)
-		d.FieldValueBool("is_right_most", isRightMost)
+		d.FieldValueBool("is_rightmost", isRightMost)
 		d.FieldValueBool("is_leaf", isLeaf)
 		d.FieldValueBool("is_root", isRoot)
 		d.FieldValueBool("is_deleted", isDeleted)
@@ -250,8 +247,8 @@ func decodeBTPageOpaqueData(btree *BTreeD, d *decode.D) {
 		d.FieldValueBool("is_half_dead", isHalfDead)
 		d.FieldValueBool("is_ignore", isIgnore)
 		d.FieldValueBool("has_garbage", hasGarbage)
-		d.FieldValueBool("is_incompleteSplit", isIncompleteSplit)
-		d.FieldValueBool("has_fullXid", hasFullXid)
+		d.FieldValueBool("is_incomplete_split", isIncompleteSplit)
+		d.FieldValueBool("has_full_xid", hasFullXid)
 	})
 }
 
@@ -308,6 +305,13 @@ func decodeItemIds(btree *BTreeD, d *decode.D) {
 			page.ItemIds = append(page.ItemIds, itemID)
 		})
 	} // for pd_linp
+
+	pos0 := d.Pos()
+	if pos0 > page.posFreeSpaceEnd {
+		d.Fatalf("items overflows free space")
+	}
+	freeSpaceLen := page.posFreeSpaceEnd - pos0
+	d.FieldRawLen("free_space", freeSpaceLen, scalar.RawHex)
 }
 
 func decodeIndexTuples(btree *BTreeD, d *decode.D) {
@@ -322,9 +326,7 @@ func decodeIndexTuples(btree *BTreeD, d *decode.D) {
 			continue
 		}
 
-		//pos := int64(page.PagePosBegin)*8 + int64(id.Off)*8
 		pos := int64(page.bytesPosBegin)*8 + int64(id.Off)*8
-		//tupleDataLen := id.Len - SizeOfHeapTupleHeaderData
 
 		// seek to tuple with ItemId offset
 		d.SeekAbs(pos)
