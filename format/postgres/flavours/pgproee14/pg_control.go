@@ -221,7 +221,7 @@ func DecodePgControl(d *decode.D, in any) any {
 	d.FieldU32("padding0")
 	/* total size (bytes):  336 */
 
-	d.AssertPosBytes(336)
+	d.AssertPos(336 * 8)
 	d.FieldRawLen("unused", d.BitsLeft())
 
 	return nil

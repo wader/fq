@@ -816,11 +816,9 @@ func (d *D) FieldRangeFn(name string, firstBit int64, nBits int64, fn func() *Va
 	return v
 }
 
-func (d *D) AssertPosBytes(nBytes int64) {
-	nBits := nBytes * 8
-	if d.Pos() != nBits {
-		// TODO:
-		panic(DecoderError{Reason: fmt.Sprintf("expected position bytes %d, bits %d", nBytes, nBits), Pos: d.Pos()})
+func (d *D) AssertPos(pos int64) {
+	if d.Pos() != pos {
+		panic(DecoderError{Reason: fmt.Sprintf("expected bits position %d", pos), Pos: d.Pos()})
 	}
 }
 
