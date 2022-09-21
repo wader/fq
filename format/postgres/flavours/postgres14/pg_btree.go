@@ -288,7 +288,7 @@ func decodeItemIds(btree *BTreeD, d *decode.D) {
 		/*    0: 0   |     4 */ // unsigned int lp_off: 15
 		/*    1: 7   |     4 */ // unsigned int lp_flags: 2
 		/*    2: 1   |     4 */ // unsigned int lp_len: 15
-		d.FieldStruct("ItemIdData", func(d *decode.D) {
+		d.FieldStruct("item_id", func(d *decode.D) {
 			itemID := common14.ItemIdData{}
 
 			itemPos := d.Pos()

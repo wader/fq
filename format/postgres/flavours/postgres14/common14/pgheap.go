@@ -140,7 +140,7 @@ type HeapPageD struct {
 }
 
 type TupleD struct {
-	IsMulti uint64
+	IsMulti bool
 }
 
 func DecodeHeap(heap *HeapD, d *decode.D) any {
@@ -159,7 +159,7 @@ func decodeHeapPages(heap *HeapD, d *decode.D) {
 		page := &HeapPageD{}
 		heap.Page = page
 
-		d.FieldStruct("HeapPage", func(d *decode.D) {
+		d.FieldStruct("page", func(d *decode.D) {
 			decodeHeapPage(heap, d)
 		})
 
@@ -178,7 +178,7 @@ func decodeHeapPage(heap *HeapD, d *decode.D) {
 	page.PagePosBegin = pagePosBegin
 
 	// PageHeader
-	d.FieldStruct("PageHeaderData", func(d *decode.D) {
+	d.FieldStruct("page_header", func(d *decode.D) {
 		heap.DecodePageHeaderDataFn(heap, d)
 	})
 
@@ -186,7 +186,7 @@ func decodeHeapPage(heap *HeapD, d *decode.D) {
 	freeSpaceEnd := int64(pagePosBegin*8) + int64(page.PdUpper*8)
 	freeSpaceNBits := freeSpaceEnd - d.Pos()
 	if freeSpaceNBits != 0 {
-		d.FieldRawLen("FreeSpace", freeSpaceNBits, scalar.RawHex)
+		d.FieldRawLen("free_space", freeSpaceNBits, scalar.RawHex)
 	}
 
 	if uint64(page.PdSpecial) != heap.PageSize && heap.DecodePageSpecialFn != nil {
@@ -194,7 +194,7 @@ func decodeHeapPage(heap *HeapD, d *decode.D) {
 	}
 
 	// Tuples
-	d.FieldArray("Tuples", func(d *decode.D) {
+	d.FieldArray("tuples", func(d *decode.D) {
 		decodeTuples(heap, d)
 	})
 }
@@ -243,7 +243,7 @@ func DecodeItemIds(heap *HeapD, d *decode.D) {
 		/*    0: 0   |     4 */ // unsigned int lp_off: 15
 		/*    1: 7   |     4 */ // unsigned int lp_flags: 2
 		/*    2: 1   |     4 */ // unsigned int lp_len: 15
-		d.FieldStruct("ItemIdData", func(d *decode.D) {
+		d.FieldStruct("item_id", func(d *decode.D) {
 			itemID := ItemIdData{}
 
 			itemPos := d.Pos()
@@ -290,19 +290,21 @@ func decodeTuples(heap *HeapD, d *decode.D) {
 		/* XXX  1-byte padding  */
 		//
 		/* total size (bytes):   24 */
-		d.FieldStruct("Tuple", func(d *decode.D) {
-			d.FieldStruct("HeapTupleHeaderData", func(d *decode.D) {
+		d.FieldStruct("tuple", func(d *decode.D) {
+			heap.Tuple = &TupleD{}
+
+			d.FieldStruct("header", func(d *decode.D) {
 
 				pos1 := d.Pos()
 				// we need infomask before t_xmin, t_xmax
 				d.SeekAbs(pos1 + 18*8)
-				d.FieldU16("t_infomask2")
-				d.FieldStruct("Infomask2", func(d *decode.D) {
-					decodeInfomask2(heap, d)
+				infomask2 := d.FieldU16("t_infomask2")
+				d.FieldStruct("infomask2", func(d *decode.D) {
+					decodeInfomask2(d, infomask2)
 				})
-				d.FieldU16("t_infomask")
-				d.FieldStruct("Infomask", func(d *decode.D) {
-					decodeInfomask(heap, d)
+				infomask := d.FieldU16("t_infomask")
+				d.FieldStruct("infomask", func(d *decode.D) {
+					decodeInfomask(heap, d, infomask)
 				})
 
 				// restore pos and continue
@@ -335,7 +337,7 @@ func decodeTuples(heap *HeapD, d *decode.D) {
 				//d.FieldRawLen("t_bits", int64(tupleDataLen*8), scalar.RawHex)
 			}) // HeapTupleHeaderData
 
-			d.FieldRawLen("Data", int64(tupleDataLen*8), scalar.RawHex)
+			d.FieldRawLen("data", int64(tupleDataLen*8), scalar.RawHex)
 
 			// data alignment
 			pos2 := uint64(d.Pos() / 8)
@@ -355,63 +357,38 @@ func decodeTuples(heap *HeapD, d *decode.D) {
 	} // for ItemsIds
 }
 
-func decodeInfomask2(heap *HeapD, d *decode.D) {
-	tuple := &TupleD{}
-	heap.Tuple = tuple
-
-	pos := d.Pos() - 16
-	d.SeekAbs(pos)
-	d.FieldU16("HEAP_KEYS_UPDATED", common.Mask{Mask: HEAP_KEYS_UPDATED})
-	d.SeekAbs(pos)
-	d.FieldU16("HEAP_HOT_UPDATED", common.Mask{Mask: HEAP_HOT_UPDATED})
-	d.SeekAbs(pos)
-	d.FieldU16("HEAP_ONLY_TUPLE", common.Mask{Mask: HEAP_ONLY_TUPLE})
+func decodeInfomask2(d *decode.D, infomask2 uint64) {
+	d.FieldValueBool("heap_keys_updated", common.IsMaskSet0(infomask2, HEAP_KEYS_UPDATED))
+	d.FieldValueBool("heap_hot_updated", common.IsMaskSet0(infomask2, HEAP_HOT_UPDATED))
+	d.FieldValueBool("heap_only_tuple", common.IsMaskSet0(infomask2, HEAP_ONLY_TUPLE))
 }
 
-func decodeInfomask(heap *HeapD, d *decode.D) {
+func decodeInfomask(heap *HeapD, d *decode.D, infomask uint64) {
 	tuple := heap.Tuple
 
-	pos := d.Pos() - 16
-	d.SeekAbs(pos)
-	d.FieldU16("HEAP_HASNULL", common.Mask{Mask: HEAP_HASNULL})
-	d.SeekAbs(pos)
-	d.FieldU16("HEAP_HASVARWIDTH", common.Mask{Mask: HEAP_HASVARWIDTH})
-	d.SeekAbs(pos)
-	d.FieldU16("HEAP_HASEXTERNAL", common.Mask{Mask: HEAP_HASEXTERNAL})
-	d.SeekAbs(pos)
-	d.FieldU16("HEAP_HASOID_OLD", common.Mask{Mask: HEAP_HASOID_OLD})
-	d.SeekAbs(pos)
-	d.FieldU16("HEAP_XMAX_KEYSHR_LOCK", common.Mask{Mask: HEAP_XMAX_KEYSHR_LOCK})
-	d.SeekAbs(pos)
-	d.FieldU16("HEAP_COMBOCID", common.Mask{Mask: HEAP_COMBOCID})
-	d.SeekAbs(pos)
-	d.FieldU16("HEAP_XMAX_EXCL_LOCK", common.Mask{Mask: HEAP_XMAX_EXCL_LOCK})
-	d.SeekAbs(pos)
-	d.FieldU16("HEAP_XMAX_LOCK_ONLY", common.Mask{Mask: HEAP_XMAX_LOCK_ONLY})
-	d.SeekAbs(pos)
-	d.FieldU16("HEAP_XMAX_SHR_LOCK", common.Mask{Mask: HEAP_XMAX_SHR_LOCK})
-	d.SeekAbs(pos)
-	d.FieldU16("HEAP_LOCK_MASK", common.Mask{Mask: HEAP_LOCK_MASK})
-	d.SeekAbs(pos)
-	d.FieldU16("HEAP_XMIN_COMMITTED", common.Mask{Mask: HEAP_XMIN_COMMITTED})
-	d.SeekAbs(pos)
-	d.FieldU16("HEAP_XMIN_INVALID", common.Mask{Mask: HEAP_XMIN_INVALID})
-	d.SeekAbs(pos)
-	d.FieldU16("HEAP_XMIN_FROZEN", common.Mask{Mask: HEAP_XMIN_FROZEN})
-	d.SeekAbs(pos)
-	d.FieldU16("HEAP_XMAX_COMMITTED", common.Mask{Mask: HEAP_XMAX_COMMITTED})
-	d.SeekAbs(pos)
-	d.FieldU16("HEAP_XMAX_INVALID", common.Mask{Mask: HEAP_XMAX_INVALID})
-	d.SeekAbs(pos)
-	tuple.IsMulti = d.FieldU16("HEAP_XMAX_IS_MULTI", common.Mask{Mask: HEAP_XMAX_IS_MULTI})
-	d.SeekAbs(pos)
-	d.FieldU16("HEAP_UPDATED", common.Mask{Mask: HEAP_UPDATED})
-	d.SeekAbs(pos)
-	d.FieldU16("HEAP_MOVED_OFF", common.Mask{Mask: HEAP_MOVED_OFF})
-	d.SeekAbs(pos)
-	d.FieldU16("HEAP_MOVED_IN", common.Mask{Mask: HEAP_MOVED_IN})
-	d.SeekAbs(pos)
-	d.FieldU16("HEAP_MOVED", common.Mask{Mask: HEAP_MOVED})
+	isMulti := common.IsMaskSet0(infomask, HEAP_XMAX_IS_MULTI)
+	tuple.IsMulti = isMulti
+
+	d.FieldValueBool("heap_hasnull", common.IsMaskSet0(infomask, HEAP_HASNULL))
+	d.FieldValueBool("heap_hasvarwidth", common.IsMaskSet0(infomask, HEAP_HASVARWIDTH))
+	d.FieldValueBool("heap_hasexternal", common.IsMaskSet0(infomask, HEAP_HASEXTERNAL))
+	d.FieldValueBool("heap_hasoid_old", common.IsMaskSet0(infomask, HEAP_HASOID_OLD))
+	d.FieldValueBool("heap_xmax_keyshr_lock", common.IsMaskSet0(infomask, HEAP_XMAX_KEYSHR_LOCK))
+	d.FieldValueBool("heap_combocid", common.IsMaskSet0(infomask, HEAP_COMBOCID))
+	d.FieldValueBool("heap_xmax_excl_lock", common.IsMaskSet0(infomask, HEAP_XMAX_EXCL_LOCK))
+	d.FieldValueBool("heap_xmax_lock_only", common.IsMaskSet0(infomask, HEAP_XMAX_LOCK_ONLY))
+	d.FieldValueBool("heap_xmax_shr_lock", common.IsMaskSet0(infomask, HEAP_XMAX_SHR_LOCK))
+	d.FieldValueBool("heap_lock_mask", common.IsMaskSet0(infomask, HEAP_LOCK_MASK))
+	d.FieldValueBool("heap_xmin_committed", common.IsMaskSet0(infomask, HEAP_XMIN_COMMITTED))
+	d.FieldValueBool("heap_xmin_invalid", common.IsMaskSet0(infomask, HEAP_XMIN_INVALID))
+	d.FieldValueBool("heap_xmin_frozen", common.IsMaskSet0(infomask, HEAP_XMIN_FROZEN))
+	d.FieldValueBool("heap_xmax_committed", common.IsMaskSet0(infomask, HEAP_XMAX_COMMITTED))
+	d.FieldValueBool("heap_xmax_invalid", common.IsMaskSet0(infomask, HEAP_XMAX_INVALID))
+	d.FieldValueBool("heap_xmax_is_multi", isMulti)
+	d.FieldValueBool("heap_updated", common.IsMaskSet0(infomask, HEAP_UPDATED))
+	d.FieldValueBool("heap_moved_off", common.IsMaskSet0(infomask, HEAP_MOVED_OFF))
+	d.FieldValueBool("heap_moved_in", common.IsMaskSet0(infomask, HEAP_MOVED_IN))
+	d.FieldValueBool("heap_moved", common.IsMaskSet0(infomask, HEAP_MOVED))
 }
 
 /*    0      |    12 */ // union {
@@ -468,12 +445,12 @@ type TransactionMapper struct {
 func (m TransactionMapper) MapScalar(s scalar.S) (scalar.S, error) {
 	xid := s.ActualU()
 
-	if m.Page.PdXidBase != 0 && m.Tuple.IsMulti == 0 && common.TransactionIDIsNormal(xid) {
+	if m.Page.PdXidBase != 0 && m.Tuple.IsMulti && common.TransactionIDIsNormal(xid) {
 		xid64 := xid + m.Page.PdXidBase
 		s.Sym = fmt.Sprintf("%d", xid64)
 	}
 
-	if m.Page.PdMultiBase != 0 && m.Tuple.IsMulti != 0 && common.TransactionIDIsNormal(xid) {
+	if m.Page.PdMultiBase != 0 && !m.Tuple.IsMulti && common.TransactionIDIsNormal(xid) {
 		xid64 := xid + m.Page.PdMultiBase
 		s.Sym = fmt.Sprintf("%d", xid64)
 	}
