@@ -76,7 +76,7 @@ const (
 //
 /* total size (bytes):   12  */
 /* } t_choice;             //
-/*   12      |     6 */// ItemPointerData t_ctid;
+/*   12      |     6 */ // ItemPointerData t_ctid;
 /*   18      |     2 */ // uint16 t_infomask2;
 /*   20      |     2 */ // uint16 t_infomask;
 /*   22      |     1 */ // uint8 t_hoff;
@@ -114,7 +114,10 @@ type HeapD struct {
 	PageSize uint64
 
 	// current Page
-	Page *HeapPageD
+	Page *HeapPage
+	// Page special data
+	Special *PageSpecial
+
 	// current tuple
 	Tuple *TupleD
 
@@ -122,9 +125,7 @@ type HeapD struct {
 	DecodePageSpecialFn    func(heap *HeapD, d *decode.D)
 }
 
-type HeapPageD struct {
-	HeapPage
-
+type PageSpecial struct {
 	// pgproee
 	PdXidBase   uint64 // 8 TransactionId pd_xid_base;
 	PdMultiBase uint64 // 8 TransactionId pd_multi_base;
@@ -149,9 +150,6 @@ func decodeHeapPages(heap *HeapD, d *decode.D) {
 			return
 		}
 
-		page := &HeapPageD{}
-		heap.Page = page
-
 		d.FieldStruct("page", func(d *decode.D) {
 			decodeHeapPage(heap, d)
 		})
@@ -164,14 +162,15 @@ func decodeHeapPages(heap *HeapD, d *decode.D) {
 }
 
 func decodeHeapPage(heap *HeapD, d *decode.D) {
-	page := &HeapPageD{}
+	page := &HeapPage{}
 	heap.Page = page
+	heap.Special = &PageSpecial{}
 
 	d.FieldStruct("page_header", func(d *decode.D) {
-		heap.DecodePageHeaderDataFn(&heap.Page.HeapPage, d)
+		heap.DecodePageHeaderDataFn(page, d)
 	})
 
-	DecodeItemIds(&heap.Page.HeapPage, d)
+	DecodeItemIds(page, d)
 
 	if uint64(page.PdSpecial) != heap.PageSize && heap.DecodePageSpecialFn != nil {
 		heap.DecodePageSpecialFn(heap, d)
@@ -319,7 +318,7 @@ func decodeInfomask(heap *HeapD, d *decode.D, infomask uint64) {
 /*                12 */ //     DatumTupleFields t_datum;
 //						} t_choice;
 func decodeTChoice(heap *HeapD, d *decode.D) {
-	page := heap.Page
+	special := heap.Special
 	tuple := heap.Tuple
 
 	pos1 := d.Pos()
@@ -334,8 +333,8 @@ func decodeTChoice(heap *HeapD, d *decode.D) {
 	//
 	/* total size (bytes):   12 */
 	d.FieldStruct("t_heap", func(d *decode.D) {
-		d.FieldU32("t_xmin", TransactionMapper{Heap: heap, Page: page, Tuple: tuple})
-		d.FieldU32("t_xmax", TransactionMapper{Heap: heap, Page: page, Tuple: tuple})
+		d.FieldU32("t_xmin", TransactionMapper{Heap: heap, Special: special, Tuple: tuple})
+		d.FieldU32("t_xmax", TransactionMapper{Heap: heap, Special: special, Tuple: tuple})
 		d.FieldStruct("t_field3", func(d *decode.D) {
 			pos2 := d.Pos()
 			d.FieldU32("t_cid")
@@ -360,21 +359,21 @@ func decodeTChoice(heap *HeapD, d *decode.D) {
 }
 
 type TransactionMapper struct {
-	Heap  *HeapD
-	Page  *HeapPageD
-	Tuple *TupleD
+	Heap    *HeapD
+	Special *PageSpecial
+	Tuple   *TupleD
 }
 
 func (m TransactionMapper) MapScalar(s scalar.S) (scalar.S, error) {
 	xid := s.ActualU()
 
-	if m.Page.PdXidBase != 0 && m.Tuple.IsMulti && common.TransactionIDIsNormal(xid) {
-		xid64 := xid + m.Page.PdXidBase
+	if m.Special.PdXidBase != 0 && m.Tuple.IsMulti && common.TransactionIDIsNormal(xid) {
+		xid64 := xid + m.Special.PdXidBase
 		s.Sym = fmt.Sprintf("%d", xid64)
 	}
 
-	if m.Page.PdMultiBase != 0 && !m.Tuple.IsMulti && common.TransactionIDIsNormal(xid) {
-		xid64 := xid + m.Page.PdMultiBase
+	if m.Special.PdMultiBase != 0 && !m.Tuple.IsMulti && common.TransactionIDIsNormal(xid) {
+		xid64 := xid + m.Special.PdMultiBase
 		s.Sym = fmt.Sprintf("%d", xid64)
 	}
 
