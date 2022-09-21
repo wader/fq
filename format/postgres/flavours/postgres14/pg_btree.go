@@ -67,7 +67,7 @@ const (
 func DecodePgBTree(d *decode.D) any {
 	d.SeekAbs(0)
 
-	btree := &BTreeD{
+	btree := &BTree{
 		PageSize: common.HeapPageSize,
 	}
 	decodeBTreePages(btree, d)
@@ -75,12 +75,12 @@ func DecodePgBTree(d *decode.D) any {
 	return nil
 }
 
-type BTreeD struct {
+type BTree struct {
 	PageSize uint64
 	page     *common14.HeapPage
 }
 
-func decodeBTreePages(btree *BTreeD, d *decode.D) {
+func decodeBTreePages(btree *BTree, d *decode.D) {
 	for i := 0; ; i++ {
 
 		page := &common14.HeapPage{}
@@ -112,7 +112,7 @@ func decodeBTreePages(btree *BTreeD, d *decode.D) {
 	}
 }
 
-func decodeBTreeMetaPage(btree *BTreeD, d *decode.D) {
+func decodeBTreeMetaPage(btree *BTree, d *decode.D) {
 	page := btree.page
 
 	d.FieldStruct("page_header", func(d *decode.D) {
@@ -135,7 +135,7 @@ func decodeBTreeMetaPage(btree *BTreeD, d *decode.D) {
 	}
 }
 
-func decodeBTMetaPageData(btree *BTreeD, d *decode.D) {
+func decodeBTMetaPageData(btree *BTree, d *decode.D) {
 	/*    0      |     4 */ // uint32 btm_magic
 	/*    4      |     4 */ // uint32 btm_version
 	/*    8      |     4 */ // BlockNumber btm_root
@@ -171,7 +171,7 @@ func decodeBTMetaPageData(btree *BTreeD, d *decode.D) {
 /*    8      |     4 */ // uint32 btpo_level;
 /*   12      |     2 */ // uint16 btpo_flags;
 /*   14      |     2 */ // BTCycleId btpo_cycleid;
-func decodeBTPageOpaqueData(btree *BTreeD, d *decode.D) {
+func decodeBTPageOpaqueData(btree *BTree, d *decode.D) {
 	prev := d.FieldU32("btpo_prev")
 	next := d.FieldU32("btpo_next")
 	d.FieldU32("btpo_level")
@@ -205,7 +205,7 @@ func decodeBTPageOpaqueData(btree *BTreeD, d *decode.D) {
 	})
 }
 
-func decodeBTreePage(btree *BTreeD, d *decode.D) {
+func decodeBTreePage(btree *BTree, d *decode.D) {
 	page := btree.page
 
 	d.FieldStruct("page_header", func(d *decode.D) {
@@ -232,7 +232,7 @@ func decodeBTreePage(btree *BTreeD, d *decode.D) {
 	})
 }
 
-func decodeIndexTuples(btree *BTreeD, d *decode.D) {
+func decodeIndexTuples(btree *BTree, d *decode.D) {
 	page := btree.page
 
 	for i := 0; i < len(page.ItemIds); i++ {

@@ -15,7 +15,7 @@ import (
 //
 /* total size (bytes):    4 */
 
-type ItemIdData struct {
+type ItemId struct {
 	Off   uint32 // unsigned int lp_off: 15
 	Flags uint32 // unsigned int lp_flags: 2
 	Len   uint32 // unsigned int lp_len: 15
@@ -26,7 +26,7 @@ type HeapPage struct {
 	PdLower           uint16
 	PdUpper           uint16
 	PdSpecial         uint16
-	PdPagesizeVersion uint16
+	PdPageSizeVersion uint16
 
 	// calculated bytes positions
 	BytesPosBegin   int64 // bytes pos of page's beginning
@@ -38,7 +38,7 @@ type HeapPage struct {
 	PosFreeSpaceEnd int64 // bits pos free space end
 
 	// parsed items positions
-	ItemIds []ItemIdData
+	ItemIds []ItemId
 }
 
 func DecodePageHeader(page *HeapPage, d *decode.D) {
@@ -53,7 +53,7 @@ func DecodePageHeader(page *HeapPage, d *decode.D) {
 	page.PdLower = uint16(d.FieldU16("pd_lower"))
 	page.PdUpper = uint16(d.FieldU16("pd_upper"))
 	page.PdSpecial = uint16(d.FieldU16("pd_special"))
-	page.PdPagesizeVersion = uint16(d.FieldU16("pd_pagesize_version"))
+	page.PdPageSizeVersion = uint16(d.FieldU16("pd_pagesize_version"))
 	d.FieldU32("pd_prune_xid")
 
 	page.BytesPosSpecial = page.BytesPosBegin + int64(page.PdSpecial)
@@ -84,7 +84,7 @@ func decodeItemIdsInternal(page *HeapPage, d *decode.D) {
 		/*    1: 7   |     4 */ // unsigned int lp_flags: 2
 		/*    2: 1   |     4 */ // unsigned int lp_len: 15
 		d.FieldStruct("item_id", func(d *decode.D) {
-			itemID := ItemIdData{}
+			itemID := ItemId{}
 
 			itemPos := d.Pos()
 			itemID.Off = uint32(d.FieldU32("lp_off", common.LpOffMapper))

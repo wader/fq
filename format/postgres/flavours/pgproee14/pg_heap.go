@@ -82,10 +82,10 @@ import (
 /* total size (bytes):   24 */
 
 func DecodeHeap(d *decode.D) any {
-	heap := &common14.HeapD{
-		PageSize:               common.HeapPageSize,
-		DecodePageHeaderDataFn: ee14.DecodePageHeaderData,
-		DecodePageSpecialFn:    ee14.DecodePageSpecial,
+	heap := &common14.Heap{
+		PageSize:             common.HeapPageSize,
+		DecodePageHeaderData: ee14.DecodePageHeaderData,
+		DecodePageSpecial:    ee14.DecodePageSpecial,
 	}
 	return common14.DecodeHeap(heap, d)
 }

@@ -27,7 +27,7 @@ func DecodePageHeaderData(page *common14.HeapPage, d *decode.D) {
 	page.PdLower = uint16(d.FieldU16("pd_lower"))
 	page.PdUpper = uint16(d.FieldU16("pd_upper"))
 	page.PdSpecial = uint16(d.FieldU16("pd_special"))
-	page.PdPagesizeVersion = uint16(d.FieldU16("pd_pagesize_version"))
+	page.PdPageSizeVersion = uint16(d.FieldU16("pd_pagesize_version"))
 
 	page.BytesPosSpecial = page.BytesPosBegin + int64(page.PdSpecial)
 	page.PosItemsEnd = (page.BytesPosBegin * 8) + int64(page.PdLower*8)
@@ -41,7 +41,7 @@ func DecodePageHeaderData(page *common14.HeapPage, d *decode.D) {
 /*   20      |     4 */ // uint32 pd_magic;
 //
 /* total size (bytes):   24 */
-func DecodePageSpecial(heap *common14.HeapD, d *decode.D) {
+func DecodePageSpecial(heap *common14.Heap, d *decode.D) {
 	page := heap.Page
 	special := heap.Special
 

@@ -110,7 +110,7 @@ const SizeOfHeapTupleHeaderData = 24
 //
 /* total size (bytes):    6 */
 
-type HeapD struct {
+type Heap struct {
 	PageSize uint64
 
 	// current Page
@@ -121,8 +121,8 @@ type HeapD struct {
 	// current tuple
 	Tuple *TupleD
 
-	DecodePageHeaderDataFn func(page *HeapPage, d *decode.D)
-	DecodePageSpecialFn    func(heap *HeapD, d *decode.D)
+	DecodePageHeaderData func(page *HeapPage, d *decode.D)
+	DecodePageSpecial    func(heap *Heap, d *decode.D)
 }
 
 type PageSpecial struct {
@@ -137,14 +137,14 @@ type TupleD struct {
 	IsMulti bool
 }
 
-func DecodeHeap(heap *HeapD, d *decode.D) any {
+func DecodeHeap(heap *Heap, d *decode.D) any {
 	d.SeekAbs(0)
 	decodeHeapPages(heap, d)
 
 	return nil
 }
 
-func decodeHeapPages(heap *HeapD, d *decode.D) {
+func decodeHeapPages(heap *Heap, d *decode.D) {
 	for {
 		if end, _ := d.TryEnd(); end {
 			return
@@ -161,19 +161,19 @@ func decodeHeapPages(heap *HeapD, d *decode.D) {
 	}
 }
 
-func decodeHeapPage(heap *HeapD, d *decode.D) {
+func decodeHeapPage(heap *Heap, d *decode.D) {
 	page := &HeapPage{}
 	heap.Page = page
 	heap.Special = &PageSpecial{}
 
 	d.FieldStruct("page_header", func(d *decode.D) {
-		heap.DecodePageHeaderDataFn(page, d)
+		heap.DecodePageHeaderData(page, d)
 	})
 
 	DecodeItemIds(page, d)
 
-	if uint64(page.PdSpecial) != heap.PageSize && heap.DecodePageSpecialFn != nil {
-		heap.DecodePageSpecialFn(heap, d)
+	if uint64(page.PdSpecial) != heap.PageSize && heap.DecodePageSpecial != nil {
+		heap.DecodePageSpecial(heap, d)
 	}
 
 	// Tuples
@@ -182,7 +182,7 @@ func decodeHeapPage(heap *HeapD, d *decode.D) {
 	})
 }
 
-func decodeTuples(heap *HeapD, d *decode.D) {
+func decodeTuples(heap *Heap, d *decode.D) {
 	page := heap.Page
 	for i := 0; i < len(page.ItemIds); i++ {
 		id := page.ItemIds[i]
@@ -285,7 +285,7 @@ func decodeInfomask2(d *decode.D, infomask2 uint64) {
 	d.FieldValueBool("heap_only_tuple", common.IsMaskSet0(infomask2, HEAP_ONLY_TUPLE))
 }
 
-func decodeInfomask(heap *HeapD, d *decode.D, infomask uint64) {
+func decodeInfomask(heap *Heap, d *decode.D, infomask uint64) {
 	tuple := heap.Tuple
 
 	isMulti := common.IsMaskSet0(infomask, HEAP_XMAX_IS_MULTI)
@@ -317,7 +317,7 @@ func decodeInfomask(heap *HeapD, d *decode.D, infomask uint64) {
 /*                12 */ //     HeapTupleFields t_heap;
 /*                12 */ //     DatumTupleFields t_datum;
 //						} t_choice;
-func decodeTChoice(heap *HeapD, d *decode.D) {
+func decodeTChoice(heap *Heap, d *decode.D) {
 	special := heap.Special
 	tuple := heap.Tuple
 
@@ -359,7 +359,7 @@ func decodeTChoice(heap *HeapD, d *decode.D) {
 }
 
 type TransactionMapper struct {
-	Heap    *HeapD
+	Heap    *Heap
 	Special *PageSpecial
 	Tuple   *TupleD
 }
