@@ -27,11 +27,12 @@ func decodeAr(d *decode.D, _ any) any {
 		for !d.End() {
 			d.FieldStruct("file", func(d *decode.D) {
 				d.FieldUTF8("identifier", 16, scalar.ActualTrimSpace)
-				d.FieldUTF8("modification_timestamp", 12, scalar.ActualTrimSpace, scalar.SymUParseUint(10))
-				d.FieldUTF8("owner_id", 6, scalar.ActualTrimSpace, scalar.SymUParseUint(10))
-				d.FieldUTF8("group_id", 6, scalar.ActualTrimSpace, scalar.SymUParseUint(10))
-				d.FieldUTF8("file_mode", 8, scalar.ActualTrimSpace, scalar.SymUParseUint(8)) // Octal
-				sizeS := d.FieldScalarUTF8("file_size", 10, scalar.ActualTrimSpace, scalar.SymUParseUint(10))
+				// TODO: try scalar.DescriptionSymUUnixTime
+				d.FieldUTF8("modification_timestamp", 12, scalar.ActualTrimSpace, scalar.TrySymUParseUint(10))
+				d.FieldUTF8("owner_id", 6, scalar.ActualTrimSpace, scalar.TrySymUParseUint(10))
+				d.FieldUTF8("group_id", 6, scalar.ActualTrimSpace, scalar.TrySymUParseUint(10))
+				d.FieldUTF8("file_mode", 8, scalar.ActualTrimSpace, scalar.TrySymUParseUint(8)) // Octal
+				sizeS := d.FieldScalarUTF8("file_size", 10, scalar.ActualTrimSpace, scalar.TrySymUParseUint(10))
 				if sizeS.Sym == nil {
 					d.Fatalf("could not decode file_size")
 				}
