@@ -76,7 +76,7 @@ const (
 //
 /* total size (bytes):   12  */
 /* } t_choice;             //
-/*   12      |     6 */ // ItemPointerData t_ctid;
+/*   12      |     6 */// ItemPointerData t_ctid;
 /*   18      |     2 */ // uint16 t_infomask2;
 /*   20      |     2 */ // uint16 t_infomask;
 /*   22      |     1 */ // uint8 t_hoff;
@@ -118,19 +118,12 @@ type HeapD struct {
 	// current tuple
 	Tuple *TupleD
 
-	DecodePageHeaderDataFn func(heap *HeapD, d *decode.D)
+	DecodePageHeaderDataFn func(page *HeapPage, d *decode.D)
 	DecodePageSpecialFn    func(heap *HeapD, d *decode.D)
 }
 
 type HeapPageD struct {
-	PdLower           uint16
-	PdUpper           uint16
-	PdSpecial         uint16
-	PdPagesizeVersion uint16
-
-	ItemIds      []ItemIdData
-	PagePosBegin uint64
-	ItemsEnd     int64
+	HeapPage
 
 	// pgproee
 	PdXidBase   uint64 // 8 TransactionId pd_xid_base;
@@ -174,20 +167,11 @@ func decodeHeapPage(heap *HeapD, d *decode.D) {
 	page := &HeapPageD{}
 	heap.Page = page
 
-	pagePosBegin := common.RoundDown(heap.PageSize, uint64(d.Pos()/8))
-	page.PagePosBegin = pagePosBegin
-
-	// PageHeader
 	d.FieldStruct("page_header", func(d *decode.D) {
-		heap.DecodePageHeaderDataFn(heap, d)
+		heap.DecodePageHeaderDataFn(&heap.Page.HeapPage, d)
 	})
 
-	// free space
-	freeSpaceEnd := int64(pagePosBegin*8) + int64(page.PdUpper*8)
-	freeSpaceNBits := freeSpaceEnd - d.Pos()
-	if freeSpaceNBits != 0 {
-		d.FieldRawLen("free_space", freeSpaceNBits, scalar.RawHex)
-	}
+	DecodeItemIds(&heap.Page.HeapPage, d)
 
 	if uint64(page.PdSpecial) != heap.PageSize && heap.DecodePageSpecialFn != nil {
 		heap.DecodePageSpecialFn(heap, d)
@@ -197,65 +181,6 @@ func decodeHeapPage(heap *HeapD, d *decode.D) {
 	d.FieldArray("tuples", func(d *decode.D) {
 		decodeTuples(heap, d)
 	})
-}
-
-/*    0      |     8 */ // PageXLogRecPtr pd_lsn;
-/*    8      |     2 */ // uint16 pd_checksum;
-/*   10      |     2 */ // uint16 pd_flags;
-/*   12      |     2 */ // LocationIndex pd_lower;
-/*   14      |     2 */ // LocationIndex pd_upper;
-/*   16      |     2 */ // LocationIndex pd_special;
-/*   18      |     2 */ // uint16 PdPagesizeVersion;
-/*   20      |     4 */ // TransactionId pd_prune_xid;
-/*   24      |     0 */ // ItemIdData pd_linp[];
-func DecodePageHeaderData(heap *HeapD, d *decode.D) {
-	page := heap.Page
-
-	d.FieldStruct("pd_lsn", func(d *decode.D) {
-		/*    0      |     4 */ // uint32 xlogid;
-		/*    4      |     4 */ // uint32 xrecoff;
-		d.FieldU32("xlogid", common.HexMapper)
-		d.FieldU32("xrecoff", common.HexMapper)
-	})
-	d.FieldU16("pd_checksum")
-	d.FieldU16("pd_flags")
-	page.PdLower = uint16(d.FieldU16("pd_lower"))
-	page.PdUpper = uint16(d.FieldU16("pd_upper"))
-	page.PdSpecial = uint16(d.FieldU16("pd_special"))
-	page.PdPagesizeVersion = uint16(d.FieldU16("pd_pagesize_version"))
-	d.FieldU32("pd_prune_xid")
-
-	// ItemIdData pd_linp[];
-	page.ItemsEnd = int64(page.PagePosBegin*8) + int64(page.PdLower*8)
-	d.FieldArray("pd_linp", func(d *decode.D) {
-		DecodeItemIds(heap, d)
-	})
-}
-
-func DecodeItemIds(heap *HeapD, d *decode.D) {
-	page := heap.Page
-
-	for {
-		checkPos := d.Pos()
-		if checkPos >= page.ItemsEnd {
-			break
-		}
-		/*    0: 0   |     4 */ // unsigned int lp_off: 15
-		/*    1: 7   |     4 */ // unsigned int lp_flags: 2
-		/*    2: 1   |     4 */ // unsigned int lp_len: 15
-		d.FieldStruct("item_id", func(d *decode.D) {
-			itemID := ItemIdData{}
-
-			itemPos := d.Pos()
-			itemID.Off = uint32(d.FieldU32("lp_off", common.LpOffMapper))
-			d.SeekAbs(itemPos)
-			itemID.Flags = uint32(d.FieldU32("lp_flags", common.LpFlagsMapper))
-			d.SeekAbs(itemPos)
-			itemID.Len = uint32(d.FieldU32("lp_len", common.LpLenMapper))
-
-			page.ItemIds = append(page.ItemIds, itemID)
-		})
-	} // for pd_linp
 }
 
 func decodeTuples(heap *HeapD, d *decode.D) {
@@ -269,7 +194,7 @@ func decodeTuples(heap *HeapD, d *decode.D) {
 			continue
 		}
 
-		pos := int64(page.PagePosBegin)*8 + int64(id.Off)*8
+		pos := int64(page.BytesPosBegin)*8 + int64(id.Off)*8
 		tupleDataLen := id.Len - SizeOfHeapTupleHeaderData
 
 		// seek to tuple with ItemId offset
@@ -333,8 +258,6 @@ func decodeTuples(heap *HeapD, d *decode.D) {
 
 				d.FieldU8("t_hoff")
 				d.FieldU8("padding0")
-
-				//d.FieldRawLen("t_bits", int64(tupleDataLen*8), scalar.RawHex)
 			}) // HeapTupleHeaderData
 
 			d.FieldRawLen("data", int64(tupleDataLen*8), scalar.RawHex)

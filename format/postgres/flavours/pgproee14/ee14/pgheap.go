@@ -15,9 +15,7 @@ import (
 /*   16      |     2 */ // LocationIndex pd_special;
 /*   18      |     2 */ // uint16 pd_pagesize_version;
 /*   20      |     0 */ // ItemIdData pd_linp[];
-func DecodePageHeaderData(heap *common14.HeapD, d *decode.D) {
-	page := heap.Page
-
+func DecodePageHeaderData(page *common14.HeapPage, d *decode.D) {
 	d.FieldStruct("pd_lsn", func(d *decode.D) {
 		/*    0      |     4 */ // uint32 xlogid;
 		/*    4      |     4 */ // uint32 xrecoff;
@@ -31,11 +29,9 @@ func DecodePageHeaderData(heap *common14.HeapD, d *decode.D) {
 	page.PdSpecial = uint16(d.FieldU16("pd_special"))
 	page.PdPagesizeVersion = uint16(d.FieldU16("pd_pagesize_version"))
 
-	// ItemIdData pd_linp[];
-	page.ItemsEnd = int64(page.PagePosBegin*8) + int64(page.PdLower*8)
-	d.FieldArray("pd_linp", func(d *decode.D) {
-		common14.DecodeItemIds(heap, d)
-	})
+	page.BytesPosSpecial = page.BytesPosBegin + int64(page.PdSpecial)
+	page.PosItemsEnd = (page.BytesPosBegin * 8) + int64(page.PdLower*8)
+	page.PosFreeSpaceEnd = (page.BytesPosBegin * 8) + int64(page.PdUpper*8)
 }
 
 // type = struct HeapPageSpecialData {
@@ -48,7 +44,7 @@ func DecodePageHeaderData(heap *common14.HeapD, d *decode.D) {
 func DecodePageSpecial(heap *common14.HeapD, d *decode.D) {
 	page := heap.Page
 
-	specialPos := int64(page.PagePosBegin*8) + int64(page.PdSpecial*8)
+	specialPos := page.BytesPosSpecial * 8
 	d.SeekAbs(specialPos)
 
 	d.FieldStruct("special_data", func(d *decode.D) {
