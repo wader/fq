@@ -140,11 +140,13 @@ def _help($arg0; $topic):
       | (_format_func($f.name; "_help")? // {} | _help_format_enrich($arg0; $f; true)) as $fhelp
       | ((_registry.files[][] | select(.name=="\($topic).md").data) // false) as $doc
       | "\($f.name): \($f.description) decoder"
+      , ""
       , if $f.decode_in_arg then
           ( $f.decode_in_arg
           | to_entries
           | map(["  \(.key)=\(.value)  ", $f.decode_in_arg_doc[.key]])
-          | "# Options"
+          | "Options"
+          , "======="
           , ""
           , table(
               .;
@@ -157,11 +159,12 @@ def _help($arg0; $topic):
                 )
               ) | join("")
             )
+          , ""
           )
         else empty
         end
-      , ""
-      , "# Decode examples"
+      , "Decode examples"
+      , "==============="
       , ""
       , ( $fhelp.examples[]
         | "  # \(.comment)"

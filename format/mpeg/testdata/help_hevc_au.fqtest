@@ -1,0 +1,20 @@
+$ fq -h hevc_au
+hevc_au: H.265/HEVC Access Unit decoder
+
+Options
+=======
+
+  length_size=4  Length value size
+
+Decode examples
+===============
+
+  # Decode file as hevc_au
+  $ fq -d hevc_au . file
+  # Decode value as hevc_au
+  ... | hevc_au
+  # Decode file using hevc_au options
+  $ fq -d hevc_au -o length_size=4 . file
+  # Decode value as hevc_au
+  ... | hevc_au({length_size:4})
+

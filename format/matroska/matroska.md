@@ -1,10 +1,10 @@
-### Lookup element path using `matroska_path`
+### Lookup element using path
 
 ```sh
 $ fq 'matroska_path(".Segment.Tracks[0)")' file.mkv
 ```
 
-### Get element path using `matroska_path`
+### Get path to element
 
 ```sh
 $ fq 'grep_by(.id == "Tracks") | matroska_path' file.mkv

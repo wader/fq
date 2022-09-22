@@ -1,0 +1,31 @@
+$ fq -h csv
+csv: Comma separated values decoder
+
+Options
+=======
+
+  comma=,    Separator character
+  comment=#  Comment line character
+
+Decode examples
+===============
+
+  # Decode file as csv
+  $ fq -d csv . file
+  # Decode value as csv
+  ... | csv
+  # Decode file using csv options
+  $ fq -d csv -o comma="," -o comment="#" . file
+  # Decode value as csv
+  ... | csv({comma:",",comment:"#"})
+
+TSV to CSV
+==========
+
+  $ fq -d csv -o comma="\t" tocsv file.tsv
+  
+Convert rows to objects based on header row
+===========================================
+
+  $ fq -d csv '.[0] as $t | .[1:] | map(with_entries(.key = $t[.key]))' file.csv
+  

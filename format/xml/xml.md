@@ -44,9 +44,7 @@ $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -d xml -o seq=true
 # access text of the <c> element
 $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq '.a.c["#text"]'
 "ccc"
-```
 
-```sh
 # decode to object and encode to xml
 $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -r -d xml -o seq=true 'toxml({indent:2})'
 <a>
@@ -89,11 +87,9 @@ Elements are arrays of the shape `["#text": "body text", "attr_name", {key: "att
     ]
   ]
 ]
-```
 
-```sh
 # decode to array and encode to xml
-✗ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -r -d xml -o array=true -o seq=true 'toxml({indent:2})'
+$ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -r -d xml -o array=true -o seq=true 'toxml({indent:2})'
 <a>
   <b></b>
   <b>bbb</b>

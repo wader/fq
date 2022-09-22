@@ -21,7 +21,13 @@ def _markdown_to_text($width; $header_depth):
   def _f($pln):
     if type == "string" then gsub("\n"; " ")
     elif .type == "document" then .children[] | _f("\n\n")
-    elif .type == "heading" then "#" * (.level+$header_depth), " ", (.children[] | _f("\n\n")), "\n"
+    elif .type == "heading" then
+      ( (.children[] | _f("\n\n")) as $title
+      | $title
+      , "\n"
+      , ("=" * ($title | length))
+      , "\n"
+      )
     elif .type == "paragraph" then
       ( ( [.children[] | _f("\n\n")]
         | join("")

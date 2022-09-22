@@ -1,0 +1,20 @@
+$ fq -h flac_frame
+flac_frame: FLAC frame decoder
+
+Options
+=======
+
+  bits_per_sample=16  Bits per sample
+
+Decode examples
+===============
+
+  # Decode file as flac_frame
+  $ fq -d flac_frame . file
+  # Decode value as flac_frame
+  ... | flac_frame
+  # Decode file using flac_frame options
+  $ fq -d flac_frame -o bits_per_sample=16 . file
+  # Decode value as flac_frame
+  ... | flac_frame({bits_per_sample:16})
+
