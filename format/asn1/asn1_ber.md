@@ -4,7 +4,7 @@ Supports decoding BER, CER and DER (X.690).
 - Does not support specifying a schema.
 - Supports `torepr` but without schema all sequences and sets will be arrays.
 
-### `frompem` can be used to decode certificates etc
+### Can be used to decode certificates etc
 
 ```sh
 $ fq -d raw 'frompem | asn1_ber | d' cert.pem

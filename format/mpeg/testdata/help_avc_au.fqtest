@@ -1,0 +1,20 @@
+$ fq -h avc_au
+avc_au: H.264/AVC Access Unit decoder
+
+Options
+=======
+
+  length_size=4  Length value size
+
+Decode examples
+===============
+
+  # Decode file as avc_au
+  $ fq -d avc_au . file
+  # Decode value as avc_au
+  ... | avc_au
+  # Decode file using avc_au options
+  $ fq -d avc_au -o length_size=4 . file
+  # Decode value as avc_au
+  ... | avc_au({length_size:4})
+

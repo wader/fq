@@ -51,14 +51,10 @@ $ '<a href="url">text</a>' | fq -d html -o array=true
     ]
   ]
 ]
-```
 
-```sh
-# Decode html files to a {file: "title", ...} object
+# decode html files to a {file: "title", ...} object
 $ fq -n -d html '[inputs | {key: input_filename, value: .html.head.title?}] | from_entries' *.html
-```
 
-```sh
 # <a> href:s in file
 $ fq -r -o array=true -d html '.. | select(.[0] == "a" and .[1].href)?.[1].href' file.html
 ```

@@ -1,0 +1,81 @@
+$ fq -h html
+html: HyperText Markup Language decoder
+
+Options
+=======
+
+  array=false         Decode as nested arrays
+  attribute_prefix=@  Prefix for attribute keys
+  seq=false           Use seq attribute to preserve element order
+
+Decode examples
+===============
+
+  # Decode file as html
+  $ fq -d html . file
+  # Decode value as html
+  ... | html
+  # Decode file using html options
+  $ fq -d html -o array=false -o attribute_prefix="@" -o seq=false . file
+  # Decode value as html
+  ... | html({array:false,attribute_prefix:"@",seq:false})
+
+HTML is decoded in HTML5 mode and will always include <html>, <body> and <head> element.
+
+See xml format for more examples and how to preserve element order and how to encode to xml.
+
+There is no tohtml function, see toxml instead.
+
+Element as object
+=================
+
+  # decode as object is the default
+  $ echo '<a href="url">text</a>' | fq -d html
+  {
+    "html": {
+      "body": {
+        "a": {
+          "#text": "text",
+          "@href": "url"
+        }
+      },
+      "head": ""
+    }
+  }
+  
+Element as array
+================
+
+  $ '<a href="url">text</a>' | fq -d html -o array=true
+  [
+    "html",
+    null,
+    [
+      [
+        "head",
+        null,
+        []
+      ],
+      [
+        "body",
+        null,
+        [
+          [
+            "a",
+            {
+              "#text": "text",
+              "href": "url"
+            },
+            []
+          ]
+        ]
+      ]
+    ]
+  ]
+  
+  # decode html files to a {file: "title", ...} object
+  $ fq -n -d html '[inputs | {key: input_filename, value: .html.head.title?}] | from_entries' *.html
+  
+  # <a> href:s in file
+  $ fq -r -o array=true -d html '.. | select(.[0] == "a" and .[1].href)?.[1].href' file.html
+  

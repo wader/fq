@@ -1,0 +1,20 @@
+$ fq -h aac_frame
+aac_frame: Advanced Audio Coding frame decoder
+
+Options
+=======
+
+  object_type=1  Audio object type
+
+Decode examples
+===============
+
+  # Decode file as aac_frame
+  $ fq -d aac_frame . file
+  # Decode value as aac_frame
+  ... | aac_frame
+  # Decode file using aac_frame options
+  $ fq -d aac_frame -o object_type=1 . file
+  # Decode value as aac_frame
+  ... | aac_frame({object_type:1})
+

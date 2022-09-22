@@ -1,0 +1,20 @@
+$ fq -h bencode
+bencode: BitTorrent bencoding decoder
+
+Decode examples
+===============
+
+  # Decode file as bencode
+  $ fq -d bencode . file
+  # Decode value as bencode
+  ... | bencode
+
+Convert represented value to JSON
+=================================
+
+  $ fq -d bencode torepr file.torrent
+  
+References
+==========
+- https://wiki.theory.org/BitTorrentSpecification#Bencoding
+
