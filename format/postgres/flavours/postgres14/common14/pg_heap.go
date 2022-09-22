@@ -193,10 +193,10 @@ func decodeTuples(heap *Heap, d *decode.D) {
 			continue
 		}
 
-		pos := int64(page.BytesPosBegin)*8 + int64(id.Off)*8
+		pos := (page.BytesPosBegin * 8) + int64(id.Off)*8
 		tupleDataLen := id.Len - SizeOfHeapTupleHeaderData
 
-		// seek to tuple with ItemId offset
+		// seek to tuple with ItemID offset
 		d.SeekAbs(pos)
 
 		// type = struct HeapTupleHeaderData {

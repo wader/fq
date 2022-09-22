@@ -6,6 +6,7 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
+//nolint:revive
 const (
 	BTREE_MAGIC = 0x053162
 	P_NONE      = 0
@@ -22,6 +23,7 @@ const (
 	BTP_HAS_FULLXID      = 1 << 8 /* contains BTDeletedPageData */
 )
 
+//nolint:revive
 const (
 	INDEX_SIZE_MASK       = 0x1FFF
 	INDEX_AM_RESERVED_BIT = 0x2000 /* reserved for index-AM specific usage */
@@ -119,14 +121,14 @@ func decodeBTreeMetaPage(btree *BTree, d *decode.D) {
 		common14.DecodePageHeader(page, d)
 	})
 	d.FieldStruct("meta_page_data", func(d *decode.D) {
-		decodeBTMetaPageData(btree, d)
+		decodeBTMetaPageData(d)
 	})
 
 	pos0 := d.Pos()
-	pos1 := int64(btree.page.BytesPosSpecial) * 8
+	pos1 := btree.page.BytesPosSpecial * 8
 	d.FieldRawLen("unused0", pos1-pos0)
 	d.FieldStruct("page_opaque_data", func(d *decode.D) {
-		decodeBTPageOpaqueData(btree, d)
+		decodeBTPageOpaqueData(d)
 	})
 	pos2 := d.Pos()
 	bytesPos2 := pos2 / 8
@@ -135,7 +137,7 @@ func decodeBTreeMetaPage(btree *BTree, d *decode.D) {
 	}
 }
 
-func decodeBTMetaPageData(btree *BTree, d *decode.D) {
+func decodeBTMetaPageData(d *decode.D) {
 	/*    0      |     4 */ // uint32 btm_magic
 	/*    4      |     4 */ // uint32 btm_version
 	/*    8      |     4 */ // BlockNumber btm_root
@@ -171,7 +173,7 @@ func decodeBTMetaPageData(btree *BTree, d *decode.D) {
 /*    8      |     4 */ // uint32 btpo_level;
 /*   12      |     2 */ // uint16 btpo_flags;
 /*   14      |     2 */ // BTCycleId btpo_cycleid;
-func decodeBTPageOpaqueData(btree *BTree, d *decode.D) {
+func decodeBTPageOpaqueData(d *decode.D) {
 	prev := d.FieldU32("btpo_prev")
 	next := d.FieldU32("btpo_next")
 	d.FieldU32("btpo_level")
@@ -213,10 +215,10 @@ func decodeBTreePage(btree *BTree, d *decode.D) {
 	})
 
 	pos0 := d.Pos()
-	pos1 := int64(btree.page.BytesPosSpecial) * 8
+	pos1 := btree.page.BytesPosSpecial * 8
 	d.SeekAbs(pos1)
 	d.FieldStruct("page_opaque_data", func(d *decode.D) {
-		decodeBTPageOpaqueData(btree, d)
+		decodeBTPageOpaqueData(d)
 	})
 	pos2 := d.Pos()
 	bytesPos2 := pos2 / 8
@@ -244,9 +246,9 @@ func decodeIndexTuples(btree *BTree, d *decode.D) {
 			continue
 		}
 
-		pos := int64(page.BytesPosBegin)*8 + int64(id.Off)*8
+		pos := (page.BytesPosBegin * 8) + int64(id.Off)*8
 
-		// seek to tuple with ItemId offset
+		// seek to tuple with ItemID offset
 		d.SeekAbs(pos)
 		d.FieldStruct("tuple", func(d *decode.D) {
 
