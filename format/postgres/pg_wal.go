@@ -20,8 +20,8 @@ func init() {
 		Name:        format.PG_WAL,
 		Description: "PostgreSQL write-ahead log file",
 		DecodeFn:    decodePgwal,
-		DecodeInArg: format.PostgresIn{
-			Flavour: "default",
+		DecodeInArg: format.PostgresWalIn{
+			Flavour: PG_FLAVOUR_POSTGRES14,
 			Lsn:     "",
 		},
 	})
@@ -65,7 +65,7 @@ func XLogSegmentOffset(xLogPtr uint32) uint32 {
 func decodePgwal(d *decode.D, in any) any {
 	d.Endian = decode.LittleEndian
 
-	pgIn, ok := in.(format.PostgresIn)
+	pgIn, ok := in.(format.PostgresWalIn)
 	if !ok {
 		d.Fatalf("DecodeInArg must be PostgresIn!\n")
 	}
@@ -82,7 +82,7 @@ func decodePgwal(d *decode.D, in any) any {
 	switch pgIn.Flavour {
 	//case PG_FLAVOUR_POSTGRES11:
 	//	return postgres11.DecodePgControl(d, in)
-	case PG_FLAVOUR_POSTGRES14, PG_FLAVOUR_POSTGRES:
+	case PG_FLAVOUR_POSTGRES14:
 		return postgres14.DecodePgwal(d, maxOffset)
 		//case PG_FLAVOUR_PGPROEE14:
 		//	return pgproee14.DecodePgControl(d, in)

@@ -579,84 +579,134 @@ $ fq -d msgpack torepr file.msgpack
 
 ### Options
 
-|Name     |Default|Description|
-|-        |-      |-|
-|`flavour`|default|PostgreSQL flavour: postgres, postgres13, pgpro...|
-|`lsn`    |       |Current LSN for WAL, use "select pg_current_wal_lsn()"|
+|Name     |Default   |Description|
+|-        |-         |-|
+|`flavour`|postgres14|PostgreSQL flavour: postgres14, pgproee14.., postgres10|
 
 ### Examples
 
 Decode file using pg_btree options
 ```
-$ fq -d pg_btree -o flavour="default" -o lsn="" . file
+$ fq -d pg_btree -o flavour="postgres14" . file
 ```
 
 Decode value as pg_btree
 ```
-... | pg_btree({flavour:"default",lsn:""})
+... | pg_btree({flavour:"postgres14"})
 ```
 
+### Btree index meta page
+
+```sh
+$ fq -d pg_btree -o flavour=postgres14 ".[0] | d" 16404
+```
+
+### Btree index page
+
+```sh
+$ fq -d pg_btree -o flavour=postgres14 ".[1]" 16404
+```
+
+### References
+- https://www.postgresql.org/docs/current/storage-page-layout.html
 ## pg_control
 
 ### Options
 
-|Name     |Default|Description|
-|-        |-      |-|
-|`flavour`|default|PostgreSQL flavour: postgres, postgres13, pgpro...|
-|`lsn`    |       |Current LSN for WAL, use "select pg_current_wal_lsn()"|
+|Name     |Default   |Description|
+|-        |-         |-|
+|`flavour`|postgres14|PostgreSQL flavour: postgres14, pgproee14.., postgres10|
 
 ### Examples
 
 Decode file using pg_control options
 ```
-$ fq -d pg_control -o flavour="default" -o lsn="" . file
+$ fq -d pg_control -o flavour="postgres14" . file
 ```
 
 Decode value as pg_control
 ```
-... | pg_control({flavour:"default",lsn:""})
+... | pg_control({flavour:"postgres14"})
 ```
 
+### Decode content of pg_control file
+
+```sh
+$ fq -d pg_control -o flavour=postgres14 d pg_control
+```
+
+### Specific fields can be got by request
+
+```sh
+$ fq -d pg_control -o flavour=postgres14 ".state, .check_point_copy.redo, .wal_level" pg_control
+```
+
+### References
+- https://github.com/postgres/postgres/blob/REL_14_2/src/include/catalog/pg_control.h
 ## pg_heap
 
 ### Options
 
-|Name     |Default|Description|
-|-        |-      |-|
-|`flavour`|default|PostgreSQL flavour: postgres, postgres13, pgpro...|
-|`lsn`    |       |Current LSN for WAL, use "select pg_current_wal_lsn()"|
+|Name     |Default   |Description|
+|-        |-         |-|
+|`flavour`|postgres14|PostgreSQL flavour: postgres14, pgproee14.., postgres10|
 
 ### Examples
 
 Decode file using pg_heap options
 ```
-$ fq -d pg_heap -o flavour="default" -o lsn="" . file
+$ fq -d pg_heap -o flavour="postgres14" . file
 ```
 
 Decode value as pg_heap
 ```
-... | pg_heap({flavour:"default",lsn:""})
+... | pg_heap({flavour:"postgres14"})
 ```
 
+### To see heap page's content
+```sh
+$ fq -d pg_heap -o flavour=postgres14 ".[0]" 16994
+```
+
+### To see page's header
+
+```sh
+$ fq -d pg_heap -o flavour=postgres14 ".[0].page_header" 16994
+```
+
+### First and last item pointers on first page
+
+```sh
+$ fq -d pg_heap -o flavour=postgres14 ".[0].pd_linp[0, -1]" 16994
+```
+
+### First and last tuple on first page
+
+```sh
+$ fq -d pg_heap -o flavour=postgres14 ".[0].tuples[0, -1]" 16994
+```
+
+### References
+- https://www.postgresql.org/docs/current/storage-page-layout.html
 ## pg_wal
 
 ### Options
 
-|Name     |Default|Description|
-|-        |-      |-|
-|`flavour`|default|PostgreSQL flavour: postgres, postgres13, pgpro...|
-|`lsn`    |       |Current LSN for WAL, use "select pg_current_wal_lsn()"|
+|Name     |Default   |Description|
+|-        |-         |-|
+|`flavour`|postgres14|PostgreSQL flavour: postgres14, pgproee14.., postgres10|
+|`lsn`    |          |Current LSN for WAL, use "select pg_current_wal_lsn()"|
 
 ### Examples
 
 Decode file using pg_wal options
 ```
-$ fq -d pg_wal -o flavour="default" -o lsn="" . file
+$ fq -d pg_wal -o flavour="postgres14" -o lsn="" . file
 ```
 
 Decode value as pg_wal
 ```
-... | pg_wal({flavour:"default",lsn:""})
+... | pg_wal({flavour:"postgres14",lsn:""})
 ```
 
 ## protobuf

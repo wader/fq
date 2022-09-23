@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"embed"
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/postgres/flavours/pgpro11"
 	"github.com/wader/fq/format/postgres/flavours/pgpro12"
@@ -22,17 +23,21 @@ import (
 // TO DO
 // oom kill on 1 GB file
 
+//go:embed pg_heap.md
+var pgHeapFS embed.FS
+
 func init() {
 	interp.RegisterFormat(decode.Format{
 		Name:        format.PG_HEAP,
 		Description: "PostgreSQL heap file",
 		DecodeFn:    decodePgheap,
 		DecodeInArg: format.PostgresIn{
-			Flavour: "default",
+			Flavour: PG_FLAVOUR_POSTGRES14,
 		},
 		RootArray: true,
 		RootName:  "Pages",
 	})
+	interp.RegisterFS(pgHeapFS)
 }
 
 func decodePgheap(d *decode.D, in any) any {
@@ -50,7 +55,7 @@ func decodePgheap(d *decode.D, in any) any {
 		return postgres12.DecodeHeap(d)
 	case PG_FLAVOUR_POSTGRES13:
 		return postgres13.DecodeHeap(d)
-	case PG_FLAVOUR_POSTGRES14, PG_FLAVOUR_POSTGRES:
+	case PG_FLAVOUR_POSTGRES14:
 		return postgres14.DecodeHeap(d)
 	case PG_FLAVOUR_PGPROEE10:
 		return pgproee10.DecodeHeap(d)
