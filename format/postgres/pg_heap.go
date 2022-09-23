@@ -35,7 +35,7 @@ func init() {
 			Flavour: PG_FLAVOUR_POSTGRES14,
 		},
 		RootArray: true,
-		RootName:  "Pages",
+		RootName:  "pages",
 	})
 	interp.RegisterFS(pgHeapFS)
 }

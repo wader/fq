@@ -30,7 +30,7 @@ func init() {
 		Description: "PostgreSQL control file",
 		DecodeFn:    decodePgControl,
 		DecodeInArg: format.PostgresIn{
-			Flavour: PG_FLAVOUR_POSTGRES14,
+			Flavour: "",
 		},
 	})
 	interp.RegisterFS(pgControlFS)
