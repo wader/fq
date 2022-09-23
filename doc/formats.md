@@ -79,12 +79,15 @@
 |`mpeg_spu`                        |Sub&nbsp;Picture&nbsp;Unit&nbsp;(DVD&nbsp;subtitle)                                      |<sub></sub>|
 |`mpeg_ts`                         |MPEG&nbsp;Transport&nbsp;Stream                                                          |<sub></sub>|
 |[`msgpack`](#msgpack)             |MessagePack                                                                              |<sub></sub>|
-|[`postgres`](#postgres)           |PostgreSQL
 |`ogg`                             |OGG&nbsp;file                                                                            |<sub>`ogg_page` `vorbis_packet` `opus_packet` `flac_metadatablock` `flac_frame`</sub>|
 |`ogg_page`                        |OGG&nbsp;page                                                                            |<sub></sub>|
 |`opus_packet`                     |Opus&nbsp;packet                                                                         |<sub>`vorbis_comment`</sub>|
 |`pcap`                            |PCAP&nbsp;packet&nbsp;capture                                                            |<sub>`link_frame` `tcp_stream` `ipv4_packet`</sub>|
 |`pcapng`                          |PCAPNG&nbsp;packet&nbsp;capture                                                          |<sub>`link_frame` `tcp_stream` `ipv4_packet`</sub>|
+|[`pg_btree`](#pg_btree)           |PostgreSQL&nbsp;btree&nbsp;index&nbsp;file                                               |<sub></sub>|
+|[`pg_control`](#pg_control)       |PostgreSQL&nbsp;control&nbsp;file                                                        |<sub></sub>|
+|[`pg_heap`](#pg_heap)             |PostgreSQL&nbsp;heap&nbsp;file                                                           |<sub></sub>|
+|[`pg_wal`](#pg_wal)               |PostgreSQL&nbsp;write-ahead&nbsp;log&nbsp;file                                           |<sub></sub>|
 |`png`                             |Portable&nbsp;Network&nbsp;Graphics&nbsp;file                                            |<sub>`icc_profile` `exif`</sub>|
 |`prores_frame`                    |Apple&nbsp;ProRes&nbsp;frame                                                             |<sub></sub>|
 |[`protobuf`](#protobuf)           |Protobuf                                                                                 |<sub></sub>|
@@ -572,58 +575,89 @@ $ fq -d msgpack torepr file.msgpack
 ### References
 - https://github.com/msgpack/msgpack/blob/master/spec.md
 
-## postgres
+## pg_btree
 
-### Decode content of pg_control file
+### Options
 
-```sh
-$ fq -d pg_control -o flavour=postgres14 d pg_control
+|Name     |Default|Description|
+|-        |-      |-|
+|`flavour`|default|PostgreSQL flavour: postgres, postgres13, pgpro...|
+|`lsn`    |       |Current LSN for WAL, use "select pg_current_wal_lsn()"|
+
+### Examples
+
+Decode file using pg_btree options
+```
+$ fq -d pg_btree -o flavour="default" -o lsn="" . file
 ```
 
-### Specific fields can be got by request
-
-```sh
-$ fq -d pg_control -o flavour=postgres14 ".state, .check_point_copy.redo, .wal_level" pg_control
+Decode value as pg_btree
+```
+... | pg_btree({flavour:"default",lsn:""})
 ```
 
-### To see heap page's content
-```sh
-$ fq -d pg_heap -o flavour=postgres14 ".[0]" 16994
+## pg_control
+
+### Options
+
+|Name     |Default|Description|
+|-        |-      |-|
+|`flavour`|default|PostgreSQL flavour: postgres, postgres13, pgpro...|
+|`lsn`    |       |Current LSN for WAL, use "select pg_current_wal_lsn()"|
+
+### Examples
+
+Decode file using pg_control options
+```
+$ fq -d pg_control -o flavour="default" -o lsn="" . file
 ```
 
-### To see page's header
-
-```sh
-$ fq -d pg_heap -o flavour=postgres14 ".[0].page_header" 16994
+Decode value as pg_control
+```
+... | pg_control({flavour:"default",lsn:""})
 ```
 
-### First and last item pointers on first page
+## pg_heap
 
-```sh
-$ fq -d pg_heap -o flavour=postgres14 ".[0].pd_linp[0, -1]" 16994
+### Options
+
+|Name     |Default|Description|
+|-        |-      |-|
+|`flavour`|default|PostgreSQL flavour: postgres, postgres13, pgpro...|
+|`lsn`    |       |Current LSN for WAL, use "select pg_current_wal_lsn()"|
+
+### Examples
+
+Decode file using pg_heap options
+```
+$ fq -d pg_heap -o flavour="default" -o lsn="" . file
 ```
 
-### First and last tuple on first page
-
-```sh
-$ fq -d pg_heap -o flavour=postgres14 ".[0].tuples[0, -1]" 16994
+Decode value as pg_heap
+```
+... | pg_heap({flavour:"default",lsn:""})
 ```
 
-### Btree index meta page
+## pg_wal
 
-```sh
-$ fq -d pg_btree -o flavour=postgres14 ".[0] | d" 16404
+### Options
+
+|Name     |Default|Description|
+|-        |-      |-|
+|`flavour`|default|PostgreSQL flavour: postgres, postgres13, pgpro...|
+|`lsn`    |       |Current LSN for WAL, use "select pg_current_wal_lsn()"|
+
+### Examples
+
+Decode file using pg_wal options
+```
+$ fq -d pg_wal -o flavour="default" -o lsn="" . file
 ```
 
-### Btree index page
-
-```sh
-$ fq -d pg_btree -o flavour=postgres14 ".[1]" 16404
+Decode value as pg_wal
 ```
-
-### References
-- https://github.com/postgres/postgres/blob/REL_14_2/src/include/catalog/pg_control.h
-- https://www.postgresql.org/docs/current/storage-page-layout.html
+... | pg_wal({flavour:"default",lsn:""})
+```
 
 ## protobuf
 
