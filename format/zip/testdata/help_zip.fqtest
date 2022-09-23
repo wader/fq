@@ -1,0 +1,27 @@
+$ fq -h zip
+zip: ZIP archive decoder
+
+Options
+=======
+
+  uncompress=true  Uncompress and probe files
+
+Decode examples
+===============
+
+  # Decode file as zip
+  $ fq -d zip . file
+  # Decode value as zip
+  ... | zip
+  # Decode file using zip options
+  $ fq -d zip -o uncompress=true . file
+  # Decode value as zip
+  ... | zip({uncompress:true})
+
+Supports ZIP64.
+
+References
+==========
+- https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
+- https://opensource.apple.com/source/zip/zip-6/unzip/unzip/proginfo/extra.fld
+

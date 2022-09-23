@@ -163,7 +163,7 @@ Supports decoding BER, CER and DER (X.690).
 - Does not support specifying a schema.
 - Supports `torepr` but without schema all sequences and sets will be arrays.
 
-### `frompem` can be used to decode certificates etc
+### Can be used to decode certificates etc
 
 ```sh
 $ fq -d raw 'frompem | asn1_ber | d' cert.pem
@@ -220,6 +220,11 @@ Limitations:
 
 ### References
 - https://avro.apache.org/docs/current/spec.html#Object+Container+Files
+
+### Authors
+- Xentripetal
+xentripetal@fastmail.com
+[@xentripetal](https://github.com/xentripetal)
 
 ## bencode
 
@@ -429,14 +434,10 @@ $ '<a href="url">text</a>' | fq -d html -o array=true
     ]
   ]
 ]
-```
 
-```sh
-# Decode html files to a {file: "title", ...} object
+# decode html files to a {file: "title", ...} object
 $ fq -n -d html '[inputs | {key: input_filename, value: .html.head.title?}] | from_entries' *.html
-```
 
-```sh
 # <a> href:s in file
 $ fq -r -o array=true -d html '.. | select(.[0] == "a" and .[1].href)?.[1].href' file.html
 ```
@@ -454,15 +455,20 @@ $ fq '.load_commands[] | select(.cmd=="segment_64")' file
 ### References
 - https://github.com/aidansteele/osx-abi-macho-file-format-reference
 
+### Authors
+- Sıddık AÇIL
+acils@itu.edu.tr
+[@Akaame](https://github.com/Akaame)
+
 ## matroska
 
-### Lookup element path using `matroska_path`
+### Lookup element using path
 
 ```sh
 $ fq 'matroska_path(".Segment.Tracks[0)")' file.mkv
 ```
 
-### Get element path using `matroska_path`
+### Get path to element
 
 ```sh
 $ fq 'grep_by(.id == "Tracks") | matroska_path' file.mkv
@@ -517,14 +523,14 @@ Decode value as mp4
 ... | mp4({allow_truncated:false,decode_samples:true})
 ```
 
-### `mp4_path($path)` - Lookup mp4 box using a mp4 box path.
+### Lookup mp4 box using a mp4 box path.
 
 ```sh
 # <decode value box> | mp4_path($path) -> <decode value box>
 $ fq 'mp4_path(".moov.trak[1]")' file.mp4
 ```
 
-### `mp4_path` - Return mp4 box path for a decode value box.
+### Get mp4 box path for a decode value box.
 
 ```sh
 # <decode value box> | mp4_path -> string
@@ -537,9 +543,10 @@ $ fq 'grep_by(.type == "trak") | mp4_path' file.mp4
 $ fq -n '"AAAAHGVsc3QAAAAAAAAAAQAAADIAAAQAAAEAAA==" | frombase64 | mp4({force:true}) | d'
 ```
 
-### Don't decode samples and manually decode first sample for first track as a `aac_frame`
+### Speed up decoding by not decoding samples
 
 ```sh
+# manually decode first sample as a aac_frame
 $ fq -o decode_samples=false '.tracks[0].samples[0] | aac_frame | d' file.mp4
 ```
 
@@ -725,9 +732,7 @@ $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -d xml -o seq=true
 # access text of the <c> element
 $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq '.a.c["#text"]'
 "ccc"
-```
 
-```sh
 # decode to object and encode to xml
 $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -r -d xml -o seq=true 'toxml({indent:2})'
 <a>
@@ -770,11 +775,9 @@ Elements are arrays of the shape `["#text": "body text", "attr_name", {key: "att
     ]
   ]
 ]
-```
 
-```sh
 # decode to array and encode to xml
-✗ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -r -d xml -o array=true -o seq=true 'toxml({indent:2})'
+$ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -r -d xml -o array=true -o seq=true 'toxml({indent:2})'
 <a>
   <b></b>
   <b>bbb</b>

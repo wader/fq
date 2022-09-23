@@ -1,0 +1,20 @@
+$ fq -h msgpack
+msgpack: MessagePack decoder
+
+Decode examples
+===============
+
+  # Decode file as msgpack
+  $ fq -d msgpack . file
+  # Decode value as msgpack
+  ... | msgpack
+
+Convert represented value to JSON
+=================================
+
+  $ fq -d msgpack torepr file.msgpack
+  
+References
+==========
+- https://github.com/msgpack/msgpack/blob/master/spec.md
+

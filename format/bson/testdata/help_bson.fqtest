@@ -1,0 +1,25 @@
+$ fq -h bson
+bson: Binary JSON decoder
+
+Decode examples
+===============
+
+  # Decode file as bson
+  $ fq -d bson . file
+  # Decode value as bson
+  ... | bson
+
+Convert represented value to JSON
+=================================
+
+  $ fq -d bson torepr file.bson
+  
+Filter represented value
+========================
+
+  $ fq -d bson 'torepr | select(.name=="bob")' file.bson
+  
+References
+==========
+- https://bsonspec.org/spec.html
+
