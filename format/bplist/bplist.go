@@ -214,7 +214,7 @@ func bplistDecode(d *decode.D, _ any) any {
 
 	d.SeekAbs(d.Len()-32*8, func(d *decode.D) {
 		d.FieldStruct("trailer", func(d *decode.D) {
-			d.FieldU40("padding") // unused
+			d.FieldU40("unused")
 			d.FieldS8("sort_version")
 			p.t.offTblOffSize = d.FieldU8("offset_table_offset_size", d.AssertURange(1, 8))
 			p.t.objRefSize = d.FieldU8("object_reference_size", d.AssertURange(1, 8))

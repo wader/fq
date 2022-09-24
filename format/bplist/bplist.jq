@@ -26,5 +26,5 @@ def _bplist_torepr:
      );
   ( .objects
   | _f
-   );
+  );
 
