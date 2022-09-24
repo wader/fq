@@ -3,10 +3,25 @@
 $ fq -d bplist dv Info.plist
 ```
 
-### Get JSON representation
-```
-$ fq torepr com.apple.UIAutomation.plist
+### Timestamps
+Timestamps in Apple Binary Property Lists are encoded as Cocoa Core Data
+timestamps, where the raw value is the floating point number of seconds since
+January 1, 2001. By default, `fq` will render the raw floating point value. In
+order to get the raw value or string description, use the `todescription`
+function, you can use the `tovalue` and `todescription` functions:
 
+```sh
+$ fq 'torepr.SomeTimeStamp | tovalue' Info.plist
+685135328
+
+$ fq 'torepr.SomeTimeStamp | todescription' Info.plist
+"2022-09-17T19:22:08Z"
+```
+
+
+### Get JSON representation
+```sh
+$ fq torepr com.apple.UIAutomation.plist
 {
   "UIAutomationEnabled": true
 }

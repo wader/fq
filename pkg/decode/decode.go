@@ -803,7 +803,7 @@ func (d *D) FieldStructArrayLoop(name string, structName string, condFn func() b
 	})
 }
 
-// FieldStructArrayN decodes an array of elements with a known count.
+// FieldStructNArray decodes an array of elements with a known count.
 func (d *D) FieldStructNArray(name string, structName string, count int64, fn func(d *D)) *D {
 	return d.FieldArray(name, func(d *D) {
 		for i := int64(0); i < count; i++ {

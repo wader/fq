@@ -11,7 +11,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-//go:embed bplist.jq
+//go:embed bplist.jq bplist.md
 var bplistFS embed.FS
 
 func init() {
