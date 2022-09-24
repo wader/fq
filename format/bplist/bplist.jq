@@ -4,7 +4,7 @@ def _bplist_torepr:
       elif .type == "int" then .value
       elif .type == "real" then .value
       elif .type == "date" then .value
-      elif .type == "data" then .value.data
+      elif .type == "data" then .value
       elif .type == "ascii_string" then .value
       elif .type == "unicode_string" then .value
       elif .type == "uid" then .value
