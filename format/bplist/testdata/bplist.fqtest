@@ -1,5 +1,5 @@
 $ fq -d bplist dv com.apple.UIAutomation.plist
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: com.apple.UIAutomation.plist (bplist) 0x0-0x44.7 (69)
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: format/bplist/testdata/com.apple.UIAutomation.plist (bplist) 0x0-0x44.7 (69)
     |                                               |                |  header{}: 0x0-0x7.7 (8)
 0x00|62 70 6c 69 73 74                              |bplist          |    magic: "bplist" (valid) 0x0-0x5.7 (6)
 0x00|                  30 30                        |      00        |    version: "00" (valid) 0x6-0x7.7 (2)
@@ -30,7 +30,7 @@ $ fq -d bplist dv com.apple.UIAutomation.plist
 0x20|         0b                                    |   .            |    [1]: 11 element 0x23-0x23.7 (1)
 0x20|            21                                 |    !           |    [2]: 33 element 0x24-0x24.7 (1)
     |                                               |                |  trailer{}: 0x25-0x44.7 (32)
-0x20|               00 00 00 00 00                  |     .....      |    padding: 0 0x25-0x29.7 (5)
+0x20|               00 00 00 00 00                  |     .....      |    unused: 0 0x25-0x29.7 (5)
 0x20|                              00               |          .     |    sort_version: 0 0x2a-0x2a.7 (1)
 0x20|                                 01            |           .    |    offset_table_offset_size: 1 (valid) 0x2b-0x2b.7 (1)
 0x20|                                    01         |            .   |    object_reference_size: 1 (valid) 0x2c-0x2c.7 (1)
@@ -40,7 +40,7 @@ $ fq -d bplist dv com.apple.UIAutomation.plist
 0x30|                                       00 00 00|             ...|    offset_table_start: 34 0x3d-0x44.7 (8)
 0x40|00 00 00 00 22|                                |...."|          |
 $ fq -d bplist dv Info.plist
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: Info.plist (bplist) 0x0-0x983.7 (2436)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: format/bplist/testdata/Info.plist (bplist) 0x0-0x983.7 (2436)
      |                                               |                |  header{}: 0x0-0x7.7 (8)
 0x000|62 70 6c 69 73 74                              |bplist          |    magic: "bplist" (valid) 0x0-0x5.7 (6)
 0x000|                  30 30                        |      00        |    version: "00" (valid) 0x6-0x7.7 (2)
@@ -2258,7 +2258,7 @@ $ fq -d bplist dv Info.plist
 0x960|08 78                                          |.x              |    [112]: 2168 element 0x960-0x961.7 (2)
 0x960|      08 7b                                    |  .{            |    [113]: 2171 element 0x962-0x963.7 (2)
      |                                               |                |  trailer{}: 0x964-0x983.7 (32)
-0x960|            00 00 00 00 00                     |    .....       |    padding: 0 0x964-0x968.7 (5)
+0x960|            00 00 00 00 00                     |    .....       |    unused: 0 0x964-0x968.7 (5)
 0x960|                           00                  |         .      |    sort_version: 0 0x969-0x969.7 (1)
 0x960|                              02               |          .     |    offset_table_offset_size: 2 (valid) 0x96a-0x96a.7 (1)
 0x960|                                 01            |           .    |    object_reference_size: 1 (valid) 0x96b-0x96b.7 (1)
