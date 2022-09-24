@@ -135,38 +135,29 @@ func decodeItem(d *decode.D, p *plist) {
 	case elementTypeArray:
 		n := decodeSize(d)
 		d.FieldValueU("size", n)
-		i := uint64(0)
-		d.FieldStructArrayLoop("entries", "entry",
-			func() bool { return i < n },
+		d.FieldStructNArray("entries", "entry", int64(n),
 			func(d *decode.D) {
 				idx := d.FieldU8("object_index")
 				decodeReference(d, p, idx)
-				i++
 			})
 	case elementTypeSet:
 		n := decodeSize(d)
 		d.FieldValueU("size", n)
-		i := uint64(0)
-		d.FieldStructArrayLoop("entries", "entry",
-			func() bool { return i < n },
+		d.FieldStructNArray("entries", "entry", int64(n),
 			func(d *decode.D) {
 				idx := d.FieldU8("object_index")
 				decodeReference(d, p, idx)
-				i++
 			})
 	case elementTypeDict:
 		n := decodeSize(d)
 		d.FieldValueU("size", n)
-		i := uint64(0)
-		d.FieldStructArrayLoop("entries", "entry",
-			func() bool { return i < n },
+		d.FieldStructNArray("entries", "entry", int64(n),
 			func(d *decode.D) {
 				var ki, vi uint64
 				ki = d.FieldU8("key_index")
 				d.SeekRel(int64((n-1)*p.t.objRefSize)*8, func(d *decode.D) {
 					vi = d.FieldU8("value_index")
 				})
-				i++
 				d.FieldStruct("key", func(d *decode.D) {
 					decodeReference(d, p, ki)
 				})
@@ -236,11 +227,10 @@ func bplistDecode(d *decode.D, _ any) any {
 		)
 	})
 
-	d.SeekAbs(int64(p.o[0] * 8))
-
 	d.FieldStruct("objects",
 		func(d *decode.D) {
-			decodeItem(d, p)
+			decodeReference(d, p, 0)
 		})
+
 	return nil
 }
