@@ -1,8 +1,10 @@
 $ fq -i -d mp3 . test.mp3
-mp3> .headers[0].flags.unsynchronisation | ., tovalue, type, length?
+mp3> .headers[0].flags.unsynchronisation | ., tovalue, toactual, tosym, type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|               00                              |     .          |.headers[0].flags.unsynchronisation: false
 false
+false
+null
 "boolean"
 mp3> .headers[0].flags.unsynchronisation[0] | ., type, length?
 error: expected an array but got: boolean
@@ -52,8 +54,13 @@ mp3> .headers[0].flags.unsynchronisation._name | ., type, length?
 "unsynchronisation"
 "string"
 17
+mp3> .headers[0].flags.unsynchronisation._actual | ., type, length?
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|               00                              |     .          |.headers[0].flags.unsynchronisation: false
+"boolean"
 mp3> .headers[0].flags.unsynchronisation._sym | ., type, length?
-null
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|               00                              |     .          |.headers[0].flags.unsynchronisation: false
 "null"
 0
 mp3> .headers[0].flags.unsynchronisation._description | ., type, length?
@@ -74,13 +81,11 @@ mp3> .headers[0].flags.unsynchronisation._bits | ., type, length?
 0x0|               00                              |     .          |.: raw bits 0x5-0x5 (0.1)
 "string"
 1
-mp3> 
 mp3> .headers[0].flags.unsynchronisation._bytes | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|               00                              |     .          |.: raw bits 0x5-0x5 (0.1)
 "string"
 0
-mp3> 
 mp3> .headers[0].flags.unsynchronisation._error | ., type, length?
 null
 "null"

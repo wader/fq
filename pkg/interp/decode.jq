@@ -56,8 +56,10 @@ def decode: decode(options.decode_format; {});
 def topath: _decode_value(._path);
 def tovalue($opts): _tovalue(options($opts));
 def tovalue: _tovalue(options({}));
-def toactual: _decode_value(._actual);
-def tosym: _decode_value(._sym);
+def toactual($opts): _decode_value(._actual) | tovalue($opts);
+def toactual: toactual({});
+def tosym($opts): _decode_value(._sym) | tovalue($opts);
+def tosym: tosym({});
 def todescription: _decode_value(._description);
 
 # TODO: rename?
