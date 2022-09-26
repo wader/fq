@@ -157,6 +157,34 @@ func decodeChunk(d *decode.D, expectedChunkID string, stringData bool) {
 		"fact": func(d *decode.D) {
 			d.FieldU32("sample_length")
 		},
+		"smpl": func(d *decode.D) {
+			d.FieldU32("manufacturer")
+			d.FieldU32("product")
+			d.FieldU32("sample_period")
+			d.FieldU32("midi_unity_note")
+			d.FieldU32("midi_pitch_fraction")
+			d.FieldU32("smpte_format")
+			d.FieldU32("smpte_offset")
+			numSampleLoops := int(d.FieldU32("number_of_sample_loops"))
+			samplerDataBytes := int(d.FieldU32("sampler_data_bytes"))
+			d.FieldArray("samples_loops", func(d *decode.D) {
+				for i := 0; i < numSampleLoops; i++ {
+					d.FieldStruct("sample_loop", func(d *decode.D) {
+						d.FieldUTF8("id", 4)
+						d.FieldU32("type", scalar.UToSymStr{
+							0: "forward",
+							1: "forward_backward",
+							2: "backward",
+						})
+						d.FieldU32("start")
+						d.FieldU32("end")
+						d.FieldU32("fraction")
+						d.FieldU32("number_of_times")
+					})
+				}
+			})
+			d.FieldRawLen("sampler_data", int64(samplerDataBytes)*8)
+		},
 	}
 
 	trimChunkID := d.FieldStrFn("id", func(d *decode.D) string {
