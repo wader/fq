@@ -163,6 +163,11 @@ func decodeHeapPages(heap *Heap, d *decode.D) {
 
 func decodeHeapPage(heap *Heap, d *decode.D) {
 	page := &HeapPage{}
+	if heap.Page != nil {
+		// use prev page
+		page.BytesPosBegin = heap.Page.BytesPosEnd
+	}
+	page.BytesPosEnd = int64(common.TypeAlign(heap.PageSize, uint64(page.BytesPosBegin)+1))
 	heap.Page = page
 	heap.Special = &PageSpecial{}
 
