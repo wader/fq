@@ -60,7 +60,7 @@ Elements are arrays of the shape `["#text": "body text", "attr_name", {key: "att
 
 ```sh
 # decode as array
-✗ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -d xml -o array=true
+$ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -d xml -o array=true
 [
   "a",
   null,
