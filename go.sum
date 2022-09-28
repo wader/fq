@@ -25,8 +25,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/wader/gojq v0.12.1-0.20220822132002-64fe65a68424 h1:4SZxNA1ti22+TemKXy5H2qyFPPqi5X55vtyjmOnLsqk=
 github.com/wader/gojq v0.12.1-0.20220822132002-64fe65a68424/go.mod h1:HM2cB+ANeJ4kBhxQp/4cNKewKjvYHACuCpBneQBgHkg=
-github.com/wader/readline v0.0.0-20220704090837-31be50517a56 h1:MEvdJFQfJD9D5nH2C5aXW+jWGcU1YmL8fJWIDsXvrJw=
-github.com/wader/readline v0.0.0-20220704090837-31be50517a56/go.mod h1:Zgz8IJWvJoe7NK23CCPpC109XMCqJCpUhpHcnnA4XaM=
+github.com/wader/readline v0.0.0-20220928125628-732951d41240 h1:fqNaldd6kVsMNGXLXH4TtB1kJtaPQOzGwqNYgswIM94=
+github.com/wader/readline v0.0.0-20220928125628-732951d41240/go.mod h1:Zgz8IJWvJoe7NK23CCPpC109XMCqJCpUhpHcnnA4XaM=
 golang.org/x/crypto v0.0.0-20220817201139-bc19a97f63c8 h1:GIAS/yBem/gq2MUqgNIzUHW7cJMmx3TGZOrnyYaNQ6c=
 golang.org/x/crypto v0.0.0-20220817201139-bc19a97f63c8/go.mod h1:IxCIyHEi3zRg3s0A5j5BB6A9Jmi73HwBIUl50j+osU4=
 golang.org/x/exp v0.0.0-20220722155223-a9213eeb770e h1:+WEEuIdZHnUeJJmEUjyYC2gfUMj69yZXw17EnHg/otA=
