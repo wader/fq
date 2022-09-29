@@ -135,6 +135,9 @@ def _cli_repl_error($_):
   _eval_error("compile"; "repl can only be used from interactive repl");
 def _cli_slurp_error(_):
   _eval_error("compile"; "slurp can only be used from interactive repl");
+# TODO: rewrite query to reuse _display_default_opts value? also _repl_display
+def _cli_display:
+  display(_display_default_opts);
 # _cli_eval halts on compile errors
 def _cli_eval($expr; $opts):
   eval(
@@ -145,7 +148,7 @@ def _cli_eval($expr; $opts):
         repl: "_cli_repl_error",
         slurp: "_cli_slurp_error"
       },
-      catch_query: _query_func("_cli_eval_on_expr_error")
+      catch_query: _query_func("_cli_eval_on_expr_error"),
     };
     _cli_eval_on_error;
     _cli_eval_on_compile_error
@@ -235,7 +238,6 @@ def _main:
           )
         else
           ( _cli_last_expr_error(null) as $_
-          | _display_default_opts as $default_opts
           | _cli_eval(
               $opts.expr;
               ( $eval_opts
@@ -248,9 +250,11 @@ def _main:
                     else _query_func("inputs")
                     end
                   )
+              # call display in sub eval so it can be interrupted
+              # for repl case value will used as input to _repl instead
+              | .output_query = _query_func("_cli_display")
               )
             )
-          | display($default_opts)
           )
         end;
         # finally
