@@ -77,6 +77,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 	}
 
 	isInArray := false
+	isCompound := isCompound(v)
 	inArrayLen := 0
 	if v.Parent != nil {
 		if dc, ok := v.Parent.V.(*decode.Compound); ok {
@@ -113,7 +114,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 	}
 
 	innerRange := v.InnerRange()
-	willDisplayData := innerRange.Len > 0 && (!isCompound(v) || (opts.Depth != 0 && opts.Depth == depth))
+	willDisplayData := innerRange.Len > 0 && (!isCompound || (opts.Depth != 0 && opts.Depth == depth))
 
 	// show address bar on root, nested root and format change
 	if depth == 0 || v.IsRoot || v.Format != nil {
@@ -130,10 +131,8 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 		cfmt(colField, "%s%s%s", deco.Index.F("["), deco.Number.F(strconv.Itoa(v.Index)), deco.Index.F("]"))
 	}
 
-	var valueErr error
+	var desc string
 
-	// TODO: cleanup map[string]any []any or json format
-	// dump should use some internal interface instead?
 	switch vv := v.V.(type) {
 	case *decode.Compound:
 		if vv.IsArray {
@@ -142,43 +141,45 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 			cfmt(colField, "%s", deco.Object.F("{}"))
 		}
 		cprint(colField, ":")
+		desc = vv.Description
+
+	case Scalarable:
+		cprint(colField, ":")
+		actual := vv.ScalarActual()
+		sym := vv.ScalarSym()
+		df := vv.ScalarDisplayFormat()
+		if sym == nil {
+			cfmt(colField, " %s", deco.ValueColor(actual).F(previewValue(actual, df)))
+		} else {
+			cfmt(colField, " %s", deco.ValueColor(sym).F(previewValue(sym, scalar.NumberDecimal)))
+			cfmt(colField, " (%s)", deco.ValueColor(actual).F(previewValue(actual, df)))
+		}
+		desc = vv.ScalarDescription()
+
+	default:
+		panic(fmt.Sprintf("unreachable vv %#+v", vv))
+	}
+
+	if isCompound {
 		if isInArray {
 			cfmt(colField, " %s", v.Name)
 		}
-		if vv.Description != "" {
-			cfmt(colField, " %s", deco.Value.F(vv.Description))
+		if desc != "" {
+			cfmt(colField, " %s", deco.Value.F(desc))
 		}
-	case *scalar.S:
-		switch av := vv.Actual.(type) {
-		case map[string]any:
-			cfmt(colField, ": %s", deco.Object.F("{}"))
-		case []any:
-			// TODO: format?
-			cfmt(colField, ": %s%s:%s%s", deco.Index.F("["), deco.Number.F("0"), deco.Number.F(strconv.Itoa(len(av))), deco.Index.F("]"))
-		default:
-			cprint(colField, ":")
-			if vv.Sym == nil {
-				cfmt(colField, " %s", deco.ValueColor(vv.Actual).F(previewValue(vv.Actual, vv.ActualDisplay)))
-			} else {
-				cfmt(colField, " %s", deco.ValueColor(vv.Sym).F(previewValue(vv.Sym, vv.SymDisplay)))
-				cfmt(colField, " (%s)", deco.ValueColor(vv.Actual).F(previewValue(vv.Actual, vv.ActualDisplay)))
-			}
-		}
-
+	} else {
 		if opts.Verbose && isInArray {
 			cfmt(colField, " %s", v.Name)
 		}
-		if vv.Description != "" {
-			cfmt(colField, " (%s)", deco.Value.F(vv.Description))
+		if desc != "" {
+			cfmt(colField, " (%s)", deco.Value.F(desc))
 		}
-	default:
-		panic(fmt.Sprintf("unreachable vv %#+v", vv))
 	}
 
 	if v.Format != nil {
 		cfmt(colField, " (%s)", deco.Value.F(v.Format.Name))
 	}
-	valueErr = v.Err
+	valueErr := v.Err
 
 	if opts.Verbose {
 		cfmt(colField, " %s (%s)",
@@ -419,7 +420,7 @@ func hexdump(w io.Writer, bv Binary, opts Options) error {
 	return dump(
 		&decode.Value{
 			// TODO: hack
-			V:          &scalar.S{Actual: br},
+			V:          &scalar.BitBuf{Actual: br},
 			Range:      bv.r,
 			RootReader: bv.br,
 		},

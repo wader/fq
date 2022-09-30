@@ -35,7 +35,7 @@ const (
 	compressionDeflate = 0
 )
 
-var compressionNames = scalar.UToSymStr{
+var compressionNames = scalar.UintMapSymStr{
 	compressionDeflate: "deflate",
 }
 
@@ -45,7 +45,7 @@ const (
 	disposeOpPrevious   = 2
 )
 
-var disposeOpNames = scalar.UToSymStr{
+var disposeOpNames = scalar.UintMapSymStr{
 	disposeOpNone:       "none",
 	disposeOpBackground: "background",
 	disposeOpPrevious:   "previous",
@@ -56,7 +56,7 @@ const (
 	blendOpBackground = 1
 )
 
-var blendOpNames = scalar.UToSymStr{
+var blendOpNames = scalar.UintMapSymStr{
 	blendOpNone:       "source",
 	blendOpBackground: "over",
 }
@@ -69,7 +69,7 @@ const (
 	colorTypeRGBA               = 6
 )
 
-var colorTypeMap = scalar.UToSymStr{
+var colorTypeMap = scalar.UintMapSymStr{
 	colorTypeGrayscale:          "grayscale",
 	colorTypeRGB:                "rgb",
 	colorTypePalette:            "palette",
@@ -106,10 +106,10 @@ func pngDecode(d *decode.D, _ any) any {
 				d.FieldU8("bit_depth")
 				colorType = d.FieldU8("color_type", colorTypeMap)
 				d.FieldU8("compression_method", compressionNames)
-				d.FieldU8("filter_method", scalar.UToSymStr{
+				d.FieldU8("filter_method", scalar.UintMapSymStr{
 					0: "adaptive_filtering",
 				})
-				d.FieldU8("interlace_method", scalar.UToSymStr{
+				d.FieldU8("interlace_method", scalar.UintMapSymStr{
 					0: "none",
 					1: "adam7",
 				})
@@ -167,14 +167,14 @@ func pngDecode(d *decode.D, _ any) any {
 				d.FieldU32("value")
 			case "cHRM":
 				df := func(d *decode.D) float64 { return float64(d.U32()) / 1000.0 }
-				d.FieldFFn("white_point_x", df)
-				d.FieldFFn("white_point_y", df)
-				d.FieldFFn("red_x", df)
-				d.FieldFFn("red_y", df)
-				d.FieldFFn("green_x", df)
-				d.FieldFFn("green_y", df)
-				d.FieldFFn("blue_x", df)
-				d.FieldFFn("blue_y", df)
+				d.FieldFltFn("white_point_x", df)
+				d.FieldFltFn("white_point_y", df)
+				d.FieldFltFn("red_x", df)
+				d.FieldFltFn("red_y", df)
+				d.FieldFltFn("green_x", df)
+				d.FieldFltFn("green_y", df)
+				d.FieldFltFn("blue_x", df)
+				d.FieldFltFn("blue_y", df)
 			case "eXIf":
 				d.FieldFormatLen("exif", d.BitsLeft(), exifFormat, nil)
 			case "acTL":
@@ -229,7 +229,7 @@ func pngDecode(d *decode.D, _ any) any {
 
 		chunkCRC := crc32.NewIEEE()
 		d.Copy(chunkCRC, bitio.NewIOReader(d.BitBufRange(crcStartPos, d.Pos()-crcStartPos)))
-		d.FieldU32("crc", d.ValidateUBytes(chunkCRC.Sum(nil)), scalar.ActualHex)
+		d.FieldU32("crc", d.UintValidateBytes(chunkCRC.Sum(nil)), scalar.UintHex)
 	})
 
 	return nil

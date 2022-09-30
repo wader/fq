@@ -37,11 +37,11 @@ func vp8Decode(d *decode.D, _ any) any {
 		firstPartSize0 := d.FieldU3("first_part_size0")
 		d.FieldU1("show_frame")
 		version := d.FieldU3("version")
-		keyFrameV := d.FieldBool("frame_type", scalar.BoolToSymStr{true: "non_key_frame", false: "key_frame"})
+		keyFrameV := d.FieldBool("frame_type", scalar.BoolMapSymStr{true: "non_key_frame", false: "key_frame"})
 		firstPartSize1 := d.FieldU16LE("first_part_size1")
 
 		firstPartSize := firstPartSize0 | firstPartSize1<<3
-		d.FieldValueU("first_part_size", firstPartSize)
+		d.FieldValueUint("first_part_size", firstPartSize)
 
 		isKeyFrame = !keyFrameV
 		if v, ok := versions[version]; ok {
@@ -51,18 +51,18 @@ func vp8Decode(d *decode.D, _ any) any {
 	})
 
 	if isKeyFrame {
-		d.FieldU24("start_code", d.ValidateU(0x9d012a), scalar.ActualHex)
+		d.FieldU24("start_code", d.UintValidate(0x9d012a), scalar.UintHex)
 
 		// width and height are not contiguous bits
 		width0 := d.FieldU8("width0")
 		d.FieldU2("horizontal_scale")
 		width1 := d.FieldU6("width1")
-		d.FieldValueU("width", width0|width1<<8)
+		d.FieldValueUint("width", width0|width1<<8)
 
 		height0 := d.FieldU8("height0")
 		d.FieldU2("vertical_scale")
 		height1 := d.FieldU6("height1")
-		d.FieldValueU("height", height0|height1<<8)
+		d.FieldValueUint("height", height0|height1<<8)
 	}
 
 	d.FieldRawLen("data", d.BitsLeft())

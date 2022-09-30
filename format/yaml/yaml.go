@@ -44,7 +44,7 @@ func decodeYAML(d *decode.D, _ any) any {
 		d.Fatalf("trialing data after top-level value")
 	}
 
-	var s scalar.S
+	var s scalar.Any
 	s.Actual = gojqex.Normalize(r)
 
 	switch s.Actual.(type) {

@@ -19,14 +19,14 @@ func init() {
 	})
 }
 
-var headerDescription = scalar.StrToDescription{
+var headerUintDescription = scalar.StrMapDescription{
 	"Xing": "XING variable bitrate",
 	"Info": "XING variable bitrate",
 	"VBRI": "Fraunhofer Encoder variable bitrate info",
 }
 
 func mp3FrameTagsDecode(d *decode.D, _ any) any {
-	switch d.FieldUTF8("header", 4, headerDescription) {
+	switch d.FieldUTF8("header", 4, headerUintDescription) {
 	case "Xing",
 		"Info":
 		qualityPresent := false
@@ -80,12 +80,12 @@ func mp3FrameTagsDecode(d *decode.D, _ any) any {
 		d.FieldU16("version_id")
 		d.FieldU16("delay")
 		d.FieldU16("quality")
-		d.FieldU32("length", scalar.Description("Number of bytes"))
-		d.FieldU32("frames", scalar.Description("Number of frames"))
-		tocEntries := d.FieldU16("toc_entries", scalar.Description("Number of entries within TOC table"))
-		d.FieldU16("scale_factor", scalar.Description("Scale factor of TOC table entries"))
-		tocEntrySize := d.FieldU16("toc_entry_size", d.AssertU(1, 2, 3, 4), scalar.Description("Size per table entry"))
-		d.FieldU16("frame_per_entry", scalar.Description("Frames per table entry"))
+		d.FieldU32("length", scalar.UintDescription("Number of bytes"))
+		d.FieldU32("frames", scalar.UintDescription("Number of frames"))
+		tocEntries := d.FieldU16("toc_entries", scalar.UintDescription("Number of entries within TOC table"))
+		d.FieldU16("scale_factor", scalar.UintDescription("Scale factor of TOC table entries"))
+		tocEntrySize := d.FieldU16("toc_entry_size", d.UintAssert(1, 2, 3, 4), scalar.UintDescription("Size per table entry"))
+		d.FieldU16("frame_per_entry", scalar.UintDescription("Frames per table entry"))
 		d.FieldArray("toc", func(d *decode.D) {
 			for i := 0; i < int(tocEntries); i++ {
 				d.FieldU("entry", int(tocEntrySize)*8)

@@ -36,7 +36,7 @@ func decodeTOML(d *decode.D, _ any) any {
 	if _, err := toml.NewDecoder(bitio.NewIOReader(br)).Decode(&r); err != nil {
 		d.Fatalf("%s", err)
 	}
-	var s scalar.S
+	var s scalar.Any
 	s.Actual = gojqex.Normalize(r)
 
 	// TODO: better way to handle that an empty file is valid toml and parsed as an object

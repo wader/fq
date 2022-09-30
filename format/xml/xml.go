@@ -269,7 +269,7 @@ func decodeXML(d *decode.D, in any) any {
 	if err != nil {
 		d.Fatalf("%s", err)
 	}
-	var s scalar.S
+	var s scalar.Any
 	s.Actual = r
 
 	switch s.Actual.(type) {

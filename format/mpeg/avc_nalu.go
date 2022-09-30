@@ -65,7 +65,7 @@ const (
 	avcNALCodedSliceExtension                = 20
 )
 
-var avcNALNames = scalar.UToScalar{
+var avcNALNames = scalar.UintMap{
 	1:                                        {Sym: "slice", Description: "Coded slice of a non-IDR picture"},
 	2:                                        {Sym: "dpa", Description: "Coded slice data partition A"},
 	3:                                        {Sym: "dpb", Description: "Coded slice data partition B"},
@@ -85,7 +85,7 @@ var avcNALNames = scalar.UToScalar{
 	20:                                       {Sym: "exten_slice", Description: "Coded slice extension"},
 }
 
-var sliceNames = scalar.UToSymStr{
+var sliceNames = scalar.UintMapSymStr{
 	0: "p",
 	1: "b",
 	2: "i",
@@ -113,9 +113,9 @@ func avcNALUDecode(d *decode.D, _ any) any {
 		avcNALCodedSliceAuxWithoutPartition,
 		avcNALCodedSliceExtension:
 		d.FieldStruct("slice_header", func(d *decode.D) {
-			d.FieldUFn("first_mb_in_slice", uEV)
-			d.FieldUFn("slice_type", uEV, sliceNames)
-			d.FieldUFn("pic_parameter_set_id", uEV)
+			d.FieldUintFn("first_mb_in_slice", uEV)
+			d.FieldUintFn("slice_type", uEV, sliceNames)
+			d.FieldUintFn("pic_parameter_set_id", uEV)
 			// TODO: if ( separate_colour_plane_flag from SPS ) colour_plane_id; frame_num
 		})
 	case avcNALSupplementalEnhancementInformation:

@@ -32,11 +32,11 @@ func init() {
 
 const delfateMethod = 8
 
-var compressionMethodNames = scalar.UToSymStr{
+var compressionMethodNames = scalar.UintMapSymStr{
 	delfateMethod: "deflate",
 }
 
-var osNames = scalar.UToSymStr{
+var osNames = scalar.UintMapSymStr{
 	0:  "fat",
 	1:  "amiga",
 	2:  "vms",
@@ -53,7 +53,7 @@ var osNames = scalar.UToSymStr{
 	13: "acorn_riscos",
 }
 
-var deflateExtraFlagsNames = scalar.UToSymStr{
+var deflateExtraFlagsNames = scalar.UintMapSymStr{
 	2: "slow",
 	4: "fast",
 }
@@ -75,7 +75,7 @@ func gzDecode(d *decode.D, _ any) any {
 		hasComment = d.FieldBool("comment")
 		d.FieldU3("reserved")
 	})
-	d.FieldU32("mtime", scalar.DescriptionUnixTimeFn(scalar.S.TryActualU, time.RFC3339))
+	d.FieldU32("mtime", scalar.UintActualUnixTime(time.RFC3339))
 	switch compressionMethod {
 	case delfateMethod:
 		d.FieldU8("extra_flags", deflateExtraFlagsNames)
@@ -117,7 +117,7 @@ func gzDecode(d *decode.D, _ any) any {
 			crc32W := crc32.NewIEEE()
 			// TODO: cleanup clone
 			d.CopyBits(crc32W, d.CloneReadSeeker(uncompressedBR))
-			d.FieldU32("crc32", d.ValidateUBytes(crc32W.Sum(nil)), scalar.ActualHex)
+			d.FieldU32("crc32", d.UintValidateBytes(crc32W.Sum(nil)), scalar.UintHex)
 			d.FieldU32("isize")
 		}
 	}

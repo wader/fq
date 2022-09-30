@@ -37,7 +37,7 @@ const (
 	typeTypedObject = 0x10
 )
 
-var typeNames = scalar.UToSymStr{
+var typeNames = scalar.UintMapSymStr{
 	typeNumber:      "number",
 	typeBoolean:     "boolean",
 	typeString:      "string",
@@ -83,9 +83,9 @@ func amf0DecodeValue(d *decode.D) {
 			}
 		})
 	case typeNull:
-		d.FieldValueNil("value")
+		d.FieldValueAny("value", nil)
 	case typeUndefined:
-		d.FieldValueNil("value") // TODO: ?
+		d.FieldValueAny("value", nil) // TODO: ?
 	case typeReference:
 		d.FieldU16("value") // TODO: index pointer
 	case typeECMAArray:

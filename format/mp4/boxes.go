@@ -22,16 +22,16 @@ const (
 	boxSizeUse64bitSize = 1
 )
 
-var boxSizeNames = scalar.UToDescription{
+var boxSizeNames = scalar.UintMapDescription{
 	boxSizeRestOfFile:   "Rest of file",
 	boxSizeUse64bitSize: "Use 64 bit size",
 }
 
-var mediaTimeNames = scalar.SToDescription{
+var mediaTimeNames = scalar.SintMapDescription{
 	-1: "empty",
 }
 
-var subTypeNames = scalar.StrToDescription{
+var subTypeNames = scalar.StrMapDescription{
 	"alis": "Alias Data",
 	"camm": "Camera Metadata",
 	"crsm": "Clock Reference",
@@ -59,7 +59,7 @@ var subTypeNames = scalar.StrToDescription{
 	"vide": "Video Track",
 }
 
-var dataFormatNames = scalar.StrToDescription{
+var dataFormatNames = scalar.StrMapDescription{
 	// additional codecs
 	"apch": "Apple ProRes 422 High Quality",
 	"apcn": "Apple ProRes 422 Standard Definition",
@@ -185,15 +185,15 @@ var (
 	uuidIpodBytes         = [16]byte{0x6b, 0x68, 0x40, 0xf2, 0x5f, 0x24, 0x4f, 0xc5, 0xba, 0x39, 0xa5, 0x1b, 0xcf, 0x03, 0x23, 0xf3}
 )
 
-var uuidNames = scalar.BytesToScalar{
-	{Bytes: uuidIsmlManifestBytes[:], Scalar: scalar.S{Sym: "isml_manifest"}},
-	{Bytes: uuidXmpBytes[:], Scalar: scalar.S{Sym: "xmp"}},
-	{Bytes: uuidSphericalBytes[:], Scalar: scalar.S{Sym: "spherical"}},
-	{Bytes: uuidPspUsmtBytes[:], Scalar: scalar.S{Sym: "psp_usmt"}},
-	{Bytes: uuidTfxdBytes[:], Scalar: scalar.S{Sym: "tfxd"}},
-	{Bytes: uuidTfrfBytes[:], Scalar: scalar.S{Sym: "tfrf"}},
-	{Bytes: uuidProfBytes[:], Scalar: scalar.S{Sym: "prof"}},
-	{Bytes: uuidIpodBytes[:], Scalar: scalar.S{Sym: "ipod"}},
+var uuidNames = scalar.RawBytesMap{
+	{Bytes: uuidIsmlManifestBytes[:], Scalar: scalar.BitBuf{Sym: "isml_manifest"}},
+	{Bytes: uuidXmpBytes[:], Scalar: scalar.BitBuf{Sym: "xmp"}},
+	{Bytes: uuidSphericalBytes[:], Scalar: scalar.BitBuf{Sym: "spherical"}},
+	{Bytes: uuidPspUsmtBytes[:], Scalar: scalar.BitBuf{Sym: "psp_usmt"}},
+	{Bytes: uuidTfxdBytes[:], Scalar: scalar.BitBuf{Sym: "tfxd"}},
+	{Bytes: uuidTfrfBytes[:], Scalar: scalar.BitBuf{Sym: "tfrf"}},
+	{Bytes: uuidProfBytes[:], Scalar: scalar.BitBuf{Sym: "prof"}},
+	{Bytes: uuidIpodBytes[:], Scalar: scalar.BitBuf{Sym: "ipod"}},
 }
 
 // ISO 639-2/T language code 3 * 5bit packed uint + 1 zero bit
@@ -208,7 +208,8 @@ func decodeLang(d *decode.D) string {
 
 // Quicktime time seconds in January 1, 1904 UTC
 var quicktimeEpochDate = time.Date(1904, time.January, 4, 0, 0, 0, 0, time.UTC)
-var quicktimeEpoch = scalar.DescriptionTimeFn(scalar.S.TryActualU, quicktimeEpochDate, time.RFC3339)
+
+var uintActualQuicktimeEpoch = scalar.UintActualDate(quicktimeEpochDate, time.RFC3339)
 
 func decodeMvhdFieldMatrix(d *decode.D, name string) {
 	d.FieldStruct(name, func(d *decode.D) {
@@ -228,29 +229,29 @@ func decodeMvhdFieldMatrix(d *decode.D, name string) {
 func decodeSampleFlags(d *decode.D) {
 	d.FieldU4("reserved0")
 	d.FieldU2("is_leading")
-	d.FieldU2("sample_depends_on", scalar.UToScalar{
-		0: scalar.S{Sym: "unknown"},
-		1: scalar.S{Sym: "other", Description: "Not I-picture"},
-		2: scalar.S{Sym: "none", Description: "Is I-picture"},
+	d.FieldU2("sample_depends_on", scalar.UintMap{
+		0: scalar.Uint{Sym: "unknown"},
+		1: scalar.Uint{Sym: "other", Description: "Not I-picture"},
+		2: scalar.Uint{Sym: "none", Description: "Is I-picture"},
 	})
-	d.FieldU2("sample_is_depended_on", scalar.UToScalar{
-		0: scalar.S{Sym: "unknown"},
-		1: scalar.S{Sym: "other", Description: "Not disposable"},
-		2: scalar.S{Sym: "none", Description: "Is disposable"},
+	d.FieldU2("sample_is_depended_on", scalar.UintMap{
+		0: scalar.Uint{Sym: "unknown"},
+		1: scalar.Uint{Sym: "other", Description: "Not disposable"},
+		2: scalar.Uint{Sym: "none", Description: "Is disposable"},
 	})
-	d.FieldU2("sample_has_redundancy", scalar.UToScalar{
-		0: scalar.S{Sym: "unknown"},
-		2: scalar.S{Sym: "none", Description: "No redundant coding"},
+	d.FieldU2("sample_has_redundancy", scalar.UintMap{
+		0: scalar.Uint{Sym: "unknown"},
+		2: scalar.Uint{Sym: "none", Description: "No redundant coding"},
 	})
 	d.FieldU3("sample_padding_value")
 	d.FieldU1("sample_is_non_sync_sample")
 	d.FieldU16("sample_degradation_priority")
 }
 
-func decodeBoxWithParentData(ctx *decodeContext, d *decode.D, parentData any, extraTypeMappers ...scalar.Mapper) {
+func decodeBoxWithParentData(ctx *decodeContext, d *decode.D, parentData any, extraTypeMappers ...scalar.StrMapper) {
 	var typ string
 	var dataSize uint64
-	typeMappers := []scalar.Mapper{boxDescriptions}
+	typeMappers := []scalar.StrMapper{boxDescriptions}
 	if len(extraTypeMappers) > 0 {
 		typeMappers = append(typeMappers, extraTypeMappers...)
 	}
@@ -283,11 +284,11 @@ func decodeBoxWithParentData(ctx *decodeContext, d *decode.D, parentData any, ex
 	ctx.path = ctx.path[0 : len(ctx.path)-1]
 }
 
-func decodeBoxes(ctx *decodeContext, d *decode.D, extraTypeMappers ...scalar.Mapper) {
+func decodeBoxes(ctx *decodeContext, d *decode.D, extraTypeMappers ...scalar.StrMapper) {
 	decodeBoxesWithParentData(ctx, d, nil, extraTypeMappers...)
 }
 
-func decodeBoxesWithParentData(ctx *decodeContext, d *decode.D, parentData any, extraTypeMappers ...scalar.Mapper) {
+func decodeBoxesWithParentData(ctx *decodeContext, d *decode.D, parentData any, extraTypeMappers ...scalar.StrMapper) {
 	d.FieldStructArrayLoop("boxes", "box",
 		func() bool { return d.BitsLeft() >= 8*8 },
 		func(d *decode.D) {
@@ -381,13 +382,13 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		d.FieldU24("flags")
 		switch version {
 		case 0:
-			d.FieldU32("creation_time", quicktimeEpoch)
-			d.FieldU32("modification_time", quicktimeEpoch)
+			d.FieldU32("creation_time", uintActualQuicktimeEpoch)
+			d.FieldU32("modification_time", uintActualQuicktimeEpoch)
 			d.FieldU32("time_scale")
 			d.FieldU32("duration")
 		case 1:
-			d.FieldU64("creation_time", quicktimeEpoch)
-			d.FieldU64("modification_time", quicktimeEpoch)
+			d.FieldU64("creation_time", uintActualQuicktimeEpoch)
+			d.FieldU64("modification_time", uintActualQuicktimeEpoch)
 			d.FieldU32("time_scale")
 			d.FieldU64("duration")
 		default:
@@ -435,14 +436,14 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		d.FieldU24("flags")
 		switch version {
 		case 0:
-			d.FieldU32("creation_time", quicktimeEpoch)
-			d.FieldU32("modification_time", quicktimeEpoch)
+			d.FieldU32("creation_time", uintActualQuicktimeEpoch)
+			d.FieldU32("modification_time", uintActualQuicktimeEpoch)
 			trackID = int(d.FieldU32("track_id"))
 			d.FieldU32("reserved1")
 			d.FieldU32("duration")
 		case 1:
-			d.FieldU64("creation_time", quicktimeEpoch)
-			d.FieldU64("modification_time", quicktimeEpoch)
+			d.FieldU64("creation_time", uintActualQuicktimeEpoch)
+			d.FieldU64("modification_time", uintActualQuicktimeEpoch)
 			trackID = int(d.FieldU32("track_id"))
 			d.FieldU32("reserved1")
 			d.FieldU64("duration")
@@ -470,13 +471,13 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		// TODO: timestamps
 		switch version {
 		case 0:
-			d.FieldU32("creation_time", quicktimeEpoch)
-			d.FieldU32("modification_time", quicktimeEpoch)
+			d.FieldU32("creation_time", uintActualQuicktimeEpoch)
+			d.FieldU32("modification_time", uintActualQuicktimeEpoch)
 			d.FieldU32("time_scale")
 			d.FieldU32("duration")
 		case 1:
-			d.FieldU64("creation_time", quicktimeEpoch)
-			d.FieldU64("modification_time", quicktimeEpoch)
+			d.FieldU64("creation_time", uintActualQuicktimeEpoch)
+			d.FieldU64("modification_time", uintActualQuicktimeEpoch)
 			d.FieldU32("time_scale")
 			d.FieldU64("duration")
 		default:
@@ -827,7 +828,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			for d.NotEnd() {
 				d.FieldStruct("entry", func(d *decode.D) {
 					d.FieldU2("reserved")
-					values := scalar.UToSymStr{
+					values := scalar.UintMapSymStr{
 						0: "unknown",
 						1: "yes",
 						2: "no",
@@ -900,7 +901,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		if mb := ctx.currentMetaBox(); mb != nil && mb.keys != nil && len(mb.keys.keys) > 0 {
 			// meta box had a keys box
 			var b [4]byte
-			typeSymMapper := scalar.StrToSymStr{}
+			typeSymMapper := scalar.StrMapSymStr{}
 			for k, v := range mb.keys.keys {
 				// type will be a uint32 be integer
 				// +1 as they seem to be counted from 1
@@ -1206,11 +1207,11 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			systemIDPlayReady = [16]byte{0x9a, 0x04, 0xf0, 0x79, 0x98, 0x40, 0x42, 0x86, 0xab, 0x92, 0xe6, 0x5b, 0xe0, 0x88, 0x5f, 0x95}
 			systemIDFairPlay  = [16]byte{0x94, 0xce, 0x86, 0xfb, 0x07, 0xff, 0x4f, 0x43, 0xad, 0xb8, 0x93, 0xd2, 0xfa, 0x96, 0x8c, 0xa2}
 		)
-		systemIDNames := scalar.BytesToScalar{
-			{Bytes: systemIDCommon[:], Scalar: scalar.S{Sym: "common"}},
-			{Bytes: systemIDWidevine[:], Scalar: scalar.S{Sym: "widevine"}},
-			{Bytes: systemIDPlayReady[:], Scalar: scalar.S{Sym: "playready"}},
-			{Bytes: systemIDFairPlay[:], Scalar: scalar.S{Sym: "fairplay"}},
+		systemIDNames := scalar.RawBytesMap{
+			{Bytes: systemIDCommon[:], Scalar: scalar.BitBuf{Sym: "common"}},
+			{Bytes: systemIDWidevine[:], Scalar: scalar.BitBuf{Sym: "widevine"}},
+			{Bytes: systemIDPlayReady[:], Scalar: scalar.BitBuf{Sym: "playready"}},
+			{Bytes: systemIDFairPlay[:], Scalar: scalar.BitBuf{Sym: "fairplay"}},
 		}
 
 		version := d.FieldU8("version")
@@ -1495,7 +1496,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		// 		for i := uint64(0); i < nPresentation; i++ {
 		// 			d.FieldStruct("presentation", func(d *decode.D) {
 		// 				d.FieldU8("presentation_version")
-		// 				presBytes := d.FieldUFn("pres_bytes", func() (uint64, decode.DisplayFormat, string) {
+		// 				presBytes := d.FieldUintFn("pres_bytes", func() (uint64, decode.DisplayFormat, string) {
 		// 					n := d.U8()
 		// 					if n == 0x0ff {
 		// 						n += d.U16()
@@ -1611,7 +1612,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 	case "cdsc":
 		decodeBoxIrefEntry(ctx, d)
 	case "irot":
-		d.FieldU8("rotation", scalar.UToSymU{
+		d.FieldU8("rotation", scalar.UintMapSymUint{
 			0: 0,
 			1: 90,
 			2: 180,

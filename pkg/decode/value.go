@@ -219,15 +219,33 @@ func (v *Value) postProcess() {
 	}
 }
 
-func (v *Value) TryScalarFn(sms ...scalar.Mapper) error {
+// TODO: rethink this
+func (v *Value) TryUintScalarFn(sms ...scalar.UintMapper) error {
 	var err error
-	sr, ok := v.V.(*scalar.S)
+	sr, ok := v.V.(*scalar.Uint)
 	if !ok {
 		panic("not a scalar value")
 	}
 	s := *sr
 	for _, sm := range sms {
-		s, err = sm.MapScalar(s)
+		s, err = sm.MapUint(s)
+		if err != nil {
+			break
+		}
+	}
+	v.V = &s
+	return err
+}
+
+func (v *Value) TryBitBufScalarFn(sms ...scalar.BitBufMapper) error {
+	var err error
+	sr, ok := v.V.(*scalar.BitBuf)
+	if !ok {
+		panic("not a scalar value")
+	}
+	s := *sr
+	for _, sm := range sms {
+		s, err = sm.MapBitBuf(s)
 		if err != nil {
 			break
 		}

@@ -17,7 +17,7 @@ const (
 	NANOSECOND
 )
 
-func logicalMapperForSchema(schema schema.SimplifiedSchema) scalar.Mapper {
+func logicalTimeMapperForSchema(schema schema.SimplifiedSchema) scalar.SintMapper {
 	switch schema.LogicalType {
 	case "timestamp":
 		return TimestampMapper{Precision: SECOND}
@@ -46,8 +46,8 @@ type TimestampMapper struct {
 	Precision Precision
 }
 
-func (t TimestampMapper) MapScalar(s scalar.S) (scalar.S, error) {
-	v := s.ActualS()
+func (t TimestampMapper) MapSint(s scalar.Sint) (scalar.Sint, error) {
+	v := s.Actual
 	var ts time.Time
 	if t.Precision == SECOND {
 		ts = time.Unix(v, 0)
@@ -68,8 +68,8 @@ type TimeMapper struct {
 	Precision Precision
 }
 
-func (t TimeMapper) MapScalar(s scalar.S) (scalar.S, error) {
-	v := s.ActualS()
+func (t TimeMapper) MapSint(s scalar.Sint) (scalar.Sint, error) {
+	v := s.Actual
 
 	if t.Precision == SECOND {
 		s.Sym = time.Unix(v, 0).UTC().Format("15:04:05")
@@ -88,8 +88,8 @@ func (t TimeMapper) MapScalar(s scalar.S) (scalar.S, error) {
 type DateMapper struct {
 }
 
-func (d DateMapper) MapScalar(s scalar.S) (scalar.S, error) {
-	v := s.ActualS()
+func (d DateMapper) MapSint(s scalar.Sint) (scalar.Sint, error) {
+	v := s.Actual
 	s.Sym = time.Unix(0, 0).AddDate(0, 0, int(v)).UTC().Format("2006-01-02")
 	return s, nil
 }

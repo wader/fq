@@ -23,7 +23,7 @@ const (
 	tcpOptionNop = 1
 )
 
-var tcpOptionsMap = scalar.UToScalar{
+var tcpOptionsMap = scalar.UintMap{
 	tcpOptionEnd: {Sym: "end", Description: "End of options list"},
 	tcpOptionNop: {Sym: "nop", Description: "No operation"},
 	2:            {Sym: "maxseg", Description: "Maximum segment size"},
@@ -55,7 +55,7 @@ func decodeTCP(d *decode.D, in any) any {
 	d.FieldBool("fin")
 	d.FieldU16("window_size")
 	// checksumStart := d.Pos()
-	d.FieldU16("checksum", scalar.ActualHex)
+	d.FieldU16("checksum", scalar.UintHex)
 	// checksumEnd := d.Pos()
 	d.FieldU16("urgent_pointer")
 	optionsLen := (int64(dataOffset) - 5) * 8 * 4
@@ -81,7 +81,7 @@ func decodeTCP(d *decode.D, in any) any {
 	// tcpChecksum := &checksum.IPv4{}
 	// d.MustCopy(tcpChecksum, d.BitBufRange(0, checksumStart))
 	// d.MustCopy(tcpChecksum, d.BitBufRange(checksumEnd, d.Len()-checksumEnd))
-	// _ = d.FieldMustGet("checksum").TryScalarFn(d.ValidateUBytes(tcpChecksum.Sum(nil)), scalar.Hex)
+	// _ = d.FieldMustGet("checksum").TryScalarFn(d.UintValidateBytes(tcpChecksum.Sum(nil)), scalar.Hex)
 
 	d.FieldRawLen("payload", d.BitsLeft())
 

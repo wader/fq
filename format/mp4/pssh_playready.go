@@ -20,7 +20,7 @@ const (
 	recordTypeLicenseStore           = 2
 )
 
-var recordTypeNames = scalar.UToSymStr{
+var recordTypeNames = scalar.UintMapSymStr{
 	recordTypeRightsManagementHeader: "Rights management header",
 	recordTypeLicenseStore:           "License store",
 }

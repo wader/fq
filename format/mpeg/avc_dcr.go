@@ -25,7 +25,7 @@ func init() {
 	})
 }
 
-var avcProfileNames = scalar.UToSymStr{
+var avcProfileNames = scalar.UintMapSymStr{
 	// 66: "constrained_baseline_profile", // (CBP, 66 with constraint set 1)
 	66:  "baseline_profile",
 	88:  "extended_profile",
@@ -48,7 +48,7 @@ var avcProfileNames = scalar.UToSymStr{
 }
 
 // TODO: 1b contraint flag 1?
-var avcLevelNames = scalar.UToSymStr{
+var avcLevelNames = scalar.UintMapSymStr{
 	10: "1",
 	//10:  "1b"
 	11: "1.1",
@@ -122,7 +122,7 @@ func avcDcrDecode(d *decode.D, _ any) any {
 	d.FieldU8("profile_compatibility")
 	d.FieldU8("level_indication", avcLevelNames)
 	d.FieldU6("reserved0")
-	lengthSize := d.FieldU2("length_size", scalar.ActualUAdd(1))
+	lengthSize := d.FieldU2("length_size", scalar.UintActualAdd(1))
 	d.FieldU3("reserved1")
 	numSeqParamSets := d.FieldU5("num_of_sequence_parameter_sets")
 	d.FieldArray("sequence_parameter_sets", func(d *decode.D) {

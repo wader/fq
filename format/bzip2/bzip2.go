@@ -58,7 +58,7 @@ func bzip2Decode(d *decode.D, _ any) any {
 	var blockCRCValue *decode.Value
 	var streamCRCN uint32
 
-	d.FieldUTF8("magic", 2, d.AssertStr("BZ"))
+	d.FieldUTF8("magic", 2, d.StrAssert("BZ"))
 	d.FieldU8("version")
 	d.FieldU8("hundred_k_blocksize")
 
@@ -67,8 +67,8 @@ func bzip2Decode(d *decode.D, _ any) any {
 		// 	moreStreams = false
 		// 	return
 		// }
-		d.FieldU48("magic", d.AssertU(blockMagic), scalar.ActualHex)
-		d.FieldU32("crc", scalar.ActualHex)
+		d.FieldU48("magic", d.UintAssert(blockMagic), scalar.UintHex)
+		d.FieldU32("crc", scalar.UintHex)
 		blockCRCValue = d.FieldGet("crc")
 		d.FieldU1("randomised")
 		d.FieldU24("origptr")
@@ -91,7 +91,7 @@ func bzip2Decode(d *decode.D, _ any) any {
 		})
 		treesI := uint64(0)
 		d.FieldArrayLoop("trees", func() bool { return treesI < numTrees }, func(d *decode.D) {
-			d.FieldUFn("tree", func(d *decode.D) uint64 {
+			d.FieldUintFn("tree", func(d *decode.D) uint64 {
 				l := d.U5()
 				if !d.Bool() {
 					return l
@@ -118,7 +118,7 @@ func bzip2Decode(d *decode.D, _ any) any {
 		blockCRC32W := crc32.NewIEEE()
 		d.Copy(blockCRC32W, bitFlipReader{bitio.NewIOReader(uncompressedBR)})
 		blockCRC32N := bits.Reverse32(binary.BigEndian.Uint32(blockCRC32W.Sum(nil)))
-		_ = blockCRCValue.TryScalarFn(d.ValidateU(uint64(blockCRC32N)))
+		_ = blockCRCValue.TryUintScalarFn(d.UintValidate(uint64(blockCRC32N)))
 		streamCRCN = blockCRC32N ^ ((streamCRCN << 1) | (streamCRCN >> 31))
 
 		// HACK: bzip2.NewReader will read from start of whole buffer and then we figure out compressedSize ourself
@@ -137,9 +137,9 @@ func bzip2Decode(d *decode.D, _ any) any {
 		d.FieldRawLen("compressed", compressedSize)
 
 		d.FieldStruct("footer", func(d *decode.D) {
-			d.FieldU48("magic", d.AssertU(footerMagic), scalar.ActualHex)
+			d.FieldU48("magic", d.UintAssert(footerMagic), scalar.UintHex)
 			// TODO: crc of block crcs
-			d.FieldU32("crc", scalar.ActualHex, d.ValidateU(uint64(streamCRCN)))
+			d.FieldU32("crc", scalar.UintHex, d.UintValidate(uint64(streamCRCN)))
 			d.FieldRawLen("padding", int64(d.ByteAlignBits()))
 		})
 	}

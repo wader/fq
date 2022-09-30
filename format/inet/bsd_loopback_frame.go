@@ -33,7 +33,7 @@ var bsdLoopbackFrameNetworkLayerEtherType = map[uint64]int{
 	bsdLoopbackNetworkLayerIPv6: format.EtherTypeIPv6,
 }
 
-var bsdLookbackNetworkLayerMap = scalar.UToScalar{
+var bsdLookbackNetworkLayerMap = scalar.UintMap{
 	bsdLoopbackNetworkLayerIPv4: {Sym: "ipv4", Description: `Internet protocol v4`},
 	bsdLoopbackNetworkLayerIPv6: {Sym: "ipv6", Description: `Internet protocol v6`},
 }
@@ -50,7 +50,7 @@ func decodeLoopbackFrame(d *decode.D, in any) any {
 	}
 	// if no LinkFrameIn assume big endian for now
 
-	networkLayer := d.FieldU32("network_layer", bsdLookbackNetworkLayerMap, scalar.ActualHex)
+	networkLayer := d.FieldU32("network_layer", bsdLookbackNetworkLayerMap, scalar.UintHex)
 
 	d.FieldFormatOrRawLen(
 		"payload",

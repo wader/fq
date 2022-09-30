@@ -26,7 +26,7 @@ func init() {
 const littleEndian = 0x49492a00 // "II*\0"
 const bigEndian = 0x4d4d002a    // "MM\0*"
 
-var endianNames = scalar.UToSymStr{
+var endianNames = scalar.UintMapSymStr{
 	littleEndian: "little-endian",
 	bigEndian:    "big-endian",
 }
@@ -42,7 +42,7 @@ const (
 	SRATIONAL = 10
 )
 
-var typeNames = scalar.UToSymStr{
+var typeNames = scalar.UintMapSymStr{
 	BYTE:      "BYTE",
 	ASCII:     "ASCII",
 	SHORT:     "SHORT",
@@ -71,7 +71,7 @@ func fieldRational(d *decode.D, name string) float64 {
 		numerator := d.FieldU32("numerator")
 		denominator := d.FieldU32("denominator")
 		v := float64(numerator) / float64(denominator)
-		d.FieldValueFloat("float", v)
+		d.FieldValueFlt("float", v)
 	})
 	return v
 }
@@ -82,7 +82,7 @@ func fieldSRational(d *decode.D, name string) float64 {
 		numerator := d.FieldS32("numerator")
 		denominator := d.FieldS32("denominator")
 		v := float64(numerator) / float64(denominator)
-		d.FieldValueFloat("float", v)
+		d.FieldValueFlt("float", v)
 	})
 	return v
 }
@@ -92,7 +92,7 @@ type strips struct {
 	byteCounts []int64
 }
 
-func decodeIfd(d *decode.D, s *strips, tagNames scalar.UToSymStr) int64 {
+func decodeIfd(d *decode.D, s *strips, tagNames scalar.UintMapSymStr) int64 {
 	var nextIfdOffset int64
 
 	d.FieldStruct("ifd", func(d *decode.D) {
@@ -100,7 +100,7 @@ func decodeIfd(d *decode.D, s *strips, tagNames scalar.UToSymStr) int64 {
 		d.FieldArray("entries", func(d *decode.D) {
 			for i := uint64(0); i < numberOfFields; i++ {
 				d.FieldStruct("entry", func(d *decode.D) {
-					tag := d.FieldU16("tag", tagNames, scalar.ActualHex)
+					tag := d.FieldU16("tag", tagNames, scalar.UintHex)
 					typ := d.FieldU16("type", typeNames)
 					count := d.FieldU32("count")
 					valueOrByteOffset := d.FieldU32("value_offset")
@@ -202,7 +202,7 @@ func decodeIfd(d *decode.D, s *strips, tagNames scalar.UToSymStr) int64 {
 }
 
 func tiffDecode(d *decode.D, _ any) any {
-	endian := d.FieldU32("endian", endianNames, scalar.ActualHex)
+	endian := d.FieldU32("endian", endianNames, scalar.UintHex)
 
 	switch endian {
 	case littleEndian:
@@ -215,8 +215,8 @@ func tiffDecode(d *decode.D, _ any) any {
 
 	d.SeekRel(-4 * 8)
 
-	d.FieldUTF8("order", 2, d.AssertStr("II", "MM"))
-	d.FieldU16("integer_42", d.AssertU(42))
+	d.FieldUTF8("order", 2, d.StrAssert("II", "MM"))
+	d.FieldU16("integer_42", d.UintAssert(42))
 
 	ifdOffset := int64(d.FieldU32("first_ifd"))
 	s := &strips{}

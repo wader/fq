@@ -140,7 +140,7 @@ const (
 	LinkTypeETW                        = 290
 )
 
-var LinkTypeMap = scalar.UToScalar{
+var LinkTypeMap = scalar.UintMap{
 	LinkTypeNULL:                       {Sym: "null", Description: `BSD loopback encapsulation`},
 	LinkTypeETHERNET:                   {Sym: "ethernet", Description: `IEEE 802.3 Ethernet`},
 	LinkTypeAX25:                       {Sym: "ax25", Description: `AX.25 packet, with nothing preceding it`},
@@ -281,7 +281,7 @@ const (
 
 // from https://en.wikipedia.org/wiki/EtherType
 // TODO: cleanup
-var EtherTypeMap = scalar.UToScalar{
+var EtherTypeMap = scalar.UintMap{
 	EtherTypeIPv4: {Sym: "ipv4", Description: `Internet Protocol version 4`},
 	0x0806:        {Sym: "arp", Description: `Address Resolution Protocol`},
 	0x0842:        {Sym: "wake", Description: `Wake-on-LAN[9]`},
@@ -350,7 +350,7 @@ const (
 	IPv4ProtocolICMPv6 = 58
 )
 
-var IPv4ProtocolMap = scalar.UToScalar{
+var IPv4ProtocolMap = scalar.UintMap{
 	0:                  {Sym: "ip", Description: "Internet protocol, pseudo protocol number"},
 	IPv4ProtocolICMP:   {Sym: "icmp", Description: "Internet control message protocol"},
 	IPv4ProtocolIGMP:   {Sym: "igmp", Description: "Internet group management protocol"},
@@ -498,7 +498,7 @@ const (
 	UDPPortMDNS   = 5353
 )
 
-var UDPPortMap = scalar.UToScalar{
+var UDPPortMap = scalar.UintMap{
 	1:             {Sym: "tcpmux", Description: "TCP Port Service Multiplexer"},
 	2:             {Sym: "compressnet", Description: "Management Utility"},
 	3:             {Sym: "compressnet", Description: "Compression Process"},
@@ -1186,7 +1186,7 @@ const (
 	TCPPortRTMP   = 1935
 )
 
-var TCPPortMap = scalar.UToScalar{
+var TCPPortMap = scalar.UintMap{
 	1:             {Sym: "tcpmux", Description: "TCP Port Service Multiplexer"},
 	2:             {Sym: "compressnet", Description: "Management Utility"},
 	3:             {Sym: "compressnet", Description: "Compression Process"},

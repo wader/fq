@@ -17,11 +17,11 @@ func init() {
 
 func id3v11Decode(d *decode.D, _ any) any {
 	d.AssertAtLeastBitsLeft(128 * 8)
-	d.FieldUTF8("magic", 4, d.AssertStr("TAG+"))
+	d.FieldUTF8("magic", 4, d.StrAssert("TAG+"))
 	d.FieldUTF8("title", 60)
 	d.FieldUTF8("artist", 60)
 	d.FieldUTF8("album", 60)
-	d.FieldU8("speed", scalar.UToSymStr{
+	d.FieldU8("speed", scalar.UintMapSymStr{
 		0: "unset",
 		1: "slow",
 		2: "medium",

@@ -21,26 +21,26 @@ func moreRBSPData(d *decode.D) bool {
 }
 
 func avcPPSDecode(d *decode.D, _ any) any {
-	d.FieldUFn("pic_parameter_set_id", uEV)
-	d.FieldUFn("seq_parameter_set_id", uEV)
+	d.FieldUintFn("pic_parameter_set_id", uEV)
+	d.FieldUintFn("seq_parameter_set_id", uEV)
 	d.FieldBool("entropy_coding_mode_flag")
 	d.FieldBool("bottom_field_pic_order_in_frame_present_flag")
-	numSliceGroups := d.FieldUFn("num_slice_groups", uEV, scalar.ActualUAdd(1))
+	numSliceGroups := d.FieldUintFn("num_slice_groups", uEV, scalar.UintActualAdd(1))
 	if numSliceGroups > 1 {
-		sliceGroupMapType := d.FieldUFn("slice_group_map_type", uEV)
+		sliceGroupMapType := d.FieldUintFn("slice_group_map_type", uEV)
 		switch sliceGroupMapType {
 		case 0:
 			d.FieldArray("slice_groups", func(d *decode.D) {
 				for i := uint64(0); i < numSliceGroups; i++ {
-					d.FieldUFn("slice_group", uEV)
+					d.FieldUintFn("slice_group", uEV)
 				}
 			})
 		case 2:
 			d.FieldArray("slice_groups", func(d *decode.D) {
 				for i := uint64(0); i < numSliceGroups; i++ {
 					d.FieldStruct("slice_group", func(d *decode.D) {
-						d.FieldUFn("top_left", uEV)
-						d.FieldUFn("bottom_right", uEV)
+						d.FieldUintFn("top_left", uEV)
+						d.FieldUintFn("bottom_right", uEV)
 					})
 				}
 			})
@@ -49,12 +49,12 @@ func avcPPSDecode(d *decode.D, _ any) any {
 				for i := uint64(0); i < numSliceGroups; i++ {
 					d.FieldStruct("slice_group", func(d *decode.D) {
 						d.FieldBool("change_direction_flag")
-						d.FieldUFn("change_rate", uEV, scalar.ActualUAdd(1))
+						d.FieldUintFn("change_rate", uEV, scalar.UintActualAdd(1))
 					})
 				}
 			})
 		case 6:
-			picSizeInMapUnits := d.FieldUFn("pic_size_in_map_units", uEV, scalar.ActualUAdd(1))
+			picSizeInMapUnits := d.FieldUintFn("pic_size_in_map_units", uEV, scalar.UintActualAdd(1))
 			for i := uint64(0); i < picSizeInMapUnits; i++ {
 				d.FieldStruct("slice_group", func(d *decode.D) {
 					d.FieldBool("id")
@@ -63,13 +63,13 @@ func avcPPSDecode(d *decode.D, _ any) any {
 		}
 	}
 
-	d.FieldUFn("num_ref_idx_l0_default_active", uEV, scalar.ActualUAdd(1))
-	d.FieldUFn("num_ref_idx_l1_default_active", uEV, scalar.ActualUAdd(1))
+	d.FieldUintFn("num_ref_idx_l0_default_active", uEV, scalar.UintActualAdd(1))
+	d.FieldUintFn("num_ref_idx_l1_default_active", uEV, scalar.UintActualAdd(1))
 	d.FieldBool("weighted_pred_flag")
 	d.FieldU2("weighted_bipred_idc")
-	d.FieldSFn("pic_init_qp", sEV, scalar.ActualSAdd(26))
-	d.FieldSFn("pic_init_qs", sEV, scalar.ActualSAdd(26))
-	d.FieldSFn("chroma_qp_index_offset", sEV)
+	d.FieldSintFn("pic_init_qp", sEV, scalar.SintActualAdd(26))
+	d.FieldSintFn("pic_init_qs", sEV, scalar.SintActualAdd(26))
+	d.FieldSintFn("chroma_qp_index_offset", sEV)
 	d.FieldBool("deblocking_filter_control_present_flag")
 	d.FieldBool("constrained_intra_pred_flag")
 	d.FieldBool("redundant_pic_cnt_present_flag")
@@ -84,7 +84,7 @@ func avcPPSDecode(d *decode.D, _ any) any {
 				}
 			})
 		}
-		d.FieldSFn("second_chroma_qp_index_offset", sEV)
+		d.FieldSintFn("second_chroma_qp_index_offset", sEV)
 	} else {
 		d.FieldBool("rbsp_stop_one_bit")
 	}

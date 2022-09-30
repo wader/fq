@@ -24,7 +24,7 @@ func init() {
 	})
 }
 
-var sllPacketTypeMap = scalar.UToScalar{
+var sllPacketTypeMap = scalar.UintMap{
 	0: {Sym: "to_us", Description: "Sent to us"},
 	1: {Sym: "broadcast", Description: "Broadcast by somebody else"},
 	2: {Sym: "multicast", Description: "Multicast by somebody else"},
@@ -38,7 +38,7 @@ const (
 )
 
 // based on https://github.com/torvalds/linux/blob/master/include/uapi/linux/if_arp.h
-var arpHdrTypeMAp = scalar.UToScalar{
+var arpHdrTypeMAp = scalar.UintMap{
 	0:                  {Sym: "netrom", Description: `from KA9Q: NET/ROM pseudo`},
 	arpHdrTypeEther:    {Sym: "ether", Description: `Ethernet 10Mbps`},
 	2:                  {Sym: "eether", Description: `Experimental Ethernet`},
@@ -127,8 +127,8 @@ func decodeSLL(d *decode.D, in any) any {
 	// TODO: handle other arphdr types
 	switch arpHdrType {
 	case arpHdrTypeLoopback, arpHdrTypeEther:
-		_ = d.FieldMustGet("link_address").TryScalarFn(mapUToEtherSym, scalar.ActualHex)
-		protcolType := d.FieldU16("protocol_type", format.EtherTypeMap, scalar.ActualHex)
+		_ = d.FieldMustGet("link_address").TryUintScalarFn(mapUToEtherSym, scalar.UintHex)
+		protcolType := d.FieldU16("protocol_type", format.EtherTypeMap, scalar.UintHex)
 		d.FieldFormatOrRawLen(
 			"payload",
 			d.BitsLeft(),

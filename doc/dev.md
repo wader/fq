@@ -98,7 +98,7 @@ d.FieldUTF8("magic", 4)
 // create a new struct and add it as "headers", returns a *decode.D
 d.FieldStruct("headers", func(d *decode.D) {
     // read 8 bit unsigned integer, map it and add it as "type", returns a uint64
-    d.FieldU8("type", scalar.UToSymStr{
+    d.FieldU8("type", scalar.UintMapSymStr{
         1: "start",
         // ...
     })
@@ -115,7 +115,7 @@ will produce something like this:
         Children: []*decode.Value{
             *decode.Value{
                 Name: "magic",
-                V: scalar.S{
+                V: scalar.Str{
                     Actual: "abcd", // read and set by UTF8 reader
                 },
                 Range: ranges.Range{Start: 0, Len: 32},
@@ -128,9 +128,9 @@ will produce something like this:
                     Children: []*decode.Value{
                         *decode.Value{
                             Name: "type",
-                            V: scalar.S{
+                            V: scalar.Uint{
                                 Actual: uint64(1), // read and set by U8 reader
-                                Sym: "start", // set by UToSymStr scalar.Mapper
+                                Sym: "start", // set by UintMapSymStr scalar.Mapper
                             },
                             Range: ranges.Range{Start: 32, Len: 8},
                         },
@@ -186,7 +186,7 @@ Decoder authors will probably not have to create them.
 
 Keeps track of
 - Actual value. Decoded value represented using a go type like `uint64`, `string` etc. For example a value reader by a utf8 or utf16 reader both will ends up as a `string`.
-- Symbolic value. Optional symbolic representation of the actual value. For example a `scalar.UToSymStr` would map an actual `uint64` to a symbolic `string`.
+- Symbolic value. Optional symbolic representation of the actual value. For example a `scalar.UintMapSymStr` would map an actual `uint64` to a symbolic `string`.
 - String description of the value.
 - Number representation
 

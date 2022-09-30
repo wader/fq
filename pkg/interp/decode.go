@@ -17,7 +17,6 @@ import (
 	"github.com/wader/fq/internal/mapstruct"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
-	"github.com/wader/fq/pkg/scalar"
 
 	"github.com/wader/gojq"
 )
@@ -346,16 +345,17 @@ func makeDecodeValueOut(dv *decode.Value, kind decodeValueKind, out any) any {
 			return NewArrayDecodeValue(dv, out, vv)
 		}
 		return NewStructDecodeValue(dv, out, vv)
-	case *scalar.S:
+
+	case Scalarable:
 		// TODO: rethink value/actual/sym handling
 		var vvv any
 		switch kind {
 		case decodeValueValue:
-			vvv = vv.Value()
+			vvv = vv.ScalarValue()
 		case decodeValueActual:
-			vvv = vv.Actual
+			vvv = vv.ScalarActual()
 		case decodeValueSym:
-			vvv = vv.Sym
+			vvv = vv.ScalarSym()
 		}
 
 		switch vvv := vvv.(type) {
@@ -519,14 +519,14 @@ func (dvb decodeValueBase) JQValueKey(name string) any {
 		return makeDecodeValue(dv.Parent, decodeValueValue)
 	case "_actual":
 		switch dv.V.(type) {
-		case *scalar.S:
+		case Scalarable:
 			return makeDecodeValue(dv, decodeValueActual)
 		default:
 			return nil
 		}
 	case "_sym":
 		switch dv.V.(type) {
-		case *scalar.S:
+		case Scalarable:
 			return makeDecodeValue(dv, decodeValueSym)
 		default:
 			return nil
@@ -538,11 +538,12 @@ func (dvb decodeValueBase) JQValueKey(name string) any {
 				return nil
 			}
 			return vv.Description
-		case *scalar.S:
-			if vv.Description == "" {
+		case Scalarable:
+			desc := vv.ScalarDescription()
+			if desc == "" {
 				return nil
 			}
-			return vv.Description
+			return desc
 		default:
 			return nil
 		}
@@ -575,8 +576,8 @@ func (dvb decodeValueBase) JQValueKey(name string) any {
 		return dvb.out
 	case "_gap":
 		switch vv := dv.V.(type) {
-		case *scalar.S:
-			return vv.Gap
+		case Scalarable:
+			return vv.ScalarGap()
 		default:
 			return false
 		}

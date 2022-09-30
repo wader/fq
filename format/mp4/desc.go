@@ -4,7 +4,7 @@ import "github.com/wader/fq/pkg/scalar"
 
 // based on https://github.com/HexFiend/HexFiend/blob/master/templates/Media/MOV.tcl
 
-var boxDescriptions = scalar.StrToDescription{
+var boxDescriptions = scalar.StrMapDescription{
 	"dimg": "Derived image",
 	"cdsc": "Content description",
 	"ainf": "Asset information to identify, license and play",

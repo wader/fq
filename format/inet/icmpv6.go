@@ -17,7 +17,7 @@ func init() {
 }
 
 // based on https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol_for_IPv6
-var icmpv6TypeMap = scalar.UToScalar{
+var icmpv6TypeMap = scalar.UintMap{
 	1:   {Sym: "unreachable", Description: "Destination unreachable"},
 	2:   {Sym: "too_big", Description: "Packet too big"},
 	3:   {Sym: "time_exceeded", Description: "Time exceeded"},
@@ -56,7 +56,7 @@ var icmpv6TypeMap = scalar.UToScalar{
 	255: {Description: "Reserved for expansion of ICMPv6 informational messages"},
 }
 
-var icmpv6CodeMapMap = map[uint64]scalar.UToDescription{
+var icmpv6CodeMapMap = map[uint64]scalar.UintMapDescription{
 	1: {
 		1: "Communication with destination administratively prohibited",
 		2: "Beyond scope of source address",

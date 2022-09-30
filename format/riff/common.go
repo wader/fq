@@ -43,7 +43,7 @@ func riffDecode(d *decode.D, path path, headFn func(d *decode.D, path path) (str
 }
 
 // TODO: sym name?
-var chunkIDDescriptions = scalar.StrToDescription{
+var chunkIDDescriptions = scalar.StrMapDescription{
 	"LIST": "Chunk list",
 	"JUNK": "Alignment",
 

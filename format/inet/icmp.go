@@ -17,7 +17,7 @@ func init() {
 }
 
 // based on https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol
-var icmpTypeMap = scalar.UToScalar{
+var icmpTypeMap = scalar.UintMap{
 	0:  {Sym: "echo_reply", Description: "Echo reply"},
 	3:  {Sym: "unreachable", Description: "Destination network unreachable"},
 	4:  {Sym: "source_quench", Description: "Source quench (congestion control)"},
@@ -50,7 +50,7 @@ var icmpTypeMap = scalar.UToScalar{
 	43: {Sym: "extended_echo_reply", Description: "No Error"},
 }
 
-var icmpCodeMapMap = map[uint64]scalar.UToDescription{
+var icmpCodeMapMap = map[uint64]scalar.UintMapDescription{
 	3: {
 		1:  "Destination host unreachable",
 		2:  "Destination protocol unreachable",

@@ -31,12 +31,12 @@ func decodeSLL2(d *decode.D, in any) any {
 		}
 	}
 
-	protcolType := d.FieldU16("protocol_type", format.EtherTypeMap, scalar.ActualHex)
+	protcolType := d.FieldU16("protocol_type", format.EtherTypeMap, scalar.UintHex)
 	d.FieldU16("reserved")
 	d.FieldU32("interface_index")
 	arpHdrType := d.FieldU16("arphdr_type", arpHdrTypeMAp)
 	d.FieldU8("packet_type", sllPacketTypeMap)
-	addressLength := d.FieldU8("link_address_length", d.ValidateURange(0, 8))
+	addressLength := d.FieldU8("link_address_length", d.UintValidateRange(0, 8))
 	// "If there are more than 8 bytes, only the first 8 bytes are present"
 	if addressLength > 8 {
 		addressLength = 8
@@ -51,7 +51,7 @@ func decodeSLL2(d *decode.D, in any) any {
 	// TODO: handle other arphdr types
 	switch arpHdrType {
 	case arpHdrTypeLoopback, arpHdrTypeEther:
-		_ = d.FieldMustGet("link_address").TryScalarFn(mapUToEtherSym, scalar.ActualHex)
+		_ = d.FieldMustGet("link_address").TryUintScalarFn(mapUToEtherSym, scalar.UintHex)
 		d.FieldFormatOrRawLen(
 			"payload",
 			d.BitsLeft(),

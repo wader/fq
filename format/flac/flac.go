@@ -33,7 +33,7 @@ func init() {
 }
 
 func flacDecode(d *decode.D, _ any) any {
-	d.FieldUTF8("magic", 4, d.AssertStr("fLaC"))
+	d.FieldUTF8("magic", 4, d.StrAssert("fLaC"))
 
 	var streamInfo format.FlacStreamInfo
 	var flacFrameIn format.FlacFrameIn
@@ -78,8 +78,8 @@ func flacDecode(d *decode.D, _ any) any {
 	})
 
 	md5CalcValue := d.FieldRootBitBuf("md5_calculated", bitio.NewBitReader(md5Samples.Sum(nil), -1))
-	_ = md5CalcValue.TryScalarFn(d.ValidateBitBuf(streamInfo.MD5), scalar.RawHex)
-	d.FieldValueU("decoded_samples", framesNDecodedSamples)
+	_ = md5CalcValue.TryBitBufScalarFn(d.ValidateBitBuf(streamInfo.MD5), scalar.RawHex)
+	d.FieldValueUint("decoded_samples", framesNDecodedSamples)
 
 	return nil
 }

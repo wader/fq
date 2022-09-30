@@ -66,7 +66,7 @@ func decodeJSONEx(d *decode.D, lines bool) any {
 		d.Fatalf("trialing data after top-level value")
 	}
 
-	var s scalar.S
+	var s scalar.Any
 	if lines {
 		if len(vs) == 0 {
 			d.Fatalf("not lines found")

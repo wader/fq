@@ -42,9 +42,9 @@ var (
 
 const wavRiffType = "WAVE"
 
-var subFormatNames = scalar.BytesToScalar{
-	{Bytes: subFormatPCMBytes[:], Scalar: scalar.S{Sym: "pcm"}},
-	{Bytes: subFormatIEEEFloat[:], Scalar: scalar.S{Sym: "ieee_float"}},
+var subFormatNames = scalar.RawBytesMap{
+	{Bytes: subFormatPCMBytes[:], Scalar: scalar.BitBuf{Sym: "pcm"}},
+	{Bytes: subFormatIEEEFloat[:], Scalar: scalar.BitBuf{Sym: "ieee_float"}},
 }
 
 func wavDecode(d *decode.D, _ any) any {
@@ -61,13 +61,13 @@ func wavDecode(d *decode.D, _ any) any {
 			id := d.FieldUTF8("id", 4, chunkIDDescriptions)
 
 			const restOfFileLen = 0xffffffff
-			size := int64(d.FieldUScalarFn("size", func(d *decode.D) scalar.S {
+			size := int64(d.FieldScalarUintFn("size", func(d *decode.D) scalar.Uint {
 				l := d.U32()
 				if l == restOfFileLen {
-					return scalar.S{Actual: l, ActualDisplay: scalar.NumberHex, Description: "Rest of file"}
+					return scalar.Uint{Actual: l, DisplayFormat: scalar.NumberHex, Description: "Rest of file"}
 				}
-				return scalar.S{Actual: l, ActualDisplay: scalar.NumberDecimal}
-			}))
+				return scalar.Uint{Actual: l, DisplayFormat: scalar.NumberDecimal}
+			}).Actual)
 
 			if size == restOfFileLen {
 				size = d.BitsLeft() / 8
@@ -78,7 +78,7 @@ func wavDecode(d *decode.D, _ any) any {
 		func(d *decode.D, id string, path path) (bool, any) {
 			switch id {
 			case "RIFF":
-				riffType = d.FieldUTF8("format", 4, d.AssertStr(wavRiffType))
+				riffType = d.FieldUTF8("format", 4, d.StrAssert(wavRiffType))
 				return true, nil
 
 			case "LIST":
@@ -128,7 +128,7 @@ func wavDecode(d *decode.D, _ any) any {
 					for i := 0; i < numSampleLoops; i++ {
 						d.FieldStruct("sample_loop", func(d *decode.D) {
 							d.FieldUTF8("id", 4)
-							d.FieldU32("type", scalar.UToSymStr{
+							d.FieldU32("type", scalar.UintMapSymStr{
 								0: "forward",
 								1: "forward_backward",
 								2: "backward",

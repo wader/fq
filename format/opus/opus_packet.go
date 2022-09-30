@@ -98,7 +98,7 @@ func opusDecode(d *decode.D, _ any) any {
 				config := configurations[n]
 				d.FieldValueStr("mode", config.mode)
 				d.FieldValueStr("bandwidth", config.bandwidth)
-				d.FieldValueFloat("frame_size", config.frameSize)
+				d.FieldValueFlt("frame_size", config.frameSize)
 			})
 			d.FieldBool("stereo")
 			d.FieldStruct("frames_per_packet", func(d *decode.D) {
@@ -113,7 +113,7 @@ func opusDecode(d *decode.D, _ any) any {
 				}
 				n := d.FieldU2("config")
 				config := framesPerPacketConfigs[n]
-				d.FieldValueU("frames", config.frames)
+				d.FieldValueUint("frames", config.frames)
 				d.FieldValueStr("mode", config.mode)
 			})
 			d.FieldRawLen("data", d.BitsLeft())

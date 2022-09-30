@@ -11,8 +11,8 @@ import (
 type DecodeFn func(string, *decode.D) any
 
 func DecodeFnForSchema(s schema.SimplifiedSchema) (DecodeFn, error) {
-	var sms []scalar.Mapper
-	mapper := logicalMapperForSchema(s)
+	var sms []scalar.SintMapper
+	mapper := logicalTimeMapperForSchema(s)
 	if mapper != nil {
 		sms = append(sms, mapper)
 	}
@@ -21,27 +21,27 @@ func DecodeFnForSchema(s schema.SimplifiedSchema) (DecodeFn, error) {
 	case schema.ARRAY:
 		return decodeArrayFn(s)
 	case schema.BOOLEAN:
-		return decodeBoolFn(sms...)
+		return decodeBoolFn()
 	case schema.BYTES:
-		return decodeBytesFn(sms...)
+		return decodeBytesFn()
 	case schema.DOUBLE:
-		return decodeDoubleFn(sms...)
+		return decodeDoubleFn()
 	case schema.ENUM:
 		return decodeEnumFn(s, sms...)
 	case schema.FIXED:
-		return decodeFixedFn(s, sms...)
+		return decodeFixedFn(s)
 	case schema.FLOAT:
-		return decodeFloatFn(sms...)
+		return decodeFloatFn()
 	case schema.INT:
 		return decodeIntFn(sms...)
 	case schema.LONG:
 		return decodeLongFn(sms...)
 	case schema.NULL:
-		return decodeNullFn(sms...)
+		return decodeNullFn()
 	case schema.RECORD:
 		return decodeRecordFn(s)
 	case schema.STRING:
-		return decodeStringFn(s, sms...)
+		return decodeStringFn(s)
 	case schema.UNION:
 		return decodeUnionFn(s)
 	case schema.MAP:

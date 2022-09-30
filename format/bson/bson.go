@@ -43,7 +43,7 @@ const (
 	elementTypeInt64     = 0x12
 )
 
-var elementTypeMap = scalar.UToScalar{
+var elementTypeMap = scalar.UintMap{
 	elementTypeDouble:    {Sym: "double", Description: "64-bit binary floating point"},
 	elementTypeString:    {Sym: "string", Description: "UTF-8 string"},
 	elementTypeDocument:  {Sym: "document", Description: "Embedded document"},
@@ -91,7 +91,7 @@ func decodeBSONDocument(d *decode.D) {
 					case elementTypeDatatime:
 						d.FieldS32("value")
 					case elementTypeNull:
-						d.FieldValueNil("value")
+						d.FieldValueAny("value", nil)
 					case elementTypeRegexp:
 						d.FieldUTF8Null("value")
 						d.FieldUTF8Null("options")
@@ -107,7 +107,7 @@ func decodeBSONDocument(d *decode.D) {
 				})
 			}
 		})
-		d.FieldU8("terminator", d.ValidateU(0))
+		d.FieldU8("terminator", d.UintValidate(0))
 	})
 }
 

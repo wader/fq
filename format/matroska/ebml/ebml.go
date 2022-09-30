@@ -33,9 +33,9 @@ type Attribute struct {
 	Type          Type
 	Tag           Tag
 	Definition    string
-	IntegerEnums  scalar.SToScalar
-	UintegerEnums scalar.UToScalar
-	StringEnums   scalar.StrToScalar
+	IntegerEnums  scalar.SintMap
+	UintegerEnums scalar.UintMap
+	StringEnums   scalar.StrMap
 }
 
 type Tag map[uint64]Attribute

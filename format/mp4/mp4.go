@@ -270,7 +270,7 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 			}
 
 			d.FieldStruct("track", func(d *decode.D) {
-				d.FieldValueU("id", uint64(t.id))
+				d.FieldValueUint("id", uint64(t.id))
 
 				trackSDDataFormat := "unknown"
 				if len(t.sampleDescriptions) > 0 {

@@ -2,7 +2,6 @@ package tzif
 
 import (
 	"embed"
-	"fmt"
 	"time"
 
 	"github.com/wader/fq/format"
@@ -50,7 +49,7 @@ type tzifHeader struct {
 	charcnt  uint32
 }
 
-var versionToSymMapper = scalar.UToSymStr{
+var versionToSymMapper = scalar.UintMapSymStr{
 	0x00: "1",
 	0x32: "2",
 	0x33: "3",
@@ -60,8 +59,8 @@ func decodeTZifHeader(d *decode.D, name string) tzifHeader {
 	var h tzifHeader
 
 	d.FieldStruct(name, func(d *decode.D) {
-		h.magic = uint32(d.FieldU32("magic", scalar.ActualHex, d.AssertU(0x545a6966)))
-		h.ver = uint8(d.FieldU8("ver", d.AssertU(0x00, 0x32, 0x33), scalar.ActualHex, versionToSymMapper))
+		h.magic = uint32(d.FieldU32("magic", scalar.UintHex, d.UintAssert(0x545a6966)))
+		h.ver = uint8(d.FieldU8("ver", d.UintAssert(0x00, 0x32, 0x33), scalar.UintHex, versionToSymMapper))
 		d.FieldRawLen("reserved", 15*8)
 		h.isutcnt = uint32(d.FieldU32("isutcnt"))
 		h.isstdcnt = uint32(d.FieldU32("isstdcnt"))
@@ -87,13 +86,8 @@ func decodeTZifHeader(d *decode.D, name string) tzifHeader {
 	return h
 }
 
-var unixTimeToStr = scalar.Fn(func(s scalar.S) (scalar.S, error) {
-	i, ok := s.Value().(int64)
-	if !ok {
-		return s, fmt.Errorf("expected int64 but got %T", s.Value())
-	}
-
-	s.Sym = time.Unix(i, 0).UTC().Format(time.RFC3339)
+var unixTimeToStr = scalar.SintFn(func(s scalar.Sint) (scalar.Sint, error) {
+	s.Sym = time.Unix(s.Actual, 0).UTC().Format(time.RFC3339)
 	return s, nil
 })
 
@@ -126,9 +120,9 @@ func decodeTZifDataBlock(d *decode.D, h tzifHeader, decodeAsVer int, name string
 		d.FieldArray("local_time_type_records", func(d *decode.D) {
 			for i := uint32(0); i < h.typecnt; i++ {
 				d.FieldStruct("local_time_type", func(d *decode.D) {
-					d.FieldS32("utoff", d.AssertSRange(-89999, 93599))
-					d.FieldU8("dst", d.AssertU(0, 1))
-					d.FieldU8("idx", d.AssertURange(0, uint64(h.charcnt)-1))
+					d.FieldS32("utoff", d.SintAssertRange(-89999, 93599))
+					d.FieldU8("dst", d.UintAssert(0, 1))
+					d.FieldU8("idx", d.UintAssertRange(0, uint64(h.charcnt)-1))
 				})
 			}
 		})
@@ -175,13 +169,13 @@ func decodeTZifDataBlock(d *decode.D, h tzifHeader, decodeAsVer int, name string
 
 		d.FieldArray("standard_wall_indicators", func(d *decode.D) {
 			for i := uint32(0); i < h.isstdcnt; i++ {
-				d.FieldU8("standard_wall_indicator", d.AssertU(0, 1))
+				d.FieldU8("standard_wall_indicator", d.UintAssert(0, 1))
 			}
 		})
 
 		d.FieldArray("ut_local_indicators", func(d *decode.D) {
 			for i := uint32(0); i < h.isutcnt; i++ {
-				d.FieldU8("ut_local_indicator", d.AssertU(0, 1))
+				d.FieldU8("ut_local_indicator", d.UintAssert(0, 1))
 			}
 		})
 	})
@@ -189,9 +183,9 @@ func decodeTZifDataBlock(d *decode.D, h tzifHeader, decodeAsVer int, name string
 
 func decodeTZifFooter(d *decode.D) {
 	d.FieldStruct("footer", func(d *decode.D) {
-		d.FieldU8("nl1", d.AssertU(0x0a))
+		d.FieldU8("nl1", d.UintAssert(0x0a))
 		n := d.PeekFindByte(0x0a, d.BitsLeft()/8)
 		d.FieldScalarUTF8("tz_string", int(n))
-		d.FieldU8("nl2", d.AssertU(0x0a))
+		d.FieldU8("nl2", d.UintAssert(0x0a))
 	})
 }

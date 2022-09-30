@@ -40,8 +40,8 @@ func strIndexNull(idx int, s string) string {
 
 type strTable string
 
-func (m strTable) MapScalar(s scalar.S) (scalar.S, error) {
-	s.Sym = strIndexNull(int(s.ActualU()), string(m))
+func (m strTable) MapUint(s scalar.Uint) (scalar.Uint, error) {
+	s.Sym = strIndexNull(int(s.Actual), string(m))
 	return s, nil
 }
 
@@ -53,14 +53,14 @@ const (
 	MH_CIGAM_64 = 0xcffa_edfe
 )
 
-var magicSymMapper = scalar.UToScalar{
-	MH_MAGIC:    scalar.S{Sym: "32le", Description: "32-bit little endian"},
-	MH_CIGAM:    scalar.S{Sym: "32be", Description: "32-bit big endian"},
-	MH_MAGIC_64: scalar.S{Sym: "64le", Description: "64-bit little endian"},
-	MH_CIGAM_64: scalar.S{Sym: "64be", Description: "64-bit big endian"},
+var magicSymMapper = scalar.UintMap{
+	MH_MAGIC:    scalar.Uint{Sym: "32le", Description: "32-bit little endian"},
+	MH_CIGAM:    scalar.Uint{Sym: "32be", Description: "32-bit big endian"},
+	MH_MAGIC_64: scalar.Uint{Sym: "64le", Description: "64-bit little endian"},
+	MH_CIGAM_64: scalar.Uint{Sym: "64be", Description: "64-bit big endian"},
 }
 
-var cpuTypes = scalar.UToSymStr{
+var cpuTypes = scalar.UintMapSymStr{
 	0xff_ff_ff_ff: "any",
 	1:             "vax",
 	2:             "romp",
@@ -89,7 +89,7 @@ func intelSubTypeHelper(f, m uint64) uint64 {
 	return f + (m << 4)
 }
 
-var cpuSubTypes = map[uint64]scalar.UToSymStr{
+var cpuSubTypes = map[uint64]scalar.UintMapSymStr{
 	0xff_ff_ff_ff: {
 		0xff_ff_ff_ff: "multiple",
 	},
@@ -214,7 +214,7 @@ var cpuSubTypes = map[uint64]scalar.UToSymStr{
 	},
 }
 
-var fileTypes = scalar.UToSymStr{
+var fileTypes = scalar.UintMapSymStr{
 	0x1: "object",
 	0x2: "execute",
 	0x3: "fvmlib",
@@ -284,7 +284,7 @@ const (
 	LC_BUILD_VERSION            = 0x32
 )
 
-var loadCommands = scalar.UToSymStr{
+var loadCommands = scalar.UintMapSymStr{
 	LC_REQ_DYLD:                 "req_dyld",
 	LC_SEGMENT:                  "segment",
 	LC_SYMTAB:                   "symtab",
@@ -339,7 +339,7 @@ var loadCommands = scalar.UToSymStr{
 	LC_BUILD_VERSION:            "build_version",
 }
 
-var sectionTypes = scalar.UToSymStr{
+var sectionTypes = scalar.UintMapSymStr{
 	0x0:  "regular",
 	0x1:  "zerofill",
 	0x2:  "cstring_literals",
@@ -390,11 +390,11 @@ func machoDecode(d *decode.D, _ any) any {
 
 	d.SeekRel(-4 * 8)
 	d.FieldStruct("header", func(d *decode.D) {
-		d.FieldValueS("arch_bits", int64(archBits))
-		d.FieldU32("magic", magicSymMapper, scalar.ActualHex)
-		d.FieldValueU("bits", uint64(archBits))
-		cpuType = d.FieldU32("cputype", cpuTypes, scalar.ActualHex)
-		d.FieldU32("cpusubtype", cpuSubTypes[cpuType], scalar.ActualHex)
+		d.FieldValueSint("arch_bits", int64(archBits))
+		d.FieldU32("magic", magicSymMapper, scalar.UintHex)
+		d.FieldValueUint("bits", uint64(archBits))
+		cpuType = d.FieldU32("cputype", cpuTypes, scalar.UintHex)
+		d.FieldU32("cpusubtype", cpuSubTypes[cpuType], scalar.UintHex)
 		d.FieldU32("filetype", fileTypes)
 		ncmds = d.FieldU32("ncdms")
 		d.FieldU32("sizeofncdms")
@@ -409,7 +409,7 @@ func machoDecode(d *decode.D, _ any) any {
 			d.FieldStruct("load_command", func(d *decode.D) {
 				d.SeekAbs(loadCommandsNext)
 
-				cmd := d.FieldU32("cmd", loadCommands, scalar.ActualHex)
+				cmd := d.FieldU32("cmd", loadCommands, scalar.UintHex)
 				cmdSize := d.FieldU32("cmdsize")
 				if cmdSize == 0 {
 					d.Fatalf("cmdSize is zero")
@@ -431,17 +431,17 @@ func machoDecode(d *decode.D, _ any) any {
 
 					var nsects uint64
 					d.FieldStruct("segment_command", func(d *decode.D) {
-						d.FieldValueS("arch_bits", int64(archBits))
+						d.FieldValueSint("arch_bits", int64(archBits))
 						d.FieldUTF8NullFixedLen("segname", 16) // OPCODE_DECODER segname==__TEXT
 						if archBits == 32 {
-							vmaddr = int64(d.FieldU32("vmaddr", scalar.ActualHex))
+							vmaddr = int64(d.FieldU32("vmaddr", scalar.UintHex))
 							d.FieldU32("vmsize")
-							fileoff = int64(d.FieldU32("fileoff", scalar.ActualHex))
+							fileoff = int64(d.FieldU32("fileoff", scalar.UintHex))
 							d.FieldU32("tfilesize")
 						} else {
-							vmaddr = int64(d.FieldU64("vmaddr", scalar.ActualHex))
+							vmaddr = int64(d.FieldU64("vmaddr", scalar.UintHex))
 							d.FieldU64("vmsize")
-							fileoff = int64(d.FieldU64("fileoff", scalar.ActualHex))
+							fileoff = int64(d.FieldU64("fileoff", scalar.UintHex))
 							d.FieldU64("tfilesize")
 						}
 						d.FieldS32("initprot")
@@ -457,13 +457,13 @@ func machoDecode(d *decode.D, _ any) any {
 								d.FieldUTF8NullFixedLen("segname", 16)
 								var size uint64
 								if archBits == 32 {
-									d.FieldU32("address", scalar.ActualHex)
+									d.FieldU32("address", scalar.UintHex)
 									size = d.FieldU32("size")
 								} else {
-									d.FieldU64("address", scalar.ActualHex)
+									d.FieldU64("address", scalar.UintHex)
 									size = d.FieldU64("size")
 								}
-								offset := d.FieldU32("offset", scalar.ActualHex)
+								offset := d.FieldU32("offset", scalar.UintHex)
 								d.FieldU32("align")
 								d.FieldU32("reloff")
 								d.FieldU32("nreloc")
@@ -506,11 +506,11 @@ func machoDecode(d *decode.D, _ any) any {
 														const flagUTF16 = 0x07d0
 
 														d.FieldU("isa_vmaddr", archBits)
-														flag := d.FieldU("flags", archBits, scalar.ActualHex, scalar.UToSymStr{
+														flag := d.FieldU("flags", archBits, scalar.UintHex, scalar.UintMapSymStr{
 															flagUTF8:  "utf8",
 															flagUTF16: "utf16",
 														})
-														dataPtr := int64(d.FieldU("data_ptr", archBits, scalar.ActualHex))
+														dataPtr := int64(d.FieldU("data_ptr", archBits, scalar.UintHex))
 														length := int64(d.FieldU("length", archBits))
 
 														offset := ((dataPtr - vmaddr) + fileoff) * 8
@@ -533,7 +533,7 @@ func machoDecode(d *decode.D, _ any) any {
 						}
 					})
 				case LC_TWOLEVEL_HINTS:
-					d.FieldU32("offset", scalar.ActualHex)
+					d.FieldU32("offset", scalar.UintHex)
 					d.FieldU32("nhints")
 				case LC_LOAD_DYLIB,
 					LC_ID_DYLIB,
@@ -542,7 +542,7 @@ func machoDecode(d *decode.D, _ any) any {
 					LC_LAZY_LOAD_DYLIB,
 					LC_REEXPORT_DYLIB:
 					d.FieldStruct("dylib_command", func(d *decode.D) {
-						offset := d.FieldU32("offset", scalar.ActualHex)
+						offset := d.FieldU32("offset", scalar.UintHex)
 						d.FieldU32("timestamp", timestampMapper)
 						d.FieldU32("current_version")
 						d.FieldU32("compatibility_version")
@@ -551,10 +551,10 @@ func machoDecode(d *decode.D, _ any) any {
 				case LC_LOAD_DYLINKER,
 					LC_ID_DYLINKER,
 					LC_DYLD_ENVIRONMENT:
-					offset := d.FieldU32("offset", scalar.ActualHex)
+					offset := d.FieldU32("offset", scalar.UintHex)
 					d.FieldUTF8NullFixedLen("name", int(cmdSize)-int(offset))
 				case LC_RPATH:
-					offset := d.FieldU32("offset", scalar.ActualHex)
+					offset := d.FieldU32("offset", scalar.UintHex)
 					d.FieldUTF8NullFixedLen("name", int(cmdSize)-int(offset))
 				case LC_PREBOUND_DYLIB:
 					// https://github.com/aidansteele/osx-abi-macho-file-format-reference#prebound_dylib_command
@@ -588,7 +588,7 @@ func machoDecode(d *decode.D, _ any) any {
 				case LC_ROUTINES,
 					LC_ROUTINES_64:
 					if archBits == 32 {
-						d.FieldU32("init_address", scalar.ActualHex)
+						d.FieldU32("init_address", scalar.UintHex)
 						d.FieldU32("init_module")
 						d.FieldU32("reserved1")
 						d.FieldU32("reserved2")
@@ -597,7 +597,7 @@ func machoDecode(d *decode.D, _ any) any {
 						d.FieldU32("reserved5")
 						d.FieldU32("reserved6")
 					} else {
-						d.FieldU64("init_address", scalar.ActualHex)
+						d.FieldU64("init_address", scalar.UintHex)
 						d.FieldU64("init_module")
 						d.FieldU64("reserved1")
 						d.FieldU64("reserved2")
@@ -610,7 +610,7 @@ func machoDecode(d *decode.D, _ any) any {
 					LC_SUB_LIBRARY,
 					LC_SUB_CLIENT,
 					LC_SUB_FRAMEWORK:
-					offset := d.FieldU32("offset", scalar.ActualHex)
+					offset := d.FieldU32("offset", scalar.UintHex)
 					d.FieldUTF8NullFixedLen("name", int(cmdSize)-int(offset))
 				case LC_SYMTAB:
 					symOff := d.FieldU32("symoff")
@@ -626,7 +626,7 @@ func machoDecode(d *decode.D, _ any) any {
 					d.SeekAbs(int64(symOff) * 8)
 					d.FieldArray("symbols", func(d *decode.D) {
 						for i := 0; i < int(nSyms); i++ {
-							symbolTypeMap := scalar.UToSymStr{
+							symbolTypeMap := scalar.UintMapSymStr{
 								0x0: "undef",
 								0x1: "abs",
 								0x5: "indr",
@@ -644,7 +644,7 @@ func machoDecode(d *decode.D, _ any) any {
 								})
 								d.FieldU8("sect")
 								d.FieldU16("desc")
-								d.FieldU("value", archBits, scalar.ActualHex)
+								d.FieldU("value", archBits, scalar.UintHex)
 							})
 						}
 					})
@@ -700,20 +700,20 @@ func machoDecode(d *decode.D, _ any) any {
 				case LC_DYLD_INFO,
 					LC_DYLD_INFO_ONLY:
 					d.FieldStruct("dyld_info", func(d *decode.D) {
-						d.FieldU32("rebase_off", scalar.ActualHex)
+						d.FieldU32("rebase_off", scalar.UintHex)
 						d.FieldU32("rebase_size")
-						d.FieldU32("bind_off", scalar.ActualHex)
+						d.FieldU32("bind_off", scalar.UintHex)
 						d.FieldU32("bind_size")
-						d.FieldU32("weak_bind_off", scalar.ActualHex)
+						d.FieldU32("weak_bind_off", scalar.UintHex)
 						d.FieldU32("weak_bind_size")
-						d.FieldU32("lazy_bind_off", scalar.ActualHex)
+						d.FieldU32("lazy_bind_off", scalar.UintHex)
 						d.FieldU32("lazy_bind_size")
-						d.FieldU32("export_off", scalar.ActualHex)
+						d.FieldU32("export_off", scalar.UintHex)
 						d.FieldU32("export_size")
 					})
 				case LC_MAIN:
 					d.FieldStruct("entrypoint", func(d *decode.D) {
-						d.FieldU64("entryoff", scalar.ActualHex)
+						d.FieldU64("entryoff", scalar.UintHex)
 						d.FieldU64("stacksize")
 					})
 				case LC_SOURCE_VERSION:
@@ -728,7 +728,7 @@ func machoDecode(d *decode.D, _ any) any {
 				case LC_ENCRYPTION_INFO,
 					LC_ENCRYPTION_INFO_64:
 					d.FieldStruct("encryption_info", func(d *decode.D) {
-						offset := d.FieldU32("offset", scalar.ActualHex)
+						offset := d.FieldU32("offset", scalar.UintHex)
 						size := d.FieldU32("size")
 						d.FieldU32("id")
 						d.RangeFn(int64(offset)*8, int64(size)*8, func(d *decode.D) {
@@ -742,9 +742,9 @@ func machoDecode(d *decode.D, _ any) any {
 				case LC_IDFVMLIB,
 					LC_LOADFVMLIB:
 					d.FieldStruct("fvmlib", func(d *decode.D) {
-						offset := d.FieldU32("offset", scalar.ActualHex)
+						offset := d.FieldU32("offset", scalar.UintHex)
 						d.FieldU32("minor_version")
-						d.FieldU32("header_addr", scalar.ActualHex)
+						d.FieldU32("header_addr", scalar.UintHex)
 						d.FieldUTF8NullFixedLen("name", int(cmdSize)-int(offset))
 					})
 				default:
@@ -817,8 +817,8 @@ func parseSectionFlags(d *decode.D) {
 	d.FieldBool("attr_loc_reloc")
 }
 
-var timestampMapper = scalar.Fn(func(s scalar.S) (scalar.S, error) {
-	s.Sym = time.UnixMilli(int64(s.ActualU())).UTC().String()
+var timestampMapper = scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
+	s.Sym = time.UnixMilli(int64(s.Actual)).UTC().String()
 	return s, nil
 })
 
