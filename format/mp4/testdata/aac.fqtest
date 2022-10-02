@@ -429,4 +429,4 @@ $ fq -d mp4 dv aac.mp4
 0x290|b4                                             |.               |          [1]: raw bits byte_align 0x290.6-0x290.7 (0.2)
 0x290|   70                                          | p              |          [2]: raw bits data 0x291-0x291.7 (1)
      |                                               |                |      id: 1 0x59d-NA (0)
-     |                                               |                |      data_foramt: "mp4a" (MPEG-4 Audio) 0x59d-NA (0)
+     |                                               |                |      data_format: "mp4a" (MPEG-4 Audio) 0x59d-NA (0)

@@ -348,7 +348,7 @@ $ fq -d mp4 dv dash_audio_init.mp4
      |                                               |                |  tracks[0:1]: 0x330-NA (0)
      |                                               |                |    [0]{}: track 0x330-NA (0)
      |                                               |                |      id: 1 0x330-NA (0)
-     |                                               |                |      data_foramt: "mp4a" (MPEG-4 Audio) 0x330-NA (0)
+     |                                               |                |      data_format: "mp4a" (MPEG-4 Audio) 0x330-NA (0)
      |                                               |                |      samples[0:0]: 0x330-NA (0)
 $ fq -d mp4 dv dash_audio_1.m4s
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: dash_audio_1.m4s (mp4) 0x0-0x4eb.7 (1260)
@@ -491,7 +491,7 @@ $ fq -d mp4 dv dash_audio_1.m4s
 *    |until 0x4e6.7 (193)                            |                |
 0x4e0|                     01 18 81 b4 70|           |       ....p|   |        [5]: raw bits sample 0x4e7-0x4eb.7 (5)
      |                                               |                |      id: 1 0x4ec-NA (0)
-     |                                               |                |      data_foramt: "unknown" 0x4ec-NA (0)
+     |                                               |                |      data_format: "unknown" 0x4ec-NA (0)
 $ fq -d mp4 dv dash_video_init.mp4
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: dash_video_init.mp4 (mp4) 0x0-0x332.7 (819)
       |                                               |                |  boxes[0:2]: 0x0-0x332.7 (819)
@@ -886,7 +886,7 @@ $ fq -d mp4 dv dash_video_init.mp4
       |                                               |                |  tracks[0:1]: 0x333-NA (0)
       |                                               |                |    [0]{}: track 0x333-NA (0)
       |                                               |                |      id: 1 0x333-NA (0)
-      |                                               |                |      data_foramt: "avc1" (Advanced Video Coding) 0x333-NA (0)
+      |                                               |                |      data_format: "avc1" (Advanced Video Coding) 0x333-NA (0)
       |                                               |                |      samples[0:0]: 0x333-NA (0)
 $ fq -d mp4 dv dash_video_1.m4s
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: dash_video_1.m4s (mp4) 0x0-0x1fd0.7 (8145)
@@ -1001,4 +1001,4 @@ $ fq -d mp4 dv dash_video_1.m4s
 0x1720|53 23 af ff f2 50 06 7f 30 02 17 55 d4 5a 6f db|S#...P..0..U.Zo.|
 *     |until 0x1fd0.7 (end) (2240)                    |                |
       |                                               |                |      id: 1 0x1fd1-NA (0)
-      |                                               |                |      data_foramt: "unknown" 0x1fd1-NA (0)
+      |                                               |                |      data_format: "unknown" 0x1fd1-NA (0)
