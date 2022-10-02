@@ -514,4 +514,4 @@ $ fq -d mp4 dv avc.mp4
 0x00d50|79 0a ff 01 f9 2d 04 d3 29 fe 4d 76 42 26 f6 cd|y....-..).MvB&..|
 *      |until 0xd80.7 (51)                             |                |
        |                                               |                |      id: 1 0x10e0-NA (0)
-       |                                               |                |      data_foramt: "avc1" (Advanced Video Coding) 0x10e0-NA (0)
+       |                                               |                |      data_format: "avc1" (Advanced Video Coding) 0x10e0-NA (0)
