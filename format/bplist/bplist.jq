@@ -1,13 +1,13 @@
 def _bplist_torepr:
   def _f:
-    ( if .type == "singleton" then .value
-      elif .type == "int" then .value
-      elif .type == "real" then .value
-      elif .type == "date" then .value
-      elif .type == "data" then .value
-      elif .type == "ascii_string" then .value
-      elif .type == "unicode_string" then .value
-      elif .type == "uid" then .value
+    ( if .type == "singleton" then .value | tovalue
+      elif .type == "int" then .value | tovalue
+      elif .type == "real" then .value | tovalue
+      elif .type == "date" then .value | tovalue
+      elif .type == "data" then .value | tovalue
+      elif .type == "ascii_string" then .value | tovalue
+      elif .type == "unicode_string" then .value | tovalue
+      elif .type == "uid" then .value | tovalue
       elif .type == "array" then
         ( .entries
         | map(_f)

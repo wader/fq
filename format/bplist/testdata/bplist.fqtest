@@ -2420,3 +2420,5 @@ $ fq torepr Info.plist
   "LSMinimumSystemVersion": "10.14",
   "NSHumanReadableCopyright": "Copyright (c) 2011-2021 Apple Inc. All rights reserved."
 }
+$ fq torepr.CFBundleName Info.plist
+"AppleProResCodecEmbedded"
