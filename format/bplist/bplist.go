@@ -91,15 +91,11 @@ func decodeItem(d *decode.D, p *plist) {
 	m := d.FieldU4("type", elementTypeMap)
 	switch m {
 	case elementTypeNullOrBoolOrFill:
-		t := d.U4()
-		switch t {
-		case null:
-			d.FieldValueNil("value")
-		case boolTrue:
-			d.FieldValueBool("value", true)
-		case boolFalse:
-			d.FieldValueBool("value", false)
-		}
+		d.FieldU4("value", scalar.UToScalar{
+			null:      scalar.S{Sym: nil},
+			boolTrue:  scalar.S{Sym: true},
+			boolFalse: scalar.S{Sym: false},
+		})
 	case elementTypeInt:
 		n := d.FieldUFn("size", func(d *decode.D) uint64 {
 			return 1 << d.U4()

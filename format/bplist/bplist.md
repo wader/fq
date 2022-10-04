@@ -1,6 +1,6 @@
 ### Show full decoding
 ```sh
-$ fq -d bplist dv Info.plist
+$ fq d Info.plist
 ```
 
 ### Timestamps
