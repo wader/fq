@@ -27,6 +27,7 @@ $ fq -n _registry.groups.probe
   "opentimestamps",
   "pcap",
   "pcapng",
+  "pe",
   "png",
   "tar",
   "tiff",
@@ -80,6 +81,7 @@ bytes                Raw bytes
 bzip2                bzip2 compression
 caff                 Live2D Cubism archive
 cbor                 Concise Binary Object Representation
+coff                 Common Object File Format
 csv                  Comma separated values
 dns                  DNS packet
 dns_tcp              DNS packet (TCP)
@@ -135,6 +137,7 @@ mpeg_pes             MPEG Packetized elementary stream
 mpeg_pes_packet      MPEG Packetized elementary stream packet
 mpeg_spu             Sub Picture Unit (DVD subtitle)
 mpeg_ts              MPEG Transport Stream
+msdos_stub           MS-DOS Stub
 msgpack              MessagePack
 nes                  iNES/NES 2.0 cartridge ROM format
 ogg                  OGG file
@@ -143,6 +146,7 @@ opentimestamps       OpenTimestamps file
 opus_packet          Opus packet
 pcap                 PCAP packet capture
 pcapng               PCAPNG packet capture
+pe                   Portable Executable
 pg_btree             PostgreSQL btree index file
 pg_control           PostgreSQL control file
 pg_heap              PostgreSQL heap file
