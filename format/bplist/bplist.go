@@ -4,6 +4,7 @@ import (
 	"embed"
 	"math"
 	"math/big"
+	"time"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/pkg/decode"
@@ -60,6 +61,8 @@ var elementTypeMap = scalar.UToScalar{
 	elementTypeDict:             {Sym: "dict", Description: "Dictionary"},
 }
 
+var cocoaTimeEpochDate = time.Date(2001, time.January, 1, 0, 0, 0, 0, time.UTC)
+
 // decodes the number of bits required to store the following object
 func decodeSize(d *decode.D, sms ...scalar.Mapper) uint64 {
 	n := d.FieldU4("size_bits")
@@ -112,7 +115,7 @@ func decodeItem(d *decode.D, p *plist) {
 	case elementTypeDate:
 		n := 1 << decodeSize(d, d.AssertU(4, 8))
 		d.FieldValueU("size", uint64(n))
-		d.FieldF("value", n*8, scalar.DescriptionActualFCocoaDate)
+		d.FieldF("value", n*8, scalar.DescriptionTimeFn(scalar.S.TryActualF, cocoaTimeEpochDate, time.RFC3339))
 	case elementTypeData:
 		n := decodeSize(d)
 		d.FieldValueU("size", n)

@@ -5,6 +5,7 @@ package tar
 
 import (
 	"bytes"
+	"time"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/pkg/decode"
@@ -53,7 +54,7 @@ func tarDecode(d *decode.D, _ any) any {
 					d.Fatalf("could not decode size")
 				}
 				size := int64(sizeS.SymU()) * 8
-				d.FieldUTF8NullFixedLen("mtime", 12, scalar.TrySymUParseUint(8), scalar.DescriptionSymUUnixTime)
+				d.FieldUTF8NullFixedLen("mtime", 12, scalar.TrySymUParseUint(8), scalar.DescriptionUnixTimeFn(scalar.S.TrySymU, time.RFC3339))
 				d.FieldUTF8NullFixedLen("chksum", 8, scalar.TrySymUParseUint(8))
 				d.FieldUTF8("typeflag", 1, mapTrimSpaceNull)
 				d.FieldUTF8("linkname", 100, mapTrimSpaceNull)

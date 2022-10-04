@@ -210,7 +210,7 @@ func decodeLang(d *decode.D) string {
 
 // Quicktime time seconds in January 1, 1904 UTC
 var quicktimeEpochDate = time.Date(1904, time.January, 4, 0, 0, 0, 0, time.UTC)
-var quicktimeEpoch = scalar.DescriptionActualUTime(quicktimeEpochDate, time.RFC3339)
+var quicktimeEpoch = scalar.DescriptionTimeFn(scalar.S.TryActualU, quicktimeEpochDate, time.RFC3339)
 
 func decodeFieldMatrix(d *decode.D, name string) {
 	d.FieldStruct(name, func(d *decode.D) {

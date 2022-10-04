@@ -8,6 +8,7 @@ import (
 	"compress/flate"
 	"hash/crc32"
 	"io"
+	"time"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/pkg/decode"
@@ -74,7 +75,7 @@ func gzDecode(d *decode.D, _ any) any {
 		hasComment = d.FieldBool("comment")
 		d.FieldU3("reserved")
 	})
-	d.FieldU32("mtime", scalar.DescriptionActualUUnixTime)
+	d.FieldU32("mtime", scalar.DescriptionUnixTimeFn(scalar.S.TryActualU, time.RFC3339))
 	switch compressionMethod {
 	case delfateMethod:
 		d.FieldU8("extra_flags", deflateExtraFlagsNames)
