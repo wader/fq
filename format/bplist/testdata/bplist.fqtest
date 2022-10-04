@@ -1,5 +1,5 @@
-$ fq -d bplist dv com.apple.UIAutomation.plist
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: format/bplist/testdata/com.apple.UIAutomation.plist (bplist) 0x0-0x44.7 (69)
+$ fq dv com.apple.UIAutomation.plist
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: com.apple.UIAutomation.plist (bplist) 0x0-0x44.7 (69)
     |                                               |                |  header{}: 0x0-0x7.7 (8)
 0x00|62 70 6c 69 73 74                              |bplist          |    magic: "bplist" (valid) 0x0-0x5.7 (6)
 0x00|                  30 30                        |      00        |    version: "00" (valid) 0x6-0x7.7 (2)
@@ -23,8 +23,7 @@ $ fq -d bplist dv com.apple.UIAutomation.plist
 0x20|64                                             |d               |
     |                                               |                |        value{}: 0x21-0x21.7 (1)
 0x20|   09                                          | .              |          type: "singleton" (0) (Singleton value (null/bool)) 0x21-0x21.3 (0.4)
-    |                                               |                |          value: true 0x22-NA (0)
-0x20|   09                                          | .              |  unknown0: raw bits 0x21.4-0x21.7 (0.4)
+0x20|   09                                          | .              |          value: true (9) 0x21.4-0x21.7 (0.4)
     |                                               |                |  offset_table[0:3]: 0x22-0x24.7 (3)
 0x20|      08                                       |  .             |    [0]: 8 element 0x22-0x22.7 (1)
 0x20|         0b                                    |   .            |    [1]: 11 element 0x23-0x23.7 (1)
@@ -39,8 +38,12 @@ $ fq -d bplist dv com.apple.UIAutomation.plist
 0x30|               00 00 00 00 00 00 00 00         |     ........   |    top_object_offset: 0 0x35-0x3c.7 (8)
 0x30|                                       00 00 00|             ...|    offset_table_start: 34 0x3d-0x44.7 (8)
 0x40|00 00 00 00 22|                                |...."|          |
-$ fq -d bplist dv Info.plist
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: format/bplist/testdata/Info.plist (bplist) 0x0-0x983.7 (2436)
+$ fq torepr com.apple.UIAutomation.plist
+{
+  "UIAutomationEnabled": true
+}
+$ fq dv Info.plist
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: Info.plist (bplist) 0x0-0x983.7 (2436)
      |                                               |                |  header{}: 0x0-0x7.7 (8)
 0x000|62 70 6c 69 73 74                              |bplist          |    magic: "bplist" (valid) 0x0-0x5.7 (6)
 0x000|                  30 30                        |      00        |    version: "00" (valid) 0x6-0x7.7 (2)
@@ -2251,3 +2254,169 @@ $ fq -d bplist dv Info.plist
 0x970|            00 00 00 00 00 00 00 00            |    ........    |    top_object_offset: 0 0x974-0x97b.7 (8)
 0x970|                                    00 00 00 00|            ....|    offset_table_start: 2176 0x97c-0x983.7 (8)
 0x980|00 00 08 80|                                   |....|           |
+$ fq torepr Info.plist
+{
+  "BuildMachineOSBuild": 685135328,
+  "CFBundleDevelopmentRegion": "English",
+  "CFBundleExecutable": "AppleProResCodecEmbedded",
+  "CFBundleIdentifier": "com.apple.proapps.AppleProResCodecEmbedded",
+  "CFBundleInfoDictionaryVersion": "6.0",
+  "CFBundleName": "AppleProResCodecEmbedded",
+  "CFBundlePackageType": "BNDL",
+  "CFBundleShortVersionString": "3.7.0",
+  "CFBundleSignature": "????",
+  "CFBundleSupportedPlatforms": [
+    "MacOSX"
+  ],
+  "CFBundleVersion": "15481",
+  "CMClassImplementations": [
+    {
+      "CMClassID": "com.apple.videotoolbox.videodecoder",
+      "CMClassImplementationID": "com.apple.videotoolbox.videodecoder.prores.embedded",
+      "CMClassImplementationName": "Apple ProRes Decoder",
+      "CMClassImplementationVersion": 1,
+      "CMCopyright": "Copyright (c) 2011-2021 Apple Inc. All rights reserved.",
+      "CMExecutableArchitectures": [
+        "x86_64",
+        "arm64"
+      ],
+      "CMFactoryFunction": "IcpVideoDecoder_CreateInstance",
+      "CMManufacturer": "Apple",
+      "CMMatchingInfo": {
+        "VTCodecType": [
+          "ap4x",
+          "ap4h",
+          "apch",
+          "apcn",
+          "apcs",
+          "apco"
+        ],
+        "VTRating": 100
+      }
+    },
+    {
+      "CMClassID": "com.apple.videotoolbox.videoencoder",
+      "CMClassImplementationID": "com.apple.videotoolbox.videoencoder.prores-4444xq.embedded",
+      "CMClassImplementationName": "Apple ProRes 4444 XQ Encoder",
+      "CMClassImplementationVersion": 1,
+      "CMCopyright": "Copyright (c) 2011-2021 Apple Inc. All rights reserved.",
+      "CMExecutableArchitectures": [
+        "x86_64",
+        "arm64"
+      ],
+      "CMFactoryFunction": "IcpVideoEncoder_CreateInstance",
+      "CMManufacturer": "Apple",
+      "CMMatchingInfo": {
+        "VTCodecType": "ap4x",
+        "VTRating": 100
+      },
+      "VTCodecName": "Apple ProRes 4444 XQ",
+      "VTEncoderName": "Apple ProRes 4444 XQ"
+    },
+    {
+      "CMClassID": "com.apple.videotoolbox.videoencoder",
+      "CMClassImplementationID": "com.apple.videotoolbox.videoencoder.prores-4444.embedded",
+      "CMClassImplementationName": "Apple ProRes 4444 Encoder",
+      "CMClassImplementationVersion": 1,
+      "CMCopyright": "Copyright (c) 2011-2021 Apple Inc. All rights reserved.",
+      "CMExecutableArchitectures": [
+        "x86_64",
+        "arm64"
+      ],
+      "CMFactoryFunction": "IcpVideoEncoder_CreateInstance",
+      "CMManufacturer": "Apple",
+      "CMMatchingInfo": {
+        "VTCodecType": "ap4h",
+        "VTRating": 100
+      },
+      "VTCodecName": "Apple ProRes 4444",
+      "VTEncoderName": "Apple ProRes 4444"
+    },
+    {
+      "CMClassID": "com.apple.videotoolbox.videoencoder",
+      "CMClassImplementationID": "com.apple.videotoolbox.videoencoder.prores-422hq.embedded",
+      "CMClassImplementationName": "Apple ProRes 422 HQ Encoder",
+      "CMClassImplementationVersion": 1,
+      "CMCopyright": "Copyright (c) 2011-2021 Apple Inc. All rights reserved.",
+      "CMExecutableArchitectures": [
+        "x86_64",
+        "arm64"
+      ],
+      "CMFactoryFunction": "IcpVideoEncoder_CreateInstance",
+      "CMManufacturer": "Apple",
+      "CMMatchingInfo": {
+        "VTCodecType": "apch",
+        "VTRating": 100
+      },
+      "VTCodecName": "Apple ProRes 422 HQ",
+      "VTEncoderName": "Apple ProRes 422 HQ"
+    },
+    {
+      "CMClassID": "com.apple.videotoolbox.videoencoder",
+      "CMClassImplementationID": "com.apple.videotoolbox.videoencoder.prores-422.embedded",
+      "CMClassImplementationName": "Apple ProRes 422 Encoder",
+      "CMClassImplementationVersion": 1,
+      "CMCopyright": "Copyright (c) 2011-2021 Apple Inc. All rights reserved.",
+      "CMExecutableArchitectures": [
+        "x86_64",
+        "arm64"
+      ],
+      "CMFactoryFunction": "IcpVideoEncoder_CreateInstance",
+      "CMManufacturer": "Apple",
+      "CMMatchingInfo": {
+        "VTCodecType": "apcn",
+        "VTRating": 100
+      },
+      "VTCodecName": "Apple ProRes 422",
+      "VTEncoderName": "Apple ProRes 422"
+    },
+    {
+      "CMClassID": "com.apple.videotoolbox.videoencoder",
+      "CMClassImplementationID": "com.apple.videotoolbox.videoencoder.prores-422lt.embedded",
+      "CMClassImplementationName": "Apple ProRes 422 LT Encoder",
+      "CMClassImplementationVersion": 1,
+      "CMCopyright": "Copyright (c) 2011-2021 Apple Inc. All rights reserved.",
+      "CMExecutableArchitectures": [
+        "x86_64",
+        "arm64"
+      ],
+      "CMFactoryFunction": "IcpVideoEncoder_CreateInstance",
+      "CMManufacturer": "Apple",
+      "CMMatchingInfo": {
+        "VTCodecType": "apcs",
+        "VTRating": 100
+      },
+      "VTCodecName": "Apple ProRes 422 LT",
+      "VTEncoderName": "Apple ProRes 422 LT"
+    },
+    {
+      "CMClassID": "com.apple.videotoolbox.videoencoder",
+      "CMClassImplementationID": "com.apple.videotoolbox.videoencoder.prores-422proxy.embedded",
+      "CMClassImplementationName": "Apple ProRes 422 Proxy Encoder",
+      "CMClassImplementationVersion": 1,
+      "CMCopyright": "Copyright (c) 2011-2021 Apple Inc. All rights reserved.",
+      "CMExecutableArchitectures": [
+        "x86_64",
+        "arm64"
+      ],
+      "CMFactoryFunction": "IcpVideoEncoder_CreateInstance",
+      "CMManufacturer": "Apple",
+      "CMMatchingInfo": {
+        "VTCodecType": "apco",
+        "VTRating": 100
+      },
+      "VTCodecName": "Apple ProRes 422 Proxy",
+      "VTEncoderName": "Apple ProRes 422 Proxy"
+    }
+  ],
+  "DTCompiler": "com.apple.compilers.llvm.clang.1_0",
+  "DTPlatformBuild": "21A344",
+  "DTPlatformName": "macosx",
+  "DTPlatformVersion": "12.0",
+  "DTSDKBuild": "21A344",
+  "DTSDKName": "macosx12.0.internal",
+  "DTXcode": "1310",
+  "DTXcodeBuild": "13A1030d",
+  "LSMinimumSystemVersion": "10.14",
+  "NSHumanReadableCopyright": "Copyright (c) 2011-2021 Apple Inc. All rights reserved."
+}

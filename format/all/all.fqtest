@@ -57,6 +57,7 @@ bitcoin_blkdat       Bitcoin blk.dat
 bitcoin_block        Bitcoin block
 bitcoin_script       Bitcoin script
 bitcoin_transaction  Bitcoin transaction
+bplist               Apple Binary Property List
 bsd_loopback_frame   BSD loopback frame
 bson                 Binary JSON
 bzip2                bzip2 compression
