@@ -49,7 +49,7 @@ func DecodePgControl(d *decode.D, in any) any {
 	d.FieldU64("backup_end_point", common.LocPtrMapper)
 	d.FieldU8("backup_end_required")
 	d.FieldU24("hole3")
-	
+
 	d.FieldS32("wal_level", common.WalLevel)
 	d.FieldU8("wal_log_hints")
 	d.FieldU24("hole4")

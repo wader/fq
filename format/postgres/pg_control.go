@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"embed"
+
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/postgres/common"
 	"github.com/wader/fq/format/postgres/flavours/pgpro10"
