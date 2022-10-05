@@ -265,7 +265,7 @@ Decode value as bitcoin_block
 
 ### Show full decoding
 ```sh
-$ fq -d bplist dv Info.plist
+$ fq d Info.plist
 ```
 
 ### Timestamps
@@ -654,20 +654,20 @@ $ fq -d pg_btree -o flavour=postgres14 ".[1]" 16404
 
 ### Options
 
-|Name     |Default   |Description|
-|-        |-         |-|
-|`flavour`|postgres14|PostgreSQL flavour: postgres14, pgproee14.., postgres10|
+|Name     |Default|Description|
+|-        |-      |-|
+|`flavour`|       |PostgreSQL flavour: postgres14, pgproee14.., postgres10|
 
 ### Examples
 
 Decode file using pg_control options
 ```
-$ fq -d pg_control -o flavour="postgres14" . file
+$ fq -d pg_control -o flavour="" . file
 ```
 
 Decode value as pg_control
 ```
-... | pg_control({flavour:"postgres14"})
+... | pg_control({flavour:""})
 ```
 
 ### Decode content of pg_control file
