@@ -280,4 +280,4 @@ $ fq dv in24.mp4
      |                                               |                |  tracks[0:1]: 0x3ec-NA (0)
      |                                               |                |    [0]{}: track 0x3ec-NA (0)
      |                                               |                |      id: 1 0x3ec-NA (0)
-     |                                               |                |      data_foramt: "in24" 0x3ec-NA (0)
+     |                                               |                |      data_format: "in24" 0x3ec-NA (0)

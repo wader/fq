@@ -4,6 +4,7 @@ package bitcoin
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/pkg/decode"
@@ -62,7 +63,7 @@ func decodeBitcoinBlock(d *decode.D, in interface{}) interface{} {
 			d.FieldU32("version", scalar.ActualHex)
 			d.FieldRawLen("previous_block_hash", 32*8, rawHexReverse)
 			d.FieldRawLen("merkle_root", 32*8, rawHexReverse)
-			d.FieldU32("time", scalar.DescriptionActualUUnixTime)
+			d.FieldU32("time", scalar.DescriptionUnixTimeFn(scalar.S.TryActualU, time.RFC3339))
 			d.FieldU32("bits", scalar.ActualHex)
 			d.FieldU32("nonce", scalar.ActualHex)
 		})

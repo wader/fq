@@ -289,7 +289,7 @@ func (i *Interp) _decode(c any, format string, opts decodeOpts) any {
 		}
 	}
 
-	return makeDecodeValueOut(dv, formatOutMap)
+	return makeDecodeValueOut(dv, decodeValueValue, formatOutMap)
 }
 
 func valueKey(name string, a, b func(name string) any) any {
@@ -326,11 +326,19 @@ func toValue(optsFn func() Options, v any) (any, bool) {
 	}
 }
 
-func makeDecodeValue(dv *decode.Value) any {
-	return makeDecodeValueOut(dv, nil)
+type decodeValueKind int
+
+const (
+	decodeValueValue decodeValueKind = iota
+	decodeValueActual
+	decodeValueSym
+)
+
+func makeDecodeValue(dv *decode.Value, kind decodeValueKind) any {
+	return makeDecodeValueOut(dv, kind, nil)
 }
 
-func makeDecodeValueOut(dv *decode.Value, out any) any {
+func makeDecodeValueOut(dv *decode.Value, kind decodeValueKind, out any) any {
 	switch vv := dv.V.(type) {
 	case *decode.Compound:
 		if vv.IsArray {
@@ -338,7 +346,18 @@ func makeDecodeValueOut(dv *decode.Value, out any) any {
 		}
 		return NewStructDecodeValue(dv, out, vv)
 	case *scalar.S:
-		switch vv := vv.Value().(type) {
+		// TODO: rethink value/actual/sym handling
+		var vvv any
+		switch kind {
+		case decodeValueValue:
+			vvv = vv.Value()
+		case decodeValueActual:
+			vvv = vv.Actual
+		case decodeValueSym:
+			vvv = vv.Sym
+		}
+
+		switch vvv := vvv.(type) {
 		case bitio.ReaderAtSeeker:
 			// is lazy so that in situations where the decode value is only used to
 			// create another binary we don't have to read and create a string, ex:
@@ -349,11 +368,11 @@ func makeDecodeValueOut(dv *decode.Value, out any) any {
 					IsScalar: true,
 					Fn: func() (gojq.JQValue, error) {
 						buf := &bytes.Buffer{}
-						vvC, err := bitio.CloneReader(vv)
+						vvvC, err := bitio.CloneReader(vvv)
 						if err != nil {
 							return nil, err
 						}
-						if _, err := bitioex.CopyBits(buf, vvC); err != nil {
+						if _, err := bitioex.CopyBits(buf, vvvC); err != nil {
 							return nil, err
 						}
 						return gojqex.String([]rune(buf.String())), nil
@@ -364,42 +383,42 @@ func makeDecodeValueOut(dv *decode.Value, out any) any {
 			}
 		case bool:
 			return decodeValue{
-				JQValue:         gojqex.Boolean(vv),
+				JQValue:         gojqex.Boolean(vvv),
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case int:
 			return decodeValue{
-				JQValue:         gojqex.Number{V: vv},
+				JQValue:         gojqex.Number{V: vvv},
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case int64:
 			return decodeValue{
-				JQValue:         gojqex.Number{V: big.NewInt(vv)},
+				JQValue:         gojqex.Number{V: big.NewInt(vvv)},
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case uint64:
 			return decodeValue{
-				JQValue:         gojqex.Number{V: new(big.Int).SetUint64(vv)},
+				JQValue:         gojqex.Number{V: new(big.Int).SetUint64(vvv)},
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case float64:
 			return decodeValue{
-				JQValue:         gojqex.Number{V: vv},
+				JQValue:         gojqex.Number{V: vvv},
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case string:
 			return decodeValue{
-				JQValue:         gojqex.String(vv),
+				JQValue:         gojqex.String(vvv),
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case []any:
 			return decodeValue{
-				JQValue:         gojqex.Array(vv),
+				JQValue:         gojqex.Array(vvv),
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case map[string]any:
 			return decodeValue{
-				JQValue:         gojqex.Object(vv),
+				JQValue:         gojqex.Object(vvv),
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case nil:
@@ -409,11 +428,11 @@ func makeDecodeValueOut(dv *decode.Value, out any) any {
 			}
 		case *big.Int:
 			return decodeValue{
-				JQValue:         gojqex.Number{V: vv},
+				JQValue:         gojqex.Number{V: vvv},
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		default:
-			panic(fmt.Sprintf("unreachable vv %#+v", vv))
+			panic(fmt.Sprintf("unreachable vv %#+v", vvv))
 		}
 	default:
 		panic(fmt.Sprintf("unreachable dv %#+v", dv))
@@ -482,37 +501,29 @@ func (dvb decodeValueBase) JQValueKey(name string) any {
 	case "_name":
 		return dv.Name
 	case "_root":
-		return makeDecodeValue(dv.Root())
+		return makeDecodeValue(dv.Root(), decodeValueValue)
 	case "_buffer_root":
 		// TODO: rename?
-		return makeDecodeValue(dv.BufferRoot())
+		return makeDecodeValue(dv.BufferRoot(), decodeValueValue)
 	case "_format_root":
 		// TODO: rename?
-		return makeDecodeValue(dv.FormatRoot())
+		return makeDecodeValue(dv.FormatRoot(), decodeValueValue)
 	case "_parent":
 		if dv.Parent == nil {
 			return nil
 		}
-		return makeDecodeValue(dv.Parent)
+		return makeDecodeValue(dv.Parent, decodeValueValue)
 	case "_actual":
-		switch vv := dv.V.(type) {
+		switch dv.V.(type) {
 		case *scalar.S:
-			jv, ok := gojqex.ToGoJQValue(vv.Actual)
-			if !ok {
-				return fmt.Errorf("can't convert actual value jq value %#+v", vv.Actual)
-			}
-			return jv
+			return makeDecodeValue(dv, decodeValueActual)
 		default:
 			return nil
 		}
 	case "_sym":
-		switch vv := dv.V.(type) {
+		switch dv.V.(type) {
 		case *scalar.S:
-			jv, ok := gojqex.ToGoJQValue(vv.Sym)
-			if !ok {
-				return fmt.Errorf("can't convert sym value jq value %#+v", vv.Actual)
-			}
-			return jv
+			return makeDecodeValue(dv, decodeValueSym)
 		default:
 			return nil
 		}
@@ -642,19 +653,19 @@ func (v ArrayDecodeValue) JQValueIndex(index int) any {
 	if index < 0 {
 		return nil
 	}
-	return makeDecodeValue((v.Compound.Children)[index])
+	return makeDecodeValue((v.Compound.Children)[index], decodeValueValue)
 }
 func (v ArrayDecodeValue) JQValueSlice(start int, end int) any {
 	vs := make([]any, end-start)
 	for i, e := range (v.Compound.Children)[start:end] {
-		vs[i] = makeDecodeValue(e)
+		vs[i] = makeDecodeValue(e, decodeValueValue)
 	}
 	return vs
 }
 func (v ArrayDecodeValue) JQValueEach() any {
 	props := make([]gojq.PathValue, len(v.Compound.Children))
 	for i, f := range v.Compound.Children {
-		props[i] = gojq.PathValue{Path: i, Value: makeDecodeValue(f)}
+		props[i] = gojq.PathValue{Path: i, Value: makeDecodeValue(f, decodeValueValue)}
 	}
 	return props
 }
@@ -680,7 +691,7 @@ func (v ArrayDecodeValue) JQValueHas(key any) any {
 func (v ArrayDecodeValue) JQValueToGoJQ() any {
 	vs := make([]any, len(v.Compound.Children))
 	for i, f := range v.Compound.Children {
-		vs[i] = makeDecodeValue(f)
+		vs[i] = makeDecodeValue(f, decodeValueValue)
 	}
 	return vs
 }
@@ -711,7 +722,7 @@ func (v StructDecodeValue) JQValueKey(name string) any {
 	}
 	if v.Compound.ByName != nil {
 		if f, ok := v.Compound.ByName[name]; ok {
-			return makeDecodeValue(f)
+			return makeDecodeValue(f, decodeValueValue)
 		}
 	}
 
@@ -720,7 +731,7 @@ func (v StructDecodeValue) JQValueKey(name string) any {
 func (v StructDecodeValue) JQValueEach() any {
 	props := make([]gojq.PathValue, len(v.Compound.Children))
 	for i, f := range v.Compound.Children {
-		props[i] = gojq.PathValue{Path: f.Name, Value: makeDecodeValue(f)}
+		props[i] = gojq.PathValue{Path: f.Name, Value: makeDecodeValue(f, decodeValueValue)}
 	}
 	return props
 }
@@ -752,7 +763,7 @@ func (v StructDecodeValue) JQValueHas(key any) any {
 func (v StructDecodeValue) JQValueToGoJQ() any {
 	vm := make(map[string]any, len(v.Compound.Children))
 	for _, f := range v.Compound.Children {
-		vm[f.Name] = makeDecodeValue(f)
+		vm[f.Name] = makeDecodeValue(f, decodeValueValue)
 	}
 	return vm
 }

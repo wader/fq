@@ -73,6 +73,14 @@ func Gaps(total Range, ranges []Range) []Range {
 	for i := 0; i < len(ranges); {
 		madded = false
 		m = ranges[i]
+
+		// skip empty ranges
+		if m.Len == 0 {
+			i++
+			madded = true
+			continue
+		}
+
 		j := i + 1
 		for ; j < len(ranges); j++ {
 			if m.Start <= ranges[j].Start && m.Stop()+1 >= ranges[j].Start {
@@ -91,8 +99,13 @@ func Gaps(total Range, ranges []Range) []Range {
 			break
 		}
 	}
+
 	if !madded {
 		merged = append(merged, m)
+	}
+
+	if len(merged) == 0 {
+		return []Range{total}
 	}
 
 	gaps := make([]Range, 0, len(merged))

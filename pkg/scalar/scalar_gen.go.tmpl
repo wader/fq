@@ -11,11 +11,17 @@ import (
 {{- range $name, $t := $.types }}
 	// Type {{$name}}
 
+	// TryActual{{$name}} try assert actual value is a {{$name}} and return result
+	func (s S) TryActual{{$name}}() ({{$t.go_type}}, bool) {
+		v, ok := s.Actual.({{$t.go_type}})
+		return v, ok
+	}
+
 	// Actual{{$name}} asserts actual value is a {{$name}} and returns it
 	func (s S) Actual{{$name}}() {{$t.go_type}} {
-		v, ok := s.Actual.({{$t.go_type}})
+		v, ok := s.TryActual{{$name}}()
 		if !ok {
-			panic(fmt.Sprintf("failed to type assert s.Actual %v as {{$t.go_type}}", s.Actual))
+			panic(fmt.Sprintf("failed to type assert s.Actual %v (%T) as {{$t.go_type}}", s.Actual, s.Actual))
 		}
 		return v
 	}
@@ -30,11 +36,17 @@ import (
 
 	// Sym{{$name}} asserts symbolic value is a {{$name}} and returns it
 	func (s S) Sym{{$name}}() {{$t.go_type}} {
-		v, ok := s.Sym.({{$t.go_type}})
+		v, ok := s.TrySym{{$name}}()
 		if !ok {
-			panic(fmt.Sprintf("failed to type assert s.Sym %v as {{$t.go_type}}", s.Sym))
+			panic(fmt.Sprintf("failed to type assert s.Sym %v (%T) as {{$t.go_type}}", s.Sym, s.Sym))
 		}
 		return v
+	}
+
+	// TrySym{{$name}} try assert symbolic value is a {{$name}} and return result
+	func (s S) TrySym{{$name}}() ({{$t.go_type}}, bool) {
+		v, ok := s.Sym.({{$t.go_type}})
+		return v, ok
 	}
 
 	// Sym{{$name}}Fn map sym {{$name}} using f

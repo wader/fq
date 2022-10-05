@@ -372,8 +372,8 @@ unary uses input and if more than one argument all as arguments ignoring the inp
   - `parents` output parents of value
   - `topath` path of value. Use `path_to_expr` to get a string representation.
   - `tovalue`, `tovalue($opts)` symbolic value if available otherwise actual value
-  - `toactual` actual value (decoded etc)
-  - `tosym` symbolic value (mapped etc)
+  - `toactual`, `toactual($opts)` actual value (usually the decoded value)
+  - `tosym`, `tosym($opts)` symbolic value (mapped etc)
   - `todescription` description of value
   - `torepr` convert decode value into what it reptresents. For example convert msgpack decode value
   into a value representing its JSON representation.

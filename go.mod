@@ -4,9 +4,9 @@ go 1.18
 
 require (
 	// fork of github.com/itchyny/gojq, see github.com/wader/gojq fq branch
-	github.com/wader/gojq v0.12.1-0.20220822132002-64fe65a68424
+	github.com/wader/gojq v0.12.1-0.20220929141349-8874f5c7907c
 	// fork of github.com/chzyer/readline, see github.com/wader/readline fq branch
-	github.com/wader/readline v0.0.0-20220704090837-31be50517a56
+	github.com/wader/readline v0.0.0-20220928125628-732951d41240
 )
 
 require (
@@ -27,7 +27,7 @@ require (
 
 	// has no tags
 	// go get -d github.com/gomarkdown/markdown@master && go mod tidy
-	github.com/gomarkdown/markdown v0.0.0-20220627144906-e9a81102ebeb
+	github.com/gomarkdown/markdown v0.0.0-20220905174103-7b278df48cfb
 
 	// has no tags yet
 	// bump-disabled: gomod-gopacket /github\.com\/gopacket\/gopacket v(.*)/ https://github.com/gopacket/gopacket.git|^1
@@ -52,15 +52,15 @@ require (
 
 	// has no tags
 	// go get -d golang.org/x/crypto@master && go mod tidy
-	golang.org/x/crypto v0.0.0-20220817201139-bc19a97f63c8
+	golang.org/x/crypto v0.0.0-20220926161630-eccd6366d1be
 
 	// has no tags
 	// go get -d golang.org/x/exp@master && go mod tidy
-	golang.org/x/exp v0.0.0-20220722155223-a9213eeb770e
+	golang.org/x/exp v0.0.0-20220927162542-c76eaa363f9d
 
 	// has no tags
 	// go get -d golang.org/x/net@master && go mod tidy
-	golang.org/x/net v0.0.0-20220812174116-3211cb980234
+	golang.org/x/net v0.0.0-20220927171203-f486391704dc
 
 	// bump: gomod-golang/text /golang\.org\/x\/text v(.*)/ https://github.com/golang/text.git|^0
 	// bump: gomod-golang/text command go get -d golang.org/x/text@v$LATEST && go mod tidy
@@ -74,9 +74,9 @@ require (
 )
 
 require (
-	github.com/itchyny/timefmt-go v0.1.3 // indirect
+	github.com/itchyny/timefmt-go v0.1.4 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
-	golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab // indirect
+	golang.org/x/sys v0.0.0-20220829200755-d48e67d00261 // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 )

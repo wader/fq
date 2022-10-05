@@ -10,11 +10,17 @@ import (
 
 // Type BigInt
 
+// TryActualBigInt try assert actual value is a BigInt and return result
+func (s S) TryActualBigInt() (*big.Int, bool) {
+	v, ok := s.Actual.(*big.Int)
+	return v, ok
+}
+
 // ActualBigInt asserts actual value is a BigInt and returns it
 func (s S) ActualBigInt() *big.Int {
-	v, ok := s.Actual.(*big.Int)
+	v, ok := s.TryActualBigInt()
 	if !ok {
-		panic(fmt.Sprintf("failed to type assert s.Actual %v as *big.Int", s.Actual))
+		panic(fmt.Sprintf("failed to type assert s.Actual %v (%T) as *big.Int", s.Actual, s.Actual))
 	}
 	return v
 }
@@ -29,11 +35,17 @@ func (fn ActualBigIntFn) MapScalar(s S) (S, error) {
 
 // SymBigInt asserts symbolic value is a BigInt and returns it
 func (s S) SymBigInt() *big.Int {
-	v, ok := s.Sym.(*big.Int)
+	v, ok := s.TrySymBigInt()
 	if !ok {
-		panic(fmt.Sprintf("failed to type assert s.Sym %v as *big.Int", s.Sym))
+		panic(fmt.Sprintf("failed to type assert s.Sym %v (%T) as *big.Int", s.Sym, s.Sym))
 	}
 	return v
+}
+
+// TrySymBigInt try assert symbolic value is a BigInt and return result
+func (s S) TrySymBigInt() (*big.Int, bool) {
+	v, ok := s.Sym.(*big.Int)
+	return v, ok
 }
 
 // SymBigIntFn map sym BigInt using f
@@ -46,11 +58,17 @@ func (f SymBigIntFn) MapScalar(s S) (S, error) {
 
 // Type BitBuf
 
+// TryActualBitBuf try assert actual value is a BitBuf and return result
+func (s S) TryActualBitBuf() (bitio.ReaderAtSeeker, bool) {
+	v, ok := s.Actual.(bitio.ReaderAtSeeker)
+	return v, ok
+}
+
 // ActualBitBuf asserts actual value is a BitBuf and returns it
 func (s S) ActualBitBuf() bitio.ReaderAtSeeker {
-	v, ok := s.Actual.(bitio.ReaderAtSeeker)
+	v, ok := s.TryActualBitBuf()
 	if !ok {
-		panic(fmt.Sprintf("failed to type assert s.Actual %v as bitio.ReaderAtSeeker", s.Actual))
+		panic(fmt.Sprintf("failed to type assert s.Actual %v (%T) as bitio.ReaderAtSeeker", s.Actual, s.Actual))
 	}
 	return v
 }
@@ -65,11 +83,17 @@ func (fn ActualBitBufFn) MapScalar(s S) (S, error) {
 
 // SymBitBuf asserts symbolic value is a BitBuf and returns it
 func (s S) SymBitBuf() bitio.ReaderAtSeeker {
-	v, ok := s.Sym.(bitio.ReaderAtSeeker)
+	v, ok := s.TrySymBitBuf()
 	if !ok {
-		panic(fmt.Sprintf("failed to type assert s.Sym %v as bitio.ReaderAtSeeker", s.Sym))
+		panic(fmt.Sprintf("failed to type assert s.Sym %v (%T) as bitio.ReaderAtSeeker", s.Sym, s.Sym))
 	}
 	return v
+}
+
+// TrySymBitBuf try assert symbolic value is a BitBuf and return result
+func (s S) TrySymBitBuf() (bitio.ReaderAtSeeker, bool) {
+	v, ok := s.Sym.(bitio.ReaderAtSeeker)
+	return v, ok
 }
 
 // SymBitBufFn map sym BitBuf using f
@@ -82,11 +106,17 @@ func (f SymBitBufFn) MapScalar(s S) (S, error) {
 
 // Type Bool
 
+// TryActualBool try assert actual value is a Bool and return result
+func (s S) TryActualBool() (bool, bool) {
+	v, ok := s.Actual.(bool)
+	return v, ok
+}
+
 // ActualBool asserts actual value is a Bool and returns it
 func (s S) ActualBool() bool {
-	v, ok := s.Actual.(bool)
+	v, ok := s.TryActualBool()
 	if !ok {
-		panic(fmt.Sprintf("failed to type assert s.Actual %v as bool", s.Actual))
+		panic(fmt.Sprintf("failed to type assert s.Actual %v (%T) as bool", s.Actual, s.Actual))
 	}
 	return v
 }
@@ -101,11 +131,17 @@ func (fn ActualBoolFn) MapScalar(s S) (S, error) {
 
 // SymBool asserts symbolic value is a Bool and returns it
 func (s S) SymBool() bool {
-	v, ok := s.Sym.(bool)
+	v, ok := s.TrySymBool()
 	if !ok {
-		panic(fmt.Sprintf("failed to type assert s.Sym %v as bool", s.Sym))
+		panic(fmt.Sprintf("failed to type assert s.Sym %v (%T) as bool", s.Sym, s.Sym))
 	}
 	return v
+}
+
+// TrySymBool try assert symbolic value is a Bool and return result
+func (s S) TrySymBool() (bool, bool) {
+	v, ok := s.Sym.(bool)
+	return v, ok
 }
 
 // SymBoolFn map sym Bool using f
@@ -118,11 +154,17 @@ func (f SymBoolFn) MapScalar(s S) (S, error) {
 
 // Type F
 
+// TryActualF try assert actual value is a F and return result
+func (s S) TryActualF() (float64, bool) {
+	v, ok := s.Actual.(float64)
+	return v, ok
+}
+
 // ActualF asserts actual value is a F and returns it
 func (s S) ActualF() float64 {
-	v, ok := s.Actual.(float64)
+	v, ok := s.TryActualF()
 	if !ok {
-		panic(fmt.Sprintf("failed to type assert s.Actual %v as float64", s.Actual))
+		panic(fmt.Sprintf("failed to type assert s.Actual %v (%T) as float64", s.Actual, s.Actual))
 	}
 	return v
 }
@@ -137,11 +179,17 @@ func (fn ActualFFn) MapScalar(s S) (S, error) {
 
 // SymF asserts symbolic value is a F and returns it
 func (s S) SymF() float64 {
-	v, ok := s.Sym.(float64)
+	v, ok := s.TrySymF()
 	if !ok {
-		panic(fmt.Sprintf("failed to type assert s.Sym %v as float64", s.Sym))
+		panic(fmt.Sprintf("failed to type assert s.Sym %v (%T) as float64", s.Sym, s.Sym))
 	}
 	return v
+}
+
+// TrySymF try assert symbolic value is a F and return result
+func (s S) TrySymF() (float64, bool) {
+	v, ok := s.Sym.(float64)
+	return v, ok
 }
 
 // SymFFn map sym F using f
@@ -154,11 +202,17 @@ func (f SymFFn) MapScalar(s S) (S, error) {
 
 // Type S
 
+// TryActualS try assert actual value is a S and return result
+func (s S) TryActualS() (int64, bool) {
+	v, ok := s.Actual.(int64)
+	return v, ok
+}
+
 // ActualS asserts actual value is a S and returns it
 func (s S) ActualS() int64 {
-	v, ok := s.Actual.(int64)
+	v, ok := s.TryActualS()
 	if !ok {
-		panic(fmt.Sprintf("failed to type assert s.Actual %v as int64", s.Actual))
+		panic(fmt.Sprintf("failed to type assert s.Actual %v (%T) as int64", s.Actual, s.Actual))
 	}
 	return v
 }
@@ -173,11 +227,17 @@ func (fn ActualSFn) MapScalar(s S) (S, error) {
 
 // SymS asserts symbolic value is a S and returns it
 func (s S) SymS() int64 {
-	v, ok := s.Sym.(int64)
+	v, ok := s.TrySymS()
 	if !ok {
-		panic(fmt.Sprintf("failed to type assert s.Sym %v as int64", s.Sym))
+		panic(fmt.Sprintf("failed to type assert s.Sym %v (%T) as int64", s.Sym, s.Sym))
 	}
 	return v
+}
+
+// TrySymS try assert symbolic value is a S and return result
+func (s S) TrySymS() (int64, bool) {
+	v, ok := s.Sym.(int64)
+	return v, ok
 }
 
 // SymSFn map sym S using f
@@ -190,11 +250,17 @@ func (f SymSFn) MapScalar(s S) (S, error) {
 
 // Type Str
 
+// TryActualStr try assert actual value is a Str and return result
+func (s S) TryActualStr() (string, bool) {
+	v, ok := s.Actual.(string)
+	return v, ok
+}
+
 // ActualStr asserts actual value is a Str and returns it
 func (s S) ActualStr() string {
-	v, ok := s.Actual.(string)
+	v, ok := s.TryActualStr()
 	if !ok {
-		panic(fmt.Sprintf("failed to type assert s.Actual %v as string", s.Actual))
+		panic(fmt.Sprintf("failed to type assert s.Actual %v (%T) as string", s.Actual, s.Actual))
 	}
 	return v
 }
@@ -209,11 +275,17 @@ func (fn ActualStrFn) MapScalar(s S) (S, error) {
 
 // SymStr asserts symbolic value is a Str and returns it
 func (s S) SymStr() string {
-	v, ok := s.Sym.(string)
+	v, ok := s.TrySymStr()
 	if !ok {
-		panic(fmt.Sprintf("failed to type assert s.Sym %v as string", s.Sym))
+		panic(fmt.Sprintf("failed to type assert s.Sym %v (%T) as string", s.Sym, s.Sym))
 	}
 	return v
+}
+
+// TrySymStr try assert symbolic value is a Str and return result
+func (s S) TrySymStr() (string, bool) {
+	v, ok := s.Sym.(string)
+	return v, ok
 }
 
 // SymStrFn map sym Str using f
@@ -226,11 +298,17 @@ func (f SymStrFn) MapScalar(s S) (S, error) {
 
 // Type U
 
+// TryActualU try assert actual value is a U and return result
+func (s S) TryActualU() (uint64, bool) {
+	v, ok := s.Actual.(uint64)
+	return v, ok
+}
+
 // ActualU asserts actual value is a U and returns it
 func (s S) ActualU() uint64 {
-	v, ok := s.Actual.(uint64)
+	v, ok := s.TryActualU()
 	if !ok {
-		panic(fmt.Sprintf("failed to type assert s.Actual %v as uint64", s.Actual))
+		panic(fmt.Sprintf("failed to type assert s.Actual %v (%T) as uint64", s.Actual, s.Actual))
 	}
 	return v
 }
@@ -245,11 +323,17 @@ func (fn ActualUFn) MapScalar(s S) (S, error) {
 
 // SymU asserts symbolic value is a U and returns it
 func (s S) SymU() uint64 {
-	v, ok := s.Sym.(uint64)
+	v, ok := s.TrySymU()
 	if !ok {
-		panic(fmt.Sprintf("failed to type assert s.Sym %v as uint64", s.Sym))
+		panic(fmt.Sprintf("failed to type assert s.Sym %v (%T) as uint64", s.Sym, s.Sym))
 	}
 	return v
+}
+
+// TrySymU try assert symbolic value is a U and return result
+func (s S) TrySymU() (uint64, bool) {
+	v, ok := s.Sym.(uint64)
+	return v, ok
 }
 
 // SymUFn map sym U using f

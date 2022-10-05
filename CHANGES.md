@@ -1,3 +1,178 @@
+# 0.0.10
+
+## Changes
+
+- Add `bplist` Apple Binary Property List decoder. Thanks David McDonald @dgmcdona #427
+- Add `markdown` decoder. #422
+- Fix panic when interrupting (ctrl-c) JSON output (`fq tovalue file ` etc), #440
+- Fix issue using `debug` (and some other native go iterator functions) inside `path(...)`, which is used by assign (`... = ...`) expressions etc. #439
+- Fix issue and also make `toactual` and `tosym` work more similar to `tovalue`. #432
+- Fix issue with unknown fields (gaps found after decoding) where one continuous gap could end up split into two of more unknown fields. #431
+- More format documentation and also nicer help output. Also now all documentation is in markdown format. #430 #422
+  ```
+  # or help(matroska) in the REPL
+  $ fq -h matroska
+  matroska: Matroska file decoder
+
+  Decode examples
+  ===============
+
+    # Decode file as matroska
+    $ fq -d matroska . file
+    # Decode value as matroska
+    ... | matroska
+
+  Lookup element using path
+  =========================
+
+    $ fq 'matroska_path(".Segment.Tracks[0)")' file.mkv
+
+  Get path to element
+  ===================
+
+    $ fq 'grep_by(.id == "Tracks") | matroska_path' file.mkv
+
+  References
+  ==========
+  - https://tools.ietf.org/html/draft-ietf-cellar-ebml-00
+  - https://matroska.org/technical/specs/index.html
+  - https://www.matroska.org/technical/basics.html
+  - https://www.matroska.org/technical/codec_specs.html
+  - https://wiki.xiph.org/MatroskaOpus
+  ```
+
+## Decoder changes
+
+- `ar` Allow empty integer strings. For example owner id can be an empty string. #428
+- `bitcoin_blkdat` Assert that there is a header. As the format is part of the probe group this speeds up probing. #402
+- `bplist` Add Apple Binary Property List decoder.
+  ```sh
+  $ fq '.objects.entries[0] | .key, .value' Info.plist
+      │00 01 02 03 04 05 06 07 08 09│0123456789│.objects.entries[0].key{}:
+  0x32│               5c            │     \    │  type: "ascii_string" (5) (ASCII encoded string)
+  0x32│               5c            │     \    │  size_bits: 12
+      │                             │          │  size: 12
+  0x32│                  43 46 42 75│      CFBu│  value: "CFBundleName"
+  0x3c│6e 64 6c 65 4e 61 6d 65      │ndleName  │
+      │00 01 02 03 04 05 06 07 08 09│0123456789│.objects.entries[0].value{}:
+  0x1ea│         5f                  │   _      │  type: "ascii_string" (5) (ASCII encoded string)
+  0x1ea│         5f                  │   _      │  size_bits: 15
+  0x1ea│            10               │    .     │  large_size_marker: 1 (valid)
+  0x1ea│            10               │    .     │  exponent: 0
+  0x1ea│               18            │     .    │  size_bigint: 24
+      │                             │          │  size: 24
+  0x1ea│                  41 70 70 6c│      Appl│  value: "AppleProResCodecEmbedded"
+  0x1f4│65 50 72 6f 52 65 73 43 6f 64│eProResCod│
+  0x1fe│65 63 45 6d 62 65 64 64 65 64│ecEmbedded│
+  ```
+  - Supports `torepr`
+  ```sh
+  $ fq torepr.CFBundleName Info.plist
+  "AppleProResCodecEmbedded"
+  ```
+- `elf`
+  - More robust decoding when string tables are missing. #417<br>
+    ```sh
+    # extract entry opcodes and disassemble with ndisasm
+    $ fq -n '"f0VMRgIBAQAAAAAAAAAAAAIAPgABAAAAeABAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAEAAOAABAAAAAAAAAAEAAAAFAAAAAAAAAAAAAAAAAEAAAAAAAAAAQAAAAAAAAAAAAAEAAAAAAAAAAQAAAAAAIAAAAAAAsDxmvwYADwU=" | frombase64 | . as $b | elf | $b[.header.entry-.program_headers[0].vaddr:]' \
+    | ndisasm -b 64 -
+    00000000  B03C              mov al,0x3c
+    00000002  66BF0600          mov di,0x6
+    00000006  0F05              syscall
+    ```
+  - Now decodes program header notes. #421
+- `markdown` Add decoder. Is used in fq to render CLI help. #422
+  ```sh
+  # array with all level 1 and 2 headers
+  $ fq -d markdown '[.. | select(.type=="heading" and .level<=2)?.children[0]]' README.md
+  [
+    "fq",
+    "Usage",
+    "Presentations",
+    "Install",
+    "TODO and ideas",
+    "Development and adding a new decoder",
+    "Thanks and related projects",
+    "License"
+  ]
+  ```
+- `matroska` Add support for sample lacing. Used by FLAC samples etc. #404
+- `mp4` More codec names and also use official names from mp4ra.org. #424<br>
+  ```sh
+  # show details of first two track in file
+  $ fq -o line_bytes=10 '.tracks[0,1]' big_buck_bunny.mp4
+          │00 01 02 03 04 05 06 07 08 09│0123456789│.tracks[0]{}: track
+  0x00910a│20 68 10 01 a0 40 0e 20 8c 1b│ h...@. ..│  samples[0:1295]:
+  0x009114│c2 2b 99 09 84 42 60 a8 c4 60│.+...B`..`│
+  *       │until 0x541697.7 (5473678)   │          │
+          │                             │          │  id: 1
+          │                             │          │  data_format: "mp4a" (MPEG-4 Audio)
+          │00 01 02 03 04 05 06 07 08 09│0123456789│.tracks[1]{}: track
+  0x00a5e6│                           00│         .│  samples[0:1440]:
+  0x00a5f0│00 00 0c 06 00 07 8b 71 b0 00│.......q..│
+  0x00a5fa│00 03 00 40 80 00 00 00 15 06│...@......│
+  *       │until 0x540959.7 (5464939)   │          │
+          │                             │          │  id: 2
+          │                             │          │  data_format: "avc1" (Advanced Video Coding)
+
+  ```
+- `html` Handle leading doc type and processing directives. #414
+
+## Changelog
+
+* a77cec92 Added documentation and tests, fixed bad date parsing
+* d784db69 Adds support for Apple Binary Plist, version 00
+* 5711f290 Code fixes from PR, still need to add tests and testdata
+* 6b04f2de Documentation cleanup
+* bcccde23 Fixes and embeds documentation
+* ebae938d Fixes bug in integer parsing
+* 368d183b Size check on nBits to save memory
+* 84ca1010 Update docker-golang from 1.19.0 to 1.19.1
+* c47c3866 Update github-go-version from 1.19.0, 1.19.0, 1.19.0 to 1.19.1
+* 816169b6 Update github-golangci-lint to 1.50.0 from 1.49.0
+* 21f2980e Update make-golangci-lint to 1.50.0 from 1.49.0
+* 5f619940 adds function for decoding fixed sized arrays
+* f08f44f1 ar: Integer strings might be empty
+* 004406de bitcoin_blkdat,bitcoin_block: Make sure there is a header if blkdat
+* 421b2b30 bplist: Fix unknown field for singletons and add torepr tests
+* 16b01211 bplist: Make torepr convert to values
+* fe64530e csv: Add tsv and header example
+* cb3dc802 decode,tar: Add scalar description and Try* helpers
+* a6429ffe decode: Remove RangeSorted flag as we can decide on array/struct instead
+* a468684a deps: Manual update ones not using bump
+* a7a101ca doc,help: Nicer format help and move help tests into each format
+* 725ab1b1 doc,html,xml: Add more documentation and examples
+* abd19ed8 doc: Fix format sections a bit
+* 0fdc03a4 doc: Fix some incorrect example prompts
+* 5382d46a elf: Basic program header notes decoding
+* 12105d8c elf: Treat missing string tables as empty to be more robust
+* 3deceeeb fixes from PR comments
+* 226a9a3e generics: Use more from x/exp
+* 404b1704 gojq: Update fq fork
+* 376f0ebb gojq: Update rebased fq fork
+* 87b2c6c1 help,doc: Use markdown for format documentation again
+* 8016352b html: Handle html with leading doctype etc
+* 768df301 interp,decode: For struct use map to lookup field
+* c4219d69 interp: Fix interrupt panic for cli eval
+* 00ee10a1 interp: Make to{actual,sym} behave similar to tovalue
+* 00a50662 markdown: Add decoder
+* 7749e1b5 matroska: Add proper lacing support
+* 20a15372 mp4: Fix data_format typo
+* 2655ba09 mp4: More codec names (from mp4ra.org)
+* 7cd43b49 perfomance: increase performance by map usage
+* 6a6fec54 range,decode: Use own range sort impl to speed up a bit
+* 0f35fe48 ranges,decode: Correctly skip empty ranges when adding unknown fields
+* ea81efec readline: Update rebased fq fork
+* 369f4016 removed unneccessary type conversions
+* 3198602d removed unused return type
+* 7d865343 sortex: Package with type safe sort helpers
+* 808202fa test: Skip go test with -race by default
+* 12836abe updates fqtest
+* 1e47f4f2 updates tests post integer-bug fix
+* 3d8ea1de updates torepr for data type
+* 1385b5d0 wasm: Add some documentation
+* d6316d5c wav: Decode smpl chunk
+
 # 0.0.9
 
 ## Changes

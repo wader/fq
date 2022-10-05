@@ -45,6 +45,7 @@ const (
 	BITCOIN_BLOCK       = "bitcoin_block"
 	BITCOIN_SCRIPT      = "bitcoin_script"
 	BITCOIN_TRANSACTION = "bitcoin_transaction"
+	BPLIST              = "bplist"
 	BSD_LOOPBACK_FRAME  = "bsd_loopback_frame"
 	BSON                = "bson"
 	BZIP2               = "bzip2"

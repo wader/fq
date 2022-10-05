@@ -271,7 +271,7 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 					}
 				}
 
-				d.FieldValueStr("data_foramt", trackSDDataFormat, dataFormatNames)
+				d.FieldValueStr("data_format", trackSDDataFormat, dataFormatNames)
 
 				switch trackSDDataFormat {
 				case "lpcm",
