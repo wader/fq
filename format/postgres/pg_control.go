@@ -4,6 +4,7 @@ import (
 	"embed"
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/postgres/common"
+	"github.com/wader/fq/format/postgres/flavours/pgpro10"
 	"github.com/wader/fq/format/postgres/flavours/pgpro11"
 	"github.com/wader/fq/format/postgres/flavours/pgpro12"
 	"github.com/wader/fq/format/postgres/flavours/pgpro13"
@@ -13,6 +14,7 @@ import (
 	"github.com/wader/fq/format/postgres/flavours/pgproee12"
 	"github.com/wader/fq/format/postgres/flavours/pgproee13"
 	"github.com/wader/fq/format/postgres/flavours/pgproee14"
+	"github.com/wader/fq/format/postgres/flavours/postgres10"
 	"github.com/wader/fq/format/postgres/flavours/postgres11"
 	"github.com/wader/fq/format/postgres/flavours/postgres12"
 	"github.com/wader/fq/format/postgres/flavours/postgres13"
@@ -48,10 +50,12 @@ const (
 
 //nolint:revive
 const (
+	PG_FLAVOUR_POSTGRES10 = "postgres10"
 	PG_FLAVOUR_POSTGRES11 = "postgres11"
 	PG_FLAVOUR_POSTGRES12 = "postgres12"
 	PG_FLAVOUR_POSTGRES13 = "postgres13"
 	PG_FLAVOUR_POSTGRES14 = "postgres14"
+	PG_FLAVOUR_PGPRO10    = "pgpro10"
 	PG_FLAVOUR_PGPRO11    = "pgpro11"
 	PG_FLAVOUR_PGPRO12    = "pgpro12"
 	PG_FLAVOUR_PGPRO13    = "pgpro13"
@@ -72,6 +76,8 @@ func decodePgControl(d *decode.D, in any) any {
 	}
 
 	switch pgIn.Flavour {
+	case PG_FLAVOUR_POSTGRES10:
+		return postgres10.DecodePgControl(d, in)
 	case PG_FLAVOUR_POSTGRES11:
 		return postgres11.DecodePgControl(d, in)
 	case PG_FLAVOUR_POSTGRES12:
@@ -80,6 +86,8 @@ func decodePgControl(d *decode.D, in any) any {
 		return postgres13.DecodePgControl(d, in)
 	case PG_FLAVOUR_POSTGRES14:
 		return postgres14.DecodePgControl(d, in)
+	case PG_FLAVOUR_PGPRO10:
+		return pgpro10.DecodePgControl(d, in)
 	case PG_FLAVOUR_PGPRO11:
 		return pgpro11.DecodePgControl(d, in)
 	case PG_FLAVOUR_PGPRO12:
@@ -116,6 +124,8 @@ func probeForDecode(d *decode.D, in any) any {
 
 	if pgProVersion == common.PG_ORIGINAL {
 		switch oriVersion {
+		case PG_CONTROL_VERSION_10:
+			return postgres10.DecodePgControl(d, in)
 		case PG_CONTROL_VERSION_11:
 			return postgres11.DecodePgControl(d, in)
 		case PG_CONTROL_VERSION_12:
@@ -127,6 +137,8 @@ func probeForDecode(d *decode.D, in any) any {
 
 	if pgProVersion == common.PGPRO_STANDARD {
 		switch oriVersion {
+		case PG_CONTROL_VERSION_10:
+			return pgpro10.DecodePgControl(d, in)
 		case PG_CONTROL_VERSION_11:
 			return pgpro11.DecodePgControl(d, in)
 		case PG_CONTROL_VERSION_12:
