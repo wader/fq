@@ -110,8 +110,6 @@ const SizeOfHeapTupleHeaderData = 24
 /* total size (bytes):    6 */
 
 type Heap struct {
-	PageSize uint64
-
 	// current Page
 	Page *HeapPage
 	// Page special data
@@ -157,7 +155,7 @@ func decodeHeapPages(heap *Heap, d *decode.D) {
 
 		// end of Page
 		endLen := uint64(d.Pos() / 8)
-		pageEnd := common.TypeAlign(heap.PageSize, endLen)
+		pageEnd := common.TypeAlign(common.PageSize, endLen)
 		d.SeekAbs(int64(pageEnd) * 8)
 	}
 }
@@ -168,11 +166,11 @@ func decodeHeapPage(heap *Heap, d *decode.D, blockNumber uint32) {
 		// use prev page
 		page.BytesPosBegin = heap.Page.BytesPosEnd
 	}
-	page.BytesPosEnd = int64(common.TypeAlign(heap.PageSize, uint64(page.BytesPosBegin)+1))
+	page.BytesPosEnd = int64(common.TypeAlign(common.PageSize, uint64(page.BytesPosBegin)+1))
 	heap.Page = page
 	heap.Special = &PageSpecial{}
 
-	checkSum := calcCheckSum(d, heap.PageSize, blockNumber)
+	checkSum := calcCheckSum(d, blockNumber)
 
 	d.FieldStruct("page_header", func(d *decode.D) {
 		heap.DecodePageHeaderData(page, d)
@@ -184,7 +182,7 @@ func decodeHeapPage(heap *Heap, d *decode.D, blockNumber uint32) {
 
 	DecodeItemIds(page, d)
 
-	if uint64(page.PdSpecial) != heap.PageSize && heap.DecodePageSpecial != nil {
+	if uint64(page.PdSpecial) != common.PageSize && heap.DecodePageSpecial != nil {
 		heap.DecodePageSpecial(heap, d)
 	}
 
@@ -194,11 +192,11 @@ func decodeHeapPage(heap *Heap, d *decode.D, blockNumber uint32) {
 	})
 }
 
-func calcCheckSum(d *decode.D, pageSize uint64, blockNumber uint32) uint16 {
+func calcCheckSum(d *decode.D, blockNumber uint32) uint16 {
 	pos0 := d.Pos()
-	pageBuffer := make([]byte, pageSize)
-	rdrPage := d.RawLen(int64(pageSize * 8))
-	_, err := rdrPage.ReadBits(pageBuffer, int64(pageSize*8))
+	pageBuffer := make([]byte, common.PageSize)
+	rdrPage := d.RawLen(int64(common.PageSize * 8))
+	_, err := rdrPage.ReadBits(pageBuffer, int64(common.PageSize*8))
 	if err != nil {
 		d.Fatalf("can't read page, err = %v\n", err)
 	}

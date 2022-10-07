@@ -1,7 +1,6 @@
 package pgproee13
 
 import (
-	"github.com/wader/fq/format/postgres/common"
 	"github.com/wader/fq/format/postgres/flavours/pgproee14/ee14"
 	"github.com/wader/fq/format/postgres/flavours/postgres14/common14"
 	"github.com/wader/fq/pkg/decode"
@@ -56,7 +55,6 @@ import (
 
 func DecodeHeap(d *decode.D) any {
 	heap := &common14.Heap{
-		PageSize:             common.HeapPageSize,
 		DecodePageHeaderData: ee14.DecodePageHeaderData,
 		DecodePageSpecial:    ee14.DecodePageSpecial,
 	}

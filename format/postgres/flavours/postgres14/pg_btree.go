@@ -70,7 +70,7 @@ func DecodePgBTree(d *decode.D) any {
 	d.SeekAbs(0)
 
 	btree := &BTree{
-		PageSize: common.HeapPageSize,
+		PageSize: common.PageSize,
 	}
 	decodeBTreePages(btree, d)
 
