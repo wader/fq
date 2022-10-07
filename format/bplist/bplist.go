@@ -109,9 +109,9 @@ func decodeItem(d *decode.D, p *plist) {
 			d.FieldUBigInt("value", int(n))
 		}
 	case elementTypeReal:
-		n := decodeSize(d)
+		n := 1 << decodeSize(d)
 		d.FieldValueU("size", n)
-		d.FieldF("value", int(n))
+		d.FieldF("value", int(n*8))
 	case elementTypeDate:
 		n := 1 << decodeSize(d, d.AssertU(4, 8))
 		d.FieldValueU("size", uint64(n))
