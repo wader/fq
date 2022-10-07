@@ -181,7 +181,7 @@ func (pl *plist) decodeReference(d *decode.D, idx uint64) any {
 	}
 
 	if pl.indexIsInStack(idx) {
-		d.Errorf("recursion detected: object %d already decoded in stack %v", idx, pl.objectStack)
+		d.Fatalf("recursion detected: object %d already decoded in stack %v", idx, pl.objectStack)
 		return nil
 	}
 
