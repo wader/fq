@@ -137,7 +137,7 @@ func decodeItem(d *decode.D, p *plist) any {
 		return d.FieldStructNArray("entries", "entry", int64(n),
 			func(d *decode.D) {
 				idx := d.FieldU("object_index", int(p.t.objRefSize)*8)
-				decodeReference(d, p, idx)
+				p.decodeReference(d, idx)
 			})
 	case elementTypeSet:
 		n := decodeSize(d)
@@ -145,7 +145,7 @@ func decodeItem(d *decode.D, p *plist) any {
 		return d.FieldStructNArray("entries", "entry", int64(n),
 			func(d *decode.D) {
 				idx := d.FieldU("object_index", int(p.t.objRefSize)*8)
-				decodeReference(d, p, idx)
+				p.decodeReference(d, idx)
 			})
 	case elementTypeDict:
 		n := decodeSize(d)
@@ -158,13 +158,13 @@ func decodeItem(d *decode.D, p *plist) any {
 					vi = d.FieldU("value_index", int(p.t.objRefSize)*8)
 				})
 				d.FieldStruct("key", func(d *decode.D) {
-					k := decodeReference(d, p, ki)
+					k := p.decodeReference(d, ki)
 					if _, ok := k.(string); !ok {
 						d.Errorf("non-string key in dictionary")
 					}
 				})
 				d.FieldStruct("value", func(d *decode.D) {
-					decodeReference(d, p, vi)
+					p.decodeReference(d, vi)
 				})
 			})
 	default:
@@ -173,23 +173,31 @@ func decodeItem(d *decode.D, p *plist) any {
 	}
 }
 
-func decodeReference(d *decode.D, p *plist, idx uint64) any {
-	if idx > uint64(len(p.o)) {
+func (pl *plist) decodeReference(d *decode.D, idx uint64) any {
+	if idx > uint64(len(pl.o)) {
 		// prevent a panic
-		d.Errorf("index %d out of bounds for object table size %d", idx, len(p.o))
+		d.Errorf("index %d out of bounds for object table size %d", idx, len(pl.o))
 		return nil
 	}
 
-	itemOffset := p.o[idx]
-	if itemOffset >= p.t.offsetTableStart {
+	if pl.indexIsInStack(idx) {
+		d.Errorf("recursion detected: object %d already decoded in stack %v", idx, pl.objectStack)
+		return nil
+	}
+
+	pl.pushIndex(idx)
+
+	itemOffset := pl.o[idx]
+	if itemOffset >= pl.t.offsetTableStart {
 		d.Errorf("attempting to decode object %d at offset 0x%x beyond offset table start 0x%x",
-			idx, itemOffset, p.t.offsetTableStart)
+			idx, itemOffset, pl.t.offsetTableStart)
 	}
 
 	var item any
 	d.SeekAbs(int64(itemOffset*8), func(d *decode.D) {
-		item = decodeItem(d, p)
+		item = decodeItem(d, pl)
 	})
+	pl.popIndex()
 	return item
 }
 
@@ -202,8 +210,26 @@ type trailer struct {
 }
 
 type plist struct {
-	t trailer
-	o []uint64
+	t           trailer
+	o           []uint64
+	objectStack []uint64
+}
+
+func (pl *plist) pushIndex(idx uint64) {
+	pl.objectStack = append(pl.objectStack, idx)
+}
+
+func (pl *plist) popIndex() {
+	pl.objectStack = pl.objectStack[:len(pl.objectStack)-1]
+}
+
+func (pl *plist) indexIsInStack(idx uint64) bool {
+	for _, existing := range pl.objectStack {
+		if existing == idx {
+			return true
+		}
+	}
+	return false
 }
 
 func bplistDecode(d *decode.D, _ any) any {
@@ -240,7 +266,7 @@ func bplistDecode(d *decode.D, _ any) any {
 
 	d.FieldStruct("objects",
 		func(d *decode.D) {
-			decodeReference(d, p, 0)
+			p.decodeReference(d, 0)
 		})
 
 	return nil
