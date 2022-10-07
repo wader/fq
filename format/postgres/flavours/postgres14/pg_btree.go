@@ -2,7 +2,7 @@ package postgres14
 
 import (
 	"github.com/wader/fq/format/postgres/common"
-	"github.com/wader/fq/format/postgres/flavours/postgres14/common14"
+	"github.com/wader/fq/format/postgres/common/pg_heap/postgres"
 	"github.com/wader/fq/pkg/decode"
 )
 
@@ -79,13 +79,13 @@ func DecodePgBTree(d *decode.D) any {
 
 type BTree struct {
 	PageSize uint64
-	page     *common14.HeapPage
+	page     *postgres.HeapPage
 }
 
 func decodeBTreePages(btree *BTree, d *decode.D) {
 	for i := 0; ; i++ {
 
-		page := &common14.HeapPage{}
+		page := &postgres.HeapPage{}
 		if btree.page != nil {
 			// use prev page
 			page.BytesPosBegin = btree.page.BytesPosEnd
@@ -118,7 +118,7 @@ func decodeBTreeMetaPage(btree *BTree, d *decode.D) {
 	page := btree.page
 
 	d.FieldStruct("page_header", func(d *decode.D) {
-		common14.DecodePageHeader(page, d)
+		postgres.DecodePageHeader(page, d)
 	})
 	d.FieldStruct("meta_page_data", func(d *decode.D) {
 		decodeBTMetaPageData(d)
@@ -211,7 +211,7 @@ func decodeBTreePage(btree *BTree, d *decode.D) {
 	page := btree.page
 
 	d.FieldStruct("page_header", func(d *decode.D) {
-		common14.DecodePageHeader(page, d)
+		postgres.DecodePageHeader(page, d)
 	})
 
 	pos0 := d.Pos()
@@ -227,7 +227,7 @@ func decodeBTreePage(btree *BTree, d *decode.D) {
 	}
 
 	d.SeekAbs(pos0)
-	common14.DecodeItemIds(page, d)
+	postgres.DecodeItemIds(page, d)
 
 	d.FieldArray("tuples", func(d *decode.D) {
 		decodeIndexTuples(btree, d)

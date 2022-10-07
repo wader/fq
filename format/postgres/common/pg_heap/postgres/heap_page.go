@@ -1,4 +1,4 @@
-package common14
+package postgres
 
 import (
 	"github.com/wader/fq/format/postgres/common"

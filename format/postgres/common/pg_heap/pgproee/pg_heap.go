@@ -1,8 +1,8 @@
-package ee14
+package pgproee
 
 import (
 	"github.com/wader/fq/format/postgres/common"
-	"github.com/wader/fq/format/postgres/flavours/postgres14/common14"
+	"github.com/wader/fq/format/postgres/common/pg_heap/postgres"
 	"github.com/wader/fq/pkg/decode"
 )
 
@@ -15,7 +15,7 @@ import (
 /*   16      |     2 */ // LocationIndex pd_special;
 /*   18      |     2 */ // uint16 pd_pagesize_version;
 /*   20      |     0 */ // ItemIdData pd_linp[];
-func DecodePageHeaderData(page *common14.HeapPage, d *decode.D) {
+func DecodePageHeaderData(page *postgres.HeapPage, d *decode.D) {
 	d.FieldStruct("pd_lsn", func(d *decode.D) {
 		/*    0      |     4 */ // uint32 xlogid;
 		/*    4      |     4 */ // uint32 xrecoff;
@@ -41,7 +41,7 @@ func DecodePageHeaderData(page *common14.HeapPage, d *decode.D) {
 /*   20      |     4 */ // uint32 pd_magic;
 //
 /* total size (bytes):   24 */
-func DecodePageSpecial(heap *common14.Heap, d *decode.D) {
+func DecodePageSpecial(heap *postgres.Heap, d *decode.D) {
 	page := heap.Page
 	special := heap.Special
 

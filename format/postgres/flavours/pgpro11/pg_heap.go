@@ -2,7 +2,7 @@ package pgpro11
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/postgres/flavours/postgres14/common14"
+	postgres2 "github.com/wader/fq/format/postgres/common/pg_heap/postgres"
 	"github.com/wader/fq/pkg/decode"
 )
 
@@ -53,9 +53,9 @@ import (
 /* total size (bytes):   12 */
 
 func DecodeHeap(d *decode.D, args format.PostgresHeapIn) any {
-	heap := &common14.Heap{
+	heap := &postgres2.Heap{
 		Args:                 args,
-		DecodePageHeaderData: common14.DecodePageHeader,
+		DecodePageHeaderData: postgres2.DecodePageHeader,
 	}
-	return common14.DecodeHeap(heap, d)
+	return postgres2.DecodeHeap(heap, d)
 }

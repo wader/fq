@@ -2,8 +2,8 @@ package pgproee10
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/postgres/flavours/pgproee14/ee14"
-	"github.com/wader/fq/format/postgres/flavours/postgres14/common14"
+	"github.com/wader/fq/format/postgres/common/pg_heap/pgproee"
+	"github.com/wader/fq/format/postgres/common/pg_heap/postgres"
 	"github.com/wader/fq/pkg/decode"
 )
 
@@ -55,10 +55,10 @@ import (
 /* total size (bytes):   24 */
 
 func DecodeHeap(d *decode.D, args format.PostgresHeapIn) any {
-	heap := &common14.Heap{
+	heap := &postgres.Heap{
 		Args:                 args,
-		DecodePageHeaderData: ee14.DecodePageHeaderData,
-		DecodePageSpecial:    ee14.DecodePageSpecial,
+		DecodePageHeaderData: pgproee.DecodePageHeaderData,
+		DecodePageSpecial:    pgproee.DecodePageSpecial,
 	}
-	return common14.DecodeHeap(heap, d)
+	return postgres.DecodeHeap(heap, d)
 }
