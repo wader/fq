@@ -183,7 +183,7 @@ func decodeReference(d *decode.D, p *plist, idx uint64) any {
 	itemOffset := p.o[idx]
 	if itemOffset >= p.t.offsetTableStart {
 		d.Errorf("attempting to decode object %d at offset 0x%x beyond offset table start 0x%x",
-		idx, itemOffset, p.t.offsetTableStart)
+			idx, itemOffset, p.t.offsetTableStart)
 	}
 
 	var item any
