@@ -688,20 +688,22 @@ $ fq -d pg_control -o flavour=postgres14 ".state, .check_point_copy.redo, .wal_l
 
 ### Options
 
-|Name     |Default   |Description|
-|-        |-         |-|
-|`flavour`|postgres14|PostgreSQL flavour: postgres14, pgproee14.., postgres10|
+|Name            |Default   |Description|
+|-               |-         |-|
+|`flavour`       |postgres14|PostgreSQL flavour: postgres14, pgproee14.., postgres10|
+|`page_number`   |0         |First page number in file, default is 0|
+|`segment_number`|0         |Segment file number (16790.1 is 1), default is 0|
 
 ### Examples
 
 Decode file using pg_heap options
 ```
-$ fq -d pg_heap -o flavour="postgres14" . file
+$ fq -d pg_heap -o flavour="postgres14" -o page_number=0 -o segment_number=0 . file
 ```
 
 Decode value as pg_heap
 ```
-... | pg_heap({flavour:"postgres14"})
+... | pg_heap({flavour:"postgres14",page_number:0,segment_number:0})
 ```
 
 ### To see heap page's content

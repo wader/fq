@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"embed"
+
 	"github.com/wader/fq/format/postgres/common/pg_heap/pgproee"
 	"github.com/wader/fq/format/postgres/common/pg_heap/postgres"
 

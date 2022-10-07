@@ -24,8 +24,8 @@ var (
 )
 
 func checksumComp(checksum uint32, value uint32) uint32 {
-	__tmp := checksum ^ value
-	checksum = __tmp*fnvPrime ^ (__tmp >> 17)
+	tmp := checksum ^ value
+	checksum = tmp*fnvPrime ^ (tmp >> 17)
 	return checksum
 }
 
