@@ -90,11 +90,11 @@ func decodeSize(d *decode.D, sms ...scalar.Mapper) uint64 {
 	return n
 }
 
-func decodeItem(d *decode.D, p *plist) {
+func decodeItem(d *decode.D, p *plist) any {
 	m := d.FieldU4("type", elementTypeMap)
 	switch m {
 	case elementTypeNullOrBoolOrFill:
-		d.FieldU4("value", scalar.UToScalar{
+		return d.FieldU4("value", scalar.UToScalar{
 			null:      scalar.S{Sym: nil},
 			boolTrue:  scalar.S{Sym: true},
 			boolFalse: scalar.S{Sym: false},
@@ -104,62 +104,65 @@ func decodeItem(d *decode.D, p *plist) {
 			return 1 << d.U4()
 		})
 		if n*8 <= 64 {
-			d.FieldU("value", int(n*8))
+			return d.FieldU("value", int(n*8))
 		} else {
-			d.FieldUBigInt("value", int(n))
+			return d.FieldUBigInt("value", int(n))
 		}
 	case elementTypeReal:
 		n := 1 << decodeSize(d)
 		d.FieldValueU("size", uint64(n))
-		d.FieldF("value", n*8)
+		return d.FieldF("value", n*8)
 	case elementTypeDate:
 		n := 1 << decodeSize(d, d.AssertU(4, 8))
 		d.FieldValueU("size", uint64(n))
-		d.FieldF("value", n*8, scalar.DescriptionTimeFn(scalar.S.TryActualF, cocoaTimeEpochDate, time.RFC3339))
+		return d.FieldF("value", n*8, scalar.DescriptionTimeFn(scalar.S.TryActualF, cocoaTimeEpochDate, time.RFC3339))
 	case elementTypeData:
 		n := decodeSize(d)
 		d.FieldValueU("size", n)
-		d.FieldRawLen("value", int64(n*8))
+		return d.FieldRawLen("value", int64(n*8))
 	case elementTypeASCIIString:
 		n := decodeSize(d)
 		d.FieldValueU("size", n)
-		d.FieldUTF8("value", int(n))
+		return d.FieldUTF8("value", int(n))
 	case elementTypeUnicodeString:
 		n := decodeSize(d)
 		d.FieldValueU("size", n)
-		d.FieldUTF16("value", int(n))
+		return d.FieldUTF16("value", int(n))
 	case elementTypeUID:
 		n := decodeSize(d)
 		d.FieldValueU("size", n)
-		d.FieldUBigInt("value", int(n)).Uint64()
+		return d.FieldUBigInt("value", int(n)).Uint64()
 	case elementTypeArray:
 		n := decodeSize(d)
 		d.FieldValueU("size", n)
-		d.FieldStructNArray("entries", "entry", int64(n),
+		return d.FieldStructNArray("entries", "entry", int64(n),
 			func(d *decode.D) {
-				idx := d.FieldU8("object_index")
+				idx := d.FieldU("object_index", int(p.t.objRefSize)*8)
 				decodeReference(d, p, idx)
 			})
 	case elementTypeSet:
 		n := decodeSize(d)
 		d.FieldValueU("size", n)
-		d.FieldStructNArray("entries", "entry", int64(n),
+		return d.FieldStructNArray("entries", "entry", int64(n),
 			func(d *decode.D) {
-				idx := d.FieldU8("object_index")
+				idx := d.FieldU("object_index", int(p.t.objRefSize)*8)
 				decodeReference(d, p, idx)
 			})
 	case elementTypeDict:
 		n := decodeSize(d)
 		d.FieldValueU("size", n)
-		d.FieldStructNArray("entries", "entry", int64(n),
+		return d.FieldStructNArray("entries", "entry", int64(n),
 			func(d *decode.D) {
 				var ki, vi uint64
-				ki = d.FieldU8("key_index")
+				ki = d.FieldU("key_index", int(p.t.objRefSize)*8)
 				d.SeekRel(int64((n-1)*p.t.objRefSize)*8, func(d *decode.D) {
-					vi = d.FieldU8("value_index")
+					vi = d.FieldU("value_index", int(p.t.objRefSize)*8)
 				})
 				d.FieldStruct("key", func(d *decode.D) {
-					decodeReference(d, p, ki)
+					k := decodeReference(d, p, ki)
+					if _, ok := k.(string); !ok {
+						d.Errorf("non-string key in dictionary")
+					}
 				})
 				d.FieldStruct("value", func(d *decode.D) {
 					decodeReference(d, p, vi)
@@ -167,19 +170,28 @@ func decodeItem(d *decode.D, p *plist) {
 			})
 	default:
 		d.Errorf("unknown type marker: %d", m)
+		return nil
 	}
 }
 
-func decodeReference(d *decode.D, p *plist, idx uint64) {
+func decodeReference(d *decode.D, p *plist, idx uint64) any {
 	if idx > uint64(len(p.o)) {
 		// prevent a panic
 		d.Errorf("index %d out of bounds for object table size %d", idx, len(p.o))
-		return
+		return nil
 	}
 
-	d.SeekAbs(int64(p.o[idx]*8), func(d *decode.D) {
-		decodeItem(d, p)
+	itemOffset := p.o[idx]
+	if itemOffset >= p.t.offsetTableStart {
+		d.Errorf("attempting to decode object %d at offset 0x%x beyond offset table start 0x%x",
+		idx, itemOffset, p.t.offsetTableStart)
+	}
+
+	var item any
+	d.SeekAbs(int64(itemOffset*8), func(d *decode.D) {
+		item = decodeItem(d, p)
 	})
+	return item
 }
 
 type trailer struct {
