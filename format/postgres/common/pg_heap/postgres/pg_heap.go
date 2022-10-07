@@ -137,7 +137,7 @@ type TupleD struct {
 	IsMulti bool
 }
 
-func DecodeHeap(heap *Heap, d *decode.D) any {
+func Decode(heap *Heap, d *decode.D) any {
 	d.SeekAbs(0)
 	decodeHeapPages(heap, d)
 
