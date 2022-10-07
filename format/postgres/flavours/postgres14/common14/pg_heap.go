@@ -2,7 +2,6 @@ package common14
 
 import (
 	"fmt"
-
 	"github.com/wader/fq/format/postgres/common"
 
 	"github.com/wader/fq/pkg/decode"
@@ -145,14 +144,16 @@ func DecodeHeap(heap *Heap, d *decode.D) any {
 }
 
 func decodeHeapPages(heap *Heap, d *decode.D) {
+	blockNumber := uint32(0)
 	for {
 		if end, _ := d.TryEnd(); end {
 			return
 		}
 
 		d.FieldStruct("page", func(d *decode.D) {
-			decodeHeapPage(heap, d)
+			decodeHeapPage(heap, d, blockNumber)
 		})
+		blockNumber++
 
 		// end of Page
 		endLen := uint64(d.Pos() / 8)
@@ -161,7 +162,7 @@ func decodeHeapPages(heap *Heap, d *decode.D) {
 	}
 }
 
-func decodeHeapPage(heap *Heap, d *decode.D) {
+func decodeHeapPage(heap *Heap, d *decode.D, blockNumber uint32) {
 	page := &HeapPage{}
 	if heap.Page != nil {
 		// use prev page
@@ -171,8 +172,14 @@ func decodeHeapPage(heap *Heap, d *decode.D) {
 	heap.Page = page
 	heap.Special = &PageSpecial{}
 
+	checkSum := calcCheckSum(d, heap.PageSize, blockNumber)
+
 	d.FieldStruct("page_header", func(d *decode.D) {
 		heap.DecodePageHeaderData(page, d)
+
+		d.FieldValueU("pd_checksum_check", uint64(checkSum))
+		sumEqual := page.PdChecksum == checkSum
+		d.FieldValueBool("pd_checksum_check_equal", sumEqual)
 	})
 
 	DecodeItemIds(page, d)
@@ -185,6 +192,19 @@ func decodeHeapPage(heap *Heap, d *decode.D) {
 	d.FieldArray("tuples", func(d *decode.D) {
 		decodeTuples(heap, d)
 	})
+}
+
+func calcCheckSum(d *decode.D, pageSize uint64, blockNumber uint32) uint16 {
+	pos0 := d.Pos()
+	pageBuffer := make([]byte, pageSize)
+	rdrPage := d.RawLen(int64(pageSize * 8))
+	_, err := rdrPage.ReadBits(pageBuffer, int64(pageSize*8))
+	if err != nil {
+		d.Fatalf("can't read page, err = %v\n", err)
+	}
+	sum2 := common.CheckSumBlock(pageBuffer, blockNumber)
+	d.SeekAbs(pos0)
+	return sum2
 }
 
 func decodeTuples(heap *Heap, d *decode.D) {

@@ -22,7 +22,7 @@ func DecodePageHeaderData(page *common14.HeapPage, d *decode.D) {
 		d.FieldU32("xlogid", common.HexMapper)
 		d.FieldU32("xrecoff", common.HexMapper)
 	})
-	d.FieldU16("pd_checksum")
+	page.PdChecksum = uint16(d.FieldU16("pd_checksum"))
 	d.FieldU16("pd_flags")
 	page.PdLower = uint16(d.FieldU16("pd_lower"))
 	page.PdUpper = uint16(d.FieldU16("pd_upper"))
