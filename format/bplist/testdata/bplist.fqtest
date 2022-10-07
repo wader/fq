@@ -2422,3 +2422,26 @@ $ fq torepr Info.plist
 }
 $ fq torepr.CFBundleName Info.plist
 "AppleProResCodecEmbedded"
+$ fq dv float.plist
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: float.plist (bplist) 0x0-0x31.7 (50)
+    |                                               |                |  header{}: 0x0-0x7.7 (8)
+0x00|62 70 6c 69 73 74                              |bplist          |    magic: "bplist" (valid) 0x0-0x5.7 (6)
+0x00|                  30 30                        |      00        |    version: "00" (valid) 0x6-0x7.7 (2)
+    |                                               |                |  objects{}: 0x8-0x10.7 (9)
+0x00|                        23                     |        #       |    type: "real" (2) (Floating Point Number) 0x8-0x8.3 (0.4)
+0x00|                        23                     |        #       |    size_bits: 3 0x8.4-0x8.7 (0.4)
+    |                                               |                |    size: 8 0x9-NA (0)
+0x00|                           40 09 21 f9 f0 1b 86|         @.!....|    value: 3.14159 0x9-0x10.7 (8)
+0x10|6e                                             |n               |
+    |                                               |                |  offset_table[0:1]: 0x11-0x11.7 (1)
+0x10|   08                                          | .              |    [0]: 8 element 0x11-0x11.7 (1)
+    |                                               |                |  trailer{}: 0x12-0x31.7 (32)
+0x10|      00 00 00 00 00                           |  .....         |    unused: 0 0x12-0x16.7 (5)
+0x10|                     00                        |       .        |    sort_version: 0 0x17-0x17.7 (1)
+0x10|                        01                     |        .       |    offset_table_offset_size: 1 (valid) 0x18-0x18.7 (1)
+0x10|                           01                  |         .      |    object_reference_size: 1 (valid) 0x19-0x19.7 (1)
+0x10|                              00 00 00 00 00 00|          ......|    object_count: 1 0x1a-0x21.7 (8)
+0x20|00 01                                          |..              |
+0x20|      00 00 00 00 00 00 00 00                  |  ........      |    top_object_offset: 0 0x22-0x29.7 (8)
+0x20|                              00 00 00 00 00 00|          ......|    offset_table_start: 17 0x2a-0x31.7 (8)
+0x30|00 11|                                         |..|             |
