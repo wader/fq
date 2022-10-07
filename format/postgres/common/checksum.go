@@ -7,6 +7,7 @@ const (
 	fnvPrime     = 16777619
 	nSumsSize    = 4 * nSums
 	mainBlockLen = PageSize / nSumsSize
+	RelSegSize   = 131072
 )
 
 var (

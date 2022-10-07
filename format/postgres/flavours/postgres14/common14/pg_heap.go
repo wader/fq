@@ -2,6 +2,7 @@ package common14
 
 import (
 	"fmt"
+	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/postgres/common"
 
 	"github.com/wader/fq/pkg/decode"
@@ -110,6 +111,8 @@ const SizeOfHeapTupleHeaderData = 24
 /* total size (bytes):    6 */
 
 type Heap struct {
+	Args format.PostgresHeapIn
+
 	// current Page
 	Page *HeapPage
 	// Page special data
@@ -142,7 +145,7 @@ func DecodeHeap(heap *Heap, d *decode.D) any {
 }
 
 func decodeHeapPages(heap *Heap, d *decode.D) {
-	blockNumber := uint32(0)
+	blockNumber := uint32(heap.Args.PageNumber + heap.Args.SegmentNumber*common.RelSegSize)
 	for {
 		if end, _ := d.TryEnd(); end {
 			return

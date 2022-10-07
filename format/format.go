@@ -328,6 +328,12 @@ type PostgresIn struct {
 	Flavour string `doc:"PostgreSQL flavour: postgres14, pgproee14.., postgres10"`
 }
 
+type PostgresHeapIn struct {
+	Flavour       string `doc:"PostgreSQL flavour: postgres14, pgproee14.., postgres10"`
+	PageNumber    int    `doc:"First page number in file, default is 0"`
+	SegmentNumber int    `doc:"Segment file number (16790.1 is 1), default is 0"`
+}
+
 type PostgresWalIn struct {
 	Flavour string `doc:"PostgreSQL flavour: postgres14, pgproee14.., postgres10"`
 	Lsn     string `doc:"Current LSN for WAL, use \"select pg_current_wal_lsn()\""`
