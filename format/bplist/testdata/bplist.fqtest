@@ -2445,8 +2445,8 @@ $ fq dv float.plist
 0x20|      00 00 00 00 00 00 00 00                  |  ........      |    top_object_offset: 0 0x22-0x29.7 (8)
 0x20|                              00 00 00 00 00 00|          ......|    offset_table_start: 17 0x2a-0x31.7 (8)
 0x30|00 11|                                         |..|             |
-$ fq dv dicttest_broken.plist
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: dicttest_broken.plist (bplist) 0x0-0x129c.7 (4765)
+$ fq dv dicttest_many_items.plist
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: dicttest_many_items.plist (bplist) 0x0-0x129c.7 (4765)
       |                                               |                |  header{}: 0x0-0x7.7 (8)
 0x0000|62 70 6c 69 73 74                              |bplist          |    magic: "bplist" (valid) 0x0-0x5.7 (6)
 0x0000|                  30 30                        |      00        |    version: "00" (valid) 0x6-0x7.7 (2)
