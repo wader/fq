@@ -4,11 +4,10 @@
   <element name="EBMLMaxSizeLength" path="\EBML\EBMLMaxSizeLength" id="0x42F3" type="uinteger" range="1-8" default="8" minOccurs="1" maxOccurs="1"/>
   <!-- Root Element-->
   <element name="Segment" path="\Segment" id="0x18538067" type="master" minOccurs="1" maxOccurs="1" unknownsizeallowed="1">
-    <documentation lang="en" purpose="definition">The Root Element that contains all other Top-Level Elements (Elements defined only at Level 1).
-A Matroska file is composed of 1 Segment.</documentation>
+    <documentation lang="en" purpose="definition">The Root Element that contains all other Top-Level Elements; see (#data-layout).</documentation>
   </element>
   <element name="SeekHead" path="\Segment\SeekHead" id="0x114D9B74" type="master" maxOccurs="2">
-    <documentation lang="en" purpose="definition">Contains the Segment Position of other Top-Level Elements.</documentation>
+    <documentation lang="en" purpose="definition">Contains seeking information of Top-Level Elements; see (#data-layout).</documentation>
     <extension type="webmproject.org" webm="1"/>
   </element>
   <element name="Seek" path="\Segment\SeekHead\Seek" id="0x4DBB" type="master" minOccurs="1">
@@ -16,48 +15,55 @@ A Matroska file is composed of 1 Segment.</documentation>
     <extension type="webmproject.org" webm="1"/>
   </element>
   <element name="SeekID" path="\Segment\SeekHead\Seek\SeekID" id="0x53AB" type="binary" length="&lt;= 4" minOccurs="1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">The binary ID corresponding to the Element name.</documentation>
+    <documentation lang="en" purpose="definition">The binary EBML ID of a Top-Level Element.</documentation>
     <extension type="webmproject.org" webm="1"/>
   </element>
   <element name="SeekPosition" path="\Segment\SeekHead\Seek\SeekPosition" id="0x53AC" type="uinteger" minOccurs="1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">The Segment Position of the Element.</documentation>
+    <documentation lang="en" purpose="definition">The Segment Position ((#segment-position)) of a Top-Level Element.</documentation>
     <extension type="webmproject.org" webm="1"/>
   </element>
   <element name="Info" path="\Segment\Info" id="0x1549A966" type="master" minOccurs="1" maxOccurs="1" recurring="1">
     <documentation lang="en" purpose="definition">Contains general information about the Segment.</documentation>
     <extension type="webmproject.org" webm="1"/>
   </element>
-  <element name="SegmentUID" path="\Segment\Info\SegmentUID" id="0x73A4" type="binary" range="not 0" length="16" maxOccurs="1">
-    <documentation lang="en" purpose="definition">A randomly generated unique ID to identify the Segment amongst many others (128 bits).</documentation>
+  <element name="SegmentUUID" path="\Segment\Info\SegmentUUID" id="0x73A4" type="binary" range="not 0" length="16" maxOccurs="1">
+    <documentation lang="en" purpose="definition">A randomly generated unique ID to identify the Segment amongst many others (128 bits).
+It is effectively a Universally Unique IDentifier stored in binary form [@!RFC4122].</documentation>
     <documentation lang="en" purpose="usage notes">If the Segment is a part of a Linked Segment, then this Element is **REQUIRED**.</documentation>
+    <extension type="libmatroska" cppname="SegmentUID"/>
   </element>
   <element name="SegmentFilename" path="\Segment\Info\SegmentFilename" id="0x7384" type="utf-8" maxOccurs="1">
     <documentation lang="en" purpose="definition">A filename corresponding to this Segment.</documentation>
   </element>
-  <element name="PrevUID" path="\Segment\Info\PrevUID" id="0x3CB923" type="binary" length="16" maxOccurs="1">
-    <documentation lang="en" purpose="definition">A unique ID to identify the previous Segment of a Linked Segment (128 bits).</documentation>
-    <documentation lang="en" purpose="usage notes">If the Segment is a part of a Linked Segment that uses Hard Linking,
-then either the PrevUID or the NextUID Element is **REQUIRED**. If a Segment contains a PrevUID but not a NextUID,
-then it **MAY** be considered as the last Segment of the Linked Segment. The PrevUID **MUST NOT** be equal to the SegmentUID.</documentation>
+  <element name="PrevUUID" path="\Segment\Info\PrevUUID" id="0x3CB923" type="binary" length="16" maxOccurs="1">
+    <documentation lang="en" purpose="definition">A unique ID to identify the previous Segment of a Linked Segment (128 bits).
+Like the SegmentUUID, it is a Universally Unique IDentifier stored in binary form [@!RFC4122].</documentation>
+    <documentation lang="en" purpose="usage notes">If the Segment is a part of a Linked Segment that uses Hard Linking ((#hard-linking)),
+then either the PrevUUID or the NextUUID Element is **REQUIRED**. If a Segment contains a PrevUUID but not a NextUUID,
+then it **MAY** be considered as the last Segment of the Linked Segment. The PrevUUID **MUST NOT** be equal to the SegmentUUID.</documentation>
+    <extension type="libmatroska" cppname="PrevUID"/>
   </element>
   <element name="PrevFilename" path="\Segment\Info\PrevFilename" id="0x3C83AB" type="utf-8" maxOccurs="1">
     <documentation lang="en" purpose="definition">A filename corresponding to the file of the previous Linked Segment.</documentation>
     <documentation lang="en" purpose="usage notes">Provision of the previous filename is for display convenience,
-but PrevUID **SHOULD** be considered authoritative for identifying the previous Segment in a Linked Segment.</documentation>
+but PrevUUID **SHOULD** be considered authoritative for identifying the previous Segment in a Linked Segment.</documentation>
   </element>
-  <element name="NextUID" path="\Segment\Info\NextUID" id="0x3EB923" type="binary" length="16" maxOccurs="1">
-    <documentation lang="en" purpose="definition">A unique ID to identify the next Segment of a Linked Segment (128 bits).</documentation>
-    <documentation lang="en" purpose="usage notes">If the Segment is a part of a Linked Segment that uses Hard Linking,
-then either the PrevUID or the NextUID Element is **REQUIRED**. If a Segment contains a NextUID but not a PrevUID,
-then it **MAY** be considered as the first Segment of the Linked Segment. The NextUID **MUST NOT** be equal to the SegmentUID.</documentation>
+  <element name="NextUUID" path="\Segment\Info\NextUUID" id="0x3EB923" type="binary" length="16" maxOccurs="1">
+    <documentation lang="en" purpose="definition">A unique ID to identify the next Segment of a Linked Segment (128 bits).
+Like the SegmentUUID, it is a Universally Unique IDentifier stored in binary form [@!RFC4122].</documentation>
+    <documentation lang="en" purpose="usage notes">If the Segment is a part of a Linked Segment that uses Hard Linking ((#hard-linking)),
+then either the PrevUUID or the NextUUID Element is **REQUIRED**. If a Segment contains a NextUUID but not a PrevUUID,
+then it **MAY** be considered as the first Segment of the Linked Segment. The NextUUID **MUST NOT** be equal to the SegmentUUID.</documentation>
+    <extension type="libmatroska" cppname="NextUID"/>
   </element>
   <element name="NextFilename" path="\Segment\Info\NextFilename" id="0x3E83BB" type="utf-8" maxOccurs="1">
     <documentation lang="en" purpose="definition">A filename corresponding to the file of the next Linked Segment.</documentation>
     <documentation lang="en" purpose="usage notes">Provision of the next filename is for display convenience,
-but NextUID **SHOULD** be considered authoritative for identifying the Next Segment.</documentation>
+but NextUUID **SHOULD** be considered authoritative for identifying the Next Segment.</documentation>
   </element>
   <element name="SegmentFamily" path="\Segment\Info\SegmentFamily" id="0x4444" type="binary" length="16">
-    <documentation lang="en" purpose="definition">A randomly generated unique ID that all Segments of a Linked Segment **MUST** share (128 bits).</documentation>
+    <documentation lang="en" purpose="definition">A randomly generated unique ID that all Segments of a Linked Segment **MUST** share (128 bits).
+It is effectively a Universally Unique IDentifier stored in binary form [@!RFC4122].</documentation>
     <documentation lang="en" purpose="usage notes">If the Segment Info contains a `ChapterTranslate` element, this Element is **REQUIRED**.</documentation>
   </element>
   <element name="ChapterTranslate" path="\Segment\Info\ChapterTranslate" id="0x6924" type="master">
@@ -133,7 +139,7 @@ It is useful when using overlay tracks on seeking or to decide what track to use
 It could change later if not specified as silent in a further Cluster.</documentation>
     <extension type="libmatroska" cppname="ClusterSilentTrackNumber"/>
   </element>
-  <element name="Position" path="\Segment\Cluster\Position" id="0xA7" type="uinteger" maxOccurs="1">
+  <element name="Position" path="\Segment\Cluster\Position" id="0xA7" type="uinteger" maxver="4" maxOccurs="1">
     <documentation lang="en" purpose="definition">The Segment Position of the Cluster in the Segment (0 in live streams).
 It might help to resynchronise offset on damaged streams.</documentation>
     <extension type="libmatroska" cppname="ClusterPosition"/>
@@ -163,7 +169,7 @@ see (#block-structure) on Block Structure.</documentation>
 </documentation>
   </element>
   <element name="BlockAdditions" path="\Segment\Cluster\BlockGroup\BlockAdditions" id="0x75A1" type="master" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Contain additional blocks to complete the main one.
+    <documentation lang="en" purpose="definition">Contain additional binary data to complete the main one; see Codec BlockAdditions section of [@?MatroskaCodec] for more information.
 An EBML parser that has no knowledge of the Block structure could still see and use/skip these data.</documentation>
     <extension type="webmproject.org" webm="1"/>
   </element>
@@ -171,13 +177,16 @@ An EBML parser that has no knowledge of the Block structure could still see and 
     <documentation lang="en" purpose="definition">Contain the BlockAdditional and some parameters.</documentation>
     <extension type="webmproject.org" webm="1"/>
   </element>
-  <element name="BlockAddID" path="\Segment\Cluster\BlockGroup\BlockAdditions\BlockMore\BlockAddID" id="0xEE" type="uinteger" range="not 0" default="1" minOccurs="1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">An ID to identify the BlockAdditional level.
-If BlockAddIDType of the corresponding block is 0, this value is also the value of BlockAddIDType for the meaning of the content of BlockAdditional.</documentation>
-    <extension type="webmproject.org" webm="1"/>
-  </element>
   <element name="BlockAdditional" path="\Segment\Cluster\BlockGroup\BlockAdditions\BlockMore\BlockAdditional" id="0xA5" type="binary" minOccurs="1" maxOccurs="1">
     <documentation lang="en" purpose="definition">Interpreted by the codec as it wishes (using the BlockAddID).</documentation>
+    <extension type="webmproject.org" webm="1"/>
+  </element>
+  <element name="BlockAddID" path="\Segment\Cluster\BlockGroup\BlockAdditions\BlockMore\BlockAddID" id="0xEE" type="uinteger" range="not 0" default="1" minOccurs="1" maxOccurs="1">
+    <documentation lang="en" purpose="definition">An ID to identify how to interpret the BlockAdditional data; see Codec BlockAdditions section of [@?MatroskaCodec] for more information.
+A value of 1 indicates that the meaning of the BlockAdditional data is defined by the codec.
+Any other value indicates the meaning of the BlockAdditional data is found in the BlockAddIDType found in the TrackEntry.</documentation>
+    <documentation lang="en" purpose="usage notes">Each BlockAddID value **MUST** be unique between all BlockMore elements found in a BlockAdditions.</documentation>
+    <documentation lang="en" purpose="usage notes">To keep MaxBlockAdditionID as low as possible, small values **SHOULD** be used.</documentation>
     <extension type="webmproject.org" webm="1"/>
   </element>
   <element name="BlockDuration" path="\Segment\Cluster\BlockGroup\BlockDuration" id="0x9B" type="uinteger" maxOccurs="1">
@@ -217,14 +226,14 @@ This information **SHOULD** always be referenced by a seek entry.</documentation
 The duration of DiscardPadding is not calculated in the duration of the TrackEntry and **SHOULD** be discarded during playback.</documentation>
     <extension type="webmproject.org" webm="1"/>
   </element>
-  <element name="Slices" path="\Segment\Cluster\BlockGroup\Slices" id="0x8E" type="master"  minver="0" maxver="0" maxOccurs="1">
+  <element name="Slices" path="\Segment\Cluster\BlockGroup\Slices" id="0x8E" type="master" minver="0" maxver="0" maxOccurs="1">
     <documentation lang="en" purpose="definition">Contains slices description.</documentation>
   </element>
   <element name="TimeSlice" path="\Segment\Cluster\BlockGroup\Slices\TimeSlice" id="0xE8" type="master" minver="0" maxver="0">
     <documentation lang="en" purpose="definition">Contains extra time information about the data contained in the Block.
 Being able to interpret this Element is not **REQUIRED** for playback.</documentation>
   </element>
-  <element name="LaceNumber" path="\Segment\Cluster\BlockGroup\Slices\TimeSlice\LaceNumber" id="0xCC" type="uinteger"  minver="0" maxver="0" maxOccurs="1">
+  <element name="LaceNumber" path="\Segment\Cluster\BlockGroup\Slices\TimeSlice\LaceNumber" id="0xCC" type="uinteger" minver="0" maxver="0" maxOccurs="1">
     <documentation lang="en" purpose="definition">The reverse number of the frame in the lace (0 is the last frame, 1 is the next to last, etc).
 Being able to interpret this Element is not **REQUIRED** for playback.</documentation>
     <extension type="libmatroska" cppname="SliceLaceNumber"/>
@@ -374,7 +383,7 @@ see (#defaultdecodedfieldduration) for more information</documentation>
     <extension type="stream copy" keep="1"/>
   </element>
   <element name="TrackTimestampScale" path="\Segment\Tracks\TrackEntry\TrackTimestampScale" id="0x23314F" type="float" maxver="3" range="&gt; 0x0p+0" default="0x1p+0" minOccurs="1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">DEPRECATED, DO NOT USE. The scale to apply on this track to work at normal speed in relation with other tracks
+    <documentation lang="en" purpose="definition">The scale to apply on this track to work at normal speed in relation with other tracks
 (mostly used to adjust video speed when the audio length differs).</documentation>
     <extension type="libmatroska" cppname="TrackTimecodeScale"/>
     <extension type="stream copy" keep="1"/>
@@ -393,10 +402,10 @@ A value 0 means there is no BlockAdditions ((#blockadditions-element)) for this 
 with BlockAddID ((#blockaddid-element)), or to the track as a whole
 with BlockAddIDExtraData.</documentation>
   </element>
-  <element name="BlockAddIDValue" path="\Segment\Tracks\TrackEntry\BlockAdditionMapping\BlockAddIDValue" id="0x41F0" type="uinteger" minver="4" range=">=2" maxOccurs="1">
+  <element name="BlockAddIDValue" path="\Segment\Tracks\TrackEntry\BlockAdditionMapping\BlockAddIDValue" id="0x41F0" type="uinteger" minver="4" range="&gt;=2" maxOccurs="1">
     <documentation lang="en" purpose="definition">If the track format extension needs content beside frames,
-the value refers to the BlockAddID ((#blockaddid-element)), value being described.
-To keep MaxBlockAdditionID as low as possible, small values **SHOULD** be used.</documentation>
+the value refers to the BlockAddID ((#blockaddid-element)), value being described.</documentation>
+    <documentation lang="en" purpose="usage notes">To keep MaxBlockAdditionID as low as possible, small values **SHOULD** be used.</documentation>
   </element>
   <element name="BlockAddIDName" path="\Segment\Tracks\TrackEntry\BlockAdditionMapping\BlockAddIDName" id="0x41A4" type="string" minver="4" maxOccurs="1">
     <documentation lang="en" purpose="definition">A human-friendly name describing the type of BlockAdditional data,
@@ -405,6 +414,7 @@ as defined by the associated Block Additional Mapping.</documentation>
   <element name="BlockAddIDType" path="\Segment\Tracks\TrackEntry\BlockAdditionMapping\BlockAddIDType" id="0x41E7" type="uinteger" minver="4" default="0" minOccurs="1" maxOccurs="1">
     <documentation lang="en" purpose="definition">Stores the registered identifier of the Block Additional Mapping
 to define how the BlockAdditional data should be handled.</documentation>
+    <documentation lang="en" purpose="usage notes">If BlockAddIDType is 0, the BlockAddIDValue and corresponding BlockAddID values **MUST** be 1.</documentation>
   </element>
   <element name="BlockAddIDExtraData" path="\Segment\Tracks\TrackEntry\BlockAdditionMapping\BlockAddIDExtraData" id="0x41ED" type="binary" minver="4" maxOccurs="1">
     <documentation lang="en" purpose="definition">Extra binary data that the BlockAddIDType can use to interpret the BlockAdditional data.
@@ -416,20 +426,21 @@ The interpretation of the binary data depends on the BlockAddIDType value and th
     <extension type="webmproject.org" webm="1"/>
   </element>
   <element name="Language" path="\Segment\Tracks\TrackEntry\Language" id="0x22B59C" type="string" default="eng" minOccurs="1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Specifies the language of the track in the Matroska languages form;
-see (#language-codes) on language codes.
-This Element **MUST** be ignored if the LanguageIETF Element is used in the same TrackEntry.</documentation>
+    <documentation lang="en" purpose="definition">The language of the track,
+in the Matroska languages form; see (#language-codes) on language codes.
+This Element **MUST** be ignored if the LanguageBCP47 Element is used in the same TrackEntry.</documentation>
     <extension type="libmatroska" cppname="TrackLanguage"/>
     <extension type="webmproject.org" webm="1"/>
   </element>
-  <element name="LanguageIETF" path="\Segment\Tracks\TrackEntry\LanguageIETF" id="0x22B59D" type="string" minver="4" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Specifies the language of the track according to [@!BCP47]
-and using the IANA Language Subtag Registry [@!IANALangRegistry].
+  <element name="LanguageBCP47" path="\Segment\Tracks\TrackEntry\LanguageBCP47" id="0x22B59D" type="string" minver="4" maxOccurs="1">
+    <documentation lang="en" purpose="definition">The language of the track,
+in the [@!BCP47] form; see (#language-codes) on language codes.
 If this Element is used, then any Language Elements used in the same TrackEntry **MUST** be ignored.</documentation>
+    <extension type="libmatroska" cppname="LanguageIETF"/>
   </element>
   <element name="CodecID" path="\Segment\Tracks\TrackEntry\CodecID" id="0x86" type="string" minOccurs="1" maxOccurs="1">
     <documentation lang="en" purpose="definition">An ID corresponding to the codec,
-see [@!MatroskaCodec] for more info.</documentation>
+see [@?MatroskaCodec] for more info.</documentation>
     <extension type="stream copy" keep="1"/>
     <extension type="webmproject.org" webm="1"/>
   </element>
@@ -596,8 +607,9 @@ Undefined values **SHOULD NOT** be used as the behavior of known implementations
     <extension type="libmatroska" cppname="VideoAlphaMode"/>
     <extension type="stream copy" keep="1"/>
   </element>
-  <element name="OldStereoMode" path="\Segment\Tracks\TrackEntry\Video\OldStereoMode" id="0x53B9" type="uinteger" maxver="0" maxOccurs="1">
-    <documentation lang="en" purpose="definition">DEPRECATED, DO NOT USE. Bogus StereoMode value used in old versions of libmatroska.</documentation>
+  <element name="OldStereoMode" path="\Segment\Tracks\TrackEntry\Video\OldStereoMode" id="0x53B9" type="uinteger" maxver="2" maxOccurs="1">
+    <documentation lang="en" purpose="definition">Bogus StereoMode value used in old versions of libmatroska.</documentation>
+    <documentation lang="en" purpose="usage notes">This Element **MUST NOT** be used. It was an incorrect value used in libmatroska up to 0.9.0.</documentation>
     <restriction>
       <enum value="0" label="mono"/>
       <enum value="1" label="right eye"/>
@@ -682,7 +694,6 @@ PixelHeight - PixelCropTop - PixelCropBottom, else there is no default value.</i
     <documentation lang="en" purpose="definition">Specify the uncompressed pixel format used for the Track's data as a FourCC.
 This value is similar in scope to the biCompression value of AVI's `BITMAPINFO` [@?AVIFormat]. See the YUV video formats [@?FourCC-YUV] and RGB video formats [@?FourCC-RGB] for common values.</documentation>
     <implementation_note note_attribute="minOccurs">UncompressedFourCC **MUST** be set (minOccurs=1) in TrackEntry, when the CodecID Element of the TrackEntry is set to "V_UNCOMPRESSED".</implementation_note>
-    <documentation lang="en" purpose="usage notes">This Element **MUST NOT** be used if the CodecID Element of the TrackEntry is set to "V_UNCOMPRESSED".</documentation>
     <extension type="libmatroska" cppname="VideoColourSpace"/>
     <extension type="stream copy" keep="1"/>
   </element>
@@ -800,7 +811,7 @@ the value and meanings for TransferCharacteristics are adopted from Table 3 of I
       <enum value="0" label="reserved"/>
       <enum value="1" label="ITU-R BT.709"/>
       <enum value="2" label="unspecified"/>
-      <enum value="3" label="reserved"/>
+      <enum value="3" label="reserved2"/>
       <enum value="4" label="Gamma 2.2 curve - BT.470M"/>
       <enum value="5" label="Gamma 2.8 curve - BT.470BG"/>
       <enum value="6" label="SMPTE 170M"/>
@@ -828,7 +839,7 @@ the value and meanings for Primaries are adopted from Table 2 of ISO/IEC 23091-4
       <enum value="0" label="reserved"/>
       <enum value="1" label="ITU-R BT.709"/>
       <enum value="2" label="unspecified"/>
-      <enum value="3" label="reserved"/>
+      <enum value="3" label="reserved2"/>
       <enum value="4" label="ITU-R BT.470M"/>
       <enum value="5" label="ITU-R BT.470BG - BT.601 625"/>
       <enum value="6" label="ITU-R BT.601 525 - SMPTE 170M"/>
@@ -865,49 +876,49 @@ in candelas per square meter (cd/m^2^).</documentation>
     <extension type="stream copy" keep="1"/>
   </element>
   <element name="PrimaryRChromaticityX" path="\Segment\Tracks\TrackEntry\Video\Colour\MasteringMetadata\PrimaryRChromaticityX" id="0x55D1" type="float" minver="4" range="0-1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Red X chromaticity coordinate, as defined by CIE 1931.</documentation>
+    <documentation lang="en" purpose="definition">Red X chromaticity coordinate, as defined by [@!CIE-1931].</documentation>
     <extension type="webmproject.org" webm="1"/>
     <extension type="libmatroska" cppname="VideoRChromaX"/>
     <extension type="stream copy" keep="1"/>
   </element>
   <element name="PrimaryRChromaticityY" path="\Segment\Tracks\TrackEntry\Video\Colour\MasteringMetadata\PrimaryRChromaticityY" id="0x55D2" type="float" minver="4" range="0-1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Red Y chromaticity coordinate, as defined by CIE 1931.</documentation>
+    <documentation lang="en" purpose="definition">Red Y chromaticity coordinate, as defined by [@!CIE-1931].</documentation>
     <extension type="webmproject.org" webm="1"/>
     <extension type="libmatroska" cppname="VideoRChromaY"/>
     <extension type="stream copy" keep="1"/>
   </element>
   <element name="PrimaryGChromaticityX" path="\Segment\Tracks\TrackEntry\Video\Colour\MasteringMetadata\PrimaryGChromaticityX" id="0x55D3" type="float" minver="4" range="0-1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Green X chromaticity coordinate, as defined by CIE 1931.</documentation>
+    <documentation lang="en" purpose="definition">Green X chromaticity coordinate, as defined by [@!CIE-1931].</documentation>
     <extension type="webmproject.org" webm="1"/>
     <extension type="libmatroska" cppname="VideoGChromaX"/>
     <extension type="stream copy" keep="1"/>
   </element>
   <element name="PrimaryGChromaticityY" path="\Segment\Tracks\TrackEntry\Video\Colour\MasteringMetadata\PrimaryGChromaticityY" id="0x55D4" type="float" minver="4" range="0-1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Green Y chromaticity coordinate, as defined by CIE 1931.</documentation>
+    <documentation lang="en" purpose="definition">Green Y chromaticity coordinate, as defined by [@!CIE-1931].</documentation>
     <extension type="webmproject.org" webm="1"/>
     <extension type="libmatroska" cppname="VideoGChromaY"/>
     <extension type="stream copy" keep="1"/>
   </element>
   <element name="PrimaryBChromaticityX" path="\Segment\Tracks\TrackEntry\Video\Colour\MasteringMetadata\PrimaryBChromaticityX" id="0x55D5" type="float" minver="4" range="0-1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Blue X chromaticity coordinate, as defined by CIE 1931.</documentation>
+    <documentation lang="en" purpose="definition">Blue X chromaticity coordinate, as defined by [@!CIE-1931].</documentation>
     <extension type="webmproject.org" webm="1"/>
     <extension type="libmatroska" cppname="VideoBChromaX"/>
     <extension type="stream copy" keep="1"/>
   </element>
   <element name="PrimaryBChromaticityY" path="\Segment\Tracks\TrackEntry\Video\Colour\MasteringMetadata\PrimaryBChromaticityY" id="0x55D6" type="float" minver="4" range="0-1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Blue Y chromaticity coordinate, as defined by CIE 1931.</documentation>
+    <documentation lang="en" purpose="definition">Blue Y chromaticity coordinate, as defined by [@!CIE-1931].</documentation>
     <extension type="webmproject.org" webm="1"/>
     <extension type="libmatroska" cppname="VideoBChromaY"/>
     <extension type="stream copy" keep="1"/>
   </element>
   <element name="WhitePointChromaticityX" path="\Segment\Tracks\TrackEntry\Video\Colour\MasteringMetadata\WhitePointChromaticityX" id="0x55D7" type="float" minver="4" range="0-1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">White X chromaticity coordinate, as defined by CIE 1931.</documentation>
+    <documentation lang="en" purpose="definition">White X chromaticity coordinate, as defined by [@!CIE-1931].</documentation>
     <extension type="webmproject.org" webm="1"/>
     <extension type="libmatroska" cppname="VideoWhitePointChromaX"/>
     <extension type="stream copy" keep="1"/>
   </element>
   <element name="WhitePointChromaticityY" path="\Segment\Tracks\TrackEntry\Video\Colour\MasteringMetadata\WhitePointChromaticityY" id="0x55D8" type="float" minver="4" range="0-1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">White Y chromaticity coordinate, as defined by CIE 1931.</documentation>
+    <documentation lang="en" purpose="definition">White Y chromaticity coordinate, as defined by [@!CIE-1931].</documentation>
     <extension type="webmproject.org" webm="1"/>
     <extension type="libmatroska" cppname="VideoWhitePointChromaY"/>
     <extension type="stream copy" keep="1"/>
@@ -973,7 +984,7 @@ Setting `ProjectionPoseYaw` to 180 or -180 degrees, with the `ProjectionPoseRoll
     <extension type="libmatroska" cppname="VideoProjectionPoseYaw"/>
     <extension type="stream copy" keep="1"/>
   </element>
-  <element name="ProjectionPosePitch" path="\Segment\Tracks\TrackEntry\Video\Projection\ProjectionPosePitch" id="0x7674" type="float" range="&gt;= -0x5Ap+0, &lt;= 0x5Ap+0" minver="4" default="0x0p+0" minOccurs="1" maxOccurs="1">
+  <element name="ProjectionPosePitch" path="\Segment\Tracks\TrackEntry\Video\Projection\ProjectionPosePitch" id="0x7674" type="float" minver="4" range="&gt;= -0x5Ap+0, &lt;= 0x5Ap+0" default="0x0p+0" minOccurs="1" maxOccurs="1">
     <documentation lang="en" purpose="definition">Specifies a pitch rotation to the projection.
 
 Value represents a counter-clockwise rotation, in degrees, around the right vector. This rotation must be applied
@@ -983,7 +994,7 @@ The value of this element **MUST** be in the -90 to 90 degree range, both includ
     <extension type="libmatroska" cppname="VideoProjectionPosePitch"/>
     <extension type="stream copy" keep="1"/>
   </element>
-  <element name="ProjectionPoseRoll" path="\Segment\Tracks\TrackEntry\Video\Projection\ProjectionPoseRoll" id="0x7675" type="float" range="&gt;= -0xB4p+0, &lt;= 0xB4p+0" minver="4" default="0x0p+0" minOccurs="1" maxOccurs="1">
+  <element name="ProjectionPoseRoll" path="\Segment\Tracks\TrackEntry\Video\Projection\ProjectionPoseRoll" id="0x7675" type="float" minver="4" range="&gt;= -0xB4p+0, &lt;= 0xB4p+0" default="0x0p+0" minOccurs="1" maxOccurs="1">
     <documentation lang="en" purpose="definition">Specifies a roll rotation to the projection.
 
 Value represents a counter-clockwise rotation, in degrees, around the forward vector. This rotation must be applied
@@ -1029,6 +1040,47 @@ Setting `ProjectionPoseRoll` to 180 or -180 degrees, with the `ProjectionPoseYaw
     <extension type="libmatroska" cppname="AudioBitDepth"/>
     <extension type="stream copy" keep="1"/>
     <extension type="webmproject.org" webm="1"/>
+  </element>
+  <element name="Emphasis" path="\Segment\Tracks\TrackEntry\Audio\Emphasis" id="0x52F1" type="uinteger" minver="5" default="0" minOccurs="1" maxOccurs="1" >
+    <documentation lang="en" purpose="definition">Audio emphasis applied on audio samples. The player **MUST** apply the inverse emphasis to get the proper audio samples.</documentation>
+    <restriction>
+      <enum value="0" label="No emphasis"/>
+      <enum value="1" label="CD audio">
+        <documentation lang="en" purpose="definition">First order filter with zero point at 50 microseconds and a pole at 15 microseconds. Also found on DVD Audio and MPEG audio.</documentation>
+      </enum>
+      <enum value="2" label="reserved"/>
+      <enum value="3" label="CCIT J.17">
+        <documentation lang="en" purpose="definition">Defined in [@!ITU-J.17].</documentation>
+      </enum>
+      <enum value="4" label="FM 50">
+        <documentation lang="en" purpose="definition">FM Radio in Europe. RC Filter with a time constant of 50 microseconds.</documentation>
+      </enum>
+      <enum value="5" label="FM 75">
+        <documentation lang="en" purpose="definition">FM Radio in the USA. RC Filter with a time constant of 75 microseconds.</documentation>
+      </enum>
+      <enum value="10" label="Phono RIAA">
+        <documentation lang="en" purpose="definition">Phono filter with time constants of t1=3180, t2=318 and t3=75 microseconds. [@!NAB1964]</documentation>
+      </enum>
+      <enum value="11" label="Phono IEC N78">
+        <documentation lang="en" purpose="definition">Phono filter with time constants of t1=3180, t2=450 and t3=50 microseconds.</documentation>
+      </enum>
+      <enum value="12" label="Phono TELDEC">
+        <documentation lang="en" purpose="definition">Phono filter with time constants of t1=3180, t2=318 and t3=50 microseconds.</documentation>
+      </enum>
+      <enum value="13" label="Phono EMI">
+        <documentation lang="en" purpose="definition">Phono filter with time constants of t1=2500, t2=500 and t3=70 microseconds.</documentation>
+      </enum>
+      <enum value="14" label="Phono Columbia LP">
+        <documentation lang="en" purpose="definition">Phono filter with time constants of t1=1590, t2=318 and t3=100 microseconds.</documentation>
+      </enum>
+      <enum value="15" label="Phono LONDON">
+        <documentation lang="en" purpose="definition">Phono filter with time constants of t1=1590, t2=318 and t3=50 microseconds.</documentation>
+      </enum>
+      <enum value="16" label="Phono NARTB">
+        <documentation lang="en" purpose="definition">Phono filter with time constants of t1=3180, t2=318 and t3=100 microseconds.</documentation>
+      </enum>
+    </restriction>
+    <extension type="stream copy" keep="1"/>
   </element>
   <element name="TrackOperation" path="\Segment\Tracks\TrackEntry\TrackOperation" id="0xE2" type="master" minver="3" maxOccurs="1">
     <documentation lang="en" purpose="definition">Operation that needs to be applied on tracks to create this virtual track.
@@ -1137,23 +1189,24 @@ Each block **MUST** be decompressable even if no previous block is available in 
   </element>
   <element name="ContentCompAlgo" path="\Segment\Tracks\TrackEntry\ContentEncodings\ContentEncoding\ContentCompression\ContentCompAlgo" id="0x4254" type="uinteger" default="0" minOccurs="1" maxOccurs="1">
     <documentation lang="en" purpose="definition">The compression algorithm used.</documentation>
+    <documentation lang="en" purpose="usage notes">Compression method "1" (bzlib) and "2" (lzo1x) are lacking proper documentation on the format which limits implementation possibilities.
+Due to licensing conflicts on commonly available libraries compression methods "2" (lzo1x) does not offer widespread interoperability.
+A Matroska Writer **SHOULD NOT** use these compression methods by default.
+A Matroska Reader **MAY** support methods "1" and "2" as possible, and **SHOULD** support other methods.</documentation>
     <restriction>
       <enum value="0" label="zlib">
         <documentation lang="en" purpose="definition">zlib compression [@!RFC1950].</documentation>
       </enum>
       <enum value="1" label="bzlib">
-        <documentation lang="en" purpose="definition">bzip2 compression [@!BZIP2], **SHOULD NOT** be used; see usage notes.</documentation>
+        <documentation lang="en" purpose="definition">bzip2 compression [@?BZIP2], **SHOULD NOT** be used; see usage notes.</documentation>
       </enum>
       <enum value="2" label="lzo1x">
-        <documentation lang="en" purpose="definition">Lempel-Ziv-Oberhumer compression [@!LZO], **SHOULD NOT** be used; see usage notes.</documentation>
+        <documentation lang="en" purpose="definition">Lempel-Ziv-Oberhumer compression [@?LZO], **SHOULD NOT** be used; see usage notes.</documentation>
       </enum>
       <enum value="3" label="Header Stripping">
         <documentation lang="en" purpose="definition">Octets in `ContentCompSettings` ((#contentcompsettings-element)) have been stripped from each frame.</documentation>
       </enum>
     </restriction>
-    <documentation lang="en" purpose="usage notes">Compression method "1" (bzlib) and "2" (lzo1x) are lacking proper documentation on the format which limits implementation possibilities.
-Due to licensing conflicts on commonly available libraries compression methods "2" (lzo1x) does not offer widespread interoperability.
-Decoding implementations **MAY** support methods "1" and "2" as possible. The use of these compression methods **SHOULD NOT** be used as a default.</documentation>
     <extension type="stream copy" keep="1"/>
   </element>
   <element name="ContentCompSettings" path="\Segment\Tracks\TrackEntry\ContentEncodings\ContentEncoding\ContentCompression\ContentCompSettings" id="0x4255" type="binary" maxOccurs="1">
@@ -1163,29 +1216,31 @@ the bytes that were removed from the beginning of each frames of the track.</doc
   </element>
   <element name="ContentEncryption" path="\Segment\Tracks\TrackEntry\ContentEncodings\ContentEncoding\ContentEncryption" id="0x5035" type="master" maxOccurs="1">
     <documentation lang="en" purpose="definition">Settings describing the encryption used.
-This Element **MUST** be present if the value of `ContentEncodingType` is 1 (encryption) and **MUST** be ignored otherwise.</documentation>
+This Element **MUST** be present if the value of `ContentEncodingType` is 1 (encryption) and **MUST** be ignored otherwise.
+A Matroska Player **MAY** support encryption.</documentation>
     <extension type="webmproject.org" webm="1"/>
     <extension type="stream copy" keep="1"/>
   </element>
   <element name="ContentEncAlgo" path="\Segment\Tracks\TrackEntry\ContentEncodings\ContentEncoding\ContentEncryption\ContentEncAlgo" id="0x47E1" type="uinteger" default="0" minOccurs="1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">The encryption algorithm used.
-The value "0" means that the contents have not been encrypted.</documentation>
+    <documentation lang="en" purpose="definition">The encryption algorithm used.</documentation>
     <restriction>
-      <enum value="0" label="Not encrypted"/>
+      <enum value="0" label="Not encrypted">
+        <documentation lang="en" purpose="definition">The data are not encrypted.</documentation>
+      </enum>
       <enum value="1" label="DES">
-        <documentation lang="en" purpose="definition">Data Encryption Standard (DES) [@!FIPS.46-3].</documentation>
+        <documentation lang="en" purpose="definition">Data Encryption Standard (DES) [@?FIPS.46-3].</documentation>
       </enum>
       <enum value="2" label="3DES">
-        <documentation lang="en" purpose="definition">Triple Data Encryption Algorithm [@!SP.800-67].</documentation>
+        <documentation lang="en" purpose="definition">Triple Data Encryption Algorithm [@?SP.800-67].</documentation>
       </enum>
       <enum value="3" label="Twofish">
-        <documentation lang="en" purpose="definition">Twofish Encryption Algorithm [@!Twofish].</documentation>
+        <documentation lang="en" purpose="definition">Twofish Encryption Algorithm [@?Twofish].</documentation>
       </enum>
       <enum value="4" label="Blowfish">
-        <documentation lang="en" purpose="definition">Blowfish Encryption Algorithm [@!Blowfish].</documentation>
+        <documentation lang="en" purpose="definition">Blowfish Encryption Algorithm [@?Blowfish].</documentation>
       </enum>
       <enum value="5" label="AES">
-        <documentation lang="en" purpose="definition">Advanced Encryption Standard (AES) [@!FIPS.197].</documentation>
+        <documentation lang="en" purpose="definition">Advanced Encryption Standard (AES) [@?FIPS.197].</documentation>
       </enum>
     </restriction>
     <extension type="webmproject.org" webm="1"/>
@@ -1197,20 +1252,20 @@ The value "0" means that the contents have not been encrypted.</documentation>
     <extension type="stream copy" keep="1"/>
   </element>
   <element name="ContentEncAESSettings" path="\Segment\Tracks\TrackEntry\ContentEncodings\ContentEncoding\ContentEncryption\ContentEncAESSettings" id="0x47E7" type="master" minver="4" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Settings describing the encryption algorithm used.
-It **MUST** be ignored if `ContentEncAlgo` is not AES (5).</documentation>
+    <documentation lang="en" purpose="definition">Settings describing the encryption algorithm used.</documentation>
+    <implementation_note note_attribute="maxOccurs">ContentEncAESSettings **MUST NOT** be set (maxOccurs=0) if ContentEncAlgo is not AES (5).</implementation_note>
     <extension type="webmproject.org" webm="1"/>
     <extension type="stream copy" keep="1"/>
   </element>
   <element name="AESSettingsCipherMode" path="\Segment\Tracks\TrackEntry\ContentEncodings\ContentEncoding\ContentEncryption\ContentEncAESSettings\AESSettingsCipherMode" id="0x47E8" type="uinteger" minver="4" minOccurs="1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">The AES cipher mode used in the encryption.
-It **MUST** be ignored if `ContentEncAlgo` is not AES (5).</documentation>
+    <documentation lang="en" purpose="definition">The AES cipher mode used in the encryption.</documentation>
+    <implementation_note note_attribute="maxOccurs">AESSettingsCipherMode **MUST NOT** be set (maxOccurs=0) if ContentEncAlgo is not AES (5).</implementation_note>
     <restriction>
       <enum value="1" label="AES-CTR">
-        <documentation lang="en" purpose="definition">Counter [@!SP.800-38A].</documentation>
+        <documentation lang="en" purpose="definition">Counter [@?SP.800-38A].</documentation>
       </enum>
       <enum value="2" label="AES-CBC">
-        <documentation lang="en" purpose="definition">Cipher Block Chaining [@!SP.800-38A].</documentation>
+        <documentation lang="en" purpose="definition">Cipher Block Chaining [@?SP.800-38A].</documentation>
       </enum>
     </restriction>
     <extension type="webmproject.org" webm="1"/>
@@ -1260,7 +1315,7 @@ All entries are local to the Segment.</documentation>
     <extension type="webmproject.org" webm="1"/>
   </element>
   <element name="CueClusterPosition" path="\Segment\Cues\CuePoint\CueTrackPositions\CueClusterPosition" id="0xF1" type="uinteger" minOccurs="1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">The Segment Position of the Cluster containing the associated Block.</documentation>
+    <documentation lang="en" purpose="definition">The Segment Position ((#segment-position)) of the Cluster containing the associated Block.</documentation>
     <extension type="webmproject.org" webm="1"/>
   </element>
   <element name="CueRelativePosition" path="\Segment\Cues\CuePoint\CueTrackPositions\CueRelativePosition" id="0xF0" type="uinteger" minver="4" maxOccurs="1">
@@ -1278,7 +1333,7 @@ If missing, the track's DefaultDuration does not apply and no duration informati
     <extension type="webmproject.org" webm="1"/>
   </element>
   <element name="CueCodecState" path="\Segment\Cues\CuePoint\CueTrackPositions\CueCodecState" id="0xEA" type="uinteger" minver="2" default="0" minOccurs="1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">The Segment Position of the Codec State corresponding to this Cue Element.
+    <documentation lang="en" purpose="definition">The Segment Position ((#segment-position)) of the Codec State corresponding to this Cue Element.
 0 means that the data is taken from the initial Track Entry.</documentation>
   </element>
   <element name="CueReference" path="\Segment\Cues\CuePoint\CueTrackPositions\CueReference" id="0xDB" type="master" minver="2">
@@ -1310,8 +1365,8 @@ If missing, the track's DefaultDuration does not apply and no duration informati
   <element name="FileName" path="\Segment\Attachments\AttachedFile\FileName" id="0x466E" type="utf-8" minOccurs="1" maxOccurs="1">
     <documentation lang="en" purpose="definition">Filename of the attached file.</documentation>
   </element>
-  <element name="FileMimeType" path="\Segment\Attachments\AttachedFile\FileMimeType" id="0x4660" type="string" minOccurs="1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">MIME type of the file.</documentation>
+  <element name="FileMediaType" path="\Segment\Attachments\AttachedFile\FileMediaType" id="0x4660" type="string" minOccurs="1" maxOccurs="1">
+    <documentation lang="en" purpose="definition">Media type of the file following the [@!RFC6838] format.</documentation>
     <extension type="libmatroska" cppname="MimeType"/>
     <extension type="stream copy" keep="1"/>
   </element>
@@ -1360,6 +1415,16 @@ For more detailed information, look at the Chapters explanation in (#chapters).<
   <element name="EditionFlagOrdered" path="\Segment\Chapters\EditionEntry\EditionFlagOrdered" id="0x45DD" type="uinteger" range="0-1" default="0" minOccurs="1" maxOccurs="1">
     <documentation lang="en" purpose="definition">Set to 1 if the chapters can be defined multiple times and the order to play them is enforced; see (#editionflagordered).</documentation>
   </element>
+  <element name="EditionDisplay" path="\Segment\Chapters\EditionEntry\EditionDisplay" id="0x4520" type="master" minver="5">
+    <documentation lang="en" purpose="definition">Contains a possible string to use for the edition display for the given languages.</documentation>
+  </element>
+  <element name="EditionString" path="\Segment\Chapters\EditionEntry\EditionDisplay\EditionString" id="0x4521" type="utf-8" minver="5" minOccurs="1" maxOccurs="1">
+    <documentation lang="en" purpose="definition">Contains the string to use as the edition name.</documentation>
+  </element>
+  <element name="EditionLanguageIETF" path="\Segment\Chapters\EditionEntry\EditionDisplay\EditionLanguageIETF" id="0x45E4" type="string" minver="5">
+    <documentation lang="en" purpose="definition">One language corresponding to the EditionString,
+in the [@!BCP47] form; see (#language-codes) on language codes.</documentation>
+  </element>
   <element name="ChapterAtom" path="\Segment\Chapters\EditionEntry\+ChapterAtom" id="0xB6" type="master" minOccurs="1" recursive="1">
     <documentation lang="en" purpose="definition">Contains the atom information to use as the chapter atom (apply to all tracks).</documentation>
     <extension type="webmproject.org" webm="1"/>
@@ -1371,7 +1436,7 @@ For more detailed information, look at the Chapters explanation in (#chapters).<
   </element>
   <element name="ChapterStringUID" path="\Segment\Chapters\EditionEntry\+ChapterAtom\ChapterStringUID" id="0x5654" type="utf-8" minver="3" maxOccurs="1">
     <documentation lang="en" purpose="definition">A unique string ID to identify the Chapter.
-Use for WebVTT cue identifier storage [@!WebVTT].</documentation>
+Use for WebVTT cue identifier storage [@?WebVTT].</documentation>
     <extension type="webmproject.org" webm="1"/>
   </element>
   <element name="ChapterTimeStart" path="\Segment\Chapters\EditionEntry\+ChapterAtom\ChapterTimeStart" id="0x91" type="uinteger" minOccurs="1" maxOccurs="1">
@@ -1395,13 +1460,45 @@ the last frame it includes, especially for the `ChapterAtom` using the last fram
 When disabled, the movie **SHOULD** skip all the content between the TimeStart and TimeEnd of this chapter; see (#chapter-flags) on Chapter flags.</documentation>
     <extension type="other document" spec="control-track"/>
   </element>
-  <element name="ChapterSegmentUID" path="\Segment\Chapters\EditionEntry\+ChapterAtom\ChapterSegmentUID" id="0x6E67" type="binary" range="&gt;0" length="16" maxOccurs="1">
-    <documentation lang="en" purpose="definition">The SegmentUID of another Segment to play during this chapter.</documentation>
-    <documentation lang="en" purpose="usage notes">The value **MUST NOT** be the `SegmentUID` value of the `Segment` it belongs to.</documentation>
-    <implementation_note note_attribute="minOccurs">ChapterSegmentUID **MUST** be set (minOccurs=1) if ChapterSegmentEditionUID is used; see (#medium-linking) on medium-linking Segments.</implementation_note>
+  <element name="ChapterSegmentUUID" path="\Segment\Chapters\EditionEntry\+ChapterAtom\ChapterSegmentUUID" id="0x6E67" type="binary" range="&gt;0" length="16" maxOccurs="1">
+    <documentation lang="en" purpose="definition">The SegmentUUID of another Segment to play during this chapter (128 bits).
+Like the SegmentUUID, it is a Universally Unique IDentifier stored in binary form [@!RFC4122].</documentation>
+    <documentation lang="en" purpose="usage notes">The value **MUST NOT** be the `SegmentUUID` value of the `Segment` it belongs to.</documentation>
+    <implementation_note note_attribute="minOccurs">ChapterSegmentUUID **MUST** be set (minOccurs=1) if ChapterSegmentEditionUID is used; see (#medium-linking) on medium-linking Segments.</implementation_note>
+    <extension type="libmatroska" cppname="ChapterSegmentUID"/>
+  </element>
+  <element name="ChapterSkipType" path="\Segment\Chapters\EditionEntry\+ChapterAtom\ChapterSkipType" id="0x4588" type="uinteger" maxOccurs="1" minver="5">
+    <documentation lang="en" purpose="definition">Indicate what type of content the ChapterAtom contains and might be skipped. It can be used to automatically skip content based on the type.
+If a `ChapterAtom` is inside a `ChapterAtom` that has a `ChapterSkipType` set, it **MUST NOT** have a `ChapterSkipType` or have a `ChapterSkipType` with the same value as it's parent `ChapterAtom`.
+If the `ChapterAtom` doesn't contain a `ChapterTimeEnd`, the value of the `ChapterSkipType` is only valid until the next `ChapterAtom` with a `ChapterSkipType` value or the end of the file.
+    </documentation>
+    <extension type="webmproject.org" webm="0"/>
+    <restriction>
+      <enum value="0" label="No Skipping">
+        <documentation lang="en" purpose="definition">Content which should not be skipped.</documentation>
+      </enum>
+      <enum value="1" label="Opening Credits">
+        <documentation lang="en" purpose="definition">Credits usually found at the beginning of the content.</documentation>
+      </enum>
+      <enum value="2" label="End Credits">
+        <documentation lang="en" purpose="definition">Credits usually found at the end of the content.</documentation>
+      </enum>
+      <enum value="3" label="Recap">
+        <documentation lang="en" purpose="definition">Recap of previous episodes of the content, usually found around the beginning.</documentation>
+      </enum>
+      <enum value="4" label="Next Preview">
+        <documentation lang="en" purpose="definition">Preview of the next episode of the content, usually found around the end. It may contain spoilers the user wants to avoid.</documentation>
+      </enum>
+      <enum value="5" label="Preview">
+        <documentation lang="en" purpose="definition">Preview of the current episode of the content, usually found around the beginning. It may contain spoilers the user want to avoid.</documentation>
+      </enum>
+      <enum value="6" label="Advertisement">
+        <documentation lang="en" purpose="definition">Advertisement within the content.</documentation>
+      </enum>
+    </restriction>
   </element>
   <element name="ChapterSegmentEditionUID" path="\Segment\Chapters\EditionEntry\+ChapterAtom\ChapterSegmentEditionUID" id="0x6EBC" type="uinteger" range="not 0" maxOccurs="1">
-    <documentation lang="en" purpose="definition">The EditionUID to play from the Segment linked in ChapterSegmentUID.
+    <documentation lang="en" purpose="definition">The EditionUID to play from the Segment linked in ChapterSegmentUUID.
 If ChapterSegmentEditionUID is undeclared, then no Edition of the linked Segment is used; see (#medium-linking) on medium-linking Segments.</documentation>
   </element>
   <element name="ChapterPhysicalEquiv" path="\Segment\Chapters\EditionEntry\+ChapterAtom\ChapterPhysicalEquiv" id="0x63C3" type="uinteger" maxOccurs="1">
@@ -1430,19 +1527,21 @@ Absence of this Element indicates that the Chapter **SHOULD** be applied to any 
   </element>
   <element name="ChapLanguage" path="\Segment\Chapters\EditionEntry\+ChapterAtom\ChapterDisplay\ChapLanguage" id="0x437C" type="string" default="eng" minOccurs="1">
     <documentation lang="en" purpose="definition">A language corresponding to the string,
-in the bibliographic ISO-639-2 form [@!ISO639-2].
-This Element **MUST** be ignored if a ChapLanguageIETF Element is used within the same ChapterDisplay Element.</documentation>
+in the Matroska languages form; see (#language-codes) on language codes.
+This Element **MUST** be ignored if a ChapLanguageBCP47 Element is used within the same ChapterDisplay Element.</documentation>
     <extension type="webmproject.org" webm="1"/>
     <extension type="libmatroska" cppname="ChapterLanguage"/>
   </element>
-  <element name="ChapLanguageIETF" path="\Segment\Chapters\EditionEntry\+ChapterAtom\ChapterDisplay\ChapLanguageIETF" id="0x437D" type="string" minver="4">
-    <documentation lang="en" purpose="definition">Specifies a language corresponding to the ChapString in the format defined in [@!BCP47]
-and using the IANA Language Subtag Registry [@!IANALangRegistry].
-If a ChapLanguageIETF Element is used, then any ChapLanguage and ChapCountry Elements used in the same ChapterDisplay **MUST** be ignored.</documentation>
+  <element name="ChapLanguageBCP47" path="\Segment\Chapters\EditionEntry\+ChapterAtom\ChapterDisplay\ChapLanguageBCP47" id="0x437D" type="string" minver="4">
+    <documentation lang="en" purpose="definition">A language corresponding to the ChapString,
+in the [@!BCP47] form; see (#language-codes) on language codes.
+If a ChapLanguageBCP47 Element is used, then any ChapLanguage and ChapCountry Elements used in the same ChapterDisplay **MUST** be ignored.</documentation>
+    <extension type="libmatroska" cppname="ChapLanguageIETF"/>
   </element>
   <element name="ChapCountry" path="\Segment\Chapters\EditionEntry\+ChapterAtom\ChapterDisplay\ChapCountry" id="0x437E" type="string">
-    <documentation lang="en" purpose="definition">A country corresponding to the string, using the same 2 octets country-codes as in Internet domains [@!IANADomains] based on [@!ISO3166-1] alpha-2 codes.
-This Element **MUST** be ignored if a ChapLanguageIETF Element is used within the same ChapterDisplay Element.</documentation>
+    <documentation lang="en" purpose="definition">A country corresponding to the string,
+in the Matroska countries form; see (#country-codes) on country codes.
+This Element **MUST** be ignored if a ChapLanguageBCP47 Element is used within the same ChapterDisplay Element.</documentation>
     <extension type="webmproject.org" webm="1"/>
     <extension type="libmatroska" cppname="ChapterCountry"/>
   </element>
@@ -1482,7 +1581,7 @@ the data correspond to the binary DVD cell pre/post commands; see (#menu-feature
   </element>
   <element name="Tags" path="\Segment\Tags" id="0x1254C367" type="master">
     <documentation lang="en" purpose="definition">Element containing metadata describing Tracks, Editions, Chapters, Attachments, or the Segment as a whole.
-A list of valid tags can be found in [@!MatroskaTags].</documentation>
+A list of valid tags can be found in [@?MatroskaTags].</documentation>
     <extension type="webmproject.org" webm="1"/>
   </element>
   <element name="Tag" path="\Segment\Tags\Tag" id="0x7373" type="master" minOccurs="1">
@@ -1525,30 +1624,30 @@ If empty or not present, then the Tag describes everything in the Segment.</docu
   </element>
   <element name="TargetType" path="\Segment\Tags\Tag\Targets\TargetType" id="0x63CA" type="string" maxOccurs="1">
     <documentation lang="en" purpose="definition">An informational string that can be used to display the logical level of the target like "ALBUM", "TRACK", "MOVIE", "CHAPTER", etc
-; see Section 6.4 of [@!MatroskaTags].</documentation>
+; see Section 6.4 of [@?MatroskaTags].</documentation>
     <restriction>
-      <enum value="COLLECTION" label="COLLECTION"/>
-      <enum value="EDITION" label="EDITION"/>
-      <enum value="ISSUE" label="ISSUE"/>
-      <enum value="VOLUME" label="VOLUME"/>
-      <enum value="OPUS" label="OPUS"/>
-      <enum value="SEASON" label="SEASON"/>
-      <enum value="SEQUEL" label="SEQUEL"/>
-      <enum value="ALBUM" label="ALBUM"/>
-      <enum value="OPERA" label="OPERA"/>
-      <enum value="CONCERT" label="CONCERT"/>
-      <enum value="MOVIE" label="MOVIE"/>
-      <enum value="EPISODE" label="EPISODE"/>
-      <enum value="PART" label="PART"/>
-      <enum value="SESSION" label="SESSION"/>
-      <enum value="TRACK" label="TRACK"/>
-      <enum value="SONG" label="SONG"/>
-      <enum value="CHAPTER" label="CHAPTER"/>
-      <enum value="SUBTRACK" label="SUBTRACK"/>
-      <enum value="PART" label="PART"/>
-      <enum value="MOVEMENT" label="MOVEMENT"/>
-      <enum value="SCENE" label="SCENE"/>
-      <enum value="SHOT" label="SHOT"/>
+      <enum value="COLLECTION" label="TargetTypeValue 70"/>
+      <enum value="EDITION" label="TargetTypeValue 60"/>
+      <enum value="ISSUE" label="TargetTypeValue 60"/>
+      <enum value="VOLUME" label="TargetTypeValue 60"/>
+      <enum value="OPUS" label="TargetTypeValue 60"/>
+      <enum value="SEASON" label="TargetTypeValue 60"/>
+      <enum value="SEQUEL" label="TargetTypeValue 60"/>
+      <enum value="ALBUM" label="TargetTypeValue 50"/>
+      <enum value="OPERA" label="TargetTypeValue 50"/>
+      <enum value="CONCERT" label="TargetTypeValue 50"/>
+      <enum value="MOVIE" label="TargetTypeValue 50"/>
+      <enum value="EPISODE" label="TargetTypeValue 50"/>
+      <enum value="PART" label="TargetTypeValue 40"/>
+      <enum value="SESSION" label="TargetTypeValue 40"/>
+      <enum value="TRACK" label="TargetTypeValue 30"/>
+      <enum value="SONG" label="TargetTypeValue 30"/>
+      <enum value="CHAPTER" label="TargetTypeValue 30"/>
+      <enum value="SUBTRACK" label="TargetTypeValue 20"/>
+      <enum value="PART" label="TargetTypeValue 20"/>
+      <enum value="MOVEMENT" label="TargetTypeValue 20"/>
+      <enum value="SCENE" label="TargetTypeValue 20"/>
+      <enum value="SHOT" label="TargetTypeValue 10"/>
     </restriction>
     <extension type="webmproject.org" webm="1"/>
     <extension type="libmatroska" cppname="TagTargetType"/>
@@ -1584,16 +1683,17 @@ If set to any other value, it **MUST** match the `FileUID` value of an attachmen
     <extension type="webmproject.org" webm="1"/>
   </element>
   <element name="TagLanguage" path="\Segment\Tags\Tag\+SimpleTag\TagLanguage" id="0x447A" type="string" default="und" minOccurs="1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Specifies the language of the tag specified, in the Matroska languages form;
-see (#language-codes) on language codes.
-This Element **MUST** be ignored if the TagLanguageIETF Element is used within the same SimpleTag Element.</documentation>
+    <documentation lang="en" purpose="definition">Specifies the language of the tag specified,
+in the Matroska languages form; see (#language-codes) on language codes.
+This Element **MUST** be ignored if the TagLanguageBCP47 Element is used within the same SimpleTag Element.</documentation>
     <extension type="webmproject.org" webm="1"/>
     <extension type="libmatroska" cppname="TagLangue"/>
   </element>
-  <element name="TagLanguageIETF" path="\Segment\Tags\Tag\+SimpleTag\TagLanguageIETF" id="0x447B" type="string" minver="4" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Specifies the language used in the TagString according to [@!BCP47]
-and using the IANA Language Subtag Registry [@!IANALangRegistry].
+  <element name="TagLanguageBCP47" path="\Segment\Tags\Tag\+SimpleTag\TagLanguageBCP47" id="0x447B" type="string" minver="4" maxOccurs="1">
+    <documentation lang="en" purpose="definition">The language used in the TagString,
+in the [@!BCP47] form; see (#language-codes) on language codes.
 If this Element is used, then any TagLanguage Elements used in the same SimpleTag **MUST** be ignored.</documentation>
+    <extension type="libmatroska" cppname="TagLanguageIETF"/>
   </element>
   <element name="TagDefault" path="\Segment\Tags\Tag\+SimpleTag\TagDefault" id="0x4484" type="uinteger" range="0-1" default="1" minOccurs="1" maxOccurs="1">
     <documentation lang="en" purpose="definition">A boolean value to indicate if this is the default/original language to use for the given tag.</documentation>
