@@ -103,10 +103,21 @@ func decodeItem(d *decode.D, p *plist) any {
 		n := d.FieldUFn("size", func(d *decode.D) uint64 {
 			return 1 << d.U4()
 		})
-		if n*8 <= 64 {
-			return d.FieldU("value", int(n*8))
+		switch n {
+		case 1:
+			return d.FieldU8("value")
+		case 2:
+			return d.FieldU16("value")
+		case 4:
+			return d.FieldU32("value")
+		case 8:
+			return d.FieldS64("value")
+		case 16:
+			return d.FieldSBigInt("value", int(n*8))
+		default:
+			d.Errorf("invalid integer size %d", n)
+			return nil
 		}
-		return d.FieldUBigInt("value", int(n))
 	case elementTypeReal:
 		n := 1 << decodeSize(d)
 		d.FieldValueU("size", uint64(n))
