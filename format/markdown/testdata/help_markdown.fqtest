@@ -1,0 +1,16 @@
+$ fq -h markdown
+markdown: Markdown decoder
+
+Decode examples
+===============
+
+  # Decode file as markdown
+  $ fq -d markdown . file
+  # Decode value as markdown
+  ... | markdown
+
+Array with all level 1 and 2 headers
+====================================
+
+  $ fq -d markdown '[.. | select(.type=="heading" and .level<=2)?.children[0]]' file.md
+  

@@ -68,7 +68,7 @@
 |`jsonl`                           |JavaScript&nbsp;Object&nbsp;Notation&nbsp;Lines                                          |<sub></sub>|
 |[`macho`](#macho)                 |Mach-O&nbsp;macOS&nbsp;executable                                                        |<sub></sub>|
 |`macho_fat`                       |Fat&nbsp;Mach-O&nbsp;macOS&nbsp;executable&nbsp;(multi-architecture)                     |<sub>`macho`</sub>|
-|`markdown`                        |Markdown                                                                                 |<sub></sub>|
+|[`markdown`](#markdown)           |Markdown                                                                                 |<sub></sub>|
 |[`matroska`](#matroska)           |Matroska&nbsp;file                                                                       |<sub>`aac_frame` `av1_ccr` `av1_frame` `avc_au` `avc_dcr` `flac_frame` `flac_metadatablocks` `hevc_au` `hevc_dcr` `image` `mp3_frame` `mpeg_asc` `mpeg_pes_packet` `mpeg_spu` `opus_packet` `vorbis_packet` `vp8_frame` `vp9_cfm` `vp9_frame`</sub>|
 |[`mp3`](#mp3)                     |MP3&nbsp;file                                                                            |<sub>`id3v2` `id3v1` `id3v11` `apev2` `mp3_frame`</sub>|
 |`mp3_frame`                       |MPEG&nbsp;audio&nbsp;layer&nbsp;3&nbsp;frame                                             |<sub>`xing`</sub>|
@@ -83,7 +83,7 @@
 |`ogg`                             |OGG&nbsp;file                                                                            |<sub>`ogg_page` `vorbis_packet` `opus_packet` `flac_metadatablock` `flac_frame`</sub>|
 |`ogg_page`                        |OGG&nbsp;page                                                                            |<sub></sub>|
 |`opus_packet`                     |Opus&nbsp;packet                                                                         |<sub>`vorbis_comment`</sub>|
-|`pcap`                            |PCAP&nbsp;packet&nbsp;capture                                                            |<sub>`link_frame` `tcp_stream` `ipv4_packet`</sub>|
+|[`pcap`](#pcap)                   |PCAP&nbsp;packet&nbsp;capture                                                            |<sub>`link_frame` `tcp_stream` `ipv4_packet`</sub>|
 |`pcapng`                          |PCAPNG&nbsp;packet&nbsp;capture                                                          |<sub>`link_frame` `tcp_stream` `ipv4_packet`</sub>|
 |`png`                             |Portable&nbsp;Network&nbsp;Graphics&nbsp;file                                            |<sub>`icc_profile` `exif`</sub>|
 |`prores_frame`                    |Apple&nbsp;ProRes&nbsp;frame                                                             |<sub></sub>|
@@ -261,7 +261,7 @@ Decode value as bitcoin_block
 
 ### Show full decoding
 ```sh
-$ fq -d bplist dv Info.plist
+$ fq d Info.plist
 ```
 
 ### Timestamps
@@ -500,6 +500,12 @@ $ fq '.load_commands[] | select(.cmd=="segment_64")' file
 acils@itu.edu.tr
 [@Akaame](https://github.com/Akaame)
 
+## markdown
+
+### Array with all level 1 and 2 headers
+```sh
+$ fq -d markdown '[.. | select(.type=="heading" and .level<=2)?.children[0]]' file.md
+```
 ## matroska
 
 ### Lookup element using path
@@ -612,6 +618,18 @@ $ fq -d msgpack torepr file.msgpack
 ### References
 - https://github.com/msgpack/msgpack/blob/master/spec.md
 
+## pcap
+
+### Build object with number of (reassembled) TCP bytes sent to/from client IP
+```sh
+# for a pcapng file you would use .[0].tcp_connections for first section
+$ fq '.tcp_connections | group_by(.client.ip) | map({key: .[0].client.ip, value: map(.client.stream, .server.stream | tobytes.size) | add}) | from_entries'
+{
+  "10.1.0.22": 15116,
+  "10.99.12.136": 234,
+  "10.99.12.150": 218
+}
+```
 ## protobuf
 
 ### Can decode sub messages
@@ -626,6 +644,11 @@ $ fq -d protobuf '.fields[6].wire_value | protobuf | d' file
 ## rtmp
 
 Current only supports plain RTMP (not RTMPT or encrypted variants etc) with AMF0 (not AMF3).
+
+### Show rtmp streams in PCAP file
+```sh
+fq '.tcp_connections[] | select(.server.port=="rtmp") | d' file.cap
+```
 
 ### References
 - https://rtmp.veriskope.com/docs/spec/

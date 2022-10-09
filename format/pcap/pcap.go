@@ -4,12 +4,17 @@ package pcap
 // TODO: tshark seems to not support sll2 in pcap, confusing
 
 import (
+	"embed"
+
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/inet/flowsdecoder"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
+
+//go:embed pcap.md
+var pcapFS embed.FS
 
 var pcapLinkFrameFormat decode.Group
 var pcapTCPStreamFormat decode.Group
@@ -45,6 +50,7 @@ func init() {
 		},
 		DecodeFn: decodePcap,
 	})
+	interp.RegisterFS(pcapFS)
 }
 
 func decodePcap(d *decode.D, _ any) any {
