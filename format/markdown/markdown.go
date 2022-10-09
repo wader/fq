@@ -15,6 +15,7 @@ import (
 )
 
 //go:embed markdown.jq
+//go:embed markdown.md
 var markdownFS embed.FS
 
 func init() {
