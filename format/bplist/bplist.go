@@ -90,7 +90,11 @@ func decodeSize(d *decode.D, sms ...scalar.Mapper) uint64 {
 	return n
 }
 
-func decodeItem(d *decode.D, p *plist) {
+// decodeItem decodes an object from the plist, and assumes that the current
+// seek position of the *decode.D is an object type tag. Returns a bool
+// indicating whether or not a string was decoded, which is necssary for
+// checking dictionary key type validity.
+func decodeItem(d *decode.D, p *plist) bool {
 	m := d.FieldU4("type", elementTypeMap)
 	switch m {
 	case elementTypeNullOrBoolOrFill:
@@ -103,15 +107,24 @@ func decodeItem(d *decode.D, p *plist) {
 		n := d.FieldUFn("size", func(d *decode.D) uint64 {
 			return 1 << d.U4()
 		})
-		if n*8 <= 64 {
-			d.FieldU("value", int(n*8))
-		} else {
-			d.FieldUBigInt("value", int(n))
+		switch n {
+		case 1:
+			d.FieldU8("value")
+		case 2:
+			d.FieldU16("value")
+		case 4:
+			d.FieldU32("value")
+		case 8:
+			d.FieldS64("value")
+		case 16:
+			d.FieldSBigInt("value", int(n*8))
+		default:
+			d.Errorf("invalid integer size %d", n)
 		}
 	case elementTypeReal:
-		n := decodeSize(d)
-		d.FieldValueU("size", n)
-		d.FieldF("value", int(n))
+		n := 1 << decodeSize(d)
+		d.FieldValueU("size", uint64(n))
+		d.FieldF("value", n*8)
 	case elementTypeDate:
 		n := 1 << decodeSize(d, d.AssertU(4, 8))
 		d.FieldValueU("size", uint64(n))
@@ -124,10 +137,12 @@ func decodeItem(d *decode.D, p *plist) {
 		n := decodeSize(d)
 		d.FieldValueU("size", n)
 		d.FieldUTF8("value", int(n))
+		return true
 	case elementTypeUnicodeString:
 		n := decodeSize(d)
 		d.FieldValueU("size", n)
 		d.FieldUTF16("value", int(n))
+		return true
 	case elementTypeUID:
 		n := decodeSize(d)
 		d.FieldValueU("size", n)
@@ -137,16 +152,16 @@ func decodeItem(d *decode.D, p *plist) {
 		d.FieldValueU("size", n)
 		d.FieldStructNArray("entries", "entry", int64(n),
 			func(d *decode.D) {
-				idx := d.FieldU8("object_index")
-				decodeReference(d, p, idx)
+				idx := d.FieldU("object_index", int(p.t.objRefSize)*8)
+				p.decodeReference(d, idx)
 			})
 	case elementTypeSet:
 		n := decodeSize(d)
 		d.FieldValueU("size", n)
 		d.FieldStructNArray("entries", "entry", int64(n),
 			func(d *decode.D) {
-				idx := d.FieldU8("object_index")
-				decodeReference(d, p, idx)
+				idx := d.FieldU("object_index", int(p.t.objRefSize)*8)
+				p.decodeReference(d, idx)
 			})
 	case elementTypeDict:
 		n := decodeSize(d)
@@ -154,32 +169,55 @@ func decodeItem(d *decode.D, p *plist) {
 		d.FieldStructNArray("entries", "entry", int64(n),
 			func(d *decode.D) {
 				var ki, vi uint64
-				ki = d.FieldU8("key_index")
+				ki = d.FieldU("key_index", int(p.t.objRefSize)*8)
 				d.SeekRel(int64((n-1)*p.t.objRefSize)*8, func(d *decode.D) {
-					vi = d.FieldU8("value_index")
+					vi = d.FieldU("value_index", int(p.t.objRefSize)*8)
 				})
 				d.FieldStruct("key", func(d *decode.D) {
-					decodeReference(d, p, ki)
+					if k := p.decodeReference(d, ki); !k {
+						d.Errorf("non-string key in dictionary")
+					}
 				})
 				d.FieldStruct("value", func(d *decode.D) {
-					decodeReference(d, p, vi)
+					p.decodeReference(d, vi)
 				})
 			})
 	default:
 		d.Errorf("unknown type marker: %d", m)
 	}
+
+	return false
 }
 
-func decodeReference(d *decode.D, p *plist, idx uint64) {
-	if idx > uint64(len(p.o)) {
+// decodeReference looks up and decodes an object based on its index in the
+// offset table. Returns a bool indicating whether or not the decoded item is
+// a string (necessary for checking dictionary key validity).
+func (pl *plist) decodeReference(d *decode.D, idx uint64) bool {
+	if idx > uint64(len(pl.o)) {
 		// prevent a panic
-		d.Errorf("index %d out of bounds for object table size %d", idx, len(p.o))
-		return
+		d.Errorf("index %d out of bounds for object table size %d", idx, len(pl.o))
+		return false
 	}
 
-	d.SeekAbs(int64(p.o[idx]*8), func(d *decode.D) {
-		decodeItem(d, p)
+	if pl.indexIsInStack(idx) {
+		d.Fatalf("recursion detected: object %d already decoded in stack %v", idx, pl.objectStack)
+		return false
+	}
+
+	pl.pushIndex(idx)
+
+	itemOffset := pl.o[idx]
+	if itemOffset >= pl.t.offsetTableStart {
+		d.Errorf("attempting to decode object %d at offset 0x%x beyond offset table start 0x%x",
+			idx, itemOffset, pl.t.offsetTableStart)
+	}
+
+	var isString bool
+	d.SeekAbs(int64(itemOffset*8), func(d *decode.D) {
+		isString = decodeItem(d, pl)
 	})
+	pl.popIndex()
+	return isString
 }
 
 type trailer struct {
@@ -191,8 +229,26 @@ type trailer struct {
 }
 
 type plist struct {
-	t trailer
-	o []uint64
+	t           trailer
+	o           []uint64
+	objectStack []uint64
+}
+
+func (pl *plist) pushIndex(idx uint64) {
+	pl.objectStack = append(pl.objectStack, idx)
+}
+
+func (pl *plist) popIndex() {
+	pl.objectStack = pl.objectStack[:len(pl.objectStack)-1]
+}
+
+func (pl *plist) indexIsInStack(idx uint64) bool {
+	for _, existing := range pl.objectStack {
+		if existing == idx {
+			return true
+		}
+	}
+	return false
 }
 
 func bplistDecode(d *decode.D, _ any) any {
@@ -229,7 +285,7 @@ func bplistDecode(d *decode.D, _ any) any {
 
 	d.FieldStruct("objects",
 		func(d *decode.D) {
-			decodeReference(d, p, 0)
+			p.decodeReference(d, 0)
 		})
 
 	return nil

@@ -68,7 +68,7 @@
 |`jsonl`                           |JavaScript&nbsp;Object&nbsp;Notation&nbsp;Lines                                          |<sub></sub>|
 |[`macho`](#macho)                 |Mach-O&nbsp;macOS&nbsp;executable                                                        |<sub></sub>|
 |`macho_fat`                       |Fat&nbsp;Mach-O&nbsp;macOS&nbsp;executable&nbsp;(multi-architecture)                     |<sub>`macho`</sub>|
-|`markdown`                        |Markdown                                                                                 |<sub></sub>|
+|[`markdown`](#markdown)           |Markdown                                                                                 |<sub></sub>|
 |[`matroska`](#matroska)           |Matroska&nbsp;file                                                                       |<sub>`aac_frame` `av1_ccr` `av1_frame` `avc_au` `avc_dcr` `flac_frame` `flac_metadatablocks` `hevc_au` `hevc_dcr` `image` `mp3_frame` `mpeg_asc` `mpeg_pes_packet` `mpeg_spu` `opus_packet` `vorbis_packet` `vp8_frame` `vp9_cfm` `vp9_frame`</sub>|
 |[`mp3`](#mp3)                     |MP3&nbsp;file                                                                            |<sub>`id3v2` `id3v1` `id3v11` `apev2` `mp3_frame`</sub>|
 |`mp3_frame`                       |MPEG&nbsp;audio&nbsp;layer&nbsp;3&nbsp;frame                                             |<sub>`xing`</sub>|
@@ -83,12 +83,8 @@
 |`ogg`                             |OGG&nbsp;file                                                                            |<sub>`ogg_page` `vorbis_packet` `opus_packet` `flac_metadatablock` `flac_frame`</sub>|
 |`ogg_page`                        |OGG&nbsp;page                                                                            |<sub></sub>|
 |`opus_packet`                     |Opus&nbsp;packet                                                                         |<sub>`vorbis_comment`</sub>|
-|`pcap`                            |PCAP&nbsp;packet&nbsp;capture                                                            |<sub>`link_frame` `tcp_stream` `ipv4_packet`</sub>|
+|[`pcap`](#pcap)                   |PCAP&nbsp;packet&nbsp;capture                                                            |<sub>`link_frame` `tcp_stream` `ipv4_packet`</sub>|
 |`pcapng`                          |PCAPNG&nbsp;packet&nbsp;capture                                                          |<sub>`link_frame` `tcp_stream` `ipv4_packet`</sub>|
-|[`pg_btree`](#pg_btree)           |PostgreSQL&nbsp;btree&nbsp;index&nbsp;file                                               |<sub></sub>|
-|[`pg_control`](#pg_control)       |PostgreSQL&nbsp;control&nbsp;file                                                        |<sub></sub>|
-|[`pg_heap`](#pg_heap)             |PostgreSQL&nbsp;heap&nbsp;file                                                           |<sub></sub>|
-|[`pg_wal`](#pg_wal)               |PostgreSQL&nbsp;write-ahead&nbsp;log&nbsp;file                                           |<sub></sub>|
 |`png`                             |Portable&nbsp;Network&nbsp;Graphics&nbsp;file                                            |<sub>`icc_profile` `exif`</sub>|
 |`prores_frame`                    |Apple&nbsp;ProRes&nbsp;frame                                                             |<sub></sub>|
 |[`protobuf`](#protobuf)           |Protobuf                                                                                 |<sub></sub>|
@@ -504,6 +500,12 @@ $ fq '.load_commands[] | select(.cmd=="segment_64")' file
 acils@itu.edu.tr
 [@Akaame](https://github.com/Akaame)
 
+## markdown
+
+### Array with all level 1 and 2 headers
+```sh
+$ fq -d markdown '[.. | select(.type=="heading" and .level<=2)?.children[0]]' file.md
+```
 ## matroska
 
 ### Lookup element using path
@@ -616,142 +618,18 @@ $ fq -d msgpack torepr file.msgpack
 ### References
 - https://github.com/msgpack/msgpack/blob/master/spec.md
 
-## pg_btree
+## pcap
 
-### Options
-
-|Name     |Default   |Description|
-|-        |-         |-|
-|`flavour`|postgres14|PostgreSQL flavour: postgres14, pgproee14.., postgres10|
-
-### Examples
-
-Decode file using pg_btree options
-```
-$ fq -d pg_btree -o flavour="postgres14" . file
-```
-
-Decode value as pg_btree
-```
-... | pg_btree({flavour:"postgres14"})
-```
-
-### Btree index meta page
-
+### Build object with number of (reassembled) TCP bytes sent to/from client IP
 ```sh
-$ fq -d pg_btree -o flavour=postgres14 ".[0] | d" 16404
+# for a pcapng file you would use .[0].tcp_connections for first section
+$ fq '.tcp_connections | group_by(.client.ip) | map({key: .[0].client.ip, value: map(.client.stream, .server.stream | tobytes.size) | add}) | from_entries'
+{
+  "10.1.0.22": 15116,
+  "10.99.12.136": 234,
+  "10.99.12.150": 218
+}
 ```
-
-### Btree index page
-
-```sh
-$ fq -d pg_btree -o flavour=postgres14 ".[1]" 16404
-```
-
-### References
-- https://www.postgresql.org/docs/current/storage-page-layout.html
-## pg_control
-
-### Options
-
-|Name     |Default|Description|
-|-        |-      |-|
-|`flavour`|       |PostgreSQL flavour: postgres14, pgproee14.., postgres10|
-
-### Examples
-
-Decode file using pg_control options
-```
-$ fq -d pg_control -o flavour="" . file
-```
-
-Decode value as pg_control
-```
-... | pg_control({flavour:""})
-```
-
-### Decode content of pg_control file
-
-```sh
-$ fq -d pg_control -o flavour=postgres14 d pg_control
-```
-
-### Specific fields can be got by request
-
-```sh
-$ fq -d pg_control -o flavour=postgres14 ".state, .check_point_copy.redo, .wal_level" pg_control
-```
-
-### References
-- https://github.com/postgres/postgres/blob/REL_14_2/src/include/catalog/pg_control.h
-## pg_heap
-
-### Options
-
-|Name            |Default   |Description|
-|-               |-         |-|
-|`flavour`       |postgres14|PostgreSQL flavour: postgres14, pgproee14.., postgres10|
-|`page_number`   |0         |First page number in file, default is 0|
-|`segment_number`|0         |Segment file number (16790.1 is 1), default is 0|
-
-### Examples
-
-Decode file using pg_heap options
-```
-$ fq -d pg_heap -o flavour="postgres14" -o page_number=0 -o segment_number=0 . file
-```
-
-Decode value as pg_heap
-```
-... | pg_heap({flavour:"postgres14",page_number:0,segment_number:0})
-```
-
-### To see heap page's content
-```sh
-$ fq -d pg_heap -o flavour=postgres14 ".[0]" 16994
-```
-
-### To see page's header
-
-```sh
-$ fq -d pg_heap -o flavour=postgres14 ".[0].page_header" 16994
-```
-
-### First and last item pointers on first page
-
-```sh
-$ fq -d pg_heap -o flavour=postgres14 ".[0].pd_linp[0, -1]" 16994
-```
-
-### First and last tuple on first page
-
-```sh
-$ fq -d pg_heap -o flavour=postgres14 ".[0].tuples[0, -1]" 16994
-```
-
-### References
-- https://www.postgresql.org/docs/current/storage-page-layout.html
-## pg_wal
-
-### Options
-
-|Name     |Default   |Description|
-|-        |-         |-|
-|`flavour`|postgres14|PostgreSQL flavour: postgres14, pgproee14.., postgres10|
-|`lsn`    |          |Current LSN for WAL, use "select pg_current_wal_lsn()"|
-
-### Examples
-
-Decode file using pg_wal options
-```
-$ fq -d pg_wal -o flavour="postgres14" -o lsn="" . file
-```
-
-Decode value as pg_wal
-```
-... | pg_wal({flavour:"postgres14",lsn:""})
-```
-
 ## protobuf
 
 ### Can decode sub messages
@@ -766,6 +644,11 @@ $ fq -d protobuf '.fields[6].wire_value | protobuf | d' file
 ## rtmp
 
 Current only supports plain RTMP (not RTMPT or encrypted variants etc) with AMF0 (not AMF3).
+
+### Show rtmp streams in PCAP file
+```sh
+fq '.tcp_connections[] | select(.server.port=="rtmp") | d' file.cap
+```
 
 ### References
 - https://rtmp.veriskope.com/docs/spec/
