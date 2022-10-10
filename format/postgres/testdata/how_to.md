@@ -105,3 +105,29 @@ scp user@192.168.0.100:~/24599 .
 ```shell
 head -c 16384 ./245991 > ./24599_2pages
 ```
+
+### 8) Locate pg_control file
+`global/pg_control` inside PGDATA
+
+### 9) Locate btree index 
+Get info about index:
+```psql
+\d pgbench_accounts
+              Table "public.pgbench_accounts"
+  Column  |     Type      | Collation | Nullable | Default 
+----------+---------------+-----------+----------+---------
+ aid      | integer       |           | not null | 
+ bid      | integer       |           |          | 
+ abalance | integer       |           |          | 
+ filler   | character(84) |           |          | 
+Indexes:
+    "pgbench_accounts_pkey" PRIMARY KEY, btree (aid)
+```
+Then get path of pgbench_accounts_pkey:
+```psql
+select pg_relation_filepath('pgbench_accounts_pkey');
+ pg_relation_filepath 
+----------------------
+ base/13746/24596
+```
+`base/13746/24596` - is a path inside PGDATA of btree index pgbench_accounts_pkey.
