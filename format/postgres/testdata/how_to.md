@@ -19,8 +19,8 @@ ps aux | grep postgre
 postgres     887  0.0  0.0 4334456 13608 ?       Ss   07:48   0:00 /usr/pgsql-14/bin/postmaster -D /u02/data
 ```
 Result is:
-- /u02/data - is PGDATA location
-- /usr/pgsql-14/bin - location of PostgreSQL bin
+- `/u02/data` - is PGDATA location
+- `/usr/pgsql-14/bin` - location of PostgreSQL bin
 
 ### 3) init tables
 
@@ -71,7 +71,7 @@ pg_relation_filepath
 base/13746/24599
 ```
 
-base/13746/24599 - location of table in PGDATA
+`base/13746/24599` - location of table in PGDATA
 
 ### 5) use root account to copy table file
 
