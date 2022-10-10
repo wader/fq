@@ -66,7 +66,7 @@ func (ft *fuzzTest) Readline(opts interp.ReadlineOpts) (string, error) {
 
 func FuzzFormats(f *testing.F) {
 	if os.Getenv("FUZZTEST") == "" {
-		f.Skip("run with FUZZTEST=1 do fuzz")
+		f.Skip("run with FUZZTEST=1 to fuzz")
 	}
 
 	i := 0
@@ -103,7 +103,18 @@ func FuzzFormats(f *testing.F) {
 	}
 
 	gi := 0
-	g := interp.DefaultRegistry.MustAll()
+	var g decode.Group
+
+	if n := os.Getenv("GROUP"); n != "" {
+		var err error
+		g, err = interp.DefaultRegistry.FormatGroup(n)
+		if err != nil {
+			f.Fatal(err)
+		}
+		f.Logf("GROUP=%s", n)
+	} else {
+		g = interp.DefaultRegistry.MustAll()
+	}
 
 	f.Fuzz(func(t *testing.T, b []byte) {
 		fz := &fuzzTest{b: b, f: g[gi]}
