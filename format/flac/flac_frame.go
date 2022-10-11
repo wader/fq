@@ -455,12 +455,19 @@ func frameDecode(d *decode.D, in any) any {
 
 								if riceParameter == riceEscape {
 									escapeSampleSize := int(d.FieldU5("escape_sample_size"))
-									d.RangeFn(d.Pos(), int64(count*escapeSampleSize), func(d *decode.D) {
-										d.FieldRawLen("samples", int64(count*escapeSampleSize))
-									})
-									for j := 0; j < count; j++ {
-										samples[n] = d.S(escapeSampleSize)
-										n++
+									if escapeSampleSize == 0 {
+										// Zero sample size, we can just skip ahead count samples as they are already zero. From spec:
+										// Note that it is possible that the number of bits is 0, which means all residual samples in that partition have
+										// a value of 0, and no bits code for the partition itself.
+										n += count
+									} else {
+										d.RangeFn(d.Pos(), int64(count*escapeSampleSize), func(d *decode.D) {
+											d.FieldRawLen("samples", int64(count*escapeSampleSize))
+										})
+										for j := 0; j < count; j++ {
+											samples[n] = d.S(escapeSampleSize)
+											n++
+										}
 									}
 								} else {
 									samplesStart := d.Pos()
@@ -493,17 +500,15 @@ func frameDecode(d *decode.D, in any) any {
 					}
 				}
 
-				var samples []int64
+				samples := make([]int64, blockSize)
 				switch subframeTypeS.SymStr() {
 				case SubframeConstant:
-					samples = make([]int64, blockSize)
 					// <n> Unencoded constant value of the subblock, n = frame's bits-per-sample.
 					v := d.FieldS("value", subframeSampleSize)
 					for i := 0; i < blockSize; i++ {
 						samples[i] = v
 					}
 				case SubframeVerbatim:
-					samples = make([]int64, blockSize)
 					// <n*i> Unencoded subblock; n = frame's bits-per-sample, i = frame's blocksize.
 					// TODO: refactor into some kind of FieldBitBufLenFn?
 					d.RangeFn(d.Pos(), int64(blockSize*subframeSampleSize), func(d *decode.D) {
@@ -514,8 +519,6 @@ func frameDecode(d *decode.D, in any) any {
 						samples[i] = d.S(subframeSampleSize)
 					}
 				case SubframeFixed:
-					samples = make([]int64, blockSize)
-
 					// <n> Unencoded warm-up samples (n = frame's bits-per-sample * predictor order).
 					decodeWarmupSamples(samples, lpcOrder, subframeSampleSize)
 					// Encoded residual
@@ -531,8 +534,6 @@ func frameDecode(d *decode.D, in any) any {
 					coeffs := fixedCoeffs[lpcOrder]
 					decodeLPC(lpcOrder, samples, coeffs, 0)
 				case SubframeLPC:
-					samples = make([]int64, blockSize)
-
 					// <n> Unencoded warm-up samples (n = frame's bits-per-sample * lpc order).
 					decodeWarmupSamples(samples, lpcOrder, subframeSampleSize)
 					// <4> (Quantized linear predictor coefficients' precision in bits)-1 (1111 = invalid).
