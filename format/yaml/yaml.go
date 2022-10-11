@@ -45,7 +45,7 @@ func decodeYAML(d *decode.D, _ any) any {
 	}
 
 	var s scalar.S
-	s.Actual = r
+	s.Actual = gojqex.Normalize(r)
 
 	switch s.Actual.(type) {
 	case map[string]any,
