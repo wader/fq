@@ -27,7 +27,7 @@ require (
 
 	// has no tags
 	// go get -d github.com/gomarkdown/markdown@master && go mod tidy
-	github.com/gomarkdown/markdown v0.0.0-20220905174103-7b278df48cfb
+	github.com/gomarkdown/markdown v0.0.0-20221010201644-ea89a695b738
 
 	// has no tags yet
 	// bump-disabled: gomod-gopacket /github\.com\/gopacket\/gopacket v(.*)/ https://github.com/gopacket/gopacket.git|^1
