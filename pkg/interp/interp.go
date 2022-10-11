@@ -1126,7 +1126,7 @@ func (i *Interp) NewColorJSON(opts Options) (*colorjson.Encoder, error) {
 			if v, ok := toValue(func() Options { return opts }, v); ok {
 				return v
 			}
-			panic(fmt.Sprintf("toValue not a JQValue value: %#v", v))
+			panic(fmt.Sprintf("toValue not a JQValue value: %#v (%T)", v, v))
 		},
 		colorjson.Colors{
 			Reset:     []byte(ansi.Reset.SetString),
