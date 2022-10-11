@@ -1,0 +1,3 @@
+# TODO: figure out a nicer way to test errors
+$ fq -d flac '._error.error' zero_esc_size.flac
+"FieldFormat: TryFieldFormat: failed at position 9755 (read size 0 seek pos 0): S: failed at position 4831.5 (read size 0 seek pos 0): trySEndian nBits must be >= 1 (0)"
