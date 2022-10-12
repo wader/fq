@@ -179,7 +179,7 @@ $ fq -d mp4 'dv' stz2.mp4
      |                                               |                |                            [0]{}: box 0x1ce-0x214.7 (71)
 0x1c0|                                          00 00|              ..|                              size: 71 0x1ce-0x1d1.7 (4)
 0x1d0|00 47                                          |.G              |
-0x1d0|      6d 70 34 61                              |  mp4a          |                              type: "mp4a" (MPEG Audio) 0x1d2-0x1d5.7 (4)
+0x1d0|      6d 70 34 61                              |  mp4a          |                              type: "mp4a" (MPEG-4 Audio) 0x1d2-0x1d5.7 (4)
 0x1d0|                  00 00 00 00 00 00            |      ......    |                              reserved: raw bits 0x1d6-0x1db.7 (6)
 0x1d0|                                    00 01      |            ..  |                              data_reference_index: 1 0x1dc-0x1dd.7 (2)
 0x1d0|                                          00 00|              ..|                              version: 0 0x1de-0x1df.7 (2)
@@ -463,4 +463,4 @@ $ fq -d mp4 'dv' stz2.mp4
 *    |until 0x4f5.7 (188)                            |                |
      |                                               |                |          crc_calculated: "c36b" (raw bits) 0x4f6-NA (0)
      |                                               |                |      id: 1 0x530-NA (0)
-     |                                               |                |      data_foramt: "mp4a" (MPEG Audio) 0x530-NA (0)
+     |                                               |                |      data_format: "mp4a" (MPEG-4 Audio) 0x530-NA (0)

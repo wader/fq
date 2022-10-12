@@ -1,6 +1,5 @@
-/test.mp3:
 $ CMD
-PROMPT> EXPR | ., tovalue, type, length?
+PROMPT> EXPR | ., tovalue, toactual, tosym, type, length?
 PROMPT> EXPR[0] | ., type, length?
 PROMPT> EXPR[-1000] | ., type, length?
 PROMPT> EXPR[1000] | ., type, length?
@@ -21,7 +20,8 @@ PROMPT> EXPR._start | ., type, length?
 PROMPT> EXPR._stop | ., type, length?
 PROMPT> EXPR._len | ., type, length?
 PROMPT> EXPR._name | ., type, length?
-PROMPT> EXPR._symbol | ., type, length?
+PROMPT> EXPR._actual | ., type, length?
+PROMPT> EXPR._sym | ., type, length?
 PROMPT> EXPR._description | ., type, length?
 PROMPT> EXPR._path | ., type, length?
 PROMPT> EXPR._bits | ., type, length?

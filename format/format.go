@@ -45,6 +45,7 @@ const (
 	BITCOIN_BLOCK       = "bitcoin_block"
 	BITCOIN_SCRIPT      = "bitcoin_script"
 	BITCOIN_TRANSACTION = "bitcoin_transaction"
+	BPLIST              = "bplist"
 	BSD_LOOPBACK_FRAME  = "bsd_loopback_frame"
 	BSON                = "bson"
 	BZIP2               = "bzip2"
@@ -86,6 +87,7 @@ const (
 	JSONL               = "jsonl"
 	MACHO               = "macho"
 	MACHO_FAT           = "macho_fat"
+	MARKDOWN            = "markdown"
 	MATROSKA            = "matroska"
 	MP3                 = "mp3"
 	MP3_FRAME           = "mp3_frame"
@@ -102,6 +104,7 @@ const (
 	OPUS_PACKET         = "opus_packet"
 	PCAP                = "pcap"
 	PCAPNG              = "pcapng"
+	PG_BTREE            = "pg_btree"
 	PG_WAL              = "pg_wal"
 	PG_WALPAGE          = "pg_wal_page"
 	PG_MULTIXACTOFF     = "pg_multixact_offsets"
@@ -322,6 +325,16 @@ type BitCoinBlockIn struct {
 }
 
 type PostgresIn struct {
-	Flavour string `doc:"PostgreSQL flavour: postgres, postgres13, pgpro..."`
+	Flavour string `doc:"PostgreSQL flavour: postgres14, pgproee14.., postgres10"`
+}
+
+type PostgresHeapIn struct {
+	Flavour       string `doc:"PostgreSQL flavour: postgres14, pgproee14.., postgres10"`
+	PageNumber    int    `doc:"First page number in file, default is 0"`
+	SegmentNumber int    `doc:"Segment file number (16790.1 is 1), default is 0"`
+}
+
+type PostgresWalIn struct {
+	Flavour string `doc:"PostgreSQL flavour: postgres14, pgproee14.., postgres10"`
 	Lsn     string `doc:"Current LSN for WAL, use \"select pg_current_wal_lsn()\""`
 }

@@ -1,0 +1,21 @@
+$ fq -h mp3
+mp3: MP3 file decoder
+
+Options
+=======
+
+  max_sync_seek=32768          Max byte distance to next sync
+  max_unique_header_configs=5  Max number of unique frame header configs allowed
+
+Decode examples
+===============
+
+  # Decode file as mp3
+  $ fq -d mp3 . file
+  # Decode value as mp3
+  ... | mp3
+  # Decode file using mp3 options
+  $ fq -d mp3 -o max_sync_seek=32768 -o max_unique_header_configs=5 . file
+  # Decode value as mp3
+  ... | mp3({max_sync_seek:32768,max_unique_header_configs:5})
+

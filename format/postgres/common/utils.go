@@ -18,3 +18,7 @@ func IsMaskSet(value uint64, mask uint64) uint64 {
 	}
 	return 0
 }
+
+func IsMaskSet0(value uint64, mask uint64) bool {
+	return (value & mask) > 0
+}

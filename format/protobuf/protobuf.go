@@ -12,7 +12,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-//go:embed protobuf.jq
+//go:embed protobuf.md
 var protobufFS embed.FS
 
 func init() {
@@ -20,7 +20,6 @@ func init() {
 		Name:        format.PROTOBUF,
 		Description: "Protobuf",
 		DecodeFn:    protobufDecode,
-		Functions:   []string{"_help"},
 	})
 	interp.RegisterFS(protobufFS)
 }

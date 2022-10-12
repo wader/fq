@@ -29,6 +29,7 @@ import (
 )
 
 //go:embed xml.jq
+//go:embed xml.md
 var xmlFS embed.FS
 
 func init() {
@@ -43,7 +44,7 @@ func init() {
 			Array:           false,
 			AttributePrefix: "@",
 		},
-		Functions: []string{"_todisplay", "_help"},
+		Functions: []string{"_todisplay"},
 	})
 	interp.RegisterFS(xmlFS)
 	interp.RegisterFunc1("toxml", toXML)

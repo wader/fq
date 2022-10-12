@@ -325,4 +325,4 @@ $ fq -d mp4 dv prores_frame.mov
 0x00c0|40 00 00 6b 7d 00 2d 30 05 a7 05 df 00 25 05 6c|@..k}.-0.....%.l|          picture_data: raw bits 0xc0-0x6c3c.7 (27517)
 *     |until 0x6c3c.7 (27517)                         |                |
       |                                               |                |      id: 1 0x6eff-NA (0)
-      |                                               |                |      data_foramt: "ap4h" (Apple ProRes 4444) 0x6eff-NA (0)
+      |                                               |                |      data_format: "ap4h" (Apple ProRes 4444) 0x6eff-NA (0)

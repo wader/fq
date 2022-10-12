@@ -13,6 +13,7 @@ import (
 )
 
 //go:embed bson.jq
+//go:embed bson.md
 var bsonFS embed.FS
 
 func init() {
@@ -20,7 +21,7 @@ func init() {
 		Name:        format.BSON,
 		Description: "Binary JSON",
 		DecodeFn:    decodeBSON,
-		Functions:   []string{"torepr", "_help"},
+		Functions:   []string{"torepr"},
 	})
 	interp.RegisterFS(bsonFS)
 }

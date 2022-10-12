@@ -2,6 +2,7 @@ package postgres_test
 
 import (
 	"github.com/wader/fq/format/postgres"
+
 	"testing"
 )
 

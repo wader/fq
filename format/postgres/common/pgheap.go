@@ -6,7 +6,7 @@ import (
 
 //nolint:revive
 const (
-	HeapPageSize             = 8192
+	PageSize                 = 8192
 	FirstNormalTransactionID = 3
 
 	LP_UNUSED   = 0 /* unused (should always have lp_len=0) */

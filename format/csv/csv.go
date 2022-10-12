@@ -17,6 +17,7 @@ import (
 )
 
 //go:embed csv.jq
+//go:embed csv.md
 var csvFS embed.FS
 
 func init() {

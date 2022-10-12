@@ -1,12 +1,13 @@
 package postgres
 
 import (
-	"errors"
 	"fmt"
+
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/postgres/flavours/postgres14"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
+
 	"strconv"
 	"strings"
 )
@@ -19,14 +20,15 @@ func init() {
 		Name:        format.PG_WAL,
 		Description: "PostgreSQL write-ahead log file",
 		DecodeFn:    decodePgwal,
-		DecodeInArg: format.PostgresIn{
-			Flavour: "default",
+		DecodeInArg: format.PostgresWalIn{
+			Flavour: PG_FLAVOUR_POSTGRES14,
 			Lsn:     "",
 		},
 	})
 }
 
-//// https://pgpedia.info/x/XLOG_PAGE_MAGIC.html
+// https://pgpedia.info/x/XLOG_PAGE_MAGIC.html
+//nolint:revive
 const (
 	XLOG_PAGE_MAGIC_15 = uint16(0xD10F)
 	XLOG_PAGE_MAGIC_14 = uint16(0xD10D)
@@ -43,7 +45,7 @@ func ParseLsn(lsn string) (uint32, error) {
 	if strings.Contains(lsn, "/") {
 		parts := strings.Split(lsn, "/")
 		if len(parts) != 2 {
-			return 0, errors.New(fmt.Sprintf("Invalid lsn = %s", lsn))
+			return 0, fmt.Errorf("invalid lsn = %s", lsn)
 		}
 		str1 = parts[1]
 	}
@@ -63,7 +65,7 @@ func XLogSegmentOffset(xLogPtr uint32) uint32 {
 func decodePgwal(d *decode.D, in any) any {
 	d.Endian = decode.LittleEndian
 
-	pgIn, ok := in.(format.PostgresIn)
+	pgIn, ok := in.(format.PostgresWalIn)
 	if !ok {
 		d.Fatalf("DecodeInArg must be PostgresIn!\n")
 	}
@@ -80,7 +82,7 @@ func decodePgwal(d *decode.D, in any) any {
 	switch pgIn.Flavour {
 	//case PG_FLAVOUR_POSTGRES11:
 	//	return postgres11.DecodePgControl(d, in)
-	case PG_FLAVOUR_POSTGRES14, PG_FLAVOUR_POSTGRES:
+	case PG_FLAVOUR_POSTGRES14:
 		return postgres14.DecodePgwal(d, maxOffset)
 		//case PG_FLAVOUR_PGPROEE14:
 		//	return pgproee14.DecodePgControl(d, in)

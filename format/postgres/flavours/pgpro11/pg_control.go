@@ -92,17 +92,17 @@ func DecodePgControl(d *decode.D, in any) any {
 	/*   32      |     8 */ // XLogRecPtr checkPoint;
 	/*   40      |    80 */ // CheckPoint checkPointCopy;
 	d.FieldS64("time", common.TimeMapper)
-	d.FieldU64("checkPoint", common.XLogRecPtrMapper)
-	d.FieldStruct("checkPointCopy", func(d *decode.D) {
+	d.FieldU64("check_point", common.XLogRecPtrMapper)
+	d.FieldStruct("check_point_copy", func(d *decode.D) {
 		/*    0      |     8 */ // XLogRecPtr redo;
 		/*    8      |     4 */ // TimeLineID ThisTimeLineID;
 		/*   12      |     4 */ // TimeLineID PrevTimeLineID;
 		/*   16      |     1 */ // _Bool fullPageWrites;
 		/* XXX  3-byte hole */
 		d.FieldU64("redo", common.XLogRecPtrMapper)
-		d.FieldU32("ThisTimeLineID")
-		d.FieldU32("PrevTimeLineID")
-		d.FieldU8("fullPageWrites")
+		d.FieldU32("this_time_line_id")
+		d.FieldU32("prev_time_line_id")
+		d.FieldU8("full_page_writes")
 		d.FieldU24("hole1")
 
 		/*   20      |     4 */ // uint32 nextXidEpoch;
@@ -119,19 +119,19 @@ func DecodePgControl(d *decode.D, in any) any {
 		/*   68      |     4 */ // TransactionId newestCommitTsXid;
 		/*   72      |     4 */ // TransactionId oldestActiveXid;
 		/* XXX  4-byte padding */
-		d.FieldU32("nextXidEpoch")
-		d.FieldU32("nextXid")
-		d.FieldU32("nextOid")
-		d.FieldU32("nextMulti")
-		d.FieldU32("nextMultiOffset")
-		d.FieldU32("oldestXid")
-		d.FieldU32("oldestXidDB")
-		d.FieldU32("oldestMulti")
-		d.FieldU32("oldestMultiDB")
+		d.FieldU32("next_xid_epoch")
+		d.FieldU32("next_xid")
+		d.FieldU32("next_oid")
+		d.FieldU32("next_multi")
+		d.FieldU32("next_multi_offset")
+		d.FieldU32("oldest_xid")
+		d.FieldU32("oldest_xid_db")
+		d.FieldU32("oldest_multi")
+		d.FieldU32("oldest_multi_db")
 		d.FieldS64("time", common.TimeMapper)
-		d.FieldU32("oldestCommitTsXid")
-		d.FieldU32("newestCommitTsXid")
-		d.FieldU32("oldestActiveXid")
+		d.FieldU32("oldest_commit_ts_xid")
+		d.FieldU32("newest_commit_ts_xid")
+		d.FieldU32("oldest_active_xid")
 		d.FieldU32("padding1")
 	})
 
@@ -139,18 +139,18 @@ func DecodePgControl(d *decode.D, in any) any {
 	/*  128      |     8 */ // XLogRecPtr minRecoveryPoint;
 	/*  136      |     4 */ // TimeLineID minRecoveryPointTLI;
 	/* XXX  4-byte hole */
-	d.FieldU64("unloggedLSN", common.LocPtrMapper)
-	d.FieldU64("minRecoveryPoint", common.LocPtrMapper)
-	d.FieldU32("minRecoveryPointTLI")
+	d.FieldU64("unlogged_lsn", common.LocPtrMapper)
+	d.FieldU64("min_recovery_point", common.LocPtrMapper)
+	d.FieldU32("min_recovery_point_tli")
 	d.FieldU32("hole2")
 
 	/*  144      |     8 */ // XLogRecPtr backupStartPoint;
 	/*  152      |     8 */ // XLogRecPtr backupEndPoint;
 	/*  160      |     1 */ // _Bool backupEndRequired;
 	/* XXX  3-byte hole */
-	d.FieldU64("backupStartPoint", common.LocPtrMapper)
-	d.FieldU64("backupEndPoint", common.LocPtrMapper)
-	d.FieldU8("backupEndRequired")
+	d.FieldU64("backup_start_point", common.LocPtrMapper)
+	d.FieldU64("backup_end_point", common.LocPtrMapper)
+	d.FieldU8("backup_end_required")
 	d.FieldU24("hole3")
 
 	/*  164      |     4 */ // int wal_level;
@@ -166,7 +166,7 @@ func DecodePgControl(d *decode.D, in any) any {
 	/*  184      |     4 */ // int max_locks_per_xact;
 	/*  188      |     1 */ // _Bool track_commit_timestamp;
 	/* XXX  3-byte hole  */
-	d.FieldS32("MaxConnections")
+	d.FieldS32("max_connections")
 	d.FieldS32("max_worker_processes")
 	d.FieldS32("max_prepared_xacts")
 	d.FieldS32("max_locks_per_xact")
@@ -175,7 +175,7 @@ func DecodePgControl(d *decode.D, in any) any {
 
 	/*  192      |     4 */ // uint32 maxAlign;
 	/* XXX  4-byte hole */
-	d.FieldU32("maxAlign")
+	d.FieldU32("max_align")
 	d.FieldU32("hole6")
 
 	/*  200      |     8 */ // double floatFormat;
@@ -190,17 +190,17 @@ func DecodePgControl(d *decode.D, in any) any {
 	/*  240      |     1 */ // _Bool float4ByVal;
 	/*  241      |     1 */ // _Bool float8ByVal;
 	/* XXX  2-byte hole */
-	d.FieldF64("floatFormat")
+	d.FieldF64("float_format")
 	d.FieldU32("blcksz")
 	d.FieldU32("relseg_size")
 	d.FieldU32("xlog_blcksz")
 	d.FieldU32("xlog_seg_size")
-	d.FieldU32("nameDataLen")
-	d.FieldU32("indexMaxKeys")
+	d.FieldU32("name_data_len")
+	d.FieldU32("index_max_keys")
 	d.FieldU32("toast_max_chunk_size")
 	d.FieldU32("loblksize")
-	d.FieldU8("float4ByVal")
-	d.FieldU8("float8ByVal")
+	d.FieldU8("float4_by_val")
+	d.FieldU8("float8_by_val")
 	d.FieldU16("hole7")
 
 	/*  244      |     4 */ // uint32 data_checksum_version;
@@ -213,7 +213,7 @@ func DecodePgControl(d *decode.D, in any) any {
 	d.FieldU32("crc")
 	/* total size (bytes):  288 */
 
-	d.AssertPosBytes(288)
+	d.AssertPos(288 * 8)
 	d.FieldRawLen("unused", d.BitsLeft())
 
 	return nil

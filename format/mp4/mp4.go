@@ -26,6 +26,7 @@ import (
 )
 
 //go:embed mp4.jq
+//go:embed mp4.md
 var mp4FS embed.FS
 
 var aacFrameFormat decode.Group
@@ -55,7 +56,7 @@ var vpxCCRFormat decode.Group
 func init() {
 	interp.RegisterFormat(decode.Format{
 		Name:        format.MP4,
-		Description: "ISOBMFF MPEG-4 part 12 and similar",
+		Description: "ISOBMFF, QuickTime and similar",
 		Groups: []string{
 			format.PROBE,
 			format.IMAGE, // avif
@@ -90,7 +91,6 @@ func init() {
 			{Names: []string{format.VP9_FRAME}, Group: &vp9FrameFormat},
 			{Names: []string{format.VPX_CCR}, Group: &vpxCCRFormat},
 		},
-		Functions: []string{"_help"},
 	})
 	interp.RegisterFS(mp4FS)
 }
@@ -271,7 +271,7 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 					}
 				}
 
-				d.FieldValueStr("data_foramt", trackSDDataFormat, dataFormatNames)
+				d.FieldValueStr("data_format", trackSDDataFormat, dataFormatNames)
 
 				switch trackSDDataFormat {
 				case "lpcm",

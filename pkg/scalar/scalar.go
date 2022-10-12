@@ -14,6 +14,7 @@ import (
 
 	"github.com/wader/fq/internal/bitioex"
 	"github.com/wader/fq/pkg/bitio"
+	"golang.org/x/exp/constraints"
 )
 
 //go:generate sh -c "cat scalar_gen.go.tmpl | go run ../../dev/tmpl.go ../decode/types.json | gofmt > scalar_gen.go"
@@ -246,40 +247,48 @@ func (m BytesToScalar) MapScalar(s S) (S, error) {
 	return s, nil
 }
 
-// TODO: nicer api, use generics
+// TODO: nicer api, use generic, many generic Try function somehow?
+
+func mapFn[T any](tryVFn func(S) (T, bool), vFn func(S) T, fn func(s S, v T) S) Mapper {
+	return Fn(func(s S) (S, error) {
+		var v T
+		var ok bool
+		if tryVFn != nil {
+			v, ok = tryVFn(s)
+			if !ok {
+				return s, nil
+			}
+		} else {
+			v = vFn(s)
+		}
+		return fn(s, v), nil
+	})
+}
+
+func TryMapFn[T any](epoch time.Time, format string, vFn func(S) (T, bool), fn func(s S, v T) S) Mapper {
+	return mapFn(vFn, nil, fn)
+}
+
+func MapFn[T any](epoch time.Time, format string, vFn func(S) T, fn func(s S, v T) S) Mapper {
+	return mapFn(nil, vFn, fn)
+}
 
 var unixTimeEpochDate = time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC)
 
-func DescriptionActualUTime(epoch time.Time, format string) Mapper {
-	return Fn(func(s S) (S, error) {
-		s.Description = epoch.Add(time.Second * time.Duration(s.ActualU())).Format(format)
-		return s, nil
+func DescriptionFn[T any](vFn func(S) (T, bool), fn func(v T) string) Mapper {
+	return mapFn(vFn, nil, func(s S, v T) S {
+		s.Description = fn(v)
+		return s
 	})
 }
 
-func DescriptionSymUTime(epoch time.Time, format string) Mapper {
-	return Fn(func(s S) (S, error) {
-		s.Description = epoch.Add(time.Second * time.Duration(s.SymU())).Format(format)
-		return s, nil
+// TODO: scalar types constraints
+func DescriptionTimeFn[T constraints.Integer | constraints.Float](vFn func(S) (T, bool), epoch time.Time, format string) Mapper {
+	return DescriptionFn(vFn, func(v T) string {
+		return epoch.Add(time.Duration(v) * time.Second).Format(format)
 	})
 }
 
-var DescriptionActualUUnixTime = DescriptionActualUTime(unixTimeEpochDate, time.RFC3339)
-var DescriptionSymUUnixTime = DescriptionSymUTime(unixTimeEpochDate, time.RFC3339)
-
-func DescriptionActualSTime(epoch time.Time, format string) Mapper {
-	return Fn(func(s S) (S, error) {
-		s.Description = epoch.Add(time.Second * time.Duration(s.ActualS())).Format(format)
-		return s, nil
-	})
+func DescriptionUnixTimeFn[T constraints.Integer | constraints.Float](vFn func(S) (T, bool), format string) Mapper {
+	return DescriptionTimeFn(vFn, unixTimeEpochDate, format)
 }
-
-func DescriptionSymSTime(epoch time.Time, format string) Mapper {
-	return Fn(func(s S) (S, error) {
-		s.Description = epoch.Add(time.Second * time.Duration(s.SymS())).Format(format)
-		return s, nil
-	})
-}
-
-var DescriptionActualSUnixTime = DescriptionActualSTime(unixTimeEpochDate, time.RFC3339)
-var DescriptionSymSUnixTime = DescriptionSymSTime(unixTimeEpochDate, time.RFC3339)

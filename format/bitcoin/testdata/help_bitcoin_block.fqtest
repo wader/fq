@@ -1,0 +1,20 @@
+$ fq -h bitcoin_block
+bitcoin_block: Bitcoin block decoder
+
+Options
+=======
+
+  has_header=false  Has blkdat header
+
+Decode examples
+===============
+
+  # Decode file as bitcoin_block
+  $ fq -d bitcoin_block . file
+  # Decode value as bitcoin_block
+  ... | bitcoin_block
+  # Decode file using bitcoin_block options
+  $ fq -d bitcoin_block -o has_header=false . file
+  # Decode value as bitcoin_block
+  ... | bitcoin_block({has_header:false})
+

@@ -4,6 +4,7 @@ $ fq -n _registry.groups.probe
   "ar",
   "avro_ocf",
   "bitcoin_blkdat",
+  "bplist",
   "bzip2",
   "elf",
   "flac",
@@ -32,3 +33,112 @@ $ fq -n _registry.groups.probe
   "xml",
   "yaml"
 ]
+$ fq --help formats
+aac_frame            Advanced Audio Coding frame
+adts                 Audio Data Transport Stream
+adts_frame           Audio Data Transport Stream frame
+amf0                 Action Message Format 0
+apev2                APEv2 metadata tag
+ar                   Unix archive
+asn1_ber             ASN1 BER (basic encoding rules, also CER and DER)
+av1_ccr              AV1 Codec Configuration Record
+av1_frame            AV1 frame
+av1_obu              AV1 Open Bitstream Unit
+avc_annexb           H.264/AVC Annex B
+avc_au               H.264/AVC Access Unit
+avc_dcr              H.264/AVC Decoder Configuration Record
+avc_nalu             H.264/AVC Network Access Layer Unit
+avc_pps              H.264/AVC Picture Parameter Set
+avc_sei              H.264/AVC Supplemental Enhancement Information
+avc_sps              H.264/AVC Sequence Parameter Set
+avro_ocf             Avro object container file
+bencode              BitTorrent bencoding
+bitcoin_blkdat       Bitcoin blk.dat
+bitcoin_block        Bitcoin block
+bitcoin_script       Bitcoin script
+bitcoin_transaction  Bitcoin transaction
+bplist               Apple Binary Property List
+bsd_loopback_frame   BSD loopback frame
+bson                 Binary JSON
+bzip2                bzip2 compression
+cbor                 Concise Binary Object Representation
+csv                  Comma separated values
+dns                  DNS packet
+dns_tcp              DNS packet (TCP)
+elf                  Executable and Linkable Format
+ether8023_frame      Ethernet 802.3 frame
+exif                 Exchangeable Image File Format
+fairplay_spc         FairPlay Server Playback Context
+flac                 Free Lossless Audio Codec file
+flac_frame           FLAC frame
+flac_metadatablock   FLAC metadatablock
+flac_metadatablocks  FLAC metadatablocks
+flac_picture         FLAC metadatablock picture
+flac_streaminfo      FLAC streaminfo
+gif                  Graphics Interchange Format
+gzip                 gzip compression
+hevc_annexb          H.265/HEVC Annex B
+hevc_au              H.265/HEVC Access Unit
+hevc_dcr             H.265/HEVC Decoder Configuration Record
+hevc_nalu            H.265/HEVC Network Access Layer Unit
+hevc_pps             H.265/HEVC Picture Parameter Set
+hevc_sps             H.265/HEVC Sequence Parameter Set
+hevc_vps             H.265/HEVC Video Parameter Set
+html                 HyperText Markup Language
+icc_profile          International Color Consortium profile
+icmp                 Internet Control Message Protocol
+icmpv6               Internet Control Message Protocol v6
+id3v1                ID3v1 metadata
+id3v11               ID3v1.1 metadata
+id3v2                ID3v2 metadata
+ipv4_packet          Internet protocol v4 packet
+ipv6_packet          Internet protocol v6 packet
+jpeg                 Joint Photographic Experts Group file
+json                 JavaScript Object Notation
+jsonl                JavaScript Object Notation Lines
+macho                Mach-O macOS executable
+macho_fat            Fat Mach-O macOS executable (multi-architecture)
+markdown             Markdown
+matroska             Matroska file
+mp3                  MP3 file
+mp3_frame            MPEG audio layer 3 frame
+mp4                  ISOBMFF, QuickTime and similar
+mpeg_asc             MPEG-4 Audio Specific Config
+mpeg_es              MPEG Elementary Stream
+mpeg_pes             MPEG Packetized elementary stream
+mpeg_pes_packet      MPEG Packetized elementary stream packet
+mpeg_spu             Sub Picture Unit (DVD subtitle)
+mpeg_ts              MPEG Transport Stream
+msgpack              MessagePack
+ogg                  OGG file
+ogg_page             OGG page
+opus_packet          Opus packet
+pcap                 PCAP packet capture
+pcapng               PCAPNG packet capture
+png                  Portable Network Graphics file
+prores_frame         Apple ProRes frame
+protobuf             Protobuf
+protobuf_widevine    Widevine protobuf
+pssh_playready       PlayReady PSSH
+raw                  Raw bits
+rtmp                 Real-Time Messaging Protocol
+sll2_packet          Linux cooked capture encapsulation v2
+sll_packet           Linux cooked capture encapsulation
+tar                  Tar archive
+tcp_segment          Transmission control protocol segment
+tiff                 Tag Image File Format
+toml                 Tom's Obvious, Minimal Language
+udp_datagram         User datagram protocol
+vorbis_comment       Vorbis comment
+vorbis_packet        Vorbis packet
+vp8_frame            VP8 frame
+vp9_cfm              VP9 Codec Feature Metadata
+vp9_frame            VP9 frame
+vpx_ccr              VPX Codec Configuration Record
+wasm                 WebAssembly Binary Format
+wav                  WAV file
+webp                 WebP image
+xing                 Xing header
+xml                  Extensible Markup Language
+yaml                 YAML Ain't Markup Language
+zip                  ZIP archive

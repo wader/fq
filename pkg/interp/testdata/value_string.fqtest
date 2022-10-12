@@ -1,8 +1,10 @@
 $ fq -i -d mp3 . test.mp3
-mp3> .headers[0].magic | ., tovalue, type, length?
+mp3> .headers[0].magic | ., tovalue, toactual, tosym, type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|49 44 33                                       |ID3             |.headers[0].magic: "ID3" (valid)
 "ID3"
+"ID3"
+null
 "string"
 3
 mp3> .headers[0].magic[0] | ., type, length?
@@ -65,8 +67,14 @@ mp3> .headers[0].magic._name | ., type, length?
 "magic"
 "string"
 5
+mp3> .headers[0].magic._actual | ., type, length?
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|49 44 33                                       |ID3             |.headers[0].magic: "ID3" (valid)
+"string"
+3
 mp3> .headers[0].magic._sym | ., type, length?
-null
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|49 44 33                                       |ID3             |.headers[0].magic: "ID3" (valid)
 "null"
 0
 mp3> .headers[0].magic._description | ., type, length?
@@ -86,13 +94,11 @@ mp3> .headers[0].magic._bits | ., type, length?
 0x0|49 44 33                                       |ID3             |.: raw bits 0x0-0x2.7 (3)
 "string"
 24
-mp3> 
 mp3> .headers[0].magic._bytes | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|49 44 33                                       |ID3             |.: raw bits 0x0-0x2.7 (3)
 "string"
 3
-mp3> 
 mp3> .headers[0].magic._error | ., type, length?
 null
 "null"
