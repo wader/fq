@@ -67,13 +67,10 @@ const (
 /* total size (bytes):    8 */
 
 func DecodePgBTree(d *decode.D) any {
-	d.SeekAbs(0)
-
 	btree := &BTree{
 		PageSize: common.PageSize,
 	}
 	decodeBTreePages(btree, d)
-
 	return nil
 }
 

@@ -139,9 +139,7 @@ type TupleD struct {
 }
 
 func Decode(heap *Heap, d *decode.D) any {
-	d.SeekAbs(0)
 	decodeHeapPages(heap, d)
-
 	return nil
 }
 
