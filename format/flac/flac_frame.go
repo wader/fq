@@ -452,6 +452,9 @@ func frameDecode(d *decode.D, in any) any {
 								if samplesLen < n+count {
 									d.Fatalf("decodeResiduals outside block size")
 								}
+								if count < 0 {
+									d.Fatalf("negative sample count %d", count)
+								}
 
 								if riceParameter == riceEscape {
 									escapeSampleSize := int(d.FieldU5("escape_sample_size"))
