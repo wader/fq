@@ -57,8 +57,8 @@ var rmgrIds = scalar.UToScalar{
 }
 
 const (
-	XLOG_PAGE_MAGIC_MASK       = 0xD000
-	XLOG_PAGE_MAGIC_POSTGRES14 = 0xD10D
+	XLOG_PAGE_MAGIC_MASK      = 0xD000
+	XLOG_PAGE_MAGIC_PGPROEE11 = 0xD098
 )
 
 const (
