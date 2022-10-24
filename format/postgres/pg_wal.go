@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"fmt"
+	"github.com/wader/fq/format/postgres/flavours/pgproee11"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/postgres/flavours/postgres14"
@@ -82,6 +83,9 @@ func decodePgwal(d *decode.D, in any) any {
 	switch pgIn.Flavour {
 	//case PG_FLAVOUR_POSTGRES11:
 	//	return postgres11.DecodePgControl(d, in)
+	case PG_FLAVOUR_PGPROEE11:
+		return pgproee11.DecodePgwal(d, maxOffset)
+
 	case PG_FLAVOUR_POSTGRES14:
 		return postgres14.DecodePgwal(d, maxOffset)
 		//case PG_FLAVOUR_PGPROEE14:
