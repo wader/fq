@@ -29,15 +29,14 @@ func init() {
 func decodePgBTree(d *decode.D, in any) any {
 	d.Endian = decode.LittleEndian
 
-	pgIn, ok := in.(format.PostgresIn)
+	_, ok := in.(format.PostgresIn)
 	if !ok {
 		d.Fatalf("DecodeInArg must be PostgresIn!\n")
 	}
 
-	switch pgIn.Flavour {
-	case PG_FLAVOUR_POSTGRES14:
-		return postgres14.DecodePgBTree(d)
-	}
-
-	return nil
+	//switch pgIn.Flavour {
+	//case PG_FLAVOUR_POSTGRES14:
+	//	return postgres14.DecodePgBTree(d)
+	//}
+	return postgres14.DecodePgBTree(d)
 }
