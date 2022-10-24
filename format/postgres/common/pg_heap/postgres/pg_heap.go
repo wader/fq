@@ -139,14 +139,13 @@ type TupleD struct {
 }
 
 func Decode(heap *Heap, d *decode.D) any {
-	d.SeekAbs(0)
 	decodeHeapPages(heap, d)
-
 	return nil
 }
 
 func decodeHeapPages(heap *Heap, d *decode.D) {
 	blockNumber := uint32(heap.Args.PageNumber + heap.Args.SegmentNumber*common.RelSegSize)
+	count := int64(0)
 	for {
 		if end, _ := d.TryEnd(); end {
 			return
@@ -156,11 +155,16 @@ func decodeHeapPages(heap *Heap, d *decode.D) {
 			decodeHeapPage(heap, d, blockNumber)
 		})
 		blockNumber++
+		count++
 
 		// end of Page
 		endLen := uint64(d.Pos() / 8)
-		pageEnd := common.TypeAlign(common.PageSize, endLen)
-		d.SeekAbs(int64(pageEnd) * 8)
+		pageEnd := int64(common.TypeAlign(common.PageSize, endLen))
+		pageEnd0 := count * common.PageSize
+		if pageEnd0 != pageEnd {
+			fmt.Printf("invalid page %d end expected %d, actual %d, endLen  %d\n", count-1, pageEnd0, pageEnd, endLen)
+		}
+		d.SeekAbs(pageEnd0 * 8)
 	}
 }
 
@@ -221,6 +225,9 @@ func decodeTuples(heap *Heap, d *decode.D) {
 		}
 
 		pos := (page.BytesPosBegin * 8) + int64(id.Off)*8
+		if id.Len < SizeOfHeapTupleHeaderData {
+			d.Fatalf("item len = %d, is less than %d HeapTupleHeaderData\n", id.Len, SizeOfHeapTupleHeaderData)
+		}
 		tupleDataLen := id.Len - SizeOfHeapTupleHeaderData
 
 		// seek to tuple with ItemID offset
