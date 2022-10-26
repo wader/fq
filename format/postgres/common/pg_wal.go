@@ -1,7 +1,6 @@
-package postgres14
+package common
 
 import (
-	"github.com/wader/fq/format/postgres/common"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
 )
@@ -154,7 +153,7 @@ type walPage struct {
 	xlpPageAddr uint64
 }
 
-func DecodePgwal(d *decode.D, maxOffset uint32) any {
+func DecodePGWAL(d *decode.D, maxOffset uint32) any {
 	pages := d.FieldArrayValue("Pages")
 	wal := &walD{
 		maxOffset: int64(maxOffset),
@@ -233,7 +232,7 @@ func decodeXLogPage(wal *walD, d *decode.D) {
 		}
 	}
 
-	remLenBytesAligned := int64(common.TypeAlign8(remLenBytes))
+	remLenBytesAligned := int64(TypeAlign8(remLenBytes))
 	remLen := remLenBytesAligned * 8
 
 	pos1 := header.Pos()
@@ -272,7 +271,7 @@ func decodeXLogRecords(wal *walD, d *decode.D) {
 	pageRecords := wal.pageRecords
 
 	posBytes := d.Pos() / 8
-	posMaxOfPageBytes := int64(common.TypeAlign(XLOG_BLCKSZ, uint64(posBytes)))
+	posMaxOfPageBytes := int64(TypeAlign(XLOG_BLCKSZ, uint64(posBytes)))
 
 	for {
 		/*    0      |     4 */ // uint32 xl_tot_len
@@ -283,7 +282,7 @@ func decodeXLogRecords(wal *walD, d *decode.D) {
 		/* XXX  2-byte hole  */
 		/*   20      |     4 */ // pg_crc32c xl_crc
 		posBytes1 := d.Pos() / 8
-		posBytes1Aligned := int64(common.TypeAlign8(uint64(posBytes1)))
+		posBytes1Aligned := int64(TypeAlign8(uint64(posBytes1)))
 		// check aligned - this is correct
 		// record header is 8 byte aligned
 		if posBytes1Aligned >= wal.maxOffset {
@@ -313,7 +312,7 @@ func decodeXLogRecords(wal *walD, d *decode.D) {
 		lsn0 := uint64(d.Pos() / 8)
 		lsn1 := lsn0 % XLOG_BLCKSZ
 		lsn := lsn1 + wal.page.xlpPageAddr
-		record.FieldValueU("lsn", lsn, common.XLogRecPtrMapper)
+		record.FieldValueU("lsn", lsn, XLogRecPtrMapper)
 
 		xlTotLen := record.FieldU32("xl_tot_len")
 		if xlTotLen < 4 {
@@ -396,7 +395,7 @@ func decodeXLogRecord(wal *walD, maxBytes int64) {
 		if isEnd(record, posMax, 64) {
 			return
 		}
-		record.FieldU64("xl_prev", common.XLogRecPtrMapper)
+		record.FieldU64("xl_prev", XLogRecPtrMapper)
 	}
 
 	if record.FieldGet("xl_info") == nil {

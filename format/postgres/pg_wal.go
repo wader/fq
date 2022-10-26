@@ -2,10 +2,8 @@ package postgres
 
 import (
 	"fmt"
-	"github.com/wader/fq/format/postgres/flavours/pgproee11"
-
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/postgres/flavours/postgres14"
+	"github.com/wader/fq/format/postgres/common"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
 
@@ -20,7 +18,7 @@ func init() {
 	interp.RegisterFormat(decode.Format{
 		Name:        format.PG_WAL,
 		Description: "PostgreSQL write-ahead log file",
-		DecodeFn:    decodePgwal,
+		DecodeFn:    decodePGWAL,
 		DecodeInArg: format.PostgresWalIn{
 			Flavour: PG_FLAVOUR_POSTGRES14,
 			Lsn:     "",
@@ -63,7 +61,7 @@ func XLogSegmentOffset(xLogPtr uint32) uint32 {
 	return xLogPtr & (walSegSizeBytes - 1)
 }
 
-func decodePgwal(d *decode.D, in any) any {
+func decodePGWAL(d *decode.D, in any) any {
 	d.Endian = decode.LittleEndian
 
 	pgIn, ok := in.(format.PostgresWalIn)
@@ -80,33 +78,5 @@ func decodePgwal(d *decode.D, in any) any {
 		maxOffset = XLogSegmentOffset(lsn)
 	}
 
-	switch pgIn.Flavour {
-	//case PG_FLAVOUR_POSTGRES11:
-	//	return postgres11.DecodePgControl(d, in)
-	case PG_FLAVOUR_PGPROEE11:
-		return pgproee11.DecodePgwal(d, maxOffset)
-
-	case PG_FLAVOUR_POSTGRES14:
-		return postgres14.DecodePgwal(d, maxOffset)
-		//case PG_FLAVOUR_PGPROEE14:
-		//	return pgproee14.DecodePgControl(d, in)
-	}
-
-	return probePgwal(d, maxOffset)
-}
-
-func probePgwal(d *decode.D, maxOffset uint32) any {
-	// read version
-	xlpMagic := uint16(d.U16())
-
-	// restore position
-	d.SeekAbs(0)
-
-	switch xlpMagic {
-	case XLOG_PAGE_MAGIC_14:
-		return postgres14.DecodePgwal(d, maxOffset)
-	}
-
-	d.Fatalf("unsupported xlp_magic = %X\n", xlpMagic)
-	return nil
+	return common.DecodePGWAL(d, maxOffset)
 }
