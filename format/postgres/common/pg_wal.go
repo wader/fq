@@ -2,69 +2,12 @@ package common
 
 import (
 	"github.com/wader/fq/pkg/decode"
-	"github.com/wader/fq/pkg/scalar"
 )
 
 //nolint:revive
 const (
 	XLOG_BLCKSZ     = 8192
 	XLP_LONG_HEADER = 2
-)
-
-//nolint:revive
-const (
-	BKPBLOCK_FORK_MASK = 0x0F
-	BKPBLOCK_FLAG_MASK = 0xF0
-	BKPBLOCK_HAS_IMAGE = 0x10 /* block data is an XLogRecordBlockImage */
-	BKPBLOCK_HAS_DATA  = 0x20
-	BKPBLOCK_WILL_INIT = 0x40 /* redo will re-init the page */
-	BKPBLOCK_SAME_REL  = 0x80 /* RelFileNode omitted, same as previous */
-)
-
-/* Information stored in bimg_info */
-//nolint:revive
-const (
-	BKPIMAGE_HAS_HOLE      = 0x01 /* page image has "hole" */
-	BKPIMAGE_IS_COMPRESSED = 0x02 /* page image is compressed */
-	BKPIMAGE_APPLY         = 0x04 /* page image should be restored during replay */
-)
-
-var rmgrIds = scalar.UToScalar{
-	0:  {Sym: "XLOG", Description: "RM_XLOG_ID"},
-	1:  {Sym: "Transaction", Description: "RM_XACT_ID"},
-	2:  {Sym: "Storage", Description: "RM_SMGR_ID"},
-	3:  {Sym: "CLOG", Description: "RM_CLOG_ID"},
-	4:  {Sym: "Database", Description: "RM_DBASE_ID"},
-	5:  {Sym: "Tablespace", Description: "RM_TBLSPC_ID"},
-	6:  {Sym: "MultiXact", Description: "RM_MULTIXACT_ID"},
-	7:  {Sym: "RelMap", Description: "RM_RELMAP_ID"},
-	8:  {Sym: "Standby", Description: "RM_STANDBY_ID"},
-	9:  {Sym: "Heap2", Description: "RM_HEAP2_ID"},
-	10: {Sym: "Heap", Description: "RM_HEAP_ID"},
-	11: {Sym: "Btree", Description: "RM_BTREE_ID"},
-	12: {Sym: "Hash", Description: "RM_HASH_ID"},
-	13: {Sym: "Gin", Description: "RM_GIN_ID"},
-	14: {Sym: "Gist", Description: "RM_GIST_ID"},
-	15: {Sym: "Sequence", Description: "RM_SEQ_ID"},
-	16: {Sym: "SPGist", Description: "RM_SPGIST_ID"},
-	17: {Sym: "BRIN", Description: "RM_BRIN_ID"},
-	18: {Sym: "CommitTs", Description: "RM_COMMIT_TS_ID"},
-	19: {Sym: "ReplicationOrigin", Description: "RM_REPLORIGIN_ID"},
-	20: {Sym: "Generic", Description: "RM_GENERIC_ID"},
-	21: {Sym: "LogicalMessage", Description: "RM_LOGICALMSG_ID"},
-}
-
-const (
-	XLOG_PAGE_MAGIC_MASK       = 0xD000
-	XLOG_PAGE_MAGIC_POSTGRES14 = 0xD10D
-)
-
-const (
-	XLR_MAX_BLOCK_ID          = 32
-	XLR_BLOCK_ID_DATA_SHORT   = 255
-	XLR_BLOCK_ID_DATA_LONG    = 254
-	XLR_BLOCK_ID_ORIGIN       = 253
-	XLR_BLOCK_ID_TOPLEVEL_XID = 252
 )
 
 // struct XLogLongPageHeaderData {
@@ -103,34 +46,6 @@ const (
 /*    8      |     4 */ // Oid relNode
 //
 /* total size (bytes):   12 */
-
-func decodeXLogPageHeaderData(d *decode.D) {
-	/*    0      |     2 */ // uint16 xlp_magic;
-	/*    2      |     2 */ // uint16 xlp_info;
-	/*    4      |     4 */ // TimeLineID xlp_tli;
-	/*    8      |     8 */ // XLogRecPtr xlp_pageaddr;
-	/*   16      |     4 */ // uint32 xlp_rem_len;
-	/* XXX  4-byte padding  */
-	xlpMagic := d.FieldU16("xlp_magic")
-	xlpInfo := d.FieldU16("xlp_info")
-	d.FieldU32("xlp_timeline")
-	d.FieldU64("xlp_pageaddr")
-	d.FieldU32("xlp_rem_len")
-	d.FieldU32("padding0")
-
-	if (xlpMagic & XLOG_PAGE_MAGIC_MASK) == 0 {
-		d.Fatalf("invalid xlp_magic = %X\n", xlpMagic)
-	}
-
-	if (xlpInfo & XLP_LONG_HEADER) != 0 {
-		// Long header
-		d.FieldStruct("XLogLongPageHeaderData", func(d *decode.D) {
-			d.FieldU64("xlp_sysid")
-			d.FieldU32("xlp_seg_size")
-			d.FieldU32("xlp_xlog_blcksz")
-		})
-	}
-}
 
 type walD struct {
 	maxOffset int64

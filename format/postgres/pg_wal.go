@@ -11,8 +11,7 @@ import (
 	"strings"
 )
 
-// TO DO
-// not ready yet
+// partial parsing of WAL
 
 func init() {
 	interp.RegisterFormat(decode.Format{
@@ -25,18 +24,6 @@ func init() {
 		},
 	})
 }
-
-// https://pgpedia.info/x/XLOG_PAGE_MAGIC.html
-//nolint:revive
-const (
-	XLOG_PAGE_MAGIC_15 = uint16(0xD10F)
-	XLOG_PAGE_MAGIC_14 = uint16(0xD10D)
-	XLOG_PAGE_MAGIC_13 = uint16(0xD106)
-	XLOG_PAGE_MAGIC_12 = uint16(0xD101)
-	XLOG_PAGE_MAGIC_11 = uint16(0xD098)
-	XLOG_PAGE_MAGIC_10 = uint16(0xD097)
-	XLOG_PAGE_MAGIC_96 = uint16(0xD093)
-)
 
 func ParseLsn(lsn string) (uint32, error) {
 	// check for 0/4E394440
