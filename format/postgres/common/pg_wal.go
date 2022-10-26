@@ -51,9 +51,6 @@ type walD struct {
 	maxOffset int64
 	page      *walPage
 
-	pages   *decode.D
-	records *decode.D
-
 	pageRecords *decode.D
 
 	state *walState
@@ -72,8 +69,6 @@ func DecodePGWAL(d *decode.D, maxOffset uint32) any {
 	pages := d.FieldArrayValue("Pages")
 	wal := &walD{
 		maxOffset: int64(maxOffset),
-		pages:     pages,
-		records:   d.FieldArrayValue("Records"),
 	}
 
 	for {
@@ -222,7 +217,6 @@ func decodeXLogRecords(wal *walD, d *decode.D) {
 		wal.state = &walState{
 			record: record,
 		}
-		wal.records.AddChild(record.Value)
 
 		lsn0 := uint64(d.Pos() / 8)
 		lsn1 := lsn0 % XLOG_BLCKSZ
