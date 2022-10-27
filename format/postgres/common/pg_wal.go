@@ -47,7 +47,7 @@ const (
 //
 /* total size (bytes):   12 */
 
-type walD struct {
+type Wal struct {
 	maxOffset int64
 	page      *walPage
 
@@ -67,7 +67,7 @@ type walPage struct {
 
 func DecodePGWAL(d *decode.D, maxOffset uint32) any {
 	pages := d.FieldArrayValue("Pages")
-	wal := &walD{
+	wal := &Wal{
 		maxOffset: int64(maxOffset),
 	}
 
@@ -93,7 +93,7 @@ func DecodePGWAL(d *decode.D, maxOffset uint32) any {
 	return nil
 }
 
-func decodeXLogPage(wal *walD, d *decode.D) {
+func decodeXLogPage(wal *Wal, d *decode.D) {
 	pos0 := d.Pos()
 	d.SeekRel(8 * 8)
 	xlpPageAddr0 := d.U64()
@@ -154,9 +154,9 @@ func decodeXLogPage(wal *walD, d *decode.D) {
 			// record of previous file
 			checkPosBytes := xLogPage.Pos() / 8
 			if checkPosBytes >= XLOG_BLCKSZ {
-				d.Fatalf("invalid pos for RawBytesOfPreviousWalFile, it must be on first page only, pos = %d\n", checkPosBytes)
+				d.Fatalf("invalid pos of raw_bytes_of_prev_wal_file, pos = %d\n", checkPosBytes)
 			}
-			xLogPage.FieldRawLen("RawBytesOfPreviousWalFile", remLen)
+			xLogPage.FieldRawLen("raw_bytes_of_prev_wal_file", remLen)
 		} else {
 			// record of previous page
 			decodeXLogRecord(wal, remLenBytesAligned)
@@ -177,7 +177,7 @@ func decodeXLogPage(wal *walD, d *decode.D) {
 	decodeXLogRecords(wal, d)
 }
 
-func decodeXLogRecords(wal *walD, d *decode.D) {
+func decodeXLogRecords(wal *Wal, d *decode.D) {
 	pageRecords := wal.pageRecords
 
 	posBytes := d.Pos() / 8
@@ -211,7 +211,10 @@ func decodeXLogRecords(wal *walD, d *decode.D) {
 			return
 		}
 
-		d.SeekAbs(posBytes1Aligned * 8)
+		if posBytes1 != posBytes1Aligned {
+			// ensure align
+			d.SeekAbs(posBytes1Aligned * 8)
+		}
 
 		record := pageRecords.FieldStructValue("XLogRecord")
 		wal.state = &walState{
@@ -248,8 +251,16 @@ func decodeXLogRecords(wal *walD, d *decode.D) {
 			d.Fatalf("xlTotLen1Bytes is negative, xLogBodyLen = %d, pos = %X\n", xLogBodyLen, errPos)
 		}
 
-		//record.FieldRawLen("xLogBody", xLogBodyLen)
 		decodeXLogRecord(wal, int64(xlTotLen1Bytes))
+
+		// align record
+		posBytes2 := d.Pos() / 8
+		posBytes2Aligned := int64(TypeAlign8(uint64(posBytes2)))
+		if posBytes2 < posBytes2Aligned {
+			alignLen := (posBytes2Aligned - posBytes2) * 8
+			wal.state.record.FieldRawLen("align0", alignLen)
+		}
+
 		wal.state = nil
 	}
 }
@@ -266,7 +277,7 @@ func isEnd(d *decode.D, posMax int64, bitsCount int64) bool {
 	return result
 }
 
-func decodeXLogRecord(wal *walD, maxBytes int64) {
+func decodeXLogRecord(wal *Wal, maxBytes int64) {
 	record := wal.state.record
 
 	pos0 := record.Pos()
