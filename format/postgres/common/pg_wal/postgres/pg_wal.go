@@ -49,16 +49,18 @@ const (
 /* total size (bytes):   12 */
 
 type Wal struct {
-	maxOffset int64
+	MaxOffset int64
 	page      *walPage
 
 	pageRecords *decode.D
 
-	state *walState
+	State *walState
+
+	DecodeXLogRecord func(wal *Wal, maxBytes int64)
 }
 
 type walState struct {
-	record            *decode.D
+	Record            *decode.D
 	recordRemLenBytes int64
 }
 
@@ -66,11 +68,8 @@ type walPage struct {
 	xlpPageAddr uint64
 }
 
-func DecodePGWAL(d *decode.D, maxOffset uint32) any {
+func Decode(d *decode.D, wal *Wal) any {
 	pages := d.FieldArrayValue("Pages")
-	wal := &Wal{
-		maxOffset: int64(maxOffset),
-	}
 
 	for {
 		decodeXLogPage(wal, pages)
@@ -80,7 +79,7 @@ func DecodePGWAL(d *decode.D, maxOffset uint32) any {
 		}
 
 		posBytes := pages.Pos() / 8
-		if posBytes >= wal.maxOffset {
+		if posBytes >= wal.MaxOffset {
 			d.FieldRawLen("unused", d.BitsLeft())
 			break
 		}
@@ -137,9 +136,9 @@ func decodeXLogPage(wal *Wal, d *decode.D) {
 		})
 	}
 
-	if wal.state != nil { // check recordRemLenBytes is initialized
-		if wal.state.recordRemLenBytes != int64(remLenBytes) {
-			d.Fatalf("recordRemLenBytes = %d != remLenBytes = %d", wal.state.recordRemLenBytes, remLenBytes)
+	if wal.State != nil { // check recordRemLenBytes is initialized
+		if wal.State.recordRemLenBytes != int64(remLenBytes) {
+			d.Fatalf("recordRemLenBytes = %d != remLenBytes = %d", wal.State.recordRemLenBytes, remLenBytes)
 		}
 	}
 
@@ -151,7 +150,7 @@ func decodeXLogPage(wal *Wal, d *decode.D) {
 
 	// parted XLogRecord
 	if remLen > 0 {
-		if wal.state == nil {
+		if wal.State == nil {
 			// record of previous file
 			checkPosBytes := xLogPage.Pos() / 8
 			if checkPosBytes >= XLOG_BLCKSZ {
@@ -160,14 +159,14 @@ func decodeXLogPage(wal *Wal, d *decode.D) {
 			xLogPage.FieldRawLen("raw_bytes_of_prev_wal_file", remLen)
 		} else {
 			// record of previous page
-			decodeXLogRecord(wal, remLenBytesAligned)
+			wal.DecodeXLogRecord(wal, remLenBytesAligned)
 		}
 	}
 
 	pos2 := xLogPage.Pos()
 
-	if wal.state != nil && wal.state.record != nil {
-		wal.state.record.SeekAbs(pos1)
+	if wal.State != nil && wal.State.Record != nil {
+		wal.State.Record.SeekAbs(pos1)
 	}
 
 	xLogPage.SeekAbs(pos2)
@@ -196,7 +195,7 @@ func decodeXLogRecords(wal *Wal, d *decode.D) {
 		posBytes1Aligned := int64(common.TypeAlign8(uint64(posBytes1)))
 		// check aligned - this is correct
 		// record header is 8 byte aligned
-		if posBytes1Aligned >= wal.maxOffset {
+		if posBytes1Aligned >= wal.MaxOffset {
 			d.FieldRawLen("unused", d.BitsLeft())
 			break
 		}
@@ -208,7 +207,7 @@ func decodeXLogRecords(wal *Wal, d *decode.D) {
 			// can't read xl_tot_len on this page
 			// can't create row in this page
 			// continue on next page
-			wal.state = nil
+			wal.State = nil
 			return
 		}
 
@@ -218,8 +217,8 @@ func decodeXLogRecords(wal *Wal, d *decode.D) {
 		}
 
 		record := pageRecords.FieldStructValue("XLogRecord")
-		wal.state = &walState{
-			record: record,
+		wal.State = &walState{
+			Record: record,
 		}
 
 		lsn0 := uint64(d.Pos() / 8)
@@ -241,8 +240,8 @@ func decodeXLogRecords(wal *Wal, d *decode.D) {
 
 		if remOnPage < int64(xlTotLen1Bytes) {
 			//record.FieldRawLen("xLogBody", remOnPage*8)
-			decodeXLogRecord(wal, remOnPage)
-			wal.state.recordRemLenBytes = int64(xlTotLen1Bytes) - remOnPage
+			wal.DecodeXLogRecord(wal, remOnPage)
+			wal.State.recordRemLenBytes = int64(xlTotLen1Bytes) - remOnPage
 			break
 		}
 
@@ -252,22 +251,22 @@ func decodeXLogRecords(wal *Wal, d *decode.D) {
 			d.Fatalf("xlTotLen1Bytes is negative, xLogBodyLen = %d, pos = %X\n", xLogBodyLen, errPos)
 		}
 
-		decodeXLogRecord(wal, int64(xlTotLen1Bytes))
+		wal.DecodeXLogRecord(wal, int64(xlTotLen1Bytes))
 
 		// align record
 		posBytes2 := d.Pos() / 8
 		posBytes2Aligned := int64(common.TypeAlign8(uint64(posBytes2)))
 		if posBytes2 < posBytes2Aligned {
 			alignLen := (posBytes2Aligned - posBytes2) * 8
-			wal.state.record.FieldRawLen("align0", alignLen)
+			wal.State.Record.FieldRawLen("align0", alignLen)
 		}
 
-		wal.state = nil
+		wal.State = nil
 	}
 }
 
-// check that we can read bitsCount on page (with posMax?)
-func isEnd(d *decode.D, posMax int64, bitsCount int64) bool {
+// IsEnd - check that we can read bitsCount on page (with posMax?)
+func IsEnd(d *decode.D, posMax int64, bitsCount int64) bool {
 	pos := d.Pos()
 	posRead := pos + bitsCount
 	result := posRead > posMax
@@ -279,7 +278,7 @@ func isEnd(d *decode.D, posMax int64, bitsCount int64) bool {
 }
 
 func decodeXLogRecord(wal *Wal, maxBytes int64) {
-	record := wal.state.record
+	record := wal.State.Record
 
 	pos0 := record.Pos()
 	maxLen := maxBytes * 8
@@ -306,42 +305,42 @@ func decodeXLogRecord(wal *Wal, maxBytes int64) {
 	// xl_tot_len already read
 
 	if record.FieldGet("xl_xid") == nil {
-		if isEnd(record, posMax, 32) {
+		if IsEnd(record, posMax, 32) {
 			return
 		}
 		record.FieldU32("xl_xid")
 	}
 
 	if record.FieldGet("xl_prev") == nil {
-		if isEnd(record, posMax, 64) {
+		if IsEnd(record, posMax, 64) {
 			return
 		}
 		record.FieldU64("xl_prev", common.XLogRecPtrMapper)
 	}
 
 	if record.FieldGet("xl_info") == nil {
-		if isEnd(record, posMax, 8) {
+		if IsEnd(record, posMax, 8) {
 			return
 		}
 		record.FieldU8("xl_info")
 	}
 
 	if record.FieldGet("xl_rmid") == nil {
-		if isEnd(record, posMax, 8) {
+		if IsEnd(record, posMax, 8) {
 			return
 		}
 		record.FieldU8("xl_rmid")
 	}
 
 	if record.FieldGet("hole1") == nil {
-		if isEnd(record, posMax, 16) {
+		if IsEnd(record, posMax, 16) {
 			return
 		}
 		record.FieldU16("hole1")
 	}
 
 	if record.FieldGet("xl_crc") == nil {
-		if isEnd(record, posMax, 32) {
+		if IsEnd(record, posMax, 32) {
 			return
 		}
 		record.FieldU32("xl_crc")
