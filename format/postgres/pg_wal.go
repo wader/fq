@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"fmt"
+	"github.com/wader/fq/format/postgres/common/pg_wal/pgproee"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/postgres/common"
@@ -64,6 +65,30 @@ func decodePGWAL(d *decode.D, in any) any {
 			d.Fatalf("Failed to ParseLsn, err = %v\n", err)
 		}
 		maxOffset = XLogSegmentOffset(lsn)
+	}
+
+	switch pgIn.Flavour {
+	case PG_FLAVOUR_POSTGRES10,
+		PG_FLAVOUR_POSTGRES11,
+		PG_FLAVOUR_POSTGRES12,
+		PG_FLAVOUR_POSTGRES13,
+		PG_FLAVOUR_POSTGRES14,
+		PG_FLAVOUR_PGPRO10,
+		PG_FLAVOUR_PGPRO11,
+		PG_FLAVOUR_PGPRO12,
+		PG_FLAVOUR_PGPRO13,
+		PG_FLAVOUR_PGPRO14:
+		return common.DecodePGWAL(d, maxOffset)
+
+	case PG_FLAVOUR_PGPROEE10,
+		PG_FLAVOUR_PGPROEE11,
+		PG_FLAVOUR_PGPROEE12,
+		PG_FLAVOUR_PGPROEE13,
+		PG_FLAVOUR_PGPROEE14:
+		return pgproee.DecodePGWAL(d, maxOffset)
+
+	default:
+		break
 	}
 
 	return common.DecodePGWAL(d, maxOffset)
