@@ -3,9 +3,9 @@ package postgres
 import (
 	"fmt"
 	"github.com/wader/fq/format/postgres/common/pg_wal/pgproee"
+	"github.com/wader/fq/format/postgres/common/pg_wal/postgres"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/postgres/common"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
 
@@ -78,7 +78,7 @@ func decodePGWAL(d *decode.D, in any) any {
 		PG_FLAVOUR_PGPRO12,
 		PG_FLAVOUR_PGPRO13,
 		PG_FLAVOUR_PGPRO14:
-		return common.DecodePGWAL(d, maxOffset)
+		return postgres.DecodePGWAL(d, maxOffset)
 
 	case PG_FLAVOUR_PGPROEE10,
 		PG_FLAVOUR_PGPROEE11,
@@ -91,5 +91,5 @@ func decodePGWAL(d *decode.D, in any) any {
 		break
 	}
 
-	return common.DecodePGWAL(d, maxOffset)
+	return postgres.DecodePGWAL(d, maxOffset)
 }

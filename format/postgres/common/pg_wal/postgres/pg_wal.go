@@ -1,6 +1,7 @@
-package common
+package postgres
 
 import (
+	"github.com/wader/fq/format/postgres/common"
 	"github.com/wader/fq/pkg/decode"
 )
 
@@ -142,7 +143,7 @@ func decodeXLogPage(wal *Wal, d *decode.D) {
 		}
 	}
 
-	remLenBytesAligned := int64(TypeAlign8(remLenBytes))
+	remLenBytesAligned := int64(common.TypeAlign8(remLenBytes))
 	remLen := remLenBytesAligned * 8
 
 	pos1 := header.Pos()
@@ -181,7 +182,7 @@ func decodeXLogRecords(wal *Wal, d *decode.D) {
 	pageRecords := wal.pageRecords
 
 	posBytes := d.Pos() / 8
-	posMaxOfPageBytes := int64(TypeAlign(XLOG_BLCKSZ, uint64(posBytes)))
+	posMaxOfPageBytes := int64(common.TypeAlign(XLOG_BLCKSZ, uint64(posBytes)))
 
 	for {
 		/*    0      |     4 */ // uint32 xl_tot_len
@@ -192,7 +193,7 @@ func decodeXLogRecords(wal *Wal, d *decode.D) {
 		/* XXX  2-byte hole  */
 		/*   20      |     4 */ // pg_crc32c xl_crc
 		posBytes1 := d.Pos() / 8
-		posBytes1Aligned := int64(TypeAlign8(uint64(posBytes1)))
+		posBytes1Aligned := int64(common.TypeAlign8(uint64(posBytes1)))
 		// check aligned - this is correct
 		// record header is 8 byte aligned
 		if posBytes1Aligned >= wal.maxOffset {
@@ -224,7 +225,7 @@ func decodeXLogRecords(wal *Wal, d *decode.D) {
 		lsn0 := uint64(d.Pos() / 8)
 		lsn1 := lsn0 % XLOG_BLCKSZ
 		lsn := lsn1 + wal.page.xlpPageAddr
-		record.FieldValueU("lsn", lsn, XLogRecPtrMapper)
+		record.FieldValueU("lsn", lsn, common.XLogRecPtrMapper)
 
 		xlTotLen := record.FieldU32("xl_tot_len")
 		if xlTotLen < 4 {
@@ -255,7 +256,7 @@ func decodeXLogRecords(wal *Wal, d *decode.D) {
 
 		// align record
 		posBytes2 := d.Pos() / 8
-		posBytes2Aligned := int64(TypeAlign8(uint64(posBytes2)))
+		posBytes2Aligned := int64(common.TypeAlign8(uint64(posBytes2)))
 		if posBytes2 < posBytes2Aligned {
 			alignLen := (posBytes2Aligned - posBytes2) * 8
 			wal.state.record.FieldRawLen("align0", alignLen)
@@ -315,7 +316,7 @@ func decodeXLogRecord(wal *Wal, maxBytes int64) {
 		if isEnd(record, posMax, 64) {
 			return
 		}
-		record.FieldU64("xl_prev", XLogRecPtrMapper)
+		record.FieldU64("xl_prev", common.XLogRecPtrMapper)
 	}
 
 	if record.FieldGet("xl_info") == nil {
