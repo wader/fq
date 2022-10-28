@@ -1,0 +1,53 @@
+$ fq -d pg_wal -o flavour=pgproee14 ".[0].records[:4] | dv" 000000010000000600000028
+[
+  {
+    "hole0": 0,
+    "hole1": 0,
+    "lsn": "6/28000030",
+    "xl_crc": 4106022103,
+    "xl_info": 0,
+    "xl_prev": "6/27FFFFA8",
+    "xl_rmid": 11,
+    "xl_tot_len": 72,
+    "xl_xid": 10000040108,
+    "xlog_body0": "<68>AAAAAKyADFQCAAAAqP//JwYAAAAACwAA1+y89AAgEAB/BgAA0jUAAEdAAAAEAQAA/wIAALwCCQAQAC1xAQAAAAAAUQA="
+  },
+  {
+    "align0": "<1>AA==",
+    "hole0": 0,
+    "hole1": 0,
+    "lsn": "6/28000078",
+    "xl_crc": 3143580000,
+    "xl_info": 0,
+    "xl_prev": "6/28000030",
+    "xl_rmid": 10,
+    "xl_tot_len": 95,
+    "xl_xid": 10000040108,
+    "xlog_body0": "<91>AAAAAKyADFQCAAAAMAAAKAYAAAAACgAAYDlfuwAgJgB/BgAA0jUAAENAAAC8AgAA/wMDAAIIGAAucQEAI3BwcHBwcHBwcHBwcHBwcHAAAAALcQEAAAAAAAoAAA=="
+  },
+  {
+    "hole0": 0,
+    "hole1": 0,
+    "lsn": "6/280000D8",
+    "xl_crc": 154712975,
+    "xl_info": 0,
+    "xl_prev": "6/28000078",
+    "xl_rmid": 11,
+    "xl_tot_len": 72,
+    "xl_xid": 10000040108,
+    "xlog_body0": "<68>AAAAAKyADFQCAAAAeAAAKAYAAAAACwAAj7s4CQAgEAB/BgAA0jUAAEdAAAAEAQAA/wIAALwCCgAQAC5xAQAAAAAAUgA="
+  },
+  {
+    "align0": "<5>AAAAAAA=",
+    "hole0": 0,
+    "hole1": 0,
+    "lsn": "6/28000120",
+    "xl_crc": 4138595501,
+    "xl_info": 0,
+    "xl_prev": "6/280000D8",
+    "xl_rmid": 15,
+    "xl_tot_len": 107,
+    "xl_xid": 10000040108,
+    "xlog_body0": "<103>AAAAAKyADFQCAAAA2AAAKAYAAAAADwAArfSt9gBAAAB/BgAA0jUAAEJAAAAAAAAA/zV/BgAA0jUAAEJAAAACAAAAAAAAAAAAAAAAAAAAAQADAAALGABPcQEAAAAAAAAAAAAAAAAAAQ=="
+  }
+]

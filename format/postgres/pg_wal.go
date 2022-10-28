@@ -24,6 +24,8 @@ func init() {
 			Flavour: PG_FLAVOUR_POSTGRES14,
 			Lsn:     "",
 		},
+		RootArray: true,
+		RootName:  "pages",
 	})
 }
 

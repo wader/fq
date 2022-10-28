@@ -10,12 +10,12 @@ func decodeXLogRecord(wal *postgres.Wal, maxBytes int64) {
 
 	pos0 := record.Pos()
 	maxLen := maxBytes * 8
-	if record.FieldGet("xLogBody0") == nil {
+	if record.FieldGet("xlog_body0") == nil {
 		// body on first page
-		record.FieldRawLen("xLogBody0", maxLen)
+		record.FieldRawLen("xlog_body0", maxLen)
 	} else {
 		// body on second page
-		record.FieldRawLen("xLogBody1", maxLen)
+		record.FieldRawLen("xlog_body1", maxLen)
 	}
 	pos1 := record.Pos()
 	posMax := pos1

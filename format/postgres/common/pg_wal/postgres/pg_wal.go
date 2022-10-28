@@ -69,7 +69,7 @@ type walPage struct {
 }
 
 func Decode(d *decode.D, wal *Wal) any {
-	pages := d.FieldArrayValue("Pages")
+	pages := d
 
 	for {
 		decodeXLogPage(wal, pages)
@@ -113,8 +113,8 @@ func decodeXLogPage(wal *Wal, d *decode.D) {
 	/*    8      |     8 */ // XLogRecPtr xlp_pageaddr;
 	/*   16      |     4 */ // uint32 xlp_rem_len;
 	/* XXX  4-byte padding  */
-	xLogPage := d.FieldStructValue("Page")
-	header := xLogPage.FieldStructValue("XLogPageHeaderData")
+	xLogPage := d.FieldStructValue("page")
+	header := xLogPage.FieldStructValue("xloog_page_header_data")
 
 	header.FieldU16("xlp_magic")
 	xlpInfo := header.FieldU16("xlp_info")
@@ -129,7 +129,7 @@ func decodeXLogPage(wal *Wal, d *decode.D) {
 
 	if (xlpInfo & XLP_LONG_HEADER) != 0 {
 		// Long header
-		header.FieldStruct("XLogLongPageHeaderData", func(d *decode.D) {
+		header.FieldStruct("xlog_long_page_header_data", func(d *decode.D) {
 			d.FieldU64("xlp_sysid")
 			d.FieldU32("xlp_seg_size")
 			d.FieldU32("xlp_xlog_blcksz")
@@ -170,7 +170,7 @@ func decodeXLogPage(wal *Wal, d *decode.D) {
 	}
 
 	xLogPage.SeekAbs(pos2)
-	pageRecords := xLogPage.FieldArrayValue("Records")
+	pageRecords := xLogPage.FieldArrayValue("records")
 
 	wal.pageRecords = pageRecords
 
@@ -216,7 +216,7 @@ func decodeXLogRecords(wal *Wal, d *decode.D) {
 			d.SeekAbs(posBytes1Aligned * 8)
 		}
 
-		record := pageRecords.FieldStructValue("XLogRecord")
+		record := pageRecords.FieldStructValue("xlog_record")
 		wal.State = &walState{
 			Record: record,
 		}
@@ -282,12 +282,12 @@ func decodeXLogRecord(wal *Wal, maxBytes int64) {
 
 	pos0 := record.Pos()
 	maxLen := maxBytes * 8
-	if record.FieldGet("xLogBody0") == nil {
+	if record.FieldGet("xlog_body0") == nil {
 		// body on first page
-		record.FieldRawLen("xLogBody0", maxLen)
+		record.FieldRawLen("xlog_body0", maxLen)
 	} else {
 		// body on second page
-		record.FieldRawLen("xLogBody1", maxLen)
+		record.FieldRawLen("xlog_body1", maxLen)
 	}
 	pos1 := record.Pos()
 	posMax := pos1
