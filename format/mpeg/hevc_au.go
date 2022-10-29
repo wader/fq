@@ -24,16 +24,20 @@ func init() {
 	})
 }
 
+// TODO: share/refactor with avcAUDecode?
 func hevcAUDecode(d *decode.D, in any) any {
-	hevcIn, ok := in.(format.HevcAuIn)
-	if !ok {
-		d.Errorf("HevcAuIn required")
+	hevcIn, _ := in.(format.HevcAuIn)
+
+	if hevcIn.LengthSize == 0 {
+		// TODO: is annexb the correct name?
+		annexBDecode(d, nil, hevcAUNALFormat)
+		return nil
 	}
 
 	for d.NotEnd() {
 		d.FieldStruct("nalu", func(d *decode.D) {
-			l := d.FieldU("length", int(hevcIn.LengthSize)*8)
-			d.FieldFormatLen("nalu", int64(l)*8, hevcAUNALFormat, nil)
+			l := int64(d.FieldU("length", int(hevcIn.LengthSize)*8)) * 8
+			d.FieldFormatLen("nalu", l, hevcAUNALFormat, nil)
 		})
 	}
 

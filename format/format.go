@@ -39,6 +39,7 @@ const (
 	AVC_PPS             = "avc_pps"
 	AVC_SEI             = "avc_sei"
 	AVC_SPS             = "avc_sps"
+	AVI                 = "avi"
 	AVRO_OCF            = "avro_ocf"
 	BENCODE             = "bencode"
 	BITCOIN_BLKDAT      = "bitcoin_blkdat"
@@ -290,6 +291,10 @@ func (t TCPStreamIn) MustIsPort(fn func(format string, a ...any), ports ...int) 
 type Mp4In struct {
 	DecodeSamples  bool `doc:"Decode supported media samples"`
 	AllowTruncated bool `doc:"Allow box to be truncated"`
+}
+
+type AviIn struct {
+	DecodeSamples bool `doc:"Decode supported media samples"`
 }
 
 type ZipIn struct {

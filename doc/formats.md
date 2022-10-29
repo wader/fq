@@ -21,6 +21,7 @@
 |`avc_pps`                         |H.264/AVC&nbsp;Picture&nbsp;Parameter&nbsp;Set                                           |<sub></sub>|
 |`avc_sei`                         |H.264/AVC&nbsp;Supplemental&nbsp;Enhancement&nbsp;Information                            |<sub></sub>|
 |`avc_sps`                         |H.264/AVC&nbsp;Sequence&nbsp;Parameter&nbsp;Set                                          |<sub></sub>|
+|[`avi`](#avi)                     |Audio&nbsp;Video&nbsp;Interleaved                                                        |<sub>`avc_au` `hevc_au` `mp3_frame` `flac_frame`</sub>|
 |[`avro_ocf`](#avro_ocf)           |Avro&nbsp;object&nbsp;container&nbsp;file                                                |<sub></sub>|
 |[`bencode`](#bencode)             |BitTorrent&nbsp;bencoding                                                                |<sub></sub>|
 |`bitcoin_blkdat`                  |Bitcoin&nbsp;blk.dat                                                                     |<sub>`bitcoin_block`</sub>|
@@ -116,7 +117,7 @@
 |`inet_packet`                     |Group                                                                                    |<sub>`ipv4_packet` `ipv6_packet`</sub>|
 |`ip_packet`                       |Group                                                                                    |<sub>`icmp` `icmpv6` `tcp_segment` `udp_datagram`</sub>|
 |`link_frame`                      |Group                                                                                    |<sub>`bsd_loopback_frame` `ether8023_frame` `sll2_packet` `sll_packet`</sub>|
-|`probe`                           |Group                                                                                    |<sub>`adts` `ar` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `jsonl` `macho` `macho_fat` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `toml` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
+|`probe`                           |Group                                                                                    |<sub>`adts` `ar` `avi` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `jsonl` `macho` `macho_fat` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `toml` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
 |`tcp_stream`                      |Group                                                                                    |<sub>`dns_tcp` `rtmp`</sub>|
 |`udp_payload`                     |Group                                                                                    |<sub>`dns`</sub>|
 
@@ -193,19 +194,59 @@ $ fq -d asn1_ber 'torepr as $r | ["version", "modulus", "private_exponent", "pri
 
 |Name         |Default|Description|
 |-            |-      |-|
-|`length_size`|4      |Length value size|
+|`length_size`|0      |Length value size|
 
 ### Examples
 
 Decode file using avc_au options
 ```
-$ fq -d avc_au -o length_size=4 . file
+$ fq -d avc_au -o length_size=0 . file
 ```
 
 Decode value as avc_au
 ```
-... | avc_au({length_size:4})
+... | avc_au({length_size:0})
 ```
+
+## avi
+
+### Options
+
+|Name            |Default|Description|
+|-               |-      |-|
+|`decode_samples`|true   |Decode supported media samples|
+
+### Examples
+
+Decode file using avi options
+```
+$ fq -d avi -o decode_samples=true . file
+```
+
+Decode value as avi
+```
+... | avi({decode_samples:true})
+```
+
+### Samples
+
+AVI has many redundant ways to index samples so currently `.streams[].samples` will only include samples the most "modern" way used in the file. That is in order of stream super index, movi ix index then idx1 index.
+
+### Extract samples for stream 1
+
+```sh
+$ fq '.streams[1].samples[] | tobytes' file.avi > stream01.mp3
+```
+
+### Show stream summary
+```sh
+$ fq -o decode_samples=false '[.chunks[0] | grep_by(.id=="LIST" and .type=="strl") | grep_by(.id=="strh") as {$type} | grep_by(.id=="strf") as {$format_tag, $compression} | {$type,$format_tag,$compression}]' *.avi
+```
+
+### References
+
+- [AVI RIFF File Reference](https://learn.microsoft.com/en-us/windows/win32/directshow/avi-riff-file-reference)
+- [OpenDML AVI File Format Extensions](http://www.jmcgowan.com/odmlff2.pdf)
 
 ## avro_ocf
 
