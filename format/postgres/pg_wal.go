@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"fmt"
+
 	"github.com/wader/fq/format/postgres/common/pg_wal/pgproee"
 	"github.com/wader/fq/format/postgres/common/pg_wal/postgres"
 

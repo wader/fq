@@ -2,7 +2,8 @@ package postgres
 
 import (
 	"embed"
-	"github.com/wader/fq/format/postgres/common/pg_btree"
+
+	"github.com/wader/fq/format/postgres/common/pg_btree/postgres"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/pkg/decode"
@@ -25,5 +26,5 @@ func init() {
 
 func decodePgBTree(d *decode.D, in any) any {
 	d.Endian = decode.LittleEndian
-	return pg_btree.DecodePgBTree(d)
+	return postgres.DecodePgBTree(d)
 }
