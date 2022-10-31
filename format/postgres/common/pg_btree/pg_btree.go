@@ -1,4 +1,4 @@
-package postgres14
+package pg_btree
 
 import (
 	"github.com/wader/fq/format/postgres/common"
