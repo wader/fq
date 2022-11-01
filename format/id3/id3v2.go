@@ -287,30 +287,44 @@ func textFn(encoding int, nBytes int) func(d *decode.D) string {
 	}
 }
 
-func textNullFn(encoding int) func(d *decode.D) string {
+func textNullLenFn(encoding int, notFoundFixedBytes int) func(d *decode.D) string {
 	return func(d *decode.D) string {
 		nullLen := encodingLen[encodingUTF8]
 		if n, ok := encodingLen[uint64(encoding)]; ok {
 			nullLen = n
 		}
 
-		offset, _ := d.PeekFind(
+		offset, _, err := d.TryPeekFind(
 			int(nullLen)*8,
 			nullLen*8,
-			-1,
+			int64(notFoundFixedBytes)*8,
 			func(v uint64) bool { return v == 0 },
 		)
+		if err != nil {
+			d.IOPanic(err, "textNullLenFn")
+		}
+		if offset < 0 {
+			if notFoundFixedBytes < 0 {
+				d.Fatalf("textNullLenFn: null not found")
+			}
+			return textFn(encoding, notFoundFixedBytes)(d)
+		}
+
 		offsetBytes := offset / 8
 		text := textFn(encoding, int(offsetBytes))(d)
 
 		d.SeekRel(nullLen * 8)
-		// seems sometimes utf16 etc has en exta null byte
+		// seems sometimes utf16 etc has one exta null byte
 		if nullLen > 1 && d.PeekBits(8) == 0 {
 			d.SeekRel(8)
 		}
 
 		return text
 	}
+}
+
+func textNullFn(encoding int) func(d *decode.D) string {
+	return textNullLenFn(encoding, -1)
 }
 
 func decodeFrame(d *decode.D, version int) uint64 {
@@ -493,7 +507,8 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		"COMM": func(d *decode.D) {
 			encoding := d.FieldU8("text_encoding", encodingNames)
 			d.FieldUTF8("language", 3)
-			d.FieldStrFn("description", textNullFn(int(encoding)))
+			// there are COMM frames with no null termination
+			d.FieldStrFn("description", textNullLenFn(int(encoding), int(d.BitsLeft()/8)))
 			d.FieldStrFn("value", textFn(int(encoding), int(d.BitsLeft()/8)))
 		},
 		// Text information identifier  "T00" - "TZZ" , excluding "TXX",
@@ -522,7 +537,8 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Value             <text string according to encoding>
 		"TXXX": func(d *decode.D) {
 			encoding := d.FieldU8("text_encoding", encodingNames)
-			d.FieldStrFn("description", textNullFn(int(encoding)))
+			// there are TXXX frames with no null termination
+			d.FieldStrFn("description", textNullLenFn(int(encoding), int(d.BitsLeft()/8)))
 			d.FieldStrFn("value", textFn(int(encoding), int(d.BitsLeft()/8)))
 		},
 		// <Header for 'Private frame', ID: "PRIV">
