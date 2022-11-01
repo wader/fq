@@ -155,22 +155,22 @@ For details see [usage.md](doc/usage.md)
 
 ## Presentations
 
+- "fq - jq for binary formats" at [No time to wait 6](https://mediaarea.net/NoTimeToWait6) - [video](https://www.youtube.com/watch?v=-Pwt5KL-xRs&t=1450s) - [slides](doc/presentations/nttw6/fq-nttw6-slides.pdf)
 - "fq - jq for binary formats" at [Binary Tools Summit 2022](https://binary-tools.net/summit.html) - [video](https://www.youtube.com/watch?v=GJOq_b0eb-s&list=PLTj8twuHdQz-JcX7k6eOwyVPDB8CyfZc8&index=1) - [slides](doc/presentations/bts2022/fq-bts2022-v1.pdf)
 
 ## Install
 
-Use one of the methods listed below or download [release](https://github.com/wader/fq/releases) for your platform. Unarchive it and move the executable to `PATH` etc.
+Use one of the methods listed below or download a pre-built [release](https://github.com/wader/fq/releases) for macOS, Linux or Windows. Unarchive it and move the executable to `PATH` etc.
 
-On macOS if you don't install using a method below you might have to manually allow the binary to run. This can be done by trying to run the binary, ignore the warning and then go into security preference and allow it. Or you can run this command:
+On macOS if you don't install using a method below you might have to manually allow the binary to run. This can be done by trying to run the binary, ignore the warning and then go into security preference and allow it. Same can be done with this command:
 
 ```sh
 xattr -d com.apple.quarantine fq && spctl --add fq
 ```
 
-### Homebrew
+### Homebrew (macOS)
 
 ```sh
-# install latest release
 brew install wader/tap/fq
 ```
 
@@ -224,26 +224,30 @@ apk add -X http://dl-cdn.alpinelinux.org/alpine/edge/testing fq
 
 ### Build from source
 
-Make sure you have go 1.18 or later installed.
+Make sure you have [go](https://go.dev) 1.18 or later installed.
 
-To install directly from git repository do:
+To install directly from git repository (no clone needed) do:
 ```sh
 # build and install latest release
 go install github.com/wader/fq@latest
 
-# or build and install latest master
+# build and install latest master
 go install github.com/wader/fq@master
 
 # copy binary to $PATH if needed
 cp "$(go env GOPATH)/bin/fq" /usr/local/bin
 ```
 
-To run and run tests from source directory:
+To build, run and test from source:
 ```sh
+# build an run
+go run fq.go
+# or
+go run .
+# just build
+go build -o fq .
 # run all tests and build binary
 make test fq
-# it's also possible to use go run
-go run fq.go
 ```
 
 ## TODO and ideas
@@ -285,12 +289,13 @@ Licenses of direct dependencies:
 
 - Forked version of gojq https://github.com/itchyny/gojq/blob/main/LICENSE (MIT)
 - Forked version of readline https://github.com/chzyer/readline/blob/master/LICENSE (MIT)
-- gopacket https://github.com/gopacket/gopacket/blob/master/LICENSE (BSD)
-- mapstructure https://github.com/mitchellh/mapstructure/blob/master/LICENSE (MIT)
-- copystructure https://github.com/mitchellh/copystructure/blob/master/LICENSE (MIT)
-- go-difflib https://github.com/pmezard/go-difflib/blob/master/LICENSE (BSD)
-- golang/x/* https://github.com/golang/text/blob/master/LICENSE (BSD)
-- golang/snappy https://github.com/golang/snappy/blob/master/LICENSE (BSD)
 - github.com/BurntSushi/toml https://github.com/BurntSushi/toml/blob/master/COPYING (MIT)
-- gopkg.in/yaml.v3 https://github.com/go-yaml/yaml/blob/v3/LICENSE (MIT)
 - github.com/creasty/defaults https://github.com/creasty/defaults/blob/master/LICENSE (MIT)
+- github.com/gomarkdown/markdown https://github.com/gomarkdown/markdown/blob/master/LICENSE.txt (BSD)
+- github.com/gopacket/gopacket https://github.com/gopacket/gopacket/blob/master/LICENSE (BSD)
+- github.com/mitchellh/copystructure https://github.com/mitchellh/copystructure/blob/master/LICENSE (MIT)
+- github.com/mitchellh/mapstructure https://github.com/mitchellh/mapstructure/blob/master/LICENSE (MIT)
+- github.com/pmezard/go-difflib https://github.com/pmezard/go-difflib/blob/master/LICENSE (BSD)
+- golang/snappy https://github.com/golang/snappy/blob/master/LICENSE (BSD)
+- golang/x/* https://github.com/golang/text/blob/master/LICENSE (BSD)
+- gopkg.in/yaml.v3 https://github.com/go-yaml/yaml/blob/v3/LICENSE (MIT)

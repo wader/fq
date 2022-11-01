@@ -32,8 +32,8 @@ func (d *D) tryUEndian(nBits int, endian Endian) (uint64, error) {
 }
 
 func (d *D) trySEndian(nBits int, endian Endian) (int64, error) {
-	if nBits < 0 {
-		return 0, fmt.Errorf("trySEndian nBits must be >= 0 (%d)", nBits)
+	if nBits < 1 {
+		return 0, fmt.Errorf("trySEndian nBits must be >= 1 (%d)", nBits)
 	}
 	n, err := d.tryUEndian(nBits, endian)
 	if err != nil {

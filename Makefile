@@ -69,7 +69,7 @@ gogenerate:
 lint:
 # bump: make-golangci-lint /golangci-lint@v([\d.]+)/ git:https://github.com/golangci/golangci-lint.git|^1
 # bump: make-golangci-lint link "Release notes" https://github.com/golangci/golangci-lint/releases/tag/v$LATEST
-	go run github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.0 run
+	go run github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1 run
 
 .PHONY: depgraph.svg
 depgraph.svg:
@@ -95,16 +95,19 @@ update-gomod:
 	GOPROXY=direct go get -d github.com/wader/gojq@fq
 	go mod tidy
 
+# Usage: make fuzz # fuzz all foramts
+# Usage: make fuzz GROUP=mp4 # fuzz a group (each format is a group also)
 # TODO: as decode recovers panic and "repanics" unrecoverable errors this is a bit hacky at the moment
-# fuzz code is not suppose to print to stderr so log to file
 # Retrigger:
+# try to decode crsash with all formats:
 # cat format/testdata/fuzz/FuzzFormats/... | go run dev/fuzzbytes.go | go run . -d raw '. as $b | formats | keys[] as $f | $b | decode($f)'
+# convert crash into raw bytes:
 # cat format/testdata/fuzz/FuzzFormats/... | go run dev/fuzzbytes.go | fq -d raw 'tobytes | tobase64'
 # fq -n '"..." | frombase64 | ...'
 .PHONY: fuzz
 fuzz:
 # in other terminal: tail -f /tmp/repanic
-	FUZZTEST=1 REPANIC_LOG=/tmp/repanic gotip test -v -run Fuzz -fuzz=Fuzz ./format/
+	FUZZTEST=1 REPANIC_LOG=/tmp/repanic go test -v -run Fuzz -fuzz=Fuzz ./format/
 
 # usage: make release VERSION=0.0.1
 # tag forked dependeces for history and to make then stay around

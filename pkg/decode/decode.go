@@ -487,6 +487,9 @@ func (d *D) PeekFind(nBits int, seekBits int64, maxLen int64, fn func(v uint64) 
 // Does not update current position.
 // TODO: nBytes -1?
 func (d *D) TryBytesRange(bitOffset int64, nBytes int) ([]byte, error) {
+	if nBytes < 0 {
+		return nil, fmt.Errorf("negative nBytes %d", nBytes)
+	}
 	buf := make([]byte, nBytes)
 	n, err := bitio.ReadAtFull(d.bitBuf, buf, int64(nBytes)*8, bitOffset)
 	if n == int64(nBytes)*8 {
