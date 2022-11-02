@@ -80,7 +80,7 @@ null
 $ fq . a
 exitcode: 4
 stderr:
-error: a: probe: failed to decode (try -d FORMAT)
+error: a: probe: failed to decode: try fq -d FORMAT to force format, see fq -h formats for list
 $ fq -i -d raw . a b c
 raw, ...[0:3][]> ._format
 "raw"
@@ -98,4 +98,4 @@ exitcode: 4
 stdin:
 test
 stderr:
-error: <stdin>: probe: failed to decode (try -d FORMAT)
+error: <stdin>: probe: failed to decode: try fq -d FORMAT to force format, see fq -h formats for list
