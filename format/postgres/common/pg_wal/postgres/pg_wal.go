@@ -49,8 +49,7 @@ const (
 /* total size (bytes):   12 */
 
 type Wal struct {
-	MaxOffset int64
-	page      *walPage
+	page *walPage
 
 	pageRecords *decode.D
 
@@ -79,11 +78,6 @@ func Decode(d *decode.D, wal *Wal) any {
 		}
 
 		posBytes := pages.Pos() / 8
-		if posBytes >= wal.MaxOffset {
-			d.FieldRawLen("unused", d.BitsLeft())
-			break
-		}
-
 		remBytes := posBytes % XLOG_BLCKSZ
 		if remBytes != 0 {
 			d.Fatalf("invalid page remBytes = %d\n", remBytes)
@@ -193,12 +187,6 @@ func decodeXLogRecords(wal *Wal, d *decode.D) {
 		/*   20      |     4 */ // pg_crc32c xl_crc
 		posBytes1 := d.Pos() / 8
 		posBytes1Aligned := int64(common.TypeAlign8(uint64(posBytes1)))
-		// check aligned - this is correct
-		// record header is 8 byte aligned
-		if posBytes1Aligned >= wal.MaxOffset {
-			d.FieldRawLen("unused", d.BitsLeft())
-			break
-		}
 
 		// check what we cat read xl_tot_len on this page
 		if posMaxOfPageBytes < posBytes1Aligned+4 {

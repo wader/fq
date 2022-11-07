@@ -21,9 +21,8 @@ func init() {
 		Name:        format.PG_WAL,
 		Description: "PostgreSQL write-ahead log file",
 		DecodeFn:    decodePGWAL,
-		DecodeInArg: format.PostgresWalIn{
+		DecodeInArg: format.PostgresIn{
 			Flavour: PG_FLAVOUR_POSTGRES14,
-			Lsn:     "",
 		},
 		RootArray: true,
 		RootName:  "pages",
@@ -48,26 +47,12 @@ func ParseLsn(lsn string) (uint32, error) {
 	return uint32(r1), err
 }
 
-func XLogSegmentOffset(xLogPtr uint32) uint32 {
-	const walSegSizeBytes = 16 * 1024 * 1024
-	return xLogPtr & (walSegSizeBytes - 1)
-}
-
 func decodePGWAL(d *decode.D, in any) any {
 	d.Endian = decode.LittleEndian
 
-	pgIn, ok := in.(format.PostgresWalIn)
+	pgIn, ok := in.(format.PostgresIn)
 	if !ok {
 		d.Fatalf("DecodeInArg must be PostgresIn!\n")
-	}
-
-	maxOffset := uint32(0xFFFFFFFF)
-	if pgIn.Lsn != "" {
-		lsn, err := ParseLsn(pgIn.Lsn)
-		if err != nil {
-			d.Fatalf("Failed to ParseLsn, err = %v\n", err)
-		}
-		maxOffset = XLogSegmentOffset(lsn)
 	}
 
 	switch pgIn.Flavour {
@@ -81,18 +66,18 @@ func decodePGWAL(d *decode.D, in any) any {
 		PG_FLAVOUR_PGPRO12,
 		PG_FLAVOUR_PGPRO13,
 		PG_FLAVOUR_PGPRO14:
-		return postgres.DecodePGWAL(d, maxOffset)
+		return postgres.DecodePGWAL(d)
 
 	case PG_FLAVOUR_PGPROEE10,
 		PG_FLAVOUR_PGPROEE11,
 		PG_FLAVOUR_PGPROEE12,
 		PG_FLAVOUR_PGPROEE13,
 		PG_FLAVOUR_PGPROEE14:
-		return pgproee.DecodePGWAL(d, maxOffset)
+		return pgproee.DecodePGWAL(d)
 
 	default:
 		break
 	}
 
-	return postgres.DecodePGWAL(d, maxOffset)
+	return postgres.DecodePGWAL(d)
 }

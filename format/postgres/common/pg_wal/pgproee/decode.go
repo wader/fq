@@ -5,9 +5,8 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-func DecodePGWAL(d *decode.D, maxOffset uint32) any {
+func DecodePGWAL(d *decode.D) any {
 	wal := &postgres.Wal{
-		MaxOffset:        int64(maxOffset),
 		DecodeXLogRecord: decodeXLogRecord,
 	}
 	return postgres.Decode(d, wal)
