@@ -19,22 +19,10 @@ func TransactionIDIsNormal(xid uint64) bool {
 	return xid >= FirstNormalTransactionID
 }
 
-type lpOffMapper struct{}
-
-func (m lpOffMapper) MapScalar(s scalar.S) (scalar.S, error) {
-	v := s.ActualU() & 0x7fff
-	s.Actual = v
-	return s, nil
-}
-
-var LpOffMapper = lpOffMapper{}
-
 type lpFlagsMapper struct{}
 
 func (m lpFlagsMapper) MapScalar(s scalar.S) (scalar.S, error) {
-	v := (s.ActualU() >> 15) & 0x3
-	s.Actual = v
-	switch v {
+	switch s.ActualU() {
 	case LP_UNUSED:
 		s.Sym = "LP_UNUSED"
 	case LP_NORMAL:
@@ -48,16 +36,6 @@ func (m lpFlagsMapper) MapScalar(s scalar.S) (scalar.S, error) {
 }
 
 var LpFlagsMapper = lpFlagsMapper{}
-
-type lpLenMapper struct{}
-
-func (m lpLenMapper) MapScalar(s scalar.S) (scalar.S, error) {
-	v := (s.ActualU() >> 17) & 0x7fff
-	s.Actual = v
-	return s, nil
-}
-
-var LpLenMapper = lpLenMapper{}
 
 type Mask struct {
 	Mask uint64
