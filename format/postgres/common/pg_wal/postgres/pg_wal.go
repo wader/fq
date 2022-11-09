@@ -89,6 +89,8 @@ func Decode(d *decode.D, wal *Wal) any {
 
 func decodeXLogPage(wal *Wal, d *decode.D) {
 	pos0 := d.Pos()
+	posPageEnd := pos0 + XLOG_BLCKSZ*8
+
 	d.SeekRel(8 * 8)
 	xlpPageAddr0 := d.U64()
 	d.SeekAbs(pos0)
@@ -141,6 +143,13 @@ func decodeXLogPage(wal *Wal, d *decode.D) {
 
 	pos1 := header.Pos()
 	xLogPage.SeekAbs(pos1)
+
+	maxBitOnPage := posPageEnd - pos1
+	if remLen > maxBitOnPage {
+		// XLogRecord size is more than page size
+		remLen = maxBitOnPage
+		remLenBytesAligned = remLen / 8
+	}
 
 	// parted XLogRecord
 	if remLen > 0 {
