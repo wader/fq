@@ -1,6 +1,8 @@
 package postgres
 
 import (
+	"fmt"
+
 	"github.com/wader/fq/format/postgres/common"
 	"github.com/wader/fq/pkg/decode"
 )
@@ -279,12 +281,12 @@ func decodeXLogRecord(wal *Wal, maxBytes int64) {
 
 	pos0 := record.Pos()
 	maxLen := maxBytes * 8
-	if record.FieldGet("xlog_body0") == nil {
-		// body on first page
-		record.FieldRawLen("xlog_body0", maxLen)
-	} else {
-		// body on second page
-		record.FieldRawLen("xlog_body1", maxLen)
+	for i := 0; ; i++ {
+		fieldName := fmt.Sprintf("xlog_body%d", i)
+		if record.FieldGet(fieldName) == nil {
+			record.FieldRawLen(fieldName, maxLen)
+			break
+		}
 	}
 	pos1 := record.Pos()
 	posMax := pos1
