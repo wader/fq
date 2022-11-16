@@ -360,7 +360,12 @@ func frameDecode(d *decode.D, _ any) any {
 	}
 
 	// total frame size
-	frameBytes := int((float64(sampleCount)/float64(sampleRate))*float64(bitRate)/8) + paddingBytes
+	frameBytes := (bitRate * 144) / sampleRate
+	if lsf {
+		frameBytes /= 2
+	}
+	frameBytes += paddingBytes
+
 	// audio data size, may include audio data from other frames also if main_data_begin is used
 	restBytes := frameBytes - headerBytes - crcBytes - sideInfoBytes
 	d.FramedFn(int64(restBytes)*8, func(d *decode.D) {
