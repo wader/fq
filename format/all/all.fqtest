@@ -102,6 +102,7 @@ markdown             Markdown
 matroska             Matroska file
 mp3                  MP3 file
 mp3_frame            MPEG audio layer 3 frame
+mp3_frame_tags       MP3 frame info/xing tags
 mp4                  ISOBMFF, QuickTime and similar
 mpeg_asc             MPEG-4 Audio Specific Config
 mpeg_es              MPEG Elementary Stream
@@ -138,7 +139,6 @@ vpx_ccr              VPX Codec Configuration Record
 wasm                 WebAssembly Binary Format
 wav                  WAV file
 webp                 WebP image
-xing                 Xing header
 xml                  Extensible Markup Language
 yaml                 YAML Ain't Markup Language
 zip                  ZIP archive

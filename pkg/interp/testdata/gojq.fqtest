@@ -210,7 +210,7 @@ $ fq -d mp3 '.frames[0] | . + .header | keys, .bitrate' test.mp3
   "sample_rate",
   "side_info",
   "sync",
-  "xing"
+  "tags"
 ]
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x20|                                             40|               @|.frames[0].header.bitrate: 56000 (4)
@@ -234,7 +234,7 @@ $ fq -d mp3 '[.frames[0] | ., .header] | add | keys, .bitrate' test.mp3
   "sample_rate",
   "side_info",
   "sync",
-  "xing"
+  "tags"
 ]
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x20|                                             40|               @|.frames[0].header.bitrate: 56000 (4)
@@ -243,14 +243,14 @@ $ fq -d mp3 '.frames[0] | keys' test.mp3
 [
   "header",
   "side_info",
-  "xing",
+  "tags",
   "audio_data",
   "crc_calculated"
 ]
 $ fq -d mp3 '.frames[0] | to_entries[].key' test.mp3
 "header"
 "side_info"
-"xing"
+"tags"
 "audio_data"
 "crc_calculated"
 # xml, csv does string normalization, make sure it works with nested JQValue:s

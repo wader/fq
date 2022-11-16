@@ -254,30 +254,22 @@ mp3> .headers[0] = 1
         "scfsi0": 0,
         "share": 0
       },
-      "xing": {
+      "tags": {
+        "abr_vbr": 0,
+        "audiophile_replay_gain": 0,
         "bytes": 599,
+        "encoder": "Lavc58.91",
+        "encoder_delay": 576,
+        "encoder_padding": 1287,
         "frames": 2,
         "header": "Info",
-        "lame_extension": {
-          "abr_vbr": 0,
-          "audiophile_replay_gain": 0,
-          "encoder": "Lavc58.91",
-          "encoder_delay": 576,
-          "encoder_padding": 1287,
-          "lame_ath_type": 0,
-          "lame_flags": 0,
-          "length": 599,
-          "lowpass_filter": 0,
-          "misc": 0,
-          "mp3_gain": 0,
-          "music_crc": 25328,
-          "preset": 0,
-          "radio_replay_gain": 0,
-          "replay_gain_peak": 0,
-          "tag_crc": 23093,
-          "tag_revision": 0,
-          "vbr_method": 0
-        },
+        "lame_ath_type": 0,
+        "lame_flags": 0,
+        "length": 599,
+        "lowpass_filter": 0,
+        "misc": 0,
+        "mp3_gain": 0,
+        "music_crc": 25328,
         "present_flags": {
           "bytes": true,
           "frames": true,
@@ -285,7 +277,12 @@ mp3> .headers[0] = 1
           "toc": true,
           "unused": 0
         },
+        "preset": 0,
         "quality": 0,
+        "radio_replay_gain": 0,
+        "replay_gain_peak": 0,
+        "tag_crc": 23093,
+        "tag_revision": 0,
         "toc": [
           0,
           166,
@@ -387,7 +384,8 @@ mp3> .headers[0] = 1
           255,
           255,
           255
-        ]
+        ],
+        "vbr_method": 0
       }
     },
     {
@@ -589,30 +587,22 @@ mp3> .headers[0] |= empty
         "scfsi0": 0,
         "share": 0
       },
-      "xing": {
+      "tags": {
+        "abr_vbr": 0,
+        "audiophile_replay_gain": 0,
         "bytes": 599,
+        "encoder": "Lavc58.91",
+        "encoder_delay": 576,
+        "encoder_padding": 1287,
         "frames": 2,
         "header": "Info",
-        "lame_extension": {
-          "abr_vbr": 0,
-          "audiophile_replay_gain": 0,
-          "encoder": "Lavc58.91",
-          "encoder_delay": 576,
-          "encoder_padding": 1287,
-          "lame_ath_type": 0,
-          "lame_flags": 0,
-          "length": 599,
-          "lowpass_filter": 0,
-          "misc": 0,
-          "mp3_gain": 0,
-          "music_crc": 25328,
-          "preset": 0,
-          "radio_replay_gain": 0,
-          "replay_gain_peak": 0,
-          "tag_crc": 23093,
-          "tag_revision": 0,
-          "vbr_method": 0
-        },
+        "lame_ath_type": 0,
+        "lame_flags": 0,
+        "length": 599,
+        "lowpass_filter": 0,
+        "misc": 0,
+        "mp3_gain": 0,
+        "music_crc": 25328,
         "present_flags": {
           "bytes": true,
           "frames": true,
@@ -620,7 +610,12 @@ mp3> .headers[0] |= empty
           "toc": true,
           "unused": 0
         },
+        "preset": 0,
         "quality": 0,
+        "radio_replay_gain": 0,
+        "replay_gain_peak": 0,
+        "tag_crc": 23093,
+        "tag_revision": 0,
         "toc": [
           0,
           166,
@@ -722,7 +717,8 @@ mp3> .headers[0] |= empty
           255,
           255,
           255
-        ]
+        ],
+        "vbr_method": 0
       }
     },
     {
