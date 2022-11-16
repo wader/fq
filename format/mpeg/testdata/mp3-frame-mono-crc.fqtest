@@ -1,4 +1,4 @@
-# ffmpeg -f lavfi -i sine -t 10ms -f wav pipe:1 | lame - - | fq - '.frame[1] | tobits' > mp3-frame-mono-crc
+# ffmpeg -f lavfi -i sine -t 10ms -f wav pipe:1 | lame - - | fq - '.frames[1] | tobits' > mp3-frame-mono-crc
 $ fq -d mp3_frame dv mp3-frame-mono-crc
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: mp3-frame-mono-crc (mp3_frame) 0x0-0xd0.7 (209)
     |                                               |                |  header{}: 0x0-0x5.7 (6)

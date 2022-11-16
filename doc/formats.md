@@ -71,7 +71,8 @@
 |[`markdown`](#markdown)           |Markdown                                                                                 |<sub></sub>|
 |[`matroska`](#matroska)           |Matroska&nbsp;file                                                                       |<sub>`aac_frame` `av1_ccr` `av1_frame` `avc_au` `avc_dcr` `flac_frame` `flac_metadatablocks` `hevc_au` `hevc_dcr` `image` `mp3_frame` `mpeg_asc` `mpeg_pes_packet` `mpeg_spu` `opus_packet` `vorbis_packet` `vp8_frame` `vp9_cfm` `vp9_frame`</sub>|
 |[`mp3`](#mp3)                     |MP3&nbsp;file                                                                            |<sub>`id3v2` `id3v1` `id3v11` `apev2` `mp3_frame`</sub>|
-|`mp3_frame`                       |MPEG&nbsp;audio&nbsp;layer&nbsp;3&nbsp;frame                                             |<sub>`xing`</sub>|
+|`mp3_frame`                       |MPEG&nbsp;audio&nbsp;layer&nbsp;3&nbsp;frame                                             |<sub>`mp3_frame_tags`</sub>|
+|`mp3_frame_tags`                  |MP3&nbsp;frame&nbsp;info/xing&nbsp;tags                                                  |<sub></sub>|
 |[`mp4`](#mp4)                     |ISOBMFF,&nbsp;QuickTime&nbsp;and&nbsp;similar                                            |<sub>`aac_frame` `av1_ccr` `av1_frame` `avc_au` `avc_dcr` `flac_frame` `flac_metadatablocks` `hevc_au` `hevc_dcr` `icc_profile` `id3v2` `image` `jpeg` `mp3_frame` `mpeg_es` `mpeg_pes_packet` `opus_packet` `prores_frame` `protobuf_widevine` `pssh_playready` `vorbis_packet` `vp9_frame` `vpx_ccr`</sub>|
 |`mpeg_asc`                        |MPEG-4&nbsp;Audio&nbsp;Specific&nbsp;Config                                              |<sub></sub>|
 |`mpeg_es`                         |MPEG&nbsp;Elementary&nbsp;Stream                                                         |<sub>`mpeg_asc` `vorbis_packet`</sub>|
@@ -108,7 +109,6 @@
 |[`wasm`](#wasm)                   |WebAssembly&nbsp;Binary&nbsp;Format                                                      |<sub></sub>|
 |`wav`                             |WAV&nbsp;file                                                                            |<sub>`id3v2` `id3v1` `id3v11`</sub>|
 |`webp`                            |WebP&nbsp;image                                                                          |<sub>`vp8_frame`</sub>|
-|`xing`                            |Xing&nbsp;header                                                                         |<sub></sub>|
 |[`xml`](#xml)                     |Extensible&nbsp;Markup&nbsp;Language                                                     |<sub></sub>|
 |`yaml`                            |YAML&nbsp;Ain't&nbsp;Markup&nbsp;Language                                                |<sub></sub>|
 |[`zip`](#zip)                     |ZIP&nbsp;archive                                                                         |<sub>`probe`</sub>|
