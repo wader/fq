@@ -59,9 +59,11 @@ bitcoin_blkdat       Bitcoin blk.dat
 bitcoin_block        Bitcoin block
 bitcoin_script       Bitcoin script
 bitcoin_transaction  Bitcoin transaction
+bits                 Raw bits
 bplist               Apple Binary Property List
 bsd_loopback_frame   BSD loopback frame
 bson                 Binary JSON
+bytes                Raw bytes
 bzip2                bzip2 compression
 cbor                 Concise Binary Object Representation
 csv                  Comma separated values
@@ -123,7 +125,6 @@ prores_frame         Apple ProRes frame
 protobuf             Protobuf
 protobuf_widevine    Widevine protobuf
 pssh_playready       PlayReady PSSH
-raw                  Raw bits
 rtmp                 Real-Time Messaging Protocol
 sll2_packet          Linux cooked capture encapsulation v2
 sll_packet           Linux cooked capture encapsulation

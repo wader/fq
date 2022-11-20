@@ -7,8 +7,8 @@ $ fq -d html . /test
     "head": ""
   }
 }
-$ fq -d raw -ni . all.xml multi_diff.xml multi_same.xml ns.xml simple.xml escape.xml noscript.html
-null> inputs | {name: input_filename, str: (tobytes | tostring)} | slurp("files")
+$ fq -d bytes -ni . all.xml multi_diff.xml multi_same.xml ns.xml simple.xml escape.xml noscript.html
+null> inputs | {name: input_filename, str: tostring} | slurp("files")
 null> spew("files") | .name, (.str | fromhtml | ., (toxml({indent: 2}) | println))
 "all.xml"
 {

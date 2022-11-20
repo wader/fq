@@ -10,7 +10,8 @@ $ fq -d matroska 'matroska_path(matroska_path(".Segment.Tracks[0].TrackEntry[0].
 exitcode: 5
 stderr:
 error: avc.mkv: cannot iterate over: null
-$ fq -n '"a" | raw | matroska_path(".Segment")'
+# TODO: use some test format
+$ fq -n '"a" | mp3_frame | matroska_path(".Segment")'
 exitcode: 5
 stderr:
 error: not matroska format

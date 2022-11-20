@@ -1,6 +1,6 @@
 ### Known bugs to fix
 
-- `fq -n '"aabbccdd" | hex | tobytes[1:] | raw | tobytes'` create binary `aabbcc` should be `bbccdd`. I think decode (raw in this case) is confused by root value buffer.
+- `fq -n '"aabbccdd" | hex | tobytes[1:] | decode("bytes") | tobytes'` create binary `aabbcc` should be `bbccdd`. I think decode (raw in this case) is confused by root value buffer.
 - Buffers/string duality is confusing, most string functions should be wrapped to understand binary.
 - REPL cancel seems to sometimes exit a sub-REPl without properly cleanup options.
 - Value errors, can only be accessed with `._error`.

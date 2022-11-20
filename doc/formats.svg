@@ -1945,53 +1945,59 @@
 <polygon fill="paleturquoise" stroke="transparent" points="2619,-2025.5 2619,-2051.5 2690,-2051.5 2690,-2025.5 2619,-2025.5"/>
 <text text-anchor="start" x="2621.5" y="-2033.5" font-family="Times,serif" font-size="20.00">bencode</text>
 </g>
-<!-- bson -->
+<!-- bits -->
 <g id="node109" class="node">
+<title>bits</title>
+<polygon fill="paleturquoise" stroke="transparent" points="2723.5,-2025.5 2723.5,-2051.5 2755.5,-2051.5 2755.5,-2025.5 2723.5,-2025.5"/>
+<text text-anchor="start" x="2725.5" y="-2033.5" font-family="Times,serif" font-size="20.00">bits</text>
+</g>
+<!-- bson -->
+<g id="node110" class="node">
 <title>bson</title>
-<polygon fill="paleturquoise" stroke="transparent" points="2720,-2025.5 2720,-2051.5 2761,-2051.5 2761,-2025.5 2720,-2025.5"/>
-<text text-anchor="start" x="2722.5" y="-2033.5" font-family="Times,serif" font-size="20.00">bson</text>
+<polygon fill="paleturquoise" stroke="transparent" points="2789,-2025.5 2789,-2051.5 2830,-2051.5 2830,-2025.5 2789,-2025.5"/>
+<text text-anchor="start" x="2791.5" y="-2033.5" font-family="Times,serif" font-size="20.00">bson</text>
+</g>
+<!-- bytes -->
+<g id="node111" class="node">
+<title>bytes</title>
+<polygon fill="paleturquoise" stroke="transparent" points="2860.5,-2025.5 2860.5,-2051.5 2906.5,-2051.5 2906.5,-2025.5 2860.5,-2025.5"/>
+<text text-anchor="start" x="2862.5" y="-2033.5" font-family="Times,serif" font-size="20.00">bytes</text>
 </g>
 <!-- cbor -->
-<g id="node110" class="node">
+<g id="node112" class="node">
 <title>cbor</title>
-<polygon fill="paleturquoise" stroke="transparent" points="2791.5,-2025.5 2791.5,-2051.5 2831.5,-2051.5 2831.5,-2025.5 2791.5,-2025.5"/>
-<text text-anchor="start" x="2793.5" y="-2033.5" font-family="Times,serif" font-size="20.00">cbor</text>
+<polygon fill="paleturquoise" stroke="transparent" points="2936.5,-2025.5 2936.5,-2051.5 2976.5,-2051.5 2976.5,-2025.5 2936.5,-2025.5"/>
+<text text-anchor="start" x="2938.5" y="-2033.5" font-family="Times,serif" font-size="20.00">cbor</text>
 </g>
 <!-- csv -->
-<g id="node111" class="node">
+<g id="node113" class="node">
 <title>csv</title>
-<polygon fill="paleturquoise" stroke="transparent" points="2865,-2025.5 2865,-2051.5 2896,-2051.5 2896,-2025.5 2865,-2025.5"/>
-<text text-anchor="start" x="2867.5" y="-2033.5" font-family="Times,serif" font-size="20.00">csv</text>
+<polygon fill="paleturquoise" stroke="transparent" points="3010,-2025.5 3010,-2051.5 3041,-2051.5 3041,-2025.5 3010,-2025.5"/>
+<text text-anchor="start" x="3012.5" y="-2033.5" font-family="Times,serif" font-size="20.00">csv</text>
 </g>
 <!-- fairplay_spc -->
-<g id="node112" class="node">
+<g id="node114" class="node">
 <title>fairplay_spc</title>
-<polygon fill="paleturquoise" stroke="transparent" points="2929.5,-2025.5 2929.5,-2051.5 3031.5,-2051.5 3031.5,-2025.5 2929.5,-2025.5"/>
-<text text-anchor="start" x="2931.5" y="-2033.5" font-family="Times,serif" font-size="20.00">fairplay_spc</text>
+<polygon fill="paleturquoise" stroke="transparent" points="3074.5,-2025.5 3074.5,-2051.5 3176.5,-2051.5 3176.5,-2025.5 3074.5,-2025.5"/>
+<text text-anchor="start" x="3076.5" y="-2033.5" font-family="Times,serif" font-size="20.00">fairplay_spc</text>
 </g>
 <!-- html -->
-<g id="node113" class="node">
+<g id="node115" class="node">
 <title>html</title>
-<polygon fill="paleturquoise" stroke="transparent" points="3062,-2025.5 3062,-2051.5 3103,-2051.5 3103,-2025.5 3062,-2025.5"/>
-<text text-anchor="start" x="3064.5" y="-2033.5" font-family="Times,serif" font-size="20.00">html</text>
+<polygon fill="paleturquoise" stroke="transparent" points="3207,-2025.5 3207,-2051.5 3248,-2051.5 3248,-2025.5 3207,-2025.5"/>
+<text text-anchor="start" x="3209.5" y="-2033.5" font-family="Times,serif" font-size="20.00">html</text>
 </g>
 <!-- markdown -->
-<g id="node114" class="node">
+<g id="node116" class="node">
 <title>markdown</title>
-<polygon fill="paleturquoise" stroke="transparent" points="3133,-2025.5 3133,-2051.5 3222,-2051.5 3222,-2025.5 3133,-2025.5"/>
-<text text-anchor="start" x="3135.5" y="-2033.5" font-family="Times,serif" font-size="20.00">markdown</text>
+<polygon fill="paleturquoise" stroke="transparent" points="3278,-2025.5 3278,-2051.5 3367,-2051.5 3367,-2025.5 3278,-2025.5"/>
+<text text-anchor="start" x="3280.5" y="-2033.5" font-family="Times,serif" font-size="20.00">markdown</text>
 </g>
 <!-- msgpack -->
-<g id="node115" class="node">
+<g id="node117" class="node">
 <title>msgpack</title>
-<polygon fill="paleturquoise" stroke="transparent" points="3252,-2025.5 3252,-2051.5 3327,-2051.5 3327,-2025.5 3252,-2025.5"/>
-<text text-anchor="start" x="3254.5" y="-2033.5" font-family="Times,serif" font-size="20.00">msgpack</text>
-</g>
-<!-- raw -->
-<g id="node116" class="node">
-<title>raw</title>
-<polygon fill="paleturquoise" stroke="transparent" points="3359,-2025.5 3359,-2051.5 3394,-2051.5 3394,-2025.5 3359,-2025.5"/>
-<text text-anchor="start" x="3361.5" y="-2033.5" font-family="Times,serif" font-size="20.00">raw</text>
+<polygon fill="paleturquoise" stroke="transparent" points="3397,-2025.5 3397,-2051.5 3472,-2051.5 3472,-2025.5 3397,-2025.5"/>
+<text text-anchor="start" x="3399.5" y="-2033.5" font-family="Times,serif" font-size="20.00">msgpack</text>
 </g>
 </g>
 </svg>

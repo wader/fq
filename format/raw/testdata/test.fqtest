@@ -1,4 +1,0 @@
-# echo test | bzip2 > test.bz2
-$ fq -n -d raw '"test" | decode'
-   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (raw)
-0x0|74 65 73 74|                                   |test|           |  unknown0: raw bits

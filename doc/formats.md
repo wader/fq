@@ -28,9 +28,11 @@
 |[`bitcoin_block`](#bitcoin_block) |Bitcoin&nbsp;block                                                                       |<sub>`bitcoin_transaction`</sub>|
 |`bitcoin_script`                  |Bitcoin&nbsp;script                                                                      |<sub></sub>|
 |`bitcoin_transaction`             |Bitcoin&nbsp;transaction                                                                 |<sub>`bitcoin_script`</sub>|
+|[`bits`](#bits)                   |Raw&nbsp;bits                                                                            |<sub></sub>|
 |[`bplist`](#bplist)               |Apple&nbsp;Binary&nbsp;Property&nbsp;List                                                |<sub></sub>|
 |`bsd_loopback_frame`              |BSD&nbsp;loopback&nbsp;frame                                                             |<sub>`inet_packet`</sub>|
 |[`bson`](#bson)                   |Binary&nbsp;JSON                                                                         |<sub></sub>|
+|[`bytes`](#bytes)                 |Raw&nbsp;bytes                                                                           |<sub></sub>|
 |`bzip2`                           |bzip2&nbsp;compression                                                                   |<sub>`probe`</sub>|
 |[`cbor`](#cbor)                   |Concise&nbsp;Binary&nbsp;Object&nbsp;Representation                                      |<sub></sub>|
 |[`csv`](#csv)                     |Comma&nbsp;separated&nbsp;values                                                         |<sub></sub>|
@@ -92,7 +94,6 @@
 |[`protobuf`](#protobuf)           |Protobuf                                                                                 |<sub></sub>|
 |`protobuf_widevine`               |Widevine&nbsp;protobuf                                                                   |<sub>`protobuf`</sub>|
 |`pssh_playready`                  |PlayReady&nbsp;PSSH                                                                      |<sub></sub>|
-|`raw`                             |Raw&nbsp;bits                                                                            |<sub></sub>|
 |[`rtmp`](#rtmp)                   |Real-Time&nbsp;Messaging&nbsp;Protocol                                                   |<sub>`amf0` `mpeg_asc`</sub>|
 |`sll2_packet`                     |Linux&nbsp;cooked&nbsp;capture&nbsp;encapsulation&nbsp;v2                                |<sub>`inet_packet`</sub>|
 |`sll_packet`                      |Linux&nbsp;cooked&nbsp;capture&nbsp;encapsulation                                        |<sub>`inet_packet`</sub>|
@@ -129,7 +130,7 @@ Currently the only global option is `force` and is used to ignore some format as
 
 ```
 fq -d mp4 -o force=true file.mp4
-fq -d raw 'mp4({force: true})' file.mp4
+fq -d bytes 'mp4({force: true})' file.mp4
 ```
 
 ## Format details
@@ -167,7 +168,7 @@ Supports decoding BER, CER and DER (X.690).
 ### Can be used to decode certificates etc
 
 ```sh
-$ fq -d raw 'frompem | asn1_ber | d' cert.pem
+$ fq -d bytes 'frompem | asn1_ber | d' cert.pem
 ```
 
 ### Can decode nested values
@@ -298,6 +299,28 @@ Decode value as bitcoin_block
 ... | bitcoin_block({has_header:false})
 ```
 
+## bits
+
+Decode to a slice and indexable binary of bits.
+
+### Slice and decode bit range
+
+```sh
+$ echo 'some {"a":1} json' | fq -d bits '.[40:-48] | fromjson'
+{
+  "a": 1
+}
+```
+
+## Index bits
+
+```sh
+✗ echo 'hello' | fq -d bits '.[4]'
+1
+$ echo 'hello' | fq -c -d bits '[.[range(8)]]'
+[0,1,1,0,1,0,0,0]
+```
+
 ## bplist
 
 ### Show full decoding
@@ -354,6 +377,33 @@ $ fq -d bson 'torepr | select(.name=="bob")' file.bson
 
 ### References
 - https://bsonspec.org/spec.html
+
+## bytes
+
+Decode to a slice and indexable binary of bytes.
+
+### Slice out byte ranges
+
+```sh
+$ echo -n 'hello' | fq -d bytes '.[-3:]' > last_3_bytes
+$ echo -n 'hello' | fq -d bytes '[.[-2:], .[0:2]] | tobytes' > first_last_2_bytes_swapped
+```
+
+### Slice and decode byte range
+
+```sh
+$ echo 'some {"a":1} json' | fq -d bytes '.[5:-6] | fromjson'
+{
+  "a": 1
+}
+```
+
+## Index bytes
+
+```sh
+$ echo 'hello' | fq -d bytes '.[1]'
+101
+```
 
 ## cbor
 
