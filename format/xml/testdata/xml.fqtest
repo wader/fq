@@ -4,8 +4,8 @@ $ fq . probe.xml
 {
   "a": ""
 }
-$ fq -d raw -ni . all.xml decl.xml multi_diff.xml multi_same.xml ns.xml simple.xml escape.xml
-null> inputs | {name: input_filename, str: (tobytes | tostring)} | slurp("files")
+$ fq -d bytes -ni . all.xml decl.xml multi_diff.xml multi_same.xml ns.xml simple.xml escape.xml
+null> inputs | {name: input_filename, str: tostring} | slurp("files")
 null> spew("files") | .name, try (.str | fromxml | ., (toxml({indent: 2}) | println)) catch .
 "all.xml"
 {
