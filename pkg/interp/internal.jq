@@ -213,18 +213,24 @@ def _tree_path(children; name; $v):
     | $v
     | _expr_to_path
     | _normalize_path
-    | reduce .[] as $n ($c;
-        if $n | _is_string then
-          children | map(select(name == $n))
-        else
-          .[$n]
+    | reduce .[] as $n (
+        $c;
+        if . then
+          if $n | _is_string then
+            children | map(select(name == $n))
+          else
+            .[$n]
+          end
+        else empty
         end
       )
     );
   def _path:
     [ . as $r
     | $v._path as $p
-    | foreach range(($p | length)/2) as $i (null; null;
+    | foreach range(($p | length)/2) as $i (
+        null;
+        null;
         ( ($r | getpath($p[0:($i+1)*2]) | name) as $name
         | [($r | getpath($p[0:($i+1)*2-1]))[] | name][0:$p[($i*2)+1]+1] as $before
         | [ $name
