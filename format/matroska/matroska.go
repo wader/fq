@@ -32,6 +32,7 @@ var matroskaFS embed.FS
 var aacFrameGroup decode.Group
 var av1CCRGroup decode.Group
 var av1FrameGroup decode.Group
+var ffv1FrameGroup decode.Group
 var flacFrameGroup decode.Group
 var flacMetadatablocksGroup decode.Group
 var imageGroup decode.Group
@@ -67,6 +68,7 @@ func init() {
 				{Groups: []*decode.Group{format.AV1_Frame}, Out: &av1FrameGroup},
 				{Groups: []*decode.Group{format.AVC_AU}, Out: &mpegAVCAUGroup},
 				{Groups: []*decode.Group{format.AVC_DCR}, Out: &mpegAVCDCRGroup},
+				{Groups: []*decode.Group{format.FFV1_Frame}, Out: &ffv1FrameGroup},
 				{Groups: []*decode.Group{format.FLAC_Frame}, Out: &flacFrameGroup},
 				{Groups: []*decode.Group{format.FLAC_Metadatablocks}, Out: &flacMetadatablocksGroup},
 				{Groups: []*decode.Group{format.HEVC_AU}, Out: &mpegHEVCSampleGroup},
@@ -91,6 +93,7 @@ func init() {
 		"A_FLAC":           &flacFrameGroup,
 		"A_AAC":            &aacFrameGroup,
 		"A_OPUS":           &opusPacketFrameGroup,
+		"V_FFV1":           &ffv1FrameGroup,
 		"V_VP8":            &vp8FrameGroup,
 		"V_VP9":            &vp9FrameGroup,
 		"V_AV1":            &av1FrameGroup,
@@ -506,6 +509,30 @@ func matroskaDecode(d *decode.D) any {
 			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, &av1CCRGroup, nil)
 		case "V_VP9":
 			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, &vp9CFMGroup, nil)
+
+		case "V_MS/VFW/FOURCC":
+			t.parentD.RangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
+				d.FieldStruct("bitmap_info_header", func(d *decode.D) {
+					d.FieldU32("bi_size")
+					d.FieldU32("width")
+					d.FieldU32("height")
+					d.FieldU16("planes")
+					d.FieldU16("bit_count")
+					compression := d.FieldUTF8("compression", 4)
+					d.FieldU32("size_image")
+					d.FieldU32("x_pels_per_meter")
+					d.FieldU32("y_pels_per_meter")
+					d.FieldU32("clr_used")
+					d.FieldU32("clr_important")
+
+					switch compression {
+					case format.BMPTagFFV1:
+						// TODO: hack? remove codecToFormat?
+						t.codec = "V_FFV1"
+					}
+				})
+			})
+
 		default:
 			t.parentD.RangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
 				d.FieldRawLen("value", d.BitsLeft())
