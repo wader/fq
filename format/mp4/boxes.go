@@ -226,6 +226,17 @@ func decodeFieldMatrix(d *decode.D, name string) {
 	})
 }
 
+func decodeSampleFlags(d *decode.D) {
+	d.FieldU4("reserved0")
+	d.FieldU2("is_leading")
+	d.FieldU2("sample_depends_on")
+	d.FieldU2("sample_is_depended_on")
+	d.FieldU2("sample_has_redundancy")
+	d.FieldU3("sample_padding_value")
+	d.FieldU1("sample_is_non_sync_sample")
+	d.FieldU16("sample_degradation_priority")
+}
+
 func decodeBoxWithParentData(ctx *decodeContext, d *decode.D, parentData any) {
 	var typ string
 	var dataSize uint64
@@ -946,7 +957,7 @@ func init() {
 				m.defaultSampleSize = int64(d.FieldU32("default_sample_size"))
 			}
 			if defaultSampleFlagsPresent {
-				d.FieldU32("default_sample_flags")
+				d.FieldStruct("default_sample_flags", decodeSampleFlags)
 			}
 
 			if t := ctx.currentTrafBox(); t != nil {
@@ -989,7 +1000,7 @@ func init() {
 				dataOffset = d.FieldS32("data_offset")
 			}
 			if firstSampleFlagsPresent {
-				d.FieldU32("first_sample_flags")
+				d.FieldStruct("first_sample_flags", decodeSampleFlags)
 			}
 
 			if sampleCount > maxSampleEntryCount {
@@ -1010,7 +1021,7 @@ func init() {
 							sampleSize = int64(d.FieldU32("sample_size"))
 						}
 						if sampleFlagsPresent {
-							d.FieldU32("sample_flags")
+							d.FieldStruct("sample_flags", decodeSampleFlags)
 						}
 						if sampleCompositionTimeOffsetsPresent {
 							d.FieldU32("sample_composition_time_offset")
@@ -1040,14 +1051,7 @@ func init() {
 			d.FieldU32("default_sample_description_index")
 			d.FieldU32("default_sample_duration")
 			d.FieldU32("default_sample_size")
-			d.FieldU4("reserved0")
-			d.FieldU2("is_leading")
-			d.FieldU2("sample_depends_on")
-			d.FieldU2("sample_is_depended_on")
-			d.FieldU2("sample_has_redundancy")
-			d.FieldU3("sample_padding_value")
-			d.FieldU1("sample_is_non_sync_sample")
-			d.FieldU16("sample_degradation_priority")
+			d.FieldStruct("default_sample_flags", decodeSampleFlags)
 		},
 		"mfra": decodeBoxes,
 		"tfra": func(_ *decodeContext, d *decode.D) {
