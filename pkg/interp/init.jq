@@ -46,7 +46,7 @@ def input:
         | [ $opts.decode_format
           , if $err | _is_string then ": \($err)"
             # TODO: if not string assume decode itself failed for now
-            else ": failed to decode (try -d FORMAT)"
+            else ": failed to decode: try fq -d FORMAT to force format, see fq -h formats for list"
             end
           ] | join("")
         | (_error_str([$name]) | printerrln)

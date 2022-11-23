@@ -9,7 +9,8 @@ $ fq -d mp4 'mp4_path(".moov.trak[1]") | mp4_path' fragmented.mp4
 ".moov.trak[1]"
 $ fq -d mp4 'mp4_path(mp4_path(".moov.trak[1]"))' fragmented.mp4
 ".moov.trak[1]"
-$ fq -n '"a" | raw | mp4_path(".moov")'
+# TODO: use some test format
+$ fq -n '"a" | mp3_frame | mp4_path(".moov")'
 exitcode: 5
 stderr:
 error: not mp4 format

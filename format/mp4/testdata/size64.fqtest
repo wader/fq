@@ -1,5 +1,5 @@
 # ffmpeg -y -f lavfi -i anoisesrc -lpc_passes 1 -strict -2 -c:a flac -t 50000s size64.mp4
-# fq -d raw 'tobytes[0:100]' size64.mp4 > size64
+# fq -d bytes '.[0:100]' size64.mp4 > size64
 # TODO: test that don't uses decode failure?
 $ fq -d mp4 '.boxes[] | d' size64
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.boxes[0]{}: box

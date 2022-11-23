@@ -20,7 +20,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var xingHeader decode.Group
+var mp3FrameTagsHeader decode.Group
 
 func init() {
 	interp.RegisterFormat(decode.Format{
@@ -28,7 +28,7 @@ func init() {
 		Description: "MPEG audio layer 3 frame",
 		DecodeFn:    frameDecode,
 		Dependencies: []decode.Dependency{
-			{Names: []string{format.XING}, Group: &xingHeader},
+			{Names: []string{format.MP3_FRAME_TAGS}, Group: &mp3FrameTagsHeader},
 		},
 	})
 }
@@ -360,11 +360,16 @@ func frameDecode(d *decode.D, _ any) any {
 	}
 
 	// total frame size
-	frameBytes := int((float64(sampleCount)/float64(sampleRate))*float64(bitRate)/8) + paddingBytes
+	frameBytes := (bitRate * 144) / sampleRate
+	if lsf {
+		frameBytes /= 2
+	}
+	frameBytes += paddingBytes
+
 	// audio data size, may include audio data from other frames also if main_data_begin is used
 	restBytes := frameBytes - headerBytes - crcBytes - sideInfoBytes
 	d.FramedFn(int64(restBytes)*8, func(d *decode.D) {
-		_, _, _ = d.TryFieldFormat("xing", xingHeader, nil)
+		_, _, _ = d.TryFieldFormat("tags", mp3FrameTagsHeader, nil)
 		d.FieldRawLen("audio_data", d.BitsLeft())
 	})
 

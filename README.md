@@ -4,9 +4,15 @@ Tool, language and decoders for working with binary data.
 
 ![fq demo](doc/demo.svg)
 
+Basic usage is `fq . file` or `fq d file`.
+
+For details see [usage.md](doc/usage.md).
+
+### Background
+
 fq is inspired by the well known jq tool and language and allows you to work with binary formats the same way you would using jq. In addition it can present data like a hex viewer, transform, slice and concatenate binary data. It also supports nested formats and has an interactive REPL with auto-completion.
 
-It was originally designed to query, inspect and debug media codecs and containers like mp4, flac, mp3, jpeg. Since then it has been extended to support a variety of formats like executables, packet captures (including TCP reassembly) and serialization formats like JSON, YAML, XML, ASN1 BER, Avro, CBOR, protobuf. In addition it also has functions to work with URL:s, convert to/from hex, number bases, search for things etc.
+It was originally designed to query, inspect and debug media codecs and containers like mp4, flac, mp3, jpeg. But has since then been extended to support a variety of formats like executables, packet captures (with TCP reassembly) and serialization formats like JSON, YAML, XML, ASN1 BER, Avro, CBOR, protobuf. In addition it also has functions to work with URL:s, convert to/from hex, number bases, search for things etc.
 
 In summary it aims to be jq, hexdump, dd and gdb for files combined into one.
 
@@ -45,15 +51,18 @@ avc_nalu,
 avc_pps,
 avc_sei,
 avc_sps,
+[avi](doc/formats.md#avi),
 [avro_ocf](doc/formats.md#avro_ocf),
 [bencode](doc/formats.md#bencode),
 bitcoin_blkdat,
 [bitcoin_block](doc/formats.md#bitcoin_block),
 bitcoin_script,
 bitcoin_transaction,
+[bits](doc/formats.md#bits),
 [bplist](doc/formats.md#bplist),
 bsd_loopback_frame,
 [bson](doc/formats.md#bson),
+[bytes](doc/formats.md#bytes),
 bzip2,
 [cbor](doc/formats.md#cbor),
 [csv](doc/formats.md#csv),
@@ -96,6 +105,7 @@ macho_fat,
 [matroska](doc/formats.md#matroska),
 [mp3](doc/formats.md#mp3),
 mp3_frame,
+mp3_frame_tags,
 [mp4](doc/formats.md#mp4),
 mpeg_asc,
 mpeg_es,
@@ -118,7 +128,6 @@ prores_frame,
 [protobuf](doc/formats.md#protobuf),
 protobuf_widevine,
 pssh_playready,
-raw,
 [rtmp](doc/formats.md#rtmp),
 sll2_packet,
 sll_packet,
@@ -136,7 +145,6 @@ vpx_ccr,
 [wasm](doc/formats.md#wasm),
 wav,
 webp,
-xing,
 [xml](doc/formats.md#xml),
 yaml,
 [zip](doc/formats.md#zip)
@@ -146,12 +154,6 @@ yaml,
 It can also work with some common text formats like URL:s, hex, base64, PEM etc and for some serialization formats like XML, YAML etc it can transform both from and to jq values.
 
 For details see [formats.md](doc/formats.md) and [usage.md](doc/usage.md).
-
-## Usage
-
-Basic usage is `fq . file`.
-
-For details see [usage.md](doc/usage.md)
 
 ## Presentations
 

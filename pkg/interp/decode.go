@@ -67,11 +67,12 @@ func (i *Interp) _registry(c any) any {
 
 	for _, f := range uniqueFormats {
 		vf := map[string]any{
-			"name":        f.Name,
-			"description": f.Description,
-			"probe_order": f.ProbeOrder,
-			"root_name":   f.RootName,
-			"root_array":  f.RootArray,
+			"name":                 f.Name,
+			"description":          f.Description,
+			"probe_order":          f.ProbeOrder,
+			"root_name":            f.RootName,
+			"root_array":           f.RootArray,
+			"skip_decode_function": f.SkipDecodeFunction,
 		}
 
 		var dependenciesVs []any
@@ -431,6 +432,9 @@ func makeDecodeValueOut(dv *decode.Value, kind decodeValueKind, out any) any {
 				JQValue:         gojqex.Number{V: vvv},
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
+		case Binary:
+			// used by bytes and bits format
+			return vvv
 		default:
 			panic(fmt.Sprintf("unreachable vv %#+v", vvv))
 		}

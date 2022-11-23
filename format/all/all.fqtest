@@ -2,6 +2,7 @@ $ fq -n _registry.groups.probe
 [
   "adts",
   "ar",
+  "avi",
   "avro_ocf",
   "bitcoin_blkdat",
   "bplist",
@@ -51,15 +52,18 @@ avc_nalu             H.264/AVC Network Access Layer Unit
 avc_pps              H.264/AVC Picture Parameter Set
 avc_sei              H.264/AVC Supplemental Enhancement Information
 avc_sps              H.264/AVC Sequence Parameter Set
+avi                  Audio Video Interleaved
 avro_ocf             Avro object container file
 bencode              BitTorrent bencoding
 bitcoin_blkdat       Bitcoin blk.dat
 bitcoin_block        Bitcoin block
 bitcoin_script       Bitcoin script
 bitcoin_transaction  Bitcoin transaction
+bits                 Raw bits
 bplist               Apple Binary Property List
 bsd_loopback_frame   BSD loopback frame
 bson                 Binary JSON
+bytes                Raw bytes
 bzip2                bzip2 compression
 cbor                 Concise Binary Object Representation
 csv                  Comma separated values
@@ -102,6 +106,7 @@ markdown             Markdown
 matroska             Matroska file
 mp3                  MP3 file
 mp3_frame            MPEG audio layer 3 frame
+mp3_frame_tags       MP3 frame info/xing tags
 mp4                  ISOBMFF, QuickTime and similar
 mpeg_asc             MPEG-4 Audio Specific Config
 mpeg_es              MPEG Elementary Stream
@@ -120,7 +125,6 @@ prores_frame         Apple ProRes frame
 protobuf             Protobuf
 protobuf_widevine    Widevine protobuf
 pssh_playready       PlayReady PSSH
-raw                  Raw bits
 rtmp                 Real-Time Messaging Protocol
 sll2_packet          Linux cooked capture encapsulation v2
 sll_packet           Linux cooked capture encapsulation
@@ -138,7 +142,6 @@ vpx_ccr              VPX Codec Configuration Record
 wasm                 WebAssembly Binary Format
 wav                  WAV file
 webp                 WebP image
-xing                 Xing header
 xml                  Extensible Markup Language
 yaml                 YAML Ain't Markup Language
 zip                  ZIP archive

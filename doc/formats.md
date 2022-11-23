@@ -21,15 +21,18 @@
 |`avc_pps`                         |H.264/AVC&nbsp;Picture&nbsp;Parameter&nbsp;Set                                           |<sub></sub>|
 |`avc_sei`                         |H.264/AVC&nbsp;Supplemental&nbsp;Enhancement&nbsp;Information                            |<sub></sub>|
 |`avc_sps`                         |H.264/AVC&nbsp;Sequence&nbsp;Parameter&nbsp;Set                                          |<sub></sub>|
+|[`avi`](#avi)                     |Audio&nbsp;Video&nbsp;Interleaved                                                        |<sub>`avc_au` `hevc_au` `mp3_frame` `flac_frame`</sub>|
 |[`avro_ocf`](#avro_ocf)           |Avro&nbsp;object&nbsp;container&nbsp;file                                                |<sub></sub>|
 |[`bencode`](#bencode)             |BitTorrent&nbsp;bencoding                                                                |<sub></sub>|
 |`bitcoin_blkdat`                  |Bitcoin&nbsp;blk.dat                                                                     |<sub>`bitcoin_block`</sub>|
 |[`bitcoin_block`](#bitcoin_block) |Bitcoin&nbsp;block                                                                       |<sub>`bitcoin_transaction`</sub>|
 |`bitcoin_script`                  |Bitcoin&nbsp;script                                                                      |<sub></sub>|
 |`bitcoin_transaction`             |Bitcoin&nbsp;transaction                                                                 |<sub>`bitcoin_script`</sub>|
+|[`bits`](#bits)                   |Raw&nbsp;bits                                                                            |<sub></sub>|
 |[`bplist`](#bplist)               |Apple&nbsp;Binary&nbsp;Property&nbsp;List                                                |<sub></sub>|
 |`bsd_loopback_frame`              |BSD&nbsp;loopback&nbsp;frame                                                             |<sub>`inet_packet`</sub>|
 |[`bson`](#bson)                   |Binary&nbsp;JSON                                                                         |<sub></sub>|
+|[`bytes`](#bytes)                 |Raw&nbsp;bytes                                                                           |<sub></sub>|
 |`bzip2`                           |bzip2&nbsp;compression                                                                   |<sub>`probe`</sub>|
 |[`cbor`](#cbor)                   |Concise&nbsp;Binary&nbsp;Object&nbsp;Representation                                      |<sub></sub>|
 |[`csv`](#csv)                     |Comma&nbsp;separated&nbsp;values                                                         |<sub></sub>|
@@ -71,7 +74,8 @@
 |[`markdown`](#markdown)           |Markdown                                                                                 |<sub></sub>|
 |[`matroska`](#matroska)           |Matroska&nbsp;file                                                                       |<sub>`aac_frame` `av1_ccr` `av1_frame` `avc_au` `avc_dcr` `flac_frame` `flac_metadatablocks` `hevc_au` `hevc_dcr` `image` `mp3_frame` `mpeg_asc` `mpeg_pes_packet` `mpeg_spu` `opus_packet` `vorbis_packet` `vp8_frame` `vp9_cfm` `vp9_frame`</sub>|
 |[`mp3`](#mp3)                     |MP3&nbsp;file                                                                            |<sub>`id3v2` `id3v1` `id3v11` `apev2` `mp3_frame`</sub>|
-|`mp3_frame`                       |MPEG&nbsp;audio&nbsp;layer&nbsp;3&nbsp;frame                                             |<sub>`xing`</sub>|
+|`mp3_frame`                       |MPEG&nbsp;audio&nbsp;layer&nbsp;3&nbsp;frame                                             |<sub>`mp3_frame_tags`</sub>|
+|`mp3_frame_tags`                  |MP3&nbsp;frame&nbsp;info/xing&nbsp;tags                                                  |<sub></sub>|
 |[`mp4`](#mp4)                     |ISOBMFF,&nbsp;QuickTime&nbsp;and&nbsp;similar                                            |<sub>`aac_frame` `av1_ccr` `av1_frame` `avc_au` `avc_dcr` `flac_frame` `flac_metadatablocks` `hevc_au` `hevc_dcr` `icc_profile` `id3v2` `image` `jpeg` `mp3_frame` `mpeg_es` `mpeg_pes_packet` `opus_packet` `prores_frame` `protobuf_widevine` `pssh_playready` `vorbis_packet` `vp9_frame` `vpx_ccr`</sub>|
 |`mpeg_asc`                        |MPEG-4&nbsp;Audio&nbsp;Specific&nbsp;Config                                              |<sub></sub>|
 |`mpeg_es`                         |MPEG&nbsp;Elementary&nbsp;Stream                                                         |<sub>`mpeg_asc` `vorbis_packet`</sub>|
@@ -90,7 +94,6 @@
 |[`protobuf`](#protobuf)           |Protobuf                                                                                 |<sub></sub>|
 |`protobuf_widevine`               |Widevine&nbsp;protobuf                                                                   |<sub>`protobuf`</sub>|
 |`pssh_playready`                  |PlayReady&nbsp;PSSH                                                                      |<sub></sub>|
-|`raw`                             |Raw&nbsp;bits                                                                            |<sub></sub>|
 |[`rtmp`](#rtmp)                   |Real-Time&nbsp;Messaging&nbsp;Protocol                                                   |<sub>`amf0` `mpeg_asc`</sub>|
 |`sll2_packet`                     |Linux&nbsp;cooked&nbsp;capture&nbsp;encapsulation&nbsp;v2                                |<sub>`inet_packet`</sub>|
 |`sll_packet`                      |Linux&nbsp;cooked&nbsp;capture&nbsp;encapsulation                                        |<sub>`inet_packet`</sub>|
@@ -108,7 +111,6 @@
 |[`wasm`](#wasm)                   |WebAssembly&nbsp;Binary&nbsp;Format                                                      |<sub></sub>|
 |`wav`                             |WAV&nbsp;file                                                                            |<sub>`id3v2` `id3v1` `id3v11`</sub>|
 |`webp`                            |WebP&nbsp;image                                                                          |<sub>`vp8_frame`</sub>|
-|`xing`                            |Xing&nbsp;header                                                                         |<sub></sub>|
 |[`xml`](#xml)                     |Extensible&nbsp;Markup&nbsp;Language                                                     |<sub></sub>|
 |`yaml`                            |YAML&nbsp;Ain't&nbsp;Markup&nbsp;Language                                                |<sub></sub>|
 |[`zip`](#zip)                     |ZIP&nbsp;archive                                                                         |<sub>`probe`</sub>|
@@ -116,7 +118,7 @@
 |`inet_packet`                     |Group                                                                                    |<sub>`ipv4_packet` `ipv6_packet`</sub>|
 |`ip_packet`                       |Group                                                                                    |<sub>`icmp` `icmpv6` `tcp_segment` `udp_datagram`</sub>|
 |`link_frame`                      |Group                                                                                    |<sub>`bsd_loopback_frame` `ether8023_frame` `sll2_packet` `sll_packet`</sub>|
-|`probe`                           |Group                                                                                    |<sub>`adts` `ar` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `jsonl` `macho` `macho_fat` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `toml` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
+|`probe`                           |Group                                                                                    |<sub>`adts` `ar` `avi` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `jsonl` `macho` `macho_fat` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `toml` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
 |`tcp_stream`                      |Group                                                                                    |<sub>`dns_tcp` `rtmp`</sub>|
 |`udp_payload`                     |Group                                                                                    |<sub>`dns`</sub>|
 
@@ -128,7 +130,7 @@ Currently the only global option is `force` and is used to ignore some format as
 
 ```
 fq -d mp4 -o force=true file.mp4
-fq -d raw 'mp4({force: true})' file.mp4
+fq -d bytes 'mp4({force: true})' file.mp4
 ```
 
 ## Format details
@@ -166,7 +168,7 @@ Supports decoding BER, CER and DER (X.690).
 ### Can be used to decode certificates etc
 
 ```sh
-$ fq -d raw 'frompem | asn1_ber | d' cert.pem
+$ fq -d bytes 'frompem | asn1_ber | d' cert.pem
 ```
 
 ### Can decode nested values
@@ -193,19 +195,59 @@ $ fq -d asn1_ber 'torepr as $r | ["version", "modulus", "private_exponent", "pri
 
 |Name         |Default|Description|
 |-            |-      |-|
-|`length_size`|4      |Length value size|
+|`length_size`|0      |Length value size|
 
 ### Examples
 
 Decode file using avc_au options
 ```
-$ fq -d avc_au -o length_size=4 . file
+$ fq -d avc_au -o length_size=0 . file
 ```
 
 Decode value as avc_au
 ```
-... | avc_au({length_size:4})
+... | avc_au({length_size:0})
 ```
+
+## avi
+
+### Options
+
+|Name            |Default|Description|
+|-               |-      |-|
+|`decode_samples`|true   |Decode supported media samples|
+
+### Examples
+
+Decode file using avi options
+```
+$ fq -d avi -o decode_samples=true . file
+```
+
+Decode value as avi
+```
+... | avi({decode_samples:true})
+```
+
+### Samples
+
+AVI has many redundant ways to index samples so currently `.streams[].samples` will only include samples the most "modern" way used in the file. That is in order of stream super index, movi ix index then idx1 index.
+
+### Extract samples for stream 1
+
+```sh
+$ fq '.streams[1].samples[] | tobytes' file.avi > stream01.mp3
+```
+
+### Show stream summary
+```sh
+$ fq -o decode_samples=false '[.chunks[0] | grep_by(.id=="LIST" and .type=="strl") | grep_by(.id=="strh") as {$type} | grep_by(.id=="strf") as {$format_tag, $compression} | {$type,$format_tag,$compression}]' *.avi
+```
+
+### References
+
+- [AVI RIFF File Reference](https://learn.microsoft.com/en-us/windows/win32/directshow/avi-riff-file-reference)
+- [OpenDML AVI File Format Extensions](http://www.jmcgowan.com/odmlff2.pdf)
 
 ## avro_ocf
 
@@ -255,6 +297,28 @@ $ fq -d bitcoin_block -o has_header=false . file
 Decode value as bitcoin_block
 ```
 ... | bitcoin_block({has_header:false})
+```
+
+## bits
+
+Decode to a slice and indexable binary of bits.
+
+### Slice and decode bit range
+
+```sh
+$ echo 'some {"a":1} json' | fq -d bits '.[40:-48] | fromjson'
+{
+  "a": 1
+}
+```
+
+## Index bits
+
+```sh
+✗ echo 'hello' | fq -d bits '.[4]'
+1
+$ echo 'hello' | fq -c -d bits '[.[range(8)]]'
+[0,1,1,0,1,0,0,0]
 ```
 
 ## bplist
@@ -313,6 +377,33 @@ $ fq -d bson 'torepr | select(.name=="bob")' file.bson
 
 ### References
 - https://bsonspec.org/spec.html
+
+## bytes
+
+Decode to a slice and indexable binary of bytes.
+
+### Slice out byte ranges
+
+```sh
+$ echo -n 'hello' | fq -d bytes '.[-3:]' > last_3_bytes
+$ echo -n 'hello' | fq -d bytes '[.[-2:], .[0:2]] | tobytes' > first_last_2_bytes_swapped
+```
+
+### Slice and decode byte range
+
+```sh
+$ echo 'some {"a":1} json' | fq -d bytes '.[5:-6] | fromjson'
+{
+  "a": 1
+}
+```
+
+## Index bytes
+
+```sh
+$ echo 'hello' | fq -d bytes '.[1]'
+101
+```
 
 ## cbor
 

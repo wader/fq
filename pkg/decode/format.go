@@ -8,18 +8,19 @@ type Dependency struct {
 }
 
 type Format struct {
-	Name          string
-	ProbeOrder    int // probe order is from low to hi value then by name
-	Description   string
-	Groups        []string
-	DecodeFn      func(d *D, _ any) any
-	DecodeInArg   any
-	DecodeOutType any
-	RootArray     bool
-	RootName      string
-	Dependencies  []Dependency
-	Help          FormatHelp
-	Functions     []string
+	Name               string
+	ProbeOrder         int // probe order is from low to hi value then by name
+	Description        string
+	Groups             []string
+	DecodeFn           func(d *D, _ any) any
+	DecodeInArg        any
+	DecodeOutType      any
+	RootArray          bool
+	RootName           string
+	Dependencies       []Dependency
+	Help               FormatHelp
+	Functions          []string
+	SkipDecodeFunction bool
 }
 
 type HelpExample struct {

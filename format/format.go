@@ -22,6 +22,9 @@ const (
 	TCP_STREAM  = "tcp_stream"  // ex: http
 	UDP_PAYLOAD = "udp_payload" // ex: dns
 
+	BYTES = "bytes"
+	BITS  = "bits"
+
 	AAC_FRAME           = "aac_frame"
 	ADTS                = "adts"
 	ADTS_FRAME          = "adts_frame"
@@ -39,6 +42,7 @@ const (
 	AVC_PPS             = "avc_pps"
 	AVC_SEI             = "avc_sei"
 	AVC_SPS             = "avc_sps"
+	AVI                 = "avi"
 	AVRO_OCF            = "avro_ocf"
 	BENCODE             = "bencode"
 	BITCOIN_BLKDAT      = "bitcoin_blkdat"
@@ -91,6 +95,7 @@ const (
 	MATROSKA            = "matroska"
 	MP3                 = "mp3"
 	MP3_FRAME           = "mp3_frame"
+	MP3_FRAME_TAGS      = "mp3_frame_tags"
 	MP4                 = "mp4"
 	MPEG_ASC            = "mpeg_asc"
 	MPEG_ES             = "mpeg_es"
@@ -112,7 +117,6 @@ const (
 	PROTOBUF            = "protobuf"
 	PROTOBUF_WIDEVINE   = "protobuf_widevine"
 	PSSH_PLAYREADY      = "pssh_playready"
-	RAW                 = "raw"
 	RTMP                = "rtmp"
 	SLL_PACKET          = "sll_packet"
 	SLL2_PACKET         = "sll2_packet"
@@ -130,7 +134,6 @@ const (
 	WASM                = "wasm"
 	WAV                 = "wav"
 	WEBP                = "webp"
-	XING                = "xing"
 	XML                 = "xml"
 	YAML                = "yaml"
 	ZIP                 = "zip"
@@ -293,6 +296,10 @@ func (t TCPStreamIn) MustIsPort(fn func(format string, a ...any), ports ...int) 
 type Mp4In struct {
 	DecodeSamples  bool `doc:"Decode supported media samples"`
 	AllowTruncated bool `doc:"Allow box to be truncated"`
+}
+
+type AviIn struct {
+	DecodeSamples bool `doc:"Decode supported media samples"`
 }
 
 type ZipIn struct {

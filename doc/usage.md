@@ -180,7 +180,7 @@ fq '.frames[0:10] | map(tobytesrange.start)' file.mp3
 
 ```sh
 # decode byte range 100 to end
-fq -d raw 'tobytes[100:] | mp3_frame | d' file.mp3
+fq -d bytes '.[100:] | mp3_frame | d' file.mp3
 # decode byte range 10 bytes into .somefield and preseve relative position in file
 fq '.somefield | tobytesrange[10:] | mp3_frame | d' file.mp3
 ```
@@ -407,7 +407,7 @@ unary uses input and if more than one argument all as arguments ignoring the inp
 - `open` open file for reading
 - All decode function takes a optional option argument. The only option currently is `force` to ignore decoder asserts.
 For example to decode as mp3 and ignore assets do `mp3({force: true})` or `decode("mp3"; {force: true})`, from command line
-you currently have to do `fq -d raw 'mp3({force: true})' file`.
+you currently have to do `fq -d bytes 'mp3({force: true})' file`.
 - `decode`, `decode("<format>")`, `decode("<format>"; $opts)` decode format
 - `probe`, `probe($opts)` probe and decode format
 - `mp3`, `mp3($opts)`, ..., `<format>`, `<format>($opts)` same as `decode("<format>")`, `decode("<format>"; $opts)`  decode as format
@@ -781,7 +781,7 @@ you know the format of some unknown value. Then you can decode manually.
 # try decode a `mp3_frame` that failed to decode
 $ fq -d mp3 '.unknown0 | mp3_frame' file.mp3
 # skip first 10 bytes then decode as `mp3_frame`
-$ fq -d raw 'tobytes[10:] | mp3_frame' file.mp3
+$ fq -d bytes '.[10:] | mp3_frame' file.mp3
 </pre>
 
 ### Use `.` as input and in a positional argument

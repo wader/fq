@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	// fork of github.com/itchyny/gojq, see github.com/wader/gojq fq branch
-	github.com/wader/gojq v0.12.1-0.20221030123557-e1510a9e80c3
+	github.com/wader/gojq v0.12.1-0.20221119094510-72d27cb69e7b
 	// fork of github.com/chzyer/readline, see github.com/wader/readline fq branch
 	github.com/wader/readline v0.0.0-20220928125628-732951d41240
 )
@@ -33,7 +33,7 @@ require (
 	// bump-disabled: gomod-gopacket /github\.com\/gopacket\/gopacket v(.*)/ https://github.com/gopacket/gopacket.git|^1
 	// bump-disabled: gomod-gopacket command go get -d github.com/gopacket/gopacket@v$LATEST && go mod tidy
 	// bump-disabled: gomod-gopacket link "Release notes" https://github.com/gopacket/gopacket/releases/tag/v$LATEST
-	github.com/gopacket/gopacket v0.0.0-20221006103438-9e6d99b9b443
+	github.com/gopacket/gopacket v0.1.0
 
 	// bump: gomod-copystructure /github\.com\/mitchellh\/copystructure v(.*)/ https://github.com/mitchellh/copystructure.git|^1
 	// bump: gomod-copystructure command go get -d github.com/mitchellh/copystructure@v$LATEST && go mod tidy
@@ -52,15 +52,15 @@ require (
 
 	// has no tags
 	// go get -d golang.org/x/crypto@master && go mod tidy
-	golang.org/x/crypto v0.1.1-0.20221024173537-a3485e174077
+	golang.org/x/crypto v0.3.0
 
 	// has no tags
 	// go get -d golang.org/x/exp@master && go mod tidy
-	golang.org/x/exp v0.0.0-20221028150844-83b7d23a625f
+	golang.org/x/exp v0.0.0-20221114191408-850992195362
 
 	// has no tags
 	// go get -d golang.org/x/net@master && go mod tidy
-	golang.org/x/net v0.1.1-0.20221027164007-c63010009c80
+	golang.org/x/net v0.2.0
 
 	// bump: gomod-golang/text /golang\.org\/x\/text v(.*)/ https://github.com/golang/text.git|^0
 	// bump: gomod-golang/text command go get -d golang.org/x/text@v$LATEST && go mod tidy
@@ -77,6 +77,6 @@ require (
 	github.com/itchyny/timefmt-go v0.1.4 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
-	golang.org/x/sys v0.1.0 // indirect
+	golang.org/x/sys v0.2.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 )

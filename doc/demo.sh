@@ -17,8 +17,11 @@ echo
 c "Show ID3v2 tag inside mp3 file"
 s "fq '.headers[0]' file.mp3"
 echo
+c "Show encoder software used"
+s "fq -r '.frames[0].tags.encoder | tovalue' file.mp3"
+echo
 c "Decode at two offsets as mp3_frame and show bitrate"
-s "fq -d raw 'tobytes[0xb79,0xc49:] | mp3_frame.header.bitrate' file.mp3"
+s "fq -d bytes '.[0xb79,0xc49:] | mp3_frame.header.bitrate' file.mp3"
 echo
 c "Extract PNG file"
 s "fq '.headers[].frames[] | select(.id == \"APIC\")?.picture | tobits' file.mp3 >file.png"
