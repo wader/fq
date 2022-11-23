@@ -2,6 +2,7 @@ package bplist
 
 import (
 	"embed"
+	"fmt"
 	"time"
 
 	"github.com/wader/fq/format"
@@ -10,7 +11,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-//go:embed bplist.jq bplist.md
+//go:embed bookmark.jq bplist.md
 var bookmarkFS embed.FS
 
 func init() {
@@ -20,8 +21,7 @@ func init() {
 		Description: "Apple BookmarkData",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    bookmarkDecode,
-		Functions:   []string{},
-		//Functions:   []string{"torepr"},
+		Functions:   []string{"torepr"},
 	})
 	interp.RegisterFS(bookmarkFS)
 }
@@ -147,20 +147,22 @@ var elementTypeMap = scalar.UToScalar{
 var cocoaTimeEpochDate = time.Date(2001, time.January, 1, 0, 0, 0, 0, time.UTC)
 
 type tocHeader struct {
-	tocSize       uint64
-	nextTOCOffset uint64
-	numEntries    uint64
+	tocSize          uint64
+	nextTOCOffset    uint64
+	numEntries       uint64
+	entryArrayOffset uint64
 }
 
-func decodeTOCHeader(d *decode.D) *tocHeader {
-	var hdr *tocHeader
+func decodeTOCHeader(d *decode.D, idx int) *tocHeader {
+	hdr := new(tocHeader)
 
-	d.FieldStruct("first_toc", func(d *decode.D) {
+	d.FieldStruct(fmt.Sprintf("toc_header_%d", idx), func(d *decode.D) {
 		hdr.tocSize = d.FieldU32("toc_size")
 		d.FieldU32("magic", d.AssertU(0xfffffffe))
 		d.FieldU32("identifier")
 		hdr.nextTOCOffset = d.FieldU32("next_toc_offset")
 		hdr.numEntries = d.FieldU32("num_entries_in_toc")
+		hdr.entryArrayOffset = uint64(d.Pos())
 	})
 
 	return hdr
@@ -187,89 +189,135 @@ const (
 )
 
 func decodeRecord(d *decode.D, offset uint64) {
-	d.FieldStruct("record", func(d *decode.D) {
-		n := int(d.FieldU32("length"))
-		typ := d.FieldU32("type", dataTypeMap)
-		switch typ {
-		case dataTypeString:
-			d.FieldUTF8("data", n)
-		case dataTypeData:
-			d.FieldRawLen("data", int64(n*8))
-		case dataTypeNumber8:
-			d.FieldS8("data")
-		case dataTypeNumber16:
-			d.FieldS16("data")
-		case dataTypeNumber32:
-			d.FieldS32("data")
-		case dataTypeNumber64:
-			d.FieldS64("data")
-		case dataTypeNumber32F:
-			d.FieldF32("data")
-		case dataTypeNumber64F:
-			d.FieldF64("data")
-		case dataTypeDate:
-			d.FieldF64("data")
-		case dataTypeBooleanFalse:
-		case dataTypeBooleanTrue:
-		case dataTypeArray:
-			d.FieldStructNArray("data", "element", int64(n/arrayEntrySize), func(d *decode.D) {
-				offset := d.FieldU32("offset")
-				decodeRecord(d, offset)
-			})
-		case dataTypeDictionary:
-			d.FieldStructNArray("data", "element", int64(n/dictEntrySize), func(d *decode.D) {
-				keyOffset := d.FieldU32("key_offset")
-				d.FieldStruct("key", func(d *decode.D) {
-					decodeRecord(d, keyOffset)
+	d.SeekAbs(int64(offset), func(d *decode.D) {
+		d.FieldStruct("record", func(d *decode.D) {
+			n := int(d.FieldU32("length"))
+			typ := d.FieldU32("type", dataTypeMap)
+			switch typ {
+			case dataTypeString:
+				d.FieldUTF8("data", n)
+			case dataTypeData:
+				d.FieldRawLen("data", int64(n*8))
+			case dataTypeNumber8:
+				d.FieldS8("data")
+			case dataTypeNumber16:
+				d.FieldS16("data")
+			case dataTypeNumber32:
+				d.FieldS32("data")
+			case dataTypeNumber64:
+				d.FieldS64("data")
+			case dataTypeNumber32F:
+				d.FieldF32("data")
+			case dataTypeNumber64F:
+				d.FieldF64("data")
+			case dataTypeDate:
+				d.FieldF64BE("data")
+			case dataTypeBooleanFalse:
+			case dataTypeBooleanTrue:
+			case dataTypeArray:
+				d.FieldStructNArray("data", "element", int64(n/arrayEntrySize), func(d *decode.D) {
+					offset := calcOffset(d.FieldU32("offset"))
+					decodeRecord(d, offset)
+				})
+			case dataTypeDictionary:
+				d.FieldStructNArray("data", "element", int64(n/dictEntrySize), func(d *decode.D) {
+					keyOffset := calcOffset(d.FieldU32("key_offset"))
+					d.FieldStruct("key", func(d *decode.D) {
+						decodeRecord(d, keyOffset)
+					})
+
+					valueOffset := calcOffset(d.FieldU32("value_offset"))
+					d.FieldStruct("value", func(d *decode.D) {
+						decodeRecord(d, valueOffset)
+					})
+				})
+			case dataTypeUUID:
+				d.FieldRawLen("data", int64(n*8))
+			case dataTypeURL:
+				d.FieldUTF8("data", n)
+			case dataTypeRelativeURL:
+				baseOffset := d.FieldU32("base_url_offset")
+				d.FieldStruct("base_url", func(d *decode.D) {
+					decodeRecord(d, baseOffset)
 				})
 
-				valueOffset := d.FieldU32("value_offset")
-				d.FieldStruct("key", func(d *decode.D) {
-					decodeRecord(d, valueOffset)
+				suffixOffset := d.FieldU32("suffix_offset")
+				d.FieldStruct("suffix", func(d *decode.D) {
+					decodeRecord(d, suffixOffset)
 				})
-			})
-		case dataTypeUUID:
-			d.FieldRawLen("data", int64(n*8))
-		case dataTypeURL:
-			d.FieldUTF8("data", n)
-		case dataTypeRelativeURL:
-			baseOffset := d.FieldU32("base_url_offset")
-			d.FieldStruct("base_url", func(d *decode.D) {
-				decodeRecord(d, baseOffset)
-			})
-
-			suffixOffset := d.FieldU32("suffix_offset")
-			d.FieldStruct("suffix", func(d *decode.D) {
-				decodeRecord(d, suffixOffset)
-			})
-		}
+			}
+		})
 	})
 }
 
+const reservedSize = 32
+const headerEnd = 48
+const headerEndBitPos = headerEnd * 8
+
+// all offsets are calculated relative to the end of the bookmark header
+func calcOffset(i uint64) uint64 { return 8 * (i + headerEnd) }
+
 func bookmarkDecode(d *decode.D, _ any) any {
+
+	// all fields are little-endian with the exception of the Date datatype.
+	d.Endian = decode.LittleEndian
+
+	// decode bookmarkdata header, one at the top of each "file",
+	// although these may be nested inside of binary plists
 	d.FieldStruct("header", func(d *decode.D) {
 		d.FieldUTF8("magic", 4, d.AssertStr("book", "alis"))
-		d.FieldU32("total_size")
+		d.FieldU32LE("total_size")
 		d.FieldU32("unknown")
 		d.FieldU32("header_size", d.AssertU(48))
+		d.FieldRawLen("reserved", reservedSize*8)
 	})
 
-	tocOffset := d.FieldU32("first_toc_offset")
+	tocOffset := calcOffset(d.FieldU32("first_toc_offset"))
 
-	for tocOffset != 0 {
+	var tocHeaders []*tocHeader
+
+	for i := 0; tocOffset != headerEndBitPos; i++ {
+		// seek to the TOC, and decode the header and entries
+		// for this TOC instance. SeekAbs restores our offset each time.
 		d.SeekAbs(int64(tocOffset), func(d *decode.D) {
-			tocHdr := decodeTOCHeader(d)
-			tocOffset = tocHdr.nextTOCOffset
-			d.FieldStructNArray("entries", "entry", int64(tocHdr.numEntries), func(d *decode.D) {
-				var entry *tocEntry
 
-				entry.key = d.FieldU32("key", elementTypeMap)
-				entry.recordOffset = d.FieldU32("offset_to_record")
-				d.FieldU32("reserved")
+			tocHdr := decodeTOCHeader(d, i)
+			// store the toc header. we're going to decode the entries in one
+			// big array once we have decoded all toc's
+			tocHeaders = append(tocHeaders, tocHdr)
+			// save the next toc_offset value. 0 indicates that we have reached
+			// the last TOC instance.
+			tocOffset = calcOffset(tocHdr.nextTOCOffset)
 
-				decodeRecord(d, entry.recordOffset)
-			})
 		})
+
+		j := 0
+
+		// now that we've collected all toc headers, iterate through each one's
+		// entries and decode associated records.
+		d.FieldArrayLoop("bookmark_entries",
+			func() bool { return j < len(tocHeaders) },
+			func(d *decode.D) {
+
+				tocHdr := tocHeaders[j]
+				j++
+
+				d.SeekAbs(int64(tocHdr.entryArrayOffset), func(d *decode.D) {
+					for k := uint64(0); k < tocHdr.numEntries; k++ {
+						entry := new(tocEntry)
+
+						d.FieldStruct("entry", func(d *decode.D) {
+							entry.key = d.FieldU32("key", elementTypeMap)
+
+							entry.recordOffset = calcOffset(d.FieldU32("offset_to_record"))
+
+							d.FieldU32("reserved")
+
+							decodeRecord(d, entry.recordOffset)
+						})
+					}
+				})
+			})
 	}
 
 	return nil
