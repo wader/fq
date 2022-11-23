@@ -162,7 +162,7 @@ func decodeHeapPages(heap *Heap, d *decode.D) {
 		pageEnd := int64(common.TypeAlign(common.PageSize, endLen))
 		pageEnd0 := count * common.PageSize
 		if pageEnd0 != pageEnd {
-			fmt.Printf("invalid page %d end expected %d, actual %d, endLen  %d\n", count-1, pageEnd0, pageEnd, endLen)
+			d.Errorf("invalid page %d end expected %d, actual %d, endLen  %d\n", count-1, pageEnd0, pageEnd, endLen)
 		}
 		d.SeekAbs(pageEnd0 * 8)
 	}
