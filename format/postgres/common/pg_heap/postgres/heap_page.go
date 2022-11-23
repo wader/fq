@@ -85,12 +85,12 @@ func decodeItemIdsInternal(page *HeapPage, d *decode.D) {
 		/*    1: 7   |     4 */ // unsigned int lp_flags: 2
 		/*    2: 1   |     4 */ // unsigned int lp_len: 15
 		d.FieldStruct("item_id", func(d *decode.D) {
-			itemIdData := d.FieldU32("item_id_data")
+			itemIDData := d.FieldU32("item_id_data")
 
 			itemID := ItemID{}
-			itemID.Off = uint32(itemIdData & 0x7fff)
-			itemID.Flags = uint32((itemIdData >> 15) & 0x3)
-			itemID.Len = uint32((itemIdData >> 17) & 0x7fff)
+			itemID.Off = uint32(itemIDData & 0x7fff)
+			itemID.Flags = uint32((itemIDData >> 15) & 0x3)
+			itemID.Len = uint32((itemIDData >> 17) & 0x7fff)
 
 			d.FieldValueU("lp_off", uint64(itemID.Off))
 			d.FieldValueU("lp_flags", uint64(itemID.Flags), common.LpFlagsMapper)
