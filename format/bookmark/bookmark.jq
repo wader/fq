@@ -1,7 +1,6 @@
-def _apple_bookmarkdata_torepr:
+def _bookmark_torepr:
   def _f:
-    ( if .type == 0x101 then .value | tovalue
-      elif .type == "String" then .data | tovalue
+    ( if .type == "String" then .data | tovalue
       elif .type == "Data" then .data | tovalue
       elif .type == "Byte" then .data | tovalue
       elif .type == "Short" then .data | tovalue
@@ -9,11 +8,12 @@ def _apple_bookmarkdata_torepr:
       elif .type == "Long" then .data | tovalue
       elif .type == "Float" then .data | tovalue
       elif .type == "Double" then .data | tovalue
+      elif .type == "Date" then .data | tovalue
       elif .type == "BooleanFalse" then false
-      elif .type == "BooleanTrue" then false
+      elif .type == "BooleanTrue" then true
       elif .type == "Array" then 
         ( .data
-        | map(_f)
+        | map(.record | _f)
         )
       elif .type == "Dictionary" then
         ( .data
@@ -22,10 +22,13 @@ def _apple_bookmarkdata_torepr:
         )
       elif .type == "UUID" then .data | tovalue
       elif .type == "URL" then .data | tovalue
-      elif .type == "RelativeURL" then .data | tovalue
+      elif .type == "RelativeURL" then
+		.data | map(.record.data)
       end
      );
   ( .bookmark_entries
-  | map({(.key): (.record | _f)})
+  | map({key: (.key_string?.record.data // .key|tostring), value: (.record | _f)})
+  | from_entries
   );
+
 

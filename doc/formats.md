@@ -29,6 +29,7 @@
 |`bitcoin_script`                  |Bitcoin&nbsp;script                                                                      |<sub></sub>|
 |`bitcoin_transaction`             |Bitcoin&nbsp;transaction                                                                 |<sub>`bitcoin_script`</sub>|
 |[`bits`](#bits)                   |Raw&nbsp;bits                                                                            |<sub></sub>|
+|[`bookmark`](#bookmark)           |Apple&nbsp;BookmarkData                                                                  |<sub></sub>|
 |[`bplist`](#bplist)               |Apple&nbsp;Binary&nbsp;Property&nbsp;List                                                |<sub></sub>|
 |`bsd_loopback_frame`              |BSD&nbsp;loopback&nbsp;frame                                                             |<sub>`inet_packet`</sub>|
 |[`bson`](#bson)                   |Binary&nbsp;JSON                                                                         |<sub></sub>|
@@ -118,7 +119,7 @@
 |`inet_packet`                     |Group                                                                                    |<sub>`ipv4_packet` `ipv6_packet`</sub>|
 |`ip_packet`                       |Group                                                                                    |<sub>`icmp` `icmpv6` `tcp_segment` `udp_datagram`</sub>|
 |`link_frame`                      |Group                                                                                    |<sub>`bsd_loopback_frame` `ether8023_frame` `sll2_packet` `sll_packet`</sub>|
-|`probe`                           |Group                                                                                    |<sub>`adts` `ar` `avi` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `jsonl` `macho` `macho_fat` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `toml` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
+|`probe`                           |Group                                                                                    |<sub>`adts` `ar` `avi` `avro_ocf` `bitcoin_blkdat` `bookmark` `bplist` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `jsonl` `macho` `macho_fat` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `toml` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
 |`tcp_stream`                      |Group                                                                                    |<sub>`dns_tcp` `rtmp`</sub>|
 |`udp_payload`                     |Group                                                                                    |<sub>`dns`</sub>|
 
@@ -320,6 +321,44 @@ $ echo 'some {"a":1} json' | fq -d bits '.[40:-48] | fromjson'
 $ echo 'hello' | fq -c -d bits '[.[range(8)]]'
 [0,1,1,0,1,0,0,0]
 ```
+
+## bookmark
+
+## Apple bookmarkData format
+
+Apple's `bookmarkData` format is used to encode information that can be resolved
+into a `URL` object for a file even if the user moves or renames it. Can also
+contain security scoping information for App Sandbox support.
+
+These `bookmarkData` blobs are often found endcoded in data fields of Binary
+Property Lists. Notable examples include:
+
+- `com.apple.finder.plist` - contains an `FXRecentFolders` value, which is an
+  array of ten objects, each of which consists of a `name` and `file-bookmark`
+  field, which is a `bookmarkData` object for each recently accessed folder
+  location.
+
+- `com.apple.LSSharedFileList.RecentApplications.sfl2` - `sfl2` files are
+  actually `plist` files of the `NSKeyedArchiver` format. They can be parsed the
+  same as `plist` files, but they have a more complicated tree-like structure
+  than would typically be found. For more information about these types of files,
+  see [Sarah Edwards'](https://www.mac4n6.com/blog/2016/1/1/manual-analysis-of-nskeyedarchiver-formatted-plist-files-a-review-of-the-new-os-x-1011-recent-items)
+  excellent research on the subject.
+
+Locating `bookmarkData` objects in `NSKeyedArchiver` plist files is a place
+where `fq`'s recursive searching really shines:
+```
+fq '.. | select(format=="bookmark") | .map(. | torepr)' com.apple.LSSharedFileList.RecentApplications.sfl2
+```
+
+### Authors
+- David McDonald
+[@dgmcdona](https://github.com/dgmcdona)
+
+### References
+- https://mac-alias.readthedocs.io/en/latest/bookmark_fmt.html
+- https://www.mac4n6.com/blog/2016/1/1/manual-analysis-of-nskeyedarchiver-formatted-plist-files-a-review-of-the-new-os-x-1011-recent-items
+- https://michaellynn.github.io/2015/10/24/apples-bookmarkdata-exposed/
 
 ## bplist
 

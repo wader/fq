@@ -11,7 +11,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-//go:embed bookmark.jq bplist.md
+//go:embed bookmark.jq bookmark.md
 var bookmarkFS embed.FS
 
 func init() {
@@ -121,7 +121,7 @@ var elementTypeMap = scalar.UToScalar{
 	elementTypeVolumePath:            {Sym: "Volume path", Description: "Array of individual path components"},
 	elementTypeVolumeURL:             {Sym: "Volume URL", Description: "URL of volume root"},
 	elementTypeVolumeName:            {Sym: "Volume name", Description: "String"},
-	elementTypeVolumeUUID:            {Sym: "Volume UUID", Description: "String (not a UUID!)"},
+	elementTypeVolumeUUID:            {Sym: "Volume UUID", Description: "String UUID"},
 	elementTypeVolumeSize:            {Sym: "Volume size", Description: "8-byte integer"},
 	elementTypeVolumeCreationDate:    {Sym: "Volume creation date", Description: "Date"},
 	elementTypeVolumeFlags:           {Sym: "Volume flags", Description: "Data - see below"},
@@ -134,14 +134,14 @@ var elementTypeMap = scalar.UToScalar{
 	elementTypeCreatorUID:            {Sym: "Creator UID", Description: "UID of user that created bookmark"},
 	elementTypeFileReferenceFlag:     {Sym: "File reference flag", Description: "True if creating URL was a file reference URL"},
 	elementTypeCreationOptions:       {Sym: "Creation options", Description: "Integer containing flags passed to CFURLCreateBookmarkData"},
-	elementTypeURLLengthArray:        {Sym: "URL length array", Description: "Array of integers - see below"},
+	elementTypeURLLengthArray:        {Sym: "URL length array", Description: "Array of integers"},
 	elementTypeDisplayName:           {Sym: "Display name", Description: "String"},
 	elementTypeIconData:              {Sym: "Icon data", Description: "icns format data"},
 	elementTypeIconImageData:         {Sym: "Icon image", Description: "Data"},
 	elementTypeTypeBindingInfo:       {Sym: "Type binding info", Description: "dnib byte array"},
 	elementTypeBookmarkCreationTime:  {Sym: "Bookmark creation time", Description: "64-bit float seconds since January 1st 2001"},
 	elementTypeSandboxRWExtension:    {Sym: "Sandbox RW extension", Description: "Looks like a hash with data and an access right"},
-	elementTypeSandboxROExtension:    {Sym: "Sandbox RO extension", Description: "As above"},
+	elementTypeSandboxROExtension:    {Sym: "Sandbox RO extension", Description: "Looks like a hash with data and an access right"},
 }
 
 var cocoaTimeEpochDate = time.Date(2001, time.January, 1, 0, 0, 0, 0, time.UTC)
@@ -211,7 +211,7 @@ func decodeRecord(d *decode.D, offset uint64) {
 			case dataTypeNumber64F:
 				d.FieldF64("data")
 			case dataTypeDate:
-				d.FieldF64BE("data")
+				d.FieldF64BE("data", scalar.DescriptionTimeFn(scalar.S.TryActualF, cocoaTimeEpochDate, time.RFC3339))
 			case dataTypeBooleanFalse:
 			case dataTypeBooleanTrue:
 			case dataTypeArray:
@@ -266,7 +266,7 @@ func bookmarkDecode(d *decode.D, _ any) any {
 	// although these may be nested inside of binary plists
 	d.FieldStruct("header", func(d *decode.D) {
 		d.FieldUTF8("magic", 4, d.AssertStr("book", "alis"))
-		d.FieldU32LE("total_size")
+		d.FieldU32("total_size")
 		d.FieldU32("unknown")
 		d.FieldU32("header_size", d.AssertU(48))
 		d.FieldRawLen("reserved", reservedSize*8)
@@ -307,7 +307,16 @@ func bookmarkDecode(d *decode.D, _ any) any {
 						entry := new(tocEntry)
 
 						d.FieldStruct("entry", func(d *decode.D) {
+							// entry.key = d.FieldU32("key", elementTypeMap)
 							entry.key = d.FieldU32("key", elementTypeMap)
+
+							// if the key has the top bit set, then (key & 0x7fffffff)
+							// gives the offset of a string record.
+							if entry.key&0x80000000 != 0 {
+								d.FieldStruct("key_string", func(d *decode.D) {
+									decodeRecord(d, calcOffset(entry.key&0x7fffffff))
+								})
+							}
 
 							entry.recordOffset = calcOffset(d.FieldU32("offset_to_record"))
 
