@@ -1,3 +1,96 @@
+# 0.1.0
+
+Adds `avi` decoder and replace `raw` with more convenient `bits` and `bytes` format. Otherwise mostly small updates and bug fixes.
+
+Increase minor version. fq does not use sementic versioning (yet) but it's probably a good idea to start increase minor version when adding features to be able to do patch releases.
+
+In other fq related news:
+- I gave a [talk about fq](https://www.youtube.com/watch?v=-Pwt5KL-xRs&t=1450s) at [No Time To Wait 6](https://mediaarea.net/NoTimeToWait6) a conference about open media, standardization, and audiovisual preservation.
+- While prototyping writing decoders directly in jq for fq I ended up [implementing jq in jq](https://github.com/wader/jqjq). Still thinking and working on how to do decoders in jq.
+
+## Changes
+
+- Replace `raw` format with `bits` and `bytes` format that decodes directly to a binary with different unit size.
+  ```sh
+  $ echo -n 'hello' | fq -d bytes '.[-3:]' > last_3_bytes
+  $ echo 'hello' | fq -d bytes '.[1]'
+  101
+  $ echo 'hello' | fq -c -d bits '[.[range(8)]]'
+  [0,1,1,0,1,0,0,0]
+  ```
+
+## Decoder changes
+
+- `avc_au` Support annexb format (used in AVI). #476
+- `avi` Add AVI (Audio Video Interleaved) decoder. #476
+  ```sh
+  # extract samples for stream 1
+  $ fq '.streams[1].samples[] | tobytes' file.avi > stream01.mp3
+  ```
+- `bits` Replaces `raw` but is a binary using bit units. #485
+- `bytes` Replaces `raw` but is a binary using byte units. #485
+- `bplist`
+  - Fix signed interger decoding. #451 @dgmcdona
+  - Use correct size for references and check for infinite loops. #454 @dgmcdona
+- `flac_frame` Correctly decode zero escape sample size. #461
+- `id3v2` Fix decoding of COMM and TXXX with missing null terminator. #468
+- `matroska` Updated to latest specification. #455
+- `mp3_frame` Use frame size calculation from spec instead of own as it seems to not work in some cases. #480
+- `mp3_frame_tags` Replaces `xing` and also decodes "lame extensions" for both Xing and Info. #481
+- `raw` Removed. #485
+- `wav` More codec symbol names and now shares RIFF code with AVI decoder. #476
+- `yaml` Fix type panic for large intergers. #462
+
+## Changelog
+
+* 7b6492ee Improve README.md a bit, one more demo and move up usage
+* 4e069625 Update docker-golang to 1.19.2 from 1.19.1
+* e0334497 Update docker-golang to 1.19.3 from 1.19.2
+* f3f2648b Update github-go-version to 1.19.2 from 1.19.1, 1.19.1, 1.19.1
+* 003197eb Update github-go-version to 1.19.3 from 1.19.2, 1.19.2, 1.19.2
+* 453963dd Update github-golangci-lint to 1.50.1 from 1.50.0
+* 56dcb3a0 Update gomod-BurntSushi/toml to 1.2.1 from 1.2.0
+* 101b2806 Update gomod-golang/text to 0.3.8 from 0.3.7
+* d80f12c7 Update gomod-golang/text to 0.4.0 from 0.3.8
+* 753927ba Update make-golangci-lint to 1.50.1 from 1.50.0
+* 4d8dd5c5 adds check for recursion in decodeReference, adds test to verify fix
+* b7c4576c adds necessary cast
+* 46b7ab32 adds test to verify fix
+* 4ee7dd8a changes Errorf to Fatalf on infinite loops
+* 41b2d1ad cli: Better decode error help
+* 7254b0f9 decode,elf,fuzz: TryBytesRange error on negative size
+* bafd1f56 decode,fuzz: Signed integer (S) read require at least one bit
+* 2a86d323 doc,rtmp,pcap,markdown: Add more examples
+* 0b9b0173 doc: Add gomarkdown to license/dependencies
+* 4bfd9d81 doc: Add link to nttw6 presentation video and slides
+* fb1a91ac drop indented else block per lint
+* 4dd594c1 fixes bad path in test output
+* f9a1d3f4 fixes calculation of floating point lengths
+* 236fbc17 fixes reference calculation to use reference size from trailer
+* ac86f931 fixes signed integer parsing
+* fb2a2b94 flac,fuzz: Fatal error on negative partition sample count
+* 7859be1e flac_frame: Properly decode zero escape sample size
+* 7cb2a6c9 fuzz: gotip not needed anymore
+* cef4245b fuzz: make fuzz GROUP=mp4 to fuzz one group
+* 413d4250 gofmt
+* 349d9497 gojq: Update rebased fq fork
+* 450f5844 gojq: Update rebased fq fork
+* d8641ab1 gomod: Update modules that lack bump config
+* f66e2244 id3v2: In the wild COMM and TXXX frame might not have a null terminator
+* b09d6116 makes dictionary key type checking more sensible
+* d07b2eec markdown,fuzz: Update gomarkdown
+* 646f32d5 matroska: Fix path tests and make _tree_path more robust
+* e748079e matroska: Update spec and regenerate
+* 1c7d3252 mod: Update ones without bump config
+* 2de87539 mp3_frame: Fix issue calc frame size for some configs
+* c3a0686c mp3_frame_tags: Refactor and rename xing format to mp3_frame_tags
+* d75748d8 mp4: Decode more sample flags
+* c93301fc raw,bits,bytes: Replace raw format with bits and bytes format that decode to a binary
+* b08e25ce removes unnecessary cast
+* 2b3adbe8 renames test data file
+* 0cf46e11 wav,avi,avc_au: Add avi decoder and refactor wav decoder
+* 26069167 yaml,fuzz: gojq.Normalize value to fix type panic
+
 # 0.0.10
 
 ## Changes
