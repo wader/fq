@@ -494,6 +494,7 @@ func init() {
 			d.FieldUTF8NullFixedLen("component_name", int(d.BitsLeft()/8))
 
 			if t := ctx.currentTrack(); t != nil {
+				t.seenHdlr = true
 				// component_type seems to be all zero sometimes so can't look for "mhlr"
 				switch subType {
 				case "vide", "soun":
@@ -535,7 +536,20 @@ func init() {
 						t.sampleDescriptions = append(t.sampleDescriptions, sampleDescription{
 							dataFormat: dataFormat,
 						})
-						subType = t.subType
+
+						if t.seenHdlr {
+							subType = t.subType
+						} else {
+							// TODO: seems to be ffmpeg mov.c, where is this documented in specs?
+							// no hdlr box found, guess using dataFormat
+							// ex PNG samples but there is no hdlr box saying it's video, but the esds says MPEGObjectTypePNG
+							switch dataFormat {
+							case "mp4v":
+								subType = "vide"
+							case "mp4a":
+								subType = "soun"
+							}
+						}
 					}
 
 					d.FramedFn(int64(size-8)*8, func(d *decode.D) {
@@ -633,7 +647,7 @@ func init() {
 			})
 		},
 		"avcC": func(ctx *decodeContext, d *decode.D) {
-			dv, v := d.FieldFormat("descriptor", mpegAVCDCRFormat, nil)
+			dv, v := d.FieldFormat("descriptor", avcDCRFormat, nil)
 			avcDcrOut, ok := v.(format.AvcDcrOut)
 			if dv != nil && !ok {
 				panic(fmt.Sprintf("expected AvcDcrOut got %#+v", v))
@@ -643,7 +657,7 @@ func init() {
 			}
 		},
 		"hvcC": func(ctx *decodeContext, d *decode.D) {
-			dv, v := d.FieldFormat("descriptor", mpegHEVCDCRFrameFormat, nil)
+			dv, v := d.FieldFormat("descriptor", hevcCDCRFormat, nil)
 			hevcDcrOut, ok := v.(format.HevcDcrOut)
 			if dv != nil && !ok {
 				panic(fmt.Sprintf("expected HevcDcrOut got %#+v", v))

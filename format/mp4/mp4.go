@@ -32,20 +32,21 @@ var mp4FS embed.FS
 var aacFrameFormat decode.Group
 var av1CCRFormat decode.Group
 var av1FrameFormat decode.Group
+var avcAUFormat decode.Group
+var avcDCRFormat decode.Group
 var flacFrameFormat decode.Group
 var flacMetadatablocksFormat decode.Group
+var hevcAUFormat decode.Group
+var hevcCDCRFormat decode.Group
 var iccProfileFormat decode.Group
 var id3v2Format decode.Group
 var imageFormat decode.Group
 var jpegFormat decode.Group
 var mp3FrameFormat decode.Group
-var mpegAVCAUFormat decode.Group
-var mpegAVCDCRFormat decode.Group
 var mpegESFormat decode.Group
-var mpegHEVCDCRFrameFormat decode.Group
-var mpegHEVCSampleFormat decode.Group
 var mpegPESPacketSampleFormat decode.Group
 var opusPacketFrameFormat decode.Group
+var pngFormat decode.Group
 var proResFrameFormat decode.Group
 var protoBufWidevineFormat decode.Group
 var psshPlayreadyFormat decode.Group
@@ -70,12 +71,12 @@ func init() {
 			{Names: []string{format.AAC_FRAME}, Group: &aacFrameFormat},
 			{Names: []string{format.AV1_CCR}, Group: &av1CCRFormat},
 			{Names: []string{format.AV1_FRAME}, Group: &av1FrameFormat},
-			{Names: []string{format.AVC_AU}, Group: &mpegAVCAUFormat},
-			{Names: []string{format.AVC_DCR}, Group: &mpegAVCDCRFormat},
+			{Names: []string{format.AVC_AU}, Group: &avcAUFormat},
+			{Names: []string{format.AVC_DCR}, Group: &avcDCRFormat},
 			{Names: []string{format.FLAC_FRAME}, Group: &flacFrameFormat},
 			{Names: []string{format.FLAC_METADATABLOCKS}, Group: &flacMetadatablocksFormat},
-			{Names: []string{format.HEVC_AU}, Group: &mpegHEVCSampleFormat},
-			{Names: []string{format.HEVC_DCR}, Group: &mpegHEVCDCRFrameFormat},
+			{Names: []string{format.HEVC_AU}, Group: &hevcAUFormat},
+			{Names: []string{format.HEVC_DCR}, Group: &hevcCDCRFormat},
 			{Names: []string{format.ICC_PROFILE}, Group: &iccProfileFormat},
 			{Names: []string{format.ID3V2}, Group: &id3v2Format},
 			{Names: []string{format.IMAGE}, Group: &imageFormat},
@@ -84,6 +85,7 @@ func init() {
 			{Names: []string{format.MPEG_ES}, Group: &mpegESFormat},
 			{Names: []string{format.MPEG_PES_PACKET}, Group: &mpegPESPacketSampleFormat},
 			{Names: []string{format.OPUS_PACKET}, Group: &opusPacketFrameFormat},
+			{Names: []string{format.PNG}, Group: &pngFormat},
 			{Names: []string{format.PRORES_FRAME}, Group: &proResFrameFormat},
 			{Names: []string{format.PROTOBUF_WIDEVINE}, Group: &protoBufWidevineFormat},
 			{Names: []string{format.PSSH_PLAYREADY}, Group: &psshPlayreadyFormat},
@@ -129,6 +131,7 @@ type stsz struct {
 }
 
 type track struct {
+	seenHdlr           bool
 	id                 int
 	sampleDescriptions []sampleDescription
 	subType            string
@@ -229,10 +232,10 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 					case dataFormat == "vp09":
 						d.FieldFormatLen(name, nBits, vp9FrameFormat, inArg)
 					case dataFormat == "avc1":
-						d.FieldFormatLen(name, nBits, mpegAVCAUFormat, inArg)
+						d.FieldFormatLen(name, nBits, avcAUFormat, inArg)
 					case dataFormat == "hev1",
 						dataFormat == "hvc1":
-						d.FieldFormatLen(name, nBits, mpegHEVCSampleFormat, inArg)
+						d.FieldFormatLen(name, nBits, hevcAUFormat, inArg)
 					case dataFormat == "av01":
 						d.FieldFormatLen(name, nBits, av1FrameFormat, inArg)
 					case dataFormat == "mp4a" && t.objectType == format.MPEGObjectTypeMP3:
@@ -245,6 +248,8 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 						d.FieldFormatLen(name, nBits, mpegPESPacketSampleFormat, inArg)
 					case dataFormat == "mp4v" && t.objectType == format.MPEGObjectTypeMJPEG:
 						d.FieldFormatLen(name, nBits, jpegFormat, inArg)
+					case dataFormat == "mp4v" && t.objectType == format.MPEGObjectTypePNG:
+						d.FieldFormatLen(name, nBits, pngFormat, inArg)
 					case dataFormat == "jpeg":
 						d.FieldFormatLen(name, nBits, jpegFormat, inArg)
 					case dataFormat == "apch",
