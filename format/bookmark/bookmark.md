@@ -33,6 +33,7 @@ fq '.. | select(format=="bookmark") | .map(. | torepr)' com.apple.LSSharedFileLi
 ### Authors
 - David McDonald
 [@dgmcdona](https://github.com/dgmcdona)
+[@river_rat_504](https://twitter.com/river_rat_504)
 
 ### References
 - https://developer.apple.com/documentation/foundation/url/2143023-bookmarkdata
