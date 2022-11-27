@@ -46,22 +46,22 @@ const (
 )
 
 var dataTypeMap = scalar.UToScalar{
-	dataTypeString:       {Sym: "String", Description: "UTF-8 String"},
-	dataTypeData:         {Sym: "Data", Description: "Raw bytes"},
-	dataTypeNumber8:      {Sym: "Byte", Description: "(signed 8-bit) 1-byte number"},
-	dataTypeNumber16:     {Sym: "Short", Description: "(signed 16-bit) 2-byte number"},
-	dataTypeNumber32:     {Sym: "Int", Description: "(signed 32-bit) 4-byte number"},
-	dataTypeNumber64:     {Sym: "Long", Description: "(signed 64-bit) 8-byte number"},
-	dataTypeNumber32F:    {Sym: "Float", Description: "(32-bit float) IEEE single precision"},
-	dataTypeNumber64F:    {Sym: "Double", Description: "(64-bit float) IEEE double precision"},
-	dataTypeDate:         {Sym: "Date", Description: "Big-endian IEEE double precision seconds since 2001-01-01 00:00:00 UTC"},
-	dataTypeBooleanFalse: {Sym: "BooleanFalse", Description: "(false)"},
-	dataTypeBooleanTrue:  {Sym: "BooleanTrue", Description: "(true)"},
-	dataTypeArray:        {Sym: "Array", Description: "Array of 4-byte offsets to data items"},
-	dataTypeDictionary:   {Sym: "Dictionary", Description: "Array of pairs of 4-byte (key, value) data item offsets"},
-	dataTypeUUID:         {Sym: "UUID", Description: "Raw bytes"},
-	dataTypeURL:          {Sym: "URL", Description: "UTF-8 string"},
-	dataTypeRelativeURL:  {Sym: "RelativeURL", Description: "4-byte offset to base URL, 4-byte offset to UTF-8 string"},
+	dataTypeString:       {Sym: "string", Description: "UTF-8 String"},
+	dataTypeData:         {Sym: "data", Description: "Raw bytes"},
+	dataTypeNumber8:      {Sym: "byte", Description: "(signed 8-bit) 1-byte number"},
+	dataTypeNumber16:     {Sym: "short", Description: "(signed 16-bit) 2-byte number"},
+	dataTypeNumber32:     {Sym: "int", Description: "(signed 32-bit) 4-byte number"},
+	dataTypeNumber64:     {Sym: "long", Description: "(signed 64-bit) 8-byte number"},
+	dataTypeNumber32F:    {Sym: "float", Description: "(32-bit float) IEEE single precision"},
+	dataTypeNumber64F:    {Sym: "double", Description: "(64-bit float) IEEE double precision"},
+	dataTypeDate:         {Sym: "date", Description: "Big-endian IEEE double precision seconds since 2001-01-01 00:00:00 UTC"},
+	dataTypeBooleanFalse: {Sym: "boolean_false", Description: "False"},
+	dataTypeBooleanTrue:  {Sym: "boolean_true", Description: "True"},
+	dataTypeArray:        {Sym: "array", Description: "Array of 4-byte offsets to data items"},
+	dataTypeDictionary:   {Sym: "dictionary", Description: "Array of pairs of 4-byte (key, value) data item offsets"},
+	dataTypeUUID:         {Sym: "uuid", Description: "Raw bytes"},
+	dataTypeURL:          {Sym: "url", Description: "UTF-8 string"},
+	dataTypeRelativeURL:  {Sym: "relative_url", Description: "4-byte offset to base URL, 4-byte offset to UTF-8 string"},
 }
 
 const (
@@ -105,43 +105,43 @@ const (
 )
 
 var elementTypeMap = scalar.UToScalar{
-	elementTypeTargetURL:             {Sym: "Target URL", Description: "A URL"},
-	elementTypeTargetPath:            {Sym: "Target path", Description: "Array of individual path components"},
-	elementTypeTargetCNIDPath:        {Sym: "Target CNID path", Description: "Array of CNIDs"},
-	elementTypeTargetFlags:           {Sym: "Target flags", Description: "Data - see below"},
-	elementTypeTargetFilename:        {Sym: "Target filename", Description: "String"},
-	elementTypeCNID:                  {Sym: "Target CNID", Description: "4-byte integer"},
-	elementTypeTargetCreationDate:    {Sym: "Target creation date", Description: "Date"},
-	elementTypeUnknown1:              {Sym: "Unknown", Description: "Unknown"},
-	elementTypeUnknown2:              {Sym: "Unknown", Description: "Unknown"},
-	elementTypeUnknown3:              {Sym: "Unknown", Description: "Unknown"},
-	elementTypeUnknown4:              {Sym: "Unknown", Description: "Unknown"},
-	elementTypeUnknown5:              {Sym: "Unknown", Description: "Unknown"},
-	elementTypeTOCPath:               {Sym: "TOC path", Description: "Array - see below"},
-	elementTypeVolumePath:            {Sym: "Volume path", Description: "Array of individual path components"},
-	elementTypeVolumeURL:             {Sym: "Volume URL", Description: "URL of volume root"},
-	elementTypeVolumeName:            {Sym: "Volume name", Description: "String"},
-	elementTypeVolumeUUID:            {Sym: "Volume UUID", Description: "String UUID"},
-	elementTypeVolumeSize:            {Sym: "Volume size", Description: "8-byte integer"},
-	elementTypeVolumeCreationDate:    {Sym: "Volume creation date", Description: "Date"},
-	elementTypeVolumeFlags:           {Sym: "Volume flags", Description: "Data - see below"},
-	elementTypeVolumeIsRoot:          {Sym: "Volume is root", Description: "True if the volume was the filesystem root"},
-	elementTypeVolumeBookmark:        {Sym: "Volume bookmark", Description: "TOC identifier for disk image"},
-	elementTypeVolumeMountPointURL:   {Sym: "Volume mount point", Description: "URL"},
-	elementTypeUnknown6:              {Sym: "Unknown", Description: "Unknown"},
-	elementTypeContainingFolderIndex: {Sym: "Containing folder index", Description: "Integer index of containing folder in target path array"},
-	elementTypeCreatorUsername:       {Sym: "Creator username", Description: "Name of user that created bookmark"},
-	elementTypeCreatorUID:            {Sym: "Creator UID", Description: "UID of user that created bookmark"},
-	elementTypeFileReferenceFlag:     {Sym: "File reference flag", Description: "True if creating URL was a file reference URL"},
-	elementTypeCreationOptions:       {Sym: "Creation options", Description: "Integer containing flags passed to CFURLCreateBookmarkData"},
-	elementTypeURLLengthArray:        {Sym: "URL length array", Description: "Array of integers"},
-	elementTypeDisplayName:           {Sym: "Display name", Description: "String"},
-	elementTypeIconData:              {Sym: "Icon data", Description: "icns format data"},
-	elementTypeIconImageData:         {Sym: "Icon image", Description: "Data"},
-	elementTypeTypeBindingInfo:       {Sym: "Type binding info", Description: "dnib byte array"},
-	elementTypeBookmarkCreationTime:  {Sym: "Bookmark creation time", Description: "64-bit float seconds since January 1st 2001"},
-	elementTypeSandboxRWExtension:    {Sym: "Sandbox RW extension", Description: "Looks like a hash with data and an access right"},
-	elementTypeSandboxROExtension:    {Sym: "Sandbox RO extension", Description: "Looks like a hash with data and an access right"},
+	elementTypeTargetURL:             {Sym: "target_url", Description: "A URL"},
+	elementTypeTargetPath:            {Sym: "target_path", Description: "Array of individual path components"},
+	elementTypeTargetCNIDPath:        {Sym: "target_cnid_path", Description: "Array of CNIDs"},
+	elementTypeTargetFlags:           {Sym: "target_flags", Description: "Data - see below"},
+	elementTypeTargetFilename:        {Sym: "target_filename", Description: "String"},
+	elementTypeCNID:                  {Sym: "target_cnid", Description: "4-byte integer"},
+	elementTypeTargetCreationDate:    {Sym: "target_creation_date", Description: "Date"},
+	elementTypeUnknown1:              {Sym: "unknown", Description: "Unknown"},
+	elementTypeUnknown2:              {Sym: "unknown", Description: "Unknown"},
+	elementTypeUnknown3:              {Sym: "unknown", Description: "Unknown"},
+	elementTypeUnknown4:              {Sym: "unknown", Description: "Unknown"},
+	elementTypeUnknown5:              {Sym: "unknown", Description: "Unknown"},
+	elementTypeTOCPath:               {Sym: "toc_path", Description: "Array - see below"},
+	elementTypeVolumePath:            {Sym: "volume_path", Description: "Array of individual path components"},
+	elementTypeVolumeURL:             {Sym: "volume_url", Description: "URL of volume root"},
+	elementTypeVolumeName:            {Sym: "volume_name", Description: "String"},
+	elementTypeVolumeUUID:            {Sym: "volume_uuid", Description: "String UUID"},
+	elementTypeVolumeSize:            {Sym: "volume_size", Description: "8-byte integer"},
+	elementTypeVolumeCreationDate:    {Sym: "volume_creation_date", Description: "Date"},
+	elementTypeVolumeFlags:           {Sym: "volume_flags", Description: "Data - see below"},
+	elementTypeVolumeIsRoot:          {Sym: "volume_is_root", Description: "True if the volume was the filesystem root"},
+	elementTypeVolumeBookmark:        {Sym: "volume_bookmark", Description: "TOC identifier for disk image"},
+	elementTypeVolumeMountPointURL:   {Sym: "volume_mount_point", Description: "URL"},
+	elementTypeUnknown6:              {Sym: "unknown", Description: "Unknown"},
+	elementTypeContainingFolderIndex: {Sym: "containing_folder_index", Description: "Integer index of containing folder in target path array"},
+	elementTypeCreatorUsername:       {Sym: "creator_username", Description: "Name of user that created bookmark"},
+	elementTypeCreatorUID:            {Sym: "creator_uid", Description: "UID of user that created bookmark"},
+	elementTypeFileReferenceFlag:     {Sym: "file_reference_flag", Description: "True if creating URL was a file reference URL"},
+	elementTypeCreationOptions:       {Sym: "creation_options", Description: "Integer containing flags passed to CFURLCreateBookmarkData"},
+	elementTypeURLLengthArray:        {Sym: "url_length_array", Description: "Array of integers"},
+	elementTypeDisplayName:           {Sym: "display_name", Description: "String"},
+	elementTypeIconData:              {Sym: "icon_data", Description: "icns format data"},
+	elementTypeIconImageData:         {Sym: "icon_image", Description: "Data"},
+	elementTypeTypeBindingInfo:       {Sym: "type_binding_info", Description: "dnib byte array"},
+	elementTypeBookmarkCreationTime:  {Sym: "bookmark_creation_time", Description: "64-bit float seconds since January 1st 2001"},
+	elementTypeSandboxRWExtension:    {Sym: "sandbox_rw_extension", Description: "Looks like a hash with data and an access right"},
+	elementTypeSandboxROExtension:    {Sym: "sandbox_ro_extension", Description: "Looks like a hash with data and an access right"},
 }
 
 var cocoaTimeEpochDate = time.Date(2001, time.January, 1, 0, 0, 0, 0, time.UTC)
@@ -150,7 +150,7 @@ type tocHeader struct {
 	tocSize          uint64
 	nextTOCOffset    uint64
 	numEntries       uint64
-	entryArrayOffset uint64
+	entryArrayOffset int64
 }
 
 func decodeTOCHeader(d *decode.D, idx int) *tocHeader {
@@ -162,7 +162,7 @@ func decodeTOCHeader(d *decode.D, idx int) *tocHeader {
 		d.FieldU32("identifier")
 		hdr.nextTOCOffset = d.FieldU32("next_toc_offset")
 		hdr.numEntries = d.FieldU32("num_entries_in_toc")
-		hdr.entryArrayOffset = uint64(d.Pos())
+		hdr.entryArrayOffset = d.Pos()
 	})
 
 	return hdr
@@ -170,7 +170,7 @@ func decodeTOCHeader(d *decode.D, idx int) *tocHeader {
 
 type tocEntry struct {
 	key          uint64
-	recordOffset uint64
+	recordOffset int64
 }
 
 const (
@@ -178,65 +178,63 @@ const (
 	dictEntrySize  = 4
 )
 
-func decodeRecord(d *decode.D, offset uint64) {
-	d.SeekAbs(int64(offset), func(d *decode.D) {
-		d.FieldStruct("record", func(d *decode.D) {
-			n := int(d.FieldU32("length"))
-			typ := d.FieldU32("type", dataTypeMap)
-			switch typ {
-			case dataTypeString:
-				d.FieldUTF8("data", n)
-			case dataTypeData:
-				d.FieldRawLen("data", int64(n*8))
-			case dataTypeNumber8:
-				d.FieldS8("data")
-			case dataTypeNumber16:
-				d.FieldS16("data")
-			case dataTypeNumber32:
-				d.FieldS32("data")
-			case dataTypeNumber64:
-				d.FieldS64("data")
-			case dataTypeNumber32F:
-				d.FieldF32("data")
-			case dataTypeNumber64F:
-				d.FieldF64("data")
-			case dataTypeDate:
-				d.FieldF64BE("data", scalar.DescriptionTimeFn(scalar.S.TryActualF, cocoaTimeEpochDate, time.RFC3339))
-			case dataTypeBooleanFalse:
-			case dataTypeBooleanTrue:
-			case dataTypeArray:
-				d.FieldStructNArray("data", "element", int64(n/arrayEntrySize), func(d *decode.D) {
-					offset := calcOffset(d.FieldU32("offset"))
-					decodeRecord(d, offset)
-				})
-			case dataTypeDictionary:
-				d.FieldStructNArray("data", "element", int64(n/dictEntrySize), func(d *decode.D) {
-					keyOffset := calcOffset(d.FieldU32("key_offset"))
-					d.FieldStruct("key", func(d *decode.D) {
-						decodeRecord(d, keyOffset)
-					})
-
-					valueOffset := calcOffset(d.FieldU32("value_offset"))
-					d.FieldStruct("value", func(d *decode.D) {
-						decodeRecord(d, valueOffset)
-					})
-				})
-			case dataTypeUUID:
-				d.FieldRawLen("data", int64(n*8))
-			case dataTypeURL:
-				d.FieldUTF8("data", n)
-			case dataTypeRelativeURL:
-				baseOffset := d.FieldU32("base_url_offset")
-				d.FieldStruct("base_url", func(d *decode.D) {
-					decodeRecord(d, baseOffset)
+func decodeRecord(d *decode.D) {
+	d.FieldStruct("record", func(d *decode.D) {
+		n := int(d.FieldU32("length"))
+		typ := d.FieldU32("type", dataTypeMap)
+		switch typ {
+		case dataTypeString:
+			d.FieldUTF8("data", n)
+		case dataTypeData:
+			d.FieldRawLen("data", int64(n*8))
+		case dataTypeNumber8:
+			d.FieldS8("data")
+		case dataTypeNumber16:
+			d.FieldS16("data")
+		case dataTypeNumber32:
+			d.FieldS32("data")
+		case dataTypeNumber64:
+			d.FieldS64("data")
+		case dataTypeNumber32F:
+			d.FieldF32("data")
+		case dataTypeNumber64F:
+			d.FieldF64("data")
+		case dataTypeDate:
+			d.FieldF64BE("data", scalar.DescriptionTimeFn(scalar.S.TryActualF, cocoaTimeEpochDate, time.RFC3339))
+		case dataTypeBooleanFalse:
+		case dataTypeBooleanTrue:
+		case dataTypeArray:
+			d.FieldStructNArray("data", "element", int64(n/arrayEntrySize), func(d *decode.D) {
+				offset := calcOffset(d.FieldU32("offset"))
+				d.SeekAbs(int64(offset), decodeRecord)
+			})
+		case dataTypeDictionary:
+			d.FieldStructNArray("data", "element", int64(n/dictEntrySize), func(d *decode.D) {
+				keyOffset := calcOffset(d.FieldU32("key_offset"))
+				d.FieldStruct("key", func(d *decode.D) {
+					d.SeekAbs(keyOffset, decodeRecord)
 				})
 
-				suffixOffset := d.FieldU32("suffix_offset")
-				d.FieldStruct("suffix", func(d *decode.D) {
-					decodeRecord(d, suffixOffset)
+				valueOffset := calcOffset(d.FieldU32("value_offset"))
+				d.FieldStruct("value", func(d *decode.D) {
+					d.SeekAbs(int64(valueOffset), decodeRecord)
 				})
-			}
-		})
+			})
+		case dataTypeUUID:
+			d.FieldRawLen("data", int64(n*8))
+		case dataTypeURL:
+			d.FieldUTF8("data", n)
+		case dataTypeRelativeURL:
+			baseOffset := d.FieldU32("base_url_offset")
+			d.FieldStruct("base_url", func(d *decode.D) {
+				d.SeekAbs(int64(baseOffset), decodeRecord)
+			})
+
+			suffixOffset := d.FieldU32("suffix_offset")
+			d.FieldStruct("suffix", func(d *decode.D) {
+				d.SeekAbs(int64(suffixOffset), decodeRecord)
+			})
+		}
 	})
 }
 
@@ -245,7 +243,7 @@ const headerEnd = 48
 const headerEndBitPos = headerEnd * 8
 
 // all offsets are calculated relative to the end of the bookmark header
-func calcOffset(i uint64) uint64 { return 8 * (i + headerEnd) }
+func calcOffset(i uint64) int64 { return int64(8 * (i + headerEnd)) }
 
 func bookmarkDecode(d *decode.D, _ any) any {
 
@@ -269,7 +267,7 @@ func bookmarkDecode(d *decode.D, _ any) any {
 	for i := 0; tocOffset != headerEndBitPos; i++ {
 		// seek to the TOC, and decode the header and entries
 		// for this TOC instance. SeekAbs restores our offset each time.
-		d.SeekAbs(int64(tocOffset), func(d *decode.D) {
+		d.SeekAbs(tocOffset, func(d *decode.D) {
 
 			tocHdr := decodeTOCHeader(d, i)
 			// store the toc header. we're going to decode the entries in one
@@ -292,7 +290,7 @@ func bookmarkDecode(d *decode.D, _ any) any {
 				tocHdr := tocHeaders[j]
 				j++
 
-				d.SeekAbs(int64(tocHdr.entryArrayOffset), func(d *decode.D) {
+				d.SeekAbs(tocHdr.entryArrayOffset, func(d *decode.D) {
 					for k := uint64(0); k < tocHdr.numEntries; k++ {
 						entry := new(tocEntry)
 
@@ -304,7 +302,7 @@ func bookmarkDecode(d *decode.D, _ any) any {
 							// gives the offset of a string record.
 							if entry.key&0x80000000 != 0 {
 								d.FieldStruct("key_string", func(d *decode.D) {
-									decodeRecord(d, calcOffset(entry.key&0x7fffffff))
+									d.SeekAbs(int64(calcOffset(entry.key&0x7fffffff)), decodeRecord)
 								})
 							}
 
@@ -312,7 +310,7 @@ func bookmarkDecode(d *decode.D, _ any) any {
 
 							d.FieldU32("reserved")
 
-							decodeRecord(d, entry.recordOffset)
+							d.SeekAbs(int64(entry.recordOffset), decodeRecord)
 						})
 					}
 				})
