@@ -1,4 +1,4 @@
-package apple_bookmark
+package applebookmark
 
 import (
 	"embed"

@@ -5,7 +5,7 @@ package all
 
 import (
 	_ "github.com/wader/fq/format/ape"
-	_ "github.com/wader/fq/format/apple_bookmark"
+	_ "github.com/wader/fq/format/applebookmark"
 	_ "github.com/wader/fq/format/ar"
 	_ "github.com/wader/fq/format/asn1"
 	_ "github.com/wader/fq/format/av1"
