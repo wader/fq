@@ -206,7 +206,7 @@ func decodeRecord(d *decode.D) {
 		case dataTypeArray:
 			d.FieldStructNArray("data", "element", int64(n/arrayEntrySize), func(d *decode.D) {
 				offset := calcOffset(d.FieldU32("offset"))
-				d.SeekAbs(int64(offset), decodeRecord)
+				d.SeekAbs(offset, decodeRecord)
 			})
 		case dataTypeDictionary:
 			d.FieldStructNArray("data", "element", int64(n/dictEntrySize), func(d *decode.D) {
@@ -217,7 +217,7 @@ func decodeRecord(d *decode.D) {
 
 				valueOffset := calcOffset(d.FieldU32("value_offset"))
 				d.FieldStruct("value", func(d *decode.D) {
-					d.SeekAbs(int64(valueOffset), decodeRecord)
+					d.SeekAbs(valueOffset, decodeRecord)
 				})
 			})
 		case dataTypeUUID:
@@ -302,7 +302,7 @@ func bookmarkDecode(d *decode.D, _ any) any {
 							// gives the offset of a string record.
 							if entry.key&0x80000000 != 0 {
 								d.FieldStruct("key_string", func(d *decode.D) {
-									d.SeekAbs(int64(calcOffset(entry.key&0x7fffffff)), decodeRecord)
+									d.SeekAbs(calcOffset(entry.key&0x7fffffff), decodeRecord)
 								})
 							}
 
@@ -310,7 +310,7 @@ func bookmarkDecode(d *decode.D, _ any) any {
 
 							d.FieldU32("reserved")
 
-							d.SeekAbs(int64(entry.recordOffset), decodeRecord)
+							d.SeekAbs(entry.recordOffset, decodeRecord)
 						})
 					}
 				})
