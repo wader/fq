@@ -173,16 +173,6 @@ type tocEntry struct {
 	recordOffset uint64
 }
 
-func decodeTOCEntry(d *decode.D) *tocEntry {
-	var entry *tocEntry
-
-	entry.key = d.FieldU32("key")
-	entry.recordOffset = d.FieldU32("offset_to_record")
-	d.FieldU32("reserved")
-
-	return entry
-}
-
 const (
 	arrayEntrySize = 4
 	dictEntrySize  = 4
