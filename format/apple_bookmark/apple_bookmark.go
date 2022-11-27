@@ -1,4 +1,4 @@
-package bplist
+package apple_bookmark
 
 import (
 	"embed"
@@ -11,12 +11,12 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-//go:embed bookmark.jq bookmark.md
+//go:embed apple_bookmark.jq apple_bookmark.md
 var bookmarkFS embed.FS
 
 func init() {
 	interp.RegisterFormat(decode.Format{
-		Name:        format.BOOKMARK,
+		Name:        format.APPLE_BOOKMARK,
 		ProbeOrder:  format.ProbeOrderBinUnique,
 		Description: "Apple BookmarkData",
 		Groups:      []string{format.PROBE},

@@ -1,5 +1,5 @@
 $ fq dv sample1.book 
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: sample1.book (bookmark) 0x0-0x22f.7 (560)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: sample1.book (apple_bookmark) 0x0-0x22f.7 (560)
      |                                               |                |  header{}: 0x0-0x2f.7 (48)
 0x000|62 6f 6f 6b                                    |book            |    magic: "book" (valid) 0x0-0x3.7 (4)
 0x000|            30 02 00 00                        |    0...        |    total_size: 560 0x4-0x7.7 (4)
@@ -151,7 +151,7 @@ $ fq dv sample1.book
 0x180|                                    00 00 00 00|            ....|    next_toc_offset: 0 0x18c-0x18f.7 (4)
 0x190|0d 00 00 00                                    |....            |    num_entries_in_toc: 13 0x190-0x193.7 (4)
 $ fq dv sample2.book 
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: sample2.book (bookmark) 0x0-0x2ab.7 (684)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: sample2.book (apple_bookmark) 0x0-0x2ab.7 (684)
      |                                               |                |  header{}: 0x0-0x2f.7 (48)
 0x000|62 6f 6f 6b                                    |book            |    magic: "book" (valid) 0x0-0x3.7 (4)
 0x000|            ac 02 00 00                        |    ....        |    total_size: 684 0x4-0x7.7 (4)
@@ -356,7 +356,7 @@ $ fq dv sample2.book
 0x1c0|                                    00 00 00 00|            ....|    next_toc_offset: 0 0x1cc-0x1cf.7 (4)
 0x1d0|12 00 00 00                                    |....            |    num_entries_in_toc: 18 0x1d0-0x1d3.7 (4)
 $ fq dv sample3.book 
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: sample3.book (bookmark) 0x0-0x333.7 (820)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: sample3.book (apple_bookmark) 0x0-0x333.7 (820)
      |                                               |                |  header{}: 0x0-0x2f.7 (48)
 0x000|62 6f 6f 6b                                    |book            |    magic: "book" (valid) 0x0-0x3.7 (4)
 0x000|            34 03 00 00                        |    4...        |    total_size: 820 0x4-0x7.7 (4)
@@ -603,7 +603,7 @@ $ fq dv sample3.book
 0x250|            00 00 00 00                        |    ....        |    next_toc_offset: 0 0x254-0x257.7 (4)
 0x250|                        12 00 00 00            |        ....    |    num_entries_in_toc: 18 0x258-0x25b.7 (4)
 $ fq dv sample4.book 
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: sample4.book (bookmark) 0x0-0x2f3.7 (756)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: sample4.book (apple_bookmark) 0x0-0x2f3.7 (756)
      |                                               |                |  header{}: 0x0-0x2f.7 (48)
 0x000|62 6f 6f 6b                                    |book            |    magic: "book" (valid) 0x0-0x3.7 (4)
 0x000|            f4 02 00 00                        |    ....        |    total_size: 756 0x4-0x7.7 (4)

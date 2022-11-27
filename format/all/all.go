@@ -5,6 +5,7 @@ package all
 
 import (
 	_ "github.com/wader/fq/format/ape"
+	_ "github.com/wader/fq/format/apple_bookmark"
 	_ "github.com/wader/fq/format/ar"
 	_ "github.com/wader/fq/format/asn1"
 	_ "github.com/wader/fq/format/av1"
@@ -12,7 +13,6 @@ import (
 	_ "github.com/wader/fq/format/bencode"
 	_ "github.com/wader/fq/format/bitcoin"
 	_ "github.com/wader/fq/format/bits"
-	_ "github.com/wader/fq/format/bookmark"
 	_ "github.com/wader/fq/format/bplist"
 	_ "github.com/wader/fq/format/bson"
 	_ "github.com/wader/fq/format/bzip2"

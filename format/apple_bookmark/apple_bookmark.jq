@@ -1,4 +1,4 @@
-def _bookmark_torepr:
+def _apple_bookmark_torepr:
   def _f:
     ( if .type == "String" then .data | tovalue
       elif .type == "Data" then .data | tovalue
