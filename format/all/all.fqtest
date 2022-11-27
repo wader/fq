@@ -5,6 +5,7 @@ $ fq -n _registry.groups.probe
   "avi",
   "avro_ocf",
   "bitcoin_blkdat",
+  "bookmark",
   "bplist",
   "bzip2",
   "elf",
@@ -60,6 +61,7 @@ bitcoin_block        Bitcoin block
 bitcoin_script       Bitcoin script
 bitcoin_transaction  Bitcoin transaction
 bits                 Raw bits
+bookmark             Apple BookmarkData
 bplist               Apple Binary Property List
 bsd_loopback_frame   BSD loopback frame
 bson                 Binary JSON
