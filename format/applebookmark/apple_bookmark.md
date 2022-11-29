@@ -1,4 +1,4 @@
-## Apple `bookmarkData` format
+## Apple bookmarkData format
 
 Apple's `bookmarkData` format is used to encode information that can be resolved
 into a `URL` object for a file even if the user moves or renames it. Can also
