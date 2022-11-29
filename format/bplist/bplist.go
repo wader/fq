@@ -90,30 +90,6 @@ func decodeSize(d *decode.D, sms ...scalar.Mapper) uint64 {
 	return n
 }
 
-func decodeSizedInteger(d *decode.D, nBytes uint64, sms ...scalar.Mapper) (low uint64, high uint64) {
-	switch nBytes {
-	case 1:
-		low, high = d.U8(), 0
-	case 2:
-		low, high = d.U16(), 0
-	case 4:
-		low, high = d.U32(), 0
-	case 8:
-		low = d.FieldU64("value")
-		if low&0x8000000000000000 != 0 {
-			high = 0xffffffffffffffff
-		} else {
-			high = 0
-		}
-	case 16:
-		high, low = d.U64(), d.U64()
-	default:
-		d.Errorf("integer cannot be parsed from %d bytes", nBytes)
-	}
-
-	return
-}
-
 // decodeItem decodes an object from the plist, and assumes that the current
 // seek position of the *decode.D is an object type tag. Returns a bool
 // indicating whether or not a string was decoded, which is necssary for
