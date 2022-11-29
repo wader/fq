@@ -13,22 +13,25 @@ import (
 // Stack is a context stack
 type Stack struct {
 	cancelFns []func()
-	closeCh   chan struct{}
+	stopCh    chan struct{}
 }
 
 // New context stack
 func New(triggerCh func(stopCh chan struct{})) *Stack {
 	stopCh := make(chan struct{})
-	s := &Stack{closeCh: stopCh}
+	s := &Stack{stopCh: stopCh}
 
 	go func() {
 		for {
 			triggerCh(stopCh)
 			select {
 			case <-stopCh:
-				// stop if closed
+				// stop if stopCh closed
 			default:
-				s.cancelFns[len(s.cancelFns)-1]()
+				// ignore if triggered before any context pushed
+				if len(s.cancelFns) > 0 {
+					s.cancelFns[len(s.cancelFns)-1]()
+				}
 				continue
 			}
 			break
@@ -43,13 +46,14 @@ func (s *Stack) Stop() {
 	for i := len(s.cancelFns) - 1; i >= 0; i-- {
 		s.cancelFns[i]()
 	}
-	close(s.closeCh)
+	close(s.stopCh)
 }
 
 // Push creates, pushes and returns new context. Cancel pops it.
 func (s *Stack) Push(parent context.Context) (context.Context, func()) {
 	stackCtx, stackCtxCancel := context.WithCancel(parent)
 	stackIdx := len(s.cancelFns)
+
 	s.cancelFns = append(s.cancelFns, stackCtxCancel)
 	cancelled := false
 
