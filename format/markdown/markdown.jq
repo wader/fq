@@ -1,9 +1,9 @@
 def _markdown__todisplay: tovalue;
 
-def word_break($width):
+def _word_break($width):
   def _f($a; $acc; $l):
     ( $a[0] as $w
-    | ($w // "" | length) as $wl
+    | ($w // "" | length+1) as $wl
     | if $w == null then $acc
       elif ($l + $wl) >= $width then
         ( $acc
@@ -17,7 +17,7 @@ def word_break($width):
   );
 
 def _markdown_to_text($width; $header_depth):
-  def lb: if $width > 0 then word_break($width) | join("\n") end;
+  def lb: if $width > 0 then _word_break($width) | join("\n") end;
   def _f($pln):
     if type == "string" then gsub("\n"; " ")
     elif .type == "document" then .children[] | _f("\n\n")
