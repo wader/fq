@@ -23,9 +23,9 @@ def _apple_bookmark_torepr:
       elif .type == "UUID" then .data | tovalue
       elif .type == "URL" then .data | tovalue
       elif .type == "RelativeURL" then
-		.data | map(.record.data)
+        .data | map(.record.data)
       end
-     );
+    );
   ( .bookmark_entries
   | map({key: (.key_string?.record.data // .key|tostring), value: (.record | _f)})
   | from_entries
