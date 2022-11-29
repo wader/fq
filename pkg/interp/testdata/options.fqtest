@@ -65,6 +65,7 @@ $ fq -n options
   "expr": "options",
   "expr_eval_path": "arg",
   "expr_file": null,
+  "expr_given": true,
   "filenames": [
     null
   ],

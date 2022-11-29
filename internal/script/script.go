@@ -127,7 +127,7 @@ func (cr *CaseRun) Stdin() interp.Input {
 		FileReader: interp.FileReader{
 			R: bytes.NewBufferString(cr.StdinInitial),
 		},
-		isTerminal: cr.StdinInitial == "",
+		isTerminal: cr.StdinInitial == "" || cr.getEnvInt("_STDIN_IS_TERMINAL") != 0,
 		width:      cr.getEnvInt("_STDIN_WIDTH"),
 		height:     cr.getEnvInt("_STDIN_HEIGHT"),
 	}
@@ -160,6 +160,7 @@ func (cr *CaseRun) Environ() []string {
 		"_STDOUT_WIDTH=135",
 		"_STDOUT_HEIGHT=25",
 		"_STDOUT_IS_TERMINAL=1",
+		"_STDIN_IS_TERMINAL=0",
 		"NO_COLOR=1",
 		"NO_DECODE_PROGRESS=1",
 		"COMPLETION_TIMEOUT=10", // increase to make -race work better

@@ -184,25 +184,36 @@ def _main:
     ]) as $_
   | options as $opts
   | if $opts.show_help then
-      ( if ($opts.show_help | type) == "boolean" then
-          ( ("banner", "", "usage", "", "example_usage", "", "args")
+      ( # if show_help is a string -h <topic> was used
+        if ($opts.show_help | type) == "boolean" then
+          ( # "" to print separators
+            ( "banner"
+            , ""
+            , "usage"
+            , ""
+            , "example_usage"
+            , ""
+            , "args"
+            )
           | if . != "" then _help($arg0; .) end
           )
         else _help($arg0; $opts.show_help)
         end
       | println
       )
-    elif $opts.show_version then "\($version) (\($os) \($arch))" | println
+    elif $opts.show_version then
+      "\($version) (\($os) \($arch))" | println
     elif
       ( $opts.filenames == [null] and
         $opts.null_input == false and
         ($opts.repl | not) and
         ($opts.expr_file | not) and
+        ($opts.expr_given | not) and
         stdin_tty.is_terminal and
         stdout_tty.is_terminal
       ) then
       ( (_help($arg0; "usage") | printerrln)
-      , null | halt_error(_exit_code_args_error)
+      , (null | halt_error(_exit_code_args_error))
       )
     else
       ( # store some global state

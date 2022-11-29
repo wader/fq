@@ -2,6 +2,10 @@ $ fq
 exitcode: 2
 stderr:
 Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
+$ _STDIN_IS_TERMINAL=1 fq type
+"number"
+stdin:
+123
 $ fq -h
 fq - jq for binary formats
 Tool, language and decoders for working with binary data.
@@ -80,6 +84,7 @@ display_bytes       16
 expr                .
 expr_eval_path      arg
 expr_file           
+expr_given          false
 filenames           [null]
 force               false
 include_path        

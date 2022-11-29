@@ -47,6 +47,7 @@ def _opt_build_default_fixed:
       decode_progress:    (env.NO_DECODE_PROGRESS == null),
       depth:              0,
       expr:               ".",
+      expr_given:         false,
       expr_eval_path:     "arg",
       expr_file:          null,
       filenames:          null,
@@ -86,6 +87,7 @@ def _opt_options:
     depth:              "number",
     display_bytes:      "number",
     expr:               "string",
+    expr_given:         "boolean",
     expr_eval_path:     "string",
     expr_file:          "string",
     filenames:          "array_string",
@@ -156,6 +158,10 @@ def _opt_eval($rest):
           else $rest[0] // null
           end
         )
+      ),
+      expr_given: (
+        # was a expr arg given
+        $rest[0] != null
       ),
       expr_eval_path: .expr_file,
       filenames: (
