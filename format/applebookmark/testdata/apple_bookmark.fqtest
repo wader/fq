@@ -144,12 +144,13 @@ $ fq dv sample1.book
 0x220|                                    00 00 00 00|            ....|      reserved: 0 0x22c-0x22f.7 (4)
 0x060|                           00 00 00            |         ...    |  unknown0: raw bits 0x69-0x6b.7 (3)
 0x170|               00 00 00                        |     ...        |  unknown1: raw bits 0x175-0x177.7 (3)
-     |                                               |                |  toc_header_0{}: 0x180-0x193.7 (20)
-0x180|a8 00 00 00                                    |....            |    toc_size: 168 0x180-0x183.7 (4)
-0x180|            fe ff ff ff                        |    ....        |    magic: 4294967294 (valid) 0x184-0x187.7 (4)
-0x180|                        01 00 00 00            |        ....    |    identifier: 1 0x188-0x18b.7 (4)
-0x180|                                    00 00 00 00|            ....|    next_toc_offset: 0 0x18c-0x18f.7 (4)
-0x190|0d 00 00 00                                    |....            |    num_entries_in_toc: 13 0x190-0x193.7 (4)
+     |                                               |                |  toc_headers[0:1]: 0x180-0x193.7 (20)
+     |                                               |                |    [0]{}: toc_header 0x180-0x193.7 (20)
+0x180|a8 00 00 00                                    |....            |      toc_size: 168 0x180-0x183.7 (4)
+0x180|            fe ff ff ff                        |    ....        |      magic: 4294967294 (valid) 0x184-0x187.7 (4)
+0x180|                        01 00 00 00            |        ....    |      identifier: 1 0x188-0x18b.7 (4)
+0x180|                                    00 00 00 00|            ....|      next_toc_offset: 0 0x18c-0x18f.7 (4)
+0x190|0d 00 00 00                                    |....            |      num_entries_in_toc: 13 0x190-0x193.7 (4)
 $ fq dv sample2.book 
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: sample2.book (apple_bookmark) 0x0-0x2ab.7 (684)
      |                                               |                |  header{}: 0x0-0x2f.7 (48)
@@ -349,12 +350,13 @@ $ fq dv sample2.book
 0x060|               00 00 00                        |     ...        |  unknown1: raw bits 0x65-0x67.7 (3)
 0x070|                     00                        |       .        |  unknown2: raw bits 0x77-0x77.7 (1)
 0x1b0|               00 00 00                        |     ...        |  unknown3: raw bits 0x1b5-0x1b7.7 (3)
-     |                                               |                |  toc_header_0{}: 0x1c0-0x1d3.7 (20)
-0x1c0|e4 00 00 00                                    |....            |    toc_size: 228 0x1c0-0x1c3.7 (4)
-0x1c0|            fe ff ff ff                        |    ....        |    magic: 4294967294 (valid) 0x1c4-0x1c7.7 (4)
-0x1c0|                        01 00 00 00            |        ....    |    identifier: 1 0x1c8-0x1cb.7 (4)
-0x1c0|                                    00 00 00 00|            ....|    next_toc_offset: 0 0x1cc-0x1cf.7 (4)
-0x1d0|12 00 00 00                                    |....            |    num_entries_in_toc: 18 0x1d0-0x1d3.7 (4)
+     |                                               |                |  toc_headers[0:1]: 0x1c0-0x1d3.7 (20)
+     |                                               |                |    [0]{}: toc_header 0x1c0-0x1d3.7 (20)
+0x1c0|e4 00 00 00                                    |....            |      toc_size: 228 0x1c0-0x1c3.7 (4)
+0x1c0|            fe ff ff ff                        |    ....        |      magic: 4294967294 (valid) 0x1c4-0x1c7.7 (4)
+0x1c0|                        01 00 00 00            |        ....    |      identifier: 1 0x1c8-0x1cb.7 (4)
+0x1c0|                                    00 00 00 00|            ....|      next_toc_offset: 0 0x1cc-0x1cf.7 (4)
+0x1d0|12 00 00 00                                    |....            |      num_entries_in_toc: 18 0x1d0-0x1d3.7 (4)
 $ fq dv sample3.book 
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: sample3.book (apple_bookmark) 0x0-0x333.7 (820)
      |                                               |                |  header{}: 0x0-0x2f.7 (48)
@@ -596,12 +598,13 @@ $ fq dv sample3.book
 0x0a0|                  00 00                        |      ..        |  unknown4: raw bits 0xa6-0xa7.7 (2)
 0x0b0|               00 00 00                        |     ...        |  unknown5: raw bits 0xb5-0xb7.7 (3)
 0x230|                                       00 00 00|             ...|  unknown6: raw bits 0x23d-0x23f.7 (3)
-     |                                               |                |  toc_header_0{}: 0x248-0x25b.7 (20)
-0x240|                        e4 00 00 00            |        ....    |    toc_size: 228 0x248-0x24b.7 (4)
-0x240|                                    fe ff ff ff|            ....|    magic: 4294967294 (valid) 0x24c-0x24f.7 (4)
-0x250|01 00 00 00                                    |....            |    identifier: 1 0x250-0x253.7 (4)
-0x250|            00 00 00 00                        |    ....        |    next_toc_offset: 0 0x254-0x257.7 (4)
-0x250|                        12 00 00 00            |        ....    |    num_entries_in_toc: 18 0x258-0x25b.7 (4)
+     |                                               |                |  toc_headers[0:1]: 0x248-0x25b.7 (20)
+     |                                               |                |    [0]{}: toc_header 0x248-0x25b.7 (20)
+0x240|                        e4 00 00 00            |        ....    |      toc_size: 228 0x248-0x24b.7 (4)
+0x240|                                    fe ff ff ff|            ....|      magic: 4294967294 (valid) 0x24c-0x24f.7 (4)
+0x250|01 00 00 00                                    |....            |      identifier: 1 0x250-0x253.7 (4)
+0x250|            00 00 00 00                        |    ....        |      next_toc_offset: 0 0x254-0x257.7 (4)
+0x250|                        12 00 00 00            |        ....    |      num_entries_in_toc: 18 0x258-0x25b.7 (4)
 $ fq dv sample4.book 
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: sample4.book (apple_bookmark) 0x0-0x2f3.7 (756)
      |                                               |                |  header{}: 0x0-0x2f.7 (48)
@@ -829,9 +832,265 @@ $ fq dv sample4.book
 0x070|                                             00|               .|  unknown3: raw bits 0x7f-0x7f.7 (1)
 0x080|                                          00 00|              ..|  unknown4: raw bits 0x8e-0x8f.7 (2)
 0x1f0|                                       00 00 00|             ...|  unknown5: raw bits 0x1fd-0x1ff.7 (3)
-     |                                               |                |  toc_header_0{}: 0x208-0x21b.7 (20)
-0x200|                        e4 00 00 00            |        ....    |    toc_size: 228 0x208-0x20b.7 (4)
-0x200|                                    fe ff ff ff|            ....|    magic: 4294967294 (valid) 0x20c-0x20f.7 (4)
-0x210|01 00 00 00                                    |....            |    identifier: 1 0x210-0x213.7 (4)
-0x210|            00 00 00 00                        |    ....        |    next_toc_offset: 0 0x214-0x217.7 (4)
-0x210|                        12 00 00 00            |        ....    |    num_entries_in_toc: 18 0x218-0x21b.7 (4)
+     |                                               |                |  toc_headers[0:1]: 0x208-0x21b.7 (20)
+     |                                               |                |    [0]{}: toc_header 0x208-0x21b.7 (20)
+0x200|                        e4 00 00 00            |        ....    |      toc_size: 228 0x208-0x20b.7 (4)
+0x200|                                    fe ff ff ff|            ....|      magic: 4294967294 (valid) 0x20c-0x20f.7 (4)
+0x210|01 00 00 00                                    |....            |      identifier: 1 0x210-0x213.7 (4)
+0x210|            00 00 00 00                        |    ....        |      next_toc_offset: 0 0x214-0x217.7 (4)
+0x210|                        12 00 00 00            |        ....    |      num_entries_in_toc: 18 0x218-0x21b.7 (4)
+$ fq torepr sample1.book
+{
+  "creation_options": 536870912,
+  "target_cnid_path": [
+    55637351,
+    54389243
+  ],
+  "target_creation_date": 687998368,
+  "target_flags": "<24>AgAAAAAAAAAPAAAAAAAAAAAAAAAAAAAA",
+  "target_path": [
+    {
+      "data": "Applications",
+      "length": 12,
+      "type": "string"
+    },
+    {
+      "data": "Bitwarden.app",
+      "length": 13,
+      "type": "string"
+    }
+  ],
+  "volume_creation_date": 599558400,
+  "volume_flags": "<24>gQAAAAEAAADvEwAAAQAAAAAAAAAAAAAA",
+  "volume_is_root": true,
+  "volume_name": {
+    "data": "Macintosh HD",
+    "length": 12,
+    "type": "string"
+  },
+  "volume_path": {
+    "data": "/",
+    "length": 1,
+    "type": "string"
+  },
+  "volume_size": 499963174912,
+  "volume_url": "file:///",
+  "volume_uuid": {
+    "data": "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA",
+    "length": 36,
+    "type": "string"
+  }
+}
+$ fq torepr sample2.book
+{
+  "983055": true,
+  "containing_folder_index": 1,
+  "creation_options": 536870912,
+  "creator_uid": 501,
+  "creator_username": {
+    "data": "davidmcdonald",
+    "length": 13,
+    "type": "string"
+  },
+  "display_name": {
+    "data": "hxstore",
+    "length": 7,
+    "type": "string"
+  },
+  "target_cnid_path": [
+    23307,
+    564764,
+    54838727
+  ],
+  "target_creation_date": 689188614.6088948,
+  "target_flags": "<24>AgAAAAAAAAAfAgAAAAAAABoCAAAAAAAA",
+  "target_path": [
+    {
+      "data": "Users",
+      "length": 5,
+      "type": "string"
+    },
+    {
+      "data": "davidmcdonald",
+      "length": 13,
+      "type": "string"
+    },
+    {
+      "data": "hxstore",
+      "length": 7,
+      "type": "string"
+    }
+  ],
+  "volume_creation_date": 599558400,
+  "volume_flags": "<24>gQAAAAEAAADvEwAAAQAAAAAAAAAAAAAA",
+  "volume_is_root": true,
+  "volume_name": {
+    "data": "Macintosh HD",
+    "length": 12,
+    "type": "string"
+  },
+  "volume_path": {
+    "data": "/",
+    "length": 1,
+    "type": "string"
+  },
+  "volume_size": 499963174912,
+  "volume_url": "file:///",
+  "volume_uuid": {
+    "data": "8A829A03-9B24-4085-8051-18978712E4BE",
+    "length": 36,
+    "type": "string"
+  }
+}
+$ fq torepr sample3.book
+{
+  "983055": true,
+  "containing_folder_index": 4,
+  "creation_options": 536870912,
+  "creator_uid": 501,
+  "creator_username": {
+    "data": "davidmcdonald",
+    "length": 13,
+    "type": "string"
+  },
+  "display_name": {
+    "data": "Blink",
+    "length": 5,
+    "type": "string"
+  },
+  "target_cnid_path": [
+    23307,
+    564764,
+    909650,
+    925616,
+    36514705,
+    36514706
+  ],
+  "target_creation_date": 673397442.9093685,
+  "target_flags": "<24>AgAAAAAAAAAfAgAAAAAAABoCAAAAAAAA",
+  "target_path": [
+    {
+      "data": "Users",
+      "length": 5,
+      "type": "string"
+    },
+    {
+      "data": "davidmcdonald",
+      "length": 13,
+      "type": "string"
+    },
+    {
+      "data": "Documents",
+      "length": 9,
+      "type": "string"
+    },
+    {
+      "data": "Arduino",
+      "length": 7,
+      "type": "string"
+    },
+    {
+      "data": "generated_examples",
+      "length": 18,
+      "type": "string"
+    },
+    {
+      "data": "Blink",
+      "length": 5,
+      "type": "string"
+    }
+  ],
+  "volume_creation_date": 599558400,
+  "volume_flags": "<24>gQAAAAEAAADvEwAAAQAAAAAAAAAAAAAA",
+  "volume_is_root": true,
+  "volume_name": {
+    "data": "Macintosh HD",
+    "length": 12,
+    "type": "string"
+  },
+  "volume_path": {
+    "data": "/",
+    "length": 1,
+    "type": "string"
+  },
+  "volume_size": 499963174912,
+  "volume_url": "file:///",
+  "volume_uuid": {
+    "data": "8A829A03-9B24-4085-8051-18978712E4BE",
+    "length": 36,
+    "type": "string"
+  }
+}
+$ fq torepr sample4.book
+{
+  "983055": true,
+  "containing_folder_index": 3,
+  "creation_options": 536870912,
+  "creator_uid": 501,
+  "creator_username": {
+    "data": "davidmcdonald",
+    "length": 13,
+    "type": "string"
+  },
+  "display_name": {
+    "data": "thesis",
+    "length": 6,
+    "type": "string"
+  },
+  "target_cnid_path": [
+    23307,
+    564764,
+    1193796,
+    1381791,
+    33157203
+  ],
+  "target_creation_date": 671035102.0590391,
+  "target_flags": "<24>AgAAAAAAAAAfAgAAAAAAABoCAAAAAAAA",
+  "target_path": [
+    {
+      "data": "Users",
+      "length": 5,
+      "type": "string"
+    },
+    {
+      "data": "davidmcdonald",
+      "length": 13,
+      "type": "string"
+    },
+    {
+      "data": "go",
+      "length": 2,
+      "type": "string"
+    },
+    {
+      "data": "src",
+      "length": 3,
+      "type": "string"
+    },
+    {
+      "data": "thesis",
+      "length": 6,
+      "type": "string"
+    }
+  ],
+  "volume_creation_date": 599558400,
+  "volume_flags": "<24>gQAAAAEAAADvEwAAAQAAAAAAAAAAAAAA",
+  "volume_is_root": true,
+  "volume_name": {
+    "data": "Macintosh HD",
+    "length": 12,
+    "type": "string"
+  },
+  "volume_path": {
+    "data": "/",
+    "length": 1,
+    "type": "string"
+  },
+  "volume_size": 499963174912,
+  "volume_url": "file:///",
+  "volume_uuid": {
+    "data": "8A829A03-9B24-4085-8051-18978712E4BE",
+    "length": 36,
+    "type": "string"
+  }
+}
