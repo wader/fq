@@ -7404,7 +7404,7 @@ $ fq dv com.apple.LSSharedFileList.RecentApplications.sfl2
 0x22d0|00 00 00 00 00 00                              |......          |
 0x22d0|                  00 00 00 00 00 00 20 a0|     |      ...... .| |    offset_table_start: 8352 0x22d6-0x22dd.7 (8)
 $ fq dv com.apple.LSSharedFileList.RecentDocuments.sfl2
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: format/bplist/testdata/com.apple.LSSharedFileList.RecentDocuments.sfl2 (bplist) 0x0-0x289b.7 (10396)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: com.apple.LSSharedFileList.RecentDocuments.sfl2 (bplist) 0x0-0x289b.7 (10396)
       |                                               |                |  header{}: 0x0-0x7.7 (8)
 0x0000|62 70 6c 69 73 74                              |bplist          |    magic: "bplist" (valid) 0x0-0x5.7 (6)
 0x0000|                  30 30                        |      00        |    version: "00" (valid) 0x6-0x7.7 (2)
