@@ -1,6 +1,6 @@
 def _apple_bookmark_torepr:
   def _f:
-    ( if .type == "String" then .data | tovalue
+    ( if .type == "string" then .data | tovalue
       elif .type == "data" then .data | tovalue
       elif .type == "byte" then .data | tovalue
       elif .type == "short" then .data | tovalue
