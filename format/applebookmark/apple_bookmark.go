@@ -2,7 +2,6 @@ package applebookmark
 
 import (
 	"embed"
-	"fmt"
 	"time"
 
 	"github.com/wader/fq/format"
@@ -153,10 +152,35 @@ type tocHeader struct {
 	entryArrayOffset int64
 }
 
-func decodeTOCHeader(d *decode.D, idx int) *tocHeader {
+func (hdr *tocHeader) decodeEntries(d *decode.D) {
+	for k := uint64(0); k < hdr.numEntries; k++ {
+		entry := new(tocEntry)
+
+		d.FieldStruct("entry", func(d *decode.D) {
+			// entry.key = d.FieldU32("key", elementTypeMap)
+			entry.key = d.FieldU32("key", elementTypeMap)
+
+			// if the key has the top bit set, then (key & 0x7fffffff)
+			// gives the offset of a string record.
+			if entry.key&0x80000000 != 0 {
+				d.FieldStruct("key_string", func(d *decode.D) {
+					d.SeekAbs(calcOffset(entry.key&0x7fffffff), decodeRecord)
+				})
+			}
+
+			entry.recordOffset = calcOffset(d.FieldU32("offset_to_record"))
+
+			d.FieldU32("reserved")
+
+			d.SeekAbs(entry.recordOffset, decodeRecord)
+		})
+	}
+}
+
+func decodeTOCHeader(d *decode.D) *tocHeader {
 	hdr := new(tocHeader)
 
-	d.FieldStruct(fmt.Sprintf("toc_header_%d", idx), func(d *decode.D) {
+	d.FieldStruct("toc_header", func(d *decode.D) {
 		hdr.tocSize = d.FieldU32("toc_size")
 		d.FieldU32("magic", d.AssertU(0xfffffffe))
 		d.FieldU32("identifier")
@@ -262,60 +286,27 @@ func bookmarkDecode(d *decode.D, _ any) any {
 
 	tocOffset := calcOffset(d.FieldU32("first_toc_offset"))
 
+	var currentHdr *tocHeader
 	var tocHeaders []*tocHeader
 
-	for i := 0; tocOffset != headerEndBitPos; i++ {
-		// seek to the TOC, and decode the header and entries
-		// for this TOC instance. SeekAbs restores our offset each time.
+	d.FieldArrayLoop("toc_headers", func() bool {
+		return tocOffset != headerEndBitPos
+	}, func(d *decode.D) {
 		d.SeekAbs(tocOffset, func(d *decode.D) {
-
-			tocHdr := decodeTOCHeader(d, i)
-			// store the toc header. we're going to decode the entries in one
-			// big array once we have decoded all toc's
-			tocHeaders = append(tocHeaders, tocHdr)
-			// save the next toc_offset value. 0 indicates that we have reached
-			// the last TOC instance.
-			tocOffset = calcOffset(tocHdr.nextTOCOffset)
-
+			currentHdr = decodeTOCHeader(d)
+			tocOffset = calcOffset(currentHdr.nextTOCOffset)
+			tocHeaders = append(tocHeaders, currentHdr)
 		})
+	})
 
-		j := 0
+	// now that we've collected all toc headers, iterate through each one's
+	// entries and decode associated records.
+	d.FieldArray("bookmark_entries",
+		func(d *decode.D) {
 
-		// now that we've collected all toc headers, iterate through each one's
-		// entries and decode associated records.
-		d.FieldArrayLoop("bookmark_entries",
-			func() bool { return j < len(tocHeaders) },
-			func(d *decode.D) {
-
-				tocHdr := tocHeaders[j]
-				j++
-
-				d.SeekAbs(tocHdr.entryArrayOffset, func(d *decode.D) {
-					for k := uint64(0); k < tocHdr.numEntries; k++ {
-						entry := new(tocEntry)
-
-						d.FieldStruct("entry", func(d *decode.D) {
-							// entry.key = d.FieldU32("key", elementTypeMap)
-							entry.key = d.FieldU32("key", elementTypeMap)
-
-							// if the key has the top bit set, then (key & 0x7fffffff)
-							// gives the offset of a string record.
-							if entry.key&0x80000000 != 0 {
-								d.FieldStruct("key_string", func(d *decode.D) {
-									d.SeekAbs(calcOffset(entry.key&0x7fffffff), decodeRecord)
-								})
-							}
-
-							entry.recordOffset = calcOffset(d.FieldU32("offset_to_record"))
-
-							d.FieldU32("reserved")
-
-							d.SeekAbs(entry.recordOffset, decodeRecord)
-						})
-					}
-				})
-			})
-	}
-
+			for _, hdr := range tocHeaders {
+				d.SeekAbs(hdr.entryArrayOffset, hdr.decodeEntries)
+			}
+		})
 	return nil
 }
