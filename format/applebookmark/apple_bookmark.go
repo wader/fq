@@ -157,7 +157,6 @@ func (hdr *tocHeader) decodeEntries(d *decode.D) {
 		entry := new(tocEntry)
 
 		d.FieldStruct("entry", func(d *decode.D) {
-			// entry.key = d.FieldU32("key", elementTypeMap)
 			entry.key = d.FieldU32("key", elementTypeMap)
 
 			// if the key has the top bit set, then (key & 0x7fffffff)
