@@ -4,7 +4,7 @@ def _apple_bookmark_torepr:
       elif .type == "data" then .data | tovalue
       elif .type == "byte" then .data | tovalue
       elif .type == "short" then .data | tovalue
-      elif .type == "Int" then .data | tovalue
+      elif .type == "int" then .data | tovalue
       elif .type == "long" then .data | tovalue
       elif .type == "float" then .data | tovalue
       elif .type == "double" then .data | tovalue
