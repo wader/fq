@@ -121,6 +121,7 @@ const (
 	TCP_SEGMENT         = "tcp_segment"
 	TIFF                = "tiff"
 	TOML                = "toml"
+	TZIF                = "tzif"
 	UDP_DATAGRAM        = "udp_datagram"
 	VORBIS_COMMENT      = "vorbis_comment"
 	VORBIS_PACKET       = "vorbis_packet"

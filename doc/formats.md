@@ -101,6 +101,7 @@
 |`tcp_segment`                     |Transmission&nbsp;control&nbsp;protocol&nbsp;segment                                     |<sub></sub>|
 |`tiff`                            |Tag&nbsp;Image&nbsp;File&nbsp;Format                                                     |<sub>`icc_profile`</sub>|
 |`toml`                            |Tom's&nbsp;Obvious,&nbsp;Minimal&nbsp;Language                                           |<sub></sub>|
+|[`tzif`](#tzif)                   |Time&nbsp;Zone&nbsp;Information&nbsp;Format                                              |<sub></sub>|
 |`udp_datagram`                    |User&nbsp;datagram&nbsp;protocol                                                         |<sub>`udp_payload`</sub>|
 |`vorbis_comment`                  |Vorbis&nbsp;comment                                                                      |<sub>`flac_picture`</sub>|
 |`vorbis_packet`                   |Vorbis&nbsp;packet                                                                       |<sub>`vorbis_comment`</sub>|
@@ -118,7 +119,7 @@
 |`inet_packet`                     |Group                                                                                    |<sub>`ipv4_packet` `ipv6_packet`</sub>|
 |`ip_packet`                       |Group                                                                                    |<sub>`icmp` `icmpv6` `tcp_segment` `udp_datagram`</sub>|
 |`link_frame`                      |Group                                                                                    |<sub>`bsd_loopback_frame` `ether8023_frame` `sll2_packet` `sll_packet`</sub>|
-|`probe`                           |Group                                                                                    |<sub>`adts` `ar` `avi` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `jsonl` `macho` `macho_fat` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `toml` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
+|`probe`                           |Group                                                                                    |<sub>`adts` `ar` `avi` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `jsonl` `macho` `macho_fat` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `toml` `tzif` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
 |`tcp_stream`                      |Group                                                                                    |<sub>`dns_tcp` `rtmp`</sub>|
 |`udp_payload`                     |Group                                                                                    |<sub>`dns`</sub>|
 
@@ -744,6 +745,17 @@ fq '.tcp_connections[] | select(.server.port=="rtmp") | d' file.cap
 ### References
 - https://rtmp.veriskope.com/docs/spec/
 - https://rtmp.veriskope.com/pdf/video_file_format_spec_v10.pdf
+
+## tzif
+
+### Authors
+- Takashi Oguma
+[@bitbears-dev](https://github.com/bitbears-dev)
+[@0xb17bea125](https://twitter.com/0xb17bea125)
+
+### References
+- https://datatracker.ietf.org/doc/html/rfc8536
+
 
 ## wasm
 
