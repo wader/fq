@@ -473,7 +473,7 @@ func (dvb decodeValueBase) ExtKeys() []string {
 		"_path",
 		"_bits",
 		"_bytes",
-		"_unknown",
+		"_gap",
 		"_index", // TODO: only if parent is array?
 	}
 
@@ -573,10 +573,10 @@ func (dvb decodeValueBase) JQValueKey(name string) any {
 		return nil
 	case "_out":
 		return dvb.out
-	case "_unknown":
+	case "_gap":
 		switch vv := dv.V.(type) {
 		case *scalar.S:
-			return vv.Unknown
+			return vv.Gap
 		default:
 			return false
 		}

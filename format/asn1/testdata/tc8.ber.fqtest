@@ -8,4 +8,4 @@ $ fq -d asn1_ber dv tc8.ber
 0x0|      41                                       |  A             |  decimal_encoding: true 0x2.1-0x2.1 (0.1)
 0x0|      41                                       |  A             |  special: "minus_infinity" (1) 0x2.2-0x2.7 (0.6)
    |                                               |                |  value: -Inf 0x3-NA (0)
-0x0|         00 00|                                |   ..|          |  unknown0: raw bits 0x3-0x4.7 (2)
+0x0|         00 00|                                |   ..|          |  gap0: raw bits 0x3-0x4.7 (2)

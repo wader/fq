@@ -14,8 +14,8 @@ to `format/format.go` and don't forget to change the string constant.
 Prefer a nice and easy query tree structure over nice decoder implementation.
 - Use same names, symbols, constant number bases etc as in specification.
 But maybe in lowercase to be jq/JSON-ish.
-- Decode only ranges you know what they are. If possible let "parent" decide what to do with unknown
-bits by using `*Decode*Len/Range/Limit` functions. fq will also automatically add "unknown" fields if
+- Decode only ranges you know what they are. If possible let "parent" decide what to do with unknown gaps
+bits by using `*Decode*Len/Range/Limit` functions. fq will also automatically add "gap" fields if
 it finds gaps.
 - Try to not decode too much as one value.
 A length encoded int could be two fields, but maybe a length prefixed string should be one.

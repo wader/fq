@@ -582,7 +582,7 @@ $ fq -d ar dv libbbb.a
 0x6d0|            01 00 00 00 00 00 00 00            |    ........    |            addralign: 1 0x6d4-0x6db.7 (8)
 0x6d0|                                    00 00 00 00|            ....|            entsize: 0 0x6dc-0x6e3.7 (8)
 0x6e0|00 00 00 00|                                   |....|           |
-0x130|   00 00 00                                    | ...            |        unknown0: raw bits 0x131-0x133.7 (3)
-0x390|                                       00 00 00|             ...|        unknown1: raw bits 0x39d-0x3a3.7 (7)
+0x130|   00 00 00                                    | ...            |        gap0: raw bits 0x131-0x133.7 (3)
+0x390|                                       00 00 00|             ...|        gap1: raw bits 0x39d-0x3a3.7 (7)
 0x3a0|00 00 00 00                                    |....            |
      |                                               |                |        program_headers[0:0]: 0x6e4-NA (0)

@@ -708,7 +708,7 @@ $ fq -n '"broken" | mp3 | d'
    |                                               |                |  error: mp3: error at position 0x0: no frames found
    |                                               |                |  headers[0:0]:
    |                                               |                |  frames[0:0]:
-0x0|62 72 6f 6b 65 6e|                             |broken|         |  unknown0: raw bits
+0x0|62 72 6f 6b 65 6e|                             |broken|         |  gap0: raw bits
 # TODO: add root depth test
 # test unicode "│" and column truncate
 $ fq -o unicode=true . test.mp3

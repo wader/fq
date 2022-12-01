@@ -33,7 +33,7 @@ $ fq -d mp3 dv header-zeros-frames.mp3
 0x010|               4c 61 76 66 35 38 2e 34 35 2e 31|     Lavf58.45.1|          text: "Lavf58.45.100" 0x15-0x22.7 (14)
 0x020|30 30 00                                       |00.             |
 0x020|         00 00 00 00 00 00 00 00 00 00         |   ..........   |      padding: raw bits (all zero) 0x23-0x2c.7 (10)
-0x020|                                       00 00 00|             ...|  unknown0: raw bits 0x2d-0x2f.7 (3)
+0x020|                                       00 00 00|             ...|  gap0: raw bits 0x2d-0x2f.7 (3)
      |                                               |                |  frames[0:1]: 0x30-0xff.7 (208)
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [0]{}: frame (mp3_frame) 0x30-0xff.7 (208)
      |                                               |                |      header{}: 0x30-0x33.7 (4)

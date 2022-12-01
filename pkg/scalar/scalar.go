@@ -49,7 +49,7 @@ type S struct {
 	Sym           any
 	SymDisplay    DisplayFormat
 	Description   string
-	Unknown       bool
+	Gap           bool
 }
 
 func (s S) Value() any {

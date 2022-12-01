@@ -5,4 +5,4 @@ $ fq -d asn1_ber d tc46.ber
 0x0|03                                             |.               |  form: "primitive" (0)
 0x0|03                                             |.               |  tag: "bit_string" (0x3)
 0x0|   80                                          | .              |  length: "indefinite" (0)
-0x0|      04 0a 3b 5f 29 1c d0 00 00|              |  ..;_)....|    |  unknown0: raw bits
+0x0|      04 0a 3b 5f 29 1c d0 00 00|              |  ..;_)....|    |  gap0: raw bits
