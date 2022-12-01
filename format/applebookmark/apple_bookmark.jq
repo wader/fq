@@ -11,6 +11,13 @@ def _apple_bookmark_torepr:
       elif .type == "date" then .data | tovalue
       elif .type == "boolean_false" then false
       elif .type == "boolean_true" then true
+      elif .type == "flag_data" then
+        ( .enabled_property_flags as $eflags 
+          | .property_flags 
+          | to_entries
+          | map(select($eflags[.key]))
+          | from_entries
+        )
       elif .type == "array" then 
         ( .data
         | map(.record | _f)

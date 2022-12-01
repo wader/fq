@@ -107,7 +107,7 @@ var elementTypeMap = scalar.UToScalar{
 	elementTypeTargetURL:             {Sym: "target_url", Description: "A URL"},
 	elementTypeTargetPath:            {Sym: "target_path", Description: "Array of individual path components"},
 	elementTypeTargetCNIDPath:        {Sym: "target_cnid_path", Description: "Array of CNIDs"},
-	elementTypeTargetFlags:           {Sym: "target_flags", Description: "Data - see below"},
+	elementTypeTargetFlags:           {Sym: "target_flags", Description: "flag bitfield"},
 	elementTypeTargetFilename:        {Sym: "target_filename", Description: "String"},
 	elementTypeCNID:                  {Sym: "target_cnid", Description: "4-byte integer"},
 	elementTypeTargetCreationDate:    {Sym: "target_creation_date", Description: "Date"},
@@ -123,7 +123,7 @@ var elementTypeMap = scalar.UToScalar{
 	elementTypeVolumeUUID:            {Sym: "volume_uuid", Description: "String UUID"},
 	elementTypeVolumeSize:            {Sym: "volume_size", Description: "8-byte integer"},
 	elementTypeVolumeCreationDate:    {Sym: "volume_creation_date", Description: "Date"},
-	elementTypeVolumeFlags:           {Sym: "volume_flags", Description: "Data - see below"},
+	elementTypeVolumeFlags:           {Sym: "volume_flags", Description: "flag bitfield"},
 	elementTypeVolumeIsRoot:          {Sym: "volume_is_root", Description: "True if the volume was the filesystem root"},
 	elementTypeVolumeBookmark:        {Sym: "volume_bookmark", Description: "TOC identifier for disk image"},
 	elementTypeVolumeMountPointURL:   {Sym: "volume_mount_point", Description: "URL"},
@@ -141,6 +141,180 @@ var elementTypeMap = scalar.UToScalar{
 	elementTypeBookmarkCreationTime:  {Sym: "bookmark_creation_time", Description: "64-bit float seconds since January 1st 2001"},
 	elementTypeSandboxRWExtension:    {Sym: "sandbox_rw_extension", Description: "Looks like a hash with data and an access right"},
 	elementTypeSandboxROExtension:    {Sym: "sandbox_ro_extension", Description: "Looks like a hash with data and an access right"},
+}
+
+const dataObjectLen = 24
+
+func decodeFlagDataObject(d *decode.D, flagFn func(d *decode.D)) {
+	d.FieldStruct("record", func(d *decode.D) {
+		d.FieldU32("length", d.AssertU(dataObjectLen))
+		d.FieldU32("raw_type", dataTypeMap, d.AssertU(dataTypeData))
+		d.FieldValueStr("type", "flag_data")
+		flagFn(d)
+		d.FieldRawLen("valid_flag_bits", 64)
+		d.FieldRawLen("reserved", 64)
+	})
+}
+
+type dataObjectDecoder struct {
+	flagFn func(d *decode.D)
+}
+
+func (dod *dataObjectDecoder) decode(d *decode.D) {
+	decodeFlagDataObject(d, dod.flagFn)
+}
+
+var resourcePropDecoder = &dataObjectDecoder{decodeResourcePropertyFlags}
+var volumePropDecoder = &dataObjectDecoder{decodeVolumePropertyFlags}
+
+func decodeResourcePropertyFlags(d *decode.D) {
+	d.FieldStruct("property_flags", func(d *decode.D) {
+		start := d.Pos()
+		d.FieldBool("is_regular_file")
+		d.FieldBool("is_directory")
+		d.FieldBool("is_symbolic_link")
+		d.FieldBool("is_volume")
+		d.FieldBool("is_package")
+		d.FieldBool("is_system_immutable")
+		d.FieldBool("is_user_immutable")
+		d.FieldBool("is_hidden")
+		d.FieldBool("has_hidden_extension")
+		d.FieldBool("is_application")
+		d.FieldBool("is_compressed")
+		d.FieldBool("can_set_hidden_extension")
+		d.FieldBool("is_readable")
+		d.FieldBool("is_writeable")
+		d.FieldBool("is_executable")
+		d.FieldBool("is_alias_file")
+		d.FieldBool("is_mount_trigger")
+		d.RawLen(64 - (d.Pos() - start))
+	})
+	d.FieldStruct("enabled_property_flags", func(d *decode.D) {
+		start := d.Pos()
+		d.FieldBool("is_regular_file")
+		d.FieldBool("is_directory")
+		d.FieldBool("is_symbolic_link")
+		d.FieldBool("is_volume")
+		d.FieldBool("is_package")
+		d.FieldBool("is_system_immutable")
+		d.FieldBool("is_user_immutable")
+		d.FieldBool("is_hidden")
+		d.FieldBool("has_hidden_extension")
+		d.FieldBool("is_application")
+		d.FieldBool("is_compressed")
+		d.FieldBool("can_set_hidden_extension")
+		d.FieldBool("is_readable")
+		d.FieldBool("is_writeable")
+		d.FieldBool("is_executable")
+		d.FieldBool("is_alias_file")
+		d.FieldBool("is_mount_trigger")
+		d.RawLen(64 - (d.Pos() - start))
+	})
+}
+
+func decodeVolumePropertyFlags(d *decode.D) {
+	d.FieldStruct("property_flags", func(d *decode.D) {
+		start := d.Pos()
+		d.FieldBool("is_local")
+		d.FieldBool("is_automount")
+		d.FieldBool("dont_browse")
+		d.FieldBool("is_read_only")
+		d.FieldBool("is_quarantined")
+		d.FieldBool("is_ejectable")
+		d.FieldBool("is_removable")
+		d.FieldBool("is_internal")
+		d.FieldBool("is_external")
+		d.FieldBool("is_disk_image")
+		d.FieldBool("is_file_vault")
+		d.FieldBool("is_local_idisk_mirror")
+		d.FieldBool("is_ipod")
+		d.FieldBool("is_idisk")
+		d.FieldBool("is_cd")
+		d.FieldBool("is_dvd")
+		d.FieldBool("is_device_file_system")
+		d.FieldBool("supports_persistent_ids")
+		d.FieldBool("supports_search_fs")
+		d.FieldBool("supports_exchange")
+		d.FieldBool("reserved_0")
+		d.FieldBool("supports_symbolic_links")
+		d.FieldBool("supports_deny_modes")
+		d.FieldBool("supports_copy_file")
+		d.FieldBool("supports_read_dir_attr")
+		d.FieldBool("supports_journaling")
+		d.FieldBool("supports_rename")
+		d.FieldBool("supports_fast_stat_fs")
+		d.FieldBool("supports_case_sensitive_names")
+		d.FieldBool("supports_case_preserved_names")
+		d.FieldBool("supports_flock")
+		d.FieldBool("has_no_root_directory_times")
+		d.FieldBool("supports_extended_security")
+		d.FieldBool("supports_2_tb_file_size")
+		d.FieldBool("supports_hard_links")
+		d.FieldBool("supports_mandatory_byte_range_locks")
+		d.FieldBool("supports_path_from_id")
+		d.FieldBool("reserved_1")
+		d.FieldBool("is_journaling")
+		d.FieldBool("supports_sparse_files")
+		d.FieldBool("supports_zero_runs")
+		d.FieldBool("supports_volume_sizes")
+		d.FieldBool("supports_remote_events")
+		d.FieldBool("supports_hidden_files")
+		d.FieldBool("supports_decmp_fs_compression")
+		d.FieldBool("has64_bit_object_ids")
+		d.FieldBool("property_flags_all")
+		d.RawLen(64 - (d.Pos() - start))
+	})
+	d.FieldStruct("enabled_property_flags", func(d *decode.D) {
+		start := d.Pos()
+		d.FieldBool("is_local")
+		d.FieldBool("is_automount")
+		d.FieldBool("dont_browse")
+		d.FieldBool("is_read_only")
+		d.FieldBool("is_quarantined")
+		d.FieldBool("is_ejectable")
+		d.FieldBool("is_removable")
+		d.FieldBool("is_internal")
+		d.FieldBool("is_external")
+		d.FieldBool("is_disk_image")
+		d.FieldBool("is_file_vault")
+		d.FieldBool("is_local_idisk_mirror")
+		d.FieldBool("is_ipod")
+		d.FieldBool("is_idisk")
+		d.FieldBool("is_cd")
+		d.FieldBool("is_dvd")
+		d.FieldBool("is_device_file_system")
+		d.FieldBool("supports_persistent_ids")
+		d.FieldBool("supports_search_fs")
+		d.FieldBool("supports_exchange")
+		d.FieldBool("reserved_0")
+		d.FieldBool("supports_symbolic_links")
+		d.FieldBool("supports_deny_modes")
+		d.FieldBool("supports_copy_file")
+		d.FieldBool("supports_read_dir_attr")
+		d.FieldBool("supports_journaling")
+		d.FieldBool("supports_rename")
+		d.FieldBool("supports_fast_stat_fs")
+		d.FieldBool("supports_case_sensitive_names")
+		d.FieldBool("supports_case_preserved_names")
+		d.FieldBool("supports_flock")
+		d.FieldBool("has_no_root_directory_times")
+		d.FieldBool("supports_extended_security")
+		d.FieldBool("supports_2_tb_file_size")
+		d.FieldBool("supports_hard_links")
+		d.FieldBool("supports_mandatory_byte_range_locks")
+		d.FieldBool("supports_path_from_id")
+		d.FieldBool("reserved_1")
+		d.FieldBool("is_journaling")
+		d.FieldBool("supports_sparse_files")
+		d.FieldBool("supports_zero_runs")
+		d.FieldBool("supports_volume_sizes")
+		d.FieldBool("supports_remote_events")
+		d.FieldBool("supports_hidden_files")
+		d.FieldBool("supports_decmp_fs_compression")
+		d.FieldBool("has64_bit_object_ids")
+		d.FieldBool("property_flags_all")
+		d.RawLen(64 - (d.Pos() - start))
+	})
 }
 
 var cocoaTimeEpochDate = time.Date(2001, time.January, 1, 0, 0, 0, 0, time.UTC)
@@ -169,9 +343,17 @@ func (hdr *tocHeader) decodeEntries(d *decode.D) {
 
 			entry.recordOffset = calcOffset(d.FieldU32("offset_to_record"))
 
-			d.FieldU32("reserved")
+			d.U32()
 
-			d.SeekAbs(entry.recordOffset, decodeRecord)
+			switch entry.key {
+			case elementTypeTargetFlags:
+				d.SeekAbs(entry.recordOffset, resourcePropDecoder.decode)
+			case elementTypeVolumeFlags:
+				d.SeekAbs(entry.recordOffset, volumePropDecoder.decode)
+			default:
+				d.SeekAbs(entry.recordOffset, decodeRecord)
+			}
+
 		})
 	}
 }
