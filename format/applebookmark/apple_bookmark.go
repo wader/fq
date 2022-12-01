@@ -382,7 +382,21 @@ const (
 	dictEntrySize  = 4
 )
 
+var offsetStack []int64
+
+func checkStack(d *decode.D) {
+	cur := d.Pos()
+	for _, o := range offsetStack {
+		if cur == o {
+			d.Fatalf("infinite recursion detected in record decoding")
+		}
+	}
+}
+
 func decodeRecord(d *decode.D) {
+	checkStack(d)
+	offsetStack = append(offsetStack, d.Pos())
+
 	d.FieldStruct("record", func(d *decode.D) {
 		n := int(d.FieldU32("length"))
 		typ := d.FieldU32("type", dataTypeMap)
@@ -440,6 +454,7 @@ func decodeRecord(d *decode.D) {
 			})
 		}
 	})
+	offsetStack = offsetStack[:len(offsetStack)-1]
 }
 
 const reservedSize = 32
@@ -468,14 +483,16 @@ func bookmarkDecode(d *decode.D, _ any) any {
 	var currentHdr *tocHeader
 	var tocHeaders []*tocHeader
 
+	hdrCount := 0
 	d.FieldArrayLoop("toc_headers", func() bool {
-		return tocOffset != headerEndBitPos
+		return tocOffset != headerEndBitPos || hdrCount > 100
 	}, func(d *decode.D) {
 		d.SeekAbs(tocOffset, func(d *decode.D) {
 			currentHdr = decodeTOCHeader(d)
 			tocOffset = calcOffset(currentHdr.nextTOCOffset)
 			tocHeaders = append(tocHeaders, currentHdr)
 		})
+		hdrCount++
 	})
 
 	// now that we've collected all toc headers, iterate through each one's
