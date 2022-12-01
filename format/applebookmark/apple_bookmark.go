@@ -151,7 +151,6 @@ func decodeFlagDataObject(d *decode.D, flagFn func(d *decode.D)) {
 		d.FieldU32("raw_type", dataTypeMap, d.AssertU(dataTypeData))
 		d.FieldValueStr("type", "flag_data")
 		flagFn(d)
-		d.FieldRawLen("valid_flag_bits", 64)
 		d.FieldRawLen("reserved", 64)
 	})
 }
@@ -451,7 +450,6 @@ const headerEndBitPos = headerEnd * 8
 func calcOffset(i uint64) int64 { return int64(8 * (i + headerEnd)) }
 
 func bookmarkDecode(d *decode.D, _ any) any {
-
 	// all fields are little-endian with the exception of the Date datatype.
 	d.Endian = decode.LittleEndian
 
@@ -484,7 +482,6 @@ func bookmarkDecode(d *decode.D, _ any) any {
 	// entries and decode associated records.
 	d.FieldArray("bookmark_entries",
 		func(d *decode.D) {
-
 			for _, hdr := range tocHeaders {
 				d.SeekAbs(hdr.entryArrayOffset, hdr.decodeEntries)
 			}
