@@ -36,7 +36,7 @@ error: --argdecode filea: no such file or directory
 $ fq -n -d mp4 --argdecode filea test.mp3 '$filea'
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: test.mp3 (mp4)
      |                                               |                |  error: mp4: error at position 0x8: no styp, ftyp, free or moov box found
-0x000|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|  unknown0: raw bits
+0x000|49 44 33 04 00 00 00 00 00 23 54 53 53 45 00 00|ID3......#TSSE..|  gap0: raw bits
 *    |until 0x283.7 (end) (644)                      |                |
 $ fq -n --argjson a '(' '$a'
 exitcode: 2

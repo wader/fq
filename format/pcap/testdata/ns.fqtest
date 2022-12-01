@@ -45,6 +45,6 @@ $ fq dv ns.pcap
 0x50|      00 09 00 01 24 3c ba a0 59 e8 82 21 00 00|  ....$<..Y..!..|            payload: raw bits 0x52-0xc1.7 (112)
 0x60|04 24 00 00 00 08 00 00 00 5c 01 a8 00 15 00 08|.$.......\......|
 *   |until 0xc1.7 (112)                             |                |
-0xc0|      74 be 47 c0|                             |  t.G.|         |          unknown0: raw bits 0xc2-0xc5.7 (4)
+0xc0|      74 be 47 c0|                             |  t.G.|         |          gap0: raw bits 0xc2-0xc5.7 (4)
     |                                               |                |  ipv4_reassembled[0:0]: 0xc6-NA (0)
     |                                               |                |  tcp_connections[0:0]: 0xc6-NA (0)

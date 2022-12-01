@@ -119,7 +119,7 @@ func decode(ctx context.Context, br bitio.ReaderAtSeeker, group Group, opts Opti
 
 		// TODO: maybe move to Format* funcs?
 		if opts.FillGaps {
-			d.FillGaps(ranges.Range{Start: 0, Len: decodeRange.Len}, "unknown")
+			d.FillGaps(ranges.Range{Start: 0, Len: decodeRange.Len}, "gap")
 		}
 
 		var minMaxRange ranges.Range
@@ -309,14 +309,14 @@ func (d *D) FillGaps(r ranges.Range, namePrefix string) {
 		v := &Value{
 			Name: fmt.Sprintf("%s%d", namePrefix, i),
 			V: &scalar.S{
-				Actual:  br,
-				Unknown: true,
+				Actual: br,
+				Gap:    true,
 			},
 			RootReader: d.bitBuf,
 			Range:      gap,
 		}
 
-		// TODO: for arrays not great that we just append unknown fields
+		// TODO: for arrays not great that we just append gap fields
 		d.AddChild(v)
 	}
 }

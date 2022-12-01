@@ -500,5 +500,5 @@ $ fq -d ar dv libbbb.a
 0x4a0|            00 00 00 00                        |    ....        |            info: 0 0x4a4-0x4a7.7 (4)
 0x4a0|                        01 00 00 00            |        ....    |            addralign: 1 0x4a8-0x4ab.7 (4)
 0x4a0|                                    00 00 00 00|            ....|            entsize: 0 0x4ac-0x4af.7 (4)
-0x2c0|                                       00 00 00|             ...|        unknown0: raw bits 0x2cd-0x2cf.7 (3)
+0x2c0|                                       00 00 00|             ...|        gap0: raw bits 0x2cd-0x2cf.7 (3)
      |                                               |                |        program_headers[0:0]: 0x4b0-NA (0)

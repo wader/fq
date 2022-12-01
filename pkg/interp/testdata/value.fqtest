@@ -98,7 +98,7 @@ mp3> .headers[0].magic as $c | (0, "abc") as $n | $n, try ($c | has($n)) catch .
 "has cannot be applied to: string"
 "abc"
 "has cannot be applied to: string"
-mp3> . as $c | ("_start", "_stop", "_len", "_name", "_root", "_buffer_root", "_format_root", "_parent", "_sym", "_description", "_path", "_bits", "_bytes", "_error", "_unknown", "_format", "_abc") as $n | $n, try ($c | has($n)) catch .
+mp3> . as $c | ("_start", "_stop", "_len", "_name", "_root", "_buffer_root", "_format_root", "_parent", "_sym", "_description", "_path", "_bits", "_bytes", "_error", "_gap", "_format", "_abc") as $n | $n, try ($c | has($n)) catch .
 "_start"
 true
 "_stop"
@@ -127,13 +127,13 @@ true
 true
 "_error"
 true
-"_unknown"
+"_gap"
 true
 "_format"
 true
 "_abc"
 "expected a extkey but got: _abc"
-mp3> .headers as $c | ("_start", "_stop", "_len", "_name", "_root", "_buffer_root", "_format_root", "_parent", "_sym", "_description", "_path", "_bits", "_bytes", "_error", "_unknown", "_format", "_abc") as $n | $n, try ($c | has($n)) catch .
+mp3> .headers as $c | ("_start", "_stop", "_len", "_name", "_root", "_buffer_root", "_format_root", "_parent", "_sym", "_description", "_path", "_bits", "_bytes", "_error", "_gap", "_format", "_abc") as $n | $n, try ($c | has($n)) catch .
 "_start"
 true
 "_stop"
@@ -162,13 +162,13 @@ true
 true
 "_error"
 true
-"_unknown"
+"_gap"
 true
 "_format"
 true
 "_abc"
 "expected a extkey but got: _abc"
-mp3> .headers[0].magic as $c | ("_start", "_stop", "_len", "_name", "_root", "_buffer_root", "_format_root", "_parent", "_sym", "_description", "_path", "_bits", "_bytes", "_error", "_unknown", "_format", "_abc") as $n | $n, try ($c | has($n)) catch .
+mp3> .headers[0].magic as $c | ("_start", "_stop", "_len", "_name", "_root", "_buffer_root", "_format_root", "_parent", "_sym", "_description", "_path", "_bits", "_bytes", "_error", "_gap", "_format", "_abc") as $n | $n, try ($c | has($n)) catch .
 "_start"
 true
 "_stop"
@@ -197,7 +197,7 @@ true
 true
 "_error"
 true
-"_unknown"
+"_gap"
 true
 "_format"
 true
@@ -255,7 +255,7 @@ mp3> ._bytes
 *    |until 0x283.7 (end) (644)                      |                |
 mp3> ._error
 null
-mp3> ._unknown
+mp3> ._gap
 false
 mp3> ._format
 "mp3"

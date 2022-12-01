@@ -97,7 +97,7 @@ json> (.)._error | ., type, length?
 null
 "null"
 0
-json> (.)._unknown | ., type, length?
+json> (.)._gap | ., type, length?
 false
 "boolean"
 json> (.).a = 1

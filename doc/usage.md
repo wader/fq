@@ -764,7 +764,7 @@ A value has these special keys (TODO: remove, are internal)
 - `_bits` bits in range as a binary
 - `_bytes` bits in range as binary using byte units
 - `_path` jq path to value
-- `_unknown` value is un-decoded gap
+- `_gap_` value is a un-decoded gap
 - `_symbol` symbolic string representation of value (optional)
 - `_description` longer description of value (optional)
 - `_format` name of decoded format (optional)
@@ -791,11 +791,11 @@ Try add `select(...)?` to catch and ignore type errors in the select expression.
 ### Manual decode
 
 Sometimes fq fails to decode or you know there is valid data buried inside some binary or maybe
-you know the format of some unknown value. Then you can decode manually.
+you know the format of some gap field. Then you can decode manually.
 
 <pre>
 # try decode a `mp3_frame` that failed to decode
-$ fq -d mp3 '.unknown0 | mp3_frame' file.mp3
+$ fq -d mp3 '.gap0 | mp3_frame' file.mp3
 # skip first 10 bytes then decode as `mp3_frame`
 $ fq -d bytes '.[10:] | mp3_frame' file.mp3
 </pre>

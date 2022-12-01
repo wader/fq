@@ -3,4 +3,4 @@ $ fq -d asn1_ber d tc2.ber
    |                                               |                |  error: asn1_ber: Bool: failed at position 10 (read size 0 seek pos 0): EOF
 0x0|9f                                             |.               |  class: "context" (2)
 0x0|9f                                             |.               |  form: "primitive" (0)
-0x0|9f ff ff ff ff ff ff ff ff ff|                 |..........|     |  unknown0: raw bits
+0x0|9f ff ff ff ff ff ff ff ff ff|                 |..........|     |  gap0: raw bits

@@ -5,9 +5,9 @@ $ fq.go -n '"SUkqAAwAAAAwMDAwAQAwMDAwMDAwMDAwMDAhAAAAMDAwAAAhAAAA" | frombase64 
 0x00|49 49                                          |II              |  order: "II" (valid)
 0x00|      2a 00                                    |  *.            |  integer_42: 42 (valid)
 0x00|            0c 00 00 00                        |    ....        |  first_ifd: 12
-0x00|                        30 30 30 30            |        0000    |  unknown0: raw bits
+0x00|                        30 30 30 30            |        0000    |  gap0: raw bits
 0x00|                                    01 00 30 30|            ..00|  ifds[0:2]:
 0x10|30 30 30 30 30 30 30 30 30 30 21 00 00 00 30 30|0000000000!...00|
 0x20|30 00 00 21 00 00 00|                          |0..!...|        |
-0x10|                                          30 30|              00|  unknown1: raw bits
+0x10|                                          30 30|              00|  gap1: raw bits
 0x20|30                                             |0               |

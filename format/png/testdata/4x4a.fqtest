@@ -109,4 +109,4 @@ $ fq -d png dv 4x4a.apng
 0xe0|                                          4e   |              N |      reserved: false 0xee.3-0xee.3 (0.1)
 0xe0|                                             44|               D|      safe_to_copy: false 0xef.3-0xef.3 (0.1)
 0xf0|ae 42 60 82|                                   |.B`.|           |      crc: 0xae426082 (valid) 0xf0-0xf3.7 (4)
-0xe0|29 e6 05 fb                                    |)...            |  unknown0: raw bits 0xe0-0xe3.7 (4)
+0xe0|29 e6 05 fb                                    |)...            |  gap0: raw bits 0xe0-0xe3.7 (4)

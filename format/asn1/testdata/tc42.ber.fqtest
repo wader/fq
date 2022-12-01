@@ -17,4 +17,4 @@ $ fq -d asn1_ber d tc42.ber
 0x0|                     04                        |       .        |      form: "primitive" (0)
 0x0|                     04                        |       .        |      tag: "octet_string" (0x4)
 0x0|                        5f                     |        _       |      length: 95
-0x0|                           29 1c d0 00 00|     |         )....| |  unknown0: raw bits
+0x0|                           29 1c d0 00 00|     |         )....| |  gap0: raw bits

@@ -4,10 +4,10 @@
 - Buffers/string duality is confusing, most string functions should be wrapped to understand binary.
 - REPL cancel seems to sometimes exit a sub-REPl without properly cleanup options.
 - Value errors, can only be accessed with `._error`.
-- Framed (add unknown in gaps) decode should be on struct level not format?
+- Framed (add unknown gaps) decode should be on struct level not format?
 - `tovalue({bits_format: "base64"})` only affect root value.
 - Auto complete of non-global variables is broken. `scope` is broken for variables.
-- `echo '{} {} {}' | jq` vs `echo '{} {} {}' | fq` works differently. fq currently decodes one root format and might add unknown fields etc. Maybe should work differently for `json` format?
+- `echo '{} {} {}' | jq` vs `echo '{} {} {}' | fq` works differently. fq currently decodes one root format and might add unknown gap fields etc. Maybe should work differently for `json` format?
 - `format/0` overlap with jq builtin `format/1`. What to rename it to? `decode_format`?
 - repl expression returning a value that produced lots of output can't be interrupted. This is becaus ctrl-c currently only interrupts the eval interpreter, outputted value is printed (`display`) by parent interpreter.
 - Rework cli/repl user interrupt (context cancel via ctrl-c), see comment in Interp.Main

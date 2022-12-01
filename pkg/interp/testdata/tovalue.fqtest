@@ -1,6 +1,6 @@
 # TODO: use test format
 $ fq -i
-null> "aaa" | mp3_frame | .unknown0 | tovalue, tovalue({sizebase: 2})
+null> "aaa" | mp3_frame | .gap0 | tovalue, tovalue({sizebase: 2})
 "aaa"
 "aaa"
 null> ^D

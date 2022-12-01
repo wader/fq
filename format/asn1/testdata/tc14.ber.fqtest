@@ -5,4 +5,4 @@ $ fq -d asn1_ber d tc14.ber
 0x0|09                                             |.               |  form: "primitive" (0)
 0x0|09                                             |.               |  tag: "real" (0x9)
 0x0|   83 00 00 07                                 | ....           |  length: 7
-0x0|               83 04|                          |     ..|        |  unknown0: raw bits
+0x0|               83 04|                          |     ..|        |  gap0: raw bits

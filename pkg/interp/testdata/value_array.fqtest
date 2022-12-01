@@ -185,7 +185,7 @@ mp3> .headers._error | ., type, length?
 null
 "null"
 0
-mp3> .headers._unknown | ., type, length?
+mp3> .headers._gap | ., type, length?
 false
 "boolean"
 mp3> .headers.a = 1

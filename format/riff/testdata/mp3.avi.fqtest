@@ -349,7 +349,7 @@ $ fq dv mp3.avi
 0x18d0|                                       00 00 00|             ...|            unused2: raw bits 0x18dd-0x18df.7 (3)
 0x18e0|b6 01 00 00                                    |....            |          offset: 438 0x18e0-0x18e3.7 (4)
 0x18e0|            d1 00 00 00|                       |    ....|       |          length: 209 0x18e4-0x18e7.7 (4)
-0x00b0|                                          01 00|              ..|  unknown0: raw bits 0xbe-0xc9.7 (12)
+0x00b0|                                          01 00|              ..|  gap0: raw bits 0xbe-0xc9.7 (12)
 0x00c0|02 00 00 00 80 04 01 00 71 05                  |........q.      |
       |                                               |                |  streams[0:1]: 0x162c-0x18ae.7 (643)
       |                                               |                |    [0]{}: stream 0x162c-0x18ae.7 (643)

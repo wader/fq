@@ -5,4 +5,4 @@ $ fq -d asn1_ber d tc23.ber
 0x0|06                                             |.               |  form: "primitive" (0)
 0x0|06                                             |.               |  tag: "object_identifier" (0x6)
 0x0|   11                                          | .              |  length: 17
-0x0|      7f ff ff ff ff ff|                       |  ......|       |  unknown0: raw bits
+0x0|      7f ff ff ff ff ff|                       |  ......|       |  gap0: raw bits
