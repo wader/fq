@@ -5,7 +5,7 @@ $ fq -n options
   "argdecode": [],
   "argjson": [],
   "array_truncate": 50,
-  "bits_format": "snippet",
+  "bits_format": "string",
   "byte_colors": [
     {
       "ranges": [

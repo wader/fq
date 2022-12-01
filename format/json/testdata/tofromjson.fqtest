@@ -52,7 +52,7 @@ $ fq . json.gz
 0x010|                                 0b 00 00 00|  |           ....||  isize: 11
 $ fq tovalue json.gz
 {
-  "compressed": "<13>q1ZKVLJSMDQyruUCAA==",
+  "compressed": "\ufffdVJT\ufffdR042\ufffd\ufffd\u0002\u0000",
   "compression_method": "deflate",
   "crc32": 2631052320,
   "extra_flags": 0,
@@ -64,7 +64,7 @@ $ fq tovalue json.gz
     "reserved": 0,
     "text": false
   },
-  "identification": "<2>H4s=",
+  "identification": "\u001f\ufffd",
   "isize": 11,
   "mtime": 1627916901,
   "os": "unix",

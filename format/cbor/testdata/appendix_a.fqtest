@@ -9,7 +9,7 @@ json> map(select(.decoded) | (.cbor | frombase64 | cbor | torepr) as $a | select
     "actual": {
       "major_type": "bytes",
       "short_count": 9,
-      "value": "<9>AQAAAAAAAAAA"
+      "value": "\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
     },
     "test": {
       "cbor": "wkkBAAAAAAAAAAA=",
@@ -22,7 +22,7 @@ json> map(select(.decoded) | (.cbor | frombase64 | cbor | torepr) as $a | select
     "actual": {
       "major_type": "bytes",
       "short_count": 9,
-      "value": "<9>AQAAAAAAAAAA"
+      "value": "\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
     },
     "test": {
       "cbor": "w0kBAAAAAAAAAAA=",

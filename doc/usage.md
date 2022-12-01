@@ -699,6 +699,22 @@ Text encodings
 - `toutf16be` Encode string as UTF16 big-endian into binary.
 - `fromutf16be` Decode binary as UTF16 big-endian into string.
 
+## Options
+
+fq has some general options in addition to decode and decoders specific options. They all use the same `-o <name>=<value>` argument.
+
+`<value>` is fuzzily parsed based on the type of the option. Ex: a string can specified as `-o name=string` or `-o name="string"`.
+
+### `bits_format`
+
+How to represent raw bits as JSON.
+
+- `-o bits_foramt=string` String with raw bytes (zero bit padded). The string is binary safe internally in fq but bytes not represetable as UTF-8 will be lost if turn to JSON.
+- `-o bits_format=md5` MD5 hex string (zero bit padded).
+- `-o bits_format=base64` Base64 string.
+- `-p bits_foramt=truncate` Truncated string.
+- `-o bits_format=snippet` Truncated Base64 string prefixed with bit length.
+
 ## Color and unicode output
 
 fq by default tries to use colors if possible, this can be disabled with `-M`. You can also
