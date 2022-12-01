@@ -1,6 +1,6 @@
 # TODO: use test format
 $ fq -i
 null> "aaa" | mp3_frame | .unknown0 | tovalue, tovalue({sizebase: 2})
-"<3>YWFh"
-"<0b11>YWFh"
+"aaa"
+"aaa"
 null> ^D

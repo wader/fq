@@ -10,7 +10,7 @@ def _opt_build_default_fixed:
       argdecode:      [],
       argjson:        [],
       array_truncate: 50,
-      bits_format:    "snippet",
+      bits_format:    "string",
       # 0-0xff=brightwhite,0=brightblack,32-126:9-13=white
       byte_colors:    [
         { ranges: [[0,255]],
