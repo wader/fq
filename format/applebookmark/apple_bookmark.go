@@ -323,20 +323,26 @@ const (
 	dictEntrySize  = 4
 )
 
-var offsetStack []int64
+type stack []int64
 
-func checkStack(d *decode.D) {
-	cur := d.Pos()
+var offsetStack stack
+
+func (s *stack) tryPush(d *decode.D) {
+	i := d.Pos()
 	for _, o := range offsetStack {
-		if cur == o {
+		if i == o {
 			d.Fatalf("infinite recursion detected in record decoding")
 		}
 	}
+	*s = append(*s, i)
+}
+
+func (s *stack) pop() {
+	*s = (*s)[:len(*s)-1]
 }
 
 func decodeRecord(d *decode.D) {
-	checkStack(d)
-	offsetStack = append(offsetStack, d.Pos())
+	offsetStack.tryPush(d)
 
 	d.FieldStruct("record", func(d *decode.D) {
 		n := int(d.FieldU32("length"))
@@ -396,7 +402,7 @@ func decodeRecord(d *decode.D) {
 			})
 		}
 	})
-	offsetStack = offsetStack[:len(offsetStack)-1]
+	offsetStack.pop()
 }
 
 const reservedSize = 32
