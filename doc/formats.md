@@ -179,9 +179,8 @@ Property Lists. Notable examples include:
   same as `plist` files, but they have a more complicated tree-like structure
   than would typically be found, which can make locating and retrieving specific
   values difficult, even once it has been converted to a JSON representation.
-  For more information about these types of files, see 
-  [Sarah Edwards'](https://www.mac4n6.com/blog/2016/1/1/manual-analysis-of-nskeyedarchiver-formatted-plist-files-a-review-of-the-new-os-x-1011-recent-items)
-  excellent research on the subject.
+  For more information about these types of files, see Sarah Edwards' excellent
+  research on the subject (link in references).
 
 Locating `bookmarkData` objects in plist files, especially those of the
 `NSKeyedArchiver` type, is a place where `fq`'s recursive searching really
