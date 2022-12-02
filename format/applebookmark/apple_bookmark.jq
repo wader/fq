@@ -15,7 +15,7 @@ def _apple_bookmark_torepr:
         ( .enabled_property_flags as $eflags 
           | .property_flags 
           | to_entries
-          | map(select($eflags[.key]))
+          | map(select($eflags[.key] and (.key | startswith("reserved") | not)))
           | from_entries
         )
       elif .type == "array" then 
