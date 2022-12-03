@@ -190,16 +190,8 @@ func decodeTZifDataBlock(d *decode.D, h tzifHeader, decodeAsVer int, name string
 func decodeTZifFooter(d *decode.D) {
 	d.FieldStruct("footer", func(d *decode.D) {
 		d.FieldU8("nl1", d.AssertU(0x0a))
-		i := 1
-		for {
-			b := d.PeekBytes(i)
-			if b[len(b)-1] == 0x0a {
-				//d.FieldRawLen("tz_string", int64(len(b)-1)*8)
-				d.FieldScalarUTF8("tz_string", len(b)-1)
-				break
-			}
-			i++
-		}
+		n := d.PeekFindByte(0x0a, d.BitsLeft()/8)
+		d.FieldScalarUTF8("tz_string", int(n))
 		d.FieldU8("nl2", d.AssertU(0x0a))
 	})
 }
