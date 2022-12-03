@@ -327,7 +327,7 @@ type stack []int64
 
 var offsetStack stack
 
-func (s *stack) tryPush(d *decode.D) {
+func (s *stack) pushAndPop(d *decode.D) func() {
 	i := d.Pos()
 	for _, o := range offsetStack {
 		if i == o {
@@ -335,6 +335,7 @@ func (s *stack) tryPush(d *decode.D) {
 		}
 	}
 	*s = append(*s, i)
+	return s.pop
 }
 
 func (s *stack) pop() {
@@ -342,7 +343,7 @@ func (s *stack) pop() {
 }
 
 func decodeRecord(d *decode.D) {
-	offsetStack.tryPush(d)
+	defer offsetStack.pushAndPop(d)()
 
 	d.FieldStruct("record", func(d *decode.D) {
 		n := int(d.FieldU32("length"))
@@ -402,7 +403,6 @@ func decodeRecord(d *decode.D) {
 			})
 		}
 	})
-	offsetStack.pop()
 }
 
 const reservedSize = 32
