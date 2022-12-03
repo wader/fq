@@ -1,6 +1,7 @@
 package tzif
 
 import (
+	"embed"
 	"fmt"
 	"time"
 
@@ -10,6 +11,9 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
+//go:embed tzif.md
+var tzifFS embed.FS
+
 func init() {
 	interp.RegisterFormat(decode.Format{
 		Name:        format.TZIF,
@@ -17,6 +21,7 @@ func init() {
 		DecodeFn:    decodeTZIF,
 		Groups:      []string{format.PROBE},
 	})
+	interp.RegisterFS(tzifFS)
 }
 
 func decodeTZIF(d *decode.D, _ any) any {

@@ -748,6 +748,16 @@ fq '.tcp_connections[] | select(.server.port=="rtmp") | d' file.cap
 
 ## tzif
 
+### Get last transition time
+```sh
+fq '.v2plusdatablock.transition_times[-1] | tovalue' tziffile
+```
+
+### Count leap second records
+```sh
+fq '.v2plusdatablock.leap_second_records | length' tziffile
+```
+
 ### Authors
 - Takashi Oguma
 [@bitbears-dev](https://github.com/bitbears-dev)
@@ -755,7 +765,6 @@ fq '.tcp_connections[] | select(.server.port=="rtmp") | d' file.cap
 
 ### References
 - https://datatracker.ietf.org/doc/html/rfc8536
-
 
 ## wasm
 
