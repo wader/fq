@@ -82,10 +82,7 @@ func decodeTZifHeader(d *decode.D, name string) tzifHeader {
 	return h
 }
 
-type unixTimeToStrMapper struct {
-}
-
-func (m unixTimeToStrMapper) MapScalar(s scalar.S) (scalar.S, error) {
+var unixTimeToStr = scalar.Fn(func(s scalar.S) (scalar.S, error) {
 	i, ok := s.Value().(int64)
 	if !ok {
 		return s, fmt.Errorf("expected int64 but got %T", s.Value())
@@ -93,9 +90,7 @@ func (m unixTimeToStrMapper) MapScalar(s scalar.S) (scalar.S, error) {
 
 	s.Sym = time.Unix(i, 0).UTC().Format(time.RFC3339)
 	return s, nil
-}
-
-var unixTimeToStr unixTimeToStrMapper
+})
 
 func decodeTZifDataBlock(d *decode.D, h tzifHeader, decodeAsVer int, name string) {
 	timeSize := 8 * 8
