@@ -13,10 +13,10 @@ def _apple_bookmark_torepr:
       elif .type == "boolean_true" then true
       elif .type == "flag_data" then
         ( .enabled_property_flags as $eflags 
-          | .property_flags 
-          | to_entries
-          | map(select($eflags[.key] and (.key | startswith("reserved") | not)))
-          | from_entries
+        | .property_flags 
+        | to_entries
+        | map(select($eflags[.key] and (.key | startswith("reserved") | not)))
+        | from_entries
         )
       elif .type == "array" then 
         ( .data
@@ -37,5 +37,3 @@ def _apple_bookmark_torepr:
   | map({key: (.key_string?.record.data // .key|tostring), value: (.record | _f)})
   | from_entries
   );
-
-

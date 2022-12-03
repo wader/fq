@@ -1,5 +1,3 @@
-## Apple bookmarkData format
-
 Apple's `bookmarkData` format is used to encode information that can be resolved
 into a `URL` object for a file even if the user moves or renames it. Can also
 contain security scoping information for App Sandbox support.
@@ -20,13 +18,12 @@ Property Lists. Notable examples include:
   For more information about these types of files, see Sarah Edwards' excellent
   research on the subject (link in references).
 
-Locating `bookmarkData` objects in plist files, especially those of the
-`NSKeyedArchiver` type, is a place where `fq`'s recursive searching really
-shines. Here, we recursively descend through the decoded tree, probing for and 
-selecting any `bookmark` blobs, then converting them to readable JSON with
-`torepr`:
+`fq`'s `grep_by` function can be used to recursively descend through the decoded
+tree, probing for and selecting any `bookmark` blobs, then converting them to
+readable JSON with `torepr`:
 ```
-fq '.. | select(format=="bookmark") | .map(. | torepr)' com.apple.LSSharedFileList.RecentApplications.sfl2
+fq 'grep_by(.type=="data" and .value[0:4] == "book") | .value | apple_bookmark |
+torepr' <sfl2 file>
 ```
 
 ### Authors
