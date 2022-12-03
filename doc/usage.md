@@ -9,6 +9,7 @@ cat file | fq
 fq . < file
 fq . *.png *.mp3
 fq '.frames[0]' *.mp3
+fq '.frames[-1] | tobytes' file.mp3 > last_frame
 ```
 
 ### Common usages
@@ -20,18 +21,40 @@ fq d file
 fq display file
 
 # display all bytes for each value
+fq dd file
+# same as
 fq 'd({display_bytes: 0})' file
+
 # display 200 bytes for each value
 fq 'd({display_bytes: 200})' file
 
 # recursively display decode tree without truncating
 fq da file
+# same as
+fq 'd({array_truncate: 0})' file
 
 # recursively and verbosely display decode tree
 fq dv file
+# same as
+fq 'd({verbose: true})' file
 
 # JSON repersenation for whole file
 fq tovalue file
+# JSON but raw bit fields truncated
+fq -o bits_format=truncate tovalue file
+# JSON but raw bit fields as md5 hex string
+fq -o bits_format=md5 tovalue file
+
+# grep whole tree by value
+fq 'grep("^prefix")' file
+fq 'grep(123)' file
+# grep whole tree by condition
+fq 'grep_by(. >= 100 and . =< 100)' file
+
+# recursively look for values fullfilling some condition
+fq '.. | select(.type=="trak")?' file
+fq 'grep_by(.type=="trak")' file
+# grep_by(f) is alias for .. | select(f)?, that is: recuse, select and ignore errors
 
 # recursively look for decode value roots for a format
 fq '.. | select(format=="jpeg")' file
@@ -41,15 +64,6 @@ fq 'grep_by(format=="jpeg")' file
 # recursively look for first decode value root for a format
 fq 'first(.. | select(format=="jpeg"))' file
 fq 'first(grep_by(format=="jpeg"))' file
-
-# recursively look for objects fullfilling condition
-fq '.. | select(.type=="trak")?' file
-fq 'grep_by(.type=="trak")' file
-
-# grep whole tree
-fq 'grep("^prefix")' file
-fq 'grep(123)' file
-fq 'grep_by(. >= 100 and . =< 100)' file
 
 # decode file as mp4 and return a result even if there are some errors
 fq -d mp4 file.mp4
@@ -179,9 +193,9 @@ fq '.frames[0:10] | map(tobytesrange.start)' file.mp3
 #### Decode at range
 
 ```sh
-# decode byte range 100 to end
+# decode byte range 100 to end as mp3_frame
 fq -d bytes '.[100:] | mp3_frame | d' file.mp3
-# decode byte range 10 bytes into .somefield and preseve relative position in file
+# decode byte range 10 bytes from .somefield and preseve relative position in file
 fq '.somefield | tobytesrange[10:] | mp3_frame | d' file.mp3
 ```
 
@@ -261,6 +275,12 @@ To get the most out of fq it's recommended to learn more about jq, here are some
 - [jq wiki: Pitfalls](https://github.com/stedolan/jq/wiki/How-to:-Avoid-Pitfalls)
 - [FAQ](https://github.com/stedolan/jq/wiki/FAQ)
 
+For a more convenient jq experience these might be interesting:
+
+- [jq Dash docset](https://github.com/wader/jq-dash-docset)
+- [vscode-jq](https://github.com/wader/vscode-jq)
+- [jq-lsp](https://github.com/wader/jq-lsp)
+
 Common beginner gotcha are:
 - jq's use of `;` and `,`. jq uses `;` as argument separator
 and `,` as output separator. To call a function `f` with two arguments use `f(1; 2)`. If you do `f(1, 2)` you pass a
@@ -268,7 +288,6 @@ single argument `1, 2` (a lambda expression that output `1` and then output `2`)
 - Expressions can return or "output" zero or more values. This is how loops, foreach etc is
 achieved.
 - Expressions have one implicit input and output value. This how pipelines like `1 | . * 2` work.
-
 
 ## Types specific to fq
 
