@@ -36,7 +36,8 @@ Flags can be struct with bit-fields.
 ### Checklist
 
 - Commits:
-  - Use commit messages with a context prefix to make it easier to find and understand, ex: `mp3: Validate sync correctly`
+  - Use commit messages with a context prefix to make it easier to find and understand, ex:<br>
+  `mp3: Validate sync correctly`
 - Tests:
   - If possible use a pair of `testdata/file` and `testdata/file.fqtest` where `file.fqtest` is `$ fq dv file` and optionally `$ fq torepr file` if there is `torepr` support.
   - If `dv` produces a lof of output maybe use `dv({array_truncate: 50})` etc
@@ -47,8 +48,8 @@ Flags can be struct with bit-fields.
   - Use simple markdown, just sections (depth starts at 3, `### Section`),  paragraphs, lists and links.
   - No heading section is needs with format name, will be added by `make doc` and fq cli help system.
   - Add a `testdata/<name>_help.fqtest` with just `$ fq -h <name>` to test CLI help.
-  - Run `make doc` to add documentation to `doc/formats.md`.
   - If in doubt look at `mp4.md`/`mp4.go` etc.
+  - Run `make README.md doc/formats.md` to update md files.
 - Run linter `make lint`
 - Run fuzzer `make fuzz GROUP=<name>`, see usage in Makefile
 
@@ -205,7 +206,7 @@ I ususally use `-d <format>` and `dv` while developing, that way you will get a 
 even if it fails. `dv` gives verbose output and also includes stacktrace.
 
 ```sh
-go run fq.go -d <format> dv file
+go run . -d <format> dv file
 ```
 
 If the format is inside some other format it can be handy to first extract the bits and run
@@ -225,7 +226,7 @@ make things more comfortable. Also using vscode/delve for debugging should work 
 launch `args` are setup etc.
 
 ```
-watchexec "go run fq.go -d aac_frame dv aac_frame"
+watchexec "go run . -d aac_frame dv aac_frame"
 ```
 
 Some different ways to run tests:
@@ -262,12 +263,12 @@ Split debug and normal output even when using repl:
 
 Write `log` package output and stderr to a file that can be `tail -f`:ed in another terminal:
 ```sh
-LOGFILE=/tmp/log go run fq.go ... 2>>/tmp/log
+LOGFILE=/tmp/log go run . ... 2>>/tmp/log
 ```
 
 gojq execution debug:
 ```sh
-GOJQ_DEBUG=1 go run -tags debug fq.go ...
+GOJQ_DEBUG=1 go run -tags debug . ...
 ```
 
 Memory and CPU profile (will open a browser):
