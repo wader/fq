@@ -49,6 +49,9 @@ tear_down() {
   if grep "error" ./*.fqtest; then
     exit 1
   fi
+
+  echo '$ fq -h tzif' > help_tzif.fqtest
+  ../../../fq -h tzif >> help_tzif.fqtest
 )
 
 result=0
