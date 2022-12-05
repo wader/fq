@@ -20,8 +20,10 @@ testgo: always
 testgo-race: RACE=-race
 testgo-race: testgo
 
-testjq: fq
-	@pkg/interp/testjq.sh ./fq pkg/interp/*_test.jq
+testjq: $(shell find . -name "*.jq.test")
+%.jq.test: fq
+	@echo $@
+	@./fq -rRs -L pkg/interp 'include "jqtest"; run_tests' $@
 
 testcli: fq
 	@pkg/cli/test_exp.sh ./fq pkg/cli/test_repl.exp

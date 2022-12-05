@@ -1,0 +1,4 @@
+# basic usage
+_args_parse(.args; .opts)
+{"args": ["-a", "123", "b"], "opts": {"a": {"short": "-a", "long": "--abc", "description": "Set abc", "string": true}}}
+{"parsed": {"a": "123"}, "rest": ["b"]}
