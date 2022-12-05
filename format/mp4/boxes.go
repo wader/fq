@@ -400,16 +400,16 @@ func init() {
 			entryCount := d.FieldU32("entry_count")
 			var i uint64
 			d.FieldStructArrayLoop("entries", "entry", func() bool { return i < entryCount }, func(d *decode.D) {
-				d.FieldS32("segment_duration")
-				d.FieldSFn("media_time", func(d *decode.D) int64 {
-					var t int64
-					if version == 0 {
-						t = d.S32()
-					} else {
-						t = d.S64()
-					}
-					return t
-				}, mediaTimeNames)
+				switch version {
+				case 0:
+					d.FieldS32("segment_duration")
+					d.FieldS32("media_time", mediaTimeNames)
+				case 1:
+					d.FieldS64("segment_duration")
+					d.FieldS64("media_time", mediaTimeNames)
+				default:
+					return
+				}
 				d.FieldFP32("media_rate")
 				i++
 			})
