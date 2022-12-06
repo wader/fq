@@ -132,6 +132,7 @@ tar,
 tcp_segment,
 tiff,
 toml,
+[tzif](doc/formats.md#tzif),
 udp_datagram,
 vorbis_comment,
 vorbis_packet,
@@ -240,9 +241,8 @@ cp "$(go env GOPATH)/bin/fq" /usr/local/bin
 To build, run and test from source:
 ```sh
 # build an run
-go run fq.go
-# or
 go run .
+go run . -d mp3 file.mp3
 # just build
 go build -o fq .
 # run all tests and build binary

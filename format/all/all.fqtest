@@ -23,6 +23,7 @@ $ fq -n _registry.groups.probe
   "png",
   "tar",
   "tiff",
+  "tzif",
   "wasm",
   "webp",
   "zip",
@@ -134,6 +135,7 @@ tar                  Tar archive
 tcp_segment          Transmission control protocol segment
 tiff                 Tag Image File Format
 toml                 Tom's Obvious, Minimal Language
+tzif                 Time Zone Information Format
 udp_datagram         User datagram protocol
 vorbis_comment       Vorbis comment
 vorbis_packet        Vorbis packet

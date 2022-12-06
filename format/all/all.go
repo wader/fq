@@ -50,6 +50,7 @@ import (
 	_ "github.com/wader/fq/format/text"
 	_ "github.com/wader/fq/format/tiff"
 	_ "github.com/wader/fq/format/toml"
+	_ "github.com/wader/fq/format/tzif"
 	_ "github.com/wader/fq/format/vorbis"
 	_ "github.com/wader/fq/format/vpx"
 	_ "github.com/wader/fq/format/wasm"

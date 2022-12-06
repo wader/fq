@@ -17,6 +17,7 @@ But maybe in lowercase to be jq/JSON-ish.
 - Decode only ranges you know what they are. If possible let "parent" decide what to do with unknown gaps
 bits by using `*Decode*Len/Range/Limit` functions. fq will also automatically add "gap" fields if
 it finds gaps.
+- If you have decode helpers functions that decode a bunch of fields etc it is usually nice to make it only decode fields, not seek or add it's own "containing" struct. That way the function will be easier to reuse and only do one thing. Ex the helper `func decodeHeader(d *decode.D)` can then be use as `d.FieldStruct("header", decodeHeader)`, `d.SeekRel(1234, decodeHeader)` or `d.SeekRel(1234, func(d *decode.D) { d.FieldStruct("header, decodeHeader") }`
 - Try to not decode too much as one value.
 A length encoded int could be two fields, but maybe a length prefixed string should be one.
 Flags can be struct with bit-fields.
@@ -31,6 +32,26 @@ Flags can be struct with bit-fields.
 - Is format probeable or not
 - Can new formats be added to other formats
 - Does the new format include existing formats
+
+### Checklist
+
+- Commits:
+  - Use commit messages with a context prefix to make it easier to find and understand, ex:<br>
+  `mp3: Validate sync correctly`
+- Tests:
+  - If possible use a pair of `testdata/file` and `testdata/file.fqtest` where `file.fqtest` is `$ fq dv file` and optionally `$ fq torepr file` if there is `torepr` support.
+  - If `dv` produces a lof of output maybe use `dv({array_truncate: 50})` etc
+  - Run `go test ./format -run TestFormats/<name>` to test expected output.
+  - Run `WRITE_ACTUAL=1 go test ./format -run TestFormats/<name>` to write current output as expected output.
+- If you have format specific documentation:
+  - Put it in `format/*/<name>.md` and use `//go:embed <name>.md`/`interp.RegisterFS(..)` to embed/register it.
+  - Use simple markdown, just sections (depth starts at 3, `### Section`),  paragraphs, lists and links.
+  - No heading section is needs with format name, will be added by `make doc` and fq cli help system.
+  - Add a `testdata/<name>_help.fqtest` with just `$ fq -h <name>` to test CLI help.
+  - If in doubt look at `mp4.md`/`mp4.go` etc.
+  - Run `make README.md doc/formats.md` to update md files.
+- Run linter `make lint`
+- Run fuzzer `make fuzz GROUP=<name>`, see usage in Makefile
 
 ### Decoder API
 
@@ -185,7 +206,7 @@ I ususally use `-d <format>` and `dv` while developing, that way you will get a 
 even if it fails. `dv` gives verbose output and also includes stacktrace.
 
 ```sh
-go run fq.go -d <format> dv file
+go run . -d <format> dv file
 ```
 
 If the format is inside some other format it can be handy to first extract the bits and run
@@ -205,7 +226,7 @@ make things more comfortable. Also using vscode/delve for debugging should work 
 launch `args` are setup etc.
 
 ```
-watchexec "go run fq.go -d aac_frame dv aac_frame"
+watchexec "go run . -d aac_frame dv aac_frame"
 ```
 
 Some different ways to run tests:
@@ -215,7 +236,7 @@ make test
 # run all go tests
 go test ./...
 # run all tests for one format
-go test -run TestFQTests/mp4 ./format/
+go test -run TestFormats/mp4 ./format/
 # write all actual outputs
 WRITE_ACTUAL=1 go test ./...
 # write actual output for specific tests
@@ -242,12 +263,12 @@ Split debug and normal output even when using repl:
 
 Write `log` package output and stderr to a file that can be `tail -f`:ed in another terminal:
 ```sh
-LOGFILE=/tmp/log go run fq.go ... 2>>/tmp/log
+LOGFILE=/tmp/log go run . ... 2>>/tmp/log
 ```
 
 gojq execution debug:
 ```sh
-GOJQ_DEBUG=1 go run -tags debug fq.go ...
+GOJQ_DEBUG=1 go run -tags debug . ...
 ```
 
 Memory and CPU profile (will open a browser):

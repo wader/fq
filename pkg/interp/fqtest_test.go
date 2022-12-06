@@ -8,6 +8,6 @@ import (
 	"github.com/wader/fq/pkg/interp"
 )
 
-func TestFQTests(t *testing.T) {
+func TestInterp(t *testing.T) {
 	fqtest.TestPath(t, interp.DefaultRegistry)
 }
