@@ -111,11 +111,11 @@ var elementTypeMap = scalar.UToScalar{
 	elementTypeTargetFilename:        {Sym: "target_filename", Description: "String"},
 	elementTypeCNID:                  {Sym: "target_cnid", Description: "4-byte integer"},
 	elementTypeTargetCreationDate:    {Sym: "target_creation_date", Description: "Date"},
-	elementTypeUnknown1:              {Sym: "unknown", Description: "Unknown"},
-	elementTypeUnknown2:              {Sym: "unknown", Description: "Unknown"},
-	elementTypeUnknown3:              {Sym: "unknown", Description: "Unknown"},
-	elementTypeUnknown4:              {Sym: "unknown", Description: "Unknown"},
-	elementTypeUnknown5:              {Sym: "unknown", Description: "Unknown"},
+	elementTypeUnknown1:              {Sym: "unknown1", Description: "Unknown"},
+	elementTypeUnknown2:              {Sym: "unknown2", Description: "Unknown"},
+	elementTypeUnknown3:              {Sym: "unknown3", Description: "Unknown"},
+	elementTypeUnknown4:              {Sym: "unknown4", Description: "Unknown"},
+	elementTypeUnknown5:              {Sym: "unknown5", Description: "Unknown"},
 	elementTypeTOCPath:               {Sym: "toc_path", Description: "Array - see below"},
 	elementTypeVolumePath:            {Sym: "volume_path", Description: "Array of individual path components"},
 	elementTypeVolumeURL:             {Sym: "volume_url", Description: "URL of volume root"},
@@ -127,7 +127,7 @@ var elementTypeMap = scalar.UToScalar{
 	elementTypeVolumeIsRoot:          {Sym: "volume_is_root", Description: "True if the volume was the filesystem root"},
 	elementTypeVolumeBookmark:        {Sym: "volume_bookmark", Description: "TOC identifier for disk image"},
 	elementTypeVolumeMountPointURL:   {Sym: "volume_mount_point", Description: "URL"},
-	elementTypeUnknown6:              {Sym: "unknown", Description: "Unknown"},
+	elementTypeUnknown6:              {Sym: "unknown6", Description: "Unknown"},
 	elementTypeContainingFolderIndex: {Sym: "containing_folder_index", Description: "Integer index of containing folder in target path array"},
 	elementTypeCreatorUsername:       {Sym: "creator_username", Description: "Name of user that created bookmark"},
 	elementTypeCreatorUID:            {Sym: "creator_uid", Description: "UID of user that created bookmark"},
@@ -260,7 +260,6 @@ func decodePropertyFlags(d *decode.D, bitFn func(d *decode.D)) {
 var cocoaTimeEpochDate = time.Date(2001, time.January, 1, 0, 0, 0, 0, time.UTC)
 
 type tocHeader struct {
-	tocSize          uint64
 	nextTOCOffset    uint64
 	numEntries       uint64
 	entryArrayOffset int64
@@ -302,7 +301,7 @@ func decodeTOCHeader(d *decode.D) *tocHeader {
 	hdr := new(tocHeader)
 
 	d.FieldStruct("toc_header", func(d *decode.D) {
-		hdr.tocSize = d.FieldU32("toc_size")
+		d.FieldU32("toc_size")
 		d.FieldU32("magic", d.AssertU(0xfffffffe))
 		d.FieldU32("identifier")
 		hdr.nextTOCOffset = d.FieldU32("next_toc_offset")
