@@ -157,34 +157,6 @@ type D struct {
 	bitBuf bitio.ReaderAtSeeker
 
 	readBuf *[]byte
-	stack   []int64
-}
-
-// PushAndPop attempts to push a value to the stack of saved offsets, invoking
-// d.Fatalf if the offset is already present on the stack. Returns the Pop
-// function, useful for invocation with defer. Intended to be used for
-// detecting and short circuiting infinite recursion.
-func (d *D) PushAndPop() func() {
-	d.Push()
-	return d.Pop
-}
-
-// Push attempts to add an offset to the offset stack, invoking d.Fatalf if the
-// offset is already present on the stack. Intended as a means of detecting
-// infinite recursion.
-func (d *D) Push() {
-	i := d.Pos()
-	for _, o := range d.stack {
-		if i == o {
-			d.Fatalf("infinite recursion detected in record decoding")
-		}
-	}
-	d.stack = append(d.stack, i)
-}
-
-// Pop removes the most recently added value from the offset stack.
-func (d *D) Pop() {
-	d.stack = d.stack[:len(d.stack)-1]
 }
 
 // TODO: new struct decoder?

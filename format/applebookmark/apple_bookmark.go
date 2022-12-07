@@ -276,7 +276,7 @@ func (hdr *tocHeader) decodeEntries(d *decode.D) {
 			// gives the offset of a string record.
 			if entry.key&0x80000000 != 0 {
 				d.FieldStruct("key_string", func(d *decode.D) {
-					d.SeekAbs(calcOffset(entry.key&0x7fffffff), decodeRecord)
+					d.SeekAbs(calcOffset(entry.key&0x7fffffff), makeDecodeRecord())
 				})
 			}
 
@@ -290,7 +290,7 @@ func (hdr *tocHeader) decodeEntries(d *decode.D) {
 			case elementTypeVolumeFlags:
 				d.SeekAbs(entry.recordOffset, volumePropDecoder.decode)
 			default:
-				d.SeekAbs(entry.recordOffset, decodeRecord)
+				d.SeekAbs(entry.recordOffset, makeDecodeRecord())
 			}
 
 		})
@@ -322,67 +322,96 @@ const (
 	dictEntrySize  = 4
 )
 
-func decodeRecord(d *decode.D) {
-	defer d.PushAndPop()()
+type posLoopDetector []int64
 
-	d.FieldStruct("record", func(d *decode.D) {
-		n := int(d.FieldU32("length"))
-		typ := d.FieldU32("type", dataTypeMap)
-		switch typ {
-		case dataTypeString:
-			d.FieldUTF8("data", n)
-			d.FieldRawLen("alignment_bytes", 32-((d.Pos()+32)%32))
-		case dataTypeData:
-			d.FieldRawLen("data", int64(n*8))
-		case dataTypeNumber8:
-			d.FieldS8("data")
-		case dataTypeNumber16:
-			d.FieldS16("data")
-		case dataTypeNumber32:
-			d.FieldS32("data")
-		case dataTypeNumber64:
-			d.FieldS64("data")
-		case dataTypeNumber32F:
-			d.FieldF32("data")
-		case dataTypeNumber64F:
-			d.FieldF64("data")
-		case dataTypeDate:
-			d.FieldF64BE("data", scalar.DescriptionTimeFn(scalar.S.TryActualF, cocoaTimeEpochDate, time.RFC3339))
-		case dataTypeBooleanFalse:
-		case dataTypeBooleanTrue:
-		case dataTypeArray:
-			d.FieldStructNArray("data", "element", int64(n/arrayEntrySize), func(d *decode.D) {
-				offset := calcOffset(d.FieldU32("offset"))
-				d.SeekAbs(offset, decodeRecord)
-			})
-		case dataTypeDictionary:
-			d.FieldStructNArray("data", "element", int64(n/dictEntrySize), func(d *decode.D) {
-				keyOffset := calcOffset(d.FieldU32("key_offset"))
-				d.FieldStruct("key", func(d *decode.D) {
-					d.SeekAbs(keyOffset, decodeRecord)
-				})
-
-				valueOffset := calcOffset(d.FieldU32("value_offset"))
-				d.FieldStruct("value", func(d *decode.D) {
-					d.SeekAbs(valueOffset, decodeRecord)
-				})
-			})
-		case dataTypeUUID:
-			d.FieldRawLen("data", int64(n*8))
-		case dataTypeURL:
-			d.FieldUTF8("data", n)
-		case dataTypeRelativeURL:
-			baseOffset := d.FieldU32("base_url_offset")
-			d.FieldStruct("base_url", func(d *decode.D) {
-				d.SeekAbs(int64(baseOffset), decodeRecord)
-			})
-
-			suffixOffset := d.FieldU32("suffix_offset")
-			d.FieldStruct("suffix", func(d *decode.D) {
-				d.SeekAbs(int64(suffixOffset), decodeRecord)
-			})
+func (p *posLoopDetector) push(i int64, fn func()) {
+	for _, v := range *p {
+		if i == v {
+			fn()
 		}
-	})
+	}
+	*p = append(*p, i)
+}
+
+func (p *posLoopDetector) pop() {
+	*p = (*p)[:len(*p)-1]
+}
+
+func (p *posLoopDetector) pushAndPop(i int64, fn func()) func() {
+	p.push(i, fn)
+	return p.pop
+}
+
+func makeDecodeRecord() func(d *decode.D) {
+	var pld posLoopDetector
+
+	var decodeRecord func(d *decode.D)
+	decodeRecord = func(d *decode.D) {
+		defer pld.pushAndPop(
+			d.Pos(),
+			func() { d.Fatalf("infinite recursion detected in record decode function") },
+		)
+
+		d.FieldStruct("record", func(d *decode.D) {
+			n := int(d.FieldU32("length"))
+			typ := d.FieldU32("type", dataTypeMap)
+			switch typ {
+			case dataTypeString:
+				d.FieldUTF8("data", n)
+				d.FieldRawLen("alignment_bytes", 32-((d.Pos()+32)%32))
+			case dataTypeData:
+				d.FieldRawLen("data", int64(n*8))
+			case dataTypeNumber8:
+				d.FieldS8("data")
+			case dataTypeNumber16:
+				d.FieldS16("data")
+			case dataTypeNumber32:
+				d.FieldS32("data")
+			case dataTypeNumber64:
+				d.FieldS64("data")
+			case dataTypeNumber32F:
+				d.FieldF32("data")
+			case dataTypeNumber64F:
+				d.FieldF64("data")
+			case dataTypeDate:
+				d.FieldF64BE("data", scalar.DescriptionTimeFn(scalar.S.TryActualF, cocoaTimeEpochDate, time.RFC3339))
+			case dataTypeBooleanFalse:
+			case dataTypeBooleanTrue:
+			case dataTypeArray:
+				d.FieldStructNArray("data", "element", int64(n/arrayEntrySize), func(d *decode.D) {
+					offset := calcOffset(d.FieldU32("offset"))
+					d.SeekAbs(offset, decodeRecord)
+				})
+			case dataTypeDictionary:
+				d.FieldStructNArray("data", "element", int64(n/dictEntrySize), func(d *decode.D) {
+					keyOffset := calcOffset(d.FieldU32("key_offset"))
+					d.FieldStruct("key", func(d *decode.D) {
+						d.SeekAbs(keyOffset, decodeRecord)
+					})
+
+					valueOffset := calcOffset(d.FieldU32("value_offset"))
+					d.FieldStruct("value", func(d *decode.D) {
+						d.SeekAbs(valueOffset, decodeRecord)
+					})
+				})
+			case dataTypeUUID:
+				d.FieldRawLen("data", int64(n*8))
+			case dataTypeURL:
+				d.FieldUTF8("data", n)
+			case dataTypeRelativeURL:
+				baseOffset := d.FieldU32("base_url_offset")
+				d.FieldStruct("base_url", func(d *decode.D) {
+					d.SeekAbs(int64(baseOffset), decodeRecord)
+				})
+
+				suffixOffset := d.FieldU32("suffix_offset")
+				d.FieldStruct("suffix", func(d *decode.D) {
+					d.SeekAbs(int64(suffixOffset), decodeRecord)
+				})
+			}
+		})
+	}
+	return decodeRecord
 }
 
 const reservedSize = 32
