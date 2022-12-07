@@ -281,7 +281,7 @@ $ fq dv png_no_hdlr.mp4
      |                                               |                |                  boxes[0:1]: 0x2e9-0x30d.7 (37)
      |                                               |                |                    [0]{}: box 0x2e9-0x30d.7 (37)
 0x2e0|                           00 00 00 25         |         ...%   |                      size: 37 0x2e9-0x2ec.7 (4)
-0x2e0|                                       a9 74 6f|             .to|                      type: "�too" 0x2ed-0x2f0.7 (4)
+0x2e0|                                       a9 74 6f|             .to|                      type: "©too" (Encoder) 0x2ed-0x2f0.7 (4)
 0x2f0|6f                                             |o               |
      |                                               |                |                      boxes[0:1]: 0x2f1-0x30d.7 (29)
      |                                               |                |                        [0]{}: box 0x2f1-0x30d.7 (29)

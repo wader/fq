@@ -289,7 +289,7 @@ $ fq -d mp4 dv prores_frame.mov
       |                                               |                |          boxes[0:1]: 0x6ee6-0x6efe.7 (25)
       |                                               |                |            [0]{}: box 0x6ee6-0x6efe.7 (25)
 0x6ee0|                  00 00 00 19                  |      ....      |              size: 25 0x6ee6-0x6ee9.7 (4)
-0x6ee0|                              a9 73 77 72      |          .swr  |              type: "�swr" 0x6eea-0x6eed.7 (4)
+0x6ee0|                              a9 73 77 72      |          .swr  |              type: "©swr" 0x6eea-0x6eed.7 (4)
 0x6ee0|                                          00 0d|              ..|              data: raw bits 0x6eee-0x6efe.7 (17)
 0x6ef0|55 c4 4c 61 76 66 35 39 2e 31 36 2e 31 30 30|  |U.Lavf59.16.100||
       |                                               |                |  tracks[0:1]: 0x24-0x6efe.7 (28379)

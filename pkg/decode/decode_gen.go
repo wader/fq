@@ -7,6 +7,7 @@ import (
 
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/scalar"
+	"golang.org/x/text/encoding"
 )
 
 // Type BigInt
@@ -19859,4 +19860,51 @@ func (d *D) TryFieldUTF8NullFixedLen(name string, fixedBytes int, sms ...scalar.
 // FieldUTF8NullFixedLen adds a field and reads fixedBytes bytes long null terminated UTF8 string
 func (d *D) FieldUTF8NullFixedLen(name string, fixedBytes int, sms ...scalar.Mapper) string {
 	return d.FieldScalarUTF8NullFixedLen(name, fixedBytes, sms...).ActualStr()
+}
+
+// Reader Str
+
+// TryStr tries to read nBytes bytes using encoding e
+func (d *D) TryStr(nBytes int, e encoding.Encoding) (string, error) { return d.tryText(nBytes, e) }
+
+// Str reads nBytes bytes using encoding e
+func (d *D) Str(nBytes int, e encoding.Encoding) string {
+	v, err := d.tryText(nBytes, e)
+	if err != nil {
+		panic(IOError{Err: err, Op: "Str", Pos: d.Pos()})
+	}
+	return v
+}
+
+// TryFieldScalarStr tries to add a field and read nBytes bytes using encoding e
+func (d *D) TryFieldScalarStr(name string, nBytes int, e encoding.Encoding, sms ...scalar.Mapper) (*scalar.S, error) {
+	s, err := d.TryFieldScalarFn(name, func(s scalar.S) (scalar.S, error) {
+		v, err := d.tryText(nBytes, e)
+		s.Actual = v
+		return s, err
+	}, sms...)
+	if err != nil {
+		return nil, err
+	}
+	return s, err
+}
+
+// FieldScalarStr adds a field and reads nBytes bytes using encoding e
+func (d *D) FieldScalarStr(name string, nBytes int, e encoding.Encoding, sms ...scalar.Mapper) *scalar.S {
+	s, err := d.TryFieldScalarStr(name, nBytes, e, sms...)
+	if err != nil {
+		panic(IOError{Err: err, Name: name, Op: "Str", Pos: d.Pos()})
+	}
+	return s
+}
+
+// TryFieldStr tries to add a field and read nBytes bytes using encoding e
+func (d *D) TryFieldStr(name string, nBytes int, e encoding.Encoding, sms ...scalar.Mapper) (string, error) {
+	s, err := d.TryFieldScalarStr(name, nBytes, e, sms...)
+	return s.ActualStr(), err
+}
+
+// FieldStr adds a field and reads nBytes bytes using encoding e
+func (d *D) FieldStr(name string, nBytes int, e encoding.Encoding, sms ...scalar.Mapper) string {
+	return d.FieldScalarStr(name, nBytes, e, sms...).ActualStr()
 }

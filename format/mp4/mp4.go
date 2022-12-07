@@ -197,6 +197,11 @@ func (ctx *decodeContext) currentMoofBox() *moofBox {
 	return t
 }
 
+func (ctx *decodeContext) currentMetaBox() *metaBox {
+	t, _ := ctx.findParent("meta").(*metaBox)
+	return t
+}
+
 func (ctx *decodeContext) currentTrack() *track {
 	if t := ctx.currentTrakBox(); t != nil {
 		return ctx.lookupTrack(t.trackID)

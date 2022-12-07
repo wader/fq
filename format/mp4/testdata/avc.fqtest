@@ -439,7 +439,7 @@ $ fq -d mp4 dv avc.mp4
        |                                               |                |                  boxes[0:1]: 0x10bb-0x10df.7 (37)
        |                                               |                |                    [0]{}: box 0x10bb-0x10df.7 (37)
 0x010b0|                                 00 00 00 25   |           ...% |                      size: 37 0x10bb-0x10be.7 (4)
-0x010b0|                                             a9|               .|                      type: "�too" 0x10bf-0x10c2.7 (4)
+0x010b0|                                             a9|               .|                      type: "©too" (Encoder) 0x10bf-0x10c2.7 (4)
 0x010c0|74 6f 6f                                       |too             |
        |                                               |                |                      boxes[0:1]: 0x10c3-0x10df.7 (29)
        |                                               |                |                        [0]{}: box 0x10c3-0x10df.7 (29)

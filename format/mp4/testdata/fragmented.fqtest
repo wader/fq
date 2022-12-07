@@ -574,7 +574,7 @@ $ fq -d mp4 dv fragmented.mp4
        |                                               |                |                  boxes[0:1]: 0x4c8-0x4ec.7 (37)
        |                                               |                |                    [0]{}: box 0x4c8-0x4ec.7 (37)
 0x004c0|                        00 00 00 25            |        ...%    |                      size: 37 0x4c8-0x4cb.7 (4)
-0x004c0|                                    a9 74 6f 6f|            .too|                      type: "�too" 0x4cc-0x4cf.7 (4)
+0x004c0|                                    a9 74 6f 6f|            .too|                      type: "©too" (Encoder) 0x4cc-0x4cf.7 (4)
        |                                               |                |                      boxes[0:1]: 0x4d0-0x4ec.7 (29)
        |                                               |                |                        [0]{}: box 0x4d0-0x4ec.7 (29)
 0x004d0|00 00 00 1d                                    |....            |                          size: 29 0x4d0-0x4d3.7 (4)
