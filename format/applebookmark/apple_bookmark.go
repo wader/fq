@@ -322,27 +322,8 @@ const (
 	dictEntrySize  = 4
 )
 
-type stack []int64
-
-var offsetStack stack
-
-func (s *stack) pushAndPop(d *decode.D) func() {
-	i := d.Pos()
-	for _, o := range offsetStack {
-		if i == o {
-			d.Fatalf("infinite recursion detected in record decoding")
-		}
-	}
-	*s = append(*s, i)
-	return s.pop
-}
-
-func (s *stack) pop() {
-	*s = (*s)[:len(*s)-1]
-}
-
 func decodeRecord(d *decode.D) {
-	defer offsetStack.pushAndPop(d)()
+	defer d.PushAndPop()()
 
 	d.FieldStruct("record", func(d *decode.D) {
 		n := int(d.FieldU32("length"))
