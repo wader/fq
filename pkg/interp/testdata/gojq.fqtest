@@ -308,3 +308,6 @@ null> 0xf_0000_0000_0000_0000_0000_0000_0000_0000
 null> 0x012_3456789abcdefx
                          ^ unexpected token "x"
 null> ^D
+# test JQValue in assign/update path
+$ fq -c -d mp3 '.headers[0].version as $i | [] | .[$i] = 1 | .[$i] += 2' test.mp3
+[null,null,null,null,3]
