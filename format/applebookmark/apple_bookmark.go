@@ -334,7 +334,7 @@ func makeDecodeRecord() func(d *decode.D) {
 		defer pld.pushAndPop(
 			d.Pos(),
 			func() { d.Fatalf("infinite recursion detected in record decode function") },
-		)
+		)()
 
 		d.FieldStruct("record", func(d *decode.D) {
 			n := int(d.FieldU32("length"))
