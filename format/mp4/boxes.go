@@ -1605,6 +1605,10 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			2: 180,
 			3: 270,
 		})
+	case "hnti":
+		decodeBoxes(ctx, d)
+	case "hint":
+		decodeBoxes(ctx, d)
 	default:
 		if mb := ctx.currentMetaBox(); mb != nil && ctx.parent().typ == "ilst" {
 			// unknown type inside a metadata box with ilst as parent, decode item boxes
