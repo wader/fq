@@ -324,22 +324,22 @@ const (
 
 type posLoopDetector []int64
 
-func (p *posLoopDetector) push(i int64, fn func()) {
-	for _, v := range *p {
-		if i == v {
-			fn()
+func (pld *posLoopDetector) push(i int64, detect func()) {
+	for _, o := range *pld {
+		if i == o {
+			detect()
 		}
 	}
-	*p = append(*p, i)
+	*pld = append(*pld, i)
 }
 
-func (p *posLoopDetector) pop() {
-	*p = (*p)[:len(*p)-1]
+func (pld *posLoopDetector) pop() {
+	*pld = (*pld)[:len(*pld)-1]
 }
 
-func (p *posLoopDetector) pushAndPop(i int64, fn func()) func() {
-	p.push(i, fn)
-	return p.pop
+func (pld *posLoopDetector) pushAndPop(i int64, detect func()) func() {
+	pld.push(i, detect)
+	return pld.pop
 }
 
 func makeDecodeRecord() func(d *decode.D) {
