@@ -150,21 +150,11 @@ func decodeFlagDataObject(d *decode.D, flagFn func(d *decode.D)) {
 		d.FieldU32("length", d.AssertU(dataObjectLen))
 		d.FieldU32("raw_type", dataTypeMap, d.AssertU(dataTypeData))
 		d.FieldValueStr("type", "flag_data")
-		decodePropertyFlags(d, flagFn)
+		d.FieldStruct("property_flags", flagFn)
+		d.FieldStruct("enabled_property_flags", flagFn)
 		d.FieldRawLen("reserved", 64)
 	})
 }
-
-type dataObjectDecoder struct {
-	flagFn func(d *decode.D)
-}
-
-func (dod *dataObjectDecoder) decode(d *decode.D) {
-	decodeFlagDataObject(d, dod.flagFn)
-}
-
-var resourcePropDecoder = &dataObjectDecoder{decodeTgtPropertyFlagBits}
-var volumePropDecoder = &dataObjectDecoder{decodeVolPropertyFlagBits}
 
 func decodeTgtPropertyFlagBits(d *decode.D) {
 	start := d.Pos()
@@ -251,12 +241,6 @@ func decodeVolPropertyFlagBits(d *decode.D) {
 	d.FieldBool("supports_volume_sizes")
 }
 
-func decodePropertyFlags(d *decode.D, bitFn func(d *decode.D)) {
-	d.FieldStruct("property_flags", bitFn)
-
-	d.FieldStruct("enabled_property_flags", bitFn)
-}
-
 var cocoaTimeEpochDate = time.Date(2001, time.January, 1, 0, 0, 0, 0, time.UTC)
 
 type tocHeader struct {
@@ -286,9 +270,9 @@ func (hdr *tocHeader) decodeEntries(d *decode.D) {
 
 			switch entry.key {
 			case elementTypeTargetFlags:
-				d.SeekAbs(entry.recordOffset, resourcePropDecoder.decode)
+				d.SeekAbs(entry.recordOffset, func(d *decode.D) { decodeFlagDataObject(d, decodeTgtPropertyFlagBits) })
 			case elementTypeVolumeFlags:
-				d.SeekAbs(entry.recordOffset, volumePropDecoder.decode)
+				d.SeekAbs(entry.recordOffset, func(d *decode.D) { decodeFlagDataObject(d, decodeVolPropertyFlagBits) })
 			default:
 				d.SeekAbs(entry.recordOffset, makeDecodeRecord())
 			}
