@@ -274,7 +274,7 @@ $ fq dv in24.mp4
      |                                               |                |          boxes[0:1]: 0x3d3-0x3eb.7 (25)
      |                                               |                |            [0]{}: box 0x3d3-0x3eb.7 (25)
 0x3d0|         00 00 00 19                           |   ....         |              size: 25 0x3d3-0x3d6.7 (4)
-0x3d0|                     a9 73 77 72               |       .swr     |              type: "�swr" 0x3d7-0x3da.7 (4)
+0x3d0|                     a9 73 77 72               |       .swr     |              type: "©swr" 0x3d7-0x3da.7 (4)
 0x3d0|                                 00 0d 55 c4 4c|           ..U.L|              data: raw bits 0x3db-0x3eb.7 (17)
 0x3e0|61 76 66 35 38 2e 37 36 2e 31 30 30|           |avf58.76.100|   |
      |                                               |                |  tracks[0:1]: 0x3ec-NA (0)

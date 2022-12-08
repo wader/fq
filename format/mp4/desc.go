@@ -263,5 +263,26 @@ var boxDescriptions = scalar.StrToDescription{
 	"xml ": "XML container",
 	"yrrc": "Year when media was recorded",
 
+	// from https://wiki.multimedia.cx/index.php/FFmpeg_Metadata
+	"©nam": "Title",
+	"©ART": "Author",
+	"aART": "Album_artist",
+	"©alb": "Album",
+	"©grp": "Grouping",
+	"©wrt": "Composer",
+	"©day": "Year",
+	"trkn": "Track",
+	"©cmt": "Comment",
+	"©gen": "Genre",
+	"©cpy": "Copyright",
+	"desc": "Description",
+	"ldes": "Synopsis",
+	"tvsh": "Show",
+	"tven": "Episode_id",
+	"tvnn": "Network",
+	"©lyr": "Lyrics",
+
+	"©too": "Encoder",
+
 	"\x00\x00\x00\x00": "Terminator Atom",
 }

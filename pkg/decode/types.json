@@ -234,6 +234,13 @@
                     "doc": "fixedBytes bytes long null terminated UTF8 string"
                 }
             ]
+        },
+        {
+            "name": "Str",
+            "type": "Str",
+            "variants": [
+                {"name": "", "args": "nBytes, e", "params": "nBytes int, e encoding.Encoding", "call": "d.tryText(nBytes, e)", "doc": "nBytes bytes using encoding e"}
+            ]
         }
     ]
 }
