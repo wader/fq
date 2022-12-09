@@ -236,7 +236,7 @@ func decodeSampleFlags(d *decode.D) {
 	d.FieldU2("sample_is_depended_on", scalar.UToScalar{
 		0: scalar.S{Sym: "unknown"},
 		1: scalar.S{Sym: "other", Description: "Not disposable"},
-		2: scalar.S{Sym: "none", Description: "Is disposabl"},
+		2: scalar.S{Sym: "none", Description: "Is disposable"},
 	})
 	d.FieldU2("sample_has_redundancy", scalar.UToScalar{
 		0: scalar.S{Sym: "unknown"},
