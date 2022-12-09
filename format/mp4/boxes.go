@@ -224,12 +224,24 @@ func decodeMvhdFieldMatrix(d *decode.D, name string) {
 	})
 }
 
+// ISO 14496-12 8.40.2.3 Sample dependency box semantics
 func decodeSampleFlags(d *decode.D) {
 	d.FieldU4("reserved0")
 	d.FieldU2("is_leading")
-	d.FieldU2("sample_depends_on")
-	d.FieldU2("sample_is_depended_on")
-	d.FieldU2("sample_has_redundancy")
+	d.FieldU2("sample_depends_on", scalar.UToScalar{
+		0: scalar.S{Sym: "unknown"},
+		1: scalar.S{Sym: "other", Description: "Not I-picture"},
+		2: scalar.S{Sym: "none", Description: "Is I-picture"},
+	})
+	d.FieldU2("sample_is_depended_on", scalar.UToScalar{
+		0: scalar.S{Sym: "unknown"},
+		1: scalar.S{Sym: "other", Description: "Not disposable"},
+		2: scalar.S{Sym: "none", Description: "Is disposabl"},
+	})
+	d.FieldU2("sample_has_redundancy", scalar.UToScalar{
+		0: scalar.S{Sym: "unknown"},
+		2: scalar.S{Sym: "none", Description: "No redundant coding"},
+	})
 	d.FieldU3("sample_padding_value")
 	d.FieldU1("sample_is_non_sync_sample")
 	d.FieldU16("sample_degradation_priority")
