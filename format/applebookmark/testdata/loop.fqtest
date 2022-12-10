@@ -1,0 +1,19 @@
+$ fq . -d apple_bookmark loop.book
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: loop.book (apple_bookmark)
+     |                                               |                |  error: apple_bookmark: error at position 0x6c: infinite recursion detected in record decode function
+0x000|62 6f 6f 6b 30 02 00 00 00 00 04 10 30 00 00 00|book0.......0...|  header{}:
+*    |until 0x2f.7 (48)                              |                |
+0x030|50 01 00 00                                    |P...            |  first_toc_offset: 336
+0x030|            04 00 00 00 03 03 00 00 00 00 00 20|    ........... |  gap0: raw bits
+0x040|0c 00 00 00 01 01 00 00 41 70 70 6c 69 63 61 74|........Applicat|
+*    |until 0x6b.7 (56)                              |                |
+0x060|                                    08 00 00 00|            ....|  bookmark_entries[0:1]:
+0x070|01 06 00 00 3c 00 00 00 24 00 00 00 08 00 00 00|....<...$.......|
+*    |until 0x19f.7 (308)                            |                |
+0x070|                        24 00 00 00 08 00 00 00|        $.......|  gap1: raw bits
+0x080|04 03 00 00 67 f5 50 03 00 00 00 00 08 00 00 00|....g.P.........|
+*    |until 0x17f.7 (264)                            |                |
+0x180|a8 00 00 00 fe ff ff ff 01 00 00 00 00 00 00 00|................|  toc_headers[0:1]:
+0x190|0d 00 00 00                                    |....            |
+0x1a0|05 10 00 00 6c 00 00 00 00 00 00 00 10 10 00 00|....l...........|  gap2: raw bits
+*    |until 0x22f.7 (end) (144)                      |                |

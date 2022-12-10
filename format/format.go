@@ -30,6 +30,7 @@ const (
 	ADTS_FRAME          = "adts_frame"
 	AMF0                = "amf0"
 	APEV2               = "apev2"
+	APPLE_BOOKMARK      = "apple_bookmark"
 	AR                  = "ar"
 	ASN1_BER            = "asn1_ber"
 	AV1_CCR             = "av1_ccr"

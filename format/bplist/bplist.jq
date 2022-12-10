@@ -23,7 +23,7 @@ def _bplist_torepr:
         )
       else  error("unknown type: \(.type)")
       end
-     );
+    );
   ( .objects
   | _f
   );

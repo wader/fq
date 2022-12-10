@@ -103,7 +103,7 @@ func decodeItem(d *decode.D, p *plist) bool {
 			boolTrue:  scalar.S{Sym: true},
 			boolFalse: scalar.S{Sym: false},
 		})
-	case elementTypeInt:
+	case elementTypeInt, elementTypeUID:
 		n := d.FieldUFn("size", func(d *decode.D) uint64 {
 			return 1 << d.U4()
 		})
@@ -143,10 +143,6 @@ func decodeItem(d *decode.D, p *plist) bool {
 		d.FieldValueU("size", n)
 		d.FieldUTF16("value", int(n))
 		return true
-	case elementTypeUID:
-		n := decodeSize(d)
-		d.FieldValueU("size", n)
-		d.FieldUBigInt("value", int(n)).Uint64()
 	case elementTypeArray:
 		n := decodeSize(d)
 		d.FieldValueU("size", n)

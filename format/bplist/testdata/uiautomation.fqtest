@@ -1,0 +1,44 @@
+$ fq dv uiautomation.plist
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: uiautomation.plist (bplist) 0x0-0x44.7 (69)
+    |                                               |                |  header{}: 0x0-0x7.7 (8)
+0x00|62 70 6c 69 73 74                              |bplist          |    magic: "bplist" (valid) 0x0-0x5.7 (6)
+0x00|                  30 30                        |      00        |    version: "00" (valid) 0x6-0x7.7 (2)
+    |                                               |                |  objects{}: 0x8-0x21.7 (26)
+0x00|                        d1                     |        .       |    type: "dict" (13) (Dictionary) 0x8-0x8.3 (0.4)
+0x00|                        d1                     |        .       |    size_bits: 1 0x8.4-0x8.7 (0.4)
+    |                                               |                |    size: 1 0x9-NA (0)
+    |                                               |                |    entries[0:1]: 0x9-0x21.7 (25)
+    |                                               |                |      [0]{}: entry 0x9-0x21.7 (25)
+0x00|                           01                  |         .      |        key_index: 1 0x9-0x9.7 (1)
+0x00|                              02               |          .     |        value_index: 2 0xa-0xa.7 (1)
+    |                                               |                |        key{}: 0xb-0x20.7 (22)
+0x00|                                 5f            |           _    |          type: "ascii_string" (5) (ASCII encoded string) 0xb-0xb.3 (0.4)
+0x00|                                 5f            |           _    |          size_bits: 15 0xb.4-0xb.7 (0.4)
+0x00|                                    10         |            .   |          large_size_marker: 1 (valid) 0xc-0xc.3 (0.4)
+0x00|                                    10         |            .   |          exponent: 0 0xc.4-0xc.7 (0.4)
+0x00|                                       13      |             .  |          size_bigint: 19 0xd-0xd.7 (1)
+    |                                               |                |          size: 19 0xe-NA (0)
+0x00|                                          55 49|              UI|          value: "UIAutomationEnabled" 0xe-0x20.7 (19)
+0x10|41 75 74 6f 6d 61 74 69 6f 6e 45 6e 61 62 6c 65|AutomationEnable|
+0x20|64                                             |d               |
+    |                                               |                |        value{}: 0x21-0x21.7 (1)
+0x20|   09                                          | .              |          type: "singleton" (0) (Singleton value (null/bool)) 0x21-0x21.3 (0.4)
+0x20|   09                                          | .              |          value: true (9) 0x21.4-0x21.7 (0.4)
+    |                                               |                |  offset_table[0:3]: 0x22-0x24.7 (3)
+0x20|      08                                       |  .             |    [0]: 8 element 0x22-0x22.7 (1)
+0x20|         0b                                    |   .            |    [1]: 11 element 0x23-0x23.7 (1)
+0x20|            21                                 |    !           |    [2]: 33 element 0x24-0x24.7 (1)
+    |                                               |                |  trailer{}: 0x25-0x44.7 (32)
+0x20|               00 00 00 00 00                  |     .....      |    unused: 0 0x25-0x29.7 (5)
+0x20|                              00               |          .     |    sort_version: 0 0x2a-0x2a.7 (1)
+0x20|                                 01            |           .    |    offset_table_offset_size: 1 (valid) 0x2b-0x2b.7 (1)
+0x20|                                    01         |            .   |    object_reference_size: 1 (valid) 0x2c-0x2c.7 (1)
+0x20|                                       00 00 00|             ...|    object_count: 3 0x2d-0x34.7 (8)
+0x30|00 00 00 00 03                                 |.....           |
+0x30|               00 00 00 00 00 00 00 00         |     ........   |    top_object_offset: 0 0x35-0x3c.7 (8)
+0x30|                                       00 00 00|             ...|    offset_table_start: 34 0x3d-0x44.7 (8)
+0x40|00 00 00 00 22|                                |...."|          |
+$ fq torepr uiautomation.plist
+{
+  "UIAutomationEnabled": true
+}
