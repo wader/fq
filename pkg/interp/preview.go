@@ -1,9 +1,10 @@
 package interp
 
 import (
-	"fmt"
+	"bytes"
 	"math/big"
 	"strconv"
+	"strings"
 
 	"github.com/wader/fq/internal/mathex"
 	"github.com/wader/fq/internal/stringsex"
@@ -30,7 +31,14 @@ func previewValue(v any, df scalar.DisplayFormat) string {
 		// TODO: float32? better truncated to significant digits?
 		return strconv.FormatFloat(vv, 'g', -1, 64)
 	case string:
-		return fmt.Sprintf("%q", stringsex.TrimN(vv, 50, "..."))
+		s := strconv.Quote(stringsex.TrimN(vv, 50, "..."))
+		// TODO: hack for https://github.com/golang/go/issues/52062
+		// 0x7f used to be escaped as \u007f in 1.18 and lower, was changed to \x7f
+		// remove once 1.18 is not supported
+		if !bytes.Contains([]byte(s), []byte{0x7f}) {
+			return s
+		}
+		return strings.ReplaceAll(s, `\u007f`, `\x7f`)
 	case nil:
 		return "null"
 	case bitio.Reader:
