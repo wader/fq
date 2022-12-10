@@ -251,30 +251,28 @@ type tocHeader struct {
 
 func (hdr *tocHeader) decodeEntries(d *decode.D) {
 	for k := uint64(0); k < hdr.numEntries; k++ {
-		entry := new(tocEntry)
-
 		d.FieldStruct("entry", func(d *decode.D) {
-			entry.key = d.FieldU32("key", elementTypeMap)
+			key := d.FieldU32("key", elementTypeMap)
 
 			// if the key has the top bit set, then (key & 0x7fffffff)
 			// gives the offset of a string record.
-			if entry.key&0x80000000 != 0 {
+			if key&0x80000000 != 0 {
 				d.FieldStruct("key_string", func(d *decode.D) {
-					d.SeekAbs(calcOffset(entry.key&0x7fffffff), makeDecodeRecord())
+					d.SeekAbs(calcOffset(key&0x7fffffff), makeDecodeRecord())
 				})
 			}
 
-			entry.recordOffset = calcOffset(d.FieldU32("offset_to_record"))
+			recordOffset := calcOffset(d.FieldU32("offset_to_record"))
 
 			d.FieldU32("unused")
 
-			switch entry.key {
+			switch key {
 			case elementTypeTargetFlags:
-				d.SeekAbs(entry.recordOffset, func(d *decode.D) { decodeFlagDataObject(d, decodeTgtPropertyFlagBits) })
+				d.SeekAbs(recordOffset, func(d *decode.D) { decodeFlagDataObject(d, decodeTgtPropertyFlagBits) })
 			case elementTypeVolumeFlags:
-				d.SeekAbs(entry.recordOffset, func(d *decode.D) { decodeFlagDataObject(d, decodeVolPropertyFlagBits) })
+				d.SeekAbs(recordOffset, func(d *decode.D) { decodeFlagDataObject(d, decodeVolPropertyFlagBits) })
 			default:
-				d.SeekAbs(entry.recordOffset, makeDecodeRecord())
+				d.SeekAbs(recordOffset, makeDecodeRecord())
 			}
 
 		})
@@ -294,11 +292,6 @@ func decodeTOCHeader(d *decode.D) *tocHeader {
 	})
 
 	return hdr
-}
-
-type tocEntry struct {
-	key          uint64
-	recordOffset int64
 }
 
 const (
