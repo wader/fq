@@ -141,7 +141,7 @@ func decodeItem(d *decode.D, p *plist) bool {
 	case elementTypeUnicodeString:
 		n := decodeSize(d)
 		d.FieldValueU("size", n)
-		d.FieldUTF16("value", int(n))
+		d.FieldUTF16BE("value", int(n))
 		return true
 	case elementTypeArray:
 		n := decodeSize(d)
