@@ -187,11 +187,11 @@ func decodeItem(d *decode.D, p *plist) bool {
 
 type indexStack []uint64
 
-func (i *indexStack) Pop() {
+func (i *indexStack) pop() {
 	*i = (*i)[:len(*i)-1]
 }
 
-func (i *indexStack) Push(idx uint64, handler func()) {
+func (i *indexStack) push(idx uint64, handler func()) {
 	for _, v := range *i {
 		if v == idx {
 			handler()
@@ -200,9 +200,9 @@ func (i *indexStack) Push(idx uint64, handler func()) {
 	*i = append(*i, idx)
 }
 
-func (i *indexStack) PushAndPop(idx uint64, handler func()) func() {
-	i.Push(idx, handler)
-	return i.Pop
+func (i *indexStack) pushAndPop(idx uint64, handler func()) func() {
+	i.push(idx, handler)
+	return i.pop
 }
 
 // decodeReference looks up and decodes an object based on its index in the
@@ -216,7 +216,7 @@ func (pl *plist) decodeReference(d *decode.D, idx uint64) bool {
 	}
 	pl.consumed[idx] = true
 
-	defer pl.idxStack.PushAndPop(idx, func() { d.Fatalf("infinite recursion detected") })()
+	defer pl.idxStack.pushAndPop(idx, func() { d.Fatalf("infinite recursion detected") })()
 
 	itemOffset := pl.o[idx]
 	if itemOffset >= pl.t.offsetTableStart {
@@ -298,8 +298,8 @@ func bplistDecode(d *decode.D, _ any) any {
 
 	i := 0
 
-	d.FieldStructArrayLoop("lost_and_found", "entry",
-		func() bool { return i < len(lost) },
+	d.FieldStructNArray("lost_and_found", "entry",
+		int64(len(lost)),
 		func(d *decode.D) {
 			p.decodeReference(d, lost[i])
 			i++
