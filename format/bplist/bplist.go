@@ -185,6 +185,26 @@ func decodeItem(d *decode.D, p *plist) bool {
 	return false
 }
 
+type indexStack []uint64
+
+func (i *indexStack) pop() {
+	*i = (*i)[:len(*i)-1]
+}
+
+func (i *indexStack) push(idx uint64, handler func()) {
+	for _, v := range *i {
+		if v == idx {
+			handler()
+		}
+	}
+	*i = append(*i, idx)
+}
+
+func (i *indexStack) pushAndPop(idx uint64, handler func()) func() {
+	i.push(idx, handler)
+	return i.pop
+}
+
 // decodeReference looks up and decodes an object based on its index in the
 // offset table. Returns a bool indicating whether or not the decoded item is
 // a string (necessary for checking dictionary key validity).
@@ -194,13 +214,9 @@ func (pl *plist) decodeReference(d *decode.D, idx uint64) bool {
 		d.Errorf("index %d out of bounds for object table size %d", idx, len(pl.o))
 		return false
 	}
+	pl.consumed[idx] = true
 
-	if pl.indexIsInStack(idx) {
-		d.Fatalf("recursion detected: object %d already decoded in stack %v", idx, pl.objectStack)
-		return false
-	}
-
-	pl.pushIndex(idx)
+	defer pl.idxStack.pushAndPop(idx, func() { d.Fatalf("infinite recursion detected") })()
 
 	itemOffset := pl.o[idx]
 	if itemOffset >= pl.t.offsetTableStart {
@@ -212,7 +228,6 @@ func (pl *plist) decodeReference(d *decode.D, idx uint64) bool {
 	d.SeekAbs(int64(itemOffset*8), func(d *decode.D) {
 		isString = decodeItem(d, pl)
 	})
-	pl.popIndex()
 	return isString
 }
 
@@ -225,26 +240,10 @@ type trailer struct {
 }
 
 type plist struct {
-	t           trailer
-	o           []uint64
-	objectStack []uint64
-}
-
-func (pl *plist) pushIndex(idx uint64) {
-	pl.objectStack = append(pl.objectStack, idx)
-}
-
-func (pl *plist) popIndex() {
-	pl.objectStack = pl.objectStack[:len(pl.objectStack)-1]
-}
-
-func (pl *plist) indexIsInStack(idx uint64) bool {
-	for _, existing := range pl.objectStack {
-		if existing == idx {
-			return true
-		}
-	}
-	return false
+	t        trailer
+	o        []uint64
+	consumed map[uint64]bool
+	idxStack indexStack
 }
 
 func bplistDecode(d *decode.D, _ any) any {
@@ -254,6 +253,7 @@ func bplistDecode(d *decode.D, _ any) any {
 	})
 
 	p := new(plist)
+	p.consumed = make(map[uint64]bool)
 
 	d.SeekAbs(d.Len()-32*8, func(d *decode.D) {
 		d.FieldStruct("trailer", func(d *decode.D) {
@@ -282,6 +282,27 @@ func bplistDecode(d *decode.D, _ any) any {
 	d.FieldStruct("objects",
 		func(d *decode.D) {
 			p.decodeReference(d, 0)
+		})
+
+	var lost []uint64
+
+	for i := uint64(0); i < p.t.nObjects; i++ {
+		if _, isUsed := p.consumed[i]; !isUsed {
+			lost = append(lost, i)
+		}
+	}
+
+	if len(lost) == 0 {
+		return nil
+	}
+
+	i := 0
+
+	d.FieldStructNArray("lost_and_found", "entry",
+		int64(len(lost)),
+		func(d *decode.D) {
+			p.decodeReference(d, lost[i])
+			i++
 		})
 
 	return nil
