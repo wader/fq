@@ -898,14 +898,14 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		decodeBoxesWithParentData(ctx, d, &metaBox{})
 	case "ilst":
 		if mb := ctx.currentMetaBox(); mb != nil && mb.keys != nil && len(mb.keys.keys) > 0 {
-			// meta data box has keys box, sym map based on keys
-			// TODO: namespace?
+			// meta box had a keys box
 			var b [4]byte
 			typeSymMapper := scalar.StrToSymStr{}
 			for k, v := range mb.keys.keys {
+				// type will be a uint32 be integer
 				// +1 as they seem to be counted from 1
 				binary.BigEndian.PutUint32(b[:], uint32(k+1))
-				typeSymMapper[string(b[:])] = v.name
+				typeSymMapper[string(b[:])] = v.namespace + "." + v.name
 			}
 
 			decodeBoxes(ctx, d, typeSymMapper)
