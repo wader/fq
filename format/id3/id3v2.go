@@ -32,7 +32,7 @@ func init() {
 	})
 }
 
-var idDescriptions = scalar.StrToDescription{
+var idDescriptions = scalar.StrMapDescription{
 	"BUF":  "Recommended buffer size",
 	"CNT":  "Play counter",
 	"COM":  "Comments",
@@ -236,7 +236,7 @@ const (
 //	Terminated with $00 00.
 //
 // $03 UTF-8 [UTF-8] encoded Unicode [UNICODE]. Terminated with $00.
-var encodingNames = scalar.UToSymStr{
+var encodingNames = scalar.UintMapSymStr{
 	encodingISO8859_1: "iso_8859-1",
 	encodingUTF16:     "utf16",
 	encodingUTF16BE:   "utf16be",
@@ -370,7 +370,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Size      4 * %0xxxxxxx  (synchsafe integer)
 		// Flags         $xx xx
 		id = d.FieldUTF8("id", 4, idDescriptions)
-		dataSize = d.FieldUFn("size", decodeSyncSafeU32)
+		dataSize = d.FieldUintFn("size", decodeSyncSafeU32)
 		var headerLen uint64 = 10
 
 		dataLenFlag := false
@@ -395,7 +395,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		})
 
 		if dataLenFlag {
-			d.FieldUFn("data_length_indicator", decodeSyncSafeU32)
+			d.FieldUintFn("data_length_indicator", decodeSyncSafeU32)
 			dataSize -= 4
 			headerLen += 4
 		}
@@ -608,7 +608,7 @@ func decodeFrames(d *decode.D, version int, size uint64) {
 
 func id3v2Decode(d *decode.D, _ any) any {
 	d.AssertAtLeastBitsLeft(4 * 8)
-	d.FieldUTF8("magic", 3, d.AssertStr("ID3"))
+	d.FieldUTF8("magic", 3, d.StrAssert("ID3"))
 	version := int(d.FieldU8("version"))
 	versionValid := version == 2 || version == 3 || version == 4
 	if !versionValid {
@@ -623,7 +623,7 @@ func id3v2Decode(d *decode.D, _ any) any {
 		d.FieldBool("experimental_indicator")
 		d.FieldU5("unused")
 	})
-	size := d.FieldUFn("size", decodeSyncSafeU32)
+	size := d.FieldUintFn("size", decodeSyncSafeU32)
 
 	var extHeaderSize uint64
 	if extendedHeader {
@@ -633,7 +633,7 @@ func id3v2Decode(d *decode.D, _ any) any {
 				extHeaderSize = d.FieldU32("size")
 				d.FieldRawLen("data", int64(extHeaderSize)*8)
 			case 4:
-				extHeaderSize = d.FieldUFn("size", decodeSyncSafeU32)
+				extHeaderSize = d.FieldUintFn("size", decodeSyncSafeU32)
 				// in v4 synchsafe integer includes itself
 				d.FieldRawLen("data", (int64(extHeaderSize)-4)*8)
 			}

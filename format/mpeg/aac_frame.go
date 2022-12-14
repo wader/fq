@@ -37,7 +37,7 @@ const (
 	TERM = 0b111
 )
 
-var syntaxElementNames = scalar.UToSymStr{
+var syntaxElementNames = scalar.UintMapSymStr{
 	SCE:  "SCE",
 	CPE:  "CPE",
 	CCE:  "CCE",
@@ -58,7 +58,7 @@ const (
 	EXT_SBR_DATA_CRC  = 0xe
 )
 
-var extensionPayloadIDNames = scalar.UToSymStr{
+var extensionPayloadIDNames = scalar.UintMapSymStr{
 	EXT_FILL:          "EXT_FILL",
 	EXT_FILL_DATA:     "EXT_FILL_DATA",
 	EXT_DATA_ELEMENT:  "EXT_DATA_ELEMENT",
@@ -75,7 +75,7 @@ const (
 	LONG_STOP_SEQUENCE   = 0x3
 )
 
-var windowSequenceNames = scalar.UToSymStr{
+var windowSequenceNames = scalar.UintMapSymStr{
 	ONLY_LONG_SEQUENCE:   "ONLY_LONG_SEQUENCE",
 	LONG_START_SEQUENCE:  "LONG_START_SEQUENCE",
 	EIGHT_SHORT_SEQUENCE: "EIGHT_SHORT_SEQUENCE",
@@ -254,7 +254,7 @@ func aacFillElement(d *decode.D) {
 			cnt += escCount - 1
 		}
 	})
-	d.FieldValueU("payload_length", cnt)
+	d.FieldValueUint("payload_length", cnt)
 
 	d.FieldStruct("extension_payload", func(d *decode.D) {
 		d.FramedFn(int64(cnt)*8, func(d *decode.D) {

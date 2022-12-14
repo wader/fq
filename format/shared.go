@@ -23,7 +23,7 @@ const (
 	ProtoBufTypeFloat
 )
 
-var ProtoBufTypeNames = scalar.UToSymStr{
+var ProtoBufTypeNames = scalar.UintMapSymStr{
 	ProtoBufTypeInt32:          "Int32",
 	ProtoBufTypeInt64:          "Int64",
 	ProtoBufTypeUInt32:         "UInt32",

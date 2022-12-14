@@ -24,7 +24,7 @@ func init() {
 	})
 }
 
-var protectionAbsentNames = scalar.BoolToDescription{
+var protectionAbsentNames = scalar.BoolMapDescription{
 	true:  "No CRC",
 	false: "Has CRC",
 }
@@ -65,13 +65,13 @@ func adtsFrameDecoder(d *decode.D, _ any) any {
 	// P	2	Number of AAC frames (RDBs) in ADTS frame minus 1, for maximum compatibility always use 1 AAC frame per ADTS frame
 	// Q	16	CRC if protection absent is 0
 
-	d.FieldU12("syncword", d.AssertU(0b1111_1111_1111), scalar.ActualBin)
-	d.FieldU1("mpeg_version", scalar.UToSymStr{0: "mpeg4", 1: "mpeg2_aac"})
-	d.FieldU2("layer", d.AssertU(0))
+	d.FieldU12("syncword", d.UintAssert(0b1111_1111_1111), scalar.UintBin)
+	d.FieldU1("mpeg_version", scalar.UintMapSymStr{0: "mpeg4", 1: "mpeg2_aac"})
+	d.FieldU2("layer", d.UintAssert(0))
 	protectionAbsent := d.FieldBool("protection_absent", protectionAbsentNames)
 
-	objectType := d.FieldU2("profile", scalar.ActualUAdd(1), format.MPEGAudioObjectTypeNames)
-	d.FieldUFn("sampling_frequency", decodeEscapeValueAbsFn(4, 24, 0), frequencyIndexHzMap)
+	objectType := d.FieldU2("profile", scalar.UintActualAdd(1), format.MPEGAudioObjectTypeNames)
+	d.FieldUintFn("sampling_frequency", decodeEscapeValueAbsFn(4, 24, 0), frequencyIndexHzMap)
 	d.FieldU1("private_bit")
 	d.FieldU3("channel_configuration", channelConfigurationNames)
 	d.FieldU1("originality")
@@ -86,7 +86,7 @@ func adtsFrameDecoder(d *decode.D, _ any) any {
 	}
 
 	d.FieldU11("buffer_fullness")
-	numberOfRDBs := d.FieldU2("number_of_rdbs", scalar.ActualUAdd(1))
+	numberOfRDBs := d.FieldU2("number_of_rdbs", scalar.UintActualAdd(1))
 	if !protectionAbsent {
 		d.FieldU16("crc")
 	}

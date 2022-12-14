@@ -41,7 +41,7 @@ var packetTypeNames = map[uint]string{
 func vorbisDecode(d *decode.D, _ any) any {
 	d.Endian = decode.LittleEndian
 
-	packetType := d.FieldUScalarFn("packet_type", func(d *decode.D) scalar.S {
+	packetType := d.FieldScalarUintFn("packet_type", func(d *decode.D) scalar.Uint {
 		packetTypeName := "unknown"
 		t := d.U8()
 		// 4.2.1. Common header decode
@@ -52,18 +52,18 @@ func vorbisDecode(d *decode.D, _ any) any {
 		if n, ok := packetTypeNames[uint(t)]; ok {
 			packetTypeName = n
 		}
-		return scalar.S{Actual: t, Sym: packetTypeName}
+		return scalar.Uint{Actual: t, Sym: packetTypeName}
 	})
 
-	switch packetType {
+	switch packetType.Actual {
 	case packetTypeIdentification, packetTypeSetup, packetTypeComment:
-		d.FieldUTF8("magic", 6, d.AssertStr("vorbis"))
+		d.FieldUTF8("magic", 6, d.StrAssert("vorbis"))
 	case packetTypeAudio:
 	default:
-		d.Fatalf("unknown packet type %d", packetType)
+		d.Fatalf("unknown packet type %d", packetType.Actual)
 	}
 
-	switch packetType {
+	switch packetType.Actual {
 	case packetTypeAudio:
 	case packetTypeIdentification:
 		// 1   1) [vorbis_version] = read 32 bits as unsigned integer
@@ -75,22 +75,22 @@ func vorbisDecode(d *decode.D, _ any) any {
 		// 7   7) [blocksize_0] = 2 exponent (read 4 bits as unsigned integer)
 		// 8   8) [blocksize_1] = 2 exponent (read 4 bits as unsigned integer)
 		// 9   9) [framing_flag] = read one bit
-		d.FieldU32("vorbis_version", d.ValidateU(0))
+		d.FieldU32("vorbis_version", d.UintValidate(0))
 		d.FieldU8("audio_channels")
 		d.FieldU32("audio_sample_rate")
 		d.FieldU32("bitrate_maximum")
 		d.FieldU32("bitrate_nominal")
 		d.FieldU32("bitrate_minimum")
 		// TODO: code/comment about 2.1.4. coding bits into byte sequences
-		d.FieldUFn("blocksize_1", func(d *decode.D) uint64 { return 1 << d.U4() })
-		d.FieldUFn("blocksize_0", func(d *decode.D) uint64 { return 1 << d.U4() })
+		d.FieldUintFn("blocksize_1", func(d *decode.D) uint64 { return 1 << d.U4() })
+		d.FieldUintFn("blocksize_0", func(d *decode.D) uint64 { return 1 << d.U4() })
 		// TODO: warning if blocksize0 > blocksize1
 		// TODO: warning if not 64-8192
 		d.FieldRawLen("padding0", 7, d.BitBufIsZero())
-		d.FieldU1("framing_flag", d.ValidateU(1))
+		d.FieldU1("framing_flag", d.UintValidate(1))
 	case packetTypeSetup:
-		d.FieldUFn("vorbis_codebook_count", func(d *decode.D) uint64 { return d.U8() + 1 })
-		d.FieldU24("codecooke_sync", d.ValidateU(0x564342), scalar.ActualHex)
+		d.FieldUintFn("vorbis_codebook_count", func(d *decode.D) uint64 { return d.U8() + 1 })
+		d.FieldU24("codecooke_sync", d.UintValidate(0x564342), scalar.UintHex)
 		d.FieldU16("codebook_dimensions")
 		d.FieldU24("codebook_entries")
 
@@ -118,7 +118,7 @@ func vorbisDecode(d *decode.D, _ any) any {
 
 		// note this uses vorbis bitpacking convention, bits are added LSB first per byte
 		d.FieldRawLen("padding0", 7, d.BitBufIsZero())
-		d.FieldU1("frame_bit", d.ValidateU(1))
+		d.FieldU1("frame_bit", d.UintValidate(1))
 	}
 
 	if d.BitsLeft() > 0 {

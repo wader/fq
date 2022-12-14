@@ -165,11 +165,11 @@ func main() {
 			if len(c.Enums) > 0 {
 				switch c.Type {
 				case "integer":
-					fmt.Printf("\t\tIntegerEnums: scalar.SToScalar{\n")
+					fmt.Printf("\t\tIntegerEnums: scalar.SintMap{\n")
 				case "uinteger":
-					fmt.Printf("\t\tUintegerEnums: scalar.UToScalar{\n")
+					fmt.Printf("\t\tUintegerEnums: scalar.UintMap{\n")
 				case "string":
-					fmt.Printf("\t\tStringEnums: scalar.StrToScalar{\n")
+					fmt.Printf("\t\tStringEnums: scalar.StrMap{\n")
 				}
 
 				// matroska.xml has dup keys (e.g. PARTS)

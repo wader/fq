@@ -10,83 +10,126 @@ import (
 
 {{- range $name, $t := $.types }}
 	// Type {{$name}}
-
-	// TryActual{{$name}} try assert actual value is a {{$name}} and return result
-	func (s S) TryActual{{$name}}() ({{$t.go_type}}, bool) {
-		v, ok := s.Actual.({{$t.go_type}})
-		return v, ok
+	// does not use embedding for common fields as it works poorly with struct literals
+	type {{$name}} struct {
+		Sym         any
+		Description string
+		Gap         bool
+		Actual {{$t.go_type}}
+		{{- if $t.display_format}}
+		DisplayFormat DisplayFormat
+		{{- end}}
 	}
 
-	// Actual{{$name}} asserts actual value is a {{$name}} and returns it
-	func (s S) Actual{{$name}}() {{$t.go_type}} {
-		v, ok := s.TryActual{{$name}}()
-		if !ok {
-			panic(fmt.Sprintf("failed to type assert s.Actual %v (%T) as {{$t.go_type}}", s.Actual, s.Actual))
+	// interp.Scalarable
+	func (s {{$name}}) ScalarActual() any { return s.Actual }
+	func (s {{$name}}) ScalarValue() any {
+		if s.Sym != nil {
+			return s.Sym
 		}
-		return v
+		return s.Actual
+	}
+	func (s {{$name}}) ScalarSym() any { return s.Sym }
+	func (s {{$name}}) ScalarDescription() string { return s.Description }
+	func (s {{$name}}) ScalarGap() bool { return s.Gap }
+	{{- if $t.display_format}}
+	func (s {{$name}}) ScalarDisplayFormat() DisplayFormat { return s.DisplayFormat }
+	{{- else }}
+	func (s {{$name}}) ScalarDisplayFormat() DisplayFormat { return 0 }
+	{{- end}}
+
+	func {{$name}}Actual(v {{$t.go_type}}) {{$name}}Mapper {
+		return {{$name}}Fn(func(s {{$name}}) ({{$name}}, error) { s.Actual = v; return s, nil })
+	}
+	func {{$name}}Sym(v any) {{$name}}Mapper {
+		return {{$name}}Fn(func(s {{$name}}) ({{$name}}, error) { s.Sym = v; return s, nil })
+	}
+	func {{$name}}Description(v string) {{$name}}Mapper {
+		return {{$name}}Fn(func(s {{$name}}) ({{$name}}, error) { s.Description = v; return s, nil })
 	}
 
-	// Actual{{$name}}Fn map actual {{$name}} using f
-	type Actual{{$name}}Fn func(a {{$t.go_type}}) {{$t.go_type}}
+	type {{$name}}Mapper interface {
+		Map{{$name}}({{$name}}) ({{$name}}, error)
+	}
 
-	func (fn Actual{{$name}}Fn) MapScalar(s S) (S, error) {
-		s.Actual = fn(s.Actual{{$name}}())
+	// {{$name}}Fn map actual {{$name}} using f
+	type {{$name}}Fn func(s {{$name}}) ({{$name}}, error)
+
+	func (fn {{$name}}Fn) Map{{$name}}(s {{$name}}) ({{$name}}, error) {
+		return fn(s)
+	}
+
+	// {{$name}}ActualFn map actual {{$name}} using f
+	type {{$name}}ActualFn func(a {{$t.go_type}}) {{$t.go_type}}
+
+	// TODO: error?
+	func (fn {{$name}}ActualFn) Map{{$name}}(s {{$name}}) ({{$name}}, error) {
+		s.Actual = fn(s.Actual)
 		return s, nil
 	}
 
-	// Sym{{$name}} asserts symbolic value is a {{$name}} and returns it
-	func (s S) Sym{{$name}}() {{$t.go_type}} {
-		v, ok := s.TrySym{{$name}}()
-		if !ok {
-			panic(fmt.Sprintf("failed to type assert s.Sym %v (%T) as {{$t.go_type}}", s.Sym, s.Sym))
-		}
-		return v
-	}
+	// {{$name}}SymFn map sym {{$name}} using f
+	type {{$name}}SymFn func(a any) any
 
-	// TrySym{{$name}} try assert symbolic value is a {{$name}} and return result
-	func (s S) TrySym{{$name}}() ({{$t.go_type}}, bool) {
-		v, ok := s.Sym.({{$t.go_type}})
-		return v, ok
-	}
-
-	// Sym{{$name}}Fn map sym {{$name}} using f
-	type Sym{{$name}}Fn func(a {{$t.go_type}}) {{$t.go_type}}
-
-	func (f Sym{{$name}}Fn) MapScalar(s S) (S, error) {
-		s.Sym = f(s.Sym{{$name}}())
+	func (f {{$name}}SymFn) Map{{$name}}(s {{$name}}) ({{$name}}, error) {
+		s.Sym = f(s.Sym)
 		return s, nil
 	}
+
+	// {{$name}}DescriptionFn map sym {{$name}} using f
+	type {{$name}}DescriptionFn func(a string) string
+
+	func (f {{$name}}DescriptionFn) Map{{$name}}(s {{$name}}) ({{$name}}, error) {
+		s.Description = f(s.Description)
+		return s, nil
+	}
+
+	{{- range $sym_name, $sym_t := $.types }}
+		// TrySym{{$sym_name}} try assert symbolic value is a {{$sym_name}} and return result
+		func (s {{$name}}) TrySym{{$sym_name}}() ({{$sym_t.go_type}}, bool) {
+			//nolint:gosimple,nolintlint
+			v, ok := s.Sym.({{$sym_t.go_type}})
+			return v, ok
+		}
+
+		// Sym{{$sym_name}} asserts symbolic value is a {{$sym_name}} and returns it
+		func (s {{$name}}) Sym{{$sym_name}}() {{$sym_t.go_type}} {
+			v, ok := s.TrySym{{$sym_name}}()
+			if !ok {
+				panic(fmt.Sprintf("failed to type assert s.Sym %v (%T) as {{$t.go_type}}", s.Sym, s.Sym))
+			}
+			return v
+		}
+	{{- end}}
 {{end}}
 
 {{- range $from_name, $from := $.types }}
-	{{- if ne $from.map_from false}}
-		// Map {{$from_name}} -> Scalar
-		type {{$from_name}}ToScalar map[{{$from.go_type}}]S
-		func (m {{$from_name}}ToScalar) MapScalar(s S) (S, error) {
-			a := s.Actual{{$from_name}}()
-			if ns, ok := m[a]; ok {
-				ns.Actual = a
-				s = ns
+	{{- if $from.map_from}}
+		// Map {{$from_name}}
+		type {{$from_name}}Map map[{{$from.go_type}}]{{$from_name}}
+		func (m {{$from_name}}Map) Map{{$from_name}}(s {{$from_name}}) ({{$from_name}}, error) {
+			if ns, ok := m[s.Actual]; ok {
+				ns.Actual = s.Actual
+				return ns, nil
 			}
 			return s, nil
 		}
 
-		// Map {{$from_name}} -> Description
-		type {{$from_name}}ToDescription map[{{$from.go_type}}]string
-		func (m {{$from_name}}ToDescription) MapScalar(s S) (S, error) {
-			a := s.Actual{{$from_name}}()
-			if d, ok := m[a]; ok {
+		// Map {{$from_name}} description
+		type {{$from_name}}MapDescription map[{{$from.go_type}}]string
+		func (m {{$from_name}}MapDescription) Map{{$from_name}}(s {{$from_name}}) ({{$from_name}}, error) {
+			if d, ok := m[s.Actual]; ok {
 				s.Description = d
 			}
 			return s, nil
 		}
 
 		{{- range $to_name, $to := $.types }}
-			{{- if ne $to.map_to false}}
-				// Map {{$from_name}} -> Sym {{$to_name}}
-				type {{$from_name}}ToSym{{$to_name}} map[{{$from.go_type}}]{{$to.go_type}}
-				func (m {{$from_name}}ToSym{{$to_name}}) MapScalar(s S) (S, error) {
-					if t, ok := m[s.Actual{{$from_name}}()]; ok {
+			{{- if $to.map_to}}
+				// Map {{$from_name}} sym {{$to_name}}
+				type {{$from_name}}MapSym{{$to_name}} map[{{$from.go_type}}]{{$to.go_type}}
+				func (m {{$from_name}}MapSym{{$to_name}}) Map{{$from_name}}(s {{$from_name}}) ({{$from_name}}, error) {
+					if t, ok := m[s.Actual]; ok {
 						s.Sym = t
 					}
 					return s, nil

@@ -42,9 +42,9 @@ func decodeChunk(d *decode.D, expectedChunkID string, fn func(d *decode.D)) {
 func webpDecode(d *decode.D, _ any) any {
 	d.Endian = decode.LittleEndian
 
-	d.FieldUTF8("riff_id", 4, d.AssertStr("RIFF"))
+	d.FieldUTF8("riff_id", 4, d.StrAssert("RIFF"))
 	riffLength := d.FieldU32("riff_length")
-	d.FieldUTF8("webp_id", 4, d.AssertStr("WEBP"))
+	d.FieldUTF8("webp_id", 4, d.StrAssert("WEBP"))
 
 	d.FramedFn(int64(riffLength-4)*8, func(d *decode.D) {
 		p := d.PeekBytes(4)

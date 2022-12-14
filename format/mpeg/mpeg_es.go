@@ -73,7 +73,7 @@ const (
 	Forbidden1                          = 0xFF
 )
 
-var odTagNames = scalar.UToSymStr{
+var odTagNames = scalar.UintMapSymStr{
 	Forbidden0:                          "Forbidden",
 	ObjectDescrTag:                      "ObjectDescrTag",
 	InitialObjectDescrTag:               "InitialObjectDescrTag",
@@ -136,7 +136,7 @@ const (
 	IPMPToolStream          = 0x0B
 )
 
-var streamTypeNames = scalar.UToSymStr{
+var streamTypeNames = scalar.UintMapSymStr{
 	Forbidden:               "Forbidden",
 	ObjectDescriptorStream:  "ObjectDescriptorStream",
 	ClockReferenceStream:    "ClockReferenceStream",
@@ -220,7 +220,7 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, _ int, fn func(d *decode.D))
 						// Xiph-style lacing (similar to ogg) of n-1 packets, last is reset of block
 						d.FieldArray("laces", func(d *decode.D) {
 							for i := uint64(0); i < numPackets; i++ {
-								l := d.FieldUFn("lace", func(d *decode.D) uint64 {
+								l := d.FieldUintFn("lace", func(d *decode.D) uint64 {
 									var l uint64
 									for {
 										n := d.U8()
@@ -266,7 +266,7 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, _ int, fn func(d *decode.D))
 	// TODO: expectedTagID
 
 	tagID := d.FieldU8("tag_id", odTagNames)
-	tagLen := d.FieldUFn("length", esLengthEncoding)
+	tagLen := d.FieldUintFn("length", esLengthEncoding)
 
 	if fn != nil {
 		d.FramedFn(int64(tagLen)*8, fn)

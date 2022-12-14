@@ -39,7 +39,7 @@ const (
 	MetadataBlockPicture       = 6
 )
 
-var metadataBlockNames = scalar.UToSymStr{
+var metadataBlockNames = scalar.UintMapSymStr{
 	MetadataBlockStreaminfo:    "streaminfo",
 	MetadataBlockPadding:       "padding",
 	MetadataBlockApplication:   "application",
@@ -74,7 +74,7 @@ func metadatablockDecode(d *decode.D, _ any) any {
 		d.FieldArray("seekpoints", func(d *decode.D) {
 			for i := uint64(0); i < seektableCount; i++ {
 				d.FieldStruct("seekpoint", func(d *decode.D) {
-					d.FieldU64("sample_number", scalar.UToScalar{
+					d.FieldU64("sample_number", scalar.UintMap{
 						0xffff_ffff_ffff_ffff: {Description: "Placeholder"},
 					})
 					d.FieldU64("offset")

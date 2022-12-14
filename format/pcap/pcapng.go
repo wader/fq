@@ -37,7 +37,7 @@ const (
 	ngLittleEndian = 0x4d3c2b1a
 )
 
-var ngEndianMap = scalar.UToSymStr{
+var ngEndianMap = scalar.UintMapSymStr{
 	ngBigEndian:    "big_endian",
 	ngLittleEndian: "little_endian",
 }
@@ -51,7 +51,7 @@ const (
 )
 
 // from https://pcapng.github.io/pcapng/draft-ietf-opsawg-pcapng.html#section_block_code_registry
-var blockTypeMap = scalar.UToScalar{
+var blockTypeMap = scalar.UintMap{
 	blockTypeInterfaceDescription: {Sym: "interface_description", Description: "Interface Description Block"},
 	0x00000002:                    {Description: "Packet Block"},
 	0x00000003:                    {Description: "Simple Packet Block"},
@@ -120,7 +120,7 @@ const (
 	interfaceStatisticsUsrdeliv     = 8
 )
 
-var sectionHeaderOptionsMap = scalar.UToScalar{
+var sectionHeaderOptionsMap = scalar.UintMap{
 	optionEnd:                   {Sym: "end", Description: "End of options"},
 	optionComment:               {Sym: "comment", Description: "Comment"},
 	sectionHeaderOptionHardware: {Sym: "hardware"},
@@ -128,7 +128,7 @@ var sectionHeaderOptionsMap = scalar.UToScalar{
 	sectionHeaderOptionUserAppl: {Sym: "userappl"},
 }
 
-var interfaceDescriptionOptionsMap = scalar.UToScalar{
+var interfaceDescriptionOptionsMap = scalar.UintMap{
 	optionEnd:                       {Sym: "end", Description: "End of options"},
 	optionComment:                   {Sym: "comment", Description: "Comment"},
 	interfaceDescriptionName:        {Sym: "name"},
@@ -145,7 +145,7 @@ var interfaceDescriptionOptionsMap = scalar.UToScalar{
 	interfaceDescriptionTsoffset:    {Sym: "tsoffset"},
 }
 
-var enhancedPacketOptionsMap = scalar.UToScalar{
+var enhancedPacketOptionsMap = scalar.UintMap{
 	optionEnd:               {Sym: "end", Description: "End of options"},
 	optionComment:           {Sym: "comment", Description: "Comment"},
 	enhancedPacketFlags:     {Sym: "flags"},
@@ -153,7 +153,7 @@ var enhancedPacketOptionsMap = scalar.UToScalar{
 	enhancedPacketDropcount: {Sym: "dropcount"},
 }
 
-var nameResolutionOptionsMap = scalar.UToScalar{
+var nameResolutionOptionsMap = scalar.UintMap{
 	optionEnd:                {Sym: "end", Description: "End of options"},
 	optionComment:            {Sym: "comment", Description: "Comment"},
 	nameResolutionDNSName:    {Sym: "dnsname"},
@@ -161,7 +161,7 @@ var nameResolutionOptionsMap = scalar.UToScalar{
 	nameResolutionDNSIP6addr: {Sym: "dnsip6addr"},
 }
 
-var interfaceStatisticsOptionsMap = scalar.UToScalar{
+var interfaceStatisticsOptionsMap = scalar.UintMap{
 	optionEnd:                       {Sym: "end", Description: "End of options"},
 	optionComment:                   {Sym: "comment", Description: "Comment"},
 	interfaceStatisticsStarttime:    {Sym: "starttime"},
@@ -179,13 +179,13 @@ const (
 	nameResolutionRecordIpv6 = 0x0002
 )
 
-var nameResolutionRecordMap = scalar.UToSymStr{
+var nameResolutionRecordMap = scalar.UintMapSymStr{
 	nameResolutionRecordEnd:  "end",
 	nameResolutionRecordIpv4: "ipv4",
 	nameResolutionRecordIpv6: "ipv6",
 }
 
-func decoodeOptions(d *decode.D, opts scalar.UToScalar) {
+func decoodeOptions(d *decode.D, opts scalar.UintMap) {
 	if d.BitsLeft() < 32 {
 		return
 	}
@@ -205,9 +205,9 @@ func decoodeOptions(d *decode.D, opts scalar.UToScalar) {
 }
 
 // TODO: share
-var mapUToIPv4Sym = scalar.Fn(func(s scalar.S) (scalar.S, error) {
+var mapUToIPv4Sym = scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
 	var b [4]byte
-	binary.BigEndian.PutUint32(b[:], uint32(s.ActualU()))
+	binary.BigEndian.PutUint32(b[:], uint32(s.Actual))
 	s.Sym = net.IP(b[:]).String()
 	return s, nil
 })
@@ -266,7 +266,7 @@ var blockFns = map[uint64]func(d *decode.D, dc *decodeContext){
 					d.FramedFn(int64(length)*8, func(d *decode.D) {
 						switch typ {
 						case nameResolutionRecordIpv4:
-							d.FieldU32BE("address", mapUToIPv4Sym, scalar.ActualHex)
+							d.FieldU32BE("address", mapUToIPv4Sym, scalar.UintHex)
 							d.FieldArray("entries", func(d *decode.D) {
 								for !d.End() {
 									d.FieldUTF8Null("string")
@@ -292,7 +292,7 @@ var blockFns = map[uint64]func(d *decode.D, dc *decodeContext){
 }
 
 func decodeBlock(d *decode.D, dc *decodeContext) {
-	typ := d.FieldU32("type", blockTypeMap, scalar.ActualHex)
+	typ := d.FieldU32("type", blockTypeMap, scalar.UintHex)
 	length := d.FieldU32("length") - 8
 	const footerLengthSize = 32
 	blockLen := int64(length)*8 - footerLengthSize
@@ -317,10 +317,10 @@ func decodeSection(d *decode.D, dc *decodeContext) {
 
 		// treat header block differently as it has endian info
 		d.FieldStruct("block", func(d *decode.D) {
-			d.FieldU32("type", d.AssertU(blockTypeSectionHeader), blockTypeMap, scalar.ActualHex)
+			d.FieldU32("type", d.UintAssert(blockTypeSectionHeader), blockTypeMap, scalar.UintHex)
 
 			d.SeekRel(32)
-			endian := d.FieldU32("byte_order_magic", ngEndianMap, scalar.ActualHex)
+			endian := d.FieldU32("byte_order_magic", ngEndianMap, scalar.UintHex)
 			// peeks length and byte-order magic and marks away length
 			switch endian {
 			case ngBigEndian:

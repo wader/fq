@@ -424,7 +424,7 @@ var ChapterTranslate = ebml.Tag{
 		Name:       "chapter_translate_codec",
 		Definition: "This `ChapterTranslate` applies to this chapter codec of the given chapter edition(s); see (#chapprocesscodecid-element).",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			0: {
 				Sym:         "matroska_script",
 				Description: "Chapter commands using the Matroska Script codec.",
@@ -639,7 +639,7 @@ var TrackEntry = ebml.Tag{
 		Name:       "track_type",
 		Definition: "The `TrackType` defines the type of each frame found in the Track. The value **SHOULD** be stored on 1 octet.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			1: {
 				Sym:         "video",
 				Description: "An image.",
@@ -914,7 +914,7 @@ var TrackTranslate = ebml.Tag{
 		Name:       "track_translate_codec",
 		Definition: "This `TrackTranslate` applies to this chapter codec of the given chapter edition(s); see (#chapprocesscodecid-element).",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			0: {
 				Sym:         "matroska_script",
 				Description: "Chapter commands using the Matroska Script codec.",
@@ -937,7 +937,7 @@ var Video = ebml.Tag{
 		Name:       "flag_interlaced",
 		Definition: "Specify whether the video frames in this track are interlaced or not.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			0: {
 				Sym:         "undetermined",
 				Description: "Unknown status.",
@@ -956,7 +956,7 @@ var Video = ebml.Tag{
 		Name:       "field_order",
 		Definition: "Specify the field ordering of video frames in this track.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			0: {
 				Sym:         "progressive",
 				Description: "Interlaced frames.",
@@ -985,7 +985,7 @@ var Video = ebml.Tag{
 		Name:       "stereo_mode",
 		Definition: "Stereo-3D video mode. There are some more details in (#multi-planar-and-3d-videos).",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			0: {
 				Sym: "mono",
 			},
@@ -1037,7 +1037,7 @@ var Video = ebml.Tag{
 		Name:       "alpha_mode",
 		Definition: "Indicate whether the BlockAdditional Element with BlockAddID of \"1\" contains Alpha data, as defined by to the Codec Mapping for the `CodecID`. Undefined values **SHOULD NOT** be used as the behavior of known implementations is different (considered either as 0 or 1).",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			0: {
 				Sym:         "none",
 				Description: "The BlockAdditional Element with BlockAddID of \"1\" does not exist or **SHOULD NOT** be considered as containing such data.",
@@ -1052,7 +1052,7 @@ var Video = ebml.Tag{
 		Name:       "old_stereo_mode",
 		Definition: "Bogus StereoMode value used in old versions of libmatroska.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			0: {
 				Sym: "mono",
 			},
@@ -1111,7 +1111,7 @@ var Video = ebml.Tag{
 		Name:       "display_unit",
 		Definition: "How DisplayWidth & DisplayHeight are interpreted.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			0: {
 				Sym: "pixels",
 			},
@@ -1133,7 +1133,7 @@ var Video = ebml.Tag{
 		Name:       "aspect_ratio_type",
 		Definition: "Specify the possible modifications to the aspect ratio.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			0: {
 				Sym: "free_resizing",
 			},
@@ -1177,7 +1177,7 @@ var Colour = ebml.Tag{
 		Name:       "matrix_coefficients",
 		Definition: "The Matrix Coefficients of the video used to derive luma and chroma values from red, green, and blue color primaries. For clarity, the value and meanings for MatrixCoefficients are adopted from Table 4 of ISO/IEC 23001-8:2016 or ITU-T H.273.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			0: {
 				Sym: "identity",
 			},
@@ -1254,7 +1254,7 @@ var Colour = ebml.Tag{
 		Name:       "chroma_siting_horz",
 		Definition: "How chroma is subsampled horizontally.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			0: {
 				Sym: "unspecified",
 			},
@@ -1270,7 +1270,7 @@ var Colour = ebml.Tag{
 		Name:       "chroma_siting_vert",
 		Definition: "How chroma is subsampled vertically.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			0: {
 				Sym: "unspecified",
 			},
@@ -1286,7 +1286,7 @@ var Colour = ebml.Tag{
 		Name:       "range",
 		Definition: "Clipping of the color ranges.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			0: {
 				Sym: "unspecified",
 			},
@@ -1305,7 +1305,7 @@ var Colour = ebml.Tag{
 		Name:       "transfer_characteristics",
 		Definition: "The transfer characteristics of the video. For clarity, the value and meanings for TransferCharacteristics are adopted from Table 3 of ISO/IEC 23091-4 or ITU-T H.273.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			0: {
 				Sym: "reserved",
 			},
@@ -1369,7 +1369,7 @@ var Colour = ebml.Tag{
 		Name:       "primaries",
 		Definition: "The colour primaries of the video. For clarity, the value and meanings for Primaries are adopted from Table 2 of ISO/IEC 23091-4 or ITU-T H.273.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			0: {
 				Sym: "reserved",
 			},
@@ -1489,7 +1489,7 @@ var Projection = ebml.Tag{
 		Name:       "projection_type",
 		Definition: "Describes the projection used for this video track.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			0: {
 				Sym: "rectangular",
 			},
@@ -1556,7 +1556,7 @@ var Audio = ebml.Tag{
 		Name:       "emphasis",
 		Definition: "Audio emphasis applied on audio samples. The player **MUST** apply the inverse emphasis to get the proper audio samples.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			0: {
 				Sym: "no_emphasis",
 			},
@@ -1642,7 +1642,7 @@ var TrackPlane = ebml.Tag{
 		Name:       "track_plane_type",
 		Definition: "The kind of plane this track corresponds to.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			0: {
 				Sym: "left_eye",
 			},
@@ -1682,7 +1682,7 @@ var ContentEncoding = ebml.Tag{
 		Name:       "content_encoding_scope",
 		Definition: "A bit field that describes which Elements have been modified in this way. Values (big-endian) can be OR'ed.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			1: {
 				Sym:         "block",
 				Description: "All frame contents, excluding lacing data.",
@@ -1701,7 +1701,7 @@ var ContentEncoding = ebml.Tag{
 		Name:       "content_encoding_type",
 		Definition: "A value describing what kind of transformation is applied.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			0: {
 				Sym: "compression",
 			},
@@ -1727,7 +1727,7 @@ var ContentCompression = ebml.Tag{
 		Name:       "content_comp_algo",
 		Definition: "The compression algorithm used.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			0: {
 				Sym:         "zlib",
 				Description: "zlib compression [@!RFC1950].",
@@ -1758,7 +1758,7 @@ var ContentEncryption = ebml.Tag{
 		Name:       "content_enc_algo",
 		Definition: "The encryption algorithm used.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			0: {
 				Sym:         "not_encrypted",
 				Description: "The data are not encrypted.",
@@ -1809,7 +1809,7 @@ var ContentEncryption = ebml.Tag{
 		Name:       "content_sig_algo",
 		Definition: "The algorithm used for the signature.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			0: {
 				Sym: "not_signed",
 			},
@@ -1822,7 +1822,7 @@ var ContentEncryption = ebml.Tag{
 		Name:       "content_sig_hash_algo",
 		Definition: "The hash algorithm used for the signature.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			0: {
 				Sym: "not_signed",
 			},
@@ -1841,7 +1841,7 @@ var ContentEncAESSettings = ebml.Tag{
 		Name:       "aessettings_cipher_mode",
 		Definition: "The AES cipher mode used in the encryption.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			1: {
 				Sym:         "aes_ctr",
 				Description: "Counter [@?SP.800-38A].",
@@ -2081,7 +2081,7 @@ var ChapterAtom = ebml.Tag{
 		Name:       "chapter_skip_type",
 		Definition: "Indicate what type of content the ChapterAtom contains and might be skipped. It can be used to automatically skip content based on the type. If a `ChapterAtom` is inside a `ChapterAtom` that has a `ChapterSkipType` set, it **MUST NOT** have a `ChapterSkipType` or have a `ChapterSkipType` with the same value as it's parent `ChapterAtom`. If the `ChapterAtom` doesn't contain a `ChapterTimeEnd`, the value of the `ChapterSkipType` is only valid until the next `ChapterAtom` with a `ChapterSkipType` value or the end of the file.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			0: {
 				Sym:         "no_skipping",
 				Description: "Content which should not be skipped.",
@@ -2193,7 +2193,7 @@ var ChapProcessCommand = ebml.Tag{
 		Name:       "chap_process_time",
 		Definition: "Defines when the process command **SHOULD** be handled",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			0: {
 				Sym: "during_the_whole_chapter",
 			},
@@ -2238,7 +2238,7 @@ var Targets = ebml.Tag{
 		Name:       "target_type_value",
 		Definition: "A number to indicate the logical level of the target.",
 		Type:       ebml.Uinteger,
-		UintegerEnums: scalar.UToScalar{
+		UintegerEnums: scalar.UintMap{
 			70: {
 				Sym:         "collection",
 				Description: "The highest hierarchical level that tags can describe.",
@@ -2273,7 +2273,7 @@ var Targets = ebml.Tag{
 		Name:       "target_type",
 		Definition: "An informational string that can be used to display the logical level of the target like \"ALBUM\", \"TRACK\", \"MOVIE\", \"CHAPTER\", etc ; see Section 6.4 of [@?MatroskaTags].",
 		Type:       ebml.String,
-		StringEnums: scalar.StrToScalar{
+		StringEnums: scalar.StrMap{
 			"COLLECTION": {
 				Sym: "targettypevalue_70",
 			},

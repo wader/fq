@@ -34,7 +34,7 @@ func decodeMarkdown(d *decode.D, _ any) any {
 		panic(err)
 	}
 
-	var s scalar.S
+	var s scalar.Any
 	s.Actual = node(markdown.Parse(b, nil))
 	d.Value.V = &s
 	d.Value.Range.Len = d.Len()

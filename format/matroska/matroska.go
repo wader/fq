@@ -106,7 +106,7 @@ const (
 	lacingTypeEBML  = 0b11
 )
 
-var lacingTypeNames = scalar.UToSymStr{
+var lacingTypeNames = scalar.UintMapSymStr{
 	lacingTypeNone:  "none",
 	lacingTypeXiph:  "xiph",
 	lacingTypeFixed: "fixed",
@@ -127,7 +127,7 @@ func decodeLacingFn(d *decode.D, lacingType int, fn func(d *decode.D)) {
 		numLaces := int(d.FieldU8("num_laces"))
 		d.FieldArray("lace_sizes", func(d *decode.D) {
 			for i := 0; i < numLaces; i++ {
-				s := int64(d.FieldUFn("lace_size", decodeXiphLaceSize))
+				s := int64(d.FieldUintFn("lace_size", decodeXiphLaceSize))
 				laceSizes = append(laceSizes, s)
 			}
 			laceSizes = append(laceSizes, -1)
@@ -135,10 +135,10 @@ func decodeLacingFn(d *decode.D, lacingType int, fn func(d *decode.D)) {
 	case lacingTypeEBML:
 		numLaces := int(d.FieldU8("num_laces"))
 		d.FieldArray("lace_sizes", func(d *decode.D) {
-			s := int64(d.FieldUFn("lace_size", decodeVint)) // first is unsigned, not ranged shifted
+			s := int64(d.FieldUintFn("lace_size", decodeVint)) // first is unsigned, not ranged shifted
 			laceSizes = append(laceSizes, s)
 			for i := 0; i < numLaces-1; i++ {
-				d := int64(d.FieldUFn("lace_size_delta", decodeRawVint))
+				d := int64(d.FieldUintFn("lace_size_delta", decodeRawVint))
 				// range shifting
 				switch {
 				case d&0b1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1000_0000 == 0b0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1000_0000:
@@ -258,8 +258,8 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 					Type: ebml.Unknown,
 				}
 
-				tagID := d.FieldUFn("id", decodeRawVint, scalar.Fn(func(s scalar.S) (scalar.S, error) {
-					n := s.ActualU()
+				tagID := d.FieldUintFn("id", decodeRawVint, scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
+					n := s.Actual
 					var ok bool
 					a, ok = tag[n]
 					if !ok {
@@ -268,10 +268,10 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 							a = ebml.Attribute{
 								Type: ebml.Unknown,
 							}
-							return scalar.S{Actual: n, ActualDisplay: scalar.NumberHex, Description: "Unknown"}, nil
+							return scalar.Uint{Actual: n, DisplayFormat: scalar.NumberHex, Description: "Unknown"}, nil
 						}
 					}
-					return scalar.S{Actual: n, ActualDisplay: scalar.NumberHex, Sym: a.Name, Description: a.Definition}, nil
+					return scalar.Uint{Actual: n, DisplayFormat: scalar.NumberHex, Sym: a.Name, Description: a.Definition}, nil
 				}))
 				d.FieldValueStr("type", ebml.TypeNames[a.Type])
 
@@ -286,7 +286,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 				//    element that is not a valid sub-element of that Master-element
 				// TODO: should also handle garbage between
 				const maxStringTagSize = 100 * 1024 * 1024
-				tagSize := d.FieldUFn("size", decodeVint)
+				tagSize := d.FieldUintFn("size", decodeVint)
 
 				// assert sane tag size
 				// TODO: strings are limited for now because they are read into memory
@@ -309,29 +309,32 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 					// nop
 				}
 
-				optionalMap := func(sm scalar.Mapper) scalar.Mapper {
-					return scalar.Fn(func(s scalar.S) (scalar.S, error) {
-						if sm != nil {
-							return sm.MapScalar(s)
-						}
-						return s, nil
-					})
-				}
-
 				switch a.Type {
 				case ebml.Unknown:
 					d.FieldRawLen("data", int64(tagSize)*8)
 				case ebml.Integer:
-					d.FieldS("value", int(tagSize)*8, optionalMap(a.IntegerEnums))
+					var sm []scalar.SintMapper
+					if a.IntegerEnums != nil {
+						sm = append(sm, a.IntegerEnums)
+					}
+					d.FieldS("value", int(tagSize)*8, sm...)
 				case ebml.Uinteger:
-					v := d.FieldU("value", int(tagSize)*8, optionalMap(a.UintegerEnums))
+					var sm []scalar.UintMapper
+					if a.UintegerEnums != nil {
+						sm = append(sm, a.UintegerEnums)
+					}
+					v := d.FieldU("value", int(tagSize)*8, sm...)
 					if dc.currentTrack != nil && tagID == ebml_matroska.TrackNumberID {
 						dc.currentTrack.number = int(v)
 					}
 				case ebml.Float:
 					d.FieldF("value", int(tagSize)*8)
 				case ebml.String:
-					v := d.FieldUTF8("value", int(tagSize), optionalMap(a.StringEnums))
+					var sm []scalar.StrMapper
+					if a.StringEnums != nil {
+						sm = append(sm, a.StringEnums)
+					}
+					v := d.FieldUTF8("value", int(tagSize), sm...)
 					if dc.currentTrack != nil && tagID == ebml_matroska.CodecIDID {
 						dc.currentTrack.codec = v
 					}
@@ -450,7 +453,7 @@ func matroskaDecode(d *decode.D, _ any) any {
 		case "A_FLAC":
 			t.parentD.RangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
 				d.FieldStruct("value", func(d *decode.D) {
-					d.FieldUTF8("magic", 4, d.AssertStr("fLaC"))
+					d.FieldUTF8("magic", 4, d.StrAssert("fLaC"))
 					dv, v := d.FieldFormat("metadatablocks", flacMetadatablocksFormat, nil)
 					flacMetadatablockOut, ok := v.(format.FlacMetadatablocksOut)
 					if dv != nil && !ok {
@@ -489,7 +492,7 @@ func matroskaDecode(d *decode.D, _ any) any {
 	for _, b := range dc.blocks {
 		b.d.RangeFn(b.r.Start, b.r.Len, func(d *decode.D) {
 			var lacing uint64
-			trackNumber := d.FieldUFn("track_number", decodeVint)
+			trackNumber := d.FieldUintFn("track_number", decodeVint)
 			d.FieldU16("timestamp")
 			if b.simple {
 				d.FieldStruct("flags", func(d *decode.D) {

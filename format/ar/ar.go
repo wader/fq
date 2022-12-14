@@ -22,21 +22,20 @@ func init() {
 }
 
 func decodeAr(d *decode.D, _ any) any {
-	d.FieldUTF8("signature", 8, d.AssertStr("!<arch>\n"))
+	d.FieldUTF8("signature", 8, d.StrAssert("!<arch>\n"))
 	d.FieldArray("files", func(d *decode.D) {
 		for !d.End() {
 			d.FieldStruct("file", func(d *decode.D) {
 				d.FieldUTF8("identifier", 16, scalar.ActualTrimSpace)
-				// TODO: try scalar.DescriptionSymUUnixTime
-				d.FieldUTF8("modification_timestamp", 12, scalar.ActualTrimSpace, scalar.TrySymUParseUint(10))
-				d.FieldUTF8("owner_id", 6, scalar.ActualTrimSpace, scalar.TrySymUParseUint(10))
-				d.FieldUTF8("group_id", 6, scalar.ActualTrimSpace, scalar.TrySymUParseUint(10))
-				d.FieldUTF8("file_mode", 8, scalar.ActualTrimSpace, scalar.TrySymUParseUint(8)) // Octal
-				sizeS := d.FieldScalarUTF8("file_size", 10, scalar.ActualTrimSpace, scalar.TrySymUParseUint(10))
-				if sizeS.Sym == nil {
+				d.FieldUTF8("modification_timestamp", 12, scalar.ActualTrimSpace, scalar.TryStrSymParseUint(10))
+				d.FieldUTF8("owner_id", 6, scalar.ActualTrimSpace, scalar.TryStrSymParseUint(10))
+				d.FieldUTF8("group_id", 6, scalar.ActualTrimSpace, scalar.TryStrSymParseUint(10))
+				d.FieldUTF8("file_mode", 8, scalar.ActualTrimSpace, scalar.TryStrSymParseUint(8)) // Octal
+				sizeStr := d.FieldScalarUTF8("file_size", 10, scalar.ActualTrimSpace, scalar.TryStrSymParseUint(10))
+				if sizeStr.Sym == nil {
 					d.Fatalf("could not decode file_size")
 				}
-				size := int64(sizeS.SymU()) * 8
+				size := int64(sizeStr.SymUint()) * 8
 				d.FieldUTF8("ending_characters", 2)
 				d.FieldFormatOrRawLen("data", size, probeFormat, nil)
 				padding := d.AlignBits(16)

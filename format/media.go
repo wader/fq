@@ -46,7 +46,7 @@ const (
 	MPEGObjectTypeNONE              = 0
 )
 
-var MpegObjectTypeNames = scalar.UToSymStr{
+var MpegObjectTypeNames = scalar.UintMapSymStr{
 	MPEGObjectTypeMOV_TEXT:          "MPEGObjectTypeMOV_TEXT",
 	MPEGObjectTypeMPEG4:             "MPEGObjectTypeMPEG4",
 	MPEGObjectTypeH264:              "MPEGObjectTypeH264",
@@ -142,7 +142,7 @@ const (
 	MPEGAudioObjectTypePS        = 29
 )
 
-var MPEGAudioObjectTypeNames = scalar.UToScalar{
+var MPEGAudioObjectTypeNames = scalar.UintMap{
 	0:                            {Sym: "mull", Description: "Null"},
 	MPEGAudioObjectTypeMain:      {Sym: "aac_main", Description: "AAC Main"},
 	MPEGAudioObjectTypeLC:        {Sym: "aac_lc", Description: "AAC Low Complexity)"},
@@ -194,7 +194,7 @@ var MPEGAudioObjectTypeNames = scalar.UToScalar{
 // based on ffmpeg/libavutil/pixfmt.h
 //
 //nolint:revive
-var ISO_23091_2_ColourPrimariesMap = scalar.UToScalar{
+var ISO_23091_2_ColourPrimariesMap = scalar.UintMap{
 	1:  {Sym: "bt709", Description: "ITU-R BT1361 / IEC 61966-2-4 / SMPTE RP 177 Annex B"},
 	2:  {Sym: "unspecified", Description: "Unspecified"},
 	3:  {Sym: "reserved", Description: "Reserved"},
@@ -211,7 +211,7 @@ var ISO_23091_2_ColourPrimariesMap = scalar.UToScalar{
 }
 
 //nolint:revive
-var ISO_23091_2_TransferCharacteristicMap = scalar.UToScalar{
+var ISO_23091_2_TransferCharacteristicMap = scalar.UintMap{
 	1:  {Sym: "bt709", Description: "ITU-R BT1361"},
 	2:  {Sym: "unspecified", Description: "Unspecified"},
 	3:  {Sym: "reserved", Description: "Reserved"},
@@ -233,7 +233,7 @@ var ISO_23091_2_TransferCharacteristicMap = scalar.UToScalar{
 }
 
 //nolint:revive
-var ISO_23091_2_MatrixCoefficients = scalar.UToScalar{
+var ISO_23091_2_MatrixCoefficients = scalar.UintMap{
 	0:  {Sym: "rgb", Description: "GBR, IEC 61966-2-1 (sRGB), YZX and ST 428-1"},
 	1:  {Sym: "bt709", Description: "ITU-R BT1361 / IEC 61966-2-4 xvYCC709 / derived in SMPTE RP 177 Annex B"},
 	2:  {Sym: "unspecified", Description: "Unspecified"},
@@ -329,7 +329,7 @@ const (
 	WAVTagVORBIS          = 0x566f
 )
 
-var WAVTagNames = scalar.UToSymStr{
+var WAVTagNames = scalar.UintMapSymStr{
 	WAVTagPCM_S16LE:       "pcm_s16le",
 	WAVTagADPCM_MS:        "adpcm_ms",
 	WAVTagPCM_F32LE:       "pcm_f32le",

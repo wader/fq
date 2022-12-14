@@ -32,7 +32,7 @@ const (
 	extensionApplication      = 0xff
 )
 
-var extensionNames = scalar.UToSymStr{
+var extensionNames = scalar.UintMapSymStr{
 	extensionPlainText:        "PlainText",
 	extensionGraphicalControl: "GraphicalControl",
 	extensionComment:          "Comment",
@@ -54,14 +54,14 @@ func fieldColorMap(d *decode.D, name string, bitDepth int) {
 func gifDecode(d *decode.D, _ any) any {
 	d.Endian = decode.LittleEndian
 
-	d.FieldUTF8("header", 6, d.AssertStr("GIF87a", "GIF89a"))
+	d.FieldUTF8("header", 6, d.StrAssert("GIF87a", "GIF89a"))
 
 	d.FieldU16("width")
 	d.FieldU16("height")
 	gcpFollows := d.FieldBool("gcp_follows")
-	d.FieldUFn("color_resolution", func(d *decode.D) uint64 { return d.U3() + 1 })
+	d.FieldUintFn("color_resolution", func(d *decode.D) uint64 { return d.U3() + 1 })
 	d.FieldU1("zero")
-	bitDepth := d.FieldUFn("bit_depth", func(d *decode.D) uint64 { return d.U3() + 1 })
+	bitDepth := d.FieldUintFn("bit_depth", func(d *decode.D) uint64 { return d.U3() + 1 })
 	d.FieldU8("black_color")
 	d.FieldU8("pixel_aspect_ratio")
 
@@ -78,7 +78,7 @@ func gifDecode(d *decode.D, _ any) any {
 			case '!': /* "!" */
 				d.FieldStruct("extension_block", func(d *decode.D) {
 					d.FieldU8("introducer")
-					functionCode := d.FieldU8("function_code", extensionNames, scalar.ActualHex)
+					functionCode := d.FieldU8("function_code", extensionNames, scalar.UintHex)
 
 					dataBytes := &bytes.Buffer{}
 
@@ -121,7 +121,7 @@ func gifDecode(d *decode.D, _ any) any {
 					localFollows := d.FieldBool("local_color_map_follows")
 					d.FieldBool("image_interlaced")
 					d.FieldU3("zero")
-					d.FieldUFn("bit_depth", func(d *decode.D) uint64 { return d.U3() + 1 })
+					d.FieldUintFn("bit_depth", func(d *decode.D) uint64 { return d.U3() + 1 })
 					d.FieldU8("code_size")
 
 					if localFollows {

@@ -8,13 +8,13 @@ import (
 
 type BytesCodec struct{}
 
-func decodeBytesFn(sms ...scalar.Mapper) (DecodeFn, error) {
+func decodeBytesFn(sms ...scalar.BitBufMapper) (DecodeFn, error) {
 	// Bytes are encoded as a long followed by that many bytes of data.
 	return func(name string, d *decode.D) any {
 		var val []byte
 
 		d.FieldStruct(name, func(d *decode.D) {
-			length := d.FieldSFn("length", VarZigZag)
+			length := d.FieldSintFn("length", VarZigZag)
 			br := d.FieldRawLen("data", length*8, sms...)
 
 			val = make([]byte, length)

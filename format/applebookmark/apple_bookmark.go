@@ -44,7 +44,7 @@ const (
 	dataTypeRelativeURL  = 0x0902
 )
 
-var dataTypeMap = scalar.UToScalar{
+var dataTypeMap = scalar.UintMap{
 	dataTypeString:       {Sym: "string", Description: "UTF-8 String"},
 	dataTypeData:         {Sym: "data", Description: "Raw bytes"},
 	dataTypeNumber8:      {Sym: "byte", Description: "(signed 8-bit) 1-byte number"},
@@ -103,7 +103,7 @@ const (
 	elementTypeSandboxROExtension    = 0xf081
 )
 
-var elementTypeMap = scalar.UToScalar{
+var elementTypeMap = scalar.UintMap{
 	elementTypeTargetURL:             {Sym: "target_url", Description: "A URL"},
 	elementTypeTargetPath:            {Sym: "target_path", Description: "Array of individual path components"},
 	elementTypeTargetCNIDPath:        {Sym: "target_cnid_path", Description: "Array of CNIDs"},
@@ -147,8 +147,8 @@ const dataObjectLen = 24
 
 func decodeFlagDataObject(d *decode.D, flagFn func(d *decode.D)) {
 	d.FieldStruct("record", func(d *decode.D) {
-		d.FieldU32("length", d.AssertU(dataObjectLen))
-		d.FieldU32("raw_type", dataTypeMap, d.AssertU(dataTypeData))
+		d.FieldU32("length", d.UintAssert(dataObjectLen))
+		d.FieldU32("raw_type", dataTypeMap, d.UintAssert(dataTypeData))
 		d.FieldValueStr("type", "flag_data")
 		d.FieldStruct("property_flags", flagFn)
 		d.FieldStruct("enabled_property_flags", flagFn)
@@ -284,7 +284,7 @@ func decodeTOCHeader(d *decode.D) *tocHeader {
 
 	d.FieldStruct("toc_header", func(d *decode.D) {
 		d.FieldU32("toc_size")
-		d.FieldU32("magic", d.AssertU(0xfffffffe))
+		d.FieldU32("magic", d.UintAssert(0xfffffffe))
 		d.FieldU32("identifier")
 		hdr.nextTOCOffset = d.FieldU32("next_toc_offset")
 		hdr.numEntries = d.FieldU32("num_entries_in_toc")
@@ -351,7 +351,7 @@ func makeDecodeRecord() func(d *decode.D) {
 			case dataTypeNumber64F:
 				d.FieldF64("data")
 			case dataTypeDate:
-				d.FieldF64BE("data", scalar.DescriptionTimeFn(scalar.S.TryActualF, cocoaTimeEpochDate, time.RFC3339))
+				d.FieldF64BE("data", scalar.FltActualDate(cocoaTimeEpochDate, time.RFC3339))
 			case dataTypeBooleanFalse:
 			case dataTypeBooleanTrue:
 			case dataTypeArray:
@@ -405,10 +405,10 @@ func bookmarkDecode(d *decode.D, _ any) any {
 	// decode bookmarkdata header, one at the top of each "file",
 	// although these may be nested inside of binary plists
 	d.FieldStruct("header", func(d *decode.D) {
-		d.FieldUTF8("magic", 4, d.AssertStr("book", "alis"))
+		d.FieldUTF8("magic", 4, d.StrAssert("book", "alis"))
 		d.FieldU32("total_size")
 		d.FieldU32("unknown")
-		d.FieldU32("header_size", d.AssertU(48))
+		d.FieldU32("header_size", d.UintAssert(48))
 		d.FieldRawLen("reserved", reservedSize*8)
 	})
 

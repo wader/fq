@@ -47,7 +47,7 @@ const (
 	boolTrue  = 0x09
 )
 
-var elementTypeMap = scalar.UToScalar{
+var elementTypeMap = scalar.UintMap{
 	elementTypeNullOrBoolOrFill: {Sym: "singleton", Description: "Singleton value (null/bool)"},
 	elementTypeInt:              {Sym: "int", Description: "Integer"},
 	elementTypeReal:             {Sym: "real", Description: "Floating Point Number"},
@@ -64,13 +64,13 @@ var elementTypeMap = scalar.UToScalar{
 var cocoaTimeEpochDate = time.Date(2001, time.January, 1, 0, 0, 0, 0, time.UTC)
 
 // decodes the number of bits required to store the following object
-func decodeSize(d *decode.D, sms ...scalar.Mapper) uint64 {
+func decodeSize(d *decode.D, sms ...scalar.UintMapper) uint64 {
 	n := d.FieldU4("size_bits")
 	if n != 0x0f {
 		return n
 	}
 
-	d.FieldU4("large_size_marker", d.AssertU(0b0001))
+	d.FieldU4("large_size_marker", d.UintAssert(0b0001))
 
 	// get the exponent value
 	n = d.FieldU4("exponent")
@@ -79,11 +79,11 @@ func decodeSize(d *decode.D, sms ...scalar.Mapper) uint64 {
 	n = 1 << n
 
 	// decode that many bytes as big endian
-	n = d.FieldUFn(
+	n = d.FieldUintFn(
 		"size_bigint",
 		func(d *decode.D) uint64 {
 			v := d.UBigInt(int(n * 8))
-			d.AssertBigIntRange(big.NewInt(1), big.NewInt(math.MaxInt64))
+			d.BigIntAssertRange(big.NewInt(1), big.NewInt(math.MaxInt64))
 			return v.Uint64()
 		}, sms...)
 
@@ -98,13 +98,13 @@ func decodeItem(d *decode.D, p *plist) bool {
 	m := d.FieldU4("type", elementTypeMap)
 	switch m {
 	case elementTypeNullOrBoolOrFill:
-		d.FieldU4("value", scalar.UToScalar{
-			null:      scalar.S{Sym: nil},
-			boolTrue:  scalar.S{Sym: true},
-			boolFalse: scalar.S{Sym: false},
+		d.FieldU4("value", scalar.UintMap{
+			null:      scalar.Uint{Sym: nil},
+			boolTrue:  scalar.Uint{Sym: true},
+			boolFalse: scalar.Uint{Sym: false},
 		})
 	case elementTypeInt, elementTypeUID:
-		n := d.FieldUFn("size", func(d *decode.D) uint64 {
+		n := d.FieldUintFn("size", func(d *decode.D) uint64 {
 			return 1 << d.U4()
 		})
 		switch n {
@@ -123,29 +123,29 @@ func decodeItem(d *decode.D, p *plist) bool {
 		}
 	case elementTypeReal:
 		n := 1 << decodeSize(d)
-		d.FieldValueU("size", uint64(n))
+		d.FieldValueUint("size", uint64(n))
 		d.FieldF("value", n*8)
 	case elementTypeDate:
-		n := 1 << decodeSize(d, d.AssertU(4, 8))
-		d.FieldValueU("size", uint64(n))
-		d.FieldF("value", n*8, scalar.DescriptionTimeFn(scalar.S.TryActualF, cocoaTimeEpochDate, time.RFC3339))
+		n := 1 << decodeSize(d, d.UintAssert(4, 8))
+		d.FieldValueUint("size", uint64(n))
+		d.FieldF("value", n*8, scalar.FltActualDate(cocoaTimeEpochDate, time.RFC3339))
 	case elementTypeData:
 		n := decodeSize(d)
-		d.FieldValueU("size", n)
+		d.FieldValueUint("size", n)
 		d.FieldRawLen("value", int64(n*8))
 	case elementTypeASCIIString:
 		n := decodeSize(d)
-		d.FieldValueU("size", n)
+		d.FieldValueUint("size", n)
 		d.FieldUTF8("value", int(n))
 		return true
 	case elementTypeUnicodeString:
 		n := decodeSize(d)
-		d.FieldValueU("size", n)
+		d.FieldValueUint("size", n)
 		d.FieldUTF16BE("value", int(n))
 		return true
 	case elementTypeArray:
 		n := decodeSize(d)
-		d.FieldValueU("size", n)
+		d.FieldValueUint("size", n)
 		d.FieldStructNArray("entries", "entry", int64(n),
 			func(d *decode.D) {
 				idx := d.FieldU("object_index", int(p.t.objRefSize)*8)
@@ -153,7 +153,7 @@ func decodeItem(d *decode.D, p *plist) bool {
 			})
 	case elementTypeSet:
 		n := decodeSize(d)
-		d.FieldValueU("size", n)
+		d.FieldValueUint("size", n)
 		d.FieldStructNArray("entries", "entry", int64(n),
 			func(d *decode.D) {
 				idx := d.FieldU("object_index", int(p.t.objRefSize)*8)
@@ -161,7 +161,7 @@ func decodeItem(d *decode.D, p *plist) bool {
 			})
 	case elementTypeDict:
 		n := decodeSize(d)
-		d.FieldValueU("size", n)
+		d.FieldValueUint("size", n)
 		d.FieldStructNArray("entries", "entry", int64(n),
 			func(d *decode.D) {
 				var ki, vi uint64
@@ -248,8 +248,8 @@ type plist struct {
 
 func bplistDecode(d *decode.D, _ any) any {
 	d.FieldStruct("header", func(d *decode.D) {
-		d.FieldUTF8("magic", 6, d.AssertStr("bplist"))
-		d.FieldUTF8("version", 2, d.AssertStr("00"))
+		d.FieldUTF8("magic", 6, d.StrAssert("bplist"))
+		d.FieldUTF8("version", 2, d.StrAssert("00"))
 	})
 
 	p := new(plist)
@@ -259,8 +259,8 @@ func bplistDecode(d *decode.D, _ any) any {
 		d.FieldStruct("trailer", func(d *decode.D) {
 			d.FieldU40("unused")
 			d.FieldS8("sort_version")
-			p.t.offTblOffSize = d.FieldU8("offset_table_offset_size", d.AssertURange(1, 8))
-			p.t.objRefSize = d.FieldU8("object_reference_size", d.AssertURange(1, 8))
+			p.t.offTblOffSize = d.FieldU8("offset_table_offset_size", d.UintAssertRange(1, 8))
+			p.t.objRefSize = d.FieldU8("object_reference_size", d.UintAssertRange(1, 8))
 			p.t.nObjects = d.FieldU64("object_count")
 			p.t.topObjectOffset = d.FieldU64("top_object_offset")
 			p.t.offsetTableStart = d.FieldU64("offset_table_start")

@@ -27,11 +27,13 @@ func init() {
 	})
 }
 
+var unixTimeEpochDate = time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC)
+
 func tarDecode(d *decode.D, _ any) any {
 	const blockBytes = 512
 	const blockBits = blockBytes * 8
 
-	mapTrimSpaceNull := scalar.ActualTrim(" \x00")
+	mapTrimSpaceNull := scalar.StrActualTrim(" \x00")
 	blockPadding := func(d *decode.D) int64 {
 		return (blockBits - (d.Pos() % blockBits)) % blockBits
 	}
@@ -46,28 +48,34 @@ func tarDecode(d *decode.D, _ any) any {
 		for !d.End() {
 			d.FieldStruct("file", func(d *decode.D) {
 				d.FieldUTF8("name", 100, mapTrimSpaceNull)
-				d.FieldUTF8NullFixedLen("mode", 8, scalar.TrySymUParseUint(8))
-				d.FieldUTF8NullFixedLen("uid", 8, scalar.TrySymUParseUint(8))
-				d.FieldUTF8NullFixedLen("gid", 8, scalar.TrySymUParseUint(8))
-				sizeS := d.FieldScalarUTF8NullFixedLen("size", 12, scalar.TrySymUParseUint(8))
-				if sizeS.Sym == nil {
+				d.FieldUTF8NullFixedLen("mode", 8, scalar.TryStrSymParseUint(8))
+				d.FieldUTF8NullFixedLen("uid", 8, scalar.TryStrSymParseUint(8))
+				d.FieldUTF8NullFixedLen("gid", 8, scalar.TryStrSymParseUint(8))
+				size, sizeOk := d.FieldScalarUTF8NullFixedLen("size", 12, scalar.TryStrSymParseUint(8)).TrySymUint()
+				if !sizeOk {
 					d.Fatalf("could not decode size")
 				}
-				size := int64(sizeS.SymU()) * 8
-				d.FieldUTF8NullFixedLen("mtime", 12, scalar.TrySymUParseUint(8), scalar.DescriptionUnixTimeFn(scalar.S.TrySymU, time.RFC3339))
-				d.FieldUTF8NullFixedLen("chksum", 8, scalar.TrySymUParseUint(8))
+				size *= 8
+				d.FieldUTF8NullFixedLen("mtime", 12, scalar.TryStrSymParseUint(8), scalar.StrFn(func(s scalar.Str) (scalar.Str, error) {
+					// TODO: string might not be a number, move to scalar?
+					if v, ok := s.TrySymUint(); ok {
+						s.Description = unixTimeEpochDate.Add(time.Duration(v) * time.Second).Format(time.RFC3339)
+					}
+					return s, nil
+				}))
+				d.FieldUTF8NullFixedLen("chksum", 8, scalar.TryStrSymParseUint(8))
 				d.FieldUTF8("typeflag", 1, mapTrimSpaceNull)
 				d.FieldUTF8("linkname", 100, mapTrimSpaceNull)
-				d.FieldUTF8("magic", 6, mapTrimSpaceNull, d.AssertStr("ustar"))
-				d.FieldUTF8NullFixedLen("version", 2, scalar.TrySymUParseUint(8))
+				d.FieldUTF8("magic", 6, mapTrimSpaceNull, d.StrAssert("ustar"))
+				d.FieldUTF8NullFixedLen("version", 2, scalar.TryStrSymParseUint(8))
 				d.FieldUTF8("uname", 32, mapTrimSpaceNull)
 				d.FieldUTF8("gname", 32, mapTrimSpaceNull)
-				d.FieldUTF8NullFixedLen("devmajor", 8, scalar.TrySymUParseUint(8))
-				d.FieldUTF8NullFixedLen("devminor", 8, scalar.TrySymUParseUint(8))
+				d.FieldUTF8NullFixedLen("devmajor", 8, scalar.TryStrSymParseUint(8))
+				d.FieldUTF8NullFixedLen("devminor", 8, scalar.TryStrSymParseUint(8))
 				d.FieldUTF8("prefix", 155, mapTrimSpaceNull)
 				d.FieldRawLen("header_block_padding", blockPadding(d), d.BitBufIsZero())
 
-				d.FieldFormatOrRawLen("data", size, probeFormat, nil)
+				d.FieldFormatOrRawLen("data", int64(size), probeFormat, nil)
 
 				d.FieldRawLen("data_block_padding", blockPadding(d), d.BitBufIsZero())
 			})

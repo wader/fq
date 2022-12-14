@@ -20,7 +20,7 @@ func init() {
 // TODO: ts_packet
 
 func tsDecode(d *decode.D, _ any) any {
-	d.FieldU8("sync", d.AssertU(0x47), scalar.ActualHex)
+	d.FieldU8("sync", d.UintAssert(0x47), scalar.UintHex)
 	d.FieldBool("transport_error_indicator")
 	d.FieldBool("payload_unit_start")
 	d.FieldBool("transport_priority")

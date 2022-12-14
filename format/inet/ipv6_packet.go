@@ -41,7 +41,7 @@ const (
 // 253	Use for experimentation and testing	[RFC3692][RFC4727]
 // 254	Use for experimentation and testing	[RFC3692][RFC4727]
 
-var nextHeaderNames = scalar.UToSymStr{
+var nextHeaderNames = scalar.UintMapSymStr{
 	nextHeaderHopByHop:                     "hop_by_hop",
 	nextHeaderRouting:                      "routing",
 	nextHeaderFragment:                     "fragment",
@@ -53,11 +53,11 @@ var nextHeaderNames = scalar.UToSymStr{
 	nextHeaderShim6:                        "shim6",
 }
 
-var nextHeaderMap = scalar.Fn(func(s scalar.S) (scalar.S, error) {
-	if isIpv6Option(s.ActualU()) {
-		return nextHeaderNames.MapScalar(s)
+var nextHeaderMap = scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
+	if isIpv6Option(s.Actual) {
+		return nextHeaderNames.MapUint(s)
 	}
-	return format.IPv4ProtocolMap.MapScalar(s)
+	return format.IPv4ProtocolMap.MapUint(s)
 })
 
 func isIpv6Option(n uint64) bool {
@@ -78,7 +78,7 @@ func isIpv6Option(n uint64) bool {
 }
 
 // from https://www.iana.org/assignments/ipv6-parameters/ipv6-parameters.xhtml#ipv6-parameters-2
-var hopByHopTypeNames = scalar.UToSymStr{
+var hopByHopTypeNames = scalar.UintMapSymStr{
 	0x00: "pad1",
 	0x01: "padn",
 	0xc2: "jumbo_payload",
@@ -99,9 +99,9 @@ var hopByHopTypeNames = scalar.UToSymStr{
 	0x31: "ioam",
 }
 
-var mapUToIPv6Sym = scalar.Fn(func(s scalar.S) (scalar.S, error) {
+var mapUToIPv6Sym = scalar.BitBufFn(func(s scalar.BitBuf) (scalar.BitBuf, error) {
 	b := &bytes.Buffer{}
-	if _, err := bitioex.CopyBits(b, s.ActualBitBuf()); err != nil {
+	if _, err := bitioex.CopyBits(b, s.Actual); err != nil {
 		return s, err
 	}
 	s.Sym = net.IP(b.Bytes()).String()

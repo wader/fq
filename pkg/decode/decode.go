@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"math/big"
 	"regexp"
 
 	"github.com/wader/fq/internal/bitioex"
@@ -308,7 +307,7 @@ func (d *D) FillGaps(r ranges.Range, namePrefix string) {
 
 		v := &Value{
 			Name: fmt.Sprintf("%s%d", namePrefix, i),
-			V: &scalar.S{
+			V: &scalar.BitBuf{
 				Actual: br,
 				Gap:    true,
 			},
@@ -771,7 +770,7 @@ func (d *D) FieldMustGet(name string) *Value {
 }
 
 // FieldArray decode array of fields. Will not be range sorted.
-func (d *D) FieldArray(name string, fn func(d *D), sms ...scalar.Mapper) *D {
+func (d *D) FieldArray(name string, fn func(d *D)) *D {
 	c := &Compound{IsArray: true}
 	cd := d.fieldDecoder(name, d.bitBuf, c)
 	d.AddChild(cd.Value)
@@ -853,41 +852,6 @@ func (d *D) AssertLeastBytesLeft(nBytes int64) {
 		// TODO:
 		panic(DecoderError{Reason: fmt.Sprintf("expected bytes left %d, found %d bits", nBytes, bl), Pos: d.Pos()})
 	}
-}
-
-// TODO: rethink
-func (d *D) FieldValueU(name string, a uint64, sms ...scalar.Mapper) {
-	d.FieldScalarFn(name, func(_ scalar.S) (scalar.S, error) { return scalar.S{Actual: a}, nil }, sms...)
-}
-
-func (d *D) FieldValueS(name string, a int64, sms ...scalar.Mapper) {
-	d.FieldScalarFn(name, func(_ scalar.S) (scalar.S, error) { return scalar.S{Actual: a}, nil }, sms...)
-}
-
-func (d *D) FieldValueBigInt(name string, a *big.Int, sms ...scalar.Mapper) {
-	d.FieldScalarFn(name, func(_ scalar.S) (scalar.S, error) { return scalar.S{Actual: a}, nil }, sms...)
-}
-
-func (d *D) FieldValueBool(name string, a bool, sms ...scalar.Mapper) {
-	d.FieldScalarFn(name, func(_ scalar.S) (scalar.S, error) { return scalar.S{Actual: a}, nil }, sms...)
-}
-
-func (d *D) FieldValueFloat(name string, a float64, sms ...scalar.Mapper) {
-	d.FieldScalarFn(name, func(_ scalar.S) (scalar.S, error) { return scalar.S{Actual: a}, nil }, sms...)
-}
-
-func (d *D) FieldValueStr(name string, a string, sms ...scalar.Mapper) {
-	d.FieldScalarFn(name, func(_ scalar.S) (scalar.S, error) { return scalar.S{Actual: a}, nil }, sms...)
-}
-
-func (d *D) FieldValueNil(name string, sms ...scalar.Mapper) {
-	d.FieldScalarFn(name, func(_ scalar.S) (scalar.S, error) { return scalar.S{Actual: nil}, nil }, sms...)
-}
-
-func (d *D) FieldValueRaw(name string, a []byte, sms ...scalar.Mapper) {
-	d.FieldScalarFn(name, func(_ scalar.S) (scalar.S, error) {
-		return scalar.S{Actual: bitio.NewBitReader(a, -1)}, nil
-	}, sms...)
 }
 
 // FramedFn decode from current position nBits forward. When done position will be nBits forward.
@@ -1097,22 +1061,22 @@ func (d *D) FieldFormatBitBuf(name string, br bitio.ReaderAtSeeker, group Group,
 
 // TODO: rethink these
 
-func (d *D) FieldRootBitBuf(name string, br bitio.ReaderAtSeeker, sms ...scalar.Mapper) *Value {
+func (d *D) FieldRootBitBuf(name string, br bitio.ReaderAtSeeker, sms ...scalar.BitBufMapper) *Value {
 	brLen, err := bitioex.Len(br)
 	if err != nil {
 		d.IOPanic(err, "br Len")
 	}
 
 	v := &Value{}
-	v.V = &scalar.S{Actual: br}
+	v.V = &scalar.BitBuf{Actual: br}
 	v.Name = name
 	v.RootReader = br
 	v.IsRoot = true
 	v.Range = ranges.Range{Start: d.Pos(), Len: brLen}
 
-	if err := v.TryScalarFn(sms...); err != nil {
-		d.Fatalf("%v", err)
-	}
+	// if err := v.TryScalarFn(sms...); err != nil {
+	// 	d.Fatalf("%v", err)
+	// }
 
 	d.AddChild(v)
 
@@ -1220,39 +1184,6 @@ func (d *D) FieldValue(name string, fn func() *Value) *Value {
 	return v
 }
 
-// looks a bit weird to force at least one ScalarFn arg
-func (d *D) TryFieldScalarFn(name string, sfn scalar.Fn, sms ...scalar.Mapper) (*scalar.S, error) {
-	v, err := d.TryFieldValue(name, func() (*Value, error) {
-		s, err := sfn(scalar.S{})
-		if err != nil {
-			return &Value{V: &s}, err
-		}
-		for _, sm := range sms {
-			s, err = sm.MapScalar(s)
-			if err != nil {
-				return &Value{V: &s}, err
-			}
-		}
-		return &Value{V: &s}, nil
-	})
-	if err != nil {
-		return &scalar.S{}, err
-	}
-	sr, ok := v.V.(*scalar.S)
-	if !ok {
-		panic("not a scalar value")
-	}
-	return sr, nil
-}
-
-func (d *D) FieldScalarFn(name string, sfn scalar.Fn, sms ...scalar.Mapper) *scalar.S {
-	v, err := d.TryFieldScalarFn(name, sfn, sms...)
-	if err != nil {
-		d.IOPanic(err, "FieldScalarFn: TryFieldScalarFn")
-	}
-	return v
-}
-
 func (d *D) RE(reRef **regexp.Regexp, reStr string) []ranges.Range {
 	if *reRef == nil {
 		*reRef = regexp.MustCompile(reStr)
@@ -1284,7 +1215,7 @@ func (d *D) RE(reRef **regexp.Regexp, reStr string) []ranges.Range {
 	return rs
 }
 
-func (d *D) FieldRE(reRef **regexp.Regexp, reStr string, mRef *map[string]string, sms ...scalar.Mapper) {
+func (d *D) FieldRE(reRef **regexp.Regexp, reStr string, mRef *map[string]string, sms ...scalar.StrMapper) {
 	if *reRef == nil {
 		*reRef = regexp.MustCompile(reStr)
 	}

@@ -27,7 +27,7 @@ func apev2Decode(d *decode.D, _ any) any {
 	headerFooterFn := func(d *decode.D, name string) uint64 {
 		var tagCount uint64
 		d.FieldStruct(name, func(d *decode.D) {
-			d.FieldUTF8("preamble", 8, d.AssertStr("APETAGEX"))
+			d.FieldUTF8("preamble", 8, d.StrAssert("APETAGEX"))
 			d.FieldU32("version")
 			d.FieldU32("tag_size")
 			tagCount = d.FieldU32("item_count")

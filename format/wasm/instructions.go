@@ -9,7 +9,7 @@ func decodeBlockType(d *decode.D, name string) {
 	b := d.PeekBytes(1)[0]
 	switch b {
 	case 0x40:
-		d.FieldU8(name, scalar.Sym("ε"))
+		d.FieldU8(name, scalar.UintSym("ε"))
 	case 0x6f, 0x70, 0x7b, 0x7c, 0x7d, 0x7e, 0x7f:
 		d.FieldU8(name, valtypeToSymMapper)
 	default:
@@ -48,8 +48,8 @@ type instructionInfo struct {
 
 type instructionMap map[Opcode]instructionInfo
 
-func (m instructionMap) MapScalar(s scalar.S) (scalar.S, error) {
-	opcode := s.ActualU()
+func (m instructionMap) MapUint(s scalar.Uint) (scalar.Uint, error) {
+	opcode := s.Actual
 	instr, found := m[Opcode(opcode)]
 	if !found {
 		return s, nil
@@ -277,15 +277,15 @@ func decodeInstruction(d *decode.D) {
 }
 
 func decodeOpcode(d *decode.D) Opcode {
-	return Opcode(d.FieldU8("opcode", instrMap, scalar.ActualHex))
+	return Opcode(d.FieldU8("opcode", instrMap, scalar.UintHex))
 }
 
 func decodeElse(d *decode.D) {
-	d.FieldU8("else", d.AssertU(uint64(0x05)), scalar.ActualHex)
+	d.FieldU8("else", d.UintAssert(uint64(0x05)), scalar.UintHex)
 }
 
 func decodeEnd(d *decode.D) {
-	d.FieldU8("end", d.AssertU(uint64(0x0b)), scalar.ActualHex)
+	d.FieldU8("end", d.UintAssert(uint64(0x0b)), scalar.UintHex)
 }
 
 func decodeBlock(d *decode.D) {
@@ -402,11 +402,11 @@ func decodeMemArgWithName(name string) func(d *decode.D) {
 }
 
 func decodeMemorySize(d *decode.D) {
-	d.FieldU8("reserved", d.AssertU(0x00), scalar.ActualHex)
+	d.FieldU8("reserved", d.UintAssert(0x00), scalar.UintHex)
 }
 
 func decodeMemoryGrow(d *decode.D) {
-	d.FieldU8("reserved", d.AssertU(0x00), scalar.ActualHex)
+	d.FieldU8("reserved", d.UintAssert(0x00), scalar.UintHex)
 }
 
 func decodeI32Const(d *decode.D) {
@@ -469,7 +469,7 @@ func decodePrefixedOpcode(d *decode.D) Opcode {
 
 func decodeMemoryInit(d *decode.D) {
 	decodeDataIdx(d, "x")
-	d.FieldU8("reserved", scalar.ActualHex, d.AssertU(0))
+	d.FieldU8("reserved", scalar.UintHex, d.UintAssert(0))
 }
 
 func decodeDataDrop(d *decode.D) {
@@ -477,12 +477,12 @@ func decodeDataDrop(d *decode.D) {
 }
 
 func decodeMemoryCopy(d *decode.D) {
-	d.FieldU8("reserved1", scalar.ActualHex, d.AssertU(0))
-	d.FieldU8("reserved2", scalar.ActualHex, d.AssertU(0))
+	d.FieldU8("reserved1", scalar.UintHex, d.UintAssert(0))
+	d.FieldU8("reserved2", scalar.UintHex, d.UintAssert(0))
 }
 
 func decodeMemoryFill(d *decode.D) {
-	d.FieldU8("reserved", scalar.ActualHex, d.AssertU(0))
+	d.FieldU8("reserved", scalar.UintHex, d.UintAssert(0))
 }
 
 func decodeTableInit(d *decode.D) {

@@ -31,7 +31,7 @@ const (
 	hevcNALNUTPPS = 34
 )
 
-var hevcNALNames = scalar.UToSymStr{
+var hevcNALNames = scalar.UintMapSymStr{
 	0:             "TRAIL_N",
 	1:             "TRAIL_R",
 	2:             "TSA_N",

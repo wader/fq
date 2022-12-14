@@ -64,11 +64,11 @@ func decodeVecByte(d *decode.D, name string) {
 }
 
 func fieldU32(d *decode.D, name string) uint64 {
-	return d.FieldULEB128(name, d.AssertURange(0, math.MaxUint32))
+	return d.FieldULEB128(name, d.UintAssertRange(0, math.MaxUint32))
 }
 
 func fieldI32(d *decode.D, name string) int64 {
-	return d.FieldSLEB128(name, d.AssertSRange(math.MinInt32, math.MaxInt32))
+	return d.FieldSLEB128(name, d.SintAssertRange(math.MinInt32, math.MaxInt32))
 }
 
 func fieldI64(d *decode.D, name string) int64 {
@@ -104,7 +104,7 @@ func decodeRefType(d *decode.D, name string) {
 //
 //nolint:unparam
 func decodeValType(d *decode.D, name string) {
-	d.FieldU8(name, valtypeToSymMapper, scalar.ActualHex)
+	d.FieldU8(name, valtypeToSymMapper, scalar.UintHex)
 }
 
 // Decode resulttype.
@@ -121,7 +121,7 @@ func decodeResultType(d *decode.D, name string) {
 //	functype ::= 0x60 rt1:resulttype rt2:resulttype => rt1 -> rt2
 func decodeFuncType(d *decode.D, name string) {
 	d.FieldStruct(name, func(d *decode.D) {
-		d.FieldU8("tag", d.AssertU(0x60), scalar.ActualHex)
+		d.FieldU8("tag", d.UintAssert(0x60), scalar.UintHex)
 		decodeResultType(d, "rt1")
 		decodeResultType(d, "rt2")
 	})
@@ -133,7 +133,7 @@ func decodeFuncType(d *decode.D, name string) {
 //	        |  0x01 n:u32 m:u32 => {min: n, max: m}
 func decodeLimits(d *decode.D, name string) {
 	d.FieldStruct(name, func(d *decode.D) {
-		tag := d.FieldU8("tag", scalar.ActualHex)
+		tag := d.FieldU8("tag", scalar.UintHex)
 		switch tag {
 		case 0x00:
 			fieldU32(d, "n")
@@ -282,7 +282,7 @@ func decodeImportSegment(d *decode.D, name string) {
 
 func decodeImportDesc(d *decode.D, name string) {
 	d.FieldStruct(name, func(d *decode.D) {
-		tag := d.FieldU8("tag", importdescTagToSym, scalar.ActualHex)
+		tag := d.FieldU8("tag", importdescTagToSym, scalar.UintHex)
 		switch tag {
 		case 0x00:
 			decodeTypeIdx(d, "x")
@@ -367,7 +367,7 @@ func decodeExport(d *decode.D, name string) {
 
 func decodeExportDesc(d *decode.D, name string) {
 	d.FieldStruct(name, func(d *decode.D) {
-		tag := d.FieldU8("tag", exportdescTagToSym, scalar.ActualHex)
+		tag := d.FieldU8("tag", exportdescTagToSym, scalar.UintHex)
 		switch tag {
 		case 0x00:
 			decodeFuncIdx(d, "x")
@@ -459,7 +459,7 @@ func decodeElem(d *decode.D, name string) {
 }
 
 func decodeElemKind(d *decode.D, name string) {
-	d.FieldU8(name, d.AssertU(0x00), elemkindTagToSym)
+	d.FieldU8(name, d.UintAssert(0x00), elemkindTagToSym)
 }
 
 // Decode code section.

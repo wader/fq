@@ -97,7 +97,7 @@ const (
 	TEM   = 0x01
 )
 
-var markers = scalar.UToScalar{
+var markers = scalar.UintMap{
 	SOF0:  {Sym: "sof0", Description: "Baseline DCT"},
 	SOF1:  {Sym: "sof1", Description: "Extended sequential DCT"},
 	SOF2:  {Sym: "sof2", Description: "Progressive DCT"},

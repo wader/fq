@@ -28,7 +28,7 @@ const (
 	OBU_PADDING                = 15
 )
 
-var obuTypeNames = scalar.UToSymStr{
+var obuTypeNames = scalar.UintMapSymStr{
 	OBU_SEQUENCE_HEADER:        "OBU_SEQUENCE_HEADER",
 	OBU_TEMPORAL_DELIMITER:     "OBU_TEMPORAL_DELIMITER",
 	OBU_FRAME_HEADER:           "OBU_FRAME_HEADER",

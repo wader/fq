@@ -27,7 +27,7 @@ const (
 	scriptDataObject = 18
 )
 
-var tagTypeNames = scalar.UToSymStr{
+var tagTypeNames = scalar.UintMapSymStr{
 	audioData:        "audioData",
 	videoData:        "videoData",
 	scriptDataObject: "scriptDataObject",
@@ -49,7 +49,7 @@ const (
 	typeLongString  = 12
 )
 
-var typeNames = scalar.UToSymStr{
+var typeNames = scalar.UintMapSymStr{
 	typeNumber:      "Number",
 	typeBoolean:     "Boolean",
 	typeString:      "String",
@@ -146,11 +146,11 @@ func flvDecode(d *decode.D, _ any) any {
 		})
 	}
 
-	d.FieldUTF8("signature", 3, d.AssertStr("FLV"))
+	d.FieldUTF8("signature", 3, d.StrAssert("FLV"))
 	d.FieldU8("version")
-	d.FieldU5("type_flags_reserved", d.AssertU(0))
+	d.FieldU5("type_flags_reserved", d.UintAssert(0))
 	d.FieldU1("type_flags_audio")
-	d.FieldU1("type_flags_reserved", d.AssertU(0))
+	d.FieldU1("type_flags_reserved", d.UintAssert(0))
 	d.FieldU1("type_flags_video")
 	dataOffset := d.FieldU32("data_offset")
 

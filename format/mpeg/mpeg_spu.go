@@ -35,7 +35,7 @@ const (
 	CHG_COLCON = 0x07
 )
 
-var commandNames = scalar.UToSymStr{
+var commandNames = scalar.UintMapSymStr{
 	CMD_END:    "CMD_END",
 	FSTA_DSP:   "FSTA_DSP",
 	STA_DSP:    "STA_DSP",

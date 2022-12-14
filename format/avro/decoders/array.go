@@ -34,9 +34,9 @@ func decodeArrayFn(schema schema.SimplifiedSchema) (DecodeFn, error) {
 			count := int64(-1)
 			for count != 0 {
 				d.FieldStruct("block", func(d *decode.D) {
-					count = d.FieldSFn("count", VarZigZag)
+					count = d.FieldSintFn("count", VarZigZag)
 					if count < 0 {
-						d.FieldSFn("size", VarZigZag)
+						d.FieldSintFn("size", VarZigZag)
 						count *= -1
 					}
 					d.FieldArray("data", func(d *decode.D) {

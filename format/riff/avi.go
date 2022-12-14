@@ -54,14 +54,14 @@ func init() {
 	interp.RegisterFS(aviFS)
 }
 
-var aviListTypeDescriptions = scalar.StrToDescription{
+var aviListTypeDescriptions = scalar.StrMapDescription{
 	"hdrl": "AVI main list",
 	"strl": "Stream list",
 	"movi": "Stream Data",
 	"rec ": "Chunk group",
 }
 
-var aviStrhTypeDescriptions = scalar.StrToDescription{
+var aviStrhTypeDescriptions = scalar.StrMapDescription{
 	"auds": "Audio stream",
 	"mids": "MIDI stream",
 	"txts": "Text stream",
@@ -73,7 +73,7 @@ const (
 	aviIndexTypeChunks  = 1
 )
 
-var aviIndexTypeNames = scalar.UToSymStr{
+var aviIndexTypeNames = scalar.UintMapSymStr{
 	aviIndexTypeIndexes: "indexes",
 	aviIndexTypeChunks:  "chunks",
 }
@@ -82,7 +82,7 @@ const (
 	aviIndexSubType2Fields = 1
 )
 
-var aviIndexSubTypeNames = scalar.UToSymStr{
+var aviIndexSubTypeNames = scalar.UintMapSymStr{
 	aviIndexSubType2Fields: "2fields",
 }
 
@@ -94,7 +94,7 @@ const (
 	aviStreamChunkTypeIndex             = "ix"
 )
 
-var aviStreamChunkTypeDescriptions = scalar.StrToDescription{
+var aviStreamChunkTypeDescriptions = scalar.StrMapDescription{
 	aviStreamChunkTypeUncompressedVideo: "Uncompressed video frame",
 	aviStreamChunkTypeCompressedVideo:   "Compressed video frame",
 	aviStreamChunkTypePaletteChange:     "Palette change",
@@ -176,7 +176,7 @@ func aviDecorateStreamID(d *decode.D, id string) (string, int) {
 	typ, index, ok := aviParseChunkID(id)
 	if ok && aviIsStreamType(typ) {
 		d.FieldValueStr("stream_type", typ, aviStreamChunkTypeDescriptions)
-		d.FieldValueU("stream_nr", uint64(index))
+		d.FieldValueUint("stream_nr", uint64(index))
 		return typ, index
 	}
 	return "", 0
@@ -200,7 +200,7 @@ func aviDecodeChunkIndex(d *decode.D) []ranges.Range {
 				offset := int64(d.FieldU32("offset"))
 				sizeKeyFrame := d.FieldU32("size_keyframe")
 				size := sizeKeyFrame & 0x7f_ff_ff_ff
-				d.FieldValueU("size", size)
+				d.FieldValueUint("size", size)
 				d.FieldValueBool("key_frame", sizeKeyFrame&0x80_00_00_00 == 0)
 				rs = append(rs, ranges.Range{
 					Start: baseOffset*8 + offset*8,
@@ -235,7 +235,7 @@ func aviDecode(d *decode.D, in any) any {
 		func(d *decode.D, id string, path path) (bool, any) {
 			switch id {
 			case "RIFF":
-				riffType = d.FieldUTF8("type", 4, d.AssertStr(aviRiffType))
+				riffType = d.FieldUTF8("type", 4, d.StrAssert(aviRiffType))
 				return true, nil
 
 			case "LIST":

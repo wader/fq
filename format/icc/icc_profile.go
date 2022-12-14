@@ -111,8 +111,8 @@ func iccProfileDecode(d *decode.D, _ any) any {
 		d.FieldStruct("header", func(d *decode.D) {
 			d.FieldU32("size")
 			d.FieldUTF8NullFixedLen("cmm_type_signature", 4)
-			d.FieldUFn("version_major", decodeBCDU8)
-			d.FieldUFn("version_minor", decodeBCDU8)
+			d.FieldUintFn("version_major", decodeBCDU8)
+			d.FieldUintFn("version_minor", decodeBCDU8)
 			d.FieldU16("version_reserved")
 			d.FieldUTF8NullFixedLen("device_class_signature", 4)
 			d.FieldUTF8NullFixedLen("color_space", 4)

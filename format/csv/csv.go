@@ -64,7 +64,7 @@ func decodeCSV(d *decode.D, in any) any {
 		rvs = append(rvs, vs)
 	}
 
-	d.Value.V = &scalar.S{Actual: rvs}
+	d.Value.V = &scalar.Any{Actual: rvs}
 	d.Value.Range.Len = d.Len()
 
 	return nil

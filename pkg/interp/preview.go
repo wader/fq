@@ -2,6 +2,7 @@ package interp
 
 import (
 	"bytes"
+	"fmt"
 	"math/big"
 	"strconv"
 	"strings"
@@ -45,7 +46,12 @@ func previewValue(v any, df scalar.DisplayFormat) string {
 		return "raw bits"
 	case *big.Int:
 		return mathex.PadFormatBigInt(vv, df.FormatBase(), true, 0)
+	case map[string]any:
+		return "{}"
+	case []any:
+		return "[]"
+
 	default:
-		panic("unreachable")
+		panic(fmt.Sprintf("unreachable %v (%T)", v, v))
 	}
 }

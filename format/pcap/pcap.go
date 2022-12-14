@@ -31,7 +31,7 @@ const (
 	littleEndianNS = 0x4d3cb2a1
 )
 
-var endianMap = scalar.UToSymStr{
+var endianMap = scalar.UintMapSymStr{
 	bigEndian:      "big_endian",
 	littleEndian:   "little_endian",
 	bigEndianNS:    "big_endian_ns",
@@ -59,12 +59,12 @@ func decodePcap(d *decode.D, _ any) any {
 	timestampUNSStr := "ts_usec"
 
 	d.FieldStruct("header", func(d *decode.D) {
-		magic := d.FieldU32("magic", d.AssertU(
+		magic := d.FieldU32("magic", d.UintAssert(
 			bigEndian,
 			littleEndian,
 			bigEndianNS,
 			littleEndianNS,
-		), endianMap, scalar.ActualHex)
+		), endianMap, scalar.UintHex)
 
 		switch magic {
 		case bigEndian:

@@ -36,14 +36,14 @@ func hevcVPSDecode(d *decode.D, _ any) any {
 		}
 		for ; i <= vpsMaxSubLayersMinus1; i++ {
 			d.FieldStruct("sps_sub_layer_ordering_info", func(d *decode.D) {
-				d.FieldUFn("sps_max_dec_pic_buffering_minus1", uEV)
-				d.FieldUFn("sps_max_num_reorder_pics", uEV)
-				d.FieldUFn("sps_max_latency_increase_plus1", uEV)
+				d.FieldUintFn("sps_max_dec_pic_buffering_minus1", uEV)
+				d.FieldUintFn("sps_max_num_reorder_pics", uEV)
+				d.FieldUintFn("sps_max_latency_increase_plus1", uEV)
 			})
 		}
 	})
 	vpsMaxLayerID := d.FieldU6("vps_max_layer_id")
-	vpsNumLayerSetsMinus1 := d.FieldUFn("vps_num_layer_sets_minus1", uEV)
+	vpsNumLayerSetsMinus1 := d.FieldUintFn("vps_num_layer_sets_minus1", uEV)
 	if vpsNumLayerSetsMinus1 > maxVpsLayers {
 		d.Errorf("too many vps layers %d > %d", vpsNumLayerSetsMinus1, maxVpsLayers)
 	}
@@ -62,7 +62,7 @@ func hevcVPSDecode(d *decode.D, _ any) any {
 		d.FieldU32("vps_time_scale")
 		vpsPocProportionalToTimingFlag := d.FieldBool("vps_poc_proportional_to_timing_flag")
 		if vpsPocProportionalToTimingFlag {
-			d.FieldUFn("vps_num_ticks_poc_diff_one_minus1", uEV)
+			d.FieldUintFn("vps_num_ticks_poc_diff_one_minus1", uEV)
 		}
 		vpsHrdParametersPresentFlag := d.FieldBool("vps_hrd_parameters_present_flag")
 		if vpsHrdParametersPresentFlag {

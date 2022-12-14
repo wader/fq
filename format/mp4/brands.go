@@ -5,7 +5,7 @@ import "github.com/wader/fq/pkg/scalar"
 // from:
 // https://cconcolato.github.io/mp4ra/filetype.html
 // https://exiftool.org/TagNames/QuickTime.html
-var brandDescriptions = scalar.StrToDescription{
+var brandDescriptions = scalar.StrMapDescription{
 	"3g2a": "3GPP2",
 	"3g2b": "3GPP2 Media (.3G2) compliant with 3GPP2 C.S0050-A V1.0.0",
 	"3g2c": "3GPP2 Media (.3G2) compliant with 3GPP2 C.S0050-B v1.0",

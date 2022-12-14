@@ -9,7 +9,7 @@ import (
 
 var images decode.Group
 
-var pictureTypeNames = scalar.UToSymStr{
+var pictureTypeNames = scalar.UintMapSymStr{
 	0:  "Other",
 	1:  "32x32_pixels",
 	2:  "other_file_icon",

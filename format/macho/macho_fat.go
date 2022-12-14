@@ -34,16 +34,16 @@ func machoFatDecode(d *decode.D, _ any) any {
 	var ofiles []ofile
 
 	d.FieldStruct("fat_header", func(d *decode.D) {
-		d.FieldU32("magic", magicSymMapper, scalar.ActualHex, d.AssertU(FAT_MAGIC))
+		d.FieldU32("magic", magicSymMapper, scalar.UintHex, d.UintAssert(FAT_MAGIC))
 
 		narchs := d.FieldU32("narchs")
 		d.FieldArray("archs", func(d *decode.D) {
 			for i := 0; i < int(narchs); i++ {
 				d.FieldStruct("arch", func(d *decode.D) {
 					// beware cputype and cpusubtype changes from ofile header to fat header
-					cpuType := d.FieldU32("cputype", cpuTypes, scalar.ActualHex)
-					d.FieldU32("cpusubtype", cpuSubTypes[cpuType], scalar.ActualHex)
-					offset := d.FieldU32("offset", scalar.ActualHex)
+					cpuType := d.FieldU32("cputype", cpuTypes, scalar.UintHex)
+					d.FieldU32("cpusubtype", cpuSubTypes[cpuType], scalar.UintHex)
+					offset := d.FieldU32("offset", scalar.UintHex)
 					size := d.FieldU32("size")
 					d.FieldU32("align")
 

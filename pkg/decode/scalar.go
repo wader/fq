@@ -10,8 +10,8 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-func bitBufIsZero(s scalar.S, isValidate bool) (scalar.S, error) {
-	br := s.ActualBitBuf()
+func bitBufIsZero(s scalar.BitBuf, isValidate bool) (scalar.BitBuf, error) {
+	br := s.Actual
 
 	isZero := true
 	// TODO: shared
@@ -19,7 +19,7 @@ func bitBufIsZero(s scalar.S, isValidate bool) (scalar.S, error) {
 	bLen := int64(len(b)) * 8
 	brLen, err := bitioex.Len(br)
 	if err != nil {
-		return scalar.S{}, err
+		return scalar.BitBuf{}, err
 	}
 	brLeft := brLen
 	brPos := int64(0)
@@ -62,22 +62,22 @@ func bitBufIsZero(s scalar.S, isValidate bool) (scalar.S, error) {
 	return s, nil
 }
 
-func (d *D) BitBufIsZero() scalar.Mapper {
-	return scalar.Fn(func(s scalar.S) (scalar.S, error) {
+func (d *D) BitBufIsZero() scalar.BitBufMapper {
+	return scalar.BitBufFn(func(s scalar.BitBuf) (scalar.BitBuf, error) {
 		return bitBufIsZero(s, false)
 	})
 }
 
-func (d *D) BitBufValidateIsZero() scalar.Mapper {
-	return scalar.Fn(func(s scalar.S) (scalar.S, error) {
+func (d *D) BitBufValidateIsZero() scalar.BitBufMapper {
+	return scalar.BitBufFn(func(s scalar.BitBuf) (scalar.BitBuf, error) {
 		return bitBufIsZero(s, !d.Options.Force)
 	})
 }
 
 // TODO: generate?
-func assertBitBuf(s scalar.S, isErr bool, bss ...[]byte) (scalar.S, error) {
+func assertBitBuf(s scalar.BitBuf, isErr bool, bss ...[]byte) (scalar.BitBuf, error) {
 	bb := &bytes.Buffer{}
-	if _, err := bitioex.CopyBits(bb, s.ActualBitBuf()); err != nil {
+	if _, err := bitioex.CopyBits(bb, s.Actual); err != nil {
 		return s, err
 	}
 	for _, bs := range bss {
@@ -93,19 +93,19 @@ func assertBitBuf(s scalar.S, isErr bool, bss ...[]byte) (scalar.S, error) {
 	return s, nil
 }
 
-func (d *D) AssertBitBuf(bss ...[]byte) scalar.Mapper {
-	return scalar.Fn(func(s scalar.S) (scalar.S, error) {
+func (d *D) AssertBitBuf(bss ...[]byte) scalar.BitBufMapper {
+	return scalar.BitBufFn(func(s scalar.BitBuf) (scalar.BitBuf, error) {
 		return assertBitBuf(s, !d.Options.Force, bss...)
 	})
 }
 
-func (d *D) ValidateBitBuf(bss ...[]byte) scalar.Mapper {
-	return scalar.Fn(func(s scalar.S) (scalar.S, error) {
+func (d *D) ValidateBitBuf(bss ...[]byte) scalar.BitBufMapper {
+	return scalar.BitBufFn(func(s scalar.BitBuf) (scalar.BitBuf, error) {
 		return assertBitBuf(s, false, bss...)
 	})
 }
 
-func assertUBytes(s scalar.S, isErr bool, endian Endian, bss ...[]byte) (scalar.S, error) {
+func UintAssertBytes(s scalar.Uint, isErr bool, endian Endian, bss ...[]byte) (scalar.Uint, error) {
 	var bo binary.ByteOrder
 	switch endian {
 	case LittleEndian:
@@ -116,7 +116,7 @@ func assertUBytes(s scalar.S, isErr bool, endian Endian, bss ...[]byte) (scalar.
 		panic("invalid endian")
 	}
 
-	au := s.ActualU()
+	au := s.Actual
 	for _, bs := range bss {
 		var bu uint64
 		switch len(bs) {
@@ -144,33 +144,33 @@ func assertUBytes(s scalar.S, isErr bool, endian Endian, bss ...[]byte) (scalar.
 	return s, nil
 }
 
-func (d *D) AssertUBytes(bss ...[]byte) scalar.Mapper {
-	return scalar.Fn(func(s scalar.S) (scalar.S, error) {
-		return assertUBytes(s, true, d.Endian, bss...)
+func (d *D) UintAssertBytes(bss ...[]byte) scalar.UintMapper {
+	return scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
+		return UintAssertBytes(s, true, d.Endian, bss...)
 	})
 }
-func (d *D) ValidateUBytes(bss ...[]byte) scalar.Mapper {
-	return scalar.Fn(func(s scalar.S) (scalar.S, error) {
-		return assertUBytes(s, false, d.Endian, bss...)
+func (d *D) UintValidateBytes(bss ...[]byte) scalar.UintMapper {
+	return scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
+		return UintAssertBytes(s, false, d.Endian, bss...)
 	})
 }
-func (d *D) AssertULEBytes(bss ...[]byte) scalar.Mapper {
-	return scalar.Fn(func(s scalar.S) (scalar.S, error) {
-		return assertUBytes(s, true, LittleEndian, bss...)
+func (d *D) AssertULEBytes(bss ...[]byte) scalar.UintMapper {
+	return scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
+		return UintAssertBytes(s, true, LittleEndian, bss...)
 	})
 }
-func (d *D) ValidateULEBytes(bss ...[]byte) scalar.Mapper {
-	return scalar.Fn(func(s scalar.S) (scalar.S, error) {
-		return assertUBytes(s, false, LittleEndian, bss...)
+func (d *D) UintValidateLEBytes(bss ...[]byte) scalar.UintMapper {
+	return scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
+		return UintAssertBytes(s, false, LittleEndian, bss...)
 	})
 }
-func (d *D) AssertUBEBytes(bss ...[]byte) scalar.Mapper {
-	return scalar.Fn(func(s scalar.S) (scalar.S, error) {
-		return assertUBytes(s, true, BigEndian, bss...)
+func (d *D) AssertUBEBytes(bss ...[]byte) scalar.UintMapper {
+	return scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
+		return UintAssertBytes(s, true, BigEndian, bss...)
 	})
 }
-func (d *D) ValidateUBEBytes(bss ...[]byte) scalar.Mapper {
-	return scalar.Fn(func(s scalar.S) (scalar.S, error) {
-		return assertUBytes(s, false, BigEndian, bss...)
+func (d *D) UintValidateBEBytes(bss ...[]byte) scalar.UintMapper {
+	return scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
+		return UintAssertBytes(s, false, BigEndian, bss...)
 	})
 }
