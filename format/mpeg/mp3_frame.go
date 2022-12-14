@@ -369,7 +369,7 @@ func frameDecode(d *decode.D, _ any) any {
 	// audio data size, may include audio data from other frames also if main_data_begin is used
 	restBytes := frameBytes - headerBytes - crcBytes - sideInfoBytes
 	d.FramedFn(int64(restBytes)*8, func(d *decode.D) {
-		_, _, _ = d.TryFieldFormat("tags", mp3FrameTagsHeader, nil)
+		_, _, _ = d.TryFieldFormat("tag", mp3FrameTagsHeader, nil)
 		d.FieldRawLen("audio_data", d.BitsLeft())
 	})
 

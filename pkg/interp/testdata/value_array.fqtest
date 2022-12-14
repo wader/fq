@@ -254,7 +254,7 @@ mp3> .headers[0] = 1
         "scfsi0": 0,
         "share": 0
       },
-      "tags": {
+      "tag": {
         "abr_vbr": 0,
         "audiophile_replay_gain": 0,
         "bytes": 599,
@@ -587,7 +587,7 @@ mp3> .headers[0] |= empty
         "scfsi0": 0,
         "share": 0
       },
-      "tags": {
+      "tag": {
         "abr_vbr": 0,
         "audiophile_replay_gain": 0,
         "bytes": 599,
