@@ -14,13 +14,14 @@ const (
 const (
 	ALL = "all"
 
-	IMAGE       = "image"
-	PROBE       = "probe"
-	LINK_FRAME  = "link_frame"  // ex: ethernet
-	INET_PACKET = "inet_packet" // ex: ipv4
-	IP_PACKET   = "ip_packet"   // ex: tcp
-	TCP_STREAM  = "tcp_stream"  // ex: http
-	UDP_PAYLOAD = "udp_payload" // ex: dns
+	IMAGE          = "image"
+	PROBE          = "probe"
+	LINK_FRAME     = "link_frame"  // ex: ethernet
+	INET_PACKET    = "inet_packet" // ex: ipv4
+	IP_PACKET      = "ip_packet"   // ex: tcp
+	TCP_STREAM     = "tcp_stream"  // ex: http
+	UDP_PAYLOAD    = "udp_payload" // ex: dns
+	MP3_FRAME_TAGS = "mp3_frame_tags"
 
 	BYTES = "bytes"
 	BITS  = "bits"
@@ -96,7 +97,8 @@ const (
 	MATROSKA            = "matroska"
 	MP3                 = "mp3"
 	MP3_FRAME           = "mp3_frame"
-	MP3_FRAME_TAGS      = "mp3_frame_tags"
+	MP3_FRAME_XING      = "mp3_frame_xing"
+	MP3_FRAME_VBRI      = "mp3_frame_vbri"
 	MP4                 = "mp4"
 	MPEG_ASC            = "mpeg_asc"
 	MPEG_ES             = "mpeg_es"
