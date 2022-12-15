@@ -61,7 +61,7 @@ mp3> .frames[0] | dv({depth: 1, addrbase: 10})
 048|   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00| ...............|  side_info{}: 49-65.7 (17)
 064|00 00                                          |..              |
    |00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15|0123456789012345|
-064|      49 6e 66 6f 00 00 00 0f 00 00 00 02 00 00|  Info..........|  tag{}: (mp3_frame_tags) 66-221.7 (156)
+064|      49 6e 66 6f 00 00 00 0f 00 00 00 02 00 00|  Info..........|  tag{}: (mp3_frame_xing) 66-221.7 (156)
 080|02 57 00 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6|.W..............|
 *  |until 221.7 (156)                              |                |
 208|                                          00 00|              ..|  audio_data: raw bits 222-226.7 (5)
@@ -74,7 +74,7 @@ mp3> .frames[0] | dv({depth: 1, sizebase: 16})
 0x30|   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00| ...............|  side_info{}: 0x31-0x41.7 (0x11)
 0x40|00 00                                          |..              |
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x40|      49 6e 66 6f 00 00 00 0f 00 00 00 02 00 00|  Info..........|  tag{}: (mp3_frame_tags) 0x42-0xdd.7 (0x9c)
+0x40|      49 6e 66 6f 00 00 00 0f 00 00 00 02 00 00|  Info..........|  tag{}: (mp3_frame_xing) 0x42-0xdd.7 (0x9c)
 0x50|02 57 00 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6 a6|.W..............|
 *   |until 0xdd.7 (0x9c)                            |                |
 0xd0|                                          00 00|              ..|  audio_data: raw bits 0xde-0xe2.7 (0x5)
@@ -82,8 +82,8 @@ mp3> .frames[0] | dv({depth: 1, sizebase: 16})
     |                                               |                |  crc_calculated: "827a" (raw bits) 0xe3-NA (0x0)
 mp3> .frames[0].tag | "d", d, "da", da, "dd", dd, "dv", dv, "ddv", ddv
 "d"
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].tag{}: (mp3_frame_tags)
-0x40|      49 6e 66 6f                              |  Info          |  header: "Info" (XING variable bitrate)
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].tag{}: (mp3_frame_xing)
+0x40|      49 6e 66 6f                              |  Info          |  header: "Info" (valid)
     |                                               |                |  present_flags{}:
 0x40|                  00 00 00 0f                  |      ....      |    unused: 0
 0x40|                           0f                  |         .      |    quality: true
@@ -167,8 +167,8 @@ mp3> .frames[0].tag | "d", d, "da", da, "dd", dd, "dv", dv, "ddv", ddv
 0xd0|                              62 f0            |          b.    |  music_crc: 25328
 0xd0|                                    5a 35      |            Z5  |  tag_crc: 23093
 "da"
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].tag{}: (mp3_frame_tags)
-0x40|      49 6e 66 6f                              |  Info          |  header: "Info" (XING variable bitrate)
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].tag{}: (mp3_frame_xing)
+0x40|      49 6e 66 6f                              |  Info          |  header: "Info" (valid)
     |                                               |                |  present_flags{}:
 0x40|                  00 00 00 0f                  |      ....      |    unused: 0
 0x40|                           0f                  |         .      |    quality: true
@@ -301,8 +301,8 @@ mp3> .frames[0].tag | "d", d, "da", da, "dd", dd, "dv", dv, "ddv", ddv
 0xd0|                              62 f0            |          b.    |  music_crc: 25328
 0xd0|                                    5a 35      |            Z5  |  tag_crc: 23093
 "dd"
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].tag{}: (mp3_frame_tags)
-0x40|      49 6e 66 6f                              |  Info          |  header: "Info" (XING variable bitrate)
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].tag{}: (mp3_frame_xing)
+0x40|      49 6e 66 6f                              |  Info          |  header: "Info" (valid)
     |                                               |                |  present_flags{}:
 0x40|                  00 00 00 0f                  |      ....      |    unused: 0
 0x40|                           0f                  |         .      |    quality: true
@@ -435,8 +435,8 @@ mp3> .frames[0].tag | "d", d, "da", da, "dd", dd, "dv", dv, "ddv", ddv
 0xd0|                              62 f0            |          b.    |  music_crc: 25328
 0xd0|                                    5a 35      |            Z5  |  tag_crc: 23093
 "dv"
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].tag{}: (mp3_frame_tags) 0x42-0xdd.7 (156)
-0x40|      49 6e 66 6f                              |  Info          |  header: "Info" (XING variable bitrate) 0x42-0x45.7 (4)
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].tag{}: (mp3_frame_xing) 0x42-0xdd.7 (156)
+0x40|      49 6e 66 6f                              |  Info          |  header: "Info" (valid) 0x42-0x45.7 (4)
     |                                               |                |  present_flags{}: 0x46-0x49.7 (4)
 0x40|                  00 00 00 0f                  |      ....      |    unused: 0 0x46-0x49.3 (3.4)
 0x40|                           0f                  |         .      |    quality: true 0x49.4-0x49.4 (0.1)
@@ -569,8 +569,8 @@ mp3> .frames[0].tag | "d", d, "da", da, "dd", dd, "dv", dv, "ddv", ddv
 0xd0|                              62 f0            |          b.    |  music_crc: 25328 0xda-0xdb.7 (2)
 0xd0|                                    5a 35      |            Z5  |  tag_crc: 23093 0xdc-0xdd.7 (2)
 "ddv"
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].tag{}: (mp3_frame_tags) 0x42-0xdd.7 (156)
-0x40|      49 6e 66 6f                              |  Info          |  header: "Info" (XING variable bitrate) 0x42-0x45.7 (4)
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].tag{}: (mp3_frame_xing) 0x42-0xdd.7 (156)
+0x40|      49 6e 66 6f                              |  Info          |  header: "Info" (valid) 0x42-0x45.7 (4)
     |                                               |                |  present_flags{}: 0x46-0x49.7 (4)
 0x40|                  00 00 00 0f                  |      ....      |    unused: 0 0x46-0x49.3 (3.4)
 0x40|                           0f                  |         .      |    quality: true 0x49.4-0x49.4 (0.1)

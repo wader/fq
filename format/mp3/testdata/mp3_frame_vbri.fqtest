@@ -1,6 +1,6 @@
-$ fq -d mp3_frame_tags dv mp3_frame_tags_vbri
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: mp3_frame_tags_vbri (mp3_frame_tags) 0x0-0x11f.7 (288)
-0x000|56 42 52 49                                    |VBRI            |  header: "VBRI" (Fraunhofer Encoder variable bitrate info) 0x0-0x3.7 (4)
+$ fq -d mp3_frame_vbri dv mp3_frame_vbri
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: mp3_frame_vbri (mp3_frame_vbri) 0x0-0x11f.7 (288)
+0x000|56 42 52 49                                    |VBRI            |  header: "VBRI" (valid) 0x0-0x3.7 (4)
 0x000|            00 01                              |    ..          |  version_id: 1 0x4-0x5.7 (2)
 0x000|                  09 31                        |      .1        |  delay: 2353 0x6-0x7.7 (2)
 0x000|                        00 64                  |        .d      |  quality: 100 0x8-0x9.7 (2)
