@@ -1622,6 +1622,17 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		decodeBoxes(ctx, d)
 	case "hint":
 		decodeBoxes(ctx, d)
+	case "pdin":
+		d.FieldU8("version")
+		d.FieldU24("flags")
+		d.FieldArray("entries", func(d *decode.D) {
+			for !d.End() {
+				d.FieldStruct("entry", func(d *decode.D) {
+					d.FieldU32("rate")
+					d.FieldU32("initial_delay")
+				})
+			}
+		})
 	default:
 		if mb := ctx.currentMetaBox(); mb != nil && ctx.parent().typ == "ilst" {
 			// unknown type inside a metadata box with ilst as parent, decode item boxes
