@@ -1,4 +1,4 @@
-package applebookmark
+package bookmarkdata
 
 import (
 	"embed"

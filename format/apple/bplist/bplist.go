@@ -12,7 +12,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-//go:embed bplist.jq bplist.md
+//go:embed bplist.jq bplist.md ns_keyed_archiver.jq
 var bplistFS embed.FS
 
 func init() {
