@@ -27,7 +27,7 @@ func (pld *PosLoopDetector[T]) Pop() {
 // PushAndPop adds the current offset to the stack, executes the supplied
 // detection function, and returns the Pop method. A good usage of this is to
 // pair this method call with a defer statement.
-func (pld *PosLoopDetector[T]) PushAndPop(i T, detect func()) func() {
-	pld.Push(i, detect)
+func (pld *PosLoopDetector[T]) PushAndPop(offset T, detect func()) func() {
+	pld.Push(offset, detect)
 	return pld.Pop
 }
