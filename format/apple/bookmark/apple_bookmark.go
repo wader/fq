@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/apple"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
@@ -299,32 +300,12 @@ const (
 	dictEntrySize  = 4
 )
 
-type posLoopDetector []int64
-
-func (pld *posLoopDetector) push(i int64, detect func()) {
-	for _, o := range *pld {
-		if i == o {
-			detect()
-		}
-	}
-	*pld = append(*pld, i)
-}
-
-func (pld *posLoopDetector) pop() {
-	*pld = (*pld)[:len(*pld)-1]
-}
-
-func (pld *posLoopDetector) pushAndPop(i int64, detect func()) func() {
-	pld.push(i, detect)
-	return pld.pop
-}
-
 func makeDecodeRecord() func(d *decode.D) {
-	var pld posLoopDetector
+	var pld apple.PosLoopDetector
 
 	var decodeRecord func(d *decode.D)
 	decodeRecord = func(d *decode.D) {
-		defer pld.pushAndPop(
+		defer pld.PushAndPop(
 			d.Pos(),
 			func() { d.Fatalf("infinite recursion detected in record decode function") },
 		)()
