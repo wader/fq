@@ -197,7 +197,7 @@ func (pl *plist) decodeReference(d *decode.D, idx uint64) bool {
 	}
 	pl.consumed[idx] = true
 
-	defer pl.pld.PushAndPop(int64(idx), func() { d.Fatalf("infinite recursion detected") })()
+	defer pl.pld.PushAndPop(idx, func() { d.Fatalf("infinite recursion detected") })()
 
 	itemOffset := pl.o[idx]
 	if itemOffset >= pl.t.offsetTableStart {
@@ -224,7 +224,7 @@ type plist struct {
 	t        trailer
 	o        []uint64
 	consumed map[uint64]bool
-	pld      apple.PosLoopDetector
+	pld      apple.PosLoopDetector[uint64]
 }
 
 func bplistDecode(d *decode.D, _ any) any {

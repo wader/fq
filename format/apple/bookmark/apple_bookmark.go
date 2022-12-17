@@ -301,7 +301,7 @@ const (
 )
 
 func makeDecodeRecord() func(d *decode.D) {
-	var pld apple.PosLoopDetector
+	var pld apple.PosLoopDetector[int64]
 
 	var decodeRecord func(d *decode.D)
 	decodeRecord = func(d *decode.D) {
