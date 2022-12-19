@@ -1,8 +1,9 @@
 def from_ns_keyed_archiver($root):
-  (  
-    . as {
-      "$objects": $objects
-    }
+  if _exttype == "decode_value" and format == "bplist" then _bplist_torepr end
+  | (  
+      . as {
+        "$objects": $objects
+      }
   | def _f($id; $seen_ids):
       def _r($id):
         if $seen_ids | has("\($id)") then "cycle-\($id)"
@@ -68,4 +69,5 @@ def from_ns_keyed_archiver($root):
   );
 
 def from_ns_keyed_archiver:
-    from_ns_keyed_archiver(."$top"?.root?.cfuid // error("root node not found, must specify index"));
+    if _exttype == "decode_value" and format == "bplist" then _bplist_torepr end
+    | from_ns_keyed_archiver(."$top"?.root?.cfuid // error("root node not found, must specify root ID"));
