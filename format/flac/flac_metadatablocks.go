@@ -28,9 +28,9 @@ func metadatablocksDecode(d *decode.D, _ any) any {
 
 	isLastBlock := false
 	for !isLastBlock {
-		dv, v := d.FieldFormat("metadatablock", flacMetadatablockFormat, nil)
+		_, v := d.FieldFormat("metadatablock", flacMetadatablockFormat, nil)
 		flacMetadatablockOut, ok := v.(format.FlacMetadatablockOut)
-		if dv != nil && !ok {
+		if !ok {
 			panic(fmt.Sprintf("expected FlacMetadatablocksOut, got %#+v", flacMetadatablockOut))
 		}
 		isLastBlock = flacMetadatablockOut.IsLastBlock
