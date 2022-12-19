@@ -42,13 +42,13 @@ def from_ns_keyed_archiver($root):
                   ( ."NS.objects"
                   | map(_r(.cfuid))
                   )
-                elif $cname == "NSData" or $cname == "NSMutableData" then ."NS.Data" # TODO: will be a json string?
+                elif $cname == "NSData" or $cname == "NSMutableData" then ."NS.Data"
                 elif $cname == "NSDate" then "NS.time"
                 elif $cname == "NSNull" then null
                 elif $cname == "NSAttributedString"
                   or $cname == "NSMutableAttributedString" then
-                  _r(.NSString)
-                elif $cname == "NSUUID" then ."NS.uuidbytes" # TODO: will be a json string?
+                  _r(.NSString.cfuid)
+                elif $cname == "NSUUID" then ."NS.uuidbytes"
                 else
                   # replace class ID with classname, and dereference all cfuid values.
                   ."$class" = $cname |
