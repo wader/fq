@@ -1,9 +1,9 @@
-def from_ns_keyed_archiver:
-  (  . as {
-      "$objects": $objects,
-      "$top": {root: $root}
-      #"$top": {"796BFF22-6712-4486-A32C-A1C5DB3273BA": $root}
-    }
+def from_ns_keyed_archiver(root):
+  (  
+    . as 
+      {
+        "$objects": $objects
+      }
   | def _f($id; $seen_ids):
       def _r($id):
         if $seen_ids | has("\($id)") then "cycle-\($id)"
@@ -65,6 +65,13 @@ def from_ns_keyed_archiver:
         end
       );
     def _f($id): _f($id; {"\($id)": true});
-    _f($root?.cfuid // 1)
+    _f(root)
   );
 
+def from_ns_keyed_archiver:
+  ( . as 
+      {
+        "$top": {root: $root}
+      }
+    | from_ns_keyed_archiver($root.cfuid)
+  );
