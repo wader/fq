@@ -27,6 +27,29 @@ $ fq torepr com.apple.UIAutomation.plist
 }
 ```
 
+### Decoding NSKeyedArchiver serialized objects
+
+A common way that Swift and Objective-C libraries on macOS serialize objects
+is through the NSKeyedArchiver API, which flattens objects into a list of elements
+and class descriptions that are reconstructed into an object graph using CFUID
+elements in the property list. `fq` includes a function, `from_ns_keyed_archiver`,
+which will rebuild this object graph into a friendly representation. The `bplist`
+data must first be passed through `torepr` to create a JSON representation.
+
+If no parameters are supplied, it will assume that there is a CFUID located at
+`."$top".root` that specifies the root from which decoding should occur. If this
+is not present, the user must specify a root object in the `.$objects` list from
+which to decode.
+
+The following examples show how this might be used (in this case, in the `fq` REPL):
+```
+# Assume $top.root is present
+bplist> torepr | from_ns_keyed_archiver
+
+# Specify optional root
+bplist> torepr | from_ns_keyed_archiver(1)
+```
+
 ### Authors
 - David McDonald
 [@dgmcdona](https://github.com/dgmcdona)

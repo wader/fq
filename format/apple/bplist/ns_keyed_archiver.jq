@@ -1,9 +1,8 @@
-def from_ns_keyed_archiver(root):
+def from_ns_keyed_archiver($root):
   (  
-    . as 
-      {
-        "$objects": $objects
-      }
+    . as {
+      "$objects": $objects
+    }
   | def _f($id; $seen_ids):
       def _r($id):
         if $seen_ids | has("\($id)") then "cycle-\($id)"
@@ -65,13 +64,8 @@ def from_ns_keyed_archiver(root):
         end
       );
     def _f($id): _f($id; {"\($id)": true});
-    _f(root)
+    _f($root)
   );
 
 def from_ns_keyed_archiver:
-  ( . as 
-      {
-        "$top": {root: $root}
-      }
-    | from_ns_keyed_archiver($root.cfuid)
-  );
+    from_ns_keyed_archiver(."$top"?.root?.cfuid // error("root node not found, must specify index"));
