@@ -265,7 +265,9 @@ jq implementation [gojq](https://github.com/itchyny/gojq). I also want to thank
 [HexFiend](https://github.com/HexFiend/HexFiend) for inspiration and ideas and [stedolan](https://github.com/stedolan)
 for inventing the [jq](https://github.com/stedolan/jq) language.
 
-### Similar or related projects
+### Similar or related works
+
+#### Tools
 
 - [HexFiend](https://github.com/HexFiend/HexFiend) Hex editor for macOS with format template support.
 - [binspector](https://github.com/binspector/binspector) Binary format analysis tool with query langauge and REPL.
@@ -278,6 +280,13 @@ for inventing the [jq](https://github.com/stedolan/jq) language.
 - [hex](https://git.janouch.name/p/hex) Interactive hex viewer with format support via lua.
 - [hachoir](https://github.com/vstinner/hachoir) General python library for working binary data.
 - [scapy](https://scapy.net) Decode/Encode formats, focus on network protocols.
+
+#### Projects and Standards
+
+- [Let's Solve the File Format Problem](http://fileformats.archiveteam.org)
+- [PRONOM](https://www.nationalarchives.gov.uk/PRONOM/) file format registry
+- [Sustainability of Digital Formats](https://www.loc.gov/preservation/digital/formats/) at Library of Congress
+- [Data Format Description Language](https://en.wikipedia.org/wiki/Data_Format_Description_Language)
 
 ## License
 
