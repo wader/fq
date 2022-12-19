@@ -441,9 +441,9 @@ func matroskaDecode(d *decode.D, _ any) any {
 				})
 			})
 		case "A_AAC":
-			dv, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegASCFrameFormat, nil)
+			_, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegASCFrameFormat, nil)
 			mpegASCOut, ok := v.(format.MPEGASCOut)
-			if dv != nil && !ok {
+			if !ok {
 				panic(fmt.Sprintf("expected mpegASCOut got %#+v", v))
 			}
 			//nolint:gosimple
@@ -454,9 +454,9 @@ func matroskaDecode(d *decode.D, _ any) any {
 			t.parentD.RangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
 				d.FieldStruct("value", func(d *decode.D) {
 					d.FieldUTF8("magic", 4, d.StrAssert("fLaC"))
-					dv, v := d.FieldFormat("metadatablocks", flacMetadatablocksFormat, nil)
+					_, v := d.FieldFormat("metadatablocks", flacMetadatablocksFormat, nil)
 					flacMetadatablockOut, ok := v.(format.FlacMetadatablocksOut)
-					if dv != nil && !ok {
+					if !ok {
 						panic(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
 					}
 					if flacMetadatablockOut.HasStreamInfo {
@@ -465,16 +465,16 @@ func matroskaDecode(d *decode.D, _ any) any {
 				})
 			})
 		case "V_MPEG4/ISO/AVC":
-			dv, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegAVCDCRFormat, nil)
+			_, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegAVCDCRFormat, nil)
 			avcDcrOut, ok := v.(format.AvcDcrOut)
-			if dv != nil && !ok {
+			if !ok {
 				panic(fmt.Sprintf("expected AvcDcrOut got %#+v", v))
 			}
 			t.formatInArg = format.AvcAuIn{LengthSize: avcDcrOut.LengthSize} //nolint:gosimple
 		case "V_MPEGH/ISO/HEVC":
-			dv, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegHEVCDCRFormat, nil)
+			_, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegHEVCDCRFormat, nil)
 			hevcDcrOut, ok := v.(format.HevcDcrOut)
-			if dv != nil && !ok {
+			if !ok {
 				panic(fmt.Sprintf("expected HevcDcrOut got %#+v", v))
 			}
 			t.formatInArg = format.HevcAuIn{LengthSize: hevcDcrOut.LengthSize} //nolint:gosimple
