@@ -7,7 +7,7 @@ def _bplist_torepr:
       elif .type == "data" then .value | tovalue
       elif .type == "ascii_string" then .value | tovalue
       elif .type == "unicode_string" then .value | tovalue
-      elif .type == "uid" then .value | tovalue
+      elif .type == "uid" then {"cfuid": .value | tovalue}
       elif .type == "array" then
         ( .entries
         | map(_f)

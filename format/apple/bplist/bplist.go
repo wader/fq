@@ -7,12 +7,13 @@ import (
 	"time"
 
 	"github.com/wader/fq/format"
+	"github.com/wader/fq/format/apple"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
-//go:embed bplist.jq bplist.md
+//go:embed bplist.jq bplist.md ns_keyed_archiver.jq
 var bplistFS embed.FS
 
 func init() {
@@ -185,26 +186,6 @@ func decodeItem(d *decode.D, p *plist) bool {
 	return false
 }
 
-type indexStack []uint64
-
-func (i *indexStack) pop() {
-	*i = (*i)[:len(*i)-1]
-}
-
-func (i *indexStack) push(idx uint64, handler func()) {
-	for _, v := range *i {
-		if v == idx {
-			handler()
-		}
-	}
-	*i = append(*i, idx)
-}
-
-func (i *indexStack) pushAndPop(idx uint64, handler func()) func() {
-	i.push(idx, handler)
-	return i.pop
-}
-
 // decodeReference looks up and decodes an object based on its index in the
 // offset table. Returns a bool indicating whether or not the decoded item is
 // a string (necessary for checking dictionary key validity).
@@ -216,7 +197,7 @@ func (pl *plist) decodeReference(d *decode.D, idx uint64) bool {
 	}
 	pl.consumed[idx] = true
 
-	defer pl.idxStack.pushAndPop(idx, func() { d.Fatalf("infinite recursion detected") })()
+	defer pl.pld.PushAndPop(idx, func() { d.Fatalf("infinite recursion detected") })()
 
 	itemOffset := pl.o[idx]
 	if itemOffset >= pl.t.offsetTableStart {
@@ -243,7 +224,7 @@ type plist struct {
 	t        trailer
 	o        []uint64
 	consumed map[uint64]bool
-	idxStack indexStack
+	pld      apple.PosLoopDetector[uint64]
 }
 
 func bplistDecode(d *decode.D, _ any) any {
