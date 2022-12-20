@@ -1,17 +1,14 @@
-def from_ns_keyed_archiver($root):
-  if _exttype == "decode_value" and format == "bplist" then _bplist_torepr end
-  | (  
-      . as {
-        "$objects": $objects
-      }
+def from_ns_keyed_archiver(root):
+  ( if _is_decode_value and format == "bplist" then _bplist_torepr end
+  | ."$objects" as $objects
   | def _f($id; $seen_ids):
-      def _r($id):
-        if $seen_ids | has("\($id)") then "cycle-\($id)"
-        else _f($id; $seen_ids | ."\($id)" = true)
-        end;
-      ( $objects[$id]
-      | type as $type |
-        if $type == "string" and . == "$null" then null
+      ( def _r($id):
+          if $seen_ids | has("\($id)") then "cycle-\($id)"
+          else _f($id; $seen_ids | ."\($id)" = true)
+          end;
+        $objects[$id]
+      | type as $type
+      | if $type == "string" and . == "$null" then null
         elif $type |
           . == "number"
           or . == "boolean"
@@ -22,9 +19,9 @@ def from_ns_keyed_archiver($root):
           ( ."$class" as $class
           | if $class == null then # TODO: what case is this?
               with_entries(
-                if (.value | type == "object") 
-                    and (.value | has("cfuid")) 
-                    then .value |= _r(.cfuid) end
+                if .value | type == "object" and has("cfuid") then
+                  .value |= _r(.cfuid)
+                end
               )
             else
               ( $objects[$class.cfuid]."$classname" as $cname
@@ -52,11 +49,12 @@ def from_ns_keyed_archiver($root):
                 elif $cname == "NSUUID" then ."NS.uuidbytes"
                 else
                   # replace class ID with classname, and dereference all cfuid values.
-                  ."$class" = $cname |
-                  with_entries(
-                    if (.value | type == "object") 
-                      and (.value | has("cfuid")) 
-                      then .value |= _r(.cfuid) end
+                  ( ."$class" = $cname
+                  | with_entries(
+                      if .value | type == "object" and has("cfuid") then
+                        .value |= _r(.cfuid)
+                      end
+                    )
                   )
                 end
               )
@@ -64,10 +62,9 @@ def from_ns_keyed_archiver($root):
           )
         end
       );
-    def _f($id): _f($id; {"\($id)": true});
-    _f($root)
+    root as $root
+  | _f($root; {"\($root)": true})
   );
 
 def from_ns_keyed_archiver:
-    if _exttype == "decode_value" and format == "bplist" then _bplist_torepr end
-    | from_ns_keyed_archiver(."$top"?.root?.cfuid // error("root node not found, must specify root ID"));
+  from_ns_keyed_archiver(."$top"?.root?.cfuid // error("root node not found, must specify root ID"));
