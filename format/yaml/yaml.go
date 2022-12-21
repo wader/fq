@@ -29,7 +29,7 @@ func init() {
 		Functions:   []string{"_todisplay"},
 	})
 	interp.RegisterFS(yamlFS)
-	interp.RegisterFunc0("toyaml", toYAML)
+	interp.RegisterFunc0("to_yaml", toYAML)
 }
 
 func decodeYAML(d *decode.D, _ any) any {

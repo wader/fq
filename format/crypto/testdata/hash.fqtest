@@ -1,5 +1,5 @@
 $ fq -i
-null> "test" | tomd4, tomd5, tosha1, tosha256, tosha512, tosha3_224, tosha3_256, tosha3_384, tosha3_512 | tohex
+null> "test" | to_md4, to_md5, to_sha1, to_sha256, to_sha512, to_sha3_224, to_sha3_256, to_sha3_384, to_sha3_512 | to_hex
 "db346d691d7acc4dc2625db19f9e3f52"
 "098f6bcd4621d373cade4e832627b4f6"
 "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"
@@ -9,7 +9,7 @@ null> "test" | tomd4, tomd5, tosha1, tosha256, tosha512, tosha3_224, tosha3_256,
 "36f028580bb02cc8272a9a020f4200e346e276ae664e45ee80745574e2f5ab80"
 "e516dabb23b6e30026863543282780a3ae0dccf05551cf0295178d7ff0f1b41eecb9db3ff219007c4e097260d58621bd"
 "9ece086e9bac491fac5c1d1046ca11d737b92a2b2ebd93f005d7b710110c0a678288166e7fbe796883a4f2e9b3ca9f484f521d0ce464345cc1aec96779149c14"
-null> 0xf08 | tobits | .[:4,5,6,7,8,9] | tomd5 | tohex
+null> 0xf08 | tobits | .[:4,5,6,7,8,9] | to_md5 | to_hex
 "8c493a43d8c1ef798860bb02b62e8e79"
 "8c493a43d8c1ef798860bb02b62e8e79"
 "8c493a43d8c1ef798860bb02b62e8e79"

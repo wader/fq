@@ -6,7 +6,7 @@
 # <blank>+
 # ...
 # <next test>
-def fromjqtest:
+def from_jqtest:
   [ foreach (split("\n")[], "") as $l (
       { current_line: 0
       , nr: 1
@@ -60,7 +60,7 @@ def fromjqtest:
 
 def run_tests:
   def _f:
-    ( fromjqtest[]
+    ( from_jqtest[]
     | . as $c
     | try
         if .error | not then

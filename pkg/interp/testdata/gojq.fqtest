@@ -1,5 +1,5 @@
 # TODO: various gojq fq fork regression tests, should probably be move to fork code instead
-# 0xf_ffff_ffff_fffff_fffff-1 | toradix(2,8,16)
+# 0xf_ffff_ffff_fffff_fffff-1 | to_radix(2,8,16)
 $ fq -n '0b1111111111111111111111111111111111111111111111111111111111111111111111111110, 0o17777777777777777777777776, 0xffffffffffffffffffe'
 75557863725914323419134
 75557863725914323419134
@@ -255,7 +255,7 @@ $ fq -d mp3 '.frames[0] | to_entries[].key' test.mp3
 "crc_calculated"
 # xml, csv does string normalization, make sure it works with nested JQValue:s
 # TODO: move this test as it depends on xml
-$ fq -r '.headers[0] | toxml({indent: 2})' test.mp3
+$ fq -r '.headers[0] | to_xml({indent: 2})' test.mp3
 <doc>
   <flags>
     <experimental_indicator>false</experimental_indicator>

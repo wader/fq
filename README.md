@@ -163,7 +163,7 @@ For details see [formats.md](doc/formats.md) and [usage.md](doc/usage.md).
 
 Use one of the methods listed below or download a pre-built [release](https://github.com/wader/fq/releases) for macOS, Linux or Windows. Unarchive it and move the executable to `PATH` etc.
 
-On macOS if you don't install using a method below you might have to manually allow the binary to run. This can be done by trying to run the binary, ignore the warning and then go into security preference and allow it. Same can be done with this command:
+On macOS if you don't install using one of the method below you might have to manually allow the binary to run. This can be done by trying to run the binary, ignore the warning and then go into security preference and allow it. Same can be done with this command:
 
 ```sh
 xattr -d com.apple.quarantine fq && spctl --add fq
@@ -241,7 +241,7 @@ cp "$(go env GOPATH)/bin/fq" /usr/local/bin
 
 To build, run and test from source:
 ```sh
-# build an run
+# build and run
 go run .
 go run . -d mp3 file.mp3
 # just build

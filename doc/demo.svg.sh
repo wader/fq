@@ -29,10 +29,10 @@ s "file file.png"
 rm -f file.png
 echo
 c "Resolution of embedded PNG cover art as YAML"
-s "fq -r '.headers[0].frames[] | grep_by(.id == \"APIC\") | grep_by(.type == \"IHDR\") | {res: {width, height}} | toyaml' file.mp3"
+s "fq -r '.headers[0].frames[] | grep_by(.id == \"APIC\") | grep_by(.type == \"IHDR\") | {res: {width, height}} | to_yaml' file.mp3"
 #echo
 c "Add query parameter to URL"
-s "echo 'http://host?a=b' | fq -Rr 'fromurl | .query.b = \"a b c\" | tourl'"
+s "echo 'http://host?a=b' | fq -Rr 'from_url | .query.b = \"a b c\" | to_url'"
 echo
 c "Extract JSON and base64 encoded query parameter p"
-s "echo 'https://host?p=eyJhIjoiaGVsbG8ifQ%3D%3D' | fq -R 'fromurl.query.p | frombase64 | fromjson'"
+s "echo 'https://host?p=eyJhIjoiaGVsbG8ifQ%3D%3D' | fq -R 'from_url.query.p | from_base64 | fromjson'"

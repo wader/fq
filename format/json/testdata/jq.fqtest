@@ -1,4 +1,4 @@
-$ fq -rRs 'fromjson[] | (tojq | ., fromjq), "----", (tojq({indent:2}) | ., fromjq), "----"' variants.json
+$ fq -rRs 'fromjson[] | (to_jq | ., from_jq), "----", (to_jq({indent:2}) | ., from_jq), "----"' variants.json
 null
 null
 ----

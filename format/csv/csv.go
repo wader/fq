@@ -33,7 +33,7 @@ func init() {
 		Functions: []string{"_todisplay"},
 	})
 	interp.RegisterFS(csvFS)
-	interp.RegisterFunc1("_tocsv", toCSV)
+	interp.RegisterFunc1("_to_csv", toCSV)
 }
 
 func decodeCSV(d *decode.D, in any) any {

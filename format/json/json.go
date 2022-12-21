@@ -31,7 +31,7 @@ func init() {
 		Functions:   []string{"_todisplay"},
 	})
 	interp.RegisterFS(jsonFS)
-	interp.RegisterFunc1("_tojson", toJSON)
+	interp.RegisterFunc1("_to_json", toJSON)
 }
 
 func decodeJSONEx(d *decode.D, lines bool) any {

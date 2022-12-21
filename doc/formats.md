@@ -213,7 +213,7 @@ Supports decoding BER, CER and DER (X.690).
 ### Can be used to decode certificates etc
 
 ```sh
-$ fq -d bytes 'frompem | asn1_ber | d' cert.pem
+$ fq -d bytes 'from_pem | asn1_ber | d' cert.pem
 ```
 
 ### Can decode nested values
@@ -510,7 +510,7 @@ Decode value as csv
 ### TSV to CSV
 
 ```sh
-$ fq -d csv -o comma="\t" tocsv file.tsv
+$ fq -d csv -o comma="\t" to_csv file.tsv
 ```
 
 ### Convert rows to objects based on header row
@@ -585,7 +585,7 @@ HTML is decoded in HTML5 mode and will always include `<html>`, `<body>` and `<h
 
 See xml format for more examples and how to preserve element order and how to encode to xml.
 
-There is no `tohtml` function, see `toxml` instead.
+There is no `to_html` function, see `to_xml` instead.
 
 ### Element as object
 
@@ -751,7 +751,7 @@ $ fq 'del(.tracks) | grep_by(.type=="mdat").data = "<excluded>" | tovalue' file.
 ### Force decode a single box
 
 ```sh
-$ fq -n '"AAAAHGVsc3QAAAAAAAAAAQAAADIAAAQAAAEAAA==" | frombase64 | mp4({force:true}) | d'
+$ fq -n '"AAAAHGVsc3QAAAAAAAAAAQAAADIAAAQAAAEAAA==" | from_base64 | mp4({force:true}) | d'
 ```
 
 ### Lookup mp4 box using a mp4 box path.
@@ -887,7 +887,7 @@ Which variant to use depends a bit what you want to do. The object variant might
 to query for a specific value but array might be easier to use to generate xml or to query
 after all elements of some kind etc.
 
-Encoding is done using the `toxml` function and it will figure what variant that is used based on the input value.
+Encoding is done using the `to_xml` function and it will figure what variant that is used based on the input value.
 Is has two optional options `indent` and `attribute_prefix`.
 
 ### Elements as object
@@ -930,7 +930,7 @@ $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq '.a.c["#text"]'
 "ccc"
 
 # decode to object and encode to xml
-$ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -r -d xml -o seq=true 'toxml({indent:2})'
+$ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -r -d xml -o seq=true 'to_xml({indent:2})'
 <a>
   <b></b>
   <b>bbb</b>
@@ -973,7 +973,7 @@ $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -d xml -o array=true
 ]
 
 # decode to array and encode to xml
-$ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -r -d xml -o array=true -o seq=true 'toxml({indent:2})'
+$ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -r -d xml -o array=true -o seq=true 'to_xml({indent:2})'
 <a>
   <b></b>
   <b>bbb</b>

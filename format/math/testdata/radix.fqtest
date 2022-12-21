@@ -1,5 +1,5 @@
 $ fq -i
-null> (0,1,1024,99999999999999999999) as $n | (2,8,16,62,64) as $r | "\($r): \($n) \($n | toradix($r)) \($n | toradix($r) | fromradix($r))" | println
+null> (0,1,1024,99999999999999999999) as $n | (2,8,16,62,64) as $r | "\($r): \($n) \($n | to_radix($r)) \($n | to_radix($r) | from_radix($r))" | println
 2: 0 0 0
 8: 0 0 0
 16: 0 0 0

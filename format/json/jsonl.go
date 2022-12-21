@@ -24,7 +24,7 @@ func init() {
 		Functions:   []string{"_todisplay"},
 	})
 	interp.RegisterFS(jsonlFS)
-	interp.RegisterFunc0("tojsonl", toJSONL)
+	interp.RegisterFunc0("to_jsonl", toJSONL)
 }
 
 func decodeJSONL(d *decode.D, _ any) any {

@@ -1,5 +1,5 @@
 $ fq -i
-null> "schema://user:pass@host/path/a/b?a=1+2&b=2%20%33#fragment" | fromurl | ., tourl
+null> "schema://user:pass@host/path/a/b?a=1+2&b=2%20%33#fragment" | from_url | ., to_url
 {
   "fragment": "fragment",
   "host": "host",
@@ -16,7 +16,7 @@ null> "schema://user:pass@host/path/a/b?a=1+2&b=2%20%33#fragment" | fromurl | .,
   }
 }
 "schema://user:pass@host/path/a/b?a=1+2&b=2+3#fragment"
-null> "schema://host?query" | fromurl | ., tourl
+null> "schema://host?query" | from_url | ., to_url
 {
   "host": "host",
   "query": {
@@ -26,7 +26,7 @@ null> "schema://host?query" | fromurl | ., tourl
   "scheme": "schema"
 }
 "schema://host?query="
-null> "schema://user@host" | fromurl | ., tourl
+null> "schema://user@host" | from_url | ., to_url
 {
   "host": "host",
   "scheme": "schema",
@@ -35,7 +35,7 @@ null> "schema://user@host" | fromurl | ., tourl
   }
 }
 "schema://user@host"
-null> "schema://" | fromurl | ., tourl
+null> "schema://" | from_url | ., to_url
 {
   "scheme": "schema"
 }

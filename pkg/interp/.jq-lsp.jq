@@ -26,6 +26,6 @@ def open: empty;
 def scope: empty;
 
 # used by help.jq
-def tojq: empty;
+def to_jq: empty;
 # used by funcs.jq iprint
-def toradix($base): empty;
+def to_radix($base): empty;
