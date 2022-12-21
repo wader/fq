@@ -1,3 +1,195 @@
+# 0.2.0
+
+This ended up being a release to cleanup old sins in the decoder internals and change some defaults how binary values work with JSON and string functions.
+
+It also adds a new Time Zone Information Format decoder `tzif` (Thanks Takashi Oguma @bitbears-dev) and a new Apple BookmarkData decoder `apple_bookmark` decoder (Thanks David McDonald @dgmcdona). Also a new function `from_ns_keyed_archiver` was added to convert NSKeyedArchiver encoded objects into JSON.
+
+A possible breaking change is that now all `from`/`to` prefix functions now has a `from_`/`to_` prefix, ex: `from_mp3` instead of `frommp3`. There are some few exceptions to this. Note that the functions named just be the format name, ex `mp3` are still around.
+
+In other fq related news [jq-lsp](https://github.com/wader/jq-lsp) got some fixed and additions and seems to work fine with neovim. It's also possible to use jq-lsp with vscode using [vscode-jq](https://github.com/wader/vscode-jq).
+
+## Changes
+
+- All functions that had a `from`/`to` prefix now has the prefix `from_`/`to_`. This is to be easier to read and more consistent, there are still some exceptions like `tovalue`, `torepr`, `tobytes` etc but in general anything that does not deal with primitive types is now `snake_case`. #535
+- Change default `bit_formats` option value (how raw bits values are represented in JSON) from `snippet` to `string`. `snippet` meant truncated bits as base64. Now all bits are included as a UTF-8 string. The string will be binary safe (not lose any data) when used internally in fq but will lose data when represented in JSON as some bytes can't be encoded as UTF-8. #499
+- Don't auto convert to binary for string/regexp functions, turned out this is very confusing. Now you have to manually use `tobytes` etc to convert to binary value. #540
+  ```sh
+  # This used to not work as test/1 would convert decode values to the source bytes
+  # (0x00 0x00 0x00 0x01) in this case. Now the jq value (symbolic in this case) will
+  # be used instead. You can do ".test | tobytes" to get old behavior.
+  #
+  # find all types with a "mdta." prefix
+  $ fq -o line_bytes=10 'grep_by(.type | test(`^mdta\.`))' file.mp4
+       │00 01 02 03 04 05 06 07 08 09│0123456789│.boxes[3].boxes[2].boxes[0].boxes[2].boxes[0]{}: box
+  0x528│      00 00 00 1c            │  ....    │  size: 28
+  0x528│                  00 00 00 01│      ....│  type: "mdta.title" ("\x00\x00\x00\x01")
+  0x532│00 00 00 14 64 61 74 61 00 00│....data..│  boxes[0:1]:
+  0x53c│00 01 00 00 00 00 74 65 73 74│......test│
+       │00 01 02 03 04 05 06 07 08 09│0123456789│.boxes[3].boxes[2].boxes[0].boxes[2].boxes[1]{}: box
+  0x546│00 00 00 25                  │...%      │  size: 37
+  0x546│            00 00 00 02      │    ....  │  type: "mdta.encoder" ("\x00\x00\x00\x02")
+  0x546│                        00 00│        ..│  boxes[0:1]:
+  0x550│00 1d 64 61 74 61 00 00 00 01│..data....│
+  0x55a│00 00 00 00 4c 61 76 66 35 39│....Lavf59│
+  0x564│2e 32 37 2e 31 30 30│        │.27.100│  │
+  ```
+- Fix panic when cancel (ctrl-c etc) before interpreter is executing. Thanks @pldin601 for reporting. #495
+- Fix error using JQValue:s in assign/update paths, ex `.[<JQValue here>] = 123` #509
+- Rename fields added for bit-ranges not used by a decoder from `unknown#` to `gap#`. "unknown" is probably a useful field name in some formats and "gap" describe better what it is. #500
+- Big decode API internals refactor to split scalars types into their own go types so they can store per type specific values. This also opens up for more ways to make fq both faster and more memory efficient. It also makes the decode API more type safe and makes it possible to experiment with decode DLS that uses chained methods etc. #523
+
+## Decoder changes
+
+- `apple_bookmark` New Apple BookmarkData decoder. Thanks David McDonald @dgmcdona. #493
+- `bplist`
+  - Fix decoding of UID types
+  - Adds a `lost_and_found` array with unused values
+  - Fix an endian issue for unicode strings
+  - Add NSKeyedArchiver to JSON helper function `from_ns_keyed_archiver`, see `bplist` docs for details on how to use it. Thanks David McDonald @dgmcdona. #493
+  ```
+  # decode bplist, from_ns_keyed_archiver converts to JSON plist and then into object data as JSON, find app bookmarks keys and expand them as bookmark data and convert to represented JSON, and finally build path to applications
+  $ fq -r 'from_ns_keyed_archiver | (.. | .Bookmark? // empty) |= (apple_bookmark | torepr) | .. | .target_path? // empty | join("/")' recentapps.sfl2
+  System/Applications/Utilities/Terminal.app
+  Applications/Spotify.app
+  System/Applications/Calculator.app
+  System/Applications/Preview.app
+  Applications/Alacritty.app
+  Applications/DB Browser for SQLite.app
+  System/Applications/System Preferences.app
+  System/Library/CoreServices/Applications/Directory Utility.app
+  System/Applications/Utilities/Activity Monitor.app
+  Applications/Safari.app
+  ```
+- `tzif` new Time Zone Information Format decoder. Thanks Takashi Oguma @bitbears-dev. #498
+- `mp4`
+  - Map `mdta` metadata namespace and key names for `ilst` child boxes. #521
+  ```sh
+  $ fq 'grep_by(.type=="ilst").boxes | map({key: .type, value: .boxes[0].data}) | from_entries' file.mp4
+  # create object with all ilst key/value pairs
+  {
+    "mdta.encoder": "Lavf59.27.100",
+    "mdta.title": "test"
+  }
+  # query specific value
+  $ fq -r 'grep_by(.type=="mdta.encoder").boxes[0].data | tovalue' file.mp4
+  Lavf59.27.100
+  ```
+  - Support `sidx` version 1. #506
+  - Add description and symbolic values for traf sample flags, makes it easier to see and query for I-frames etc. #514
+  ```
+  # which boxes has depends_on flags
+  $ fq 'grep_by(.sample_depends_on) | parent.type' fragmented.mp4
+  ```
+  - Support PNG codec mapping. #492
+  - Decode `pdin` boxes. #524
+  - Decode `hnti` boxes. #513
+- `mp3_tags` Add VBRI support and split into into `mp3_frame_xing` and `mp3_frame_vbri` decoders. #525
+
+## Changelog
+
+* 7fa8b635 Add related file format projects to README
+* 4fdb7362 Update docker-golang to 1.19.4 from 1.19.3
+* 519eff6c Update github-go-version to 1.19.4 from 1.19.3, 1.19.3, 1.19.3
+* 2a91d293 Update gomod-golang/text to 0.5.0 from 0.4.0
+* cb15b371 added checks to prevent infinite looping and recursion
+* c2445335 added some sfl2 test files to bplist package
+* 7d13cf73 adds flag parsing to applebookmark
+* 71b17d03 apple bookmarkdata decoder initial commit
+* 8f39ef63 bplist: Harmonize ns_keyed_archive jq style a bit
+* cba72dbd bplist: added overload for from_ns_keyed_archiver jq func
+* 129b4b70 bplist: doc: update docs to reflect changes to ns_keyed_archiver
+* 9dab3c60 bplist: minor fix to from_ns_keyed_archiver
+* 448c3efb bplist: update docs with from_ns_keyed_archiver reference, add error case to function
+* a9047c02 bplist: updates from_ns_keyed_archiver to do automatic torepr based on format detection
+* 4a28e44f changes decoder package name from bookmark to apple_bookmark
+* d0b044c2 converts to snake_case and refactors decode helper
+* d199793a created stack type
+* e77f7769 decode,interp: Rename unknown gap fields from "unknown#" to "gap#"
+* a85da295 decode: Make FieldFormat usage more consistent
+* 9b81d4d3 decode: More type safe API and split scalar into multiple types
+* 3ec0ba3f decode: add ns_keyed_archiver, restructure apple decoder into apple package
+* 330d5f7f decode: apple_bookmark: simplifies flag decoding
+* 93f2aa5d decode: change PosLoopDetector to use generics
+* 7e98b538 decode: fix type on defer function call, test: add loop.fqtest
+* a873819e decode: fixes endian of unicode strings
+* f747873d decode: implements lost and found for unreferenced objects
+* b45f9fa6 decode: improve stack push/pop
+* a162e07b decode: minor change to method receiver name
+* 3232f9cc decode: moves PosLoopDetector into its own package
+* 7c9504c7 decode: moves macho decoder to apple package
+* 70834678 decode: remove dead code from ns_keyed_archiver
+* 7ab44662 decode: remove unused field from decoder, unused parens from torepr
+* bdb81662 decode: removed unnecessary struct
+* 98eab8cb decode: rename parameter for consistency
+* 04379df8 decode: revert decode.D back, place posLoopDetector in apple_bookmark
+* 7fb674b5 decode: unexport methods
+* fa368bb7 decode: updates all.go with correct macho path
+* 0287ffa4 decoding well but torepr needs work
+* 42debe58 dev,doc,make: Cleanup makefile and have proper targets for *.md and *.svg
+* 423bab9e dev,test: Use jqtest code from jqjq for jq tests
+* 6fc84a88 doc,dev: Add more usage and dev tips
+* 2fc16ae2 doc: Add some padding margin to formats table to make it less likely to cause git conflicts
+* 62f377c2 doc: fixes snippet for recursive bookmark searching
+* 22064f50 doc: remake
+* 4aad2fde doc: remake
+* b872b1a3 doc: remake
+* 1e1fc551 fixed one more snake_case letter
+* d0b76cae fixes broken test and removes long link from markdown body
+* 5146f28d fixes broken test for all.fqtest
+* 253033cc fixes broken uid parsing in plist decoder
+* f535ad3d fixes spacing in jq files
+* 64351e8b fixes tests and adds torepr test
+* c7d00b87 fixes unknown bit ranges
+* 8f930aac forgot to add bookmark.jq in last commit
+* 164e527b gojq: Update rebased fq fork
+* 6c869451 gojq: Update rebased fq fork
+* 578b84d4 interp,display: Add workaround for go 1.18 when escaping 0x7f
+* 42d9f2c2 interp,help: Properly count line length when breaking on whole words
+* 8d69f1fb interp: Change default bits_format=string
+* 6c229d73 interp: Don't auto convert to binary for string functions, is just confusing
+* 568afff3 interp: Fix panic when trigger before any context has been pushed
+* e3ae1440 interp: Rename to/from<format> functions to to_/from_<format>
+* ba88a684 interp: mimic jq: if expr arg is given read stdin even if tty
+* 9bd65f93 migrates tests to per-sample files
+* f7d7a49f missed a letter on last commit - converting to snake_case
+* 2f37cb55 mod: Update modules not tracked with bump
+* 55f4f1aa moved a flag bit fields into correct positions
+* 9e5a072e mp3_frame_tags: Covert to decode group and split to mp3_frame_{xing,vbri} decoders
+* 48522e3c mp3_tags,mp3: Add VBRI header support and rename tags to tag as there is only one
+* 83ccedc5 mp4,decode: Properly decode ilst items (both mdta and mdir)
+* 1dea40e6 mp4,doc: Add JSON box tree example and reorder a bit
+* b1b3b63d mp4: Add namespace to mdta ilst boxes
+* 7b60b24a mp4: Add pdin box support
+* ef2d5232 mp4: Add png mapping
+* 5fb81a14 mp4: Add sym and description for traf sample flags
+* 1d6ce2c0 mp4: Decode hint and hnti child boxes
+* 9ac453a1 mp4: Fix typo in sample flags sample_is_depended_on description
+* a23fe618 mp4: sidx version 1 segment_duration is s64
+* 3942db79 pkg/decode/D: Adds PushAndPop, Push, Pop methods. doc: adds help_applebookmark.fqtestdecode: converts applebookmark to use new d.PushAndPop method
+* 0c216dff refactors some decoder logic in apple_bookmark for better querying
+* 34db9d7f regenerated docs, added tests, fixed torepr
+* 0a72635a remade documentation
+* 1352598a removed commented out line
+* 81269430 removed unnecessary conversions
+* 5b1455e7 removed unused function
+* 63a3ca20 removes underscore from apple_bookmark package name
+* a351c346 removes unused function
+* 2ee6360b support tzif (time zone information format)
+* 8d5dcff8 test: applebookmark: adds problematic test case
+* 63a4e80c test: fixed doc test
+* 47a568e0 text,test: Unbeak base64 tests
+* 44c91d82 tweaks apple_bookmark markdown documentation
+* fd22426b tzif: add help_tzif.fqtest
+* c4e7fc79 tzif: moved document to tzif.md
+* abde823a tzif: use PeekFindByte() to find end of the string
+* 4481a77a tzif: use scalar.Fn() to define a mapper ad hoc
+* dbc6fccd updated doc with apple reference
+* f5e25fca updated docs
+* 6f4d1cb1 updated documentation
+* b2aeac6a updates bplist fq tests
+* a23ac8f5 updates fqtest for torepr in apple_bookmarkdata
+
+
 # 0.1.0
 
 Adds `avi` decoder and replace `raw` with more convenient `bits` and `bytes` format. Otherwise mostly small updates and bug fixes.
