@@ -52,15 +52,15 @@ require (
 
 	// has no tags
 	// go get -d golang.org/x/crypto@master && go mod tidy
-	golang.org/x/crypto v0.3.0
+	golang.org/x/crypto v0.4.1-0.20221221171930-bc7d1d1eb54b
 
 	// has no tags
 	// go get -d golang.org/x/exp@master && go mod tidy
-	golang.org/x/exp v0.0.0-20221114191408-850992195362
+	golang.org/x/exp v0.0.0-20221217163422-3c43f8badb15
 
 	// has no tags
 	// go get -d golang.org/x/net@master && go mod tidy
-	golang.org/x/net v0.2.0
+	golang.org/x/net v0.4.1-0.20221213214114-ad92d3db360b
 
 	// bump: gomod-golang/text /golang\.org\/x\/text v(.*)/ https://github.com/golang/text.git|^0
 	// bump: gomod-golang/text command go get -d golang.org/x/text@v$LATEST && go mod tidy
@@ -77,6 +77,6 @@ require (
 	github.com/itchyny/timefmt-go v0.1.5 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
-	golang.org/x/sys v0.2.0 // indirect
+	golang.org/x/sys v0.3.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 )
