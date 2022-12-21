@@ -1,14 +1,14 @@
 # https://en.wikipedia.org/wiki/Privacy-Enhanced_Mail
-def frompem:
+def from_pem:
   ( tobytes
   | tostring
   | capture("-----BEGIN(.*?)-----(?<s>.*?)-----END(.*?)-----"; "mg").s
-  | _frombase64({encoding: "std"})
+  | _from_base64({encoding: "std"})
   ) // error("no pem header or footer found");
 
-def topem($label):
+def to_pem($label):
   ( tobytes
-  | _tobase64({encoding: "std"})
+  | _to_base64({encoding: "std"})
   | ($label | if $label != "" then " " + $label end) as $label
   | [ "-----BEGIN\($label)-----"
     , .
@@ -17,4 +17,4 @@ def topem($label):
     ]
   | join("\n")
   );
-def topem: topem("");
+def to_pem: to_pem("");

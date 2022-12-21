@@ -1,5 +1,5 @@
 # to jq-flavoured json
-def _tojq($opts):
+def _to_jq($opts):
   def _is_ident: test("^[a-zA-Z_][a-zA-Z_0-9]*$");
   def _key: if _is_ident | not then tojson end;
   def _f($opts; $indent):
@@ -45,8 +45,8 @@ def _tojq($opts):
   ( _f($opts; $opts.indent * " ")
   | if _is_array then flatten | join("") end
   );
-def tojq($opts):
-  _tojq(
+def to_jq($opts):
+  _to_jq(
     ( { indent: 0,
         key_sep: ":",
         object_sep: ",",
@@ -62,10 +62,10 @@ def tojq($opts):
       end
     )
   );
-def tojq: tojq(null);
+def to_jq: to_jq(null);
 
 # from jq-flavoured json
-def fromjq:
+def from_jq:
   def _f:
     ( . as $v
     | .term.type
@@ -93,4 +93,4 @@ def fromjq:
   try
     (_query_fromstring | _f)
   catch
-    error("fromjq only supports constant literals");
+    error("from_jq only supports constant literals");

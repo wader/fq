@@ -1,4 +1,4 @@
-$ fq -n '"a=1+2&b=2%20%33" | fromurlquery | ., tourlquery'
+$ fq -n '"a=1+2&b=2%20%33" | from_urlquery | ., to_urlquery'
 {
   "a": "1 2",
   "b": "2 3"

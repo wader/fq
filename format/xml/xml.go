@@ -47,11 +47,11 @@ func init() {
 		Functions: []string{"_todisplay"},
 	})
 	interp.RegisterFS(xmlFS)
-	interp.RegisterFunc1("toxml", toXML)
-	interp.RegisterFunc0("fromxmlentities", func(_ *interp.Interp, c string) any {
+	interp.RegisterFunc1("to_xml", toXML)
+	interp.RegisterFunc0("from_xmlentities", func(_ *interp.Interp, c string) any {
 		return html.UnescapeString(c)
 	})
-	interp.RegisterFunc0("toxmlentities", func(_ *interp.Interp, c string) any {
+	interp.RegisterFunc0("to_xmlentities", func(_ *interp.Interp, c string) any {
 		return html.EscapeString(c)
 	})
 }
@@ -488,12 +488,12 @@ func toXMLFromArray(c any, opts ToXMLOpts) any {
 
 	ca, ok := c.([]any)
 	if !ok {
-		return gojqex.FuncTypeError{Name: "toxml", V: c}
+		return gojqex.FuncTypeError{Name: "to_xml", V: c}
 	}
 	n, ok := f(ca)
 	if !ok {
 		// TODO: better error
-		return gojqex.FuncTypeError{Name: "toxml", V: c}
+		return gojqex.FuncTypeError{Name: "to_xml", V: c}
 	}
 	bb := &bytes.Buffer{}
 	e := xml.NewEncoder(bb)
@@ -514,5 +514,5 @@ func toXML(_ *interp.Interp, c any, opts ToXMLOpts) any {
 	} else if v, ok := gojqex.Cast[[]any](c); ok {
 		return toXMLFromArray(gojqex.NormalizeToStrings(v), opts)
 	}
-	return gojqex.FuncTypeError{Name: "toxml", V: c}
+	return gojqex.FuncTypeError{Name: "to_xml", V: c}
 }

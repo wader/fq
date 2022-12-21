@@ -70,7 +70,7 @@ def _help_format_enrich($arg0; $f; $include_basic):
           , shell: "\($arg0) -d \($f.name)\($f.decode_in_arg | to_entries | map(" -o ", .key, "=", (.value | tojson)) | join("")) . file"
           }
         , { comment: "Decode value as \($f.name)"
-          , expr: "\($f.name)(\($f.decode_in_arg | tojq))"
+          , expr: "\($f.name)(\($f.decode_in_arg | to_jq))"
           }
         ]
     end
@@ -85,7 +85,7 @@ def _help($arg0; $topic):
       , "  fq . file"
       , "  fq d file"
       , "  fq tovalue file"
-      , "  fq -r totoml file.yml"
+      , "  fq -r to_toml file.yml"
       , "  fq -s -d html 'map(.html.head.title?)' *.html"
       , "  cat file.cbor | fq -d cbor torepr"
       , "  fq 'grep(\"^main$\") | parent' /bin/ls"

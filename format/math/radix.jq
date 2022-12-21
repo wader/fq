@@ -1,5 +1,5 @@
-def fromradix($base; $table):
-  ( if _is_string | not then error("cannot fromradix convert: \(.)") end
+def from_radix($base; $table):
+  ( if _is_string | not then error("cannot from_radix convert: \(.)") end
   | split("")
   | reverse
   | map($table[.])
@@ -12,8 +12,8 @@ def fromradix($base; $table):
     )
   | .[1]
   );
-def fromradix($base):
-  fromradix($base; {
+def from_radix($base):
+  from_radix($base; {
     "0": 0, "1": 1, "2": 2, "3": 3,"4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9,
     "a": 10, "b": 11, "c": 12, "d": 13, "e": 14, "f": 15, "g": 16,
     "h": 17, "i": 18, "j": 19, "k": 20, "l": 21, "m": 22, "n": 23,
@@ -26,8 +26,8 @@ def fromradix($base):
     "@": 62, "_": 63,
   });
 
-def toradix($base; $table):
-  ( if type != "number" then error("cannot toradix convert: \(.)") end
+def to_radix($base; $table):
+  ( if type != "number" then error("cannot to_radix convert: \(.)") end
   | if . == 0 then "0"
     else
       ( [ recurse(if . > 0 then _intdiv(.; $base) else empty end) | . % $base]
@@ -41,5 +41,5 @@ def toradix($base; $table):
       )
     end
   );
-def toradix($base):
-  toradix($base; "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@_");
+def to_radix($base):
+  to_radix($base; "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@_");

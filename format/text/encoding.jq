@@ -1,19 +1,21 @@
-def toiso8859_1: _tostrencoding({encoding: "ISO8859_1"});
-def fromiso8859_1: _fromstrencoding({encoding: "ISO8859_1"});
-def toutf8: _tostrencoding({encoding: "UTF8"});
-def fromutf8: _fromstrencoding({encoding: "UTF8"});
-def toutf16: _tostrencoding({encoding: "UTF16"});
-def fromutf16: _fromstrencoding({encoding: "UTF16"});
-def toutf16le: _tostrencoding({encoding: "UTF16LE"});
-def fromutf16le: _fromstrencoding({encoding: "UTF16LE"});
-def toutf16be: _tostrencoding({encoding: "UTF16BE"});
-def fromutf16be: _fromstrencoding({encoding: "UTF16BE"});
+def to_iso8859_1: _to_strencoding({encoding: "ISO8859_1"});
+def from_iso8859_1: _from_strencoding({encoding: "ISO8859_1"});
+def to_utf8: _to_strencoding({encoding: "UTF8"});
+def from_utf8: _from_strencoding({encoding: "UTF8"});
+def to_utf16: _to_strencoding({encoding: "UTF16"});
+def from_utf16: _from_strencoding({encoding: "UTF16"});
+def to_utf16le: _to_strencoding({encoding: "UTF16LE"});
+def from_utf16le: _from_strencoding({encoding: "UTF16LE"});
+def to_utf16be: _to_strencoding({encoding: "UTF16BE"});
+def from_utf16be: _from_strencoding({encoding: "UTF16BE"});
 
-def frombase64($opts): _frombase64({encoding: "std"} + $opts);
-def frombase64: _frombase64(null);
-def tobase64($opts): _tobase64({encoding: "std"} + $opts);
-def tobase64: _tobase64(null);
+def from_base64($opts): _from_base64({encoding: "std"} + $opts);
+def from_base64: _from_base64(null);
+def to_base64($opts): _to_base64({encoding: "std"} + $opts);
+def to_base64: _to_base64(null);
 
 # TODO: compat: remove at some point
-def hex: _binary_or_orig(tohex; fromhex);
-def base64: _binary_or_orig(tobase64; frombase64);
+def hex: _binary_or_orig(to_hex; from_hex);
+def base64: _binary_or_orig(to_base64; from_base64);
+def tohex: to_hex;
+def fromhex: from_hex;

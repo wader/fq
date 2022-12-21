@@ -1,7 +1,7 @@
 ### TSV to CSV
 
 ```sh
-$ fq -d csv -o comma="\t" tocsv file.tsv
+$ fq -d csv -o comma="\t" to_csv file.tsv
 ```
 
 ### Convert rows to objects based on header row

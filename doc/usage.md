@@ -38,7 +38,7 @@ fq dv file
 # same as
 fq 'd({verbose: true})' file
 
-# JSON repersenation for whole file
+# JSON representation for whole file
 fq tovalue file
 # JSON but raw bit fields truncated
 fq -o bits_format=truncate tovalue file
@@ -51,7 +51,7 @@ fq 'grep(123)' file
 # grep whole tree by condition
 fq 'grep_by(. >= 100 and . =< 100)' file
 
-# recursively look for values fullfilling some condition
+# recursively look for values fulfilling some condition
 fq '.. | select(.type=="trak")?' file
 fq 'grep_by(.type=="trak")' file
 # grep_by(f) is alias for .. | select(f)?, that is: recuse, select and ignore errors
@@ -73,7 +73,7 @@ fq -o force=true -d mp4 file.mp4
 
 ### Display output
 
-`display` or `d` is the main function for displying values and is also the function that will be used if no other output function is explicitly used. If its input is a decode value it will output a dump and tree structure or otherwise it will output as JSON.
+`display` or `d` is the main function for displaying values and is also the function that will be used if no other output function is explicitly used. If its input is a decode value it will output a dump and tree structure or otherwise it will output as JSON.
 
 Below demonstrates some usages:
 
@@ -81,17 +81,17 @@ First and second example does the same thing, inputs `"hello"` to  `display`.
 
 ![fq demo](display_json.svg)
 
-In the next few examples we select out the first "edit list" box in an mp4 file, it's a list of which part of media track to be included during playback, and displays it in various ways.
+In the next few examples we select out the first "edit list" box in an mp4 file, it's a list of which part of the media track to be included during playback, and displays it in various ways.
 
 Default if not explicitly used `display` will only show the root level:
 
 ![fq demo](display_decode_value.svg)
 
-First row shows ruler with byte offset into the line and jq path for the value.
+First row shows a ruler with byte offset into the line and jq path for the value.
 
 The columns are:
 - Start address for the line. For example we see that `type` starts at `0xd60`+`0x09`.
-- Hex repersenation of input bits for value. Will show the whole byte even if the value only partially uses bits from it.
+- Hex representation of input bits for value. Will show the whole byte even if the value only partially uses bits from it.
 - ASCII representation of input bits for value. Will show the whole byte even if the value only partially uses bits from it.
 - Tree structure of decoded value, symbolic value and description.
 
@@ -110,7 +110,7 @@ Same but verbose `dv`:
 
 In verbose mode bit ranges and array element names as shown.
 
-Bit range uses `bytes.bits` notation. For example `type` start at byte `0xd69` bit `0` (left out if zero) and ends at `0xd6c` bit `7` (inclusive) and have byte size of `4`.
+Bit range uses `bytes.bits` notation. For example `type` starts at byte `0xd69` bit `0` (left out if zero) and ends at `0xd6c` bit `7` (inclusive) and have byte size of `4`.
 
 There are also some other `display` aliases:
 - `da` same as `display({array_truncate: 0})` which will not truncate long arrays.
@@ -195,13 +195,13 @@ fq '.frames[0:10] | map(tobytesrange.start)' file.mp3
 ```sh
 # decode byte range 100 to end as mp3_frame
 fq -d bytes '.[100:] | mp3_frame | d' file.mp3
-# decode byte range 10 bytes from .somefield and preseve relative position in file
+# decode byte range 10 bytes from .somefield and preserve relative position in file
 fq '.somefield | tobytesrange[10:] | mp3_frame | d' file.mp3
 ```
 
 #### Show AVC SPS difference between two mp4 files
 
-`-n` tells fq to not have an implicit `input`, `f` is function to select out some interesting value, call `diff` with two arguments,
+`-n` tells fq to not have an implicit `input`, `f` is a function to select out some interesting value, call `diff` with two arguments,
 decoded value for `a.mp4` and `b.mp4` filtered thru `f`.
 
 ```sh
@@ -210,7 +210,7 @@ fq -n 'def f: .. | select(format=="avc_sps"); diff(input|f; input|f)' a.mp4 b.mp
 
 #### Extract first JPEG found in file
 
-Recursively look for first value that is a `jpeg` decode value root. Use `tobytes` to get bytes for value. Redirect bytes to a file.
+Recursively look for the first value that is a `jpeg` decode value root. Use `tobytes` to get bytes for value. Redirect bytes to a file.
 
 ```sh
 fq 'first(.. | select(format=="jpeg")) | tobytes' file > file.jpeg
@@ -218,7 +218,7 @@ fq 'first(.. | select(format=="jpeg")) | tobytes' file > file.jpeg
 
 #### Sample size histogram
 
-Recursively look for a all sample size boxes "stsz" and use `?` to ignore errors when doing `.type` on arrays etc. Save reference to box, count unique values, save the max, output the path to the box and output a historgram scaled to 0-100.
+Recursively look for a all sample size boxes "stsz" and use `?` to ignore errors when doing `.type` on arrays etc. Save reference to box, count unique values, save the max, output the path to the box and output a histogram scaled to 0-100.
 
 ```sh
 fq '.. | select(.type=="stsz")? as $stsz | .entries | count | max_by(.[1])[1] as $m | ($stsz | topath | path_to_expr), (.[] | "\(.[0]): \((100*.[1]/$m)*"=") \(.[1])") | println' file.mp4
@@ -281,21 +281,21 @@ For a more convenient jq experience these might be interesting:
 - [vscode-jq](https://github.com/wader/vscode-jq)
 - [jq-lsp](https://github.com/wader/jq-lsp)
 
-Common beginner gotcha are:
+Common beginner gotchas are:
 - jq's use of `;` and `,`. jq uses `;` as argument separator
 and `,` as output separator. To call a function `f` with two arguments use `f(1; 2)`. If you do `f(1, 2)` you pass a
-single argument `1, 2` (a lambda expression that output `1` and then output `2`) to `f`.
+single argument `1, 2` (a lambda expression that outputs `1` and then outputs `2`) to `f`.
 - Expressions can return or "output" zero or more values. This is how loops, foreach etc is
 achieved.
 - Expressions have one implicit input and output value. This how pipelines like `1 | . * 2` work.
 
 ## Types specific to fq
 
-fq has two additional types compared to jq, decode value and binary. In standard jq expressions they will in most case behave as some standard jq type.
+fq has two additional types compared to jq, decode value and binary. In standard jq expressions they will in most cases behave as some standard jq type.
 
 ### Decode value
 
-This type is returned by decoders and it used to represent parts of the decoed input. It can act as all standard jq types, object, array, number, string etc.
+This type is returned by decoders and it is used to represent parts of the decoded input. It can act as all standard jq types, object, array, number, string etc.
 
 Each decode value has these properties:
 - A bit range in the input
@@ -317,18 +317,18 @@ Each non-compound decode value has these properties:
 - `topath` is the jq path for the decode value
 - `torepr` convert decode value to its representation if possible
 
-The value of a decode value is the symbolic value if available and otherwise the actual value. To explicitly access the value use `tovalue`. In most expression this is not needed as it will be done automactically.
+The value of a decode value is the symbolic value if available and otherwise the actual value. To explicitly access the value use `tovalue`. In most expressions this is not needed as it will be done automatically.
 
 ### Binary
 
 Binaries are raw bits with a unit size, 1 (bits) or 8 (bytes), that can have a non-byte aligned size. Will act as byte padded strings in standard jq expressions.
 
-Use `tobits` and `tobytes` to create them from a decode values, strings, numbers or binary arrays. `tobytes` will if needed zero pad most significant bits to be byte aligned.
+Use `tobits` and `tobytes` to create them from decode values, strings, numbers or binary arrays. `tobytes` will, if needed zero pad most significant bits to be byte aligned.
 
-There is also `tobitsrange` and `tobytesrange` which does the same thing but will preserve it's source range when displayed.
+There is also `tobitsrange` and `tobytesrange` which does the same thing but will preserve its source range when displayed.
 
 - `"string" | tobytes` produces a binary with UTF8 codepoint bytes.
-- `1234 | tobits` produces a binary with the unsigned big-endian integer 1234 with enough bits to represent the number. Use `tobytes` to get the same but with enough bytes to represent the number. This is different to how numbers works inside binary arrays where they are limited to 0-255.
+- `1234 | tobits` produces a binary with the unsigned big-endian integer 1234 with enough bits to represent the number. Use `tobytes` to get the same but with enough bytes to represent the number. This is different to how numbers work inside binary arrays where they are limited to 0-255.
 - `["abc", 123, ...]  | tobytes` produce a binary from a binary array. See [binary array](#binary-array) below.
 - `.[index]` access bit or byte at index `index`. Index is in units.
   - `[0x12, 0x34, 0x56] | tobytes[1]` is `0x35`
@@ -369,13 +369,19 @@ TODO: padding and alignment
 
 ## Functions
 
+All decode functions are available in two forms, just `<format>` (like `mp3`) that returns a decode value on error and `from_<format>` which throws error on decode error.
+
+Note that jq sometimes uses the notation `name/0`, `name/1` etc in error messages and documentation which means `<function-name>/<arity>`. Same function names with different arity are treated as separate functions, but are usually related in some way in practice.
+
+### Function added in fq
+
 - All standard library functions from jq
 - Adds a few new general functions:
   - `print`, `println`, `printerr`, `printerrln` prints to stdout and stderr.
   - `group` group values, same as `group_by(.)`.
   - `streaks`, `streaks_by(f)` like `group` but groups streaks based on condition.
   - `count`, `count_by(f)` like `group` but counts groups lengths.
-  - `debug(f)` like `debug` but uses arg to produce debug message. `{a: 123} | debug({a}) | ...`.
+  - `debug(f)` like `debug` but uses arg to produce a debug message. `{a: 123} | debug({a}) | ...`.
   - `path_to_expr` from `["key", 1]` to `".key[1]"`.
   - `expr_to_path` from `".key[1]"` to `["key", 1]`.
   - `diff($a; $b)` produce diff object between two values.
@@ -394,7 +400,7 @@ unary uses input and if more than one argument all as arguments ignoring the inp
   - `toactual`, `toactual($opts)` actual value (usually the decoded value)
   - `tosym`, `tosym($opts)` symbolic value (mapped etc)
   - `todescription` description of value
-  - `torepr` convert decode value into what it reptresents. For example convert msgpack decode value
+  - `torepr` converts decode value into what it reptresents. For example convert msgpack decode value
   into a value representing its JSON representation.
   - All regexp functions work with binary as input and pattern argument with these differences
   compared to when using string input:
@@ -402,14 +408,14 @@ unary uses input and if more than one argument all as arguments ignoring the inp
     - For `capture` the `.string` value is a binary.
     - If pattern is a binary it will be matched literally and not as a regexp.
     - If pattern is a binary or flags include "b" each input byte will be read as separate code points
-  - String function are not overloaded to support binary for now as some of them are bahaviours that might be confusing.
+  - String functions are not overloaded to support binary for now as some of them might have behaviors that might be confusing.
   - `explode` is overloaded to work with binary. Will explode into array of the unit of the binary.
   end of binary.
   instead of possibly multi-byte UTF-8 codepoints. This allows to match raw bytes. Ex: `match("\u00ff"; "b")`
   will match the byte `0xff` and not the UTF-8 encoded codepoint for 255, `match("[^\u00ff]"; "b")` will match
   all non-`0xff` bytes.
   - `grep` functions take 1 or 2 arguments. First is a scalar to match, where a string is
-  treated as a regexp. A binary will be matches exact bytes. Second argument are regexp
+  treated as a regexp. A binary will match exact bytes. Second argument are regexp
   flags with addition that "b" will treat each byte in the input binary as a code point, this
   makes it possible to match exact bytes.
     - `grep($v)`, `grep($v; $flags)` recursively match value and binary
@@ -418,39 +424,55 @@ unary uses input and if more than one argument all as arguments ignoring the inp
     - `fgrep($v)`, `fgrep($v; $flags)` recursively match field name
   - `grep_by(f)` recursively match using a filter. Ex: `grep_by(. > 180 and . < 200)`, `first(grep_by(format == "id3v2"))`.
   - Binary:
-    - `tobits` - Transform input to binary with bit as unit, does not preserving source range, will start at zero.
+    - `tobits` - Transform input to binary with bit as unit, does not preserve source range, will start at zero.
     - `tobitsrange` - Transform input to binary with bit as unit, preserves source range if possible.
-    - `tobytes` - Transform input to binary with byte as unit, does not preserving source range, will start at zero.
+    - `tobytes` - Transform input to binary with byte as unit, does not preserve source range, will start at zero.
     - `tobytesrange` - Transform input binary with byte as unit, preserves source range if possible.
-    - `.[start:end]`, `.[:end]`, `.[start:]` - Slice binary from start to end preserving source range.
+    - `.[start:end]`, `.[:end]`, `.[start:]` - Slice binary from start to end preserve source range.
 - `open` open file for reading
-- All decode function takes a optional option argument. The only option currently is `force` to ignore decoder asserts.
+- All decode functions take an optional option argument. The only option currently is `force` to ignore decoder asserts.
 For example to decode as mp3 and ignore assets do `mp3({force: true})` or `decode("mp3"; {force: true})`, from command line
 you currently have to do `fq -d bytes 'mp3({force: true})' file`.
 - `decode`, `decode("<format>")`, `decode("<format>"; $opts)` decode format
 - `probe`, `probe($opts)` probe and decode format
-- `mp3`, `mp3($opts)`, ..., `<format>`, `<format>($opts)` same as `decode("<format>")`, `decode("<format>"; $opts)`  decode as format
+- `mp3`, `mp3($opts)`, ..., `<format>`, `<format>($opts)` same as `decode("<format>")`, `decode("<format>"; $opts)` decode as format and return decode value even on decode error.
+- `from_mp3`, `from_mp3($opts)`, ..., `from_<format>`, `from_<format>($opts)` same as `decode("<format>")`, `decode("<format>"; $opts)` decode as format but throw error on decode error.
 - Display shows hexdump/ASCII/tree for decode values and jq value for other types.
   - `d`/`d($opts)` display value and truncate long arrays and binaries
   - `da`/`da($opts)` display value and don't truncate arrays
   - `dd`/`dd($opts)` display value and don't truncate arrays or binaries
   - `dv`/`dv($opts)` verbosely display value and don't truncate arrays but truncate binaries
   - `ddv`/`ddv($opts)` verbosely display value and don't truncate arrays or binaries
-- `p`/`preview` show preview of field tree
 - `hd`/`hexdump` hexdump value
 - `repl`/`repl($opts)` nested REPL, must be last in a pipeline. `1 | repl`, can "slurp" outputs. Ex: `1, 2, 3 | repl`, `[1,2,3] | repl({compact: true})`.
-- `slurp("<name>")` slurp outputs and save them to `$name`, must be last in pipeline. Will be available as global array `$name`. Ex `1,2,3 | slurp("a")`, `$a[]` same as `spew("a")`.
-- `spew`/`spew("<name>")` output previously slurped values. `spew` outputs all slurps as an object, `spew("<name>")` outouts one slurp. Ex: `spew("a")`.
+- `slurp("<name>")` slurp outputs and save them to `$name`, must be last in the pipeline. Will be available as a global array `$name`. Ex `1,2,3 | slurp("a")`, `$a[]` same as `spew("a")`.
+- `spew`/`spew("<name>")` output previously slurped values. `spew` outputs all slurps as an object, `spew("<name>")` outputs one slurp. Ex: `spew("a")`.
 - `paste` read string from stdin until ^D. Useful for pasting text.
-    - Ex: `paste | frompem | asn1_ber | repl` read from stdin then decode and start a new sub-REPL with result.
+    - Ex: `paste | from_pem | asn1_ber | repl` read from stdin then decode and start a new sub-REPL with result.
+
+### Naming inconsistencies
+
+jq's naming conversion is a bit inconsistent, some standard library functions are named `tojson` while others `from_entries`. fq follows this tradition a bit by but tries to use snake_case unless there is a good reason.
+
+Here are all the non-snake_case functions added by. Most of them deal with decode and binary values which are new "primitive" types:
+- `toactual`
+- `tobits`
+- `tobitsrange`
+- `tobytes`
+- `tobytesrange`
+- `todescription`
+- `topath`
+- `torepr`
+- `tosym`
+- `tovalue`
 
 ### Encodings, serializations and hashes
 
-In an addition to binary formats fq also support reading to and from encodings and serialization formats.
+In addition to binary formats fq also support reading to and from encodings and serialization formats.
 
 At the moment fq does not have any dedicated argument for serialization formats but raw string input `-R` slurp `-s` and raw string output `-r` can make things easier. The combination `-Rs` will read all inputs into one string (same as jq).
 
-Note that `from*` functions output jq values and `to*` takes jq values as input so in some cases not all information will be properly preserved. For example for the element and attribute order might change and text and comment nodes might move or be merged. [yq](https://github.com/mikefarah/yq) might be a better tool if that is needed.
+Note that `from*` functions output jq values and `to*` takes jq values as input so in some cases not all information will be properly preserved. For example, for the element and attribute order might change and text and comment nodes might move or be merged. [yq](https://github.com/mikefarah/yq) might be a better tool if that is needed.
 
 Some example usages:
 
@@ -463,19 +485,19 @@ $ fq '...' file.yml
 $ fq -r 'tojson({indent:2})' file.yml
 
 # add token to URL
-$ echo -n "https://host.org" | fq -Rsr 'fromurl | .user.username="token" | tourl'
+$ echo -n "https://host.org" | fq -Rsr 'from_url | .user.username="token" | tourl'
 https://token@host.org
 
 # top 3 hosts in src or href attributes:
 # -d to decode as html, can't be probed as html5 parsers always produce some parse tree
 # [...] to start collect values into an array
 # .. | ."@src"?, ."@href"? | values, recurse and try (?) to get src and href attributes and filter out nulls
-# fromurl.host | values, parse as url and filter out those without a host
+# from_url.host | values, parse as url and filter out those without a host
 # count to count unique values, returns [[key, count], ...]
 # reverse sort by count and pick first 3
 # map [key, count] tuples into {key: key, values: count}
 # from_entries, convert into object
-$ curl -s https://www.discogs.com/ | fq -d html '[.. | ."@src"?, ."@href"? | values | fromurl.host | values] | count | sort_by(-.[1])[0:3] | map({key: .[0], value: .[1]}) | from_entries'
+$ curl -s https://www.discogs.com/ | fq -d html '[.. | ."@src"?, ."@href"? | values | from_url.host | values] | count | sort_by(-.[1])[0:3] | map({key: .[0], value: .[1]}) | from_entries'
 {
   "blog.discogs.com": 9,
   "st.discogs.com": 10,
@@ -488,7 +510,7 @@ $ fq  -i . <(curl -sL https://github.com/stefangabos/world_countries/archive/mas
 # select from interesting xml file
 zip> .local_files[] | select(.file_name == "world_countries-master/data/countries/en/world.xml").uncompressed | repl
 # convert xml into jq value
-> .local_files[95].uncompressed string> fromxml | repl
+> .local_files[95].uncompressed string> from_xml | repl
 # sort countries by and select the first one
 >> object> .countries.country | sort_by(."@name") | first | repl
 # see what current input is
@@ -500,7 +522,7 @@ zip> .local_files[] | select(.file_name == "world_countries-master/data/countrie
   "@name": "Afghanistan"
 }
 # remove "@" prefix from keys and convert to YAML and print it
->>> object> with_entries(.key |= .[1:]) | toyaml | print
+>>> object> with_entries(.key |= .[1:]) | to_yaml | print
 alpha2: af
 alpha3: afg
 id: "4"
@@ -512,21 +534,21 @@ name: Afghanistan
 zip> ^D
 ```
 
-- `fromxml`/`fromxml($opts)` Parse XML into jq value.<br>
+- `from_xml`/`from_xml($opts)` Parse XML into jq value.<br>
   `{seq: true}` preserve element ordering if more than one sibling.<br>
-  `{array: true}` use nested `[name, attributes, children]` arrays to represent elements. Attributes will be `null` if none and children will be `[]` if none, this is to make it easier to work it. `toxml` does not require this.<br>
-- `fromhtml`/`fromhtml($opts)` Parse HTML into jq value.<br>
-  Similar to `fromxml` but parses html5 in non-script mode. Will always have a `html` root with `head` and `body` elements.<br>
+  `{array: true}` use nested `[name, attributes, children]` arrays to represent elements. Attributes will be `null` if none and children will be `[]` if none, this is to make it easier to work with as the array as 3 values. `to_xml` does not require this.<br>
+- `from_html`/`from_html($opts)` Parse HTML into jq value.<br>
+  Similar to `from_xml` but parses html5 in non-script mode. Will always have a `html` root with `head` and `body` elements.<br>
   `{array: true}` use nested arrays to represent elements.<br>
   `{seq: true}` preserve element ordering if more than one sibling.<br>
-- `toxml`/`toxml($opts})` Serialize jq value into XML.<br>
+- `to_xml`/`to_xml($opts})` Serialize jq value into XML.<br>
   `{indent: number}` indent child elements.<br>
   Assumes object representation if input is an object, and nested arrays if input is an array.<br>
   Will automatically add a root `doc` element if jq value has more then one root element.<br>
   If a `#seq` is found on at least one element all siblings will be sort by sequence number. Attributes are always sorted.<br>
 
   XML elements can be represented as jq value in two ways, as objects (inspired by [mxj](https://github.com/clbanning/mxj) and [xml.com's Converting Between XML and JSON
-](https://www.xml.com/pub/a/2006/05/31/converting-between-xml-and-json.html)) or nested arrays. Both representations are lossy and might lose ordering of elements, text nodes and comments. In object representation `fromxml`, `fromhtml` and `toxml` support `{seq:true}` option to parse/serialize `{"#seq"=<number>}` attributes to preserve element sibling ordering.
+](https://www.xml.com/pub/a/2006/05/31/converting-between-xml-and-json.html)) or nested arrays. Both representations are lossy and might lose ordering of elements, text nodes and comments. In object representation `from_xml`, `from_html` and `to_xml` support `{seq:true}` option to parse/serialize `{"#seq"=<number>}` attributes to preserve element sibling ordering.
 
   The object version is denser and convenient to query, the nested arrays version is probably easier to use when generating XML.
 
@@ -546,9 +568,9 @@ zip> ^D
   - For explicit sibling ordering `#seq` keys with a number, can be negative, assumed zero if missing.
   - Child element with only text as `<name>` key with text as value.
   - Child element with more than just text as `<name>` key with value an object.
-  - Multiple child element sibling with same name as `name` key with value as array with strings and objects.
+  - Multiple child element siblings with same name as `name` key with value as array with strings and objects.
   ```jq
-  > $xml | fromxml
+  > $xml | from_xml
   {
     "doc": {
       "child": [
@@ -566,12 +588,12 @@ zip> ^D
   ```
 
   With nested array representation, an array with these values `["<name>", {attributes...}, [children...]]`
-  - Index 0 is element name.
+  - Index 0 is an element name.
   - Index 1 object attributes (including `#text` and `#comment` keys).
   - Index 2 array of child elements.
   #
   ```jq
-  > $xml | fromxml({array: true})
+  > $xml | from_xml({array: true})
   [
     "doc",
     [
@@ -599,7 +621,7 @@ zip> ^D
   ```
   Parse and include `#seq` attributes if needed:
   ```jq
-  > $xml | fromxml({seq:true})
+  > $xml | from_xml({seq:true})
   {
     "doc": {
       "child": [
@@ -622,7 +644,7 @@ zip> ^D
   ````
   Select values in `<doc>`, remove `<child>`, add a `<new>` element, serialize to xml with 2 space indent and print the string
   ```jq
-  > $xml | fromxml.doc | del(.child) | .new = "abc" | {root: .} | toxml({indent: 2}) | println
+  > $xml | from_xml.doc | del(.child) | .new = "abc" | {root: .} | to_xml({indent: 2}) | println
   <root>
     <new>abc</new>
     <other>text</other>
@@ -633,45 +655,47 @@ JSON and jq-flavoured JSON
 - `fromjson` Parse JSON into jq value.
 - `tojson`/`tojson($opt)`  Serialize jq value into JSON.<br>
   `{indent: number}` indent array/object values.<br>
-- `fromjq` Parse jq-flavoured JSON into jq value.
-- `tojq`/`tojq($opt)`  Serialize jq value into jq-flavoured JSON<br>
+- `from_jq` Parse jq-flavoured JSON into jq value.
+- `to_jq`/`to_jq($opt)`  Serialize jq value into jq-flavoured JSON<br>
   `{indent: number}` indent array/object values.<br>
   jq-flavoured JSON has optional key quotes, `#` comments and can have trailing comma in arrays.
-- `fromjsonl` Parse JSON lines into jq array.
-- `tojsonl` Serialize jq array into JSONL.
+- `from_jsonl` Parse JSON lines into jq array.
+- `to_jsonl` Serialize jq array into JSONL.
+
+Note that `fromjson` and `tojson` use different naming conventions as they originate from jq's standard library.
 
 YAML
-- `fromyaml` Parse YAML into jq value.
-- `toyaml`  Serialize jq value into YAML.
+- `from_yaml` Parse YAML into jq value.
+- `to_yaml`  Serialize jq value into YAML.
 
 TOML
-- `fromtoml` Parse TOML into jq value.
-- `totoml`  Serialize jq value into TOML.
+- `from_toml` Parse TOML into jq value.
+- `to_toml`  Serialize jq value into TOML.
 
 CSV
-- `fromcsv`/`fromcvs($opts)` Parse CSV into jq value.<br>
+- `from_csv`/`from_cvs($opts)` Parse CSV into jq value.<br>
   `{comma: string}` field separator, default ",".<br>
   `{comment: string}` comment line character, default "#".<br>
   To work with tab separated values you can use `fromcvs({comma: "\t"})` or `fq -d csv -o 'comma="\t"'`
-- `tocsv`/`tocsv($opts)` Serialize jq value into CSV.<br>
+- `to_csv`/`to_csv($opts)` Serialize jq value into CSV.<br>
   `{comma: string}` field separator, default ",".<br>
 
 XML encoding
-- `fromxmlentities` Decode XML entities.
-- `toxmlentities` Encode XML entities.
+- `from_xmlentities` Decode XML entities.
+- `to_xmlentities` Encode XML entities.
 
 URL parts and XML encodings
-- `fromurlpath` Decode URL path component.
-- `tourlpath` Encode URL path component. Whitespace as %20.
-- `fromurlencode` Decode URL query encoding.
-- `tourlencode` Encode URL to query encoding. Whitespace as "+".
-- `fromurlquery` Decode URL query into object. For duplicates keys value will be an array.
-- `tourlquery` Encode objet into query string.
-- `fromurl` Decode URL into object.
+- `from_urlpath` Decode URL path component.
+- `to_urlpath` Encode URL path component. Whitespace as %20.
+- `from_urlencode` Decode URL query encoding.
+- `to_urlencode` Encode URL to query encoding. Whitespace as "+".
+- `from_urlquery` Decode URL query into object. For duplicates keys value will be an array.
+- `to_urlquery` Encode object into query string.
+- `from_url` Decode URL into object.
   ```jq
-  > "schema://user:pass@host/path?key=value#fragment" | fromurl
+  > "schema://user:pass@host/path?key=value#fragment" | from_url
   {
-    "fragment": "fragement",
+    "fragment": "fragment",
     "host": "host",
     "path": "/path",
     "query": {
@@ -685,50 +709,50 @@ URL parts and XML encodings
     }
   }
   ```
-- `tourl` Encode object into URL string.
-- `fromhex` Decode hexstring to binary.
+- `to_url` Encode object into URL string.
 
 Binary encodings like hex and base64
-- `tohex` Encode binay into hexstring.
-- `frombase64`/`frombase64($opts)` Decode base64 encodings into binary.<br>
+- `from_hex` Decode hex string to binary.
+- `to_hex` Encode binary into hex string.
+- `from_base64`/`from_base64($opts)` Decode base64 encodings into binary.<br>
   `{encoding:string}` encoding variant: `std` (default), `url`, `rawstd` or `rawurl`
-- `tobase64`/`tobase64($opts)` Encode binary into base64 encodings.<br>
+- `to_base64`/`to_base64($opts)` Encode binary into base64 encodings.<br>
   `{encoding:string}` encoding variant: `std` (default), `url`, `rawstd` or `rawurl`
 
 Hash functions
-- `tomd4` Hash binary using md4.
-- `tomd5` Hash binary using md5.
-- `tosha1` Hash binary using sha1.
-- `tosha256` Hash binary using sha256.
-- `tosha512` Hash binary using sha512.
-- `tosha3_224` Hash binary using sha3 224.
-- `tosha3_256` Hash binary using sha3 256.
-- `tosha3_384` Hash binary using sha3 384.
-- `tosha3_512` Hash binary using sha3 512.
+- `to_md4` Hash binary using md4.
+- `to_md5` Hash binary using md5.
+- `to_sha1` Hash binary using sha1.
+- `to_sha256` Hash binary using sha256.
+- `to_sha512` Hash binary using sha512.
+- `to_sha3_224` Hash binary using sha3 224.
+- `to_sha3_256` Hash binary using sha3 256.
+- `to_sha3_384` Hash binary using sha3 384.
+- `to_sha3_512` Hash binary using sha3 512.
 
 Text encodings
-- `toiso8859_1` Decode binary as ISO8859-1 into string.
-- `fromiso8859_1` Encode string as ISO8859-1 into binary.
-- `toutf8` Encode string as UTF8 into binary.
-- `fromutf8` Decode binary as UTF8 into string.
-- `toutf16` Encode string as UTF16 into binary.
-- `fromutf16` Decode binary as UTF16 into string.
-- `toutf16le` Encode string as UTF16 little-endian into binary.
-- `fromutf16le` Decode binary as UTF16 little-endian into string.
-- `toutf16be` Encode string as UTF16 big-endian into binary.
-- `fromutf16be` Decode binary as UTF16 big-endian into string.
+- `to_iso8859_1` Decode binary as ISO8859-1 into string.
+- `from_iso8859_1` Encode string as ISO8859-1 into binary.
+- `to_utf8` Encode string as UTF8 into binary.
+- `from_utf8` Decode binary as UTF8 into string.
+- `to_utf16` Encode string as UTF16 into binary.
+- `from_utf16` Decode binary as UTF16 into string.
+- `to_utf16le` Encode string as UTF16 little-endian into binary.
+- `from_utf16le` Decode binary as UTF16 little-endian into string.
+- `to_utf16be` Encode string as UTF16 big-endian into binary.
+- `from_utf16be` Decode binary as UTF16 big-endian into string.
 
 ## Options
 
 fq has some general options in addition to decode and decoders specific options. They all use the same `-o <name>=<value>` argument.
 
-`<value>` is fuzzily parsed based on the type of the option. Ex: a string can specified as `-o name=string` or `-o name="string"`.
+`<value>` is fuzzily parsed based on the type of the option. Ex: a string can be specified as `-o name=string` or `-o name="string"`.
 
 ### `bits_format`
 
 How to represent raw bits as JSON.
 
-- `-o bits_foramt=string` String with raw bytes (zero bit padded). The string is binary safe internally in fq but bytes not represetable as UTF-8 will be lost if turn to JSON.
+- `-o bits_foramt=string` String with raw bytes (zero bit padded). The string is binary safe internally in fq but bytes not representable as UTF-8 will be lost if turn to JSON.
 - `-o bits_format=md5` MD5 hex string (zero bit padded).
 - `-o bits_format=base64` Base64 string.
 - `-p bits_foramt=truncate` Truncated string.
@@ -737,7 +761,7 @@ How to represent raw bits as JSON.
 ## Color and unicode output
 
 fq by default tries to use colors if possible, this can be disabled with `-M`. You can also
-enable useage of unicode characters for improved output by setting the environment
+enable usage of unicode characters for improved output by setting the environment
 variable `CLIUNICODE`.
 
 ## Configuration
@@ -749,7 +773,7 @@ To add own functions you can use `init.fq` that will be read from
 
 ## Use as script interpreter
 
-fq can be used as a scrip interpreter:
+fq can be used as a script interpreter:
 
 `mp3_duration.jq`:
 ```jq
@@ -761,9 +785,9 @@ fq can be used as a scrip interpreter:
 
 - [gojq's differences to jq](https://github.com/itchyny/gojq#difference-to-jq),
 notable is support for arbitrary-precision integers.
-- Supports hexdecimal `0xab`, octal `0o77` and binary `0b101` integer literals.
-- Try include `include "file?";` that don't fail if file is missing.
-- Some values can act as a object with keys even when it's an array, number etc.
+- Supports hexadecimal `0xab`, octal `0o77` and binary `0b101` integer literals.
+- Try include `include "file?";` that doesn't fail if file is missing or has errors.
+- Some values can act as an object with keys even when it's an array, number etc.
 - There can be keys hidden from `keys` and `[]`.
 - Some values are readonly and can't be updated.
 

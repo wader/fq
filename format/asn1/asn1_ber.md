@@ -7,7 +7,7 @@ Supports decoding BER, CER and DER (X.690).
 ### Can be used to decode certificates etc
 
 ```sh
-$ fq -d bytes 'frompem | asn1_ber | d' cert.pem
+$ fq -d bytes 'from_pem | asn1_ber | d' cert.pem
 ```
 
 ### Can decode nested values

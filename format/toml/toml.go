@@ -26,7 +26,7 @@ func init() {
 		Functions:   []string{"_todisplay"},
 	})
 	interp.RegisterFS(tomlFS)
-	interp.RegisterFunc0("totoml", toTOML)
+	interp.RegisterFunc0("to_toml", toTOML)
 }
 
 func decodeTOML(d *decode.D, _ any) any {
@@ -58,7 +58,7 @@ func decodeTOML(d *decode.D, _ any) any {
 
 func toTOML(_ *interp.Interp, c any) any {
 	if c == nil {
-		return gojqex.FuncTypeError{Name: "totoml", V: c}
+		return gojqex.FuncTypeError{Name: "to_toml", V: c}
 	}
 
 	b := &bytes.Buffer{}

@@ -20,7 +20,7 @@ import (
 var textFS embed.FS
 
 func init() {
-	interp.RegisterFunc0("fromhex", func(_ *interp.Interp, c string) any {
+	interp.RegisterFunc0("from_hex", func(_ *interp.Interp, c string) any {
 		b, err := hex.DecodeString(c)
 		if err != nil {
 			return err
@@ -31,7 +31,7 @@ func init() {
 		}
 		return bb
 	})
-	interp.RegisterFunc0("tohex", func(_ *interp.Interp, c string) any {
+	interp.RegisterFunc0("to_hex", func(_ *interp.Interp, c string) any {
 		br, err := interp.ToBitReader(c)
 		if err != nil {
 			return err
@@ -59,7 +59,7 @@ func init() {
 	type fromBase64Opts struct {
 		Encoding string
 	}
-	interp.RegisterFunc1("_frombase64", func(_ *interp.Interp, c string, opts fromBase64Opts) any {
+	interp.RegisterFunc1("_from_base64", func(_ *interp.Interp, c string, opts fromBase64Opts) any {
 		b, err := base64Encoding(opts.Encoding).DecodeString(c)
 		if err != nil {
 			return err
@@ -73,7 +73,7 @@ func init() {
 	type toBase64Opts struct {
 		Encoding string
 	}
-	interp.RegisterFunc1("_tobase64", func(_ *interp.Interp, c string, opts toBase64Opts) any {
+	interp.RegisterFunc1("_to_base64", func(_ *interp.Interp, c string, opts toBase64Opts) any {
 		br, err := interp.ToBitReader(c)
 		if err != nil {
 			return err
@@ -197,7 +197,7 @@ func init() {
 	type toStrEncodingOpts struct {
 		Encoding string
 	}
-	interp.RegisterFunc1("_tostrencoding", func(_ *interp.Interp, c string, opts toStrEncodingOpts) any {
+	interp.RegisterFunc1("_to_strencoding", func(_ *interp.Interp, c string, opts toStrEncodingOpts) any {
 		h := strEncoding(opts.Encoding)
 		if h == nil {
 			return fmt.Errorf("unknown string encoding %s", opts.Encoding)
@@ -219,7 +219,7 @@ func init() {
 	type fromStrEncodingOpts struct {
 		Encoding string
 	}
-	interp.RegisterFunc1("_fromstrencoding", func(_ *interp.Interp, c any, opts fromStrEncodingOpts) any {
+	interp.RegisterFunc1("_from_strencoding", func(_ *interp.Interp, c any, opts fromStrEncodingOpts) any {
 		inBR, err := interp.ToBitReader(c)
 		if err != nil {
 			return err

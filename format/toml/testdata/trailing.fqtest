@@ -1,4 +1,4 @@
-$ fq -n '"[a] trailing" | fromtoml._error.error'
+$ fq -n '"[a] trailing" | from_toml._error.error'
 exitcode: 5
 stderr:
 error: error at position 0xc: toml: line 1 (last key "a"): expected a top-level item to end with a newline, comment, or EOF, but got 't' instead

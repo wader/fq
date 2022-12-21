@@ -20,7 +20,7 @@ $ fq 'del(.tracks) | grep_by(.type=="mdat").data = "<excluded>" | tovalue' file.
 ### Force decode a single box
 
 ```sh
-$ fq -n '"AAAAHGVsc3QAAAAAAAAAAQAAADIAAAQAAAEAAA==" | frombase64 | mp4({force:true}) | d'
+$ fq -n '"AAAAHGVsc3QAAAAAAAAAAQAAADIAAAQAAAEAAA==" | from_base64 | mp4({force:true}) | d'
 ```
 
 ### Lookup mp4 box using a mp4 box path.
