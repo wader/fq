@@ -332,7 +332,11 @@ type PostgresIn struct {
 }
 
 type PostgresHeapIn struct {
-	Flavour       string `doc:"PostgreSQL flavour: postgres14, pgproee14.., postgres10"`
-	PageNumber    int    `doc:"First page number in file, default is 0"`
-	SegmentNumber int    `doc:"Segment file number (16790.1 is 1), default is 0"`
+	Flavour string `doc:"PostgreSQL flavour: postgres14, pgproee14.., postgres10"`
+	Page    int    `doc:"First page number in file, default is 0"`
+	Segment int    `doc:"Segment file number (16790.1 is 1), default is 0"`
+}
+
+type PostgresBTreeIn struct {
+	Page int `doc:"First page number in file, default is 0"`
 }

@@ -144,7 +144,7 @@ func Decode(heap *Heap, d *decode.D) any {
 }
 
 func decodeHeapPages(heap *Heap, d *decode.D) {
-	blockNumber := uint32(heap.Args.PageNumber + heap.Args.SegmentNumber*common.RelSegSize)
+	blockNumber := uint32(heap.Args.Page + heap.Args.Segment*common.RelSegSize)
 	count := int64(0)
 	for {
 		if end, _ := d.TryEnd(); end {

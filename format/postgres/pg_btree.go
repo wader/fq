@@ -18,13 +18,19 @@ func init() {
 		Name:        format.PG_BTREE,
 		Description: "PostgreSQL btree index file",
 		DecodeFn:    decodePgBTree,
-		RootArray:   true,
-		RootName:    "pages",
+		DecodeInArg: format.PostgresBTreeIn{
+			Page: 0,
+		},
+		RootArray: true,
+		RootName:  "pages",
 	})
 	interp.RegisterFS(pgBTreeFS)
 }
 
 func decodePgBTree(d *decode.D, in any) any {
-	d.Endian = decode.LittleEndian
-	return postgres.DecodePgBTree(d)
+	pgIn, ok := in.(format.PostgresBTreeIn)
+	if !ok {
+		d.Fatalf("DecodeInArg must be PostgresBTreeIn!\n")
+	}
+	return postgres.DecodePgBTree(d, pgIn)
 }

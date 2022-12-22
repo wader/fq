@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/postgres/common"
 	"github.com/wader/fq/format/postgres/common/pg_heap/postgres"
 	"github.com/wader/fq/pkg/decode"
@@ -66,8 +67,9 @@ const (
 // IndexTupleData *IndexTuple;
 /* total size (bytes):    8 */
 
-func DecodePgBTree(d *decode.D) any {
+func DecodePgBTree(d *decode.D, args format.PostgresBTreeIn) any {
 	btree := &BTree{
+		Args:     args,
 		PageSize: common.PageSize,
 	}
 	decodeBTreePages(btree, d)
@@ -75,13 +77,13 @@ func DecodePgBTree(d *decode.D) any {
 }
 
 type BTree struct {
+	Args     format.PostgresBTreeIn
 	PageSize uint64
 	page     *postgres.HeapPage
 }
 
 func decodeBTreePages(btree *BTree, d *decode.D) {
-	for i := 0; ; i++ {
-
+	for i := btree.Args.Page; ; i++ {
 		page := &postgres.HeapPage{}
 		if btree.page != nil {
 			// use prev page

@@ -23,9 +23,9 @@ func init() {
 		Description: "PostgreSQL heap file",
 		DecodeFn:    decodePgheap,
 		DecodeInArg: format.PostgresHeapIn{
-			Flavour:       PG_FLAVOUR_POSTGRES14,
-			PageNumber:    0,
-			SegmentNumber: 0,
+			Flavour: PG_FLAVOUR_POSTGRES14,
+			Page:    0,
+			Segment: 0,
 		},
 		RootArray: true,
 		RootName:  "pages",
