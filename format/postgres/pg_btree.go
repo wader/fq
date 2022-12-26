@@ -28,6 +28,7 @@ func init() {
 }
 
 func decodePgBTree(d *decode.D, in any) any {
+	d.Endian = decode.LittleEndian
 	pgIn, ok := in.(format.PostgresBTreeIn)
 	if !ok {
 		d.Fatalf("DecodeInArg must be PostgresBTreeIn!\n")
