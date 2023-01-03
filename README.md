@@ -243,7 +243,8 @@ To build, run and test from source:
 ```sh
 # build and run
 go run .
-go run . -d mp3 file.mp3
+# build and run with arguments
+go run . -d mp3 . file.mp3
 # just build
 go build -o fq .
 # run all tests and build binary

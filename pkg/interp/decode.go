@@ -459,22 +459,21 @@ func (dvb decodeValueBase) ToBinary() (Binary, error) {
 func (decodeValueBase) ExtType() string { return "decode_value" }
 func (dvb decodeValueBase) ExtKeys() []string {
 	kv := []string{
-		"_start",
-		"_stop",
+		"_actual",
+		"_bits",
+		"_buffer_root",
+		"_bytes",
+		"_description",
+		"_format_root",
+		"_gap",
 		"_len",
 		"_name",
-		"_root",
-		"_buffer_root",
-		"_format_root",
 		"_parent",
-		"_actual",
-		"_sym",
-		"_description",
 		"_path",
-		"_bits",
-		"_bytes",
-		"_gap",
-		"_index", // TODO: only if parent is array?
+		"_root",
+		"_start",
+		"_stop",
+		"_sym",
 	}
 
 	if _, ok := dvb.dv.V.(*decode.Compound); ok {
@@ -496,27 +495,6 @@ func (dvb decodeValueBase) JQValueKey(name string) any {
 	dv := dvb.dv
 
 	switch name {
-	case "_start":
-		return big.NewInt(dv.Range.Start)
-	case "_stop":
-		return big.NewInt(dv.Range.Stop())
-	case "_len":
-		return big.NewInt(dv.Range.Len)
-	case "_name":
-		return dv.Name
-	case "_root":
-		return makeDecodeValue(dv.Root(), decodeValueValue)
-	case "_buffer_root":
-		// TODO: rename?
-		return makeDecodeValue(dv.BufferRoot(), decodeValueValue)
-	case "_format_root":
-		// TODO: rename?
-		return makeDecodeValue(dv.FormatRoot(), decodeValueValue)
-	case "_parent":
-		if dv.Parent == nil {
-			return nil
-		}
-		return makeDecodeValue(dv.Parent, decodeValueValue)
 	case "_actual":
 		switch dv.V.(type) {
 		case Scalarable:
@@ -524,12 +502,20 @@ func (dvb decodeValueBase) JQValueKey(name string) any {
 		default:
 			return nil
 		}
-	case "_sym":
-		switch dv.V.(type) {
-		case Scalarable:
-			return makeDecodeValue(dv, decodeValueSym)
-		default:
-			return nil
+	case "_bits":
+		return Binary{
+			br:   dv.RootReader,
+			r:    dv.Range,
+			unit: 1,
+		}
+	case "_buffer_root":
+		// TODO: rename?
+		return makeDecodeValue(dv.BufferRoot(), decodeValueValue)
+	case "_bytes":
+		return Binary{
+			br:   dv.RootReader,
+			r:    dv.Range,
+			unit: 8,
 		}
 	case "_description":
 		switch vv := dv.V.(type) {
@@ -547,33 +533,9 @@ func (dvb decodeValueBase) JQValueKey(name string) any {
 		default:
 			return nil
 		}
-	case "_path":
-		return valuePath(dv)
-	case "_error":
-		var formatErr decode.FormatError
-		if errors.As(dv.Err, &formatErr) {
-			return formatErr.Value()
-		}
-		return nil
-	case "_bits":
-		return Binary{
-			br:   dv.RootReader,
-			r:    dv.Range,
-			unit: 1,
-		}
-	case "_bytes":
-		return Binary{
-			br:   dv.RootReader,
-			r:    dv.Range,
-			unit: 8,
-		}
-	case "_format":
-		if dv.Format != nil {
-			return dv.Format.Name
-		}
-		return nil
-	case "_out":
-		return dvb.out
+	case "_format_root":
+		// TODO: rename?
+		return makeDecodeValue(dv.FormatRoot(), decodeValueValue)
 	case "_gap":
 		switch vv := dv.V.(type) {
 		case Scalarable:
@@ -581,6 +543,45 @@ func (dvb decodeValueBase) JQValueKey(name string) any {
 		default:
 			return false
 		}
+	case "_len":
+		return big.NewInt(dv.Range.Len)
+	case "_name":
+		return dv.Name
+	case "_parent":
+		if dv.Parent == nil {
+			return nil
+		}
+		return makeDecodeValue(dv.Parent, decodeValueValue)
+	case "_path":
+		return valuePath(dv)
+	case "_root":
+		return makeDecodeValue(dv.Root(), decodeValueValue)
+	case "_start":
+		return big.NewInt(dv.Range.Start)
+	case "_stop":
+		return big.NewInt(dv.Range.Stop())
+	case "_sym":
+		switch dv.V.(type) {
+		case Scalarable:
+			return makeDecodeValue(dv, decodeValueSym)
+		default:
+			return nil
+		}
+
+	case "_error":
+		var formatErr decode.FormatError
+		if errors.As(dv.Err, &formatErr) {
+			return formatErr.Value()
+		}
+		return nil
+	case "_format":
+		if dv.Format != nil {
+			return dv.Format.Name
+		}
+		return nil
+	case "_out":
+		return dvb.out
+
 	case "_index":
 		if dv.Index != -1 {
 			return dv.Index
