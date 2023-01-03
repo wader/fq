@@ -793,27 +793,31 @@ notable is support for arbitrary-precision integers.
 
 ## Decoded values
 
-When you decode something you will get a decode value. A decode value work like
-normal jq values but has special abilities and is used to represent a tree structure of the decoded
-binary data. Each value always has a name, type and a bit range.
+When decoding something, using `decode` or `mp3` etc, you a decode value is returned. They behave like
+normal jq values but has special abilities and is used to represent the decoded structure. Each value
+always has a name, type and a bit range.
 
 A value has these special keys (TODO: remove, are internal)
 
+- `_actual` decoded (not symbol mapped value)
+- `_bits` bits in range as a binary
+- `_buffer_root` first decode value for current buffer
+- `_bytes` bits in range as binary using byte units
+- `_description` description of value (optional)
+- `_error` error message (optional)
+- `_format` name of decoded format (optional, only format root)
+- `_format_root` first decode value for current format
+- `_gap` is a bit range gap (was not decoded)
+- `_index` index in parent array (only for values in arrays)
+- `_len` bit range length (TODO: rename)
 - `_name` name of value
-- `_value` jq value of value
+- `_out` decoded out value
+- `_parent` parent decode value
+- `_path` jq path to decode value
+- `_root` root decode value
 - `_start` bit range start
 - `_stop` bit range stop
-- `_len` bit range length (TODO: rename)
-- `_bits` bits in range as a binary
-- `_bytes` bits in range as binary using byte units
-- `_path` jq path to value
-- `_gap_` value is a un-decoded gap
-- `_symbol` symbolic string representation of value (optional)
-- `_description` longer description of value (optional)
-- `_format` name of decoded format (optional)
-- `_error` error message (optional)
-
-- TODO: unknown gaps
+- `_sym` symbolic value (optional)
 
 ## Own decoders and use as library
 
