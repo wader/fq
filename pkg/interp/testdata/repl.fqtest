@@ -107,6 +107,8 @@ $ fq -i -d json . test.mp3
 json!> ^D
 $ fq -i -n '"[]" | json'
 json> ^D
+$ fq -i -d bytes . test.mp3
+bytes> ^D
 $ fq -n repl
 exitcode: 3
 stderr:
