@@ -42,7 +42,8 @@ func previewValue(v any, df scalar.DisplayFormat) string {
 		return strings.ReplaceAll(s, `\u007f`, `\x7f`)
 	case nil:
 		return "null"
-	case bitio.Reader:
+	case bitio.Reader,
+		Binary:
 		return "raw bits"
 	case *big.Int:
 		return mathex.PadFormatBigInt(vv, df.FormatBase(), true, 0)

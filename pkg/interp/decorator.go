@@ -49,7 +49,9 @@ func decoratorFromOptions(opts Options) Decorator {
 					return d.True
 				}
 				return d.False
-			case string, bitio.Reader:
+			case string,
+				bitio.Reader,
+				Binary:
 				return d.String
 			case int, float64, int64, uint64:
 				// TODO: clean up number types
