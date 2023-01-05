@@ -290,7 +290,7 @@ $ fq -d mp4 dv dash_audio_init.mp4
 0x2b0|70 64                                          |pd              |
 0x2b0|      01                                       |  .             |                          version: 1 0x2b2-0x2b2.7 (1)
 0x2b0|         00 00 00                              |   ...          |                          flags: 0 0x2b3-0x2b5.7 (3)
-0x2b0|                  72 6f 6c 6c                  |      roll      |                          grouping_type: 1919904876 0x2b6-0x2b9.7 (4)
+0x2b0|                  72 6f 6c 6c                  |      roll      |                          grouping_type: "roll" 0x2b6-0x2b9.7 (4)
 0x2b0|                              00 00 00 02      |          ....  |                          default_length: 2 0x2ba-0x2bd.7 (4)
 0x2b0|                                          00 00|              ..|                          entry_count: 1 0x2be-0x2c1.7 (4)
 0x2c0|00 01                                          |..              |
@@ -468,7 +468,7 @@ $ fq -d mp4 dv dash_audio_1.m4s
 0x0d0|                                    73 62 67 70|            sbgp|              type: "sbgp" (Sample to Group box) 0xdc-0xdf.7 (4)
 0x0e0|00                                             |.               |              version: 0 0xe0-0xe0.7 (1)
 0x0e0|   00 00 00                                    | ...            |              flags: 0 0xe1-0xe3.7 (3)
-0x0e0|            72 6f 6c 6c                        |    roll        |              grouping_type: 1919904876 0xe4-0xe7.7 (4)
+0x0e0|            72 6f 6c 6c                        |    roll        |              grouping_type: "roll" 0xe4-0xe7.7 (4)
 0x0e0|                        00 00 00 01            |        ....    |              entry_count: 1 0xe8-0xeb.7 (4)
      |                                               |                |              entries[0:1]: 0xec-0xf3.7 (8)
      |                                               |                |                [0]{}: entry 0xec-0xf3.7 (8)

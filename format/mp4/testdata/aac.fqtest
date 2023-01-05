@@ -299,7 +299,7 @@ $ fq -d mp4 dv aac.mp4
 0x500|                                       01      |             .  |                          version: 1 0x50d-0x50d.7 (1)
 0x500|                                          00 00|              ..|                          flags: 0 0x50e-0x510.7 (3)
 0x510|00                                             |.               |
-0x510|   72 6f 6c 6c                                 | roll           |                          grouping_type: 1919904876 0x511-0x514.7 (4)
+0x510|   72 6f 6c 6c                                 | roll           |                          grouping_type: "roll" 0x511-0x514.7 (4)
 0x510|               00 00 00 02                     |     ....       |                          default_length: 2 0x515-0x518.7 (4)
 0x510|                           00 00 00 01         |         ....   |                          entry_count: 1 0x519-0x51c.7 (4)
      |                                               |                |                          entries[0:1]: 0x51d-0x51e.7 (2)
@@ -310,7 +310,7 @@ $ fq -d mp4 dv aac.mp4
 0x520|         73 62 67 70                           |   sbgp         |                          type: "sbgp" (Sample to Group box) 0x523-0x526.7 (4)
 0x520|                     00                        |       .        |                          version: 0 0x527-0x527.7 (1)
 0x520|                        00 00 00               |        ...     |                          flags: 0 0x528-0x52a.7 (3)
-0x520|                                 72 6f 6c 6c   |           roll |                          grouping_type: 1919904876 0x52b-0x52e.7 (4)
+0x520|                                 72 6f 6c 6c   |           roll |                          grouping_type: "roll" 0x52b-0x52e.7 (4)
 0x520|                                             00|               .|                          entry_count: 1 0x52f-0x532.7 (4)
 0x530|00 00 01                                       |...             |
      |                                               |                |                          entries[0:1]: 0x533-0x53a.7 (8)

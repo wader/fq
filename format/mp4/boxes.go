@@ -1317,7 +1317,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 	case "sgpd":
 		version := d.FieldU8("version")
 		d.FieldU24("flags")
-		d.FieldU32("grouping_type")
+		d.FieldUTF8("grouping_type", 4)
 		var defaultLength uint64
 		if version == 1 {
 			defaultLength = d.FieldU32("default_length")
@@ -1345,7 +1345,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		version := d.FieldU8("version")
 		d.FieldU24("flags")
 
-		d.FieldU32("grouping_type")
+		d.FieldUTF8("grouping_type", 4)
 		if version == 1 {
 			d.FieldU32("grouping_type_parameter")
 		}
