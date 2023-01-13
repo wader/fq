@@ -70,7 +70,12 @@ $ fq -d mp4 dv avc.mp4
 0x00e00|5c                                             |\               |
 0x00e00|   74 6b 68 64                                 | tkhd           |              type: "tkhd" (Track header, overall information about the track) 0xe01-0xe04.7 (4)
 0x00e00|               00                              |     .          |              version: 0 0xe05-0xe05.7 (1)
-0x00e00|                  00 00 03                     |      ...       |              flags: 3 0xe06-0xe08.7 (3)
+       |                                               |                |              flags{}: 0xe06-0xe08.7 (3)
+0x00e00|                  00 00 03                     |      ...       |                unused: 0 0xe06-0xe08.3 (2.4)
+0x00e00|                        03                     |        .       |                size_is_aspect_ratio: false 0xe08.4-0xe08.4 (0.1)
+0x00e00|                        03                     |        .       |                in_preview: false 0xe08.5-0xe08.5 (0.1)
+0x00e00|                        03                     |        .       |                in_movie: true 0xe08.6-0xe08.6 (0.1)
+0x00e00|                        03                     |        .       |                enabled: true 0xe08.7-0xe08.7 (0.1)
 0x00e00|                           00 00 00 00         |         ....   |              creation_time: 0 (1904-01-04T00:00:00Z) 0xe09-0xe0c.7 (4)
 0x00e00|                                       00 00 00|             ...|              modification_time: 0 (1904-01-04T00:00:00Z) 0xe0d-0xe10.7 (4)
 0x00e10|00                                             |.               |

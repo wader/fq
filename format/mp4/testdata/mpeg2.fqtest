@@ -69,7 +69,12 @@ $ fq -d mp4 dv mpeg2.mp4
 0x2020|      00 00 00 5c                              |  ...\          |              size: 92 0x2022-0x2025.7 (4)
 0x2020|                  74 6b 68 64                  |      tkhd      |              type: "tkhd" (Track header, overall information about the track) 0x2026-0x2029.7 (4)
 0x2020|                              00               |          .     |              version: 0 0x202a-0x202a.7 (1)
-0x2020|                                 00 00 03      |           ...  |              flags: 3 0x202b-0x202d.7 (3)
+      |                                               |                |              flags{}: 0x202b-0x202d.7 (3)
+0x2020|                                 00 00 03      |           ...  |                unused: 0 0x202b-0x202d.3 (2.4)
+0x2020|                                       03      |             .  |                size_is_aspect_ratio: false 0x202d.4-0x202d.4 (0.1)
+0x2020|                                       03      |             .  |                in_preview: false 0x202d.5-0x202d.5 (0.1)
+0x2020|                                       03      |             .  |                in_movie: true 0x202d.6-0x202d.6 (0.1)
+0x2020|                                       03      |             .  |                enabled: true 0x202d.7-0x202d.7 (0.1)
 0x2020|                                          00 00|              ..|              creation_time: 0 (1904-01-04T00:00:00Z) 0x202e-0x2031.7 (4)
 0x2030|00 00                                          |..              |
 0x2030|      00 00 00 00                              |  ....          |              modification_time: 0 (1904-01-04T00:00:00Z) 0x2032-0x2035.7 (4)

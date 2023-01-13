@@ -71,7 +71,12 @@ $ fq -d mp4 dv mp3.mp4
 0x310|                                          74 6b|              tk|              type: "tkhd" (Track header, overall information about the track) 0x31e-0x321.7 (4)
 0x320|68 64                                          |hd              |
 0x320|      00                                       |  .             |              version: 0 0x322-0x322.7 (1)
-0x320|         00 00 03                              |   ...          |              flags: 3 0x323-0x325.7 (3)
+     |                                               |                |              flags{}: 0x323-0x325.7 (3)
+0x320|         00 00 03                              |   ...          |                unused: 0 0x323-0x325.3 (2.4)
+0x320|               03                              |     .          |                size_is_aspect_ratio: false 0x325.4-0x325.4 (0.1)
+0x320|               03                              |     .          |                in_preview: false 0x325.5-0x325.5 (0.1)
+0x320|               03                              |     .          |                in_movie: true 0x325.6-0x325.6 (0.1)
+0x320|               03                              |     .          |                enabled: true 0x325.7-0x325.7 (0.1)
 0x320|                  00 00 00 00                  |      ....      |              creation_time: 0 (1904-01-04T00:00:00Z) 0x326-0x329.7 (4)
 0x320|                              00 00 00 00      |          ....  |              modification_time: 0 (1904-01-04T00:00:00Z) 0x32a-0x32d.7 (4)
 0x320|                                          00 00|              ..|              track_id: 1 0x32e-0x331.7 (4)
