@@ -70,7 +70,12 @@ $ fq -d mp4 dv aac.mp4
 0x310|00 5c                                          |.\              |
 0x310|      74 6b 68 64                              |  tkhd          |              type: "tkhd" (Track header, overall information about the track) 0x312-0x315.7 (4)
 0x310|                  00                           |      .         |              version: 0 0x316-0x316.7 (1)
-0x310|                     00 00 03                  |       ...      |              flags: 3 0x317-0x319.7 (3)
+     |                                               |                |              flags{}: 0x317-0x319.7 (3)
+0x310|                     00 00 03                  |       ...      |                unused: 0 0x317-0x319.3 (2.4)
+0x310|                           03                  |         .      |                size_is_aspect_ratio: false 0x319.4-0x319.4 (0.1)
+0x310|                           03                  |         .      |                in_preview: false 0x319.5-0x319.5 (0.1)
+0x310|                           03                  |         .      |                in_movie: true 0x319.6-0x319.6 (0.1)
+0x310|                           03                  |         .      |                enabled: true 0x319.7-0x319.7 (0.1)
 0x310|                              00 00 00 00      |          ....  |              creation_time: 0 (1904-01-04T00:00:00Z) 0x31a-0x31d.7 (4)
 0x310|                                          00 00|              ..|              modification_time: 0 (1904-01-04T00:00:00Z) 0x31e-0x321.7 (4)
 0x320|00 00                                          |..              |

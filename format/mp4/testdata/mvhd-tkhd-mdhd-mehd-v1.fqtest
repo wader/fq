@@ -43,7 +43,12 @@ $ fq -d mp4 ddv mvhd-tkhd-mdhd-mehd-v1
 0x090|00 00 00 68                                    |...h            |      size: 104 0x90-0x93.7 (4)
 0x090|            74 6b 68 64                        |    tkhd        |      type: "tkhd" (Track header, overall information about the track) 0x94-0x97.7 (4)
 0x090|                        01                     |        .       |      version: 1 0x98-0x98.7 (1)
-0x090|                           00 00 07            |         ...    |      flags: 7 0x99-0x9b.7 (3)
+     |                                               |                |      flags{}: 0x99-0x9b.7 (3)
+0x090|                           00 00 07            |         ...    |        unused: 0 0x99-0x9b.3 (2.4)
+0x090|                                 07            |           .    |        size_is_aspect_ratio: false 0x9b.4-0x9b.4 (0.1)
+0x090|                                 07            |           .    |        in_preview: true 0x9b.5-0x9b.5 (0.1)
+0x090|                                 07            |           .    |        in_movie: true 0x9b.6-0x9b.6 (0.1)
+0x090|                                 07            |           .    |        enabled: true 0x9b.7-0x9b.7 (0.1)
 0x090|                                    00 00 00 00|            ....|      creation_time: 1652122772 (1956-05-11T18:59:32Z) 0x9c-0xa3.7 (8)
 0x0a0|62 79 64 94                                    |byd.            |
 0x0a0|            00 00 00 00 62 79 64 94            |    ....byd.    |      modification_time: 1652122772 (1956-05-11T18:59:32Z) 0xa4-0xab.7 (8)

@@ -69,7 +69,12 @@ $ fq -d mp4 dv prores_frame.mov
 0x6cb0|                                       74 6b 68|             tkh|              type: "tkhd" (Track header, overall information about the track) 0x6cbd-0x6cc0.7 (4)
 0x6cc0|64                                             |d               |
 0x6cc0|   00                                          | .              |              version: 0 0x6cc1-0x6cc1.7 (1)
-0x6cc0|      00 00 03                                 |  ...           |              flags: 3 0x6cc2-0x6cc4.7 (3)
+      |                                               |                |              flags{}: 0x6cc2-0x6cc4.7 (3)
+0x6cc0|      00 00 03                                 |  ...           |                unused: 0 0x6cc2-0x6cc4.3 (2.4)
+0x6cc0|            03                                 |    .           |                size_is_aspect_ratio: false 0x6cc4.4-0x6cc4.4 (0.1)
+0x6cc0|            03                                 |    .           |                in_preview: false 0x6cc4.5-0x6cc4.5 (0.1)
+0x6cc0|            03                                 |    .           |                in_movie: true 0x6cc4.6-0x6cc4.6 (0.1)
+0x6cc0|            03                                 |    .           |                enabled: true 0x6cc4.7-0x6cc4.7 (0.1)
 0x6cc0|               00 00 00 00                     |     ....       |              creation_time: 0 (1904-01-04T00:00:00Z) 0x6cc5-0x6cc8.7 (4)
 0x6cc0|                           00 00 00 00         |         ....   |              modification_time: 0 (1904-01-04T00:00:00Z) 0x6cc9-0x6ccc.7 (4)
 0x6cc0|                                       00 00 00|             ...|              track_id: 1 0x6ccd-0x6cd0.7 (4)

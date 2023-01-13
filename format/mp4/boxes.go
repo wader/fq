@@ -433,7 +433,13 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 	case "tkhd":
 		var trackID int
 		version := d.FieldU8("version")
-		d.FieldU24("flags")
+		d.FieldStruct("flags", func(d *decode.D) {
+			d.FieldU20("unused")
+			d.FieldBool("size_is_aspect_ratio")
+			d.FieldBool("in_preview")
+			d.FieldBool("in_movie")
+			d.FieldBool("enabled")
+		})
 		switch version {
 		case 0:
 			d.FieldU32("creation_time", uintActualQuicktimeEpoch)
