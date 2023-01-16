@@ -1,7 +1,5 @@
 package mp4
 
-// TODO: flags?
-
 import (
 	"bytes"
 	"encoding/binary"
@@ -1639,9 +1637,41 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			}
 		})
 	default:
+		// there are at least 3 ways to encode udta metadata in mov/mp4 files.
+		//
+		// mdta subtype:
+		//
+		// udta:
+		//   meta
+		//     hdlr with subtype "mdta"
+		//     keys with 1-based <index> to key namespace.name table
+		//     ilst
+		//       <index>-box
+		//         data box with value
+		//
+		// mdir subtype:
+		//
+		// udta
+		//   meta
+		//     hdlr with subtype "mdir"
+		//     ilst
+		//       ©<abc> or similar
+		//         data with value
+		//
+		// no-meta-box:
+		//
+		// udta
+		//   ©<abc> or similar
+		//     data with length, language and value
+
 		if mb := ctx.currentMetaBox(); mb != nil && ctx.parent().typ == "ilst" {
-			// unknown type inside a metadata box with ilst as parent, decode item boxes
+			// unknown type under a meta box with ilst as parent, decode as boxes
+			// is probably one or more data boxes
 			decodeBoxes(ctx, d)
+		} else if ctx.parent().typ == "udta" {
+			length := d.FieldU16("length")
+			d.FieldStrFn("language", decodeLang)
+			d.FieldUTF8("value", int(length))
 		} else {
 			d.FieldRawLen("data", d.BitsLeft())
 		}
