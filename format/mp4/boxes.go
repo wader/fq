@@ -359,8 +359,18 @@ func decodeBoxIrefEntry(ctx *decodeContext, d *decode.D) {
 }
 
 func decodeBoxFtyp(d *decode.D) {
-	d.FieldUTF8("major_brand", 4)
-	d.FieldU32("minor_version")
+	brand := d.FieldUTF8("major_brand", 4)
+	d.FieldU32("minor_version", scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
+		switch brand {
+		case "qt  ":
+			// https://developer.apple.com/library/archive/documentation/QuickTime/QTFF/QTFFChap1/qtff1.html#//apple_ref/doc/uid/TP40000939-CH203-BBCGDDDF
+			// "For QuickTime movie files, this takes the form of four binary-coded decimal values, indicating the century,
+			//  year, and month of the QuickTime File Format Specification, followed by a binary coded decimal zero. For example,
+			//  for the June 2004 minor version, this field is set to the BCD values 20 04 06 00."
+			s.Description = fmt.Sprintf("%.4d.%.2d", (s.Actual>>24)&0xff_ff, (s.Actual>>8)&0xff)
+		}
+		return s, nil
+	}))
 	numBrands := d.BitsLeft() / 8 / 4
 	var i int64
 	d.FieldArrayLoop("brands", func() bool { return i < numBrands }, func(d *decode.D) {

@@ -6,7 +6,7 @@ $ fq -d mp4 dv prores_frame.mov
 0x0000|00 00 00 14                                    |....            |      size: 20 0x0-0x3.7 (4)
 0x0000|            66 74 79 70                        |    ftyp        |      type: "ftyp" (File type and compatibility) 0x4-0x7.7 (4)
 0x0000|                        71 74 20 20            |        qt      |      major_brand: "qt  " 0x8-0xb.7 (4)
-0x0000|                                    00 00 02 00|            ....|      minor_version: 512 0xc-0xf.7 (4)
+0x0000|                                    00 00 02 00|            ....|      minor_version: 512 (0000.02) 0xc-0xf.7 (4)
       |                                               |                |      brands[0:1]: 0x10-0x13.7 (4)
 0x0010|71 74 20 20                                    |qt              |        [0]: "qt" brand 0x10-0x13.7 (4)
       |                                               |                |    [1]{}: box 0x14-0x1b.7 (8)
