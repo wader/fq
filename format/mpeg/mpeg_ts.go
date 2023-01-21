@@ -8,6 +8,7 @@ package mpeg
 // TODO: mpeg_pes, share code?
 // TODO: mpeg_pes_packet, length 0 for video?
 // TODO: dup start?
+// TODO: transport error indicator, count somehow? now mpeg_ts_packet fails
 
 // ffmpeg $(for i in $(seq 0 50); do echo "-f lavfi -i sine"; done) -t 100ms $(for i in $(seq 0 50); do echo "-map $i:0"; done) test2.ts
 
@@ -45,6 +46,9 @@ func init() {
 				{Groups: []*decode.Group{format.MPEG_TS_PMT}, Out: &mpegTsMpegTsPmtGroup},
 				{Groups: []*decode.Group{format.MPEG_PES_Packet}, Out: &mpegTsMpegPesPacketGroup},
 			},
+			DefaultInArg: format.MpegTsIn{
+				MaxSyncSeek: 100 * 1024,
+			},
 		})
 }
 
@@ -65,18 +69,19 @@ func (tb *tsBuffer) Reset() {
 	// new bytes buffer to not share byte slice
 	tb.buf = bytes.Buffer{}
 	tb.packetIndexes = nil
-
 }
 
-type tsContinuityMap map[int]int
-
-func (tcm tsContinuityMap) Update(pid int, n int) bool {
-	current, currentOk := tcm[pid]
-	tcm[pid] = n
-	if currentOk {
-		return (current+1)&0xf == n
+func tsContinuityUpdate(tcm map[int]int, pid int, current int) bool {
+	prev, prevFound := tcm[pid]
+	valid := (prevFound && ((prev+1)&0xf == current)) || current == 0
+	if valid {
+		tcm[pid] = current
+		return true
 	}
-	return n == 0
+	if prevFound {
+		delete(tcm, pid)
+	}
+	return valid
 }
 
 func tsPesDecode(d *decode.D, pid int, programPid int, streamType int, pesBuf *tsBuffer) {
@@ -93,29 +98,46 @@ func tsPesDecode(d *decode.D, pid int, programPid int, streamType int, pesBuf *t
 }
 
 func tsDecode(d *decode.D) any {
+	var ti format.MpegTsIn
+
+	d.ArgAs(&ti)
+
 	var tableReassemble = map[int]*tsBuffer{}
 	var pesReassemble = map[int]*tsBuffer{}
 	pidProgramMap := map[int]format.MpegTsProgram{}
 	pidStreamMap := map[int]format.MpegTsStream{}
-	continuityMap := tsContinuityMap(map[int]int{})
+	continuityMap := map[int]int{}
 	packetIndex := 0
+	decodeFailures := 0
 
 	tablesD := d.FieldArrayValue("tables")
 	pesD := d.FieldArrayValue("pes")
 
 	d.FieldArray("packets", func(d *decode.D) {
 		for !d.End() {
-			_, v, err := d.TryFieldFormat(
+			syncLen, _, err := d.TryPeekFind(8, 8, int64(ti.MaxSyncSeek), func(v uint64) bool {
+				return v == 0x47
+			})
+			if err != nil || syncLen < 0 {
+				break
+			}
+			if syncLen > 0 {
+				d.SeekRel(syncLen)
+			}
+
+			_, v, err := d.TryFieldFormatLen(
 				"packet",
+				tsPacketLength,
 				&mpegTsMpegTsPacketGroup,
 				format.MpegTsPacketIn{
-					ProgramMap: pidProgramMap,
-					StreamMap:  pidStreamMap,
+					ProgramMap:    pidProgramMap,
+					StreamMap:     pidStreamMap,
+					ContinuityMap: continuityMap,
 				},
 			)
 			if err != nil {
-				// TODO: malformted packet, how?
-				d.FieldRawLen("packet", tsPacketLength)
+				decodeFailures++
+				d.SeekRel(8)
 				continue
 			}
 			mtpo, mtpoOk := v.(format.MpegTsPacketOut)
@@ -123,7 +145,7 @@ func tsDecode(d *decode.D) any {
 				panic("packet is not a MpegTsPacketOut")
 			}
 
-			isContinous := continuityMap.Update(mtpo.Pid, mtpo.ContinuityCounter)
+			isContinous := tsContinuityUpdate(continuityMap, mtpo.Pid, mtpo.ContinuityCounter)
 			isTable := tsPidIsTable(mtpo.Pid, pidProgramMap)
 			stream, isStream := pidStreamMap[mtpo.Pid]
 

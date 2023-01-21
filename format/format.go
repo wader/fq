@@ -416,6 +416,10 @@ type Pg_BTree_In struct {
 	Page int `doc:"First page number in file, default is 0"`
 }
 
+type MpegTsIn struct {
+	MaxSyncSeek int `doc:"Max byte distance to next sync"`
+}
+
 type MpegTsStream struct {
 	ProgramPid int
 	Type       int
@@ -428,12 +432,14 @@ type MpegTsProgram struct {
 }
 
 type MpegTsPacketIn struct {
-	ProgramMap map[int]MpegTsProgram
-	StreamMap  map[int]MpegTsStream
+	ProgramMap    map[int]MpegTsProgram
+	StreamMap     map[int]MpegTsStream
+	ContinuityMap map[int]int
 }
 
 type MpegTsPacketOut struct {
 	Pid                        int
+	TransportErrorIndicator    bool
 	ContinuityCounter          int
 	TransportScramblingControl int
 	PayloadUnitStart           bool
