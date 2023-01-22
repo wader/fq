@@ -73,14 +73,8 @@ func (tb *tsBuffer) Reset() {
 
 func tsContinuityUpdate(tcm map[int]int, pid int, current int) bool {
 	prev, prevFound := tcm[pid]
-	valid := (prevFound && ((prev+1)&0xf == current)) || current == 0
-	if valid {
-		tcm[pid] = current
-		return true
-	}
-	if prevFound {
-		delete(tcm, pid)
-	}
+	valid := prevFound && ((prev+1)&0xf == current)
+	tcm[pid] = current
 	return valid
 }
 

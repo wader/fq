@@ -59,9 +59,9 @@ func tsPacketDecode(d *decode.D) any {
 
 		switch {
 		case prevFound && (prev+1)&0xf == current:
-			s.Description = "valid"
+			s.Description = "continuous"
 		case prevFound:
-			s.Description = "invalid"
+			s.Description = "non-continuous"
 		default:
 			s.Description = "unknown"
 		}
