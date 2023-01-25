@@ -1,0 +1,12 @@
+# construct udta box with one name box that has no length field
+$ fq -n '[0,0,0,53-32,117,100,116,97,0,0,0,45-32,110,97,109,101,"hello"] | tobytes | mp4({force: true}) | d'
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (mp4)
+    |                                               |                |  boxes[0:1]:
+    |                                               |                |    [0]{}: box
+0x00|00 00 00 15                                    |....            |      size: 21
+0x00|            75 64 74 61                        |    udta        |      type: "udta" (User-data)
+    |                                               |                |      boxes[0:1]:
+    |                                               |                |        [0]{}: box
+0x00|                        00 00 00 0d            |        ....    |          size: 13
+0x00|                                    6e 61 6d 65|            name|          type: "name"
+0x10|68 65 6c 6c 6f|                                |hello|          |          value: "hello"
