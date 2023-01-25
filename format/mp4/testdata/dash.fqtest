@@ -247,7 +247,7 @@ $ fq -d mp4 dv dash_audio_init.mp4
 0x250|                                    05         |            .   |                                        tag_id: "DecSpecificInfoTag" (5) 0x25c-0x25c.7 (1)
 0x250|                                       05      |             .  |                                        length: 5 0x25d-0x25d.7 (1)
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|                                        audio_specific_config{}: (mpeg_asc) 0x25e-0x262.7 (5)
-0x250|                                          12   |              . |                                          object_type: "aac_lc" (2) (AAC Low Complexity)) 0x25e-0x25e.4 (0.5)
+0x250|                                          12   |              . |                                          object_type: "aac_lc" (2) (AAC Low Complexity) 0x25e-0x25e.4 (0.5)
 0x250|                                          12 08|              ..|                                          sampling_frequency: 44100 (4) 0x25e.5-0x25f (0.4)
 0x250|                                             08|               .|                                          channel_configuration: 1 (front-center) 0x25f.1-0x25f.4 (0.4)
 0x250|                                             08|               .|                                          var_aot_or_byte_align: raw bits 0x25f.5-0x262.7 (3.3)

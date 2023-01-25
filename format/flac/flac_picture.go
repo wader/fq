@@ -13,7 +13,7 @@ var pictureTypeNames = scalar.UintMapSymStr{
 	0:  "Other",
 	1:  "32x32_pixels",
 	2:  "other_file_icon",
-	3:  "cover_front)",
+	3:  "cover_front",
 	4:  "cover_back",
 	5:  "leaflet_page",
 	6:  "media",
