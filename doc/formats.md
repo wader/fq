@@ -695,17 +695,18 @@ $ fq 'grep_by(.id == "Tracks") | matroska_path' file.mkv
 |-                          |-      |-|
 |`max_sync_seek`            |32768  |Max byte distance to next sync|
 |`max_unique_header_configs`|5      |Max number of unique frame header configs allowed|
+|`max_unknown`              |50     |Max percent (0-100) unknown bits|
 
 ### Examples
 
 Decode file using mp3 options
 ```
-$ fq -d mp3 -o max_sync_seek=32768 -o max_unique_header_configs=5 . file
+$ fq -d mp3 -o max_sync_seek=32768 -o max_unique_header_configs=5 -o max_unknown=50 . file
 ```
 
 Decode value as mp3
 ```
-... | mp3({max_sync_seek:32768,max_unique_header_configs:5})
+... | mp3({max_sync_seek:32768,max_unique_header_configs:5,max_unknown:50})
 ```
 
 ## mp4

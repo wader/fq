@@ -224,6 +224,7 @@ type AACFrameIn struct {
 
 type Mp3In struct {
 	MaxUniqueHeaderConfigs int `doc:"Max number of unique frame header configs allowed"`
+	MaxUnknown             int `doc:"Max percent (0-100) unknown bits"`
 	MaxSyncSeek            int `doc:"Max byte distance to next sync"`
 }
 
