@@ -145,7 +145,7 @@ const (
 var MPEGAudioObjectTypeNames = scalar.UintMap{
 	0:                            {Sym: "mull", Description: "Null"},
 	MPEGAudioObjectTypeMain:      {Sym: "aac_main", Description: "AAC Main"},
-	MPEGAudioObjectTypeLC:        {Sym: "aac_lc", Description: "AAC Low Complexity)"},
+	MPEGAudioObjectTypeLC:        {Sym: "aac_lc", Description: "AAC Low Complexity"},
 	MPEGAudioObjectTypeSSR:       {Sym: "aac_ssr", Description: "AAC Scalable Sample Rate"},
 	MPEGAudioObjectTypeLTP:       {Sym: "aac_ltp", Description: "AAC Long Term Prediction"},
 	MPEGAudioObjectTypeSBR:       {Sym: "sbr", Description: "Spectral Band Replication"},

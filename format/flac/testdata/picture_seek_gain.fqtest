@@ -72,7 +72,7 @@ $ fq -d flac dv picture_seek_gain.flac
 0x0120|                                             06|               .|      type: "picture" (6) 0x12f.1-0x12f.7 (0.7)
 0x0130|00 00 6d                                       |..m             |      length: 109 0x130-0x132.7 (3)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      picture{}: (flac_picture) 0x133-0x19f.7 (109)
-0x0130|         00 00 00 03                           |   ....         |        picture_type: "cover_front)" (3) 0x133-0x136.7 (4)
+0x0130|         00 00 00 03                           |   ....         |        picture_type: "cover_front" (3) 0x133-0x136.7 (4)
 0x0130|                     00 00 00 09               |       ....     |        mime_length: 9 0x137-0x13a.7 (4)
 0x0130|                                 69 6d 61 67 65|           image|        mime: "image/png" 0x13b-0x143.7 (9)
 0x0140|2f 70 6e 67                                    |/png            |

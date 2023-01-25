@@ -239,7 +239,7 @@ $ fq -d mp4 dv aac.mp4
 0x480|   05                                          | .              |                                        tag_id: "DecSpecificInfoTag" (5) 0x481-0x481.7 (1)
 0x480|      80 80 80 05                              |  ....          |                                        length: 5 0x482-0x485.7 (4)
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|                                        audio_specific_config{}: (mpeg_asc) 0x486-0x48a.7 (5)
-0x480|                  12                           |      .         |                                          object_type: "aac_lc" (2) (AAC Low Complexity)) 0x486-0x486.4 (0.5)
+0x480|                  12                           |      .         |                                          object_type: "aac_lc" (2) (AAC Low Complexity) 0x486-0x486.4 (0.5)
 0x480|                  12 08                        |      ..        |                                          sampling_frequency: 44100 (4) 0x486.5-0x487 (0.4)
 0x480|                     08                        |       .        |                                          channel_configuration: 1 (front-center) 0x487.1-0x487.4 (0.4)
 0x480|                     08 56 e5 00               |       .V..     |                                          var_aot_or_byte_align: raw bits 0x487.5-0x48a.7 (3.3)
