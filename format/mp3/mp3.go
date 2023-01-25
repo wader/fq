@@ -23,6 +23,7 @@ func init() {
 		DecodeFn:    mp3Decode,
 		DecodeInArg: format.Mp3In{
 			MaxUniqueHeaderConfigs: 5,
+			MaxUnknown:             50,
 			MaxSyncSeek:            4 * 1024 * 8,
 		},
 		Dependencies: []decode.Dependency{
@@ -53,13 +54,16 @@ func mp3Decode(d *decode.D, in any) any {
 		ChannelModeIndex int
 	}
 	uniqueHeaderConfigs := map[headerConfig]struct{}{}
+	knownSize := int64(0)
 
 	// there are mp3s files in the wild with multiple headers, two id3v2 tags etc
 	d.FieldArray("headers", func(d *decode.D) {
 		for d.NotEnd() {
+			headerStart := d.Pos()
 			if dv, _, _ := d.TryFieldFormat("header", headerFormat, nil); dv == nil {
 				return
 			}
+			knownSize += d.Pos() - headerStart
 		}
 	})
 
@@ -80,6 +84,7 @@ func mp3Decode(d *decode.D, in any) any {
 				d.SeekRel(syncLen)
 			}
 
+			frameStart := d.Pos()
 			dv, v, _ := d.TryFieldFormat("frame", mp3Frame, nil)
 			if dv == nil {
 				decodeFailures++
@@ -90,6 +95,7 @@ func mp3Decode(d *decode.D, in any) any {
 			if !ok {
 				panic(fmt.Sprintf("expected MP3FrameOut got %#+v", v))
 			}
+			knownSize += d.Pos() - frameStart
 			uniqueHeaderConfigs[headerConfig{
 				MPEGVersion:      mfo.MPEGVersion,
 				ProtectionAbsent: mfo.ProtectionAbsent,
@@ -115,11 +121,18 @@ func mp3Decode(d *decode.D, in any) any {
 
 	d.FieldArray("footers", func(d *decode.D) {
 		for d.NotEnd() {
+			footerStart := d.Pos()
 			if dv, _, _ := d.TryFieldFormat("footer", footerFormat, nil); dv == nil {
 				return
 			}
+			knownSize += d.Pos() - footerStart
 		}
 	})
+
+	unknownPercent := int(float64((d.Len() - knownSize)) / float64(d.Len()) * 100.0)
+	if unknownPercent > mi.MaxUnknown {
+		d.Errorf(fmt.Sprintf("exceeds max precent unknown bits, %d > %d", unknownPercent, mi.MaxUnknown))
+	}
 
 	return nil
 }
