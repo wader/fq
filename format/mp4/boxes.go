@@ -1647,7 +1647,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			}
 		})
 	default:
-		// there are at least 3 ways to encode udta metadata in mov/mp4 files.
+		// there are at least 4 ways to encode udta metadata in mov/mp4 files.
 		//
 		// mdta subtype:
 		//
@@ -1656,7 +1656,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		//     hdlr with subtype "mdta"
 		//     keys with 1-based <index> to key namespace.name table
 		//     ilst
-		//       <index>-box
+		//       <index>-box (box type is 32bit BE 1-based number into table above)
 		//         data box with value
 		//
 		// mdir subtype:
@@ -1668,20 +1668,34 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		//       ©<abc> or similar
 		//         data with value
 		//
-		// no-meta-box:
+		// no-meta-box with length and language:
 		//
 		// udta
 		//   ©<abc> or similar
-		//     data with length, language and value
-
+		//     value length and language
+		//
+		// no-meta-box value rest of box:
+		//
+		// udta
+		//   <name>
+		//     value rest of box
 		if mb := ctx.currentMetaBox(); mb != nil && ctx.parent().typ == "ilst" {
 			// unknown type under a meta box with ilst as parent, decode as boxes
 			// is probably one or more data boxes
 			decodeBoxes(ctx, d)
 		} else if ctx.parent().typ == "udta" {
-			length := d.FieldU16("length")
-			d.FieldStrFn("language", decodeLang)
-			d.FieldUTF8("value", int(length))
+			// TODO: better probe? ffmpeg uses box name heuristics?
+			// if 16 length field seems to match assume box with length, language and value
+			// otherwise decode as box with value rest of box
+			probeLength := d.PeekBits(16)
+			// +2 for length field, +2 for language field
+			if (probeLength+2+2)*8 == uint64(d.BitsLeft()) {
+				length := d.FieldU16("length")
+				d.FieldStrFn("language", decodeLang)
+				d.FieldUTF8("value", int(length))
+			} else {
+				d.FieldUTF8("value", int(d.BitsLeft()/8))
+			}
 		} else {
 			d.FieldRawLen("data", d.BitsLeft())
 		}
