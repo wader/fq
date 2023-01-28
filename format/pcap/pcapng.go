@@ -364,7 +364,7 @@ type decodeContext struct {
 func decodePcapng(d *decode.D, _ any) any {
 	sectionHeaders := 0
 	for !d.End() {
-		fd := flowsdecoder.New()
+		fd := flowsdecoder.New(flowsdecoder.DecoderOptions{CheckTCPOptions: false})
 		dc := decodeContext{
 			interfaceTypes: map[int]int{},
 			flowDecoder:    fd,
