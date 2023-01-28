@@ -90,7 +90,7 @@ func decodePcap(d *decode.D, _ any) any {
 	})
 
 	d.Endian = endian
-	fd := flowsdecoder.New()
+	fd := flowsdecoder.New(flowsdecoder.DecoderOptions{CheckTCPOptions: false})
 
 	d.FieldArray("packets", func(d *decode.D) {
 		for !d.End() {

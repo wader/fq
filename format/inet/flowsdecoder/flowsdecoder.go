@@ -30,7 +30,7 @@ type TCPConnection struct {
 	Client     TCPDirection
 	Server     TCPDirection
 	tcpState   *reassembly.TCPSimpleFSM
-	optChecker reassembly.TCPOptionCheck
+	optChecker *reassembly.TCPOptionCheck
 	net        gopacket.Flow
 	transport  gopacket.Flow
 }
@@ -41,10 +41,12 @@ func (t *TCPConnection) Accept(tcp *layers.TCP, ci gopacket.CaptureInfo, dir rea
 		// TODO: handle err?
 		return false
 	}
-	// has ok options?
-	if err := t.optChecker.Accept(tcp, ci, dir, nextSeq, start); err != nil {
-		// TODO: handle err?
-		return false
+	if t.optChecker != nil {
+		// has ok options?
+		if err := t.optChecker.Accept(tcp, ci, dir, nextSeq, start); err != nil {
+			// TODO: handle err?
+			return false
+		}
 	}
 	// TODO: checksum?
 
@@ -127,10 +129,14 @@ func (fd *Decoder) New(net, transport gopacket.Flow, tcp *layers.TCP, ac reassem
 			Buffer: &bytes.Buffer{},
 		},
 
-		net:        net,
-		transport:  transport,
-		tcpState:   reassembly.NewTCPSimpleFSM(fsmOptions),
-		optChecker: reassembly.NewTCPOptionCheck(),
+		net:       net,
+		transport: transport,
+		tcpState:  reassembly.NewTCPSimpleFSM(fsmOptions),
+	}
+
+	if fd.Options.CheckTCPOptions {
+		c := reassembly.NewTCPOptionCheck()
+		stream.optChecker = &c
 	}
 
 	fd.TCPConnections = append(fd.TCPConnections, stream)
@@ -139,6 +145,8 @@ func (fd *Decoder) New(net, transport gopacket.Flow, tcp *layers.TCP, ac reassem
 }
 
 type Decoder struct {
+	Options DecoderOptions
+
 	TCPConnections  []*TCPConnection
 	IPV4Reassembled []IPV4Reassembled
 
@@ -146,8 +154,14 @@ type Decoder struct {
 	tcpAssembler *reassembly.Assembler
 }
 
-func New() *Decoder {
-	flowDecoder := &Decoder{}
+type DecoderOptions struct {
+	CheckTCPOptions bool
+}
+
+func New(options DecoderOptions) *Decoder {
+	flowDecoder := &Decoder{
+		Options: options,
+	}
 	streamPool := reassembly.NewStreamPool(flowDecoder)
 	tcpAssembler := reassembly.NewAssembler(streamPool)
 	flowDecoder.tcpAssembler = tcpAssembler
