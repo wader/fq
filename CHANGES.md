@@ -1,3 +1,50 @@
+# 0.3.0
+
+Bug fix release, no new features mostly due to holidays and busy with other things (some jq related!).
+
+Also been preparing for a [talk about fq](https://fosdem.org/2023/schedule/event/bintools_fq/) this weekend at [FOSDEM 2023](https://fosdem.org/2023/).
+
+## Changes
+
+* TCP reassembly is now less strict about invalid TCP options. Turns out some options might end up wrong in packet captures due to hardware acceleration etc. For example it seems to be common that TCP segments end up larger than configured connection MSS. Now PCAP:s with those kinds of TCP segments should be reassembled correctly.
+* REPL now handles the del key properly. Before it could in some cases cause the output to be ignored.
+
+## Decoder changes
+
+- `mp3` Add option for max unknown bits to handle more mis-probing. Default to 50%
+- `mp4`
+  - `ftyp` set minor description to date for "qt" files
+  - `tkhd` decode enabled, preview, etc flags
+  - `udta` Handle case wit box type is key and value rest of box
+  - `sgpd`,`sbgp` Change grouping type to a string as it seems to be what it is in practice.
+- `tcp_segment` Decode all standard options, MSS, Window scale, timestamp etc. Rename "maxseg" to "mss".
+
+## Changelog
+
+* 8702e1d1 Update docker-golang to 1.19.5 from 1.19.4
+* a7f37d73 Update docker-golang to 1.20.0 from 1.19.5
+* 826d9a52 Update github-go-version to 1.19.5 from 1.19.4, 1.19.4, 1.19.4
+* d338c8b7 Update github-go-version to 1.20.0 from 1.19.5, 1.19.5, 1.19.5
+* ad4919a8 Update github-golangci-lint to 1.51.0 from 1.50.1
+* e8ecbf95 Update gomod-golang/text to 0.6.0 from 0.5.0
+* f1057b9b Update make-golangci-lint to 1.51.0 from 1.50.1
+* ca27e426 doc: Add _parent for decode values and clenaup doc a bit
+* b04a650b flac_picture,mpeg: Fix trailing ")" typo in map sym and description
+* 57144b2f github-action: Use quotes becase yaml (1.20 -> 1.2)
+* 0aa6e3e2 gojq: Update rebased fq fork
+* 7855b359 gomod: Update non-bump tracked mods and add bump config
+* 6e17de36 goreleaser: Use name_template instead of deprecated archive replacements
+* 8b49b42f interp: Wrap Binary in decodeValue to fix prompt issue with bits/bytes format
+* 2d82c05f mp3: Add max_unknown option to fail decode if too much unknown bits
+* f386a515 mp4: Decode qt minor verison as YYYY.MM description
+* 3555dc67 mp4: Decode tkhd flags
+* c3e3b3e9 mp4: Decode udta metadata boxes without meta box
+* c49012db mp4: sgpd,sbgp: Change grouping_type to a string
+* 63403658 mp4: udta: Handle box with value rest of box
+* 55ef7a4b readline: Update fq fork to fix draw issue when using del key
+* 1eb5e502 tcp: Ignore TCP option check for now as it seems unreliable in dumps
+* 62e2cef5 tcp_segment: Decode standard options and rename maxseg to mss
+
 # 0.2.0
 
 This ended up being a release to cleanup old sins in the decoder internals and change some defaults how binary values work with JSON and string functions.
