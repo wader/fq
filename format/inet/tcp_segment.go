@@ -19,18 +19,23 @@ func init() {
 }
 
 const (
-	tcpOptionEnd = 0
-	tcpOptionNop = 1
+	tcpOptionEnd           = 0
+	tcpOptionNop           = 1
+	tcpOptionMSS           = 2
+	tcpOptionWinscale      = 3
+	tcpOptionSackPermitted = 4
+	tcpOptionSack          = 5
+	tcpOptionTimestamp     = 8
 )
 
 var tcpOptionsMap = scalar.UintMap{
-	tcpOptionEnd: {Sym: "end", Description: "End of options list"},
-	tcpOptionNop: {Sym: "nop", Description: "No operation"},
-	2:            {Sym: "maxseg", Description: "Maximum segment size"},
-	3:            {Sym: "winscale", Description: "Window scale"},
-	4:            {Sym: "sack_permitted", Description: "Selective Acknowledgement permitted"},
-	5:            {Sym: "sack", Description: "Selective ACKnowledgement"},
-	8:            {Sym: "timestamp", Description: "Timestamp and echo of previous timestamp"},
+	tcpOptionEnd:           {Sym: "end", Description: "End of options list"},
+	tcpOptionNop:           {Sym: "nop", Description: "No operation"},
+	tcpOptionMSS:           {Sym: "mss", Description: "Maximum segment size"},
+	tcpOptionWinscale:      {Sym: "winscale", Description: "Window scale"},
+	tcpOptionSackPermitted: {Sym: "sack_permitted", Description: "Selective Acknowledgement permitted"},
+	tcpOptionSack:          {Sym: "sack", Description: "Selective Acknowledgement"},
+	tcpOptionTimestamp:     {Sym: "timestamp", Description: "Timestamp and echo of previous timestamp"},
 }
 
 func decodeTCP(d *decode.D, in any) any {
@@ -67,9 +72,33 @@ func decodeTCP(d *decode.D, in any) any {
 						kind := d.FieldU8("kind", tcpOptionsMap)
 						switch kind {
 						case tcpOptionEnd, tcpOptionNop:
+							// has no length or data
 						default:
 							l := d.FieldU8("length")
-							d.FieldRawLen("data", (int64(l-2))*8)
+							switch kind {
+							case tcpOptionMSS:
+								d.FieldU16("size")
+							case tcpOptionWinscale:
+								d.FieldU8("shift")
+							case tcpOptionSackPermitted:
+								// none
+							case tcpOptionSack:
+								d.FramedFn((int64(l-2))*8, func(d *decode.D) {
+									d.FieldArray("blocks", func(d *decode.D) {
+										for !d.End() {
+											d.FieldStruct("block", func(d *decode.D) {
+												d.FieldU32("left_edge")
+												d.FieldU32("right_edge")
+											})
+										}
+									})
+								})
+							case tcpOptionTimestamp:
+								d.FieldU32("value")
+								d.FieldU32("echo_reply")
+							default:
+								d.FieldRawLen("data", (int64(l-2))*8)
+							}
 						}
 					})
 				}

@@ -2602,15 +2602,15 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x01390|            00 00                              |    ..          |              urgent_pointer: 0 0x1394-0x1395.7 (2)
        |                                               |                |              options[0:9]: 0x1396-0x13ad.7 (24)
        |                                               |                |                [0]{}: option 0x1396-0x1399.7 (4)
-0x01390|                  02                           |      .         |                  kind: "maxseg" (2) (Maximum segment size) 0x1396-0x1396.7 (1)
+0x01390|                  02                           |      .         |                  kind: "mss" (2) (Maximum segment size) 0x1396-0x1396.7 (1)
 0x01390|                     04                        |       .        |                  length: 4 0x1397-0x1397.7 (1)
-0x01390|                        05 b4                  |        ..      |                  data: raw bits 0x1398-0x1399.7 (2)
+0x01390|                        05 b4                  |        ..      |                  size: 1460 0x1398-0x1399.7 (2)
        |                                               |                |                [1]{}: option 0x139a-0x139a.7 (1)
 0x01390|                              01               |          .     |                  kind: "nop" (1) (No operation) 0x139a-0x139a.7 (1)
        |                                               |                |                [2]{}: option 0x139b-0x139d.7 (3)
 0x01390|                                 03            |           .    |                  kind: "winscale" (3) (Window scale) 0x139b-0x139b.7 (1)
 0x01390|                                    03         |            .   |                  length: 3 0x139c-0x139c.7 (1)
-0x01390|                                       05      |             .  |                  data: raw bits 0x139d-0x139d.7 (1)
+0x01390|                                       05      |             .  |                  shift: 5 0x139d-0x139d.7 (1)
        |                                               |                |                [3]{}: option 0x139e-0x139e.7 (1)
 0x01390|                                          01   |              . |                  kind: "nop" (1) (No operation) 0x139e-0x139e.7 (1)
        |                                               |                |                [4]{}: option 0x139f-0x139f.7 (1)
@@ -2618,11 +2618,11 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [5]{}: option 0x13a0-0x13a9.7 (10)
 0x013a0|08                                             |.               |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x13a0-0x13a0.7 (1)
 0x013a0|   0a                                          | .              |                  length: 10 0x13a1-0x13a1.7 (1)
-0x013a0|      4b 2a 91 21 00 00 00 00                  |  K*.!....      |                  data: raw bits 0x13a2-0x13a9.7 (8)
+0x013a0|      4b 2a 91 21                              |  K*.!          |                  value: 1261080865 0x13a2-0x13a5.7 (4)
+0x013a0|                  00 00 00 00                  |      ....      |                  echo_reply: 0 0x13a6-0x13a9.7 (4)
        |                                               |                |                [6]{}: option 0x13aa-0x13ab.7 (2)
 0x013a0|                              04               |          .     |                  kind: "sack_permitted" (4) (Selective Acknowledgement permitted) 0x13aa-0x13aa.7 (1)
 0x013a0|                                 02            |           .    |                  length: 2 0x13ab-0x13ab.7 (1)
-       |                                               |                |                  data: raw bits 0x13ac-NA (0)
        |                                               |                |                [7]{}: option 0x13ac-0x13ac.7 (1)
 0x013a0|                                    00         |            .   |                  kind: "end" (0) (End of options list) 0x13ac-0x13ac.7 (1)
        |                                               |                |                [8]{}: option 0x13ad-0x13ad.7 (1)
@@ -2681,24 +2681,24 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x01400|            00 00                              |    ..          |              urgent_pointer: 0 0x1404-0x1405.7 (2)
        |                                               |                |              options[0:5]: 0x1406-0x1419.7 (20)
        |                                               |                |                [0]{}: option 0x1406-0x1409.7 (4)
-0x01400|                  02                           |      .         |                  kind: "maxseg" (2) (Maximum segment size) 0x1406-0x1406.7 (1)
+0x01400|                  02                           |      .         |                  kind: "mss" (2) (Maximum segment size) 0x1406-0x1406.7 (1)
 0x01400|                     04                        |       .        |                  length: 4 0x1407-0x1407.7 (1)
-0x01400|                        05 96                  |        ..      |                  data: raw bits 0x1408-0x1409.7 (2)
+0x01400|                        05 96                  |        ..      |                  size: 1430 0x1408-0x1409.7 (2)
        |                                               |                |                [1]{}: option 0x140a-0x140b.7 (2)
 0x01400|                              04               |          .     |                  kind: "sack_permitted" (4) (Selective Acknowledgement permitted) 0x140a-0x140a.7 (1)
 0x01400|                                 02            |           .    |                  length: 2 0x140b-0x140b.7 (1)
-       |                                               |                |                  data: raw bits 0x140c-NA (0)
        |                                               |                |                [2]{}: option 0x140c-0x1415.7 (10)
 0x01400|                                    08         |            .   |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x140c-0x140c.7 (1)
 0x01400|                                       0a      |             .  |                  length: 10 0x140d-0x140d.7 (1)
-0x01400|                                          e4 57|              .W|                  data: raw bits 0x140e-0x1415.7 (8)
-0x01410|7b 53 4b 2a 91 21                              |{SK*.!          |
+0x01400|                                          e4 57|              .W|                  value: 3830938451 0x140e-0x1411.7 (4)
+0x01410|7b 53                                          |{S              |
+0x01410|      4b 2a 91 21                              |  K*.!          |                  echo_reply: 1261080865 0x1412-0x1415.7 (4)
        |                                               |                |                [3]{}: option 0x1416-0x1416.7 (1)
 0x01410|                  01                           |      .         |                  kind: "nop" (1) (No operation) 0x1416-0x1416.7 (1)
        |                                               |                |                [4]{}: option 0x1417-0x1419.7 (3)
 0x01410|                     03                        |       .        |                  kind: "winscale" (3) (Window scale) 0x1417-0x1417.7 (1)
 0x01410|                        03                     |        .       |                  length: 3 0x1418-0x1418.7 (1)
-0x01410|                           07                  |         .      |                  data: raw bits 0x1419-0x1419.7 (1)
+0x01410|                           07                  |         .      |                  shift: 7 0x1419-0x1419.7 (1)
        |                                               |                |              payload: raw bits 0x141a-NA (0)
 0x01410|                              00 00            |          ..    |        padding: raw bits 0x141a-0x141b.7 (2)
        |                                               |                |        options[0:0]: 0x141c-NA (0)
@@ -2759,7 +2759,8 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x1474-0x147d.7 (10)
 0x01470|            08                                 |    .           |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x1474-0x1474.7 (1)
 0x01470|               0a                              |     .          |                  length: 10 0x1475-0x1475.7 (1)
-0x01470|                  4b 2a 91 3b e4 57 7b 53      |      K*.;.W{S  |                  data: raw bits 0x1476-0x147d.7 (8)
+0x01470|                  4b 2a 91 3b                  |      K*.;      |                  value: 1261080891 0x1476-0x1479.7 (4)
+0x01470|                              e4 57 7b 53      |          .W{S  |                  echo_reply: 3830938451 0x147a-0x147d.7 (4)
        |                                               |                |              payload: raw bits 0x147e-NA (0)
 0x01470|                                          00 00|              ..|        padding: raw bits 0x147e-0x147f.7 (2)
        |                                               |                |        options[0:0]: 0x1480-NA (0)
@@ -2820,7 +2821,8 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x14d8-0x14e1.7 (10)
 0x014d0|                        08                     |        .       |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x14d8-0x14d8.7 (1)
 0x014d0|                           0a                  |         .      |                  length: 10 0x14d9-0x14d9.7 (1)
-0x014d0|                              4b 2a 91 3b e4 57|          K*.;.W|                  data: raw bits 0x14da-0x14e1.7 (8)
+0x014d0|                              4b 2a 91 3b      |          K*.;  |                  value: 1261080891 0x14da-0x14dd.7 (4)
+0x014d0|                                          e4 57|              .W|                  echo_reply: 3830938451 0x14de-0x14e1.7 (4)
 0x014e0|7b 53                                          |{S              |
 0x014e0|      16 03 01 02 00 01 00 01 fc 03 03 f0 91 bc|  ..............|              payload: raw bits 0x14e2-0x16e6.7 (517)
 0x014f0|87 3e ed 9d cc 98 4a 6a 2e 84 3f 5c 1d 9b a9 e9|.>....Jj..?\....|
@@ -2885,7 +2887,8 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x1740-0x1749.7 (10)
 0x01740|08                                             |.               |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x1740-0x1740.7 (1)
 0x01740|   0a                                          | .              |                  length: 10 0x1741-0x1741.7 (1)
-0x01740|      e4 57 7b 6e 4b 2a 91 3b                  |  .W{nK*.;      |                  data: raw bits 0x1742-0x1749.7 (8)
+0x01740|      e4 57 7b 6e                              |  .W{n          |                  value: 3830938478 0x1742-0x1745.7 (4)
+0x01740|                  4b 2a 91 3b                  |      K*.;      |                  echo_reply: 1261080891 0x1746-0x1749.7 (4)
        |                                               |                |              payload: raw bits 0x174a-NA (0)
 0x01740|                              00 00            |          ..    |        padding: raw bits 0x174a-0x174b.7 (2)
        |                                               |                |        options[0:0]: 0x174c-NA (0)
@@ -2946,7 +2949,8 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x17a4-0x17ad.7 (10)
 0x017a0|            08                                 |    .           |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x17a4-0x17a4.7 (1)
 0x017a0|               0a                              |     .          |                  length: 10 0x17a5-0x17a5.7 (1)
-0x017a0|                  e4 57 7b 6e 4b 2a 91 3b      |      .W{nK*.;  |                  data: raw bits 0x17a6-0x17ad.7 (8)
+0x017a0|                  e4 57 7b 6e                  |      .W{n      |                  value: 3830938478 0x17a6-0x17a9.7 (4)
+0x017a0|                              4b 2a 91 3b      |          K*.;  |                  echo_reply: 1261080891 0x17aa-0x17ad.7 (4)
 0x017a0|                                          16 03|              ..|              payload: raw bits 0x17ae-0x183f.7 (146)
 0x017b0|03 00 5a 02 00 00 56 03 03 55 d0 e5 ff ab 64 a2|..Z...V..U....d.|
 *      |until 0x183f.7 (146)                           |                |
@@ -3009,7 +3013,8 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x1898-0x18a1.7 (10)
 0x01890|                        08                     |        .       |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x1898-0x1898.7 (1)
 0x01890|                           0a                  |         .      |                  length: 10 0x1899-0x1899.7 (1)
-0x01890|                              4b 2a 91 55 e4 57|          K*.U.W|                  data: raw bits 0x189a-0x18a1.7 (8)
+0x01890|                              4b 2a 91 55      |          K*.U  |                  value: 1261080917 0x189a-0x189d.7 (4)
+0x01890|                                          e4 57|              .W|                  echo_reply: 3830938478 0x189e-0x18a1.7 (4)
 0x018a0|7b 6e                                          |{n              |
        |                                               |                |              payload: raw bits 0x18a2-NA (0)
 0x018a0|      00 00                                    |  ..            |        padding: raw bits 0x18a2-0x18a3.7 (2)
@@ -3072,8 +3077,9 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x18fc-0x1905.7 (10)
 0x018f0|                                    08         |            .   |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x18fc-0x18fc.7 (1)
 0x018f0|                                       0a      |             .  |                  length: 10 0x18fd-0x18fd.7 (1)
-0x018f0|                                          4b 2a|              K*|                  data: raw bits 0x18fe-0x1905.7 (8)
-0x01900|91 55 e4 57 7b 6e                              |.U.W{n          |
+0x018f0|                                          4b 2a|              K*|                  value: 1261080917 0x18fe-0x1901.7 (4)
+0x01900|91 55                                          |.U              |
+0x01900|      e4 57 7b 6e                              |  .W{n          |                  echo_reply: 3830938478 0x1902-0x1905.7 (4)
 0x01900|                  14 03 03 00 01 01 16 03 03 00|      ..........|              payload: raw bits 0x1906-0x1938.7 (51)
 0x01910|28 00 00 00 00 00 00 00 00 2f 64 40 f5 c5 eb af|(......../d@....|
 *      |until 0x1938.7 (51)                            |                |
@@ -3136,7 +3142,8 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x1994-0x199d.7 (10)
 0x01990|            08                                 |    .           |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x1994-0x1994.7 (1)
 0x01990|               0a                              |     .          |                  length: 10 0x1995-0x1995.7 (1)
-0x01990|                  4b 2a 91 57 e4 57 7b 6e      |      K*.W.W{n  |                  data: raw bits 0x1996-0x199d.7 (8)
+0x01990|                  4b 2a 91 57                  |      K*.W      |                  value: 1261080919 0x1996-0x1999.7 (4)
+0x01990|                              e4 57 7b 6e      |          .W{n  |                  echo_reply: 3830938478 0x199a-0x199d.7 (4)
 0x01990|                                          17 03|              ..|              payload: raw bits 0x199e-0x19d2.7 (53)
 0x019a0|03 00 30 00 00 00 00 00 00 00 01 51 98 2a 12 b0|..0........Q.*..|
 *      |until 0x19d2.7 (53)                            |                |
@@ -3200,8 +3207,9 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x1a2c-0x1a35.7 (10)
 0x01a20|                                    08         |            .   |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x1a2c-0x1a2c.7 (1)
 0x01a20|                                       0a      |             .  |                  length: 10 0x1a2d-0x1a2d.7 (1)
-0x01a20|                                          4b 2a|              K*|                  data: raw bits 0x1a2e-0x1a35.7 (8)
-0x01a30|91 57 e4 57 7b 6e                              |.W.W{n          |
+0x01a20|                                          4b 2a|              K*|                  value: 1261080919 0x1a2e-0x1a31.7 (4)
+0x01a30|91 57                                          |.W              |
+0x01a30|      e4 57 7b 6e                              |  .W{n          |                  echo_reply: 3830938478 0x1a32-0x1a35.7 (4)
 0x01a30|                  17 03 03 00 2d 00 00 00 00 00|      ....-.....|              payload: raw bits 0x1a36-0x1a67.7 (50)
 0x01a40|00 00 02 f0 bc fa 7b fe 22 8d 11 11 1b 0b 72 db|......{.".....r.|
 *      |until 0x1a67.7 (50)                            |                |
@@ -3265,7 +3273,8 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x1ac0-0x1ac9.7 (10)
 0x01ac0|08                                             |.               |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x1ac0-0x1ac0.7 (1)
 0x01ac0|   0a                                          | .              |                  length: 10 0x1ac1-0x1ac1.7 (1)
-0x01ac0|      4b 2a 91 57 e4 57 7b 6e                  |  K*.W.W{n      |                  data: raw bits 0x1ac2-0x1ac9.7 (8)
+0x01ac0|      4b 2a 91 57                              |  K*.W          |                  value: 1261080919 0x1ac2-0x1ac5.7 (4)
+0x01ac0|                  e4 57 7b 6e                  |      .W{n      |                  echo_reply: 3830938478 0x1ac6-0x1ac9.7 (4)
 0x01ac0|                              17 03 03 00 25 00|          ....%.|              payload: raw bits 0x1aca-0x1af3.7 (42)
 0x01ad0|00 00 00 00 00 00 03 91 f4 86 be 5b 2a 4f 9f 3e|...........[*O.>|
 *      |until 0x1af3.7 (42)                            |                |
@@ -3329,8 +3338,9 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x1b4c-0x1b55.7 (10)
 0x01b40|                                    08         |            .   |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x1b4c-0x1b4c.7 (1)
 0x01b40|                                       0a      |             .  |                  length: 10 0x1b4d-0x1b4d.7 (1)
-0x01b40|                                          4b 2a|              K*|                  data: raw bits 0x1b4e-0x1b55.7 (8)
-0x01b50|91 57 e4 57 7b 6e                              |.W.W{n          |
+0x01b40|                                          4b 2a|              K*|                  value: 1261080919 0x1b4e-0x1b51.7 (4)
+0x01b50|91 57                                          |.W              |
+0x01b50|      e4 57 7b 6e                              |  .W{n          |                  echo_reply: 3830938478 0x1b52-0x1b55.7 (4)
 0x01b50|                  17 03 03 04 8f 00 00 00 00 00|      ..........|              payload: raw bits 0x1b56-0x1fe9.7 (1172)
 0x01b60|00 00 04 98 59 fb 7c d9 ba ce c7 cc 54 de 7c d1|....Y.|.....T.|.|
 *      |until 0x1fe9.7 (1172)                          |                |
@@ -3393,7 +3403,8 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x2044-0x204d.7 (10)
 0x02040|            08                                 |    .           |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x2044-0x2044.7 (1)
 0x02040|               0a                              |     .          |                  length: 10 0x2045-0x2045.7 (1)
-0x02040|                  e4 57 7b 8c 4b 2a 91 55      |      .W{.K*.U  |                  data: raw bits 0x2046-0x204d.7 (8)
+0x02040|                  e4 57 7b 8c                  |      .W{.      |                  value: 3830938508 0x2046-0x2049.7 (4)
+0x02040|                              4b 2a 91 55      |          K*.U  |                  echo_reply: 1261080917 0x204a-0x204d.7 (4)
        |                                               |                |              payload: raw bits 0x204e-NA (0)
 0x02040|                                          00 00|              ..|        padding: raw bits 0x204e-0x204f.7 (2)
        |                                               |                |        options[0:0]: 0x2050-NA (0)
@@ -3454,7 +3465,8 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x20a8-0x20b1.7 (10)
 0x020a0|                        08                     |        .       |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x20a8-0x20a8.7 (1)
 0x020a0|                           0a                  |         .      |                  length: 10 0x20a9-0x20a9.7 (1)
-0x020a0|                              e4 57 7b 8d 4b 2a|          .W{.K*|                  data: raw bits 0x20aa-0x20b1.7 (8)
+0x020a0|                              e4 57 7b 8d      |          .W{.  |                  value: 3830938509 0x20aa-0x20ad.7 (4)
+0x020a0|                                          4b 2a|              K*|                  echo_reply: 1261080917 0x20ae-0x20b1.7 (4)
 0x020b0|91 55                                          |.U              |
 0x020b0|      17 03 03 00 33 00 00 00 00 00 00 00 01 84|  ....3.........|              payload: raw bits 0x20b2-0x20e9.7 (56)
 0x020c0|43 dc 31 8d ea 84 17 37 3d ee 7d 47 7d a0 24 3f|C.1....7=.}G}.$?|
@@ -3518,7 +3530,8 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x2144-0x214d.7 (10)
 0x02140|            08                                 |    .           |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x2144-0x2144.7 (1)
 0x02140|               0a                              |     .          |                  length: 10 0x2145-0x2145.7 (1)
-0x02140|                  e4 57 7b 8d 4b 2a 91 55      |      .W{.K*.U  |                  data: raw bits 0x2146-0x214d.7 (8)
+0x02140|                  e4 57 7b 8d                  |      .W{.      |                  value: 3830938509 0x2146-0x2149.7 (4)
+0x02140|                              4b 2a 91 55      |          K*.U  |                  echo_reply: 1261080917 0x214a-0x214d.7 (4)
 0x02140|                                          17 03|              ..|              payload: raw bits 0x214e-0x2177.7 (42)
 0x02150|03 00 25 00 00 00 00 00 00 00 02 a8 2a 53 77 c7|..%.........*Sw.|
 *      |until 0x2177.7 (42)                            |                |
@@ -3582,7 +3595,8 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x21d0-0x21d9.7 (10)
 0x021d0|08                                             |.               |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x21d0-0x21d0.7 (1)
 0x021d0|   0a                                          | .              |                  length: 10 0x21d1-0x21d1.7 (1)
-0x021d0|      e4 57 7b 8e 4b 2a 91 55                  |  .W{.K*.U      |                  data: raw bits 0x21d2-0x21d9.7 (8)
+0x021d0|      e4 57 7b 8e                              |  .W{.          |                  value: 3830938510 0x21d2-0x21d5.7 (4)
+0x021d0|                  4b 2a 91 55                  |      K*.U      |                  echo_reply: 1261080917 0x21d6-0x21d9.7 (4)
 0x021d0|                              17 03 03 00 21 00|          ....!.|              payload: raw bits 0x21da-0x21ff.7 (38)
 0x021e0|00 00 00 00 00 00 03 bd 10 a7 a4 4e 7d 28 b4 4a|...........N}(.J|
 0x021f0|55 a3 39 db 64 b3 7a ae 3d e4 2e fc eb 8e 66 c5|U.9.d.z.=.....f.|
@@ -3645,7 +3659,8 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x2258-0x2261.7 (10)
 0x02250|                        08                     |        .       |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x2258-0x2258.7 (1)
 0x02250|                           0a                  |         .      |                  length: 10 0x2259-0x2259.7 (1)
-0x02250|                              4b 2a 91 84 e4 57|          K*...W|                  data: raw bits 0x225a-0x2261.7 (8)
+0x02250|                              4b 2a 91 84      |          K*..  |                  value: 1261080964 0x225a-0x225d.7 (4)
+0x02250|                                          e4 57|              .W|                  echo_reply: 3830938509 0x225e-0x2261.7 (4)
 0x02260|7b 8d                                          |{.              |
        |                                               |                |              payload: raw bits 0x2262-NA (0)
 0x02260|      00 00                                    |  ..            |        padding: raw bits 0x2262-0x2263.7 (2)
@@ -3708,8 +3723,9 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x22bc-0x22c5.7 (10)
 0x022b0|                                    08         |            .   |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x22bc-0x22bc.7 (1)
 0x022b0|                                       0a      |             .  |                  length: 10 0x22bd-0x22bd.7 (1)
-0x022b0|                                          4b 2a|              K*|                  data: raw bits 0x22be-0x22c5.7 (8)
-0x022c0|91 84 e4 57 7b 8d                              |...W{.          |
+0x022b0|                                          4b 2a|              K*|                  value: 1261080964 0x22be-0x22c1.7 (4)
+0x022c0|91 84                                          |..              |
+0x022c0|      e4 57 7b 8d                              |  .W{.          |                  echo_reply: 3830938509 0x22c2-0x22c5.7 (4)
        |                                               |                |              payload: raw bits 0x22c6-NA (0)
 0x022c0|                  00 00                        |      ..        |        padding: raw bits 0x22c6-0x22c7.7 (2)
        |                                               |                |        options[0:0]: 0x22c8-NA (0)
@@ -3771,7 +3787,8 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x2320-0x2329.7 (10)
 0x02320|08                                             |.               |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x2320-0x2320.7 (1)
 0x02320|   0a                                          | .              |                  length: 10 0x2321-0x2321.7 (1)
-0x02320|      4b 2a 91 84 e4 57 7b 8e                  |  K*...W{.      |                  data: raw bits 0x2322-0x2329.7 (8)
+0x02320|      4b 2a 91 84                              |  K*..          |                  value: 1261080964 0x2322-0x2325.7 (4)
+0x02320|                  e4 57 7b 8e                  |      .W{.      |                  echo_reply: 3830938510 0x2326-0x2329.7 (4)
        |                                               |                |              payload: raw bits 0x232a-NA (0)
 0x02320|                              00 00            |          ..    |        padding: raw bits 0x232a-0x232b.7 (2)
        |                                               |                |        options[0:0]: 0x232c-NA (0)
@@ -3832,7 +3849,8 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x2384-0x238d.7 (10)
 0x02380|            08                                 |    .           |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x2384-0x2384.7 (1)
 0x02380|               0a                              |     .          |                  length: 10 0x2385-0x2385.7 (1)
-0x02380|                  4b 2a 91 84 e4 57 7b 8e      |      K*...W{.  |                  data: raw bits 0x2386-0x238d.7 (8)
+0x02380|                  4b 2a 91 84                  |      K*..      |                  value: 1261080964 0x2386-0x2389.7 (4)
+0x02380|                              e4 57 7b 8e      |          .W{.  |                  echo_reply: 3830938510 0x238a-0x238d.7 (4)
 0x02380|                                          17 03|              ..|              payload: raw bits 0x238e-0x23b3.7 (38)
 0x02390|03 00 21 00 00 00 00 00 00 00 05 04 b0 d9 88 2d|..!............-|
 *      |until 0x23b3.7 (38)                            |                |
@@ -3896,8 +3914,9 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x240c-0x2415.7 (10)
 0x02400|                                    08         |            .   |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x240c-0x240c.7 (1)
 0x02400|                                       0a      |             .  |                  length: 10 0x240d-0x240d.7 (1)
-0x02400|                                          e4 57|              .W|                  data: raw bits 0x240e-0x2415.7 (8)
-0x02410|7b 99 4b 2a 91 55                              |{.K*.U          |
+0x02400|                                          e4 57|              .W|                  value: 3830938521 0x240e-0x2411.7 (4)
+0x02410|7b 99                                          |{.              |
+0x02410|      4b 2a 91 55                              |  K*.U          |                  echo_reply: 1261080917 0x2412-0x2415.7 (4)
 0x02410|                  17 03 03 01 e9 00 00 00 00 00|      ..........|              payload: raw bits 0x2416-0x2603.7 (494)
 0x02420|00 00 04 cf 1d 4f e3 82 9a 07 84 9e f6 6f 6c 9c|.....O.......ol.|
 *      |until 0x2603.7 (494)                           |                |
@@ -3961,8 +3980,9 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x265c-0x2665.7 (10)
 0x02650|                                    08         |            .   |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x265c-0x265c.7 (1)
 0x02650|                                       0a      |             .  |                  length: 10 0x265d-0x265d.7 (1)
-0x02650|                                          e4 57|              .W|                  data: raw bits 0x265e-0x2665.7 (8)
-0x02660|7b 99 4b 2a 91 55                              |{.K*.U          |
+0x02650|                                          e4 57|              .W|                  value: 3830938521 0x265e-0x2661.7 (4)
+0x02660|7b 99                                          |{.              |
+0x02660|      4b 2a 91 55                              |  K*.U          |                  echo_reply: 1261080917 0x2662-0x2665.7 (4)
 0x02660|                  17 03 03 00 21 00 00 00 00 00|      ....!.....|              payload: raw bits 0x2666-0x268b.7 (38)
 0x02670|00 00 05 d5 71 fb a3 87 9f 58 83 90 15 c7 2d 65|....q....X....-e|
 0x02680|52 df 40 13 ee cb 7f d6 30 c8 39 81            |R.@.....0.9.    |
@@ -4025,7 +4045,8 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x26e4-0x26ed.7 (10)
 0x026e0|            08                                 |    .           |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x26e4-0x26e4.7 (1)
 0x026e0|               0a                              |     .          |                  length: 10 0x26e5-0x26e5.7 (1)
-0x026e0|                  e4 57 7b 99 4b 2a 91 55      |      .W{.K*.U  |                  data: raw bits 0x26e6-0x26ed.7 (8)
+0x026e0|                  e4 57 7b 99                  |      .W{.      |                  value: 3830938521 0x26e6-0x26e9.7 (4)
+0x026e0|                              4b 2a 91 55      |          K*.U  |                  echo_reply: 1261080917 0x26ea-0x26ed.7 (4)
 0x026e0|                                          17 03|              ..|              payload: raw bits 0x26ee-0x271b.7 (46)
 0x026f0|03 00 29 00 00 00 00 00 00 00 06 a7 fa e5 cc 23|..)............#|
 *      |until 0x271b.7 (46)                            |                |
@@ -4088,7 +4109,8 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x2774-0x277d.7 (10)
 0x02770|            08                                 |    .           |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x2774-0x2774.7 (1)
 0x02770|               0a                              |     .          |                  length: 10 0x2775-0x2775.7 (1)
-0x02770|                  4b 2a 91 85 e4 57 7b 99      |      K*...W{.  |                  data: raw bits 0x2776-0x277d.7 (8)
+0x02770|                  4b 2a 91 85                  |      K*..      |                  value: 1261080965 0x2776-0x2779.7 (4)
+0x02770|                              e4 57 7b 99      |          .W{.  |                  echo_reply: 3830938521 0x277a-0x277d.7 (4)
        |                                               |                |              payload: raw bits 0x277e-NA (0)
 0x02770|                                          00 00|              ..|        padding: raw bits 0x277e-0x277f.7 (2)
        |                                               |                |        options[0:0]: 0x2780-NA (0)
@@ -4149,7 +4171,8 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x27d8-0x27e1.7 (10)
 0x027d0|                        08                     |        .       |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x27d8-0x27d8.7 (1)
 0x027d0|                           0a                  |         .      |                  length: 10 0x27d9-0x27d9.7 (1)
-0x027d0|                              4b 2a 91 85 e4 57|          K*...W|                  data: raw bits 0x27da-0x27e1.7 (8)
+0x027d0|                              4b 2a 91 85      |          K*..  |                  value: 1261080965 0x27da-0x27dd.7 (4)
+0x027d0|                                          e4 57|              .W|                  echo_reply: 3830938521 0x27de-0x27e1.7 (4)
 0x027e0|7b 99                                          |{.              |
        |                                               |                |              payload: raw bits 0x27e2-NA (0)
 0x027e0|      00 00                                    |  ..            |        padding: raw bits 0x27e2-0x27e3.7 (2)
@@ -4212,8 +4235,9 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x283c-0x2845.7 (10)
 0x02830|                                    08         |            .   |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x283c-0x283c.7 (1)
 0x02830|                                       0a      |             .  |                  length: 10 0x283d-0x283d.7 (1)
-0x02830|                                          4b 2a|              K*|                  data: raw bits 0x283e-0x2845.7 (8)
-0x02840|91 85 e4 57 7b 99                              |...W{.          |
+0x02830|                                          4b 2a|              K*|                  value: 1261080965 0x283e-0x2841.7 (4)
+0x02840|91 85                                          |..              |
+0x02840|      e4 57 7b 99                              |  .W{.          |                  echo_reply: 3830938521 0x2842-0x2845.7 (4)
        |                                               |                |              payload: raw bits 0x2846-NA (0)
 0x02840|                  00 00                        |      ..        |        padding: raw bits 0x2846-0x2847.7 (2)
        |                                               |                |        options[0:0]: 0x2848-NA (0)
@@ -4275,7 +4299,8 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x28a0-0x28a9.7 (10)
 0x028a0|08                                             |.               |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x28a0-0x28a0.7 (1)
 0x028a0|   0a                                          | .              |                  length: 10 0x28a1-0x28a1.7 (1)
-0x028a0|      4b 2a 91 86 e4 57 7b 99                  |  K*...W{.      |                  data: raw bits 0x28a2-0x28a9.7 (8)
+0x028a0|      4b 2a 91 86                              |  K*..          |                  value: 1261080966 0x28a2-0x28a5.7 (4)
+0x028a0|                  e4 57 7b 99                  |      .W{.      |                  echo_reply: 3830938521 0x28a6-0x28a9.7 (4)
 0x028a0|                              17 03 03 00 29 00|          ....).|              payload: raw bits 0x28aa-0x28d7.7 (46)
 0x028b0|00 00 00 00 00 00 06 96 50 96 ef 10 f4 be e9 a0|........P.......|
 *      |until 0x28d7.7 (46)                            |                |
@@ -4373,15 +4398,15 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x02eb0|                                    00 00      |            ..  |              urgent_pointer: 0 0x2ebc-0x2ebd.7 (2)
        |                                               |                |              options[0:9]: 0x2ebe-0x2ed5.7 (24)
        |                                               |                |                [0]{}: option 0x2ebe-0x2ec1.7 (4)
-0x02eb0|                                          02   |              . |                  kind: "maxseg" (2) (Maximum segment size) 0x2ebe-0x2ebe.7 (1)
+0x02eb0|                                          02   |              . |                  kind: "mss" (2) (Maximum segment size) 0x2ebe-0x2ebe.7 (1)
 0x02eb0|                                             04|               .|                  length: 4 0x2ebf-0x2ebf.7 (1)
-0x02ec0|05 b4                                          |..              |                  data: raw bits 0x2ec0-0x2ec1.7 (2)
+0x02ec0|05 b4                                          |..              |                  size: 1460 0x2ec0-0x2ec1.7 (2)
        |                                               |                |                [1]{}: option 0x2ec2-0x2ec2.7 (1)
 0x02ec0|      01                                       |  .             |                  kind: "nop" (1) (No operation) 0x2ec2-0x2ec2.7 (1)
        |                                               |                |                [2]{}: option 0x2ec3-0x2ec5.7 (3)
 0x02ec0|         03                                    |   .            |                  kind: "winscale" (3) (Window scale) 0x2ec3-0x2ec3.7 (1)
 0x02ec0|            03                                 |    .           |                  length: 3 0x2ec4-0x2ec4.7 (1)
-0x02ec0|               05                              |     .          |                  data: raw bits 0x2ec5-0x2ec5.7 (1)
+0x02ec0|               05                              |     .          |                  shift: 5 0x2ec5-0x2ec5.7 (1)
        |                                               |                |                [3]{}: option 0x2ec6-0x2ec6.7 (1)
 0x02ec0|                  01                           |      .         |                  kind: "nop" (1) (No operation) 0x2ec6-0x2ec6.7 (1)
        |                                               |                |                [4]{}: option 0x2ec7-0x2ec7.7 (1)
@@ -4389,12 +4414,12 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [5]{}: option 0x2ec8-0x2ed1.7 (10)
 0x02ec0|                        08                     |        .       |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x2ec8-0x2ec8.7 (1)
 0x02ec0|                           0a                  |         .      |                  length: 10 0x2ec9-0x2ec9.7 (1)
-0x02ec0|                              4b 2a 91 89 00 00|          K*....|                  data: raw bits 0x2eca-0x2ed1.7 (8)
+0x02ec0|                              4b 2a 91 89      |          K*..  |                  value: 1261080969 0x2eca-0x2ecd.7 (4)
+0x02ec0|                                          00 00|              ..|                  echo_reply: 0 0x2ece-0x2ed1.7 (4)
 0x02ed0|00 00                                          |..              |
        |                                               |                |                [6]{}: option 0x2ed2-0x2ed3.7 (2)
 0x02ed0|      04                                       |  .             |                  kind: "sack_permitted" (4) (Selective Acknowledgement permitted) 0x2ed2-0x2ed2.7 (1)
 0x02ed0|         02                                    |   .            |                  length: 2 0x2ed3-0x2ed3.7 (1)
-       |                                               |                |                  data: raw bits 0x2ed4-NA (0)
        |                                               |                |                [7]{}: option 0x2ed4-0x2ed4.7 (1)
 0x02ed0|            00                                 |    .           |                  kind: "end" (0) (End of options list) 0x2ed4-0x2ed4.7 (1)
        |                                               |                |                [8]{}: option 0x2ed5-0x2ed5.7 (1)
@@ -4460,7 +4485,8 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x2f30-0x2f39.7 (10)
 0x02f30|08                                             |.               |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x2f30-0x2f30.7 (1)
 0x02f30|   0a                                          | .              |                  length: 10 0x2f31-0x2f31.7 (1)
-0x02f30|      e4 57 7b bf 4b 2a 91 84                  |  .W{.K*..      |                  data: raw bits 0x2f32-0x2f39.7 (8)
+0x02f30|      e4 57 7b bf                              |  .W{.          |                  value: 3830938559 0x2f32-0x2f35.7 (4)
+0x02f30|                  4b 2a 91 84                  |      K*..      |                  echo_reply: 1261080964 0x2f36-0x2f39.7 (4)
        |                                               |                |              payload: raw bits 0x2f3a-NA (0)
 0x02f30|                              00 00            |          ..    |        padding: raw bits 0x2f3a-0x2f3b.7 (2)
        |                                               |                |        options[0:0]: 0x2f3c-NA (0)
@@ -4515,24 +4541,24 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x02f90|00 00                                          |..              |              urgent_pointer: 0 0x2f90-0x2f91.7 (2)
        |                                               |                |              options[0:5]: 0x2f92-0x2fa5.7 (20)
        |                                               |                |                [0]{}: option 0x2f92-0x2f95.7 (4)
-0x02f90|      02                                       |  .             |                  kind: "maxseg" (2) (Maximum segment size) 0x2f92-0x2f92.7 (1)
+0x02f90|      02                                       |  .             |                  kind: "mss" (2) (Maximum segment size) 0x2f92-0x2f92.7 (1)
 0x02f90|         04                                    |   .            |                  length: 4 0x2f93-0x2f93.7 (1)
-0x02f90|            05 96                              |    ..          |                  data: raw bits 0x2f94-0x2f95.7 (2)
+0x02f90|            05 96                              |    ..          |                  size: 1430 0x2f94-0x2f95.7 (2)
        |                                               |                |                [1]{}: option 0x2f96-0x2f97.7 (2)
 0x02f90|                  04                           |      .         |                  kind: "sack_permitted" (4) (Selective Acknowledgement permitted) 0x2f96-0x2f96.7 (1)
 0x02f90|                     02                        |       .        |                  length: 2 0x2f97-0x2f97.7 (1)
-       |                                               |                |                  data: raw bits 0x2f98-NA (0)
        |                                               |                |                [2]{}: option 0x2f98-0x2fa1.7 (10)
 0x02f90|                        08                     |        .       |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x2f98-0x2f98.7 (1)
 0x02f90|                           0a                  |         .      |                  length: 10 0x2f99-0x2f99.7 (1)
-0x02f90|                              e4 57 7b c4 4b 2a|          .W{.K*|                  data: raw bits 0x2f9a-0x2fa1.7 (8)
+0x02f90|                              e4 57 7b c4      |          .W{.  |                  value: 3830938564 0x2f9a-0x2f9d.7 (4)
+0x02f90|                                          4b 2a|              K*|                  echo_reply: 1261080969 0x2f9e-0x2fa1.7 (4)
 0x02fa0|91 89                                          |..              |
        |                                               |                |                [3]{}: option 0x2fa2-0x2fa2.7 (1)
 0x02fa0|      01                                       |  .             |                  kind: "nop" (1) (No operation) 0x2fa2-0x2fa2.7 (1)
        |                                               |                |                [4]{}: option 0x2fa3-0x2fa5.7 (3)
 0x02fa0|         03                                    |   .            |                  kind: "winscale" (3) (Window scale) 0x2fa3-0x2fa3.7 (1)
 0x02fa0|            03                                 |    .           |                  length: 3 0x2fa4-0x2fa4.7 (1)
-0x02fa0|               07                              |     .          |                  data: raw bits 0x2fa5-0x2fa5.7 (1)
+0x02fa0|               07                              |     .          |                  shift: 7 0x2fa5-0x2fa5.7 (1)
        |                                               |                |              payload: raw bits 0x2fa6-NA (0)
 0x02fa0|                  00 00                        |      ..        |        padding: raw bits 0x2fa6-0x2fa7.7 (2)
        |                                               |                |        options[0:0]: 0x2fa8-NA (0)
@@ -4594,7 +4620,8 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x3000-0x3009.7 (10)
 0x03000|08                                             |.               |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x3000-0x3000.7 (1)
 0x03000|   0a                                          | .              |                  length: 10 0x3001-0x3001.7 (1)
-0x03000|      4b 2a 92 83 e4 57 7b c4                  |  K*...W{.      |                  data: raw bits 0x3002-0x3009.7 (8)
+0x03000|      4b 2a 92 83                              |  K*..          |                  value: 1261081219 0x3002-0x3005.7 (4)
+0x03000|                  e4 57 7b c4                  |      .W{.      |                  echo_reply: 3830938564 0x3006-0x3009.7 (4)
        |                                               |                |              payload: raw bits 0x300a-NA (0)
 0x03000|                              00 00            |          ..    |        padding: raw bits 0x300a-0x300b.7 (2)
        |                                               |                |        options[0:0]: 0x300c-NA (0)
@@ -4655,7 +4682,8 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                [2]{}: option 0x3064-0x306d.7 (10)
 0x03060|            08                                 |    .           |                  kind: "timestamp" (8) (Timestamp and echo of previous timestamp) 0x3064-0x3064.7 (1)
 0x03060|               0a                              |     .          |                  length: 10 0x3065-0x3065.7 (1)
-0x03060|                  4b 2a 92 83 e4 57 7b c4      |      K*...W{.  |                  data: raw bits 0x3066-0x306d.7 (8)
+0x03060|                  4b 2a 92 83                  |      K*..      |                  value: 1261081219 0x3066-0x3069.7 (4)
+0x03060|                              e4 57 7b c4      |          .W{.  |                  echo_reply: 3830938564 0x306a-0x306d.7 (4)
 0x03060|                                          16 03|              ..|              payload: raw bits 0x306e-0x3145.7 (216)
 0x03070|01 00 d3 01 00 00 cf 03 03 c0 a6 33 83 e1 1e ec|...........3....|
 *      |until 0x3145.7 (216)                           |                |
