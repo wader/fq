@@ -29,11 +29,10 @@ require (
 	// go get -d github.com/gomarkdown/markdown@master && go mod tidy
 	github.com/gomarkdown/markdown v0.0.0-20221013030248-663e2500819c
 
-	// has no tags yet
-	// bump-disabled: gomod-gopacket /github\.com\/gopacket\/gopacket v(.*)/ https://github.com/gopacket/gopacket.git|^1
-	// bump-disabled: gomod-gopacket command go get -d github.com/gopacket/gopacket@v$LATEST && go mod tidy
-	// bump-disabled: gomod-gopacket link "Release notes" https://github.com/gopacket/gopacket/releases/tag/v$LATEST
-	github.com/gopacket/gopacket v0.1.0
+	// bump: gomod-gopacket /github\.com\/gopacket\/gopacket v(.*)/ https://github.com/gopacket/gopacket.git|^1
+	// bump: gomod-gopacket command go get -d github.com/gopacket/gopacket@v$LATEST && go mod tidy
+	// bump: gomod-gopacket link "Release notes" https://github.com/gopacket/gopacket/releases/tag/v$LATEST
+	github.com/gopacket/gopacket v1.0.0
 
 	// bump: gomod-copystructure /github\.com\/mitchellh\/copystructure v(.*)/ https://github.com/mitchellh/copystructure.git|^1
 	// bump: gomod-copystructure command go get -d github.com/mitchellh/copystructure@v$LATEST && go mod tidy
@@ -50,17 +49,19 @@ require (
 	// bump: gomod-go-difflib link "Source diff $CURRENT..$LATEST" https://github.com/pmezard/go-difflib/compare/v$CURRENT..v$LATEST
 	github.com/pmezard/go-difflib v1.0.0
 
-	// has no tags
-	// go get -d golang.org/x/crypto@master && go mod tidy
-	golang.org/x/crypto v0.4.1-0.20221221171930-bc7d1d1eb54b
+	// bump: gomod-golang-x-crypto /golang\.org\/x\/crypto v(.*)/ https://github.com/golang/crypto.git|^0
+	// bump: gomod-golang-x-crypto command go get -d golang.org/x/crypto@v$LATEST && go mod tidy
+	// bump: gomod-golang-x-crypto link "Tags" https://github.com/golang/crypto/tags
+	golang.org/x/crypto v0.5.0
 
 	// has no tags
 	// go get -d golang.org/x/exp@master && go mod tidy
-	golang.org/x/exp v0.0.0-20221217163422-3c43f8badb15
+	golang.org/x/exp v0.0.0-20230131160201-f062dba9d201
 
-	// has no tags
-	// go get -d golang.org/x/net@master && go mod tidy
-	golang.org/x/net v0.4.1-0.20221213214114-ad92d3db360b
+	// bump: gomod-golang-x-net /golang\.org\/x\/net v(.*)/ https://github.com/golang/net.git|^0
+	// bump: gomod-golang-x-net command go get -d golang.org/x/net@v$LATEST && go mod tidy
+	// bump: gomod-golang-x-net link "Tags" https://github.com/golang/net/tags
+	golang.org/x/net v0.5.0
 
 	// bump: gomod-golang/text /golang\.org\/x\/text v(.*)/ https://github.com/golang/text.git|^0
 	// bump: gomod-golang/text command go get -d golang.org/x/text@v$LATEST && go mod tidy
@@ -77,6 +78,6 @@ require (
 	github.com/itchyny/timefmt-go v0.1.5 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
-	golang.org/x/sys v0.3.0 // indirect
+	golang.org/x/sys v0.4.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 )
