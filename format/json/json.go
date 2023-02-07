@@ -5,9 +5,7 @@ import (
 	"embed"
 	stdjson "encoding/json"
 	"errors"
-	"fmt"
 	"io"
-	"math/big"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/internal/colorjson"
@@ -99,10 +97,8 @@ func makeEncoder(opts ToJSONOpts) *colorjson.Encoder {
 			switch v := v.(type) {
 			case gojq.JQValue:
 				return v.JQValueToGoJQ()
-			case nil, bool, float64, int, string, *big.Int, map[string]any, []any:
-				return v
 			default:
-				panic(fmt.Sprintf("toValue not a JQValue value: %#v %T", v, v))
+				return v
 			}
 		},
 		Colors: colorjson.Colors{},

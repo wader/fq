@@ -671,11 +671,28 @@ func (i *Interp) _hexdump(c any, v any) gojq.Iter {
 
 func (i *Interp) _printColorJSON(c any, v any) gojq.Iter {
 	opts := OptionsFromValue(v)
-
-	cj, err := i.NewColorJSON(opts)
-	if err != nil {
-		return gojq.NewIter(err)
+	indent := 2
+	if opts.Compact {
+		indent = 0
 	}
+
+	cj := colorjson.NewEncoder(colorjson.Options{
+		Color:   opts.Color,
+		Tab:     false,
+		Indent:  indent,
+		ValueFn: func(v any) any { return toValue(func() Options { return opts }, v) },
+		Colors: colorjson.Colors{
+			Reset:     []byte(ansi.Reset.SetString),
+			Null:      []byte(opts.Decorator.Null.SetString),
+			False:     []byte(opts.Decorator.False.SetString),
+			True:      []byte(opts.Decorator.True.SetString),
+			Number:    []byte(opts.Decorator.Number.SetString),
+			String:    []byte(opts.Decorator.String.SetString),
+			ObjectKey: []byte(opts.Decorator.ObjectKey.SetString),
+			Array:     []byte(opts.Decorator.Array.SetString),
+			Object:    []byte(opts.Decorator.Object.SetString),
+		},
+	})
 	if err := cj.Marshal(c, i.EvalInstance.Output); err != nil {
 		return gojq.NewIter(err)
 	}
@@ -1120,34 +1137,4 @@ func (i *Interp) includePaths() []string {
 func (i *Interp) slurps() map[string]any {
 	slurpsAny, _ := i.lookupState("slurps").(map[string]any)
 	return slurpsAny
-}
-
-func (i *Interp) NewColorJSON(opts Options) (*colorjson.Encoder, error) {
-	indent := 2
-	if opts.Compact {
-		indent = 0
-	}
-
-	return colorjson.NewEncoder(colorjson.Options{
-		Color:  opts.Color,
-		Tab:    false,
-		Indent: indent,
-		ValueFn: func(v any) any {
-			if v, ok := toValue(func() Options { return opts }, v); ok {
-				return v
-			}
-			panic(fmt.Sprintf("toValue not a JQValue value: %#v (%T)", v, v))
-		},
-		Colors: colorjson.Colors{
-			Reset:     []byte(ansi.Reset.SetString),
-			Null:      []byte(opts.Decorator.Null.SetString),
-			False:     []byte(opts.Decorator.False.SetString),
-			True:      []byte(opts.Decorator.True.SetString),
-			Number:    []byte(opts.Decorator.Number.SetString),
-			String:    []byte(opts.Decorator.String.SetString),
-			ObjectKey: []byte(opts.Decorator.ObjectKey.SetString),
-			Array:     []byte(opts.Decorator.Array.SetString),
-			Object:    []byte(opts.Decorator.Object.SetString),
-		},
-	}), nil
 }

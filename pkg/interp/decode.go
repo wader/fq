@@ -164,11 +164,10 @@ func (i *Interp) _registry(c any) any {
 }
 
 func (i *Interp) _toValue(c any, opts map[string]any) any {
-	v, _ := toValue(
+	return toValue(
 		func() Options { return OptionsFromValue(opts) },
 		c,
 	)
-	return v
 }
 
 type decodeOpts struct {
@@ -310,19 +309,17 @@ func valueHas(key any, a func(name string) any, b func(key any) any) any {
 }
 
 // optsFn is a function as toValue is used by tovalue/0 so needs to be fast
-func toValue(optsFn func() Options, v any) (any, bool) {
+func toValue(optsFn func() Options, v any) any {
 	switch v := v.(type) {
 	case JQValueEx:
 		if optsFn == nil {
-			return v.JQValueToGoJQ(), true
+			return v.JQValueToGoJQ()
 		}
-		return v.JQValueToGoJQEx(optsFn), true
+		return v.JQValueToGoJQEx(optsFn)
 	case gojq.JQValue:
-		return v.JQValueToGoJQ(), true
-	case nil, bool, float64, int, string, *big.Int, map[string]any, []any:
-		return v, true
+		return v.JQValueToGoJQ()
 	default:
-		return nil, false
+		return v
 	}
 }
 
