@@ -91,11 +91,11 @@ type ToJSONOpts struct {
 
 // TODO: share with interp code
 func makeEncoder(opts ToJSONOpts) *colorjson.Encoder {
-	return colorjson.NewEncoder(
-		false,
-		false,
-		opts.Indent,
-		func(v any) any {
+	return colorjson.NewEncoder(colorjson.Options{
+		Color:  false,
+		Tab:    false,
+		Indent: opts.Indent,
+		ValueFn: func(v any) any {
 			switch v := v.(type) {
 			case gojq.JQValue:
 				return v.JQValueToGoJQ()
@@ -105,8 +105,8 @@ func makeEncoder(opts ToJSONOpts) *colorjson.Encoder {
 				panic(fmt.Sprintf("toValue not a JQValue value: %#v %T", v, v))
 			}
 		},
-		colorjson.Colors{},
-	)
+		Colors: colorjson.Colors{},
+	})
 }
 
 func toJSON(_ *interp.Interp, c any, opts ToJSONOpts) any {

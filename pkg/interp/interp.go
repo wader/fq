@@ -1128,17 +1128,17 @@ func (i *Interp) NewColorJSON(opts Options) (*colorjson.Encoder, error) {
 		indent = 0
 	}
 
-	return colorjson.NewEncoder(
-		opts.Color,
-		false,
-		indent,
-		func(v any) any {
+	return colorjson.NewEncoder(colorjson.Options{
+		Color:  opts.Color,
+		Tab:    false,
+		Indent: indent,
+		ValueFn: func(v any) any {
 			if v, ok := toValue(func() Options { return opts }, v); ok {
 				return v
 			}
 			panic(fmt.Sprintf("toValue not a JQValue value: %#v (%T)", v, v))
 		},
-		colorjson.Colors{
+		Colors: colorjson.Colors{
 			Reset:     []byte(ansi.Reset.SetString),
 			Null:      []byte(opts.Decorator.Null.SetString),
 			False:     []byte(opts.Decorator.False.SetString),
@@ -1149,5 +1149,5 @@ func (i *Interp) NewColorJSON(opts Options) (*colorjson.Encoder, error) {
 			Array:     []byte(opts.Decorator.Array.SetString),
 			Object:    []byte(opts.Decorator.Object.SetString),
 		},
-	), nil
+	}), nil
 }
