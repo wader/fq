@@ -77,7 +77,7 @@ func (e *Encoder) flush() error {
 	return err
 }
 
-func (e *Encoder) Marshal(v interface{}, w io.Writer) error {
+func (e *Encoder) Marshal(v any, w io.Writer) error {
 	e.out = w
 	err := e.encode(v)
 	if ferr := e.flush(); ferr != nil && err == nil {
@@ -86,7 +86,7 @@ func (e *Encoder) Marshal(v interface{}, w io.Writer) error {
 	return err
 }
 
-func (e *Encoder) encode(v interface{}) error {
+func (e *Encoder) encode(v any) error {
 	switch v := v.(type) {
 	case nil:
 		e.write([]byte("null"), e.opts.Colors.Null)
@@ -104,21 +104,23 @@ func (e *Encoder) encode(v interface{}) error {
 		e.write(v.Append(e.buf[:0], 10), e.opts.Colors.Number)
 	case string:
 		e.encodeString(v, e.opts.Colors.String)
-	case []interface{}:
+	case []any:
 		if err := e.encodeArray(v); err != nil {
 			return err
 		}
-	case map[string]interface{}:
+	case map[string]any:
 		if err := e.encodeMap(v); err != nil {
 			return err
 		}
+	case error:
+		// value we're trying to encode is an error
+		// this can happen if ValueFn is used and it reads from reader that gets cancelled etc
+		return v
 	default:
-		if e.opts.ValueFn != nil {
-			v = e.opts.ValueFn(v)
-		} else {
-			panic(fmt.Sprintf("invalid type: %[1]T (%[1]v)", v))
+		if e.opts.ValueFn == nil {
+			panic(fmt.Sprintf("unknown type and to ValueFn set: %[1]T (%[1]v)", v))
 		}
-		return e.encode(v)
+		return e.encode(e.opts.ValueFn(v))
 	}
 	if e.w.Len() > 8*1024 {
 		return e.flush()
@@ -214,7 +216,7 @@ func (e *Encoder) encodeString(s string, color []byte) {
 	}
 }
 
-func (e *Encoder) encodeArray(vs []interface{}) error {
+func (e *Encoder) encodeArray(vs []any) error {
 	e.writeByte('[', e.opts.Colors.Array)
 	e.depth += e.opts.Indent
 	for i, v := range vs {
@@ -236,12 +238,12 @@ func (e *Encoder) encodeArray(vs []interface{}) error {
 	return nil
 }
 
-func (e *Encoder) encodeMap(vs map[string]interface{}) error {
+func (e *Encoder) encodeMap(vs map[string]any) error {
 	e.writeByte('{', e.opts.Colors.Object)
 	e.depth += e.opts.Indent
 	type keyVal struct {
 		key string
-		val interface{}
+		val any
 	}
 	kvs := make([]keyVal, len(vs))
 	var i int
