@@ -5,9 +5,7 @@ import (
 	"embed"
 	stdjson "encoding/json"
 	"errors"
-	"fmt"
 	"io"
-	"math/big"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/internal/colorjson"
@@ -91,22 +89,20 @@ type ToJSONOpts struct {
 
 // TODO: share with interp code
 func makeEncoder(opts ToJSONOpts) *colorjson.Encoder {
-	return colorjson.NewEncoder(
-		false,
-		false,
-		opts.Indent,
-		func(v any) any {
+	return colorjson.NewEncoder(colorjson.Options{
+		Color:  false,
+		Tab:    false,
+		Indent: opts.Indent,
+		ValueFn: func(v any) any {
 			switch v := v.(type) {
 			case gojq.JQValue:
 				return v.JQValueToGoJQ()
-			case nil, bool, float64, int, string, *big.Int, map[string]any, []any:
-				return v
 			default:
-				panic(fmt.Sprintf("toValue not a JQValue value: %#v %T", v, v))
+				return v
 			}
 		},
-		colorjson.Colors{},
-	)
+		Colors: colorjson.Colors{},
+	})
 }
 
 func toJSON(_ *interp.Interp, c any, opts ToJSONOpts) any {

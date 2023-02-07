@@ -350,7 +350,7 @@ func (v Number) JQValueToNumber() any { return v.V }
 func (v Number) JQValueToString() any {
 	b := &bytes.Buffer{}
 	// uses colorjson encode based on gojq encoder to support big.Int
-	if err := colorjson.NewEncoder(false, false, 0, nil, colorjson.Colors{}).Marshal(v.V, b); err != nil {
+	if err := colorjson.NewEncoder(colorjson.Options{}).Marshal(v.V, b); err != nil {
 		return err
 	}
 	return b.String()
