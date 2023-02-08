@@ -205,6 +205,10 @@ type ProtoBufIn struct {
 	Message ProtoBufMessage
 }
 
+type MatroskaIn struct {
+	DecodeSamples bool `doc:"Decode samples"`
+}
+
 type MpegDecoderConfig struct {
 	ObjectType    int
 	ASCObjectType int
@@ -296,12 +300,12 @@ func (t TCPStreamIn) MustIsPort(fn func(format string, a ...any), ports ...int) 
 }
 
 type Mp4In struct {
-	DecodeSamples  bool `doc:"Decode supported media samples"`
+	DecodeSamples  bool `doc:"Decode samples"`
 	AllowTruncated bool `doc:"Allow box to be truncated"`
 }
 
 type AviIn struct {
-	DecodeSamples bool `doc:"Decode supported media samples"`
+	DecodeSamples bool `doc:"Decode samples"`
 }
 
 type ZipIn struct {

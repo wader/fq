@@ -58,6 +58,9 @@ func init() {
 		Description: "Matroska file",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    matroskaDecode,
+		DecodeInArg: format.MatroskaIn{
+			DecodeSamples: true,
+		},
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.AAC_FRAME}, Group: &aacFrameFormat},
 			{Names: []string{format.AV1_CCR}, Group: &av1CCRFormat},
@@ -412,7 +415,9 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 
 }
 
-func matroskaDecode(d *decode.D, _ any) any {
+func matroskaDecode(d *decode.D, in any) any {
+	mi, _ := in.(format.MatroskaIn)
+
 	ebmlHeaderID := uint64(0x1a45dfa3)
 	if d.PeekBits(32) != ebmlHeaderID {
 		d.Errorf("no EBML header found")
@@ -437,7 +442,11 @@ func matroskaDecode(d *decode.D, _ any) any {
 		case "A_VORBIS":
 			t.parentD.RangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
 				decodeLacingFn(d, lacingTypeXiph, func(d *decode.D) {
-					d.FieldFormat("packet", vorbisPacketFormat, nil)
+					if mi.DecodeSamples {
+						d.FieldFormat("packet", vorbisPacketFormat, nil)
+					} else {
+						d.FieldRawLen("packet", d.BitsLeft())
+					}
 				})
 			})
 		case "A_AAC":
@@ -519,7 +528,7 @@ func matroskaDecode(d *decode.D, _ any) any {
 			}
 
 			decodeLacingFn(d, int(lacing), func(d *decode.D) {
-				if f != nil {
+				if mi.DecodeSamples && f != nil {
 					d.FieldFormat("packet", *f, track.formatInArg)
 				} else {
 					d.FieldRawLen("packet", d.BitsLeft())

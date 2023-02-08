@@ -4,7 +4,7 @@ avi: Audio Video Interleaved decoder
 Options
 =======
 
-  decode_samples=true  Decode supported media samples
+  decode_samples=true  Decode samples
 
 Decode examples
 ===============

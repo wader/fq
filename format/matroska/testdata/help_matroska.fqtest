@@ -1,6 +1,11 @@
 $ fq -h matroska
 matroska: Matroska file decoder
 
+Options
+=======
+
+  decode_samples=true  Decode samples
+
 Decode examples
 ===============
 
@@ -8,6 +13,10 @@ Decode examples
   $ fq -d matroska . file
   # Decode value as matroska
   ... | matroska
+  # Decode file using matroska options
+  $ fq -d matroska -o decode_samples=true . file
+  # Decode value as matroska
+  ... | matroska({decode_samples:true})
 
 Lookup element using path
 =========================
