@@ -9,7 +9,6 @@ package matroska
 // TODO: refactor simepleblock/block to just defer decode etc?
 // TODO: CRC
 // TODO: value to names (TrackType etc)
-// TODO: lacing
 // TODO: handle garbage (see tcl and example files)
 // TODO: could use md5 here somehow, see flac.go
 
@@ -115,6 +114,8 @@ var lacingTypeNames = scalar.UintMapSymStr{
 	lacingTypeFixed: "fixed",
 	lacingTypeEBML:  "ebml",
 }
+
+const tagSizeUnknown = 0xffffffffffffff
 
 func decodeLacingFn(d *decode.D, lacingType int, fn func(d *decode.D)) {
 	if lacingType == lacingTypeNone {
@@ -255,7 +256,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 		// var crcD *decode.D
 		// var crcStart int64
 
-		for d.Pos() < tagEndBit && d.NotEnd() {
+		for d.Pos() < tagEndBit && !d.End() {
 			d.FieldStruct("element", func(d *decode.D) {
 				a := ebml.Attribute{
 					Type: ebml.Unknown,
@@ -283,13 +284,18 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 					dc.tracks = append(dc.tracks, dc.currentTrack)
 				}
 
-				// tagSize could be 0xffffffffffffff which means "unknown" size, then we will read until eof
-				// TODO: should read until unknown id:
-				//    The end of a Master-element with unknown size is determined by the beginning of the next
-				//    element that is not a valid sub-element of that Master-element
-				// TODO: should also handle garbage between
+				// TODO:
+				// - Should be more elaborate about unknown size and maybe have a special case for unknown tag id.
+				//   currently we just read into EOF.
+				// - Handle garbage between
+				// https://github.com/ietf-wg-cellar/ebml-specification/blob/master/specification.markdown#unknown-data-size
 				const maxStringTagSize = 100 * 1024 * 1024
-				tagSize := d.FieldUintFn("size", decodeVint)
+				tagSize := d.FieldUintFn("size", decodeVint, scalar.UintMapDescription{
+					0xffffffffffffff: "unknown",
+				})
+				if tagSize == tagSizeUnknown {
+					tagSize = uint64(d.BitsLeft() / 8)
+				}
 
 				// assert sane tag size
 				// TODO: strings are limited for now because they are read into memory
