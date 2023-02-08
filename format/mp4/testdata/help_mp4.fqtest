@@ -5,7 +5,7 @@ Options
 =======
 
   allow_truncated=false  Allow box to be truncated
-  decode_samples=true    Decode supported media samples
+  decode_samples=true    Decode samples
 
 Decode examples
 ===============

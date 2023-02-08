@@ -260,7 +260,7 @@ Decode value as avc_au
 
 |Name            |Default|Description|
 |-               |-      |-|
-|`decode_samples`|true   |Decode supported media samples|
+|`decode_samples`|true   |Decode samples|
 
 ### Examples
 
@@ -668,6 +668,24 @@ $ fq -d markdown '[.. | select(.type=="heading" and .level<=2)?.children[0]]' fi
 ```
 ## matroska
 
+### Options
+
+|Name            |Default|Description|
+|-               |-      |-|
+|`decode_samples`|true   |Decode samples|
+
+### Examples
+
+Decode file using matroska options
+```
+$ fq -d matroska -o decode_samples=true . file
+```
+
+Decode value as matroska
+```
+... | matroska({decode_samples:true})
+```
+
 ### Lookup element using path
 
 ```sh
@@ -716,7 +734,7 @@ Decode value as mp3
 |Name             |Default|Description|
 |-                |-      |-|
 |`allow_truncated`|false  |Allow box to be truncated|
-|`decode_samples` |true   |Decode supported media samples|
+|`decode_samples` |true   |Decode samples|
 
 ### Examples
 
