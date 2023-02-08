@@ -8,7 +8,6 @@ package matroska
 
 // TODO: refactor simepleblock/block to just defer decode etc?
 // TODO: CRC
-// TODO: value to names (TrackType etc)
 // TODO: handle garbage (see tcl and example files)
 // TODO: could use md5 here somehow, see flac.go
 
@@ -211,6 +210,12 @@ func decodeRawVint(d *decode.D) uint64 {
 	return n
 }
 
+func peekRawVint(d *decode.D) uint64 {
+	n, w := decodeRawVintWidth(d)
+	d.SeekRel(int64(-w) * 8)
+	return n
+}
+
 func decodeVint(d *decode.D) uint64 {
 	n, w := decodeRawVintWidth(d)
 	m := (uint64(1<<((w-1)*8+(8-w))) - 1)
@@ -249,107 +254,134 @@ type decodeContext struct {
 	blocks       []block
 }
 
-func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext) {
+func decodeMaster(d *decode.D, bitsLimit int64, elm *ebml.Master, unknownSize bool, dc *decodeContext) {
 	tagEndBit := d.Pos() + bitsLimit
 
 	d.FieldArray("elements", func(d *decode.D) {
-		// var crcD *decode.D
-		// var crcStart int64
-
 		for d.Pos() < tagEndBit && !d.End() {
-			d.FieldStruct("element", func(d *decode.D) {
-				a := ebml.Attribute{
-					Type: ebml.Unknown,
+			// current we assume master with unknown size has ended if a valid parent is found
+			// TODO:
+			// https://github.com/ietf-wg-cellar/ebml-specification/blob/master/specification.markdown#unknown-data-size
+			// > Any valid EBML Element according to the EBML Schema, Global Elements excluded, that
+			// > is not a Descendant Element of the Unknown-Sized Element but shares a common direct
+			// > parent, such as a Top-Level Element.
+			// TODO: What to do if peeked is unknown?
+			// TODO: Handle garbage between element
+			if unknownSize {
+				peekTagID := peekRawVint(d)
+				_, validParent := ebml.FindParentID(ebml_matroska.IDToElement, elm.GetID(), ebml.ID(peekTagID))
+				if validParent {
+					break
 				}
+			}
+
+			d.FieldStruct("element", func(d *decode.D) {
+				var childElm ebml.Element
+				childElm = &ebml.Unknown{}
 
 				tagID := d.FieldUintFn("id", decodeRawVint, scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
 					n := s.Actual
 					var ok bool
-					a, ok = tag[n]
+					childElm, ok = elm.Master[ebml.ID(n)]
 					if !ok {
-						a, ok = ebml.Global[n]
+						childElm, ok = ebml.Global.Master[ebml.ID(n)]
 						if !ok {
-							a = ebml.Attribute{
-								Type: ebml.Unknown,
-							}
+							childElm = &ebml.Unknown{}
 							return scalar.Uint{Actual: n, DisplayFormat: scalar.NumberHex, Description: "Unknown"}, nil
 						}
 					}
-					return scalar.Uint{Actual: n, DisplayFormat: scalar.NumberHex, Sym: a.Name, Description: a.Definition}, nil
+					return scalar.Uint{
+						Actual:        n,
+						DisplayFormat: scalar.NumberHex,
+						Sym:           childElm.GetName(),
+						Description:   childElm.GetDefinition(),
+					}, nil
 				}))
-				d.FieldValueStr("type", ebml.TypeNames[a.Type])
+				d.FieldValueStr("type", childElm.GetType())
 
 				if tagID == ebml_matroska.TrackEntryID {
 					dc.currentTrack = &track{}
 					dc.tracks = append(dc.tracks, dc.currentTrack)
 				}
 
-				// TODO:
-				// - Should be more elaborate about unknown size and maybe have a special case for unknown tag id.
-				//   currently we just read into EOF.
-				// - Handle garbage between
-				// https://github.com/ietf-wg-cellar/ebml-specification/blob/master/specification.markdown#unknown-data-size
 				const maxStringTagSize = 100 * 1024 * 1024
 				tagSize := d.FieldUintFn("size", decodeVint, scalar.UintMapDescription{
 					0xffffffffffffff: "unknown",
 				})
-				if tagSize == tagSizeUnknown {
+				unknownSize := tagSize == tagSizeUnknown
+				if unknownSize {
 					tagSize = uint64(d.BitsLeft() / 8)
 				}
 
 				// assert sane tag size
 				// TODO: strings are limited for now because they are read into memory
-				switch a.Type {
-				case ebml.Integer,
-					ebml.Uinteger,
-					ebml.Float:
+				switch childElm.(type) {
+				case *ebml.Integer,
+					*ebml.Uinteger,
+					*ebml.Float:
 					if tagSize > 8 {
 						d.Fatalf("invalid tagSize %d for number type", tagSize)
 					}
-				case ebml.String,
-					ebml.UTF8:
+				case *ebml.String,
+					*ebml.UTF8:
 					if tagSize > maxStringTagSize {
 						d.Errorf("tagSize %d > maxStringTagSize %d", tagSize, maxStringTagSize)
 					}
-				case ebml.Unknown,
-					ebml.Binary,
-					ebml.Date,
-					ebml.Master:
+				case *ebml.Unknown,
+					*ebml.Binary,
+					*ebml.Date,
+					*ebml.Master:
 					// nop
 				}
 
-				switch a.Type {
-				case ebml.Unknown:
+				switch childElm := childElm.(type) {
+				case *ebml.Unknown:
 					d.FieldRawLen("data", int64(tagSize)*8)
-				case ebml.Integer:
+				case *ebml.Integer:
 					var sm []scalar.SintMapper
-					if a.IntegerEnums != nil {
-						sm = append(sm, a.IntegerEnums)
+					if childElm.Enums != nil {
+						sm = append(sm, scalar.SintFn(func(s scalar.Sint) (scalar.Sint, error) {
+							if e, ok := childElm.Enums[s.Actual]; ok {
+								s.Sym = e.Name
+								s.Description = e.Description
+							}
+							return s, nil
+						}))
 					}
 					d.FieldS("value", int(tagSize)*8, sm...)
-				case ebml.Uinteger:
+				case *ebml.Uinteger:
 					var sm []scalar.UintMapper
-					if a.UintegerEnums != nil {
-						sm = append(sm, a.UintegerEnums)
+					if childElm.Enums != nil {
+						sm = append(sm, scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
+							if e, ok := childElm.Enums[s.Actual]; ok {
+								s.Sym = e.Name
+								s.Description = e.Description
+							}
+							return s, nil
+						}))
 					}
 					v := d.FieldU("value", int(tagSize)*8, sm...)
 					if dc.currentTrack != nil && tagID == ebml_matroska.TrackNumberID {
 						dc.currentTrack.number = int(v)
 					}
-				case ebml.Float:
+				case *ebml.Float:
 					d.FieldF("value", int(tagSize)*8)
-				case ebml.String:
+				case *ebml.String:
 					var sm []scalar.StrMapper
-					if a.StringEnums != nil {
-						sm = append(sm, a.StringEnums)
-					}
+					sm = append(sm, scalar.StrFn(func(s scalar.Str) (scalar.Str, error) {
+						if e, ok := childElm.Enums[s.Actual]; ok {
+							s.Sym = e.Name
+							s.Description = e.Description
+						}
+						return s, nil
+					}))
 					v := d.FieldUTF8("value", int(tagSize), sm...)
 					if dc.currentTrack != nil && tagID == ebml_matroska.CodecIDID {
 						dc.currentTrack.codec = v
 					}
-				case ebml.UTF8:
+				case *ebml.UTF8:
 					d.FieldUTF8NullFixedLen("value", int(tagSize))
-				case ebml.Date:
+				case *ebml.Date:
 					// TODO:
 					/*
 						proc type_date {size label _extra} {
@@ -372,7 +404,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 						}
 					*/
 					d.FieldRawLen("value", int64(tagSize)*8)
-				case ebml.Binary:
+				case *ebml.Binary:
 					switch tagID {
 					case ebml_matroska.SimpleBlockID:
 						dc.blocks = append(dc.blocks, block{
@@ -398,27 +430,14 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 						d.FieldFormatLen("value", int64(tagSize)*8, imageFormat, nil)
 					default:
 						d.FieldRawLen("value", int64(tagSize)*8)
-						// if tagID == CRC {
-						// 	crcD = d
-						// 	crcStart = d.Pos()
-						// }
 					}
 
-				case ebml.Master:
-					decodeMaster(d, int64(tagSize)*8, a.Tag, dc)
+				case *ebml.Master:
+					decodeMaster(d, int64(tagSize)*8, childElm, unknownSize, dc)
 				}
 			})
 		}
-
-		// if crcD != nil {
-		// 	crcValue := crcD.FieldMustRemove("value")
-		// 	elementCRC := &crc.CRC{Bits: 32, Current: 0xffff_ffff, Table: crc.IEEELETable}
-		// 	//log.Printf("crc: %x-%x %d\n", crcStart/8, d.Pos()/8, (d.Pos()-crcStart)/8)
-		// 	ioex.MustCopy(elementCRC, d.BitBufRange(crcStart, d.Pos()-crcStart))
-		// 	crcD.FieldChecksumRange("value", crcValue.Range.Start, crcValue.Range.Len, elementCRC.Sum(nil), decode.LittleEndian)
-		// }
 	})
-
 }
 
 func matroskaDecode(d *decode.D, in any) any {
@@ -429,7 +448,7 @@ func matroskaDecode(d *decode.D, in any) any {
 		d.Errorf("no EBML header found")
 	}
 	dc := &decodeContext{tracks: []*track{}}
-	decodeMaster(d, d.BitsLeft(), ebml_matroska.Root, dc)
+	decodeMaster(d, d.BitsLeft(), ebml_matroska.RootElement, false, dc)
 
 	trackNumberToTrack := map[int]*track{}
 	for _, t := range dc.tracks {
@@ -443,7 +462,6 @@ func matroskaDecode(d *decode.D, in any) any {
 		}
 
 		// TODO: refactor, one DecodeRangeFn or refactor to add FieldFormatRangeFn?
-
 		switch t.codec {
 		case "A_VORBIS":
 			t.parentD.RangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
