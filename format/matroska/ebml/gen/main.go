@@ -66,6 +66,7 @@ type Documentation struct {
 var symLowerRE = regexp.MustCompile(`[^a-z0-9]+`)
 var newLineRE = regexp.MustCompile(`\n`)
 var doubleParanRE = regexp.MustCompile(`\(\(.+?\)\)`)
+var refsRE = regexp.MustCompile(`\[@[?!](.+?)\]`)
 var longParanRE = regexp.MustCompile(`\(.{20,}?\)`)
 var whitespaceRE = regexp.MustCompile(`\s+`)
 var quotesRE = regexp.MustCompile("`")
@@ -76,6 +77,7 @@ func findDefintion(docs []Documentation) (string, bool) {
 			s := d.Value
 			s = doubleParanRE.ReplaceAllLiteralString(s, "")
 			s = longParanRE.ReplaceAllLiteralString(s, "")
+			s = refsRE.ReplaceAllString(s, "$1")
 			s = whitespaceRE.ReplaceAllLiteralString(s, " ")
 			s = quotesRE.ReplaceAllLiteralString(s, "")
 			s = strings.TrimRight(s, " .")

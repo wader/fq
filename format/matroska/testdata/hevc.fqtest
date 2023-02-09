@@ -183,7 +183,7 @@ $ fq -d matroska dv hevc.mkv
 0x0130|      01 00 00 00 00 00 09 84                  |  ........      |              size: 2436 0x132-0x139.7 (8)
       |                                               |                |              elements[0:9]: 0x13a-0xabd.7 (2436)
       |                                               |                |                [0]{}: element 0x13a-0x13c.7 (3)
-0x0130|                              d7               |          .     |                  id: "track_number" (0xd7) (The track number as used in the Block Header (using more than 127 tracks is not encouraged) 0x13a-0x13a.7 (1)
+0x0130|                              d7               |          .     |                  id: "track_number" (0xd7) (The track number as used in the Block Header) 0x13a-0x13a.7 (1)
       |                                               |                |                  type: "uinteger" 0x13b-NA (0)
 0x0130|                                 81            |           .    |                  size: 1 0x13b-0x13b.7 (1)
 0x0130|                                    01         |            .   |                  value: 1 0x13c-0x13c.7 (1)

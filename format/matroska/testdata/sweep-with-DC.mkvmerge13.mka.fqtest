@@ -177,7 +177,7 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
 0x10c0|                              40 c4            |          @.    |              size: 196 0x10ca-0x10cb.7 (2)
       |                                               |                |              elements[0:9]: 0x10cc-0x118f.7 (196)
       |                                               |                |                [0]{}: element 0x10cc-0x10ce.7 (3)
-0x10c0|                                    d7         |            .   |                  id: "track_number" (0xd7) (The track number as used in the Block Header (using more than 127 tracks is not encouraged) 0x10cc-0x10cc.7 (1)
+0x10c0|                                    d7         |            .   |                  id: "track_number" (0xd7) (The track number as used in the Block Header) 0x10cc-0x10cc.7 (1)
       |                                               |                |                  type: "uinteger" 0x10cd-NA (0)
 0x10c0|                                       81      |             .  |                  size: 1 0x10cd-0x10cd.7 (1)
 0x10c0|                                          01   |              . |                  value: 1 0x10ce-0x10ce.7 (1)

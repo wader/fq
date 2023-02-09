@@ -888,7 +888,7 @@ var TrackNumberElement = &ebml.Uinteger{
 		ID:         TrackNumberID,
 		ParentID:   TrackEntryID,
 		Name:       "track_number",
-		Definition: "The track number as used in the Block Header (using more than 127 tracks is not encouraged",
+		Definition: "The track number as used in the Block Header",
 	},
 }
 var TrackUIDElement = &ebml.Uinteger{
@@ -930,7 +930,7 @@ var FlagDefaultElement = &ebml.Uinteger{
 		ID:         FlagDefaultID,
 		ParentID:   TrackEntryID,
 		Name:       "flag_default",
-		Definition: "Set if that track **SHOULD** be eligible for automatic selection by the player",
+		Definition: "Set if that track is eligible for automatic selection by the player",
 	},
 }
 var FlagForcedElement = &ebml.Uinteger{
@@ -946,7 +946,7 @@ var FlagHearingImpairedElement = &ebml.Uinteger{
 		ID:         FlagHearingImpairedID,
 		ParentID:   TrackEntryID,
 		Name:       "flag_hearing_impaired",
-		Definition: "Set to 1 if that track is suitable for users with hearing impairments",
+		Definition: "Set to 1 if and only if that track is suitable for users with hearing impairments",
 	},
 }
 var FlagVisualImpairedElement = &ebml.Uinteger{
@@ -954,7 +954,7 @@ var FlagVisualImpairedElement = &ebml.Uinteger{
 		ID:         FlagVisualImpairedID,
 		ParentID:   TrackEntryID,
 		Name:       "flag_visual_impaired",
-		Definition: "Set to 1 if that track is suitable for users with visual impairments",
+		Definition: "Set to 1 if and only if that track is suitable for users with visual impairments",
 	},
 }
 var FlagTextDescriptionsElement = &ebml.Uinteger{
@@ -962,7 +962,7 @@ var FlagTextDescriptionsElement = &ebml.Uinteger{
 		ID:         FlagTextDescriptionsID,
 		ParentID:   TrackEntryID,
 		Name:       "flag_text_descriptions",
-		Definition: "Set to 1 if that track contains textual descriptions of video content",
+		Definition: "Set to 1 if and only if that track contains textual descriptions of video content",
 	},
 }
 var FlagOriginalElement = &ebml.Uinteger{
@@ -970,7 +970,7 @@ var FlagOriginalElement = &ebml.Uinteger{
 		ID:         FlagOriginalID,
 		ParentID:   TrackEntryID,
 		Name:       "flag_original",
-		Definition: "Set to 1 if that track is in the content's original language",
+		Definition: "Set to 1 if and only if that track is in the content's original language",
 	},
 }
 var FlagCommentaryElement = &ebml.Uinteger{
@@ -978,7 +978,7 @@ var FlagCommentaryElement = &ebml.Uinteger{
 		ID:         FlagCommentaryID,
 		ParentID:   TrackEntryID,
 		Name:       "flag_commentary",
-		Definition: "Set to 1 if that track contains commentary",
+		Definition: "Set to 1 if and only if that track contains commentary",
 	},
 }
 var FlagLacingElement = &ebml.Uinteger{
@@ -1322,7 +1322,7 @@ var FlagInterlacedElement = &ebml.Uinteger{
 		ID:         FlagInterlacedID,
 		ParentID:   VideoID,
 		Name:       "flag_interlaced",
-		Definition: "Specify whether the video frames in this track are interlaced or not",
+		Definition: "Specify whether the video frames in this track are interlaced",
 	},
 	Enums: map[uint64]ebml.Enum{
 		0: {Name: "undetermined", Description: "Unknown status"},
@@ -1943,7 +1943,7 @@ var EmphasisElement = &ebml.Uinteger{
 		0:  {Name: "no_emphasis"},
 		1:  {Name: "cd_audio", Description: "First order filter with zero point at 50 microseconds and a pole at 15 microseconds"},
 		2:  {Name: "reserved"},
-		3:  {Name: "ccit_j_17", Description: "Defined in [@!ITU-J"},
+		3:  {Name: "ccit_j_17", Description: "Defined in ITU-J"},
 		4:  {Name: "fm_50", Description: "FM Radio in Europe"},
 		5:  {Name: "fm_75", Description: "FM Radio in the USA"},
 		10: {Name: "phono_riaa", Description: "Phono filter with time constants of t1=3180"},
@@ -2116,9 +2116,9 @@ var ContentCompAlgoElement = &ebml.Uinteger{
 		Definition: "The compression algorithm used",
 	},
 	Enums: map[uint64]ebml.Enum{
-		0: {Name: "zlib", Description: "zlib compression [@!RFC1950]"},
-		1: {Name: "bzlib", Description: "bzip2 compression [@?BZIP2]"},
-		2: {Name: "lzo1x", Description: "Lempel-Ziv-Oberhumer compression [@?LZO]"},
+		0: {Name: "zlib", Description: "zlib compression RFC1950"},
+		1: {Name: "bzlib", Description: "bzip2 compression BZIP2"},
+		2: {Name: "lzo1x", Description: "Lempel-Ziv-Oberhumer compression LZO"},
 		3: {Name: "header_stripping", Description: "Octets in ContentCompSettings have been stripped from each frame"},
 	},
 }
@@ -2157,11 +2157,11 @@ var ContentEncAlgoElement = &ebml.Uinteger{
 	},
 	Enums: map[uint64]ebml.Enum{
 		0: {Name: "not_encrypted", Description: "The data are not encrypted"},
-		1: {Name: "des", Description: "Data Encryption Standard (DES) [@?FIPS"},
-		2: {Name: "3des", Description: "Triple Data Encryption Algorithm [@?SP"},
-		3: {Name: "twofish", Description: "Twofish Encryption Algorithm [@?Twofish]"},
-		4: {Name: "blowfish", Description: "Blowfish Encryption Algorithm [@?Blowfish]"},
-		5: {Name: "aes", Description: "Advanced Encryption Standard (AES) [@?FIPS"},
+		1: {Name: "des", Description: "Data Encryption Standard (DES) FIPS"},
+		2: {Name: "3des", Description: "Triple Data Encryption Algorithm SP"},
+		3: {Name: "twofish", Description: "Twofish Encryption Algorithm Twofish"},
+		4: {Name: "blowfish", Description: "Blowfish Encryption Algorithm Blowfish"},
+		5: {Name: "aes", Description: "Advanced Encryption Standard (AES) FIPS"},
 	},
 }
 var ContentEncKeyIDElement = &ebml.Binary{
@@ -2233,8 +2233,8 @@ var AESSettingsCipherModeElement = &ebml.Uinteger{
 		Definition: "The AES cipher mode used in the encryption",
 	},
 	Enums: map[uint64]ebml.Enum{
-		1: {Name: "aes_ctr", Description: "Counter [@?SP"},
-		2: {Name: "aes_cbc", Description: "Cipher Block Chaining [@?SP"},
+		1: {Name: "aes_ctr", Description: "Counter SP"},
+		2: {Name: "aes_cbc", Description: "Cipher Block Chaining SP"},
 	},
 }
 
@@ -2435,7 +2435,7 @@ var FileMediaTypeElement = &ebml.String{
 		ID:         FileMediaTypeID,
 		ParentID:   AttachedFileID,
 		Name:       "file_media_type",
-		Definition: "Media type of the file following the [@!RFC6838] format",
+		Definition: "Media type of the file following the RFC6838 format",
 	},
 }
 var FileDataElement = &ebml.Binary{

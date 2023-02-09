@@ -89,10 +89,10 @@ The format depends on the ChapProcessCodecID used; see (#chapprocesscodecid-elem
   </element>
   <element name="ChapterTranslateEditionUID" path="\Segment\Info\ChapterTranslate\ChapterTranslateEditionUID" id="0x69FC" type="uinteger">
     <documentation lang="en" purpose="definition">Specify a chapter edition UID on which this `ChapterTranslate` applies.</documentation>
-    <documentation lang="en" purpose="usage notes">When no `ChapterTranslateEditionUID` is specified in the `ChapterTranslate`, the `ChapterTranslate` applied to all chapter editions found in the Segment using the given `ChapterTranslateCodec`.</documentation>
+    <documentation lang="en" purpose="usage notes">When no `ChapterTranslateEditionUID` is specified in the `ChapterTranslate`, the `ChapterTranslate` applies to all chapter editions found in the Segment using the given `ChapterTranslateCodec`.</documentation>
   </element>
   <element name="TimestampScale" path="\Segment\Info\TimestampScale" id="0x2AD7B1" type="uinteger" range="not 0" default="1000000" minOccurs="1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Base unit for Segment Ticks and Track Ticks, in nanoseconds. A TimestampScale value of 1.000.000 means scaled timestamps in the Segment are expressed in milliseconds; see (#timestamps) on how to interpret timestamps.</documentation>
+    <documentation lang="en" purpose="definition">Base unit for Segment Ticks and Track Ticks, in nanoseconds. A TimestampScale value of 1000000 means scaled timestamps in the Segment are expressed in milliseconds; see (#timestamps) on how to interpret timestamps.</documentation>
     <extension type="libmatroska" cppname="TimecodeScale"/>
     <extension type="webmproject.org" webm="1"/>
   </element>
@@ -194,8 +194,7 @@ Any other value indicates the meaning of the BlockAdditional data is found in th
 The BlockDuration Element can be useful at the end of a Track to define the duration of the last frame (as there is no subsequent Block available),
 or when there is a break in a track like for subtitle tracks.</documentation>
     <implementation_note note_attribute="minOccurs">BlockDuration **MUST** be set (minOccurs=1) if the associated TrackEntry stores a DefaultDuration value.</implementation_note>
-    <implementation_note note_attribute="default">When not written and with no DefaultDuration, the value is assumed to be the difference between the timestamp
-of this Block and the timestamp of the next Block in "display" order (not coding order).</implementation_note>
+    <implementation_note note_attribute="default">When not written and with no DefaultDuration, the value is assumed to be the difference between the timestamp of this Block and the timestamp of the next Block in "display" order (not coding order).</implementation_note>
     <extension type="webmproject.org" webm="1"/>
   </element>
   <element name="ReferencePriority" path="\Segment\Cluster\BlockGroup\ReferencePriority" id="0xFA" type="uinteger" default="0" minOccurs="1" maxOccurs="1">
@@ -221,7 +220,7 @@ If the `BlockGroup` doesn't have any `ReferenceBlock` element, then the `Block` 
 This information **SHOULD** always be referenced by a seek entry.</documentation>
   </element>
   <element name="DiscardPadding" path="\Segment\Cluster\BlockGroup\DiscardPadding" id="0x75A2" type="integer" minver="4" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Duration of the silent data added to the Block, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks)
+    <documentation lang="en" purpose="definition">Duration of the silent data added to the Block, expressed in Matroska Ticks -- i.e., in nanoseconds; see (#timestamp-ticks)
 (padding at the end of the Block for positive value, at the beginning of the Block for negative value).
 The duration of DiscardPadding is not calculated in the duration of the TrackEntry and **SHOULD** be discarded during playback.</documentation>
     <extension type="webmproject.org" webm="1"/>
@@ -234,7 +233,7 @@ The duration of DiscardPadding is not calculated in the duration of the TrackEnt
 Being able to interpret this Element is not **REQUIRED** for playback.</documentation>
   </element>
   <element name="LaceNumber" path="\Segment\Cluster\BlockGroup\Slices\TimeSlice\LaceNumber" id="0xCC" type="uinteger" minver="0" maxver="0" maxOccurs="1">
-    <documentation lang="en" purpose="definition">The reverse number of the frame in the lace (0 is the last frame, 1 is the next to last, etc).
+    <documentation lang="en" purpose="definition">The reverse number of the frame in the lace (0 is the last frame, 1 is the next to last, etc.).
 Being able to interpret this Element is not **REQUIRED** for playback.</documentation>
     <extension type="libmatroska" cppname="SliceLaceNumber"/>
   </element>
@@ -280,8 +279,7 @@ but the data inside the Block are Transformed (encrypt and/or signed).</document
     <extension type="webmproject.org" webm="1"/>
   </element>
   <element name="TrackNumber" path="\Segment\Tracks\TrackEntry\TrackNumber" id="0xD7" type="uinteger" range="not 0" minOccurs="1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">The track number as used in the Block Header (using more than 127 tracks is not encouraged,
-though the design allows an unlimited number).</documentation>
+    <documentation lang="en" purpose="definition">The track number as used in the Block Header.</documentation>
     <extension type="webmproject.org" webm="1"/>
   </element>
   <element name="TrackUID" path="\Segment\Tracks\TrackEntry\TrackUID" id="0x73C5" type="uinteger" range="not 0" minOccurs="1" maxOccurs="1">
@@ -327,12 +325,12 @@ The value **SHOULD** be stored on 1 octet.</documentation>
     <extension type="libmatroska" cppname="TrackFlagEnabled"/>
   </element>
   <element name="FlagDefault" path="\Segment\Tracks\TrackEntry\FlagDefault" id="0x88" type="uinteger" range="0-1" default="1" minOccurs="1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Set if that track (audio, video or subs) **SHOULD** be eligible for automatic selection by the player; see (#default-track-selection) for more details.</documentation>
+    <documentation lang="en" purpose="definition">Set if that track (audio, video or subs) is eligible for automatic selection by the player; see (#default-track-selection) for more details.</documentation>
     <extension type="libmatroska" cppname="TrackFlagDefault"/>
     <extension type="webmproject.org" webm="1"/>
   </element>
   <element name="FlagForced" path="\Segment\Tracks\TrackEntry\FlagForced" id="0x55AA" type="uinteger" range="0-1" default="0" minOccurs="1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Applies only to subtitles. Set if that track **SHOULD** be eligible for automatic selection by the player if it matches the user's language preference,
+    <documentation lang="en" purpose="definition">Applies only to subtitles. Set if that track is eligible for automatic selection by the player if it matches the user's language preference,
 even if the user's preferences would normally not enable subtitles with the selected audio track;
 this can be used for tracks containing only translations of foreign-language audio or onscreen text.
 See (#default-track-selection) for more details.</documentation>
@@ -340,44 +338,44 @@ See (#default-track-selection) for more details.</documentation>
     <extension type="webmproject.org" webm="1"/>
   </element>
   <element name="FlagHearingImpaired" path="\Segment\Tracks\TrackEntry\FlagHearingImpaired" id="0x55AB" type="uinteger" minver="4" range="0-1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Set to 1 if that track is suitable for users with hearing impairments, set to 0 if it is unsuitable for users with hearing impairments.</documentation>
+    <documentation lang="en" purpose="definition">Set to 1 if and only if that track is suitable for users with hearing impairments.</documentation>
   </element>
   <element name="FlagVisualImpaired" path="\Segment\Tracks\TrackEntry\FlagVisualImpaired" id="0x55AC" type="uinteger" minver="4" range="0-1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Set to 1 if that track is suitable for users with visual impairments, set to 0 if it is unsuitable for users with visual impairments.</documentation>
+    <documentation lang="en" purpose="definition">Set to 1 if and only if that track is suitable for users with visual impairments.</documentation>
   </element>
   <element name="FlagTextDescriptions" path="\Segment\Tracks\TrackEntry\FlagTextDescriptions" id="0x55AD" type="uinteger" minver="4" range="0-1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Set to 1 if that track contains textual descriptions of video content, set to 0 if that track does not contain textual descriptions of video content.</documentation>
+    <documentation lang="en" purpose="definition">Set to 1 if and only if that track contains textual descriptions of video content.</documentation>
   </element>
   <element name="FlagOriginal" path="\Segment\Tracks\TrackEntry\FlagOriginal" id="0x55AE" type="uinteger" minver="4" range="0-1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Set to 1 if that track is in the content's original language, set to 0 if it is a translation.</documentation>
+    <documentation lang="en" purpose="definition">Set to 1 if and only if that track is in the content's original language.</documentation>
   </element>
   <element name="FlagCommentary" path="\Segment\Tracks\TrackEntry\FlagCommentary" id="0x55AF" type="uinteger" minver="4" range="0-1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Set to 1 if that track contains commentary, set to 0 if it does not contain commentary.</documentation>
+    <documentation lang="en" purpose="definition">Set to 1 if and only if that track contains commentary.</documentation>
   </element>
   <element name="FlagLacing" path="\Segment\Tracks\TrackEntry\FlagLacing" id="0x9C" type="uinteger" range="0-1" default="1" minOccurs="1" maxOccurs="1">
     <documentation lang="en" purpose="definition">Set to 1 if the track **MAY** contain blocks using lacing. When set to 0 all blocks **MUST** have their lacing flags set to No lacing; see (#block-lacing) on Block Lacing.</documentation>
     <extension type="libmatroska" cppname="TrackFlagLacing"/>
     <extension type="webmproject.org" webm="1"/>
   </element>
-  <element name="MinCache" path="\Segment\Tracks\TrackEntry\MinCache" id="0x6DE7" type="uinteger" default="0" minOccurs="1" maxOccurs="1">
+  <element name="MinCache" path="\Segment\Tracks\TrackEntry\MinCache" id="0x6DE7" type="uinteger" minver="0" maxver="0" default="0" minOccurs="1" maxOccurs="1">
     <documentation lang="en" purpose="definition">The minimum number of frames a player **SHOULD** be able to cache during playback.
 If set to 0, the reference pseudo-cache system is not used.</documentation>
     <extension type="libmatroska" cppname="TrackMinCache"/>
   </element>
-  <element name="MaxCache" path="\Segment\Tracks\TrackEntry\MaxCache" id="0x6DF8" type="uinteger" maxOccurs="1">
+  <element name="MaxCache" path="\Segment\Tracks\TrackEntry\MaxCache" id="0x6DF8" type="uinteger" minver="0" maxver="0" maxOccurs="1">
     <documentation lang="en" purpose="definition">The maximum cache size necessary to store referenced frames in and the current frame.
 0 means no cache is needed.</documentation>
     <extension type="libmatroska" cppname="TrackMaxCache"/>
   </element>
   <element name="DefaultDuration" path="\Segment\Tracks\TrackEntry\DefaultDuration" id="0x23E383" type="uinteger" range="not 0" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Number of nanoseconds per frame, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks)
+    <documentation lang="en" purpose="definition">Number of nanoseconds per frame, expressed in Matroska Ticks -- i.e., in nanoseconds; see (#timestamp-ticks)
 (frame in the Matroska sense -- one Element put into a (Simple)Block).</documentation>
     <extension type="libmatroska" cppname="TrackDefaultDuration"/>
     <extension type="stream copy" keep="1"/>
     <extension type="webmproject.org" webm="1"/>
   </element>
   <element name="DefaultDecodedFieldDuration" path="\Segment\Tracks\TrackEntry\DefaultDecodedFieldDuration" id="0x234E7A" type="uinteger" minver="4" range="not 0" maxOccurs="1">
-    <documentation lang="en" purpose="definition">The period between two successive fields at the output of the decoding process, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks).
+    <documentation lang="en" purpose="definition">The period between two successive fields at the output of the decoding process, expressed in Matroska Ticks -- i.e., in nanoseconds; see (#timestamp-ticks).
 see (#defaultdecodedfieldduration) for more information</documentation>
     <extension type="libmatroska" cppname="TrackDefaultDecodedFieldDuration"/>
     <extension type="stream copy" keep="1"/>
@@ -389,7 +387,7 @@ see (#defaultdecodedfieldduration) for more information</documentation>
     <extension type="stream copy" keep="1"/>
   </element>
   <element name="TrackOffset" path="\Segment\Tracks\TrackEntry\TrackOffset" id="0x537F" type="integer" minver="0" maxver="0" default="0" maxOccurs="1">
-    <documentation lang="en" purpose="definition">A value to add to the Block's Timestamp, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks).
+    <documentation lang="en" purpose="definition">A value to add to the Block's Timestamp, expressed in Matroska Ticks -- i.e., in nanoseconds; see (#timestamp-ticks).
 This can be used to adjust the playback offset of a track.</documentation>
     <extension type="stream copy" keep="1"/>
   </element>
@@ -477,7 +475,7 @@ the overlay track **SHOULD** be used instead. The order of multiple TrackOverlay
 If not found it **SHOULD** be the second, etc.</documentation>
   </element>
   <element name="CodecDelay" path="\Segment\Tracks\TrackEntry\CodecDelay" id="0x56AA" type="uinteger" minver="4" default="0" minOccurs="1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">CodecDelay is The codec-built-in delay, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks).
+    <documentation lang="en" purpose="definition">CodecDelay is The codec-built-in delay, expressed in Matroska Ticks -- i.e., in nanoseconds; see (#timestamp-ticks).
 It represents the amount of codec samples that will be discarded by the decoder during playback.
 This timestamp value **MUST** be subtracted from each frame timestamp in order to get the timestamp that will be actually played.
 The value **SHOULD** be small so the muxing of tracks with the same actual timestamp are in the same Cluster.</documentation>
@@ -486,7 +484,7 @@ The value **SHOULD** be small so the muxing of tracks with the same actual times
   </element>
   <element name="SeekPreRoll" path="\Segment\Tracks\TrackEntry\SeekPreRoll" id="0x56BB" type="uinteger" minver="4" default="0" minOccurs="1" maxOccurs="1">
     <documentation lang="en" purpose="definition">After a discontinuity, SeekPreRoll is the duration of the data
-the decoder **MUST** decode before the decoded data is valid, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks).</documentation>
+the decoder **MUST** decode before the decoded data is valid, expressed in Matroska Ticks -- i.e., in nanoseconds; see (#timestamp-ticks).</documentation>
     <extension type="webmproject.org" webm="1"/>
     <extension type="stream copy" keep="1"/>
   </element>
@@ -521,7 +519,7 @@ The format depends on the `ChapProcessCodecID` used; see (#chapprocesscodecid-el
     <extension type="webmproject.org" webm="1"/>
   </element>
   <element name="FlagInterlaced" path="\Segment\Tracks\TrackEntry\Video\FlagInterlaced" id="0x9A" type="uinteger" minver="2" default="0" minOccurs="1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Specify whether the video frames in this track are interlaced or not.</documentation>
+    <documentation lang="en" purpose="definition">Specify whether the video frames in this track are interlaced.</documentation>
     <restriction>
       <enum value="0" label="undetermined">
         <documentation lang="en" purpose="definition">Unknown status.</documentation>
@@ -557,12 +555,10 @@ The format depends on the `ChapProcessCodecID` used; see (#chapprocesscodecid-el
         <documentation lang="en" purpose="definition">Bottom field displayed first. Bottom field stored first.</documentation>
       </enum>
       <enum value="9" label="bff(swapped)">
-        <documentation lang="en" purpose="definition">Top field displayed first. Fields are interleaved in storage
-with the top line of the top field stored first.</documentation>
+        <documentation lang="en" purpose="definition">Top field displayed first. Fields are interleaved in storage with the top line of the top field stored first.</documentation>
       </enum>
       <enum value="14" label="tff(swapped)">
-        <documentation lang="en" purpose="definition">Bottom field displayed first. Fields are interleaved in storage
-with the top line of the top field stored first.</documentation>
+        <documentation lang="en" purpose="definition">Bottom field displayed first. Fields are interleaved in storage with the top line of the top field stored first.</documentation>
       </enum>
     </restriction>
     <extension type="libmatroska" cppname="VideoFieldOrder"/>
@@ -692,7 +688,7 @@ PixelHeight - PixelCropTop - PixelCropBottom, else there is no default value.</i
   </element>
   <element name="UncompressedFourCC" path="\Segment\Tracks\TrackEntry\Video\UncompressedFourCC" id="0x2EB524" type="binary" length="4" maxOccurs="1">
     <documentation lang="en" purpose="definition">Specify the uncompressed pixel format used for the Track's data as a FourCC.
-This value is similar in scope to the biCompression value of AVI's `BITMAPINFO` [@?AVIFormat]. See the YUV video formats [@?FourCC-YUV] and RGB video formats [@?FourCC-RGB] for common values.</documentation>
+This value is similar in scope to the biCompression value of AVI's `BITMAPINFO` [@?AVIFormat]. There is no definitive list of FourCC values, nor an official registry. Some common values for YUV pixel formats can be found at [@?MSYUV8], [@?MSYUV16] and [@?FourCC-YUV]. Some common values for uncompressed RGB pixel formats can be found at [@?MSRGB] and [@?FourCC-RGB].</documentation>
     <implementation_note note_attribute="minOccurs">UncompressedFourCC **MUST** be set (minOccurs=1) in TrackEntry, when the CodecID Element of the TrackEntry is set to "V_UNCOMPRESSED".</implementation_note>
     <extension type="libmatroska" cppname="VideoColourSpace"/>
     <extension type="stream copy" keep="1"/>
@@ -957,12 +953,12 @@ in candelas per square meter (cd/m^2^).</documentation>
     <documentation lang="en" purpose="definition">Private data that only applies to a specific projection.
 
 *  If `ProjectionType` equals 0 (Rectangular),
-     then this element must not be present.
-*  If `ProjectionType` equals 1 (Equirectangular), then this element must be present and contain the same binary data that would be stored inside
+     then this element **MUST NOT** be present.
+*  If `ProjectionType` equals 1 (Equirectangular), then this element **MUST** be present and contain the same binary data that would be stored inside
       an ISOBMFF Equirectangular Projection Box ('equi').
-*  If `ProjectionType` equals 2 (Cubemap), then this element must be present and contain the same binary data that would be stored
+*  If `ProjectionType` equals 2 (Cubemap), then this element **MUST** be present and contain the same binary data that would be stored
       inside an ISOBMFF Cubemap Projection Box ('cbmp').
-*  If `ProjectionType` equals 3 (Mesh), then this element must be present and contain the same binary data that would be stored inside
+*  If `ProjectionType` equals 3 (Mesh), then this element **MUST** be present and contain the same binary data that would be stored inside
        an ISOBMFF Mesh Projection Box ('mshp').</documentation>
 
 <documentation lang="en" purpose="usage notes">ISOBMFF box size and fourcc fields are not included in the binary data,
@@ -1166,7 +1162,7 @@ Values (big-endian) can be OR'ed.</documentation>
       </enum>
       <enum value="4" label="Next">
         <documentation lang="en" purpose="definition">The next ContentEncoding (next `ContentEncodingOrder`. Either the data inside `ContentCompression` and/or `ContentEncryption`).</documentation>
-        <documentation lang="en" purpose="usage notes">This value **SHOULD NOT** be used.</documentation>
+        <documentation lang="en" purpose="usage notes">This value **SHOULD NOT** be used as it's not supported by players.</documentation>
       </enum>
     </restriction>
     <extension type="webmproject.org" webm="1"/>
@@ -1228,19 +1224,19 @@ A Matroska Player **MAY** support encryption.</documentation>
         <documentation lang="en" purpose="definition">The data are not encrypted.</documentation>
       </enum>
       <enum value="1" label="DES">
-        <documentation lang="en" purpose="definition">Data Encryption Standard (DES) [@?FIPS.46-3].</documentation>
+        <documentation lang="en" purpose="definition">Data Encryption Standard (DES) [@!FIPS.46-3].</documentation>
       </enum>
       <enum value="2" label="3DES">
-        <documentation lang="en" purpose="definition">Triple Data Encryption Algorithm [@?SP.800-67].</documentation>
+        <documentation lang="en" purpose="definition">Triple Data Encryption Algorithm [@!SP.800-67].</documentation>
       </enum>
       <enum value="3" label="Twofish">
-        <documentation lang="en" purpose="definition">Twofish Encryption Algorithm [@?Twofish].</documentation>
+        <documentation lang="en" purpose="definition">Twofish Encryption Algorithm [@!Twofish].</documentation>
       </enum>
       <enum value="4" label="Blowfish">
-        <documentation lang="en" purpose="definition">Blowfish Encryption Algorithm [@?Blowfish].</documentation>
+        <documentation lang="en" purpose="definition">Blowfish Encryption Algorithm [@!Blowfish].</documentation>
       </enum>
       <enum value="5" label="AES">
-        <documentation lang="en" purpose="definition">Advanced Encryption Standard (AES) [@?FIPS.197].</documentation>
+        <documentation lang="en" purpose="definition">Advanced Encryption Standard (AES) [@!FIPS.197].</documentation>
       </enum>
     </restriction>
     <extension type="webmproject.org" webm="1"/>
@@ -1303,7 +1299,7 @@ All entries are local to the Segment.</documentation>
     <extension type="webmproject.org" webm="1"/>
   </element>
   <element name="CueTime" path="\Segment\Cues\CuePoint\CueTime" id="0xB3" type="uinteger" minOccurs="1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Absolute timestamp of the seek point, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks).</documentation>
+    <documentation lang="en" purpose="definition">Absolute timestamp of the seek point, expressed in Matroska Ticks -- i.e., in nanoseconds; see (#timestamp-ticks).</documentation>
     <extension type="webmproject.org" webm="1"/>
   </element>
   <element name="CueTrackPositions" path="\Segment\Cues\CuePoint\CueTrackPositions" id="0xB7" type="master" minOccurs="1">
@@ -1340,7 +1336,7 @@ If missing, the track's DefaultDuration does not apply and no duration informati
     <documentation lang="en" purpose="definition">The Clusters containing the referenced Blocks.</documentation>
   </element>
   <element name="CueRefTime" path="\Segment\Cues\CuePoint\CueTrackPositions\CueReference\CueRefTime" id="0x96" type="uinteger" minver="2" minOccurs="1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Timestamp of the referenced Block, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks).</documentation>
+    <documentation lang="en" purpose="definition">Timestamp of the referenced Block, expressed in Matroska Ticks -- i.e., in nanoseconds; see (#timestamp-ticks).</documentation>
   </element>
   <element name="CueRefCluster" path="\Segment\Cues\CuePoint\CueTrackPositions\CueReference\CueRefCluster" id="0x97" type="uinteger" minver="0" maxver="0" minOccurs="1" maxOccurs="1">
     <documentation lang="en" purpose="definition">The Segment Position of the Cluster containing the referenced Block.</documentation>
@@ -1436,15 +1432,15 @@ in the [@!BCP47] form; see (#language-codes) on language codes.</documentation>
   </element>
   <element name="ChapterStringUID" path="\Segment\Chapters\EditionEntry\+ChapterAtom\ChapterStringUID" id="0x5654" type="utf-8" minver="3" maxOccurs="1">
     <documentation lang="en" purpose="definition">A unique string ID to identify the Chapter.
-Use for WebVTT cue identifier storage [@?WebVTT].</documentation>
+For example it is used as the storage for [@?WebVTT] cue identifier values.</documentation>
     <extension type="webmproject.org" webm="1"/>
   </element>
   <element name="ChapterTimeStart" path="\Segment\Chapters\EditionEntry\+ChapterAtom\ChapterTimeStart" id="0x91" type="uinteger" minOccurs="1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Timestamp of the start of Chapter, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks).</documentation>
+    <documentation lang="en" purpose="definition">Timestamp of the start of Chapter, expressed in Matroska Ticks -- i.e., in nanoseconds; see (#timestamp-ticks).</documentation>
     <extension type="webmproject.org" webm="1"/>
   </element>
   <element name="ChapterTimeEnd" path="\Segment\Chapters\EditionEntry\+ChapterAtom\ChapterTimeEnd" id="0x92" type="uinteger" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Timestamp of the end of Chapter timestamp excluded, expressed in Matroska Ticks -- ie in nanoseconds; see (#timestamp-ticks).
+    <documentation lang="en" purpose="definition">Timestamp of the end of Chapter timestamp excluded, expressed in Matroska Ticks -- i.e., in nanoseconds; see (#timestamp-ticks).
 The value **MUST** be greater than or equal to the `ChapterTimeStart` of the same `ChapterAtom`.</documentation>
     <documentation lang="en" purpose="usage notes">The `ChapterTimeEnd` timestamp value being excluded, it **MUST** take in account the duration of
 the last frame it includes, especially for the `ChapterAtom` using the last frames of the `Segment`.</documentation>
@@ -1590,7 +1586,7 @@ A list of valid tags can be found in [@?MatroskaTags].</documentation>
   </element>
   <element name="Targets" path="\Segment\Tags\Tag\Targets" id="0x63C0" type="master" minOccurs="1" maxOccurs="1">
     <documentation lang="en" purpose="definition">Specifies which other elements the metadata represented by the Tag applies to.
-If empty or not present, then the Tag describes everything in the Segment.</documentation>
+If empty or omitted, then the Tag describes everything in the Segment.</documentation>
     <extension type="webmproject.org" webm="1"/>
     <extension type="libmatroska" cppname="TagTargets"/>
   </element>
@@ -1623,7 +1619,7 @@ If empty or not present, then the Tag describes everything in the Segment.</docu
     <extension type="libmatroska" cppname="TagTargetTypeValue"/>
   </element>
   <element name="TargetType" path="\Segment\Tags\Tag\Targets\TargetType" id="0x63CA" type="string" maxOccurs="1">
-    <documentation lang="en" purpose="definition">An informational string that can be used to display the logical level of the target like "ALBUM", "TRACK", "MOVIE", "CHAPTER", etc
+    <documentation lang="en" purpose="definition">An informational string that can be used to display the logical level of the target like "ALBUM", "TRACK", "MOVIE", "CHAPTER", etc.
 ; see Section 6.4 of [@?MatroskaTags].</documentation>
     <restriction>
       <enum value="COLLECTION" label="TargetTypeValue 70"/>
