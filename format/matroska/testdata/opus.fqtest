@@ -182,7 +182,7 @@ $ fq -d matroska dv opus.mkv
 0x130|   01 00 00 00 00 00 00 59                     | .......Y       |              size: 89 0x131-0x138.7 (8)
      |                                               |                |              elements[0:10]: 0x139-0x191.7 (89)
      |                                               |                |                [0]{}: element 0x139-0x13b.7 (3)
-0x130|                           d7                  |         .      |                  id: "track_number" (0xd7) (The track number as used in the Block Header (using more than 127 tracks is not encouraged) 0x139-0x139.7 (1)
+0x130|                           d7                  |         .      |                  id: "track_number" (0xd7) (The track number as used in the Block Header) 0x139-0x139.7 (1)
      |                                               |                |                  type: "uinteger" 0x13a-NA (0)
 0x130|                              81               |          .     |                  size: 1 0x13a-0x13a.7 (1)
 0x130|                                 01            |           .    |                  value: 1 0x13b-0x13b.7 (1)
