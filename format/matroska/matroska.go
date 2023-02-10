@@ -306,7 +306,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, elm *ebml.Master, unknownSize bo
 
 				const maxStringTagSize = 100 * 1024 * 1024
 				tagSize := d.FieldUintFn("size", decodeVint, scalar.UintMapDescription{
-					0xffffffffffffff: "unknown",
+					0xffffffffffffff: "Unknown size",
 				})
 				unknownSize := tagSize == tagSizeUnknown
 				if unknownSize {
