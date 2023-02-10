@@ -112,13 +112,13 @@ var Header = &Master{
 		Name:     "ebml",
 	},
 	Master: map[ID]Element{
-		EBMLVersionID:        &Uinteger{ElementType: ElementType{Name: "ebml_version"}},
-		EBMLReadVersionID:    &Uinteger{ElementType: ElementType{Name: "ebml_read_version"}},
-		EBMLMaxIDLengthID:    &Uinteger{ElementType: ElementType{Name: "ebml_max_id_length"}},
-		EBMLMaxSizeLengthID:  &Uinteger{ElementType: ElementType{Name: "ebml_max_size_length"}},
-		DocTypeID:            &String{ElementType: ElementType{Name: "doc_type"}},
-		DocTypeVersionID:     &Uinteger{ElementType: ElementType{Name: "doc_type_version"}},
-		DocTypeReadVersionID: &Uinteger{ElementType: ElementType{Name: "doc_type_read_version"}},
+		EBMLVersionID:        &Uinteger{ElementType: ElementType{Name: "ebml_version", Definition: "EBML Version"}},
+		EBMLReadVersionID:    &Uinteger{ElementType: ElementType{Name: "ebml_read_version", Definition: "Minimum EBML reader version"}},
+		EBMLMaxIDLengthID:    &Uinteger{ElementType: ElementType{Name: "ebml_max_id_length", Definition: "Maximum id length"}},
+		EBMLMaxSizeLengthID:  &Uinteger{ElementType: ElementType{Name: "ebml_max_size_length", Definition: "Maximum body length"}},
+		DocTypeID:            &String{ElementType: ElementType{Name: "doc_type", Definition: "Document content type"}},
+		DocTypeVersionID:     &Uinteger{ElementType: ElementType{Name: "doc_type_version", Definition: "Document type version"}},
+		DocTypeReadVersionID: &Uinteger{ElementType: ElementType{Name: "doc_type_read_version", Definition: "Minimum document reader version"}},
 	},
 }
 
