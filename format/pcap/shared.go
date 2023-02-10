@@ -36,7 +36,7 @@ func fieldFlows(d *decode.D, fd *flowsdecoder.Decoder, tcpStreamFormat decode.Gr
 	d.FieldArray("tcp_connections", func(d *decode.D) {
 		for _, s := range fd.TCPConnections {
 			d.FieldStruct("tcp_connection", func(d *decode.D) {
-				f := func(d *decode.D, td *flowsdecoder.TCPDirection, tsi format.TCPStreamIn) {
+				f := func(d *decode.D, td *flowsdecoder.TCPDirection, tsi format.TCPStreamIn) any {
 					d.FieldValueStr("ip", td.Endpoint.IP.String())
 					d.FieldValueUint("port", uint64(td.Endpoint.Port), format.TCPPortMap)
 					d.FieldValueBool("has_start", td.HasStart)
@@ -44,18 +44,22 @@ func fieldFlows(d *decode.D, fd *flowsdecoder.Decoder, tcpStreamFormat decode.Gr
 					d.FieldValueUint("skipped_bytes", td.SkippedBytes)
 
 					br := bitio.NewBitReader(td.Buffer.Bytes(), -1)
-					if dv, _, _ := d.TryFieldFormatBitBuf(
+					dv, outV, _ := d.TryFieldFormatBitBuf(
 						"stream",
 						br,
 						tcpStreamFormat,
 						tsi,
-					); dv == nil {
+					)
+					if dv == nil {
 						d.FieldRootBitBuf("stream", br)
 					}
+					return outV
 				}
 
+				var clientV any
+				var serverV any
 				d.FieldStruct("client", func(d *decode.D) {
-					f(d, &s.Client, format.TCPStreamIn{
+					clientV = f(d, &s.Client, format.TCPStreamIn{
 						IsClient:        true,
 						HasStart:        s.Client.HasStart,
 						HasEnd:          s.Client.HasEnd,
@@ -65,7 +69,7 @@ func fieldFlows(d *decode.D, fd *flowsdecoder.Decoder, tcpStreamFormat decode.Gr
 					})
 				})
 				d.FieldStruct("server", func(d *decode.D) {
-					f(d, &s.Server, format.TCPStreamIn{
+					serverV = f(d, &s.Server, format.TCPStreamIn{
 						IsClient:        false,
 						HasStart:        s.Server.HasStart,
 						HasEnd:          s.Server.HasEnd,
@@ -74,6 +78,17 @@ func fieldFlows(d *decode.D, fd *flowsdecoder.Decoder, tcpStreamFormat decode.Gr
 						DestinationPort: s.Client.Endpoint.Port,
 					})
 				})
+
+				clientTo, clientToOk := clientV.(format.TCPStreamOut)
+				serverTo, serverToOk := serverV.(format.TCPStreamOut)
+				if clientToOk && serverToOk {
+					if clientTo.PostFn != nil {
+						clientTo.PostFn(serverTo.InArg)
+					}
+					if serverTo.PostFn != nil {
+						serverTo.PostFn(clientTo.InArg)
+					}
+				}
 			})
 		}
 	})

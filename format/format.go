@@ -97,8 +97,8 @@ const (
 	MATROSKA            = "matroska"
 	MP3                 = "mp3"
 	MP3_FRAME           = "mp3_frame"
-	MP3_FRAME_XING      = "mp3_frame_xing"
 	MP3_FRAME_VBRI      = "mp3_frame_vbri"
+	MP3_FRAME_XING      = "mp3_frame_xing"
 	MP4                 = "mp4"
 	MPEG_ASC            = "mpeg_asc"
 	MPEG_ES             = "mpeg_es"
@@ -123,6 +123,7 @@ const (
 	TAR                 = "tar"
 	TCP_SEGMENT         = "tcp_segment"
 	TIFF                = "tiff"
+	TLS                 = "tls"
 	TOML                = "toml"
 	TZIF                = "tzif"
 	UDP_DATAGRAM        = "udp_datagram"
@@ -283,6 +284,11 @@ type TCPStreamIn struct {
 	DestinationPort int
 }
 
+type TCPStreamOut struct {
+	PostFn func(peerIn any)
+	InArg  any
+}
+
 func (t TCPStreamIn) IsPort(ports ...int) bool {
 	for _, p := range ports {
 		if (t.IsClient && t.DestinationPort == p) ||
@@ -331,4 +337,8 @@ type CSVLIn struct {
 
 type BitCoinBlockIn struct {
 	HasHeader bool `doc:"Has blkdat header"`
+}
+
+type TLSIn struct {
+	Keylog string `doc:"NSS Key Log content"`
 }

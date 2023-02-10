@@ -132,6 +132,7 @@ sll_packet,
 tar,
 tcp_segment,
 tiff,
+[tls](doc/formats.md#tls),
 toml,
 [tzif](doc/formats.md#tzif),
 udp_datagram,
@@ -310,3 +311,4 @@ Licenses of direct dependencies:
 - golang/snappy https://github.com/golang/snappy/blob/master/LICENSE (BSD)
 - golang/x/* https://github.com/golang/text/blob/master/LICENSE (BSD)
 - gopkg.in/yaml.v3 https://github.com/go-yaml/yaml/blob/v3/LICENSE (MIT)
+- Parts of go crypto/tls and github.com/zmap/zcrypto https://github.com/zmap/zcrypto/blob/master/LICENSE (Apache)

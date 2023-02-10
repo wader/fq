@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+
 	"reflect"
 	"regexp"
 
@@ -204,6 +205,8 @@ func newDecoder(ctx context.Context, format Format, br bitio.ReaderAtSeeker, opt
 	}
 }
 
+// ArgAs looks for a decoder option with type of target, similar to errors.As
+// return true if found
 func (d *D) ArgAs(target any) bool {
 	targeType := reflect.TypeOf(target)
 	for _, in := range d.inArgs {
@@ -919,8 +922,6 @@ func (d *D) RangeFn(firstBit int64, nBits int64, fn func(d *D)) int64 {
 	nd.bitBuf = br
 
 	fn(&nd)
-
-	d.Value = nd.Value
 
 	endPos := nd.Pos()
 
