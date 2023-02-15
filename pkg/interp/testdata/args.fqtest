@@ -31,7 +31,7 @@ Example usages:
 --compact-output,-c     Compact output
 --decode,-d NAME        Decode format (probe)
 --from-file,-f PATH     Read EXPR from file
---help,-h [TOPIC]       Show help for TOPIC (ex: --help, --help formats)
+--help,-h [TOPIC]       Show help for TOPIC (ex: --help, -h formats, -h mp4)
 --include-path,-L PATH  Include search path
 --join-output,-j        No newline between outputs
 --monochrome-output,-M  Force monochrome output
