@@ -35,7 +35,7 @@ var rawHexReverse = scalar.BitBufFn(func(s scalar.BitBuf) (scalar.BitBuf, error)
 	})
 })
 
-func decodeBitcoinBlock(d *decode.D, in interface{}) interface{} {
+func decodeBitcoinBlock(d *decode.D, in any) any {
 	bbi, _ := in.(format.BitCoinBlockIn)
 	size := d.BitsLeft()
 

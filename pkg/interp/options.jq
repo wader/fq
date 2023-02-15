@@ -413,7 +413,7 @@ def _opt_cli_opts:
     "show_help": {
       short: "-h",
       long: "--help",
-      description: "Show help for TOPIC (ex: --help, --help formats)",
+      description: "Show help for TOPIC (ex: --help, -h formats, -h mp4)",
       string: "[TOPIC]",
       optional: true
     },
