@@ -128,7 +128,7 @@ func decodeBlockCodec(d *decode.D, dataSize int64, codec string) *bytes.Buffer {
 	return bb
 }
 
-func decodeAvroOCF(d *decode.D, _ any) any {
+func decodeAvroOCF(d *decode.D) any {
 	header := decodeHeader(d)
 
 	decodeFn, err := decoders.DecodeFnForSchema(header.Schema)

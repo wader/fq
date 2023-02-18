@@ -65,7 +65,7 @@ var typeNames = scalar.UintMapSymStr{
 	typeLongString:  "LongString",
 }
 
-func flvDecode(d *decode.D, _ any) any {
+func flvDecode(d *decode.D) any {
 	var fieldScriptDataObject func()
 	var fieldScriptDataVariable func(d *decode.D, name string)
 

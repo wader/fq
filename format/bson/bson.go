@@ -111,7 +111,7 @@ func decodeBSONDocument(d *decode.D) {
 	})
 }
 
-func decodeBSON(d *decode.D, _ any) any {
+func decodeBSON(d *decode.D) any {
 	d.Endian = decode.LittleEndian
 
 	decodeBSONDocument(d)

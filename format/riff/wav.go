@@ -47,7 +47,7 @@ var subFormatNames = scalar.RawBytesMap{
 	{Bytes: subFormatIEEEFloat[:], Scalar: scalar.BitBuf{Sym: "ieee_float"}},
 }
 
-func wavDecode(d *decode.D, _ any) any {
+func wavDecode(d *decode.D) any {
 	d.Endian = decode.LittleEndian
 
 	// there are wav files in the wild with id3v2 header id3v1 footer

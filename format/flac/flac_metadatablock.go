@@ -49,7 +49,7 @@ var metadataBlockNames = scalar.UintMapSymStr{
 	MetadataBlockPicture:       "picture",
 }
 
-func metadatablockDecode(d *decode.D, _ any) any {
+func metadatablockDecode(d *decode.D) any {
 	var hasStreamInfo bool
 	var streamInfo format.FlacStreamInfo
 

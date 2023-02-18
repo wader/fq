@@ -44,7 +44,7 @@ func init() {
 	})
 }
 
-func pictureDecode(d *decode.D, _ any) any {
+func pictureDecode(d *decode.D) any {
 	lenStr := func(name string) {
 		l := d.FieldU32(name + "_length")
 		d.FieldUTF8(name, int(l))

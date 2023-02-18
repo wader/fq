@@ -21,7 +21,7 @@ func init() {
 		Name:        format.HTML,
 		Description: "HyperText Markup Language",
 		DecodeFn:    decodeHTML,
-		DecodeInArg: format.HTMLIn{
+		DefaultInArg: format.HTMLIn{
 			Seq:             false,
 			Array:           false,
 			AttributePrefix: "@",
@@ -192,8 +192,9 @@ func fromHTMLToArray(n *html.Node) any {
 	return f(n)
 }
 
-func decodeHTML(d *decode.D, in any) any {
-	hi, _ := in.(format.HTMLIn)
+func decodeHTML(d *decode.D) any {
+	var hi format.HTMLIn
+	d.ArgAs(&hi)
 
 	br := d.RawLen(d.Len())
 	var r any

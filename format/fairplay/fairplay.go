@@ -16,7 +16,7 @@ func init() {
 	})
 }
 
-func fairPlaySPCDecode(d *decode.D, _ any) any {
+func fairPlaySPCDecode(d *decode.D) any {
 	d.FieldU32("version")
 	d.FieldRawLen("reserved", 32)
 	d.FieldRawLen("iv", 16*8)

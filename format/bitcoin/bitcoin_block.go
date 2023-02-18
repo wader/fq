@@ -22,7 +22,7 @@ func init() {
 			{Names: []string{format.BITCOIN_TRANSACTION}, Group: &bitcoinTranscationFormat},
 		},
 		DecodeFn: decodeBitcoinBlock,
-		DecodeInArg: format.BitCoinBlockIn{
+		DefaultInArg: format.BitCoinBlockIn{
 			HasHeader: false,
 		},
 	})
@@ -35,8 +35,10 @@ var rawHexReverse = scalar.BitBufFn(func(s scalar.BitBuf) (scalar.BitBuf, error)
 	})
 })
 
-func decodeBitcoinBlock(d *decode.D, in any) any {
-	bbi, _ := in.(format.BitCoinBlockIn)
+func decodeBitcoinBlock(d *decode.D) any {
+	var bbi format.BitCoinBlockIn
+	d.ArgAs(&bbi)
+
 	size := d.BitsLeft()
 
 	if bbi.HasHeader {

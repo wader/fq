@@ -128,14 +128,11 @@ func protobufDecodeFields(d *decode.D, pbm *format.ProtoBufMessage) {
 	})
 }
 
-func protobufDecode(d *decode.D, in any) any {
-	var pbm *format.ProtoBufMessage
-	pbi, ok := in.(format.ProtoBufIn)
-	if ok {
-		pbm = &pbi.Message
-	}
+func protobufDecode(d *decode.D) any {
+	var pbi format.ProtoBufIn
+	d.ArgAs(&pbi)
 
-	protobufDecodeFields(d, pbm)
+	protobufDecodeFields(d, &pbi.Message)
 
 	return nil
 }

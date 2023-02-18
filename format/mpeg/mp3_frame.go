@@ -141,7 +141,7 @@ var protectionNames = scalar.BoolMapDescription{
 	false: "Has CRC",
 }
 
-func frameDecode(d *decode.D, _ any) any {
+func frameDecode(d *decode.D) any {
 	const headerBytes = 4
 	var sideInfoBytes int
 	var isStereo bool

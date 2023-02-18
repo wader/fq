@@ -23,7 +23,7 @@ func init() {
 	interp.RegisterFS(tzifFS)
 }
 
-func decodeTZIF(d *decode.D, _ any) any {
+func decodeTZIF(d *decode.D) any {
 	d.Endian = decode.BigEndian
 
 	v1h := decodeTZifHeader(d, "v1header")

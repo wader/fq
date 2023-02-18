@@ -26,7 +26,7 @@ func init() {
 		Description: "Comma separated values",
 		ProbeOrder:  format.ProbeOrderTextFuzzy,
 		DecodeFn:    decodeCSV,
-		DecodeInArg: format.CSVLIn{
+		DefaultInArg: format.CSVLIn{
 			Comma:   ",",
 			Comment: "#",
 		},
@@ -36,8 +36,9 @@ func init() {
 	interp.RegisterFunc1("_to_csv", toCSV)
 }
 
-func decodeCSV(d *decode.D, in any) any {
-	ci, _ := in.(format.CSVLIn)
+func decodeCSV(d *decode.D) any {
+	var ci format.CSVLIn
+	d.ArgAs(&ci)
 
 	var rvs []any
 	br := d.RawLen(d.Len())

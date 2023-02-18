@@ -13,7 +13,7 @@ func init() {
 		Name:        format.HEVC_AU,
 		Description: "H.265/HEVC Access Unit",
 		DecodeFn:    hevcAUDecode,
-		DecodeInArg: format.HevcAuIn{
+		DefaultInArg: format.HevcAuIn{
 			LengthSize: 4,
 		},
 		RootArray: true,
@@ -25,18 +25,19 @@ func init() {
 }
 
 // TODO: share/refactor with avcAUDecode?
-func hevcAUDecode(d *decode.D, in any) any {
-	hevcIn, _ := in.(format.HevcAuIn)
+func hevcAUDecode(d *decode.D) any {
+	var hi format.HevcAuIn
+	d.ArgAs(&hi)
 
-	if hevcIn.LengthSize == 0 {
+	if hi.LengthSize == 0 {
 		// TODO: is annexb the correct name?
-		annexBDecode(d, nil, hevcAUNALFormat)
+		annexBDecode(d, hevcAUNALFormat)
 		return nil
 	}
 
 	for d.NotEnd() {
 		d.FieldStruct("nalu", func(d *decode.D) {
-			l := int64(d.FieldU("length", int(hevcIn.LengthSize)*8)) * 8
+			l := int64(d.FieldU("length", int(hi.LengthSize)*8)) * 8
 			d.FieldFormatLen("nalu", l, hevcAUNALFormat, nil)
 		})
 	}

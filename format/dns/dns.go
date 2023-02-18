@@ -261,9 +261,11 @@ func dnsDecode(d *decode.D, hasLengthHeader bool) any {
 	return nil
 }
 
-func dnsUDPDecode(d *decode.D, in any) any {
-	if upi, ok := in.(format.UDPPayloadIn); ok {
+func dnsUDPDecode(d *decode.D) any {
+	var upi format.UDPPayloadIn
+	if d.ArgAs(&upi) {
 		upi.MustIsPort(d.Fatalf, format.UDPPortDomain, format.UDPPortMDNS)
 	}
+
 	return dnsDecode(d, false)
 }

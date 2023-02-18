@@ -18,7 +18,7 @@ func init() {
 	})
 }
 
-func mp3FrameTagVBRIDecode(d *decode.D, _ any) any {
+func mp3FrameTagVBRIDecode(d *decode.D) any {
 	d.FieldUTF8("header", 4, d.StrAssert("VBRI"))
 	d.FieldU16("version_id")
 	d.FieldU16("delay")

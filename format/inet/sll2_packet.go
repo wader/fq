@@ -24,11 +24,10 @@ func init() {
 	})
 }
 
-func decodeSLL2(d *decode.D, in any) any {
-	if lfi, ok := in.(format.LinkFrameIn); ok {
-		if lfi.Type != format.LinkTypeLINUX_SLL2 {
-			d.Fatalf("wrong link type %d", lfi.Type)
-		}
+func decodeSLL2(d *decode.D) any {
+	var lfi format.LinkFrameIn
+	if d.ArgAs(&lfi) && lfi.Type != format.LinkTypeLINUX_SLL2 {
+		d.Fatalf("wrong link type %d", lfi.Type)
 	}
 
 	protcolType := d.FieldU16("protocol_type", format.EtherTypeMap, scalar.UintHex)

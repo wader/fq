@@ -32,7 +32,7 @@ func init() {
 	interp.RegisterFunc0("to_yaml", toYAML)
 }
 
-func decodeYAML(d *decode.D, _ any) any {
+func decodeYAML(d *decode.D) any {
 	br := d.RawLen(d.Len())
 	var r any
 

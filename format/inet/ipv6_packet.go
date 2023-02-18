@@ -108,8 +108,9 @@ var mapUToIPv6Sym = scalar.BitBufFn(func(s scalar.BitBuf) (scalar.BitBuf, error)
 	return s, nil
 })
 
-func decodeIPv6(d *decode.D, in any) any {
-	if ipi, ok := in.(format.InetPacketIn); ok && ipi.EtherType != format.EtherTypeIPv6 {
+func decodeIPv6(d *decode.D) any {
+	var ipi format.InetPacketIn
+	if d.ArgAs(&ipi) && ipi.EtherType != format.EtherTypeIPv6 {
 		d.Fatalf("incorrect ethertype %d", ipi.EtherType)
 	}
 

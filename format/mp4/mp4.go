@@ -63,7 +63,7 @@ func init() {
 			format.IMAGE, // avif
 		},
 		DecodeFn: mp4Decode,
-		DecodeInArg: format.Mp4In{
+		DefaultInArg: format.Mp4In{
 			DecodeSamples:  true,
 			AllowTruncated: false,
 		},
@@ -417,8 +417,9 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 	})
 }
 
-func mp4Decode(d *decode.D, in any) any {
-	mi, _ := in.(format.Mp4In)
+func mp4Decode(d *decode.D) any {
+	var mi format.Mp4In
+	d.ArgAs(&mi)
 
 	ctx := &decodeContext{
 		opts:   mi,

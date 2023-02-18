@@ -23,7 +23,7 @@ func init() {
 	})
 }
 
-func commentDecode(d *decode.D, _ any) any {
+func commentDecode(d *decode.D) any {
 	d.Endian = decode.LittleEndian
 
 	vendorLen := d.FieldU32("vendor_length")

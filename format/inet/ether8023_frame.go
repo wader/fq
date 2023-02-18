@@ -34,8 +34,9 @@ var mapUToEtherSym = scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
 	return s, nil
 })
 
-func decodeEthernetFrame(d *decode.D, in any) any {
-	if lfi, ok := in.(format.LinkFrameIn); ok {
+func decodeEthernetFrame(d *decode.D) any {
+	var lfi format.LinkFrameIn
+	if d.ArgAs(&lfi) {
 		if lfi.Type != format.LinkTypeETHERNET {
 			d.Fatalf("wrong link type %d", lfi.Type)
 		}

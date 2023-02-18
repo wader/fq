@@ -19,7 +19,7 @@ func init() {
 	})
 }
 
-func mp3FrameTagXingDecode(d *decode.D, _ any) any {
+func mp3FrameTagXingDecode(d *decode.D) any {
 	d.FieldUTF8("header", 4, d.StrAssert("Xing", "Info"))
 	qualityPresent := false
 	tocPresent := false

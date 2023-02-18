@@ -18,7 +18,7 @@ func init() {
 }
 
 // Decode ID3v1 tag
-func id3v1Decode(d *decode.D, _ any) any {
+func id3v1Decode(d *decode.D) any {
 	d.AssertAtLeastBitsLeft(128 * 8)
 	d.FieldUTF8("magic", 3, d.StrAssert("TAG"))
 	if d.PeekBits(8) == uint64('+') {

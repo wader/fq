@@ -23,7 +23,7 @@ func init() {
 	})
 }
 
-func opusDecode(d *decode.D, _ any) any {
+func opusDecode(d *decode.D) any {
 	d.Endian = decode.LittleEndian
 
 	var prefix []byte

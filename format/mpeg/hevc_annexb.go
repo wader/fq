@@ -12,8 +12,8 @@ func init() {
 	interp.RegisterFormat(decode.Format{
 		Name:        format.HEVC_ANNEXB,
 		Description: "H.265/HEVC Annex B",
-		DecodeFn: func(d *decode.D, in any) any {
-			return annexBDecode(d, in, annexBHEVCNALUFormat)
+		DecodeFn: func(d *decode.D) any {
+			return annexBDecode(d, annexBHEVCNALUFormat)
 		},
 		RootArray: true,
 		RootName:  "stream",

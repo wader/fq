@@ -82,7 +82,7 @@ var hevcNALNames = scalar.UintMapSymStr{
 	47:            "RSV_NVCL47",
 }
 
-func hevcNALUDecode(d *decode.D, _ any) any {
+func hevcNALUDecode(d *decode.D) any {
 	d.FieldBool("forbidden_zero_bit")
 	nalType := d.FieldU6("nal_unit_type", hevcNALNames)
 	d.FieldU6("nuh_layer_id")

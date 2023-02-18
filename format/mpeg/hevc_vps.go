@@ -19,7 +19,7 @@ func init() {
 const maxVpsLayers = 1000
 
 // H.265 page 33
-func hevcVPSDecode(d *decode.D, _ any) any {
+func hevcVPSDecode(d *decode.D) any {
 	d.FieldU4("vps_video_parameter_set_id")
 	d.FieldBool("vps_base_layer_internal_flag")
 	d.FieldBool("vps_base_layer_available_flag")

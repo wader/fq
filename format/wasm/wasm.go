@@ -593,7 +593,7 @@ const (
 	opcodeIf    Opcode = 0x04
 )
 
-func decodeWASM(d *decode.D, _ any) any {
+func decodeWASM(d *decode.D) any {
 	d.Endian = decode.LittleEndian
 
 	// delayed initialization to break initialization reference cycle

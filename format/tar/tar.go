@@ -29,7 +29,7 @@ func init() {
 
 var unixTimeEpochDate = time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC)
 
-func tarDecode(d *decode.D, _ any) any {
+func tarDecode(d *decode.D) any {
 	const blockBytes = 512
 	const blockBits = blockBytes * 8
 

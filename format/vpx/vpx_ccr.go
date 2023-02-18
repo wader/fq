@@ -16,7 +16,7 @@ func init() {
 	})
 }
 
-func vpxCCRDecode(d *decode.D, _ any) any {
+func vpxCCRDecode(d *decode.D) any {
 	d.FieldU8("profile")
 	d.FieldU8("level", vpxLevelNames)
 	d.FieldU4("bit_depth")

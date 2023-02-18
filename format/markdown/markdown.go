@@ -28,7 +28,7 @@ func init() {
 	interp.RegisterFS(markdownFS)
 }
 
-func decodeMarkdown(d *decode.D, _ any) any {
+func decodeMarkdown(d *decode.D) any {
 	b, err := io.ReadAll(bitio.NewIOReader(d.RawLen(d.Len())))
 	if err != nil {
 		panic(err)

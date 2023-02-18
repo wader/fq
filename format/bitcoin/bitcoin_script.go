@@ -43,7 +43,7 @@ func init() {
 	})
 }
 
-func decodeBitcoinScript(d *decode.D, in any) any {
+func decodeBitcoinScript(d *decode.D) any {
 	// based on https://en.bitcoin.it/wiki/Script
 	opcodeEntries := opcodeEntries{
 		{r: [2]byte{0x00, 0x00}, s: scalar.Uint{Sym: "false"}},
