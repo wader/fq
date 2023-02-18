@@ -22,7 +22,7 @@ func init() {
 	})
 }
 
-func decodeBlkDat(d *decode.D, in any) any {
+func decodeBlkDat(d *decode.D) any {
 	validBlocks := 0
 	for !d.End() {
 		d.FieldFormat("block", bitcoinBlockFormat, format.BitCoinBlockIn{HasHeader: true})

@@ -77,8 +77,9 @@ var icmpv6CodeMapMap = map[uint64]scalar.UintMapDescription{
 	},
 }
 
-func decodeICMPv6(d *decode.D, in any) any {
-	if ipi, ok := in.(format.IPPacketIn); ok && ipi.Protocol != format.IPv4ProtocolICMPv6 {
+func decodeICMPv6(d *decode.D) any {
+	var ipi format.IPPacketIn
+	if d.ArgAs(&ipi) && ipi.Protocol != format.IPv4ProtocolICMPv6 {
 		d.Fatalf("incorrect protocol %d", ipi.Protocol)
 	}
 

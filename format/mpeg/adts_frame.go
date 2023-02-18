@@ -29,7 +29,7 @@ var protectionAbsentNames = scalar.BoolMapDescription{
 	false: "Has CRC",
 }
 
-func adtsFrameDecoder(d *decode.D, _ any) any {
+func adtsFrameDecoder(d *decode.D) any {
 
 	/*
 	   adts_frame() {

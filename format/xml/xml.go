@@ -39,7 +39,7 @@ func init() {
 		ProbeOrder:  format.ProbeOrderTextFuzzy,
 		Groups:      []string{format.PROBE},
 		DecodeFn:    decodeXML,
-		DecodeInArg: format.XMLIn{
+		DefaultInArg: format.XMLIn{
 			Seq:             false,
 			Array:           false,
 			AttributePrefix: "@",
@@ -247,8 +247,9 @@ func fromXMLToArray(n xmlNode) any {
 	return f(n, nil)
 }
 
-func decodeXML(d *decode.D, in any) any {
-	xi, _ := in.(format.XMLIn)
+func decodeXML(d *decode.D) any {
+	var xi format.XMLIn
+	d.ArgAs(&xi)
 
 	br := d.RawLen(d.Len())
 	var r any

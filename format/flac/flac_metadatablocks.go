@@ -23,7 +23,7 @@ func init() {
 	})
 }
 
-func metadatablocksDecode(d *decode.D, _ any) any {
+func metadatablocksDecode(d *decode.D) any {
 	flacMetadatablocksOut := format.FlacMetadatablocksOut{}
 
 	isLastBlock := false

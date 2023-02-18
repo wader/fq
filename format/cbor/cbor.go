@@ -263,7 +263,7 @@ func decodeCBORValue(d *decode.D) any {
 	panic("unreachable")
 }
 
-func decodeCBOR(d *decode.D, _ any) any {
+func decodeCBOR(d *decode.D) any {
 	decodeCBORValue(d)
 	return nil
 }

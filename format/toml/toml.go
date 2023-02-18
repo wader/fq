@@ -29,7 +29,7 @@ func init() {
 	interp.RegisterFunc0("to_toml", toTOML)
 }
 
-func decodeTOML(d *decode.D, _ any) any {
+func decodeTOML(d *decode.D) any {
 	br := d.RawLen(d.Len())
 	var r any
 

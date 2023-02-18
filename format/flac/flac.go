@@ -32,7 +32,7 @@ func init() {
 	})
 }
 
-func flacDecode(d *decode.D, _ any) any {
+func flacDecode(d *decode.D) any {
 	d.FieldUTF8("magic", 4, d.StrAssert("fLaC"))
 
 	var streamInfo format.FlacStreamInfo

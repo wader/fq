@@ -25,7 +25,7 @@ var recordTypeNames = scalar.UintMapSymStr{
 	recordTypeLicenseStore:           "License store",
 }
 
-func playreadyPsshDecode(d *decode.D, _ any) any {
+func playreadyPsshDecode(d *decode.D) any {
 	d.Endian = decode.LittleEndian
 
 	d.FieldU32("size")

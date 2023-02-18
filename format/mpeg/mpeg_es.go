@@ -277,7 +277,7 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, _ int, fn func(d *decode.D))
 	}
 }
 
-func esDecode(d *decode.D, _ any) any {
+func esDecode(d *decode.D) any {
 	var edc esDecodeContext
 	odDecodeTag(d, &edc, -1, nil)
 	return format.MpegEsOut{DecoderConfigs: edc.decoderConfigs}

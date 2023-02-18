@@ -92,8 +92,9 @@ var icmpCodeMapMap = map[uint64]scalar.UintMapDescription{
 	},
 }
 
-func decodeICMP(d *decode.D, in any) any {
-	if ipi, ok := in.(format.IPPacketIn); ok && ipi.Protocol != format.IPv4ProtocolICMP {
+func decodeICMP(d *decode.D) any {
+	var ipi format.IPPacketIn
+	if d.ArgAs(&ipi) && ipi.Protocol != format.IPv4ProtocolICMP {
 		d.Fatalf("incorrect protocol %d", ipi.Protocol)
 	}
 

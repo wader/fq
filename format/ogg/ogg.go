@@ -57,7 +57,7 @@ type stream struct {
 	flacStreamInfo format.FlacStreamInfo
 }
 
-func decodeOgg(d *decode.D, _ any) any {
+func decodeOgg(d *decode.D) any {
 	validPages := 0
 	streams := map[uint32]*stream{}
 	streamsD := d.FieldArrayValue("streams")

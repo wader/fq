@@ -26,7 +26,7 @@ func init() {
 //nolint:revive
 const FAT_MAGIC = 0xcafe_babe
 
-func machoFatDecode(d *decode.D, _ any) any {
+func machoFatDecode(d *decode.D) any {
 	type ofile struct {
 		offset int64
 		size   int64

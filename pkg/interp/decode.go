@@ -92,9 +92,9 @@ func (i *Interp) _registry(c any) any {
 		if len(groupsVs) > 0 {
 			vf["groups"] = groupsVs
 		}
-		if f.DecodeInArg != nil {
+		if f.DefaultInArg != nil {
 			doc := map[string]any{}
-			st := reflect.TypeOf(f.DecodeInArg)
+			st := reflect.TypeOf(f.DefaultInArg)
 			for i := 0; i < st.NumField(); i++ {
 				f := st.Field(i)
 				if v, ok := f.Tag.Lookup("doc"); ok {
@@ -103,7 +103,7 @@ func (i *Interp) _registry(c any) any {
 			}
 			vf["decode_in_arg_doc"] = doc
 
-			args, err := mapstruct.ToMap(f.DecodeInArg)
+			args, err := mapstruct.ToMap(f.DefaultInArg)
 			if err != nil {
 				return err
 			}
@@ -241,27 +241,24 @@ func (i *Interp) _decode(c any, format string, opts decodeOpts) any {
 			Force:       opts.Force,
 			Range:       bv.r,
 			Description: filename,
-			FormatInArgFn: func(f decode.Format) (any, error) {
-				inArg := f.DecodeInArg
-				if inArg == nil {
-					return nil, nil
-				}
-
-				var err error
-				inArg, err = copystructure.Copy(inArg)
+			FormatInArgFn: func(init any) any {
+				v, err := copystructure.Copy(init)
 				if err != nil {
-					return f.DecodeInArg, err
+					return nil
 				}
 
 				if len(opts.Remain) > 0 {
-					if err := mapstruct.ToStruct(opts.Remain, &inArg); err != nil {
+					if err := mapstruct.ToStruct(opts.Remain, &v); err != nil {
 						// TODO: currently ignores failed struct mappings
-						//nolint: nilerr
-						return f.DecodeInArg, nil
+						return nil
 					}
 				}
+				// nil if same as init
+				if reflect.DeepEqual(init, v) {
+					return nil
+				}
 
-				return inArg, nil
+				return v
 			},
 		},
 	)

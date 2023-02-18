@@ -79,7 +79,7 @@ func decodeJSONEx(d *decode.D, lines bool) any {
 	return nil
 }
 
-func decodeJSON(d *decode.D, _ any) any {
+func decodeJSON(d *decode.D) any {
 	return decodeJSONEx(d, false)
 }
 

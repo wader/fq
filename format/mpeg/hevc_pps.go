@@ -17,7 +17,7 @@ func init() {
 }
 
 // H.265 page 36
-func hevcPPSDecode(d *decode.D, _ any) any {
+func hevcPPSDecode(d *decode.D) any {
 	d.FieldUintFn("pps_pic_parameter_set_id", uEV)
 	d.FieldUintFn("pps_seq_parameter_set_id", uEV)
 	d.FieldBool("dependent_slice_segments_enabled_flag")

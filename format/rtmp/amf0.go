@@ -144,7 +144,7 @@ func amf0DecodeValue(d *decode.D) {
 	}
 }
 
-func amf0Decode(d *decode.D, _ any) any {
+func amf0Decode(d *decode.D) any {
 	amf0DecodeValue(d)
 	return nil
 }

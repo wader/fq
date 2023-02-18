@@ -56,7 +56,7 @@ func init() {
 		Description: "Matroska file",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    matroskaDecode,
-		DecodeInArg: format.MatroskaIn{
+		DefaultInArg: format.MatroskaIn{
 			DecodeSamples: true,
 		},
 		Dependencies: []decode.Dependency{
@@ -440,8 +440,9 @@ func decodeMaster(d *decode.D, bitsLimit int64, elm *ebml.Master, unknownSize bo
 	})
 }
 
-func matroskaDecode(d *decode.D, in any) any {
-	mi, _ := in.(format.MatroskaIn)
+func matroskaDecode(d *decode.D) any {
+	var mi format.MatroskaIn
+	d.ArgAs(&mi)
 
 	ebmlHeaderID := uint64(0x1a45dfa3)
 	if d.PeekBits(32) != ebmlHeaderID {

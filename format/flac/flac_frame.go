@@ -17,7 +17,7 @@ func init() {
 		Name:        format.FLAC_FRAME,
 		Description: "FLAC frame",
 		DecodeFn:    frameDecode,
-		DecodeInArg: format.FlacFrameIn{
+		DefaultInArg: format.FlacFrameIn{
 			BitsPerSample: 16, // TODO: maybe should not have a default value?
 		},
 	})
@@ -100,7 +100,7 @@ func utf8Uint(d *decode.D) uint64 {
 }
 
 // in argument is an optional FlacFrameIn struct with stream info
-func frameDecode(d *decode.D, in any) any {
+func frameDecode(d *decode.D) any {
 	frameStart := d.Pos()
 	blockSize := 0
 	channelAssignment := uint64(0)
@@ -108,8 +108,8 @@ func frameDecode(d *decode.D, in any) any {
 	sampleSize := 0
 	sideChannelIndex := -1
 
-	ffi, ok := in.(format.FlacFrameIn)
-	if ok {
+	var ffi format.FlacFrameIn
+	if d.ArgAs(&ffi) {
 		sampleSize = ffi.BitsPerSample
 	}
 

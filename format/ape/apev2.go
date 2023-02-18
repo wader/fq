@@ -21,7 +21,7 @@ func init() {
 	})
 }
 
-func apev2Decode(d *decode.D, _ any) any {
+func apev2Decode(d *decode.D) any {
 	d.Endian = decode.LittleEndian
 
 	headerFooterFn := func(d *decode.D, name string) uint64 {

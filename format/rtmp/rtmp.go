@@ -307,9 +307,11 @@ func rtmpDecodeMessageType(d *decode.D, typ int, chunkSize *int) {
 	}
 }
 
-func rtmpDecode(d *decode.D, in any) any {
+func rtmpDecode(d *decode.D) any {
 	var isClient bool
-	if tsi, ok := in.(format.TCPStreamIn); ok {
+
+	var tsi format.TCPStreamIn
+	if d.ArgAs(&tsi) {
 		tsi.MustIsPort(d.Fatalf, format.TCPPortRTMP)
 		isClient = tsi.IsClient
 	}

@@ -15,7 +15,7 @@ func init() {
 		Name:        format.AVC_AU,
 		Description: "H.264/AVC Access Unit",
 		DecodeFn:    avcAUDecode,
-		DecodeInArg: format.AvcAuIn{
+		DefaultInArg: format.AvcAuIn{
 			LengthSize: 0,
 		},
 		RootArray: true,
@@ -26,18 +26,19 @@ func init() {
 	})
 }
 
-func avcAUDecode(d *decode.D, in any) any {
-	avcIn, _ := in.(format.AvcAuIn)
+func avcAUDecode(d *decode.D) any {
+	var ai format.AvcAuIn
+	d.ArgAs(&ai)
 
-	if avcIn.LengthSize == 0 {
+	if ai.LengthSize == 0 {
 		// TODO: is annexb the correct name?
-		annexBDecode(d, nil, avcNALUFormat)
+		annexBDecode(d, avcNALUFormat)
 		return nil
 	}
 
 	for d.NotEnd() {
 		d.FieldStruct("nalu", func(d *decode.D) {
-			l := int64(d.FieldU("length", int(avcIn.LengthSize)*8)) * 8
+			l := int64(d.FieldU("length", int(ai.LengthSize)*8)) * 8
 			d.FieldFormatLen("nalu", l, avcNALUFormat, nil)
 		})
 	}

@@ -13,8 +13,8 @@ import (
 //go:embed bytes.md
 var bitsFS embed.FS
 
-func decodeBits(unit int) func(d *decode.D, _ any) any {
-	return func(d *decode.D, _ any) any {
+func decodeBits(unit int) func(d *decode.D) any {
+	return func(d *decode.D) any {
 		var s scalar.Any
 		b, _ := interp.NewBinaryFromBitReader(d.BitBufRange(0, d.Len()), unit, 0)
 		s.Actual = b

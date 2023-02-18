@@ -15,7 +15,7 @@ func init() {
 	})
 }
 
-func id3v11Decode(d *decode.D, _ any) any {
+func id3v11Decode(d *decode.D) any {
 	d.AssertAtLeastBitsLeft(128 * 8)
 	d.FieldUTF8("magic", 4, d.StrAssert("TAG+"))
 	d.FieldUTF8("title", 60)

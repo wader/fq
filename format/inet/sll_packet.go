@@ -108,11 +108,10 @@ var arpHdrTypeMAp = scalar.UintMap{
 	0xfffe:             {Sym: "none", Description: `zero header length`},
 }
 
-func decodeSLL(d *decode.D, in any) any {
-	if lfi, ok := in.(format.LinkFrameIn); ok {
-		if lfi.Type != format.LinkTypeLINUX_SLL {
-			d.Fatalf("wrong link type %d", lfi.Type)
-		}
+func decodeSLL(d *decode.D) any {
+	var lfi format.LinkFrameIn
+	if d.ArgAs(&lfi) && lfi.Type != format.LinkTypeLINUX_SLL {
+		d.Fatalf("wrong link type %d", lfi.Type)
 	}
 
 	d.FieldU16("packet_type", sllPacketTypeMap)

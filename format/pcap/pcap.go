@@ -53,7 +53,7 @@ func init() {
 	interp.RegisterFS(pcapFS)
 }
 
-func decodePcap(d *decode.D, _ any) any {
+func decodePcap(d *decode.D) any {
 	var endian decode.Endian
 	linkType := 0
 	timestampUNSStr := "ts_usec"

@@ -27,7 +27,7 @@ func init() {
 	interp.RegisterFunc0("to_jsonl", toJSONL)
 }
 
-func decodeJSONL(d *decode.D, _ any) any {
+func decodeJSONL(d *decode.D) any {
 	return decodeJSONEx(d, true)
 }
 

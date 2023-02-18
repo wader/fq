@@ -20,7 +20,7 @@ func init() {
 	})
 }
 
-func hevcDcrDecode(d *decode.D, _ any) any {
+func hevcDcrDecode(d *decode.D) any {
 	d.FieldU8("configuration_version")
 	d.FieldU2("general_profile_space")
 	d.FieldU1("general_tier_flag")

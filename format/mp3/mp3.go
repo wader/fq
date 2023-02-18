@@ -21,7 +21,7 @@ func init() {
 		Description: "MP3 file",
 		Groups:      []string{format.PROBE},
 		DecodeFn:    mp3Decode,
-		DecodeInArg: format.Mp3In{
+		DefaultInArg: format.Mp3In{
 			MaxUniqueHeaderConfigs: 5,
 			MaxUnknown:             50,
 			MaxSyncSeek:            4 * 1024 * 8,
@@ -41,8 +41,9 @@ func init() {
 	})
 }
 
-func mp3Decode(d *decode.D, in any) any {
-	mi, _ := in.(format.Mp3In)
+func mp3Decode(d *decode.D) any {
+	var mi format.Mp3In
+	d.ArgAs(&mi)
 
 	// things in a mp3 stream usually have few unique combinations of.
 	// does not include bitrate on purpose

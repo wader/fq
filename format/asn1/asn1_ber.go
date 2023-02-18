@@ -413,7 +413,7 @@ func decodeASN1BERValue(d *decode.D, bib *bitio.Buffer, sb *strings.Builder, par
 	})
 }
 
-func decodeASN1BER(d *decode.D, _ any) any {
+func decodeASN1BER(d *decode.D) any {
 	decodeASN1BERValue(d, nil, nil, formConstructed, universalTypeSequence)
 	return nil
 }

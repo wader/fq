@@ -18,7 +18,7 @@ func init() {
 		Name:        format.AAC_FRAME,
 		Description: "Advanced Audio Coding frame",
 		DecodeFn:    aacDecode,
-		DecodeInArg: format.AACFrameIn{
+		DefaultInArg: format.AACFrameIn{
 			ObjectType: format.MPEGAudioObjectTypeMain,
 		},
 		RootArray: true,
@@ -272,16 +272,14 @@ func aacFillElement(d *decode.D) {
 	})
 }
 
-func aacDecode(d *decode.D, in any) any {
-	var objectType int
-	if afi, ok := in.(format.AACFrameIn); ok {
-		objectType = afi.ObjectType
-	}
+func aacDecode(d *decode.D) any {
+	var ai format.AACFrameIn
+	d.ArgAs(&ai)
 
 	// TODO: seems tricky to know length of blocks
 	// TODO: currently break when length is unknown
 
-	switch objectType {
+	switch ai.ObjectType {
 	case format.MPEGAudioObjectTypeMain,
 		format.MPEGAudioObjectTypeLC,
 		format.MPEGAudioObjectTypeSSR,
@@ -299,7 +297,7 @@ func aacDecode(d *decode.D, in any) any {
 					aacFillElement(d)
 
 				case SCE:
-					aacSingleChannelElement(d, objectType)
+					aacSingleChannelElement(d, ai.ObjectType)
 					seenTerm = true
 
 				case PCE:

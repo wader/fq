@@ -38,8 +38,9 @@ var bsdLookbackNetworkLayerMap = scalar.UintMap{
 	bsdLoopbackNetworkLayerIPv6: {Sym: "ipv6", Description: `Internet protocol v6`},
 }
 
-func decodeLoopbackFrame(d *decode.D, in any) any {
-	if lfi, ok := in.(format.LinkFrameIn); ok {
+func decodeLoopbackFrame(d *decode.D) any {
+	var lfi format.LinkFrameIn
+	if d.ArgAs(&lfi) {
 		if lfi.Type != format.LinkTypeNULL {
 			d.Fatalf("wrong link type %d", lfi.Type)
 		}

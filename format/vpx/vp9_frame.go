@@ -107,7 +107,7 @@ func vp9DecodeFrameSize(d *decode.D) {
 	d.FieldUintFn("frame_height", func(d *decode.D) uint64 { return d.U16() + 1 })
 }
 
-func vp9Decode(d *decode.D, _ any) any {
+func vp9Decode(d *decode.D) any {
 
 	// TODO: header_size at end? even for show_existing_frame?
 

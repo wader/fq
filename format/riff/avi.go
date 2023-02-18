@@ -40,7 +40,7 @@ func init() {
 		Name:        format.AVI,
 		Description: "Audio Video Interleaved",
 		DecodeFn:    aviDecode,
-		DecodeInArg: format.AviIn{
+		DefaultInArg: format.AviIn{
 			DecodeSamples: true,
 		},
 		Dependencies: []decode.Dependency{
@@ -213,8 +213,9 @@ func aviDecodeChunkIndex(d *decode.D) []ranges.Range {
 	return rs
 }
 
-func aviDecode(d *decode.D, in any) any {
-	ai, _ := in.(format.AviIn)
+func aviDecode(d *decode.D) any {
+	var ai format.AviIn
+	d.ArgAs(&ai)
 
 	d.Endian = decode.LittleEndian
 

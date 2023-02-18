@@ -38,7 +38,7 @@ var packetTypeNames = map[uint]string{
 	packetTypeSetup:          "Setup",
 }
 
-func vorbisDecode(d *decode.D, _ any) any {
+func vorbisDecode(d *decode.D) any {
 	d.Endian = decode.LittleEndian
 
 	packetType := d.FieldScalarUintFn("packet_type", func(d *decode.D) scalar.Uint {

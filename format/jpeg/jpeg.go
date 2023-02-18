@@ -164,7 +164,7 @@ var markers = scalar.UintMap{
 	TEM:   {Sym: "tem", Description: "For temporary private use in arithmetic coding"},
 }
 
-func jpegDecode(d *decode.D, _ any) any {
+func jpegDecode(d *decode.D) any {
 	d.AssertLeastBytesLeft(2)
 	if !bytes.Equal(d.PeekBytes(2), []byte{0xff, SOI}) {
 		d.Errorf("no SOI marker")

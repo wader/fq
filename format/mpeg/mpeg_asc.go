@@ -44,7 +44,7 @@ var channelConfigurationNames = scalar.UintMapDescription{
 	7: "front-center, front-left, front-right, side-left, side-right, back-left, back-right, LFE-channel",
 }
 
-func ascDecoder(d *decode.D, _ any) any {
+func ascDecoder(d *decode.D) any {
 	objectType := d.FieldUintFn("object_type", decodeEscapeValueCarryFn(5, 6, 0), format.MPEGAudioObjectTypeNames)
 	d.FieldUintFn("sampling_frequency", decodeEscapeValueAbsFn(4, 24, 0), frequencyIndexHzMap)
 	d.FieldU4("channel_configuration", channelConfigurationNames)

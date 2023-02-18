@@ -227,7 +227,7 @@ type plist struct {
 	pld      apple.PosLoopDetector[uint64]
 }
 
-func bplistDecode(d *decode.D, _ any) any {
+func bplistDecode(d *decode.D) any {
 	d.FieldStruct("header", func(d *decode.D) {
 		d.FieldUTF8("magic", 6, d.StrAssert("bplist"))
 		d.FieldUTF8("version", 2, d.StrAssert("00"))

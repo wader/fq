@@ -17,7 +17,7 @@ func init() {
 	})
 }
 
-func decodeProResFrame(d *decode.D, _ any) any {
+func decodeProResFrame(d *decode.D) any {
 	var size int64
 	d.FieldStruct("container", func(d *decode.D) {
 		size = int64(d.FieldU32("size"))

@@ -20,7 +20,7 @@ func moreRBSPData(d *decode.D) bool {
 	return l >= 8 && d.PeekBits(8) != 0b1000_0000
 }
 
-func avcPPSDecode(d *decode.D, _ any) any {
+func avcPPSDecode(d *decode.D) any {
 	d.FieldUintFn("pic_parameter_set_id", uEV)
 	d.FieldUintFn("seq_parameter_set_id", uEV)
 	d.FieldBool("entropy_coding_mode_flag")

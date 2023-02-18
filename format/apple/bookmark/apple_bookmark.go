@@ -379,7 +379,7 @@ const headerEndBitPos = headerEnd * 8
 // all offsets are calculated relative to the end of the bookmark header
 func calcOffset(i uint64) int64 { return int64(8 * (i + headerEnd)) }
 
-func bookmarkDecode(d *decode.D, _ any) any {
+func bookmarkDecode(d *decode.D) any {
 	// all fields are little-endian with the exception of the Date datatype.
 	d.Endian = decode.LittleEndian
 

@@ -44,7 +44,7 @@ func decodeVarInt(d *decode.D) uint64 {
 // all zero
 var txIDCoinbaseBytes = [32]byte{}
 
-func decodeBitcoinTranscation(d *decode.D, in any) any {
+func decodeBitcoinTranscation(d *decode.D) any {
 	d.Endian = decode.LittleEndian
 
 	d.FieldU32("version")

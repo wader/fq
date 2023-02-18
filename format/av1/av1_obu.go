@@ -40,7 +40,7 @@ var obuTypeNames = scalar.UintMapSymStr{
 	OBU_PADDING:                "OBU_PADDING",
 }
 
-func obuDecode(d *decode.D, _ any) any {
+func obuDecode(d *decode.D) any {
 	var obuType uint64
 	var obuSize int64
 	hasExtension := false
