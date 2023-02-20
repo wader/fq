@@ -55,7 +55,7 @@ func decodeSLL2(d *decode.D) any {
 			"payload",
 			d.BitsLeft(),
 			sllPacket2InetPacketGroup,
-			format.LinkFrameIn{Type: int(protcolType)},
+			format.InetPacketIn{EtherType: int(protcolType)},
 		)
 	default:
 		d.FieldRawLen("payload", d.BitsLeft())

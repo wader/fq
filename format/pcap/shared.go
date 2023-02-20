@@ -8,10 +8,12 @@ import (
 )
 
 var linkToDecodeFn = map[int]func(fd *flowsdecoder.Decoder, bs []byte) error{
-	format.LinkTypeNULL:       (*flowsdecoder.Decoder).LoopbackFrame,
 	format.LinkTypeETHERNET:   (*flowsdecoder.Decoder).EthernetFrame,
+	format.LinkTypeIPv4:       (*flowsdecoder.Decoder).IPv4Packet,
+	format.LinkTypeIPv6:       (*flowsdecoder.Decoder).IPv6Packet,
 	format.LinkTypeLINUX_SLL:  (*flowsdecoder.Decoder).SLLPacket,
 	format.LinkTypeLINUX_SLL2: (*flowsdecoder.Decoder).SLL2Packet,
+	format.LinkTypeNULL:       (*flowsdecoder.Decoder).LoopbackFrame,
 }
 
 // TODO: make some of this shared if more packet capture formats are added

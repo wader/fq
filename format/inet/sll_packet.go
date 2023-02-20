@@ -132,7 +132,7 @@ func decodeSLL(d *decode.D) any {
 			"payload",
 			d.BitsLeft(),
 			sllPacketInetPacketGroup,
-			format.LinkFrameIn{Type: int(protcolType)},
+			format.InetPacketIn{EtherType: int(protcolType)},
 		)
 	default:
 		d.FieldU16LE("protocol_type")
