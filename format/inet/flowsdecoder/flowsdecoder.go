@@ -223,6 +223,9 @@ func (fd *Decoder) packet(p gopacket.Packet) error {
 					Datagram:      sb.Bytes(),
 				})
 
+				// i think this replaces p with the newly defragmented ip packet and is
+				// used below when reassembling tcp streams
+				// see gopacket reassemblydump example
 				pb, ok := p.(gopacket.PacketBuilder)
 				if !ok {
 					panic("not a PacketBuilder")
