@@ -170,16 +170,24 @@ func New(options DecoderOptions) *Decoder {
 	return flowDecoder
 }
 
+func (fd *Decoder) EthernetFrame(bs []byte) error {
+	return fd.packet(gopacket.NewPacket(bs, layers.LayerTypeEthernet, gopacket.Lazy))
+}
+
+func (fd *Decoder) IPv4Packet(bs []byte) error {
+	return fd.packet(gopacket.NewPacket(bs, layers.LayerTypeIPv4, gopacket.Lazy))
+}
+
+func (fd *Decoder) IPv6Packet(bs []byte) error {
+	return fd.packet(gopacket.NewPacket(bs, layers.LayerTypeIPv6, gopacket.Lazy))
+}
+
 func (fd *Decoder) SLLPacket(bs []byte) error {
 	return fd.packet(gopacket.NewPacket(bs, layers.LayerTypeLinuxSLL, gopacket.Lazy))
 }
 
 func (fd *Decoder) SLL2Packet(bs []byte) error {
 	return fd.packet(gopacket.NewPacket(bs, layers.LayerTypeLinuxSLL2, gopacket.Lazy))
-}
-
-func (fd *Decoder) EthernetFrame(bs []byte) error {
-	return fd.packet(gopacket.NewPacket(bs, layers.LayerTypeEthernet, gopacket.Lazy))
 }
 
 func (fd *Decoder) LoopbackFrame(bs []byte) error {

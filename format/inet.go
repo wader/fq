@@ -84,8 +84,8 @@ const (
 	LinkTypeFC_2_WITH_FRAME_DELIMS     = 225
 	LinkTypeIPNET                      = 226
 	LinkTypeCAN_SOCKETCAN              = 227
-	LinkTypeIPV4                       = 228
-	LinkTypeIPV6                       = 229
+	LinkTypeIPv4                       = 228
+	LinkTypeIPv6                       = 229
 	LinkTypeIEEE802_15_4_NOFCS         = 230
 	LinkTypeDBUS                       = 231
 	LinkTypeDVB_CI                     = 235
@@ -218,8 +218,8 @@ var LinkTypeMap = scalar.UintMap{
 	LinkTypeFC_2_WITH_FRAME_DELIMS:     {Sym: "fc_2_with_frame_delims", Description: `Fibre Channel FC-2 frames, beginning an encoding of the SOF, followed by a Frame_Header, and ending with an encoding of the SOF`},
 	LinkTypeIPNET:                      {Sym: "ipnet", Description: `Solaris ipnet pseudo-header, followed by an IPv4 or IPv6 datagram`},
 	LinkTypeCAN_SOCKETCAN:              {Sym: "can_socketcan", Description: `CAN (Controller Area Network) frames, with a pseudo-header followed by the frame payload`},
-	LinkTypeIPV4:                       {Sym: "ipv4", Description: `Raw IPv4`},
-	LinkTypeIPV6:                       {Sym: "ipv6", Description: `Raw IPv6`},
+	LinkTypeIPv4:                       {Sym: "ipv4", Description: `Raw IPv4`},
+	LinkTypeIPv6:                       {Sym: "ipv6", Description: `Raw IPv6`},
 	LinkTypeIEEE802_15_4_NOFCS:         {Sym: "ieee802_15_4_nofcs", Description: `IEEE 802.15.4 Low-Rate Wireless Network, without the FCS at the end of the frame`},
 	LinkTypeDBUS:                       {Sym: "dbus", Description: `Raw D-Bus messages`},
 	LinkTypeDVB_CI:                     {Sym: "dvb_ci", Description: `DVB-CI (DVB Common Interface for communication between a PC Card module and a DVB receiver)`},

@@ -17,7 +17,10 @@ func init() {
 	interp.RegisterFormat(decode.Format{
 		Name:        format.IPV6_PACKET,
 		Description: "Internet protocol v6 packet",
-		Groups:      []string{format.INET_PACKET},
+		Groups: []string{
+			format.INET_PACKET,
+			format.LINK_FRAME,
+		},
 		Dependencies: []decode.Dependency{
 			{Names: []string{format.IP_PACKET}, Group: &ipv6IpPacketGroup},
 		},
@@ -110,8 +113,11 @@ var mapUToIPv6Sym = scalar.BitBufFn(func(s scalar.BitBuf) (scalar.BitBuf, error)
 
 func decodeIPv6(d *decode.D) any {
 	var ipi format.InetPacketIn
+	var lfi format.LinkFrameIn
 	if d.ArgAs(&ipi) && ipi.EtherType != format.EtherTypeIPv6 {
 		d.Fatalf("incorrect ethertype %d", ipi.EtherType)
+	} else if d.ArgAs(&lfi) && lfi.Type != format.LinkTypeIPv6 {
+		d.Fatalf("incorrect linktype %d", lfi.Type)
 	}
 
 	d.FieldU4("version")
