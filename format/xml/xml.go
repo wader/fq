@@ -7,15 +7,18 @@ package xml
 // TODO: rewrite ns stack
 
 import (
+	"bufio"
 	"bytes"
 	"embed"
 	"encoding/xml"
 	"errors"
+	"fmt"
 	"html"
 	"io"
 	"regexp"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/internal/gojqex"
@@ -247,15 +250,54 @@ func fromXMLToArray(n xmlNode) any {
 	return f(n, nil)
 }
 
+// from golang encoding/xml, copyright 2009 The Go Authors
+// the Char production of https://www.xml.com/axml/testaxml.htm,
+// Section 2.2 Characters.
+func isInCharacterRange(r rune) (inrange bool) {
+	return r == 0x09 ||
+		r == 0x0A ||
+		r == 0x0D ||
+		r >= 0x20 && r <= 0xD7FF ||
+		r >= 0xE000 && r <= 0xFFFD ||
+		r >= 0x10000 && r <= 0x10FFFF
+}
+
+func decodeXMLSeekFirstValidRune(br io.ReadSeeker) error {
+	buf := bufio.NewReader(br)
+	r, sz, err := buf.ReadRune()
+	if err != nil {
+		return err
+	}
+	if _, err := br.Seek(0, io.SeekStart); err != nil {
+		return err
+	}
+	if r == utf8.RuneError && sz == 1 {
+		return fmt.Errorf("invalid UTF-8")
+	}
+	if !isInCharacterRange(r) {
+		return fmt.Errorf("illegal character code %U", r)
+	}
+
+	return nil
+}
+
 func decodeXML(d *decode.D) any {
 	var xi format.XMLIn
 	d.ArgAs(&xi)
 
-	br := d.RawLen(d.Len())
+	bbr := d.RawLen(d.Len())
 	var r any
 	var err error
 
-	xd := xml.NewDecoder(bitio.NewIOReader(br))
+	br := bitio.NewIOReadSeeker(bbr)
+
+	// this reimplements same xml rune range validation as ecoding/xml but fails faster
+	if err := decodeXMLSeekFirstValidRune(br); err != nil {
+		d.Fatalf("%s", err)
+	}
+
+	xd := xml.NewDecoder(br)
+
 	xd.Strict = false
 	var n xmlNode
 	if err := xd.Decode(&n); err != nil {

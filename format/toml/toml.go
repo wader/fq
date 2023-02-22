@@ -1,8 +1,12 @@
 package toml
 
 import (
+	"bufio"
 	"bytes"
 	"embed"
+	"fmt"
+	"io"
+	"unicode/utf8"
 
 	"github.com/BurntSushi/toml"
 	"github.com/wader/fq/format"
@@ -29,11 +33,38 @@ func init() {
 	interp.RegisterFunc0("to_toml", toTOML)
 }
 
+func decodeTOMLSeekFirstValidRune(br io.ReadSeeker) error {
+	buf := bufio.NewReader(br)
+	r, sz, err := buf.ReadRune()
+	if err != nil {
+		return err
+	}
+	if _, err := br.Seek(0, io.SeekStart); err != nil {
+		return err
+	}
+	if r == utf8.RuneError && sz == 1 {
+		return fmt.Errorf("invalid UTF-8")
+	}
+	if r == 0 {
+		return fmt.Errorf("TOML can't contain null bytes")
+	}
+
+	return nil
+}
+
 func decodeTOML(d *decode.D) any {
-	br := d.RawLen(d.Len())
+	bbr := d.RawLen(d.Len())
 	var r any
 
-	if _, err := toml.NewDecoder(bitio.NewIOReader(br)).Decode(&r); err != nil {
+	br := bitio.NewIOReadSeeker(bbr)
+
+	// github.com/BurntSushi/toml currently does a ReadAll which might be expensive
+	// try find invalid toml (null bytes etc) faster and more efficient
+	if err := decodeTOMLSeekFirstValidRune(br); err != nil {
+		d.Fatalf("%s", err)
+	}
+
+	if _, err := toml.NewDecoder(br).Decode(&r); err != nil {
 		d.Fatalf("%s", err)
 	}
 	var s scalar.Any
