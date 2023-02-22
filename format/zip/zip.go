@@ -152,7 +152,7 @@ func zipDecode(d *decode.D) any {
 	d.SeekAbs(d.Len())
 
 	// TODO: better EOCD probe
-	p, _, err := d.TryPeekFind(32, -8, 10000, func(v uint64) bool {
+	p, _, err := d.TryPeekFind(32, -8, 128*8, func(v uint64) bool {
 		return v == uint64(endOfCentralDirectoryRecordSignatureN)
 	})
 	if err != nil {
@@ -177,10 +177,10 @@ func zipDecode(d *decode.D) any {
 	})
 
 	// is there a zip64 end of central directory locator?
-	p, _, err = d.TryPeekFind(32, -8, 10000, func(v uint64) bool {
+	p, _, err = d.TryPeekFind(32, -8, 128*8, func(v uint64) bool {
 		return v == uint64(endOfCentralDirectoryLocatorSignatureN)
 	})
-	if err == nil {
+	if err == nil && p != -1 {
 		d.SeekRel(p)
 
 		var offsetEOCD uint64
