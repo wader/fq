@@ -158,7 +158,7 @@ func zipDecode(d *decode.D) any {
 	if err != nil {
 		d.Fatalf("can't find end of central directory")
 	}
-	d.SeekAbs(d.Len() + p)
+	d.SeekRel(p)
 
 	var offsetCD uint64
 	var sizeCD uint64
@@ -176,15 +176,12 @@ func zipDecode(d *decode.D) any {
 		d.FieldUTF8("comment", int(commentLength))
 	})
 
-	// there is a end of central directory locator, is zip64
-	if offsetCD == 0xff_ff_ff_ff {
-		p, _, err := d.TryPeekFind(32, -8, 10000, func(v uint64) bool {
-			return v == uint64(endOfCentralDirectoryLocatorSignatureN)
-		})
-		if err != nil {
-			d.Fatalf("can't find zip64 end of central directory")
-		}
-		d.SeekAbs(d.Len() + p)
+	// is there a zip64 end of central directory locator?
+	p, _, err = d.TryPeekFind(32, -8, 10000, func(v uint64) bool {
+		return v == uint64(endOfCentralDirectoryLocatorSignatureN)
+	})
+	if err == nil {
+		d.SeekRel(p)
 
 		var offsetEOCD uint64
 		d.FieldStruct("end_of_central_directory_locator", func(d *decode.D) {
