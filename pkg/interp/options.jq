@@ -113,6 +113,7 @@ def _opt_options:
 def _opt_eval($rest):
   ( with_entries(
       ( select(.value | _is_string and startswith("@"))
+      | .key as $opt
       | .value |=
           ( . as $v
           | try
@@ -121,7 +122,10 @@ def _opt_eval($rest):
               | tobytes
               | tostring
               )
-            catch $v
+            catch
+              ( "-o \($opt)=@\($v[1:]): \(.)"
+              | halt_error(_exit_code_args_error)
+              )
           )
       )
     )
@@ -413,7 +417,7 @@ def _opt_cli_opts:
     "show_help": {
       short: "-h",
       long: "--help",
-      description: "Show help for TOPIC (ex: --help, -h formats, -h mp4)",
+      description: "Show help for TOPIC (ex: -h formats, -h mp4)",
       string: "[TOPIC]",
       optional: true
     },
@@ -453,7 +457,7 @@ def _opt_cli_opts:
       short: "-o",
       long: "--option",
       description: "Set option (ex: -o color=true, see --help options)",
-      object: "KEY=VALUE",
+      object: "KEY=VALUE/@PATH",
     },
     "string_input": {
       short: "-R",

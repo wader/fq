@@ -71,6 +71,32 @@ fq -d mp4 file.mp4
 fq -o force=true -d mp4 file.mp4
 ```
 
+### CLI arguments
+
+Most of fq's CLI argument are borrowed from jq and works in the same way.
+
+#### Decode format `--decode`, `-d NAME`
+
+Force format to decode instead of probing.
+
+`NAME` is a name of a format, ex `-d mp4`, see `-h formats` for list of formats.
+
+#### Interactive REPL `--repl`,`-i`
+
+Start interactive REPL.
+
+Can be used with both no, one and multiple inputs, ex just `fq -i ` start a REPL with `null` input, `fq -i 123` with the number 123 as input, `fq -i . a b` with two files as input. Also works with `--slurp`.
+
+#### Set option `--options`,`-o KEY=VALUE|@PATH`
+
+`KEY` is name of option
+
+`VALUE` will be interpreted as a JSON value if possible otherwise a string, ex -o `name=abc` and `-o name='"abc"'` is the same.
+
+`@PATH` will read string from file at `PATH`.
+
+Specify a global option or a format option, ex: `-o decode_samples=false` would for some container decoders like `mp4` and `matroska` disable decoding of samples.
+
 ### Display output
 
 `display` or `d` is the main function for displaying values and is also the function that will be used if no other output function is explicitly used. If its input is a decode value it will output a dump and tree structure or otherwise it will output as JSON.
