@@ -1,3 +1,5 @@
+/filea:
+aaa
 $ fq -n options
 {
   "addrbase": 16,
@@ -217,3 +219,9 @@ null> _STDOUT_WIDTH=160 _STDOUT_HEIGHT=40 options | {display_bytes, line_bytes}
   "line_bytes": 20
 }
 null> ^D
+$ fq -n -o from_file=@filea options.from_file
+"aaa\n"
+$ fq -n -o from_file=@does_not_exist options.from_file
+exitcode: 2
+stderr:
+error: -o from_file=@does_not_exist: no such file or directory
