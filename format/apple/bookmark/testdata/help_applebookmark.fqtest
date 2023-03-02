@@ -24,19 +24,19 @@ about these types of files, see Sarah Edwards' excellent research on the subject
 fq's grep_by function can be used to recursively descend through the decoded tree, probing for and selecting any bookmark blobs, then
 converting them to readable JSON with torepr:
 
-
   fq 'grep_by(.type=="data" and .value[0:4] == "book") | .value | apple_bookmark |
   torepr' <sfl2 file>
-  
+
 Authors
 =======
+
 - David McDonald @dgmcdona (https://github.com/dgmcdona) @river_rat_504 (https://twitter.com/river_rat_504)
 
 References
 ==========
+
 - https://developer.apple.com/documentation/foundation/url/2143023-bookmarkdata
 - https://mac-alias.readthedocs.io/en/latest/bookmark_fmt.html
 - 
 https://www.mac4n6.com/blog/2016/1/1/manual-analysis-of-nskeyedarchiver-formatted-plist-files-a-review-of-the-new-os-x-1011-recent-items
 - https://michaellynn.github.io/2015/10/24/apples-bookmarkdata-exposed/
-

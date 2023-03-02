@@ -15,9 +15,9 @@ Show rtmp streams in PCAP file
 ==============================
 
   fq '.tcp_connections[] | select(.server.port=="rtmp") | d' file.cap
-  
+
 References
 ==========
+
 - https://rtmp.veriskope.com/docs/spec/
 - https://rtmp.veriskope.com/pdf/video_file_format_spec_v10.pdf
-
