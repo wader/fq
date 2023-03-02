@@ -57,11 +57,11 @@ func decodeIPv4(d *decode.D) any {
 	var lfi format.LinkFrameIn
 	if d.ArgAs(&ipi) && ipi.EtherType != format.EtherTypeIPv4 {
 		d.Fatalf("incorrect ethertype %d", ipi.EtherType)
-	} else if d.ArgAs(&lfi) && lfi.Type != format.LinkTypeIPv4 {
+	} else if d.ArgAs(&lfi) && lfi.Type != format.LinkTypeIPv4 && lfi.Type != format.LinkTypeRAW {
 		d.Fatalf("incorrect linktype %d", lfi.Type)
 	}
 
-	d.FieldU4("version")
+	d.FieldU4("version", d.UintAssert(4))
 	ihl := d.FieldU4("ihl")
 	d.FieldU6("dscp")
 	d.FieldU2("ecn")

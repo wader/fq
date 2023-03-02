@@ -22,7 +22,7 @@ $ fq dv ns.pcap
 0x30|b5 cb 28 ce                                    |..(.            |
 0x30|            08 00                              |    ..          |        ether_type: "ipv4" (0x800) (Internet Protocol version 4) 0x34-0x35.7 (2)
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        payload{}: (ipv4_packet) 0x36-0xc5.7 (144)
-0x30|                  45                           |      E         |          version: 4 0x36-0x36.3 (0.4)
+0x30|                  45                           |      E         |          version: 4 (valid) 0x36-0x36.3 (0.4)
 0x30|                  45                           |      E         |          ihl: 5 0x36.4-0x36.7 (0.4)
 0x30|                     00                        |       .        |          dscp: 0 0x37-0x37.5 (0.6)
 0x30|                     00                        |       .        |          ecn: 0 0x37.6-0x37.7 (0.2)

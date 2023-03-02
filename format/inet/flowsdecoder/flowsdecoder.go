@@ -5,6 +5,7 @@ package flowsdecoder
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 	"net"
 
 	"github.com/gopacket/gopacket"
@@ -192,6 +193,18 @@ func (fd *Decoder) SLL2Packet(bs []byte) error {
 
 func (fd *Decoder) LoopbackFrame(bs []byte) error {
 	return fd.packet(gopacket.NewPacket(bs, layers.LayerTypeLoopback, gopacket.Lazy))
+}
+
+// LinkTypeRAW IPv4 or Ipv6
+func (fd *Decoder) RAWIPFrame(bs []byte) error {
+	version := bs[0] >> 4
+	switch version {
+	case 4:
+		return fd.IPv4Packet(bs)
+	case 6:
+		return fd.IPv6Packet(bs)
+	}
+	return fmt.Errorf("invalid ip version %v", version)
 }
 
 func (fd *Decoder) packet(p gopacket.Packet) error {

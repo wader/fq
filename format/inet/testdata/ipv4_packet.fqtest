@@ -1,7 +1,7 @@
 # fq 'first(.. | select(format=="ipv4")) | tobytes' many_interfaces.pcapng > ipv4_packet
 $ fq -d ipv4_packet dv ipv4_packet
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: ipv4_packet (ipv4_packet) 0x0-0x3e3.7 (996)
-0x000|45                                             |E               |  version: 4 0x0-0x0.3 (0.4)
+0x000|45                                             |E               |  version: 4 (valid) 0x0-0x0.3 (0.4)
 0x000|45                                             |E               |  ihl: 5 0x0.4-0x0.7 (0.4)
 0x000|   00                                          | .              |  dscp: 0 0x1-0x1.5 (0.6)
 0x000|   00                                          | .              |  ecn: 0 0x1.6-0x1.7 (0.2)

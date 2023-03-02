@@ -116,11 +116,11 @@ func decodeIPv6(d *decode.D) any {
 	var lfi format.LinkFrameIn
 	if d.ArgAs(&ipi) && ipi.EtherType != format.EtherTypeIPv6 {
 		d.Fatalf("incorrect ethertype %d", ipi.EtherType)
-	} else if d.ArgAs(&lfi) && lfi.Type != format.LinkTypeIPv6 {
+	} else if d.ArgAs(&lfi) && lfi.Type != format.LinkTypeIPv6 && lfi.Type != format.LinkTypeRAW {
 		d.Fatalf("incorrect linktype %d", lfi.Type)
 	}
 
-	d.FieldU4("version")
+	d.FieldU4("version", d.UintAssert(6))
 	d.FieldU6("ds")
 	d.FieldU2("ecn")
 	d.FieldU20("flow_label")
