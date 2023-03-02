@@ -42,7 +42,7 @@ Element as object
       "head": ""
     }
   }
-  
+
 Element as array
 ================
 
@@ -78,4 +78,3 @@ Element as array
   
   # <a> href:s in file
   $ fq -r -o array=true -d html '.. | select(.[0] == "a" and .[1].href)?.[1].href' file.html
-  

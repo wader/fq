@@ -29,6 +29,7 @@ options indent and attribute_prefix.
 
 Elements as object
 ==================
+
 Element can have different shapes depending on body text, attributes and children:
 
 - <a key="value">text</a> is {"a":{"#text":"text","@key":"value"}}, has text (#text) and attributes (@key)
@@ -39,7 +40,6 @@ Element can have different shapes depending on body text, attributes and childre
 
 If there is #seq attribute it encodes the child element order. Use -o seq=true to include sequence number when decoding, otherwise
 order might be lost.
-
 
   # decode as object is the default
   $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -d xml -o seq=true
@@ -73,11 +73,11 @@ order might be lost.
     <b>bbb</b>
     <c attr="value">ccc</c>
   </a>
-  
+
 Elements as array
 =================
-Elements are arrays of the shape ["#text": "body text", "attr_name", {key: "attr value"}|null, [<child element>, ...]].
 
+Elements are arrays of the shape ["#text": "body text", "attr_name", {key: "attr value"}|null, [<child element>, ...]].
 
   # decode as array
   $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -d xml -o array=true
@@ -119,8 +119,8 @@ Elements are arrays of the shape ["#text": "body text", "attr_name", {key: "attr
   # access text of the <c> element, the object variant above is probably easier to use
   $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -o array=true '.[2][2][1]["#text"]'
   "ccc"
-  
+
 References
 ==========
-- xml.com's Converting Between XML and JSON (https://www.xml.com/pub/a/2006/05/31/converting-between-xml-and-json.html)
 
+- xml.com's Converting Between XML and JSON (https://www.xml.com/pub/a/2006/05/31/converting-between-xml-and-json.html)

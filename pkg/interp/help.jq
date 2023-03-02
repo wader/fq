@@ -174,8 +174,7 @@ def _help($arg0; $topic):
           end
         )
       , ""
-      # TODO: [:-1] hack to remove extra newline as we use println later
-      , if $doc then $doc | markdown | _markdown_to_text(options.width; -2)[:-1]
+      , if $doc then $doc | markdown | _markdown_to_text(options.width; -2)
         else empty
         end
       )
