@@ -144,7 +144,7 @@ def _help($arg0; $topic):
       , if $f.decode_in_arg then
           ( $f.decode_in_arg
           | to_entries
-          | map(["  \(.key)=\(.value)  ", $f.decode_in_arg_doc[.key]])
+          | map(["  \(.key)=\(.value | tojson)  ", $f.decode_in_arg_doc[.key]])
           | "Options"
           , "======="
           , ""

@@ -4,9 +4,9 @@ html: HyperText Markup Language decoder
 Options
 =======
 
-  array=false         Decode as nested arrays
-  attribute_prefix=@  Prefix for attribute keys
-  seq=false           Use seq attribute to preserve element order
+  array=false           Decode as nested arrays
+  attribute_prefix="@"  Prefix for attribute keys
+  seq=false             Use seq attribute to preserve element order
 
 Decode examples
 ===============

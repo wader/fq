@@ -4,8 +4,8 @@ csv: Comma separated values decoder
 Options
 =======
 
-  comma=,    Separator character
-  comment=#  Comment line character
+  comma=","    Separator character
+  comment="#"  Comment line character
 
 Decode examples
 ===============
