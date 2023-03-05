@@ -2,6 +2,7 @@ package decode
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/ranges"
@@ -252,4 +253,35 @@ func (v *Value) TryBitBufScalarFn(sms ...scalar.BitBufMapper) error {
 	}
 	v.V = &s
 	return err
+}
+
+func (v *Value) Remove() error {
+	p := v.Parent
+	if p == nil {
+		return fmt.Errorf("d has no parent")
+	}
+
+	switch fv := p.V.(type) {
+	case *Compound:
+		if !fv.IsArray {
+			if _, ok := fv.ByName[v.Name]; !ok {
+				return fmt.Errorf("d not in parent ByName")
+			}
+			delete(fv.ByName, p.Name)
+		}
+		found := false
+		var cs []*Value
+		for _, c := range fv.Children {
+			if c == v {
+				found = true
+				continue
+			}
+			cs = append(cs, c)
+		}
+		if !found {
+			return fmt.Errorf("d not in parent children")
+		}
+		fv.Children = cs
+	}
+	return nil
 }

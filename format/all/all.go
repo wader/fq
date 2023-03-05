@@ -49,6 +49,7 @@ import (
 	_ "github.com/wader/fq/format/tar"
 	_ "github.com/wader/fq/format/text"
 	_ "github.com/wader/fq/format/tiff"
+	_ "github.com/wader/fq/format/tls"
 	_ "github.com/wader/fq/format/toml"
 	_ "github.com/wader/fq/format/tzif"
 	_ "github.com/wader/fq/format/vorbis"

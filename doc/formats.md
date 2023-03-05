@@ -102,6 +102,7 @@
 |`tar`                                                   |Tar&nbsp;archive                                                                                             |<sub>`probe`</sub>|
 |`tcp_segment`                                           |Transmission&nbsp;control&nbsp;protocol&nbsp;segment                                                         |<sub></sub>|
 |`tiff`                                                  |Tag&nbsp;Image&nbsp;File&nbsp;Format                                                                         |<sub>`icc_profile`</sub>|
+|[`tls`](#tls)                                           |Transport&nbsp;layer&nbsp;security                                                                           |<sub>`asn1_ber`</sub>|
 |`toml`                                                  |Tom's&nbsp;Obvious,&nbsp;Minimal&nbsp;Language                                                               |<sub></sub>|
 |[`tzif`](#tzif)                                         |Time&nbsp;Zone&nbsp;Information&nbsp;Format                                                                  |<sub></sub>|
 |`udp_datagram`                                          |User&nbsp;datagram&nbsp;protocol                                                                             |<sub>`udp_payload`</sub>|
@@ -123,7 +124,7 @@
 |`link_frame`                                            |Group                                                                                                        |<sub>`bsd_loopback_frame` `ether8023_frame` `ipv4_packet` `ipv6_packet` `sll2_packet` `sll_packet`</sub>|
 |`mp3_frame_tags`                                        |Group                                                                                                        |<sub>`mp3_frame_vbri` `mp3_frame_xing`</sub>|
 |`probe`                                                 |Group                                                                                                        |<sub>`adts` `apple_bookmark` `ar` `avi` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `jsonl` `macho` `macho_fat` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `toml` `tzif` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
-|`tcp_stream`                                            |Group                                                                                                        |<sub>`dns_tcp` `rtmp`</sub>|
+|`tcp_stream`                                            |Group                                                                                                        |<sub>`dns_tcp` `rtmp` `tls`</sub>|
 |`udp_payload`                                           |Group                                                                                                        |<sub>`dns`</sub>|
 
 [#]: sh-end
@@ -838,6 +839,153 @@ fq '.tcp_connections[] | select(.server.port=="rtmp") | d' file.cap
 ### References
 - https://rtmp.veriskope.com/docs/spec/
 - https://rtmp.veriskope.com/pdf/video_file_format_spec_v10.pdf
+
+## tls
+
+### Options
+
+|Name    |Default|Description|
+|-       |-      |-|
+|`keylog`|       |NSS Key Log content|
+
+### Examples
+
+Decode file using tls options
+```
+$ fq -d tls -o keylog="" . file
+```
+
+Decode value as tls
+```
+... | tls({keylog:""})
+```
+
+Supports decoding of most standard records, messages and extensions. Can also decrypt most standard cipher suits in a PCAP with traffic in both directions if a NSS key log is provided.
+
+### Decode and decrypt provding a PCAP and key log
+
+Write traffic to a PCAP file:
+
+```sh
+$ tcpdump -i <iface> -w traffic.pcap
+```
+
+Make sure your curl TLS backend support `SSLKEYLOGFILE` and do:
+```sh
+$ SSLKEYLOGFILE=traffic.keylog curl --tls-max 1.2 https://host/path
+```
+
+Decode, decrypt and query. Uses `keylog=@<path>` to read option value from keylog file:
+```sh
+# decode and show whole tree
+$ fq -o keylog=@traffic.keylog d traffic.pcap
+
+# write unencrypted server response to a file.
+# first .stream is the TCP stream, second .stream is TLS application data stream
+#
+# first TCP connections:
+$ fq -o keylog=@traffic.keylog '.tcp_connections[0].server.stream.stream | tobytes' traffic.pcap > data
+# first TLS connection:
+$ fq -o keylog=@traffic.keylog  'first(grep_by(.server.stream | format == "tls")).server.stream.stream | tobytes' > data
+```
+
+### Supported cipher suites for decryption
+
+`TLS_DH_ANON_EXPORT_WITH_DES40_CBC_SHA`,
+`TLS_DH_ANON_EXPORT_WITH_RC4_40_MD5`,
+`TLS_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA`,
+`TLS_DHE_DSS_WITH_3DES_EDE_CBC_SHA`,
+`TLS_DHE_DSS_WITH_AES_128_CBC_SHA`,
+`TLS_DHE_DSS_WITH_AES_128_CBC_SHA256`,
+`TLS_DHE_DSS_WITH_AES_128_GCM_SHA256`,
+`TLS_DHE_DSS_WITH_AES_256_CBC_SHA`,
+`TLS_DHE_DSS_WITH_AES_256_CBC_SHA256`,
+`TLS_DHE_DSS_WITH_AES_256_GCM_SHA384`,
+`TLS_DHE_DSS_WITH_DES_CBC_SHA`,
+`TLS_DHE_DSS_WITH_RC4_128_SHA`,
+`TLS_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA`,
+`TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA`,
+`TLS_DHE_RSA_WITH_AES_128_CBC_SHA`,
+`TLS_DHE_RSA_WITH_AES_128_CBC_SHA256`,
+`TLS_DHE_RSA_WITH_AES_128_GCM_SHA256`,
+`TLS_DHE_RSA_WITH_AES_256_CBC_SHA`,
+`TLS_DHE_RSA_WITH_AES_256_CBC_SHA256`,
+`TLS_DHE_RSA_WITH_AES_256_GCM_SHA384`,
+`TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256`,
+`TLS_DHE_RSA_WITH_DES_CBC_SHA`,
+`TLS_ECDH_ECDSA_WITH_3DES_EDE_CBC_SHA`,
+`TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA`,
+`TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256`,
+`TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256`,
+`TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA`,
+`TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384`,
+`TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384`,
+`TLS_ECDH_ECDSA_WITH_RC4_128_SHA`,
+`TLS_ECDH_RSA_WITH_3DES_EDE_CBC_SHA`,
+`TLS_ECDH_RSA_WITH_AES_128_CBC_SHA`,
+`TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256`,
+`TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256`,
+`TLS_ECDH_RSA_WITH_AES_256_CBC_SHA`,
+`TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384`,
+`TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384`,
+`TLS_ECDH_RSA_WITH_RC4_128_SHA`,
+`TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA`,
+`TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA`,
+`TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA`,
+`TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256`,
+`TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256`,
+`TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA`,
+`TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA`,
+`TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384`,
+`TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384eadAESGCM`,
+`TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256`,
+`TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305`,
+`TLS_ECDHE_ECDSA_WITH_RC4_128_SHA`,
+`TLS_ECDHE_ECDSA_WITH_RC4_128_SHA`,
+`TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA`,
+`TLS_ECDHE_PSK_WITH_AES_128_GCM_SHA256`,
+`TLS_ECDHE_PSK_WITH_AES_256_CBC_SHA`,
+`TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA`,
+`TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA`,
+`TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA`,
+`TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA`,
+`TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256`,
+`TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256`,
+`TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA`,
+`TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA`,
+`TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384`,
+`TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384`,
+`TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256`,
+`TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305`,
+`TLS_ECDHE_RSA_WITH_RC4_128_SHA`,
+`TLS_ECDHE_RSA_WITH_RC4_128_SHA`,
+`TLS_PSK_WITH_AES_128_CBC_SHA`,
+`TLS_PSK_WITH_AES_256_CBC_SHA`,
+`TLS_PSK_WITH_RC4_128_SHA`,
+`TLS_RSA_EXPORT_WITH_DES40_CBC_SHA`,
+`TLS_RSA_EXPORT_WITH_RC4_40_MD5`,
+`TLS_RSA_WITH_3DES_EDE_CBC_SHA`,
+`TLS_RSA_WITH_3DES_EDE_CBC_SHA`,
+`TLS_RSA_WITH_AES_128_CBC_SHA`,
+`TLS_RSA_WITH_AES_128_CBC_SHA`,
+`TLS_RSA_WITH_AES_128_CBC_SHA256`,
+`TLS_RSA_WITH_AES_128_CBC_SHA256`,
+`TLS_RSA_WITH_AES_128_GCM_SHA256`,
+`TLS_RSA_WITH_AES_128_GCM_SHA256`,
+`TLS_RSA_WITH_AES_256_CBC_SHA`,
+`TLS_RSA_WITH_AES_256_CBC_SHA`,
+`TLS_RSA_WITH_AES_256_CBC_SHA256`,
+`TLS_RSA_WITH_AES_256_GCM_SHA384`,
+`TLS_RSA_WITH_AES_256_GCM_SHA384`,
+`TLS_RSA_WITH_DES_CBC_SHA`,
+`TLS_RSA_WITH_RC4_128_MD5`,
+`TLS_RSA_WITH_RC4_128_SHA`,
+`TLS_RSA_WITH_RC4_128_SHA`
+
+### References
+
+- [RFC 5246: The Transport Layer Security (TLS) Protocol](https://www.rfc-editor.org/rfc/rfc5246)
+- [RFC 6101: The Secure Sockets Layer (SSL) Protocol Version 3.0](https://www.rfc-editor.org/rfc/rfc)
 
 ## tzif
 

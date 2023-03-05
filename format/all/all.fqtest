@@ -135,6 +135,7 @@ sll_packet           Linux cooked capture encapsulation
 tar                  Tar archive
 tcp_segment          Transmission control protocol segment
 tiff                 Tag Image File Format
+tls                  Transport layer security
 toml                 Tom's Obvious, Minimal Language
 tzif                 Time Zone Information Format
 udp_datagram         User datagram protocol
