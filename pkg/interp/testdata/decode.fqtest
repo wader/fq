@@ -59,7 +59,7 @@ mp3> .[] = 1
   "frames": 1,
   "headers": 1
 }
-mp3> walk(tovalue) | .headers[0].magic
+mp3> walk(tovalue) | .headers[0].header.magic
 "ID3"
 mp3> ^D
 $ fq -d bytes 'png | d' test.mp3

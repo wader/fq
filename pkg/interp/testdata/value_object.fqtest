@@ -1,6 +1,6 @@
 $ fq -i -d mp3 . test.mp3
-mp3> .headers[0].flags | ., tovalue, toactual, tosym, type, length?
-   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.headers[0].flags{}:
+mp3> .headers[0].header.flags | ., tovalue, toactual, tosym, type, length?
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.headers[0].header.flags{}:
 0x0|               00                              |     .          |  unsynchronisation: false
 0x0|               00                              |     .          |  extended_header: false
 0x0|               00                              |     .          |  experimental_indicator: false
@@ -15,100 +15,101 @@ null
 null
 "object"
 4
-mp3> .headers[0].flags[0] | ., type, length?
+mp3> .headers[0].header.flags[0] | ., type, length?
 error: expected an array with index 0 but got: object
-mp3> .headers[0].flags[-1000] | ., type, length?
+mp3> .headers[0].header.flags[-1000] | ., type, length?
 error: expected an array with index -2 but got: object
-mp3> .headers[0].flags[1000] | ., type, length?
+mp3> .headers[0].header.flags[1000] | ., type, length?
 error: expected an array with index -1 but got: object
-mp3> .headers[0].flags[1:3] | ., type, length?
+mp3> .headers[0].header.flags[1:3] | ., type, length?
 error: expected an array but got: object
-mp3> .headers[0].flags[0:-1] | ., type, length?
+mp3> .headers[0].header.flags[0:-1] | ., type, length?
 error: expected an array but got: object
-mp3> .headers[0].flags[-1000:2000] | ., type, length?
+mp3> .headers[0].header.flags[-1000:2000] | ., type, length?
 error: expected an array but got: object
-mp3> .headers[0].flags["test"] | ., type, length?
+mp3> .headers[0].header.flags["test"] | ., type, length?
 null
 "null"
 0
-mp3> [.headers[0].flags[]] | type, length?
+mp3> [.headers[0].header.flags[]] | type, length?
 "array"
 4
-mp3> .headers[0].flags | keys
+mp3> .headers[0].header.flags | keys
 [
   "unsynchronisation",
   "extended_header",
   "experimental_indicator",
   "unused"
 ]
-mp3> .headers[0].flags | has("a")
+mp3> .headers[0].header.flags | has("a")
 false
-mp3> .headers[0].flags | has(0)
+mp3> .headers[0].header.flags | has(0)
 error: cannot check whether object has a key: 0
-mp3> .headers[0].flags | type
+mp3> .headers[0].header.flags | type
 "object"
-mp3> .headers[0].flags | tonumber
+mp3> .headers[0].header.flags | tonumber
 error: tonumber cannot be applied to: object
-mp3> .headers[0].flags | tostring
+mp3> .headers[0].header.flags | tostring
 "{\"experimental_indicator\":false,\"extended_header\":false,\"unsynchronisation\":false,\"unused\":0}"
-mp3> .headers[0].flags + ""
+mp3> .headers[0].header.flags + ""
 error: cannot add: object ({"experimental_indicator" ...}) and string ("")
-mp3> .headers[0].flags + 1
+mp3> .headers[0].header.flags + 1
 error: cannot add: object ({"experimental_indicator" ...}) and number (1)
-mp3> .headers[0].flags._start | ., type, length?
+mp3> .headers[0].header.flags._start | ., type, length?
 40
 "number"
 40
-mp3> .headers[0].flags._stop | ., type, length?
+mp3> .headers[0].header.flags._stop | ., type, length?
 48
 "number"
 48
-mp3> .headers[0].flags._len | ., type, length?
+mp3> .headers[0].header.flags._len | ., type, length?
 8
 "number"
 8
-mp3> .headers[0].flags._name | ., type, length?
+mp3> .headers[0].header.flags._name | ., type, length?
 "flags"
 "string"
 5
-mp3> .headers[0].flags._actual | ., type, length?
+mp3> .headers[0].header.flags._actual | ., type, length?
 null
 "null"
 0
-mp3> .headers[0].flags._sym | ., type, length?
+mp3> .headers[0].header.flags._sym | ., type, length?
 null
 "null"
 0
-mp3> .headers[0].flags._description | ., type, length?
+mp3> .headers[0].header.flags._description | ., type, length?
 null
 "null"
 0
-mp3> .headers[0].flags._path | ., type, length?
+mp3> .headers[0].header.flags._path | ., type, length?
 [
   "headers",
   0,
+  "header",
   "flags"
 ]
 "array"
-3
-mp3> .headers[0].flags._bits | ., type, length?
+4
+mp3> .headers[0].header.flags._bits | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|               00                              |     .          |.: raw bits 0x5-0x5.7 (1)
 "string"
 8
-mp3> .headers[0].flags._bytes | ., type, length?
+mp3> .headers[0].header.flags._bytes | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|               00                              |     .          |.: raw bits 0x5-0x5.7 (1)
 "string"
 1
-mp3> .headers[0].flags._error | ., type, length?
+mp3> .headers[0].header.flags._error | ., type, length?
 null
 "null"
 0
-mp3> .headers[0].flags._gap | ., type, length?
+mp3> .headers[0].header.flags._gap | ., type, length?
 false
 "boolean"
-mp3> .headers[0].flags.a = 1
+mp3> .headers[0].header.flags.a = 1
 {
   "footers": [],
   "frames": [
@@ -437,13 +438,6 @@ mp3> .headers[0].flags.a = 1
   ],
   "headers": [
     {
-      "flags": {
-        "a": 1,
-        "experimental_indicator": false,
-        "extended_header": false,
-        "unsynchronisation": false,
-        "unused": 0
-      },
       "frames": [
         {
           "flags": {
@@ -465,17 +459,26 @@ mp3> .headers[0].flags.a = 1
           "text_encoding": "utf8"
         }
       ],
-      "magic": "ID3",
-      "padding": "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
-      "revision": 0,
-      "size": 35,
-      "version": 4
+      "header": {
+        "flags": {
+          "a": 1,
+          "experimental_indicator": false,
+          "extended_header": false,
+          "unsynchronisation": false,
+          "unused": 0
+        },
+        "magic": "ID3",
+        "revision": 0,
+        "size": 35,
+        "version": 4
+      },
+      "padding": "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
     }
   ]
 }
-mp3> .headers[0].flags[0] = 1
+mp3> .headers[0].header.flags[0] = 1
 error: expected an array but got: object ({"experimental_indicator" ...})
-mp3> .headers[0].flags.a |= empty
+mp3> .headers[0].header.flags.a |= empty
 {
   "footers": [],
   "frames": [
@@ -804,12 +807,6 @@ mp3> .headers[0].flags.a |= empty
   ],
   "headers": [
     {
-      "flags": {
-        "experimental_indicator": false,
-        "extended_header": false,
-        "unsynchronisation": false,
-        "unused": 0
-      },
       "frames": [
         {
           "flags": {
@@ -831,17 +828,25 @@ mp3> .headers[0].flags.a |= empty
           "text_encoding": "utf8"
         }
       ],
-      "magic": "ID3",
-      "padding": "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000",
-      "revision": 0,
-      "size": 35,
-      "version": 4
+      "header": {
+        "flags": {
+          "experimental_indicator": false,
+          "extended_header": false,
+          "unsynchronisation": false,
+          "unused": 0
+        },
+        "magic": "ID3",
+        "revision": 0,
+        "size": 35,
+        "version": 4
+      },
+      "padding": "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
     }
   ]
 }
-mp3> .headers[0].flags[0] |= empty
+mp3> .headers[0].header.flags[0] |= empty
 error: expected an array with index 0 but got: object
-mp3> .headers[0].flags | setpath(["a"]; 1)
+mp3> .headers[0].header.flags | setpath(["a"]; 1)
 {
   "a": 1,
   "experimental_indicator": false,
@@ -849,15 +854,15 @@ mp3> .headers[0].flags | setpath(["a"]; 1)
   "unsynchronisation": false,
   "unused": 0
 }
-mp3> .headers[0].flags | setpath([0]; 1)
+mp3> .headers[0].header.flags | setpath([0]; 1)
 error: expected an array but got: object ({"experimental_indicator" ...})
-mp3> .headers[0].flags | delpaths([["a"]])
+mp3> .headers[0].header.flags | delpaths([["a"]])
 {
   "experimental_indicator": false,
   "extended_header": false,
   "unsynchronisation": false,
   "unused": 0
 }
-mp3> .headers[0].flags | delpaths([[0]])
+mp3> .headers[0].header.flags | delpaths([[0]])
 error: expected an array but got: object ({"experimental_indicator" ...})
 mp3> ^D

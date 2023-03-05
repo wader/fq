@@ -1,13 +1,13 @@
-$ fq -d mp3 '.headers[0].magic._bits[8:16] | hd' test.mp3
+$ fq -d mp3 '.headers[0].header.magic._bits[8:16] | hd' test.mp3
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|   44                                          | D              |.: raw bits 0x1-0x1.7 (1)
-$ fq -d mp3 '.headers[0].magic._bits | [.[8:16], .[0:8]] | hd' test.mp3
+$ fq -d mp3 '.headers[0].header.magic._bits | [.[8:16], .[0:8]] | hd' test.mp3
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|44 49|                                         |DI|             |.: raw bits 0x0-0x1.7 (2)
-$ fq -d mp3 '.headers[0].magic._bits | [.[8:16], .[0:8]] | tobits | hd' test.mp3
+$ fq -d mp3 '.headers[0].header.magic._bits | [.[8:16], .[0:8]] | tobits | hd' test.mp3
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|44 49|                                         |DI|             |.: raw bits 0x0-0x1.7 (2)
-$ fq -d mp3 '.headers[0].magic._bits | [.[8:16], .[0:8]] | tobytes | hd' test.mp3
+$ fq -d mp3 '.headers[0].header.magic._bits | [.[8:16], .[0:8]] | tobytes | hd' test.mp3
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|44 49|                                         |DI|             |.: raw bits 0x0-0x1.7 (2)
 $ fq -n '"12" | tobytes | hd'
@@ -33,7 +33,7 @@ $ fq -d mp3 '.frames[]._bits[0:12] | tonumber' test.mp3
 4095
 4095
 4095
-$ fq -d mp3 '.headers[0].magic._bits[0:24] | tostring' test.mp3
+$ fq -d mp3 '.headers[0].header.magic._bits[0:24] | tostring' test.mp3
 "ID3"
 $ fq -d mp3 '.frames[0].audio_data | ("", "md5", "base64", "snippet") as $f | tovalue({bits_format: $f})' test.mp3
 "<5>AAAAAAA="
@@ -47,7 +47,7 @@ mp3> [1, 2, 3] | tobytes
 mp3> [1, 2, 3, [1, 2, 3]] | tobytes
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|01 02 03 01 02 03|                             |......|         |.: raw bits 0x0-0x5.7 (6)
-mp3> [1, 2, 3, [1, 2, 3], .headers[0].magic] | tobytes
+mp3> [1, 2, 3, [1, 2, 3], .headers[0].header.magic] | tobytes
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|01 02 03 01 02 03 49 44 33|                    |......ID3|      |.: raw bits 0x0-0x8.7 (9)
 mp3> [-1] | tobytes
