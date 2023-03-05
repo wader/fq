@@ -24,11 +24,11 @@ $ fq -n '{a:1, b: 2} | tostream'
     "b"
   ]
 ]
-$ fq -d mp3 '{(.headers[0].magic): 123}' test.mp3
+$ fq -d mp3 '{(.headers[0].header.magic): 123}' test.mp3
 {
   "ID3": 123
 }
-$ fq -d mp3 '{(.headers[0].magic): 123}' test.mp3
+$ fq -d mp3 '{(.headers[0].header.magic): 123}' test.mp3
 {
   "ID3": 123
 }
@@ -257,12 +257,6 @@ $ fq -d mp3 '.frames[0] | to_entries[].key' test.mp3
 # TODO: move this test as it depends on xml
 $ fq -r '.headers[0] | to_xml({indent: 2})' test.mp3
 <doc>
-  <flags>
-    <experimental_indicator>false</experimental_indicator>
-    <extended_header>false</extended_header>
-    <unsynchronisation>false</unsynchronisation>
-    <unused>0</unused>
-  </flags>
   <frames>
     <flags>
       <compression>false</compression>
@@ -282,11 +276,19 @@ $ fq -r '.headers[0] | to_xml({indent: 2})' test.mp3
     <text>Lavf58.45.100</text>
     <text_encoding>utf8</text_encoding>
   </frames>
-  <magic>ID3</magic>
+  <header>
+    <flags>
+      <experimental_indicator>false</experimental_indicator>
+      <extended_header>false</extended_header>
+      <unsynchronisation>false</unsynchronisation>
+      <unused>0</unused>
+    </flags>
+    <magic>ID3</magic>
+    <revision>0</revision>
+    <size>35</size>
+    <version>4</version>
+  </header>
   <padding>����������</padding>
-  <revision>0</revision>
-  <size>35</size>
-  <version>4</version>
 </doc>
 $ fq -i
 null> 0b0_1
@@ -309,5 +311,5 @@ null> 0x012_3456789abcdefx
                          ^ unexpected token "x"
 null> ^D
 # test JQValue in assign/update path
-$ fq -c -d mp3 '.headers[0].version as $i | [] | .[$i] = 1 | .[$i] += 2' test.mp3
+$ fq -c -d mp3 '.headers[0].header.version as $i | [] | .[$i] = 1 | .[$i] += 2' test.mp3
 [null,null,null,null,3]

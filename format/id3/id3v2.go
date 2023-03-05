@@ -433,6 +433,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 					d.FieldStrFn("entry", textNullFn(encodingUTF8))
 				}
 			})
+			decodeFrames(d, version, uint64(d.BitsLeft()/8))
 		},
 
 		// id3v2.0
@@ -607,23 +608,23 @@ func decodeFrames(d *decode.D, version int, size uint64) {
 }
 
 func id3v2Decode(d *decode.D) any {
-	d.AssertAtLeastBitsLeft(4 * 8)
-	d.FieldUTF8("magic", 3, d.StrAssert("ID3"))
-	version := int(d.FieldU8("version"))
-	versionValid := version == 2 || version == 3 || version == 4
-	if !versionValid {
-		d.Fatalf("unsupported version %d", version)
-	}
-
-	d.FieldU8("revision")
+	var version uint64
 	var extendedHeader bool
-	d.FieldStruct("flags", func(d *decode.D) {
-		d.FieldBool("unsynchronisation")
-		extendedHeader = d.FieldBool("extended_header")
-		d.FieldBool("experimental_indicator")
-		d.FieldU5("unused")
+	var size uint64
+
+	d.AssertAtLeastBitsLeft(4 * 8)
+	d.FieldStruct("header", func(d *decode.D) {
+		d.FieldUTF8("magic", 3, d.StrAssert("ID3"))
+		version = d.FieldU8("version", d.UintAssert(2, 3, 4))
+		d.FieldU8("revision")
+		d.FieldStruct("flags", func(d *decode.D) {
+			d.FieldBool("unsynchronisation")
+			extendedHeader = d.FieldBool("extended_header")
+			d.FieldBool("experimental_indicator")
+			d.FieldU5("unused")
+		})
+		size = d.FieldUintFn("size", decodeSyncSafeU32)
 	})
-	size := d.FieldUintFn("size", decodeSyncSafeU32)
 
 	var extHeaderSize uint64
 	if extendedHeader {
@@ -640,7 +641,7 @@ func id3v2Decode(d *decode.D) any {
 		})
 	}
 
-	decodeFrames(d, version, size)
+	decodeFrames(d, int(version), size)
 
 	return nil
 }

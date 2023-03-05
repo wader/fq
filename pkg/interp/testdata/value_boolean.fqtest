@@ -1,112 +1,113 @@
 $ fq -i -d mp3 . test.mp3
-mp3> .headers[0].flags.unsynchronisation | ., tovalue, toactual, tosym, type, length?
+mp3> .headers[0].header.flags.unsynchronisation | ., tovalue, toactual, tosym, type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|               00                              |     .          |.headers[0].flags.unsynchronisation: false
+0x0|               00                              |     .          |.headers[0].header.flags.unsynchronisation: false
 false
 false
 null
 "boolean"
-mp3> .headers[0].flags.unsynchronisation[0] | ., type, length?
+mp3> .headers[0].header.flags.unsynchronisation[0] | ., type, length?
 error: expected an array but got: boolean
-mp3> .headers[0].flags.unsynchronisation[-1000] | ., type, length?
+mp3> .headers[0].header.flags.unsynchronisation[-1000] | ., type, length?
 error: expected an array but got: boolean
-mp3> .headers[0].flags.unsynchronisation[1000] | ., type, length?
+mp3> .headers[0].header.flags.unsynchronisation[1000] | ., type, length?
 error: expected an array but got: boolean
-mp3> .headers[0].flags.unsynchronisation[1:3] | ., type, length?
+mp3> .headers[0].header.flags.unsynchronisation[1:3] | ., type, length?
 error: expected an array but got: boolean
-mp3> .headers[0].flags.unsynchronisation[0:-1] | ., type, length?
+mp3> .headers[0].header.flags.unsynchronisation[0:-1] | ., type, length?
 error: expected an array but got: boolean
-mp3> .headers[0].flags.unsynchronisation[-1000:2000] | ., type, length?
+mp3> .headers[0].header.flags.unsynchronisation[-1000:2000] | ., type, length?
 error: expected an array but got: boolean
-mp3> .headers[0].flags.unsynchronisation["test"] | ., type, length?
+mp3> .headers[0].header.flags.unsynchronisation["test"] | ., type, length?
 error: expected an object but got: boolean
-mp3> [.headers[0].flags.unsynchronisation[]] | type, length?
+mp3> [.headers[0].header.flags.unsynchronisation[]] | type, length?
 error: cannot iterate over: boolean
-mp3> .headers[0].flags.unsynchronisation | keys
+mp3> .headers[0].header.flags.unsynchronisation | keys
 error: keys cannot be applied to: boolean
-mp3> .headers[0].flags.unsynchronisation | has("a")
+mp3> .headers[0].header.flags.unsynchronisation | has("a")
 error: has cannot be applied to: boolean
-mp3> .headers[0].flags.unsynchronisation | has(0)
+mp3> .headers[0].header.flags.unsynchronisation | has(0)
 error: has cannot be applied to: boolean
-mp3> .headers[0].flags.unsynchronisation | type
+mp3> .headers[0].header.flags.unsynchronisation | type
 "boolean"
-mp3> .headers[0].flags.unsynchronisation | tonumber
+mp3> .headers[0].header.flags.unsynchronisation | tonumber
 error: tonumber cannot be applied to: boolean
-mp3> .headers[0].flags.unsynchronisation | tostring
+mp3> .headers[0].header.flags.unsynchronisation | tostring
 "false"
-mp3> .headers[0].flags.unsynchronisation + ""
+mp3> .headers[0].header.flags.unsynchronisation + ""
 error: cannot add: boolean (false) and string ("")
-mp3> .headers[0].flags.unsynchronisation + 1
+mp3> .headers[0].header.flags.unsynchronisation + 1
 error: cannot add: boolean (false) and number (1)
-mp3> .headers[0].flags.unsynchronisation._start | ., type, length?
+mp3> .headers[0].header.flags.unsynchronisation._start | ., type, length?
 40
 "number"
 40
-mp3> .headers[0].flags.unsynchronisation._stop | ., type, length?
+mp3> .headers[0].header.flags.unsynchronisation._stop | ., type, length?
 41
 "number"
 41
-mp3> .headers[0].flags.unsynchronisation._len | ., type, length?
+mp3> .headers[0].header.flags.unsynchronisation._len | ., type, length?
 1
 "number"
 1
-mp3> .headers[0].flags.unsynchronisation._name | ., type, length?
+mp3> .headers[0].header.flags.unsynchronisation._name | ., type, length?
 "unsynchronisation"
 "string"
 17
-mp3> .headers[0].flags.unsynchronisation._actual | ., type, length?
+mp3> .headers[0].header.flags.unsynchronisation._actual | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|               00                              |     .          |.headers[0].flags.unsynchronisation: false
+0x0|               00                              |     .          |.headers[0].header.flags.unsynchronisation: false
 "boolean"
-mp3> .headers[0].flags.unsynchronisation._sym | ., type, length?
+mp3> .headers[0].header.flags.unsynchronisation._sym | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|               00                              |     .          |.headers[0].flags.unsynchronisation: false
+0x0|               00                              |     .          |.headers[0].header.flags.unsynchronisation: false
 "null"
 0
-mp3> .headers[0].flags.unsynchronisation._description | ., type, length?
+mp3> .headers[0].header.flags.unsynchronisation._description | ., type, length?
 null
 "null"
 0
-mp3> .headers[0].flags.unsynchronisation._path | ., type, length?
+mp3> .headers[0].header.flags.unsynchronisation._path | ., type, length?
 [
   "headers",
   0,
+  "header",
   "flags",
   "unsynchronisation"
 ]
 "array"
-4
-mp3> .headers[0].flags.unsynchronisation._bits | ., type, length?
+5
+mp3> .headers[0].header.flags.unsynchronisation._bits | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|               00                              |     .          |.: raw bits 0x5-0x5 (0.1)
 "string"
 1
-mp3> .headers[0].flags.unsynchronisation._bytes | ., type, length?
+mp3> .headers[0].header.flags.unsynchronisation._bytes | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|               00                              |     .          |.: raw bits 0x5-0x5 (0.1)
 "string"
 0
-mp3> .headers[0].flags.unsynchronisation._error | ., type, length?
+mp3> .headers[0].header.flags.unsynchronisation._error | ., type, length?
 null
 "null"
 0
-mp3> .headers[0].flags.unsynchronisation._gap | ., type, length?
+mp3> .headers[0].header.flags.unsynchronisation._gap | ., type, length?
 false
 "boolean"
-mp3> .headers[0].flags.unsynchronisation.a = 1
+mp3> .headers[0].header.flags.unsynchronisation.a = 1
 error: expected an object but got: boolean (false)
-mp3> .headers[0].flags.unsynchronisation[0] = 1
+mp3> .headers[0].header.flags.unsynchronisation[0] = 1
 error: expected an array but got: boolean (false)
-mp3> .headers[0].flags.unsynchronisation.a |= empty
+mp3> .headers[0].header.flags.unsynchronisation.a |= empty
 error: expected an object but got: boolean
-mp3> .headers[0].flags.unsynchronisation[0] |= empty
+mp3> .headers[0].header.flags.unsynchronisation[0] |= empty
 error: expected an array but got: boolean
-mp3> .headers[0].flags.unsynchronisation | setpath(["a"]; 1)
+mp3> .headers[0].header.flags.unsynchronisation | setpath(["a"]; 1)
 error: expected an object but got: boolean (false)
-mp3> .headers[0].flags.unsynchronisation | setpath([0]; 1)
+mp3> .headers[0].header.flags.unsynchronisation | setpath([0]; 1)
 error: expected an array but got: boolean (false)
-mp3> .headers[0].flags.unsynchronisation | delpaths([["a"]])
+mp3> .headers[0].header.flags.unsynchronisation | delpaths([["a"]])
 error: expected an object but got: boolean (false)
-mp3> .headers[0].flags.unsynchronisation | delpaths([[0]])
+mp3> .headers[0].header.flags.unsynchronisation | delpaths([[0]])
 error: expected an array but got: boolean (false)
 mp3> ^D

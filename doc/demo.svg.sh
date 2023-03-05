@@ -14,8 +14,8 @@ s() {
 c "Overview of mp3 file"
 s "fq . file.mp3"
 echo
-c "Show ID3v2 tag inside mp3 file"
-s "fq '.headers[0]' file.mp3"
+c "Show header of first ID3v2 tag inside mp3 file"
+s "fq '.headers[0].header' file.mp3"
 echo
 c "Show encoder software used"
 s "fq -r '.frames[0].tag.encoder | tovalue' file.mp3"
