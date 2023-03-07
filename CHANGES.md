@@ -1,3 +1,142 @@
+# 0.4.0
+
+TLS decode and decryption, better streaming matroska/webm support, support raw IP in PCAP and bug fixes.
+
+## Changes
+
+- Fix panic when interrupting big JSON output. #573
+- Support passing options (`-o name=value`) to nested decoders. #589
+  - Allows for example to pass keylog to a TLS decoder inside a PCAP file or to tell a container decoders to not decode samples inside a ZIP file etc.
+- Exit with error if `-o name=@path` fails to read file at `path`. #597
+
+## Decoder changes
+
+- `id3v2` Properly decode CTOC subframes. #606
+- `matroska`
+  - Now supports streaming matroska and webm better (master elements with unknown size). #576 #581
+  - Add `decode_samples` option. #574
+  - Spec update and clean up of symbols and descriptions. #580
+- `pcap,pcapng` Support raw IPv4 and IPv6 link frames. #599 #590
+- `tls` Add Transport layer security decoder and decryption. #603
+  - Supports TLS 1.0, 1.1, 1.2 and some SSL 3.0.
+  - Decodes records and most messages and extensions.
+  - Can decrypt most common cipher suites if a keylog is provided. See documentation for list of supported ciphers suites.
+  ```sh
+  # show first 50 bytes of decrypted client/server TLS application data stream
+  # -o keylog=@file.pcap.keylog is used to read keylog from a file
+  # first .stream is TCP stream, second .stream the application data stream
+  $ fq -o keylog=@file.pcap.keylog '.tcp_connections[0].["client", "server"].stream.stream | tobytes[0:50] | dd' file.pcap
+      │00 01 02 03 04 05 06 07 08 09 0a 0b│0123456789ab│
+  0x00│47 45 54 20 2f 64 75 6d 70 2f 6c 6f│GET /dump/lo│.: raw bits 0x0-0x31.7 (50)
+  0x0c│67 20 48 54 54 50 2f 31 2e 31 0d 0a│g HTTP/1.1..│
+  0x18│48 6f 73 74 3a 20 69 6e 77 61 64 65│Host: inwade│
+  0x24│72 2e 63 6f 6d 0d 0a 55 73 65 72 2d│r.com..User-│
+  0x30│41 67                              │Ag          │
+      │00 01 02 03 04 05 06 07 08 09 0a 0b│0123456789ab│
+  0x00│48 54 54 50 2f 31 2e 31 20 32 30 30│HTTP/1.1 200│.: raw bits 0x0-0x31.7 (50)
+  0x0c│20 4f 4b 0d 0a 41 63 63 65 70 74 2d│ OK..Accept-│
+  0x18│52 61 6e 67 65 73 3a 20 62 79 74 65│Ranges: byte│
+  0x24│73 0d 0a 43 6f 6e 74 65 6e 74 2d 4c│s..Content-L│
+  0x30│65 6e                              │en          │
+
+  # show first TLS record from server
+  $ fq '.tcp_connections[0].server.stream.records[0] | d' file.pcap
+      │00 01 02 03 04 05 06 07 08 09 0a 0b│0123456789ab│.tcp_connections[1].server.stream.records[0]{}: record
+  0x00│16                                 │.           │  type: "handshake" (22) (valid)
+  0x00│   03 03                           │ ..         │  version: "tls1.2" (0x303) (valid)
+  0x00│         00 40                     │   .@       │  length: 64
+      │                                   │            │  message{}:
+  0x00│               02                  │     .      │    type: "server_hello" (2)
+  0x00│                  00 00 3c         │      ..<   │    length: 60
+  0x00│                           03 03   │         .. │    version: "tls1.2" (0x303)
+      │                                   │            │    random{}:
+  0x00│                                 86│           .│      gmt_unix_time: 2249760024 (2041-04-16T21:20:24Z)
+  0x0c│18 9d 18                           │...         │
+  0x0c│         19 92 33 c2 21 ce 4f 97 30│   ..3.!.O.0│      random_bytes: raw bits
+  0x18│28 98 b3 fd 1e 15 f4 36 bb e9 14 f4│(......6....│
+  0x24│67 61 66 79 d5 3f 06               │gafy.?.     │
+  0x24│                     00            │       .    │    session_id_length: 0
+      │                                   │            │    session_id: raw bits
+  0x24│                        c0 2f      │        ./  │    cipher_suit: "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256" (0xc02f)
+  0x24│                              00   │          . │    compression_method: "null" (0x0)
+  0x24│                                 00│           .│    extensions_length: 20
+  0x30│14                                 │.           │
+      │                                   │            │    extensions[0:2]:
+      │                                   │            │      [0]{}: extension
+  0x30│   ff 01                           │ ..         │        type: "renegotiation_info" (65281)
+  0x30│         00 01                     │   ..       │        length: 1
+  0x30│               00                  │     .      │        data: raw bits
+      │                                   │            │      [1]{}: extension
+  0x30│                  00 10            │      ..    │        type: "application_layer_protocol_negotiation" (16)
+  0x30│                        00 0b      │        ..  │        length: 11
+  0x30│                              00 09│          ..│        serer_names_length: 9
+      │                                   │            │        protocols[0:1]:
+      │                                   │            │          [0]{}: protocol
+  0x3c│08                                 │.           │            length: 8
+  0x3c│   68 74 74 70 2f 31 2e 31         │ http/1.1   │            name: "http/1.1"
+
+  # use ja3.jq to calculate ja3 TLS fingerprint
+  # https://github.com/wader/fq/blob/master/format/tls/testdata/ja3.jq
+  $ fq -L path/to/ja3 'include "ja3"; pcap_ja3' file.pcap
+  [
+    {
+      "client_ip": "192.168.1.193",
+      "client_port": 64126,
+      "ja3": "771,4866-4867-4865-49196-49200-159-52393-52392-52394-49195-49199-158-49188-49192-107-49187-49191-103-49162-49172-57-49161-49171-51-157-156-61-60-53-47-255,0-11-10-16-22-23-49-13-43-45-51-21,29-23-30-25-24,0-1-2",
+      "ja3_digest": "bc29aa426fc99c0be1b9be941869f88a",
+      "server_ip": "46.101.135.150",
+      "server_port": 443
+    }
+  ]
+   ```
+- `toml` Fail faster to speed up probe. Could in some cases read the whole file before failing. Thanks @0-wiz-0 for report. #594
+- `zip` Properly decode EOCD record in zip64 files. Thanks @0-wiz-0 for report and spec interpretation. #586 #596
+- `xml` Fail faster to speed up probe. Could in some cases read the whole file before failing. Thanks @0-wiz-0 for report. #594
+
+## Changelog
+
+* 0581ecea Update docker-golang to 1.20.1 from 1.20.0
+* 72870a5a Update docker-golang to 1.20.2 from 1.20.1
+* 02e573a9 Update github-go-version to 1.20.1 from 1.20.0, 1.20.0, 1.20.0
+* c5130887 Update github-go-version to 1.20.2 from 1.20.1
+* ce263726 Update github-golangci-lint to 1.51.1 from 1.51.0
+* 75bfdda3 Update github-golangci-lint to 1.51.2 from 1.51.1
+* b1d9306b Update gomod-golang-x-crypto to 0.6.0 from 0.5.0
+* c03d3ccd Update gomod-golang-x-crypto to 0.7.0 from 0.6.0
+* 2430fba7 Update gomod-golang-x-net to 0.6.0 from 0.5.0
+* dd8ab799 Update gomod-golang-x-net to 0.7.0 from 0.6.0
+* 80a07446 Update gomod-golang-x-net to 0.8.0 from 0.7.0
+* 97643b98 Update gomod-golang/text to 0.7.0 from 0.6.0
+* e7168b99 Update gomod-golang/text to 0.8.0 from 0.7.0
+* 36df57eb Update make-golangci-lint to 1.51.1 from 1.51.0
+* 70e08faa Update make-golangci-lint to 1.51.2 from 1.51.1
+* 50d26ec7 colorjson: Handle encoding error value
+* 5c8e1151 colorjson: Refactor to option struct
+* 8e0dde03 decode: Support multiple format args and some rename and refactor
+* a1bb630a doc,fq: Improve cli help and some cleanup
+* 156aeeca doc: Add FOSDEM 2023 talk
+* 3e0ebafa doc: Run make doc
+* 3cc83837 gojq: Update fq fork
+* dec433fc help,markdown: Fix double line breaks when converting to text
+* c75a83c8 help: Show default option value as JSON
+* cc52a441 id3v2: Decode subframes for CTOC and add struct for headers
+* dc79a73b interp,json: Move error handling to colorjson
+* 73db6587 interp: Exit with error if -o name=@path fails to be read, also document
+* c8666eeb ipv4_packet,ipv6_packet,sll_packet,sll2_packet: Support ipv4/ipv6 link frames and pass correct in arg
+* b60aceca matroska: Add decode_samples option
+* 9aaf2ddf matroska: Add unknown size test and add description to ebml header
+* a8d0bf4d matroska: Assume master with unknown size has ended if a valid parent is found
+* 0d14d7b4 matroska: Handle unknown size for non-master types a bit better
+* c890a289 matroska: Update spec and make refs in descriptions look nicer
+* 6c032455 pcap,pcapng,ipv4,ipv6: Support raw link type (ipv4 or ipv6)
+* d4ea6632 pcap: Add ipv4 fragments tcp test
+* f50bd6ee readline: Update fq fork
+* 9852f56b tls: Add TLS 1.0, 1.1, 1.2 decode and decryption
+* 56edb59e toml,xml: Fail fast on invalid content
+* 5228fdd6 zip: Correctly look for and decode both zip32/64 EOCD record
+* bdd6718d zip: Correctly peek for zip64 EOCD
+
+
 # 0.3.0
 
 Bug fix release, no new features mostly due to holidays and busy with other things (some jq related!).
