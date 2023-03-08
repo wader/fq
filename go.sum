@@ -23,8 +23,8 @@ github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e h1:fD57ERR4JtEqsWb
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/wader/gojq v0.12.1-0.20230131163634-53cfdef2798a h1:E7yIOkUz9EHkPDsguM2ij2p3vBE7ZBHiY65VYEh69l8=
-github.com/wader/gojq v0.12.1-0.20230131163634-53cfdef2798a/go.mod h1:jBlZvrM1MW7GZNy4VfEvMXo+If1HTuBp7W21XKe+ShQ=
+github.com/wader/gojq v0.12.1-0.20230308145020-2de2194791c0 h1:OjBLxUJRtmoYbNtgBqvqLwZdKi1lGdXHBFMCQLpOP5M=
+github.com/wader/gojq v0.12.1-0.20230308145020-2de2194791c0/go.mod h1:jQY39j9tgky+JYcJrKNz5OYTe/sPDAw7FvVj13JGqVk=
 github.com/wader/readline v0.0.0-20230307172220-bcb7158e7448 h1:AzpBtmgdXa3uznrb3esNeEoaLqtNEwckRmaUH0qWD6w=
 github.com/wader/readline v0.0.0-20230307172220-bcb7158e7448/go.mod h1:Zgz8IJWvJoe7NK23CCPpC109XMCqJCpUhpHcnnA4XaM=
 golang.org/x/crypto v0.7.0 h1:AvwMYaRytfdeVt3u6mLaxYtErKYjxA2OXjJ1HHq6t3A=
