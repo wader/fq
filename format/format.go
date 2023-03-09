@@ -29,6 +29,7 @@ const (
 	AAC_FRAME           = "aac_frame"
 	ADTS                = "adts"
 	ADTS_FRAME          = "adts_frame"
+	AIFF                = "aiff"
 	AMF0                = "amf0"
 	APEV2               = "apev2"
 	APPLE_BOOKMARK      = "apple_bookmark"

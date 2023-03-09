@@ -7,6 +7,7 @@
 |[`aac_frame`](#aac_frame)                               |Advanced&nbsp;Audio&nbsp;Coding&nbsp;frame                                                                   |<sub></sub>|
 |`adts`                                                  |Audio&nbsp;Data&nbsp;Transport&nbsp;Stream                                                                   |<sub>`adts_frame`</sub>|
 |`adts_frame`                                            |Audio&nbsp;Data&nbsp;Transport&nbsp;Stream&nbsp;frame                                                        |<sub>`aac_frame`</sub>|
+|`aiff`                                                  |Audio&nbsp;Interchange&nbsp;File&nbsp;Format                                                                 |<sub></sub>|
 |`amf0`                                                  |Action&nbsp;Message&nbsp;Format&nbsp;0                                                                       |<sub></sub>|
 |`apev2`                                                 |APEv2&nbsp;metadata&nbsp;tag                                                                                 |<sub>`image`</sub>|
 |[`apple_bookmark`](#apple_bookmark)                     |Apple&nbsp;BookmarkData                                                                                      |<sub></sub>|
@@ -123,7 +124,7 @@
 |`ip_packet`                                             |Group                                                                                                        |<sub>`icmp` `icmpv6` `tcp_segment` `udp_datagram`</sub>|
 |`link_frame`                                            |Group                                                                                                        |<sub>`bsd_loopback_frame` `ether8023_frame` `ipv4_packet` `ipv6_packet` `sll2_packet` `sll_packet`</sub>|
 |`mp3_frame_tags`                                        |Group                                                                                                        |<sub>`mp3_frame_vbri` `mp3_frame_xing`</sub>|
-|`probe`                                                 |Group                                                                                                        |<sub>`adts` `apple_bookmark` `ar` `avi` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `jsonl` `macho` `macho_fat` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `toml` `tzif` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
+|`probe`                                                 |Group                                                                                                        |<sub>`adts` `aiff` `apple_bookmark` `ar` `avi` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `elf` `flac` `gif` `gzip` `jpeg` `json` `jsonl` `macho` `macho_fat` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `toml` `tzif` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
 |`tcp_stream`                                            |Group                                                                                                        |<sub>`dns_tcp` `rtmp` `tls`</sub>|
 |`udp_payload`                                           |Group                                                                                                        |<sub>`dns`</sub>|
 

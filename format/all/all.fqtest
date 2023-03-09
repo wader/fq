@@ -27,6 +27,7 @@ $ fq -n _registry.groups.probe
   "wasm",
   "webp",
   "zip",
+  "aiff",
   "mp3",
   "mpeg_ts",
   "wav",
@@ -40,6 +41,7 @@ $ fq --help formats
 aac_frame            Advanced Audio Coding frame
 adts                 Audio Data Transport Stream
 adts_frame           Audio Data Transport Stream frame
+aiff                 Audio Interchange File Format
 amf0                 Action Message Format 0
 apev2                APEv2 metadata tag
 apple_bookmark       Apple BookmarkData

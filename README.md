@@ -37,6 +37,7 @@ In summary it aims to be jq, hexdump, dd and gdb for files combined into one.
 [aac_frame](doc/formats.md#aac_frame),
 adts,
 adts_frame,
+aiff,
 amf0,
 apev2,
 [apple_bookmark](doc/formats.md#apple_bookmark),
