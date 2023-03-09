@@ -426,7 +426,7 @@ unary uses input and if more than one argument all as arguments ignoring the inp
   - `toactual`, `toactual($opts)` actual value (usually the decoded value)
   - `tosym`, `tosym($opts)` symbolic value (mapped etc)
   - `todescription` description of value
-  - `torepr` converts decode value into what it reptresents. For example convert msgpack decode value
+  - `torepr` converts decode value into what it represents. For example convert msgpack decode value
   into a value representing its JSON representation.
   - All regexp functions work with binary as input and pattern argument with these differences
   compared to when using string input:
