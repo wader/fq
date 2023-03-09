@@ -35,6 +35,7 @@ func (a autoCompleterFn) Do(line []rune, pos int) (newLine [][]rune, length int)
 
 type stdOS struct {
 	rl            *readline.Instance
+	historyFile   string
 	closeChan     chan struct{}
 	interruptChan chan struct{}
 }
@@ -169,25 +170,26 @@ func (o *stdOS) Readline(opts interp.ReadlineOpts) (string, error) {
 		historyFile = filepath.Join(cacheDir, "fq/history")
 		_ = os.MkdirAll(filepath.Dir(historyFile), 0700)
 
-		o.rl, err = readline.NewEx(&readline.Config{
+		cfg := &readline.Config{
 			HistoryFile:       historyFile,
 			HistorySearchFold: true,
-		})
+		}
+		if opts.CompleteFn != nil {
+			cfg.AutoComplete = autoCompleterFn(func(line []rune, pos int) (newLine [][]rune, length int) {
+				names, shared := opts.CompleteFn(string(line), pos)
+				var runeNames [][]rune
+				for _, name := range names {
+					runeNames = append(runeNames, []rune(name[shared:]))
+				}
+
+				return runeNames, shared
+			})
+		}
+		o.rl, err = readline.NewEx(cfg)
 		if err != nil {
 			return "", err
 		}
-	}
-
-	if opts.CompleteFn != nil {
-		o.rl.Config.AutoComplete = autoCompleterFn(func(line []rune, pos int) (newLine [][]rune, length int) {
-			names, shared := opts.CompleteFn(string(line), pos)
-			var runeNames [][]rune
-			for _, name := range names {
-				runeNames = append(runeNames, []rune(name[shared:]))
-			}
-
-			return runeNames, shared
-		})
+		o.historyFile = historyFile
 	}
 
 	o.rl.SetPrompt(opts.Prompt)
@@ -205,7 +207,7 @@ func (o *stdOS) Readline(opts interp.ReadlineOpts) (string, error) {
 
 func (o *stdOS) History() ([]string, error) {
 	// TODO: refactor history handling to use internal fs?
-	r, err := os.Open(o.rl.Config.HistoryFile)
+	r, err := os.Open(o.historyFile)
 	if err != nil {
 		return nil, err
 	}
