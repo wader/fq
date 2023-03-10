@@ -27,6 +27,7 @@ func maybeLogFile() {
 	}
 }
 
+// function implementing readline.AutoComplete interface
 type autoCompleterFn func(line []rune, pos int) (newLine [][]rune, length int)
 
 func (a autoCompleterFn) Do(line []rune, pos int) (newLine [][]rune, length int) {
@@ -38,6 +39,7 @@ type stdOS struct {
 	historyFile   string
 	closeChan     chan struct{}
 	interruptChan chan struct{}
+	completerFn   interp.CompleteFn
 }
 
 func newStandardOS() *stdOS {
@@ -174,23 +176,28 @@ func (o *stdOS) Readline(opts interp.ReadlineOpts) (string, error) {
 			HistoryFile:       historyFile,
 			HistorySearchFold: true,
 		}
-		if opts.CompleteFn != nil {
-			cfg.AutoComplete = autoCompleterFn(func(line []rune, pos int) (newLine [][]rune, length int) {
-				names, shared := opts.CompleteFn(string(line), pos)
-				var runeNames [][]rune
-				for _, name := range names {
-					runeNames = append(runeNames, []rune(name[shared:]))
-				}
+		cfg.AutoComplete = autoCompleterFn(func(line []rune, pos int) (newLine [][]rune, length int) {
+			if o.completerFn != nil {
+				return nil, 0
+			}
 
-				return runeNames, shared
-			})
-		}
+			names, shared := o.completerFn(string(line), pos)
+			var runeNames [][]rune
+			for _, name := range names {
+				runeNames = append(runeNames, []rune(name[shared:]))
+			}
+
+			return runeNames, shared
+		})
 		o.rl, err = readline.NewEx(cfg)
 		if err != nil {
 			return "", err
 		}
 		o.historyFile = historyFile
 	}
+
+	// inject completer to autocompleter
+	o.completerFn = opts.CompleteFn
 
 	o.rl.SetPrompt(opts.Prompt)
 	line, err := o.rl.Readline()

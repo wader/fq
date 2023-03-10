@@ -150,9 +150,11 @@ type Platform struct {
 	Arch string
 }
 
+type CompleteFn func(line string, pos int) (newLine []string, shared int)
+
 type ReadlineOpts struct {
 	Prompt     string
-	CompleteFn func(line string, pos int) (newLine []string, shared int)
+	CompleteFn CompleteFn
 }
 
 type OS interface {
