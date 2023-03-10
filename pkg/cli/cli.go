@@ -177,7 +177,7 @@ func (o *stdOS) Readline(opts interp.ReadlineOpts) (string, error) {
 			HistorySearchFold: true,
 		}
 		cfg.AutoComplete = autoCompleterFn(func(line []rune, pos int) (newLine [][]rune, length int) {
-			if o.completerFn != nil {
+			if o.completerFn == nil {
 				return nil, 0
 			}
 
