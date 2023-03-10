@@ -295,7 +295,7 @@ func decodeBoxesWithParentData(ctx *decodeContext, d *decode.D, parentData any, 
 
 	if d.BitsLeft() > 0 {
 		// "Some sample descriptions terminate with four zero bytes that are not otherwise indicated."
-		if d.BitsLeft() >= 32 && d.PeekBits(32) == 0 {
+		if d.BitsLeft() >= 32 && d.PeekUintBits(32) == 0 {
 			d.FieldU32("zero_terminator")
 		}
 		if d.BitsLeft() > 0 {
@@ -904,7 +904,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		decodeBoxes(ctx, d)
 	case "meta":
 		// TODO: meta box sometimes has a 4 byte unknown field? (flag/version?)
-		maybeFlags := d.PeekBits(32)
+		maybeFlags := d.PeekUintBits(32)
 		if maybeFlags == 0 {
 			// TODO: rename?
 			d.FieldU32("maybe_flags")
@@ -1687,7 +1687,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			// TODO: better probe? ffmpeg uses box name heuristics?
 			// if 16 length field seems to match assume box with length, language and value
 			// otherwise decode as box with value rest of box
-			probeLength := d.PeekBits(16)
+			probeLength := d.PeekUintBits(16)
 			// +2 for length field, +2 for language field
 			if (probeLength+2+2)*8 == uint64(d.BitsLeft()) {
 				length := d.FieldU16("length")

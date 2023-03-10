@@ -4,7 +4,6 @@ package riff
 
 import (
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/internal/mathex"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
@@ -81,9 +80,7 @@ func aiffDecode(d *decode.D) any {
 				d.FieldU32("num_sample_frames")
 				d.FieldU16("sample_size")
 				// TODO: support big float?
-				d.FieldFltFn("sample_rate", func(d *decode.D) float64 {
-					return mathex.NewFloat80FromBytes(d.BytesLen(10)).Float64()
-				})
+				d.FieldF80("sample_rate")
 				return false, nil
 			case "SSND":
 				d.FieldU32("offset")

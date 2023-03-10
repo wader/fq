@@ -21,7 +21,7 @@ func init() {
 func id3v1Decode(d *decode.D) any {
 	d.AssertAtLeastBitsLeft(128 * 8)
 	d.FieldUTF8("magic", 3, d.StrAssert("TAG"))
-	if d.PeekBits(8) == uint64('+') {
+	if d.PeekUintBits(8) == uint64('+') {
 		d.Errorf("looks like id3v11")
 	}
 	d.FieldUTF8NullFixedLen("song_name", 30)

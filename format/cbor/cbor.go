@@ -124,7 +124,7 @@ func decodeCBORValue(d *decode.D) any {
 			if shortCount == shortCountIndefinite {
 				bb := &bytes.Buffer{}
 				d.FieldArray("items", func(d *decode.D) {
-					for d.PeekBits(8) != breakMarker {
+					for d.PeekUintBits(8) != breakMarker {
 						d.FieldStruct("item", func(d *decode.D) {
 							v := decodeCBORValue(d)
 							switch v := v.(type) {
@@ -149,7 +149,7 @@ func decodeCBORValue(d *decode.D) any {
 			if shortCount == shortCountIndefinite {
 				sb := &strings.Builder{}
 				d.FieldArray("items", func(d *decode.D) {
-					for d.PeekBits(8) != breakMarker {
+					for d.PeekUintBits(8) != breakMarker {
 						d.FieldStruct("item", func(d *decode.D) {
 							v := decodeCBORValue(d)
 							switch v := v.(type) {
@@ -171,7 +171,7 @@ func decodeCBORValue(d *decode.D) any {
 		majorTypeArray: {s: scalar.Uint{Sym: "array"}, d: func(d *decode.D, shortCount uint64, count uint64) any {
 			d.FieldArray("elements", func(d *decode.D) {
 				for i := uint64(0); true; i++ {
-					if shortCount == shortCountIndefinite && d.PeekBits(8) == breakMarker {
+					if shortCount == shortCountIndefinite && d.PeekUintBits(8) == breakMarker {
 						break
 					} else if i >= count {
 						break
@@ -187,7 +187,7 @@ func decodeCBORValue(d *decode.D) any {
 		majorTypeMap: {s: scalar.Uint{Sym: "map"}, d: func(d *decode.D, shortCount uint64, count uint64) any {
 			d.FieldArray("pairs", func(d *decode.D) {
 				for i := uint64(0); true; i++ {
-					if shortCount == shortCountIndefinite && d.PeekBits(8) == breakMarker {
+					if shortCount == shortCountIndefinite && d.PeekUintBits(8) == breakMarker {
 						break
 					} else if i >= count {
 						break

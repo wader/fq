@@ -48,7 +48,7 @@ var commandNames = scalar.UintMapSymStr{
 }
 
 func rleValue(d *decode.D) (uint64, uint64, int) {
-	p := uint(d.PeekBits(8))
+	p := uint(d.PeekUintBits(8))
 
 	// match zero prefix
 	switch {

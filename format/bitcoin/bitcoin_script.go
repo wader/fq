@@ -171,7 +171,7 @@ func decodeBitcoinScript(d *decode.D) any {
 	}
 
 	for !d.End() {
-		opcode := byte(d.PeekBits(8))
+		opcode := byte(d.PeekUintBits(8))
 		ope, ok := opcodeEntries.lookup(opcode)
 		if !ok {
 			d.Fatalf("unknown opcode %x", opcode)

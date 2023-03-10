@@ -36,7 +36,7 @@ type subStream struct {
 func pesDecode(d *decode.D) any {
 	substreams := map[int]*subStream{}
 
-	prefix := d.PeekBits(24)
+	prefix := d.PeekUintBits(24)
 	if prefix != 0b0000_0000_0000_0000_0000_0001 {
 		d.Errorf("no pes prefix found")
 	}

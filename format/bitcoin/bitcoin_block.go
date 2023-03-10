@@ -42,7 +42,7 @@ func decodeBitcoinBlock(d *decode.D) any {
 	size := d.BitsLeft()
 
 	if bbi.HasHeader {
-		magic := d.PeekBits(32)
+		magic := d.PeekUintBits(32)
 		switch magic {
 		case 0xf9beb4d9,
 			0x0b110907,

@@ -49,7 +49,7 @@ func decodeBitcoinTranscation(d *decode.D) any {
 
 	d.FieldU32("version")
 	witness := false
-	if d.PeekBits(8) == 0 {
+	if d.PeekUintBits(8) == 0 {
 		witness = true
 		d.FieldU8("marker")
 		d.FieldU8("flag")

@@ -18260,6 +18260,52 @@ func (d *D) FieldF64(name string, sms ...scalar.FltMapper) float64 {
 	return d.FieldScalarF64(name, sms...).Actual
 }
 
+// Reader F80
+
+// TryF80 tries to read 80 bit IEEE 754 float in current endian
+func (d *D) TryF80() (float64, error) { return d.tryFEndian(80, d.Endian) }
+
+// F80 reads 80 bit IEEE 754 float in current endian
+func (d *D) F80() float64 {
+	v, err := d.tryFEndian(80, d.Endian)
+	if err != nil {
+		panic(IOError{Err: err, Op: "F80", Pos: d.Pos()})
+	}
+	return v
+}
+
+// TryFieldScalarF80 tries to add a field and read 80 bit IEEE 754 float in current endian
+func (d *D) TryFieldScalarF80(name string, sms ...scalar.FltMapper) (*scalar.Flt, error) {
+	s, err := d.TryFieldScalarFltFn(name, func(d *D) (scalar.Flt, error) {
+		v, err := d.tryFEndian(80, d.Endian)
+		return scalar.Flt{Actual: v}, err
+	}, sms...)
+	if err != nil {
+		return nil, err
+	}
+	return s, err
+}
+
+// FieldScalarF80 adds a field and reads 80 bit IEEE 754 float in current endian
+func (d *D) FieldScalarF80(name string, sms ...scalar.FltMapper) *scalar.Flt {
+	s, err := d.TryFieldScalarF80(name, sms...)
+	if err != nil {
+		panic(IOError{Err: err, Name: name, Op: "F80", Pos: d.Pos()})
+	}
+	return s
+}
+
+// TryFieldF80 tries to add a field and read 80 bit IEEE 754 float in current endian
+func (d *D) TryFieldF80(name string, sms ...scalar.FltMapper) (float64, error) {
+	s, err := d.TryFieldScalarF80(name, sms...)
+	return s.Actual, err
+}
+
+// FieldF80 adds a field and reads 80 bit IEEE 754 float in current endian
+func (d *D) FieldF80(name string, sms ...scalar.FltMapper) float64 {
+	return d.FieldScalarF80(name, sms...).Actual
+}
+
 // Reader F16LE
 
 // TryF16LE tries to read 16 bit IEEE 754 float in little-endian
@@ -18398,6 +18444,52 @@ func (d *D) FieldF64LE(name string, sms ...scalar.FltMapper) float64 {
 	return d.FieldScalarF64LE(name, sms...).Actual
 }
 
+// Reader F80LE
+
+// TryF80LE tries to read 80 bit IEEE 754 float in little-endian
+func (d *D) TryF80LE() (float64, error) { return d.tryFEndian(80, LittleEndian) }
+
+// F80LE reads 80 bit IEEE 754 float in little-endian
+func (d *D) F80LE() float64 {
+	v, err := d.tryFEndian(80, LittleEndian)
+	if err != nil {
+		panic(IOError{Err: err, Op: "F80LE", Pos: d.Pos()})
+	}
+	return v
+}
+
+// TryFieldScalarF80LE tries to add a field and read 80 bit IEEE 754 float in little-endian
+func (d *D) TryFieldScalarF80LE(name string, sms ...scalar.FltMapper) (*scalar.Flt, error) {
+	s, err := d.TryFieldScalarFltFn(name, func(d *D) (scalar.Flt, error) {
+		v, err := d.tryFEndian(80, LittleEndian)
+		return scalar.Flt{Actual: v}, err
+	}, sms...)
+	if err != nil {
+		return nil, err
+	}
+	return s, err
+}
+
+// FieldScalarF80LE adds a field and reads 80 bit IEEE 754 float in little-endian
+func (d *D) FieldScalarF80LE(name string, sms ...scalar.FltMapper) *scalar.Flt {
+	s, err := d.TryFieldScalarF80LE(name, sms...)
+	if err != nil {
+		panic(IOError{Err: err, Name: name, Op: "F80LE", Pos: d.Pos()})
+	}
+	return s
+}
+
+// TryFieldF80LE tries to add a field and read 80 bit IEEE 754 float in little-endian
+func (d *D) TryFieldF80LE(name string, sms ...scalar.FltMapper) (float64, error) {
+	s, err := d.TryFieldScalarF80LE(name, sms...)
+	return s.Actual, err
+}
+
+// FieldF80LE adds a field and reads 80 bit IEEE 754 float in little-endian
+func (d *D) FieldF80LE(name string, sms ...scalar.FltMapper) float64 {
+	return d.FieldScalarF80LE(name, sms...).Actual
+}
+
 // Reader F16BE
 
 // TryF16BE tries to read 16 bit IEEE 754 float in big-endian
@@ -18534,6 +18626,52 @@ func (d *D) TryFieldF64BE(name string, sms ...scalar.FltMapper) (float64, error)
 // FieldF64BE adds a field and reads 64 bit IEEE 754 float in big-endian
 func (d *D) FieldF64BE(name string, sms ...scalar.FltMapper) float64 {
 	return d.FieldScalarF64BE(name, sms...).Actual
+}
+
+// Reader F80BE
+
+// TryF80BE tries to read 80 bit IEEE 754 float in big-endian
+func (d *D) TryF80BE() (float64, error) { return d.tryFEndian(80, BigEndian) }
+
+// F80BE reads 80 bit IEEE 754 float in big-endian
+func (d *D) F80BE() float64 {
+	v, err := d.tryFEndian(80, BigEndian)
+	if err != nil {
+		panic(IOError{Err: err, Op: "F80BE", Pos: d.Pos()})
+	}
+	return v
+}
+
+// TryFieldScalarF80BE tries to add a field and read 80 bit IEEE 754 float in big-endian
+func (d *D) TryFieldScalarF80BE(name string, sms ...scalar.FltMapper) (*scalar.Flt, error) {
+	s, err := d.TryFieldScalarFltFn(name, func(d *D) (scalar.Flt, error) {
+		v, err := d.tryFEndian(80, BigEndian)
+		return scalar.Flt{Actual: v}, err
+	}, sms...)
+	if err != nil {
+		return nil, err
+	}
+	return s, err
+}
+
+// FieldScalarF80BE adds a field and reads 80 bit IEEE 754 float in big-endian
+func (d *D) FieldScalarF80BE(name string, sms ...scalar.FltMapper) *scalar.Flt {
+	s, err := d.TryFieldScalarF80BE(name, sms...)
+	if err != nil {
+		panic(IOError{Err: err, Name: name, Op: "F80BE", Pos: d.Pos()})
+	}
+	return s
+}
+
+// TryFieldF80BE tries to add a field and read 80 bit IEEE 754 float in big-endian
+func (d *D) TryFieldF80BE(name string, sms ...scalar.FltMapper) (float64, error) {
+	s, err := d.TryFieldScalarF80BE(name, sms...)
+	return s.Actual, err
+}
+
+// FieldF80BE adds a field and reads 80 bit IEEE 754 float in big-endian
+func (d *D) FieldF80BE(name string, sms ...scalar.FltMapper) float64 {
+	return d.FieldScalarF80BE(name, sms...).Actual
 }
 
 // Reader FP

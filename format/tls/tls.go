@@ -695,7 +695,7 @@ func decodeTLS(d *decode.D) any {
 	tc.server.currentCipherSuit = ciphersuites.TLS_NULL_WITH_NULL_NULL
 	tc.server.nextCipherSuit = ciphersuites.TLS_NULL_WITH_NULL_NULL
 
-	firstByte := d.PeekBits(8)
+	firstByte := d.PeekUintBits(8)
 	if firstByte&0x80 != 0 {
 		d.FieldStruct("ssl_v2", func(d *decode.D) {
 			decodeV2ClientHello(d, tc)
