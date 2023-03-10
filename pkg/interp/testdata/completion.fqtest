@@ -68,4 +68,8 @@ color
 colors
 compact
 completion_timeout
+mp3> .frames[0] | repl
+> .frames[0] mp3_frame> .he\t
+header
+> .frames[0] mp3_frame> ^D
 mp3> ^D
