@@ -202,7 +202,7 @@ func decodeASN1BERValue(d *decode.D, bib *bitio.Buffer, sb *strings.Builder, par
 		case form == formConstructed || tag == universalTypeSequence || tag == universalTypeSet:
 			d.FieldArray("constructed", func(d *decode.D) {
 				for !d.End() {
-					if length == lengthIndefinite && d.PeekBits(16) == lengthEndMarker {
+					if length == lengthIndefinite && d.PeekUintBits(16) == lengthEndMarker {
 						break
 					}
 

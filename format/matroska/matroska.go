@@ -445,7 +445,7 @@ func matroskaDecode(d *decode.D) any {
 	d.ArgAs(&mi)
 
 	ebmlHeaderID := uint64(0x1a45dfa3)
-	if d.PeekBits(32) != ebmlHeaderID {
+	if d.PeekUintBits(32) != ebmlHeaderID {
 		d.Errorf("no EBML header found")
 	}
 	dc := &decodeContext{tracks: []*track{}}

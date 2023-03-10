@@ -71,14 +71,14 @@ func decodeBencodeValue(d *decode.D) {
 		d.FieldUTF8("end", 1, d.StrAssert("e"))
 	case "l":
 		d.FieldArray("values", func(d *decode.D) {
-			for d.PeekBits(8) != 'e' {
+			for d.PeekUintBits(8) != 'e' {
 				d.FieldStruct("value", decodeBencodeValue)
 			}
 		})
 		d.FieldUTF8("end", 1, d.StrAssert("e"))
 	case "d":
 		d.FieldArray("pairs", func(d *decode.D) {
-			for d.PeekBits(8) != 'e' {
+			for d.PeekUintBits(8) != 'e' {
 				d.FieldStruct("pair", func(d *decode.D) {
 					d.FieldStruct("key", decodeBencodeValue)
 					d.FieldStruct("value", decodeBencodeValue)

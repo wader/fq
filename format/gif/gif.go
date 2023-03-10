@@ -72,7 +72,7 @@ func gifDecode(d *decode.D) any {
 	d.FieldArray("blocks", func(d *decode.D) {
 	blocks:
 		for {
-			switch d.PeekBits(8) {
+			switch d.PeekUintBits(8) {
 			case ';':
 				break blocks
 			case '!': /* "!" */
@@ -89,7 +89,7 @@ func gifDecode(d *decode.D) any {
 							d.FieldStruct("func_data_byte", func(d *decode.D) {
 								byteCount := d.FieldU8("byte_count")
 								b := d.FieldRawLen("data", int64(byteCount*8))
-								if d.PeekBits(8) == 0 {
+								if d.PeekUintBits(8) == 0 {
 									d.FieldU8("terminator")
 									seenTerminator = true
 								}
@@ -135,7 +135,7 @@ func gifDecode(d *decode.D) any {
 							d.FieldStruct("func_data_byte", func(d *decode.D) {
 								byteCount := d.FieldU8("byte_count")
 								d.FieldRawLen("data", int64(byteCount*8))
-								if d.PeekBits(8) == 0 {
+								if d.PeekUintBits(8) == 0 {
 									d.FieldU8("terminator")
 									seenTerminator = true
 								}

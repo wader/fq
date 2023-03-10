@@ -368,7 +368,7 @@ func rtmpDecode(d *decode.D) any {
 				var chunkSteamID uint64
 
 				fmt := d.FieldU2("fmt")
-				switch d.PeekBits(6) {
+				switch d.PeekUintBits(6) {
 				case 0:
 					// 64-319: 2 byte
 					d.FieldU6("chunk_stream_id_prefix")

@@ -17,7 +17,7 @@ func init() {
 
 func moreRBSPData(d *decode.D) bool {
 	l := d.BitsLeft()
-	return l >= 8 && d.PeekBits(8) != 0b1000_0000
+	return l >= 8 && d.PeekUintBits(8) != 0b1000_0000
 }
 
 func avcPPSDecode(d *decode.D) any {

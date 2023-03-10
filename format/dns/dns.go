@@ -141,7 +141,7 @@ func fieldDecodeLabel(d *decode.D, pointerOffset int64, name string) {
 			seenTermintor := false
 			for !seenTermintor {
 				d.FieldStruct("label", func(d *decode.D) {
-					if d.PeekBits(2) == 0b11 {
+					if d.PeekUintBits(2) == 0b11 {
 						d.FieldU2("is_pointer")
 						pointer := d.FieldU14("pointer")
 						if endPos == 0 {

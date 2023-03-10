@@ -315,7 +315,7 @@ func textNullLenFn(encoding int, notFoundFixedBytes int) func(d *decode.D) strin
 
 		d.SeekRel(nullLen * 8)
 		// seems sometimes utf16 etc has one exta null byte
-		if nullLen > 1 && d.PeekBits(8) == 0 {
+		if nullLen > 1 && d.PeekUintBits(8) == 0 {
 			d.SeekRel(8)
 		}
 
@@ -592,7 +592,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 func decodeFrames(d *decode.D, version int, size uint64) {
 	d.FieldArray("frames", func(d *decode.D) {
 		for size > 0 {
-			if d.PeekBits(8) == 0 {
+			if d.PeekUintBits(8) == 0 {
 				return
 			}
 

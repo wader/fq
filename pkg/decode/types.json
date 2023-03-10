@@ -291,6 +291,13 @@
                     "doc"   : "64 bit IEEE 754 float in current endian"  
                 }, 
                 {
+                    "name"  : "80"                                     , 
+                    "args"  : ""                                       , 
+                    "params": ""                                       , 
+                    "call"  : "d.tryFEndian(80, d.Endian)"             , 
+                    "doc"   : "80 bit IEEE 754 float in current endian"  
+                }, 
+                {
                     "name"  : "16LE"                                  , 
                     "args"  : ""                                      , 
                     "params": ""                                      , 
@@ -312,6 +319,13 @@
                     "doc"   : "64 bit IEEE 754 float in little-endian"  
                 }, 
                 {
+                    "name"  : "80LE"                                  , 
+                    "args"  : ""                                      , 
+                    "params": ""                                      , 
+                    "call"  : "d.tryFEndian(80, LittleEndian)"        , 
+                    "doc"   : "80 bit IEEE 754 float in little-endian"  
+                }, 
+                {
                     "name"  : "16BE"                               , 
                     "args"  : ""                                   , 
                     "params": ""                                   , 
@@ -331,6 +345,13 @@
                     "params": ""                                   , 
                     "call"  : "d.tryFEndian(64, BigEndian)"        , 
                     "doc"   : "64 bit IEEE 754 float in big-endian"  
+                }, 
+                {
+                    "name"  : "80BE"                               , 
+                    "args"  : ""                                   , 
+                    "params": ""                                   , 
+                    "call"  : "d.tryFEndian(80, BigEndian)"        , 
+                    "doc"   : "80 bit IEEE 754 float in big-endian"  
                 }
             ]
         }, 

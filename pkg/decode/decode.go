@@ -306,7 +306,7 @@ func (d *D) SharedReadBuf(n int) []byte {
 	if len(*d.readBuf) < n {
 		*d.readBuf = make([]byte, n)
 	}
-	return *d.readBuf
+	return (*d.readBuf)[:n]
 }
 
 func (d *D) FillGaps(r ranges.Range, namePrefix string) {
@@ -370,14 +370,35 @@ func (d *D) IOPanic(err error, op string) {
 	panic(IOError{Err: err, Pos: d.Pos(), Op: op})
 }
 
+// TryBits reads nBits bits from buffer
+func (d *D) TryBits(nBits int) ([]byte, error) {
+	if nBits < 0 {
+		return nil, fmt.Errorf("nBits must be >= 0 (%d)", nBits)
+	}
+	buf := d.SharedReadBuf(int(bitio.BitsByteCount(int64(nBits))))
+	_, err := bitio.ReadFull(d.bitBuf, buf, int64(nBits))
+	if err != nil {
+		return nil, err
+	}
+
+	return buf[:], nil
+}
+
 // Bits reads nBits bits from buffer
-func (d *D) TryBits(nBits int) (uint64, error) {
+func (d *D) Bits(nBits int) []byte {
+	b, err := d.TryBits(nBits)
+	if err != nil {
+		panic(IOError{Err: err, Op: "Bits", ReadSize: int64(nBits), Pos: d.Pos()})
+	}
+	return b
+}
+
+// TryUintBits reads nBits bits as a uint64 from buffer
+func (d *D) TryUintBits(nBits int) (uint64, error) {
 	if nBits < 0 || nBits > 64 {
 		return 0, fmt.Errorf("nBits must be 0-64 (%d)", nBits)
 	}
-	// 64 bits max, 9 byte worse case if not byte aligned
-	buf := d.SharedReadBuf(9)
-	_, err := bitio.ReadFull(d.bitBuf, buf, int64(nBits)) // TODO: int64?
+	buf, err := d.TryBits(nBits)
 	if err != nil {
 		return 0, err
 	}
@@ -385,19 +406,19 @@ func (d *D) TryBits(nBits int) (uint64, error) {
 	return bitio.Read64(buf[:], 0, int64(nBits)), nil // TODO: int64
 }
 
-// Bits reads nBits bits from buffer
-func (d *D) Bits(nBits int) uint64 {
-	n, err := d.TryBits(nBits)
+// UintBits reads nBits bits as uint64 from buffer
+func (d *D) UintBits(nBits int) uint64 {
+	n, err := d.TryUintBits(nBits)
 	if err != nil {
-		panic(IOError{Err: err, Op: "Bits", ReadSize: int64(nBits), Pos: d.Pos()})
+		panic(IOError{Err: err, Op: "UintBits", ReadSize: int64(nBits), Pos: d.Pos()})
 	}
 	return n
 }
 
-func (d *D) PeekBits(nBits int) uint64 {
+func (d *D) PeekUintBits(nBits int) uint64 {
 	n, err := d.TryPeekBits(nBits)
 	if err != nil {
-		panic(IOError{Err: err, Op: "PeekBits", ReadSize: int64(nBits), Pos: d.Pos()})
+		panic(IOError{Err: err, Op: "PeekUintBits", ReadSize: int64(nBits), Pos: d.Pos()})
 	}
 	return n
 }
@@ -450,7 +471,7 @@ func (d *D) TryPeekBits(nBits int) (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
-	n, err := d.TryBits(nBits)
+	n, err := d.TryUintBits(nBits)
 	if _, err := d.bitBuf.SeekBits(start, io.SeekStart); err != nil {
 		return 0, err
 	}

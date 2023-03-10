@@ -97,7 +97,7 @@ func pesPacketDecode(d *decode.D) any {
 
 		}
 	case startCode == packHeader:
-		isMPEG2 := d.PeekBits(2) == 0b01
+		isMPEG2 := d.PeekUintBits(2) == 0b01
 		if isMPEG2 {
 			d.FieldU2("marker_bits0", mpegVersion)
 		} else {
@@ -140,7 +140,7 @@ func pesPacketDecode(d *decode.D) any {
 		d.FieldU1("packet_rate_restriction_flag")
 		d.FieldU7("reserved")
 		d.FieldArray("stream_bound_entries", func(d *decode.D) {
-			for d.PeekBits(1) == 1 {
+			for d.PeekUintBits(1) == 1 {
 				d.FieldStruct("stream_bound_entry", func(d *decode.D) {
 					d.FieldU8("stream_id")
 					d.FieldU2("skip0")

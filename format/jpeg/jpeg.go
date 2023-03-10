@@ -180,7 +180,7 @@ func jpegDecode(d *decode.D) any {
 			if inECD {
 				ecdLen := int64(0)
 				for {
-					if d.PeekBits(8) == 0xff && d.PeekBits(16) != 0xff00 {
+					if d.PeekUintBits(8) == 0xff && d.PeekUintBits(16) != 0xff00 {
 						break
 					}
 					d.SeekRel(8)

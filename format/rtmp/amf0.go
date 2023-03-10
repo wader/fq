@@ -77,7 +77,7 @@ func amf0DecodeValue(d *decode.D) {
 						l := d.FieldU16("length")
 						d.FieldUTF8("value", int(l))
 					})
-					typ = d.PeekBits(8)
+					typ = d.PeekUintBits(8)
 					d.FieldStruct("value", amf0DecodeValue)
 				})
 			}
@@ -98,7 +98,7 @@ func amf0DecodeValue(d *decode.D) {
 						l := d.FieldU16("length")
 						d.FieldUTF8("value", int(l))
 					})
-					typ = d.PeekBits(8)
+					typ = d.PeekUintBits(8)
 					d.FieldStruct("value", amf0DecodeValue)
 				})
 			}
@@ -134,7 +134,7 @@ func amf0DecodeValue(d *decode.D) {
 						l := d.FieldU16("length")
 						d.FieldUTF8("value", int(l))
 					})
-					typ = d.PeekBits(8)
+					typ = d.PeekUintBits(8)
 					d.FieldStruct("value", amf0DecodeValue)
 				})
 			}

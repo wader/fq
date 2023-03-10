@@ -127,7 +127,7 @@ func bzip2Decode(d *decode.D) any {
 		compressedSize := (readCompressedSize - compressedStart) - footerByteSize*8
 		for i := 0; i < 8; i++ {
 			d.SeekAbs(compressedStart + compressedSize)
-			if d.PeekBits(48) == footerMagic {
+			if d.PeekUintBits(48) == footerMagic {
 				break
 			}
 			compressedSize--
