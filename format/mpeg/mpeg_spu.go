@@ -22,7 +22,6 @@ func init() {
 	})
 }
 
-//nolint:revive
 const (
 	CMD_END    = 0xff
 	FSTA_DSP   = 0x00

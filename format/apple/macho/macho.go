@@ -45,7 +45,6 @@ func (m strTable) MapUint(s scalar.Uint) (scalar.Uint, error) {
 	return s, nil
 }
 
-//nolint:revive
 const (
 	MH_MAGIC    = 0xfeed_face
 	MH_CIGAM    = 0xcefa_edfe
@@ -228,7 +227,6 @@ var fileTypes = scalar.UintMapSymStr{
 	0xb: "kext_bundle",
 }
 
-//nolint:revive
 const (
 	LC_REQ_DYLD                 = 0x80000000
 	LC_SEGMENT                  = 0x1

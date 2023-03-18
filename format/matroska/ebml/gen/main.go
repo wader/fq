@@ -124,7 +124,6 @@ func main() {
 	root := os.Args[4]
 
 	fmt.Printf("// Code below generated from %s\n", xmlPath)
-	fmt.Printf("//nolint:revive\n")
 	fmt.Printf("package %s\n", pkgName)
 	fmt.Printf("import (\n")
 	fmt.Printf("  %q\n", ebmlPkgPath)

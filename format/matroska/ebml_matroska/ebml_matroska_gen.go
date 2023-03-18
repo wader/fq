@@ -1,6 +1,4 @@
 // Code below generated from ebml_matroska.xml
-//
-//nolint:revive
 package ebml_matroska
 
 import (

@@ -1,4 +1,3 @@
-//nolint:revive
 package tiff
 
 import "github.com/wader/fq/pkg/scalar"
