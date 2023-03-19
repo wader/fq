@@ -55,7 +55,6 @@ func init() {
 	interp.RegisterFS(tlsFS)
 }
 
-//nolint:revive
 const (
 	versionSSL     = 0x0300
 	versionTLS_1_0 = 0x0301

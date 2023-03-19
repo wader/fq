@@ -1,4 +1,3 @@
-//nolint:revive
 package ebml_matroska
 
 // https://raw.githubusercontent.com/ietf-wg-cellar/matroska-specification/master/ebml_matroska.xml

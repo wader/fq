@@ -5,8 +5,6 @@ import (
 )
 
 // based on ffmpeg libavformat/isom.c ff_mp4_obj_type
-//
-//nolint:revive
 const (
 	MPEGObjectTypeMOV_TEXT          = 0x08
 	MPEGObjectTypeMPEG4             = 0x20
@@ -131,7 +129,6 @@ var MpegObjectTypeStreamType = map[uint64]int{
 	MPEGObjectTypeNONE:              MPEGStreamTypeUnknown,
 }
 
-//nolint:revive
 const (
 	MPEGAudioObjectTypeMain      = 1
 	MPEGAudioObjectTypeLC        = 2
@@ -192,8 +189,6 @@ var MPEGAudioObjectTypeNames = scalar.UintMap{
 }
 
 // based on ffmpeg/libavutil/pixfmt.h
-//
-//nolint:revive
 var ISO_23091_2_ColourPrimariesMap = scalar.UintMap{
 	1:  {Sym: "bt709", Description: "ITU-R BT1361 / IEC 61966-2-4 / SMPTE RP 177 Annex B"},
 	2:  {Sym: "unspecified", Description: "Unspecified"},
@@ -210,7 +205,6 @@ var ISO_23091_2_ColourPrimariesMap = scalar.UintMap{
 	22: {Sym: "ebu3213", Description: "EBU Tech. 3213-E (nothing there) / one of JEDEC P22 group phosphors"},
 }
 
-//nolint:revive
 var ISO_23091_2_TransferCharacteristicMap = scalar.UintMap{
 	1:  {Sym: "bt709", Description: "ITU-R BT1361"},
 	2:  {Sym: "unspecified", Description: "Unspecified"},
@@ -232,7 +226,6 @@ var ISO_23091_2_TransferCharacteristicMap = scalar.UintMap{
 	18: {Sym: "arib_std_b67", Description: "ARIB STD-B67, known as Hybrid log-gamma"},
 }
 
-//nolint:revive
 var ISO_23091_2_MatrixCoefficients = scalar.UintMap{
 	0:  {Sym: "rgb", Description: "GBR, IEC 61966-2-1 (sRGB), YZX and ST 428-1"},
 	1:  {Sym: "bt709", Description: "ITU-R BT1361 / IEC 61966-2-4 xvYCC709 / derived in SMPTE RP 177 Annex B"},
@@ -252,8 +245,6 @@ var ISO_23091_2_MatrixCoefficients = scalar.UintMap{
 }
 
 // based on ffmpeg libavformat/riff.c
-//
-//nolint:revive
 const (
 	WAVTagPCM_S16LE       = 0x0001
 	WAVTagADPCM_MS        = 0x0002
@@ -405,8 +396,6 @@ var WAVTagNames = scalar.UintMapSymStr{
 }
 
 // based on ffmpeg libavformat/riff.c
-//
-//nolint:revive
 const (
 	BMPTagH264                = "H264"
 	BMPTagH264_h264           = "h264"

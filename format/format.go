@@ -9,8 +9,6 @@ const (
 )
 
 // TODO: change to CamelCase?
-//
-//nolint:revive
 const (
 	ALL = "all"
 

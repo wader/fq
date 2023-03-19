@@ -23,7 +23,6 @@ func init() {
 	})
 }
 
-//nolint:revive
 const FAT_MAGIC = 0xcafe_babe
 
 func machoFatDecode(d *decode.D) any {

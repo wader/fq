@@ -25,6 +25,10 @@ linters:
         - wastedassign
 
 linters-settings:
+    revive:
+        rules:
+            - name: unused-parameter
+              disabled: true
     exhaustive:
         default-signifies-exhaustive: true
     gosec:

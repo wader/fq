@@ -4,7 +4,6 @@ import "github.com/wader/fq/pkg/scalar"
 
 // https://www.iana.org/assignments/tls-extensiontype-values/tls-extensiontype-values-1.csv
 
-//nolint:revive
 const (
 	// fq -d csv -r '.[1:][] | select(.[1] | test("unassigned|reserved";"i") | not) | "extension\(.[1]) = \(.[0] | .[0:4] + . [7:] | ascii_downcase)"' tls-extensiontype-values-1.csv
 	extensionServerName                          = 0

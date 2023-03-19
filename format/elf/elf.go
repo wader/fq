@@ -1,4 +1,3 @@
-//nolint:revive
 package elf
 
 // https://refspecs.linuxbase.org/elf/gabi4+/contents.html
