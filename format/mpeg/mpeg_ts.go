@@ -8,13 +8,14 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.MPEG_TS,
-		ProbeOrder:  format.ProbeOrderBinFuzzy, // make sure to be after gif, both start with 0x47
-		Description: "MPEG Transport Stream",
-		Groups:      []string{format.PROBE},
-		DecodeFn:    tsDecode,
-	})
+	interp.RegisterFormat(
+		format.MpegTs,
+		&decode.Format{
+			ProbeOrder:  format.ProbeOrderBinFuzzy, // make sure to be after gif, both start with 0x47
+			Description: "MPEG Transport Stream",
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    tsDecode,
+		})
 }
 
 // TODO: ts_packet

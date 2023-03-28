@@ -10,35 +10,36 @@ import (
 	"github.com/wader/fq/pkg/interp"
 )
 
-var headerFormat decode.Group
-var footerFormat decode.Group
-var mp3Frame decode.Group
+var headerGroup decode.Group
+var footerGroup decode.Group
+var mp3FrameGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.MP3,
-		ProbeOrder:  format.ProbeOrderBinFuzzy, // after most others (silent samples and jpeg header can look like mp3 sync)
-		Description: "MP3 file",
-		Groups:      []string{format.PROBE},
-		DecodeFn:    mp3Decode,
-		DefaultInArg: format.Mp3In{
-			MaxUniqueHeaderConfigs: 5,
-			MaxUnknown:             50,
-			MaxSyncSeek:            4 * 1024 * 8,
-		},
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.ID3V2}, Group: &headerFormat},
-			{
-				Names: []string{
-					format.ID3V1,
-					format.ID3V11,
-					format.APEV2,
-				},
-				Group: &footerFormat,
+	interp.RegisterFormat(
+		format.Mp3,
+		&decode.Format{
+			ProbeOrder:  format.ProbeOrderBinFuzzy, // after most others (silent samples and jpeg header can look like mp3 sync)
+			Description: "MP3 file",
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    mp3Decode,
+			DefaultInArg: format.Mp3In{
+				MaxUniqueHeaderConfigs: 5,
+				MaxUnknown:             50,
+				MaxSyncSeek:            4 * 1024 * 8,
 			},
-			{Names: []string{format.MP3_FRAME}, Group: &mp3Frame},
-		},
-	})
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.Id3v2}, Out: &headerGroup},
+				{
+					Groups: []*decode.Group{
+						format.Id3v1,
+						format.Id3v11,
+						format.Apev2,
+					},
+					Out: &footerGroup,
+				},
+				{Groups: []*decode.Group{format.Mp3Frame}, Out: &mp3FrameGroup},
+			},
+		})
 }
 
 func mp3Decode(d *decode.D) any {
@@ -61,7 +62,7 @@ func mp3Decode(d *decode.D) any {
 	d.FieldArray("headers", func(d *decode.D) {
 		for d.NotEnd() {
 			headerStart := d.Pos()
-			if dv, _, _ := d.TryFieldFormat("header", headerFormat, nil); dv == nil {
+			if dv, _, _ := d.TryFieldFormat("header", &headerGroup, nil); dv == nil {
 				return
 			}
 			knownSize += d.Pos() - headerStart
@@ -86,7 +87,7 @@ func mp3Decode(d *decode.D) any {
 			}
 
 			frameStart := d.Pos()
-			dv, v, _ := d.TryFieldFormat("frame", mp3Frame, nil)
+			dv, v, _ := d.TryFieldFormat("frame", &mp3FrameGroup, nil)
 			if dv == nil {
 				decodeFailures++
 				d.SeekRel(8)
@@ -123,7 +124,7 @@ func mp3Decode(d *decode.D) any {
 	d.FieldArray("footers", func(d *decode.D) {
 		for d.NotEnd() {
 			footerStart := d.Pos()
-			if dv, _, _ := d.TryFieldFormat("footer", footerFormat, nil); dv == nil {
+			if dv, _, _ := d.TryFieldFormat("footer", &footerGroup, nil); dv == nil {
 				return
 			}
 			knownSize += d.Pos() - footerStart

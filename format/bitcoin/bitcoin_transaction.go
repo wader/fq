@@ -11,17 +11,18 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var bitcoinScriptFormat decode.Group
+var bitcoinScriptGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.BITCOIN_TRANSACTION,
-		Description: "Bitcoin transaction",
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.BITCOIN_SCRIPT}, Group: &bitcoinScriptFormat},
-		},
-		DecodeFn: decodeBitcoinTranscation,
-	})
+	interp.RegisterFormat(
+		format.BitcoinTransaction,
+		&decode.Format{
+			Description: "Bitcoin transaction",
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.BitcoinScript}, Out: &bitcoinScriptGroup},
+			},
+			DecodeFn: decodeBitcoinTranscation,
+		})
 }
 
 // Prefix with fd, and the next 2 bytes is the VarInt (in little-endian).
@@ -63,7 +64,7 @@ func decodeBitcoinTranscation(d *decode.D) any {
 				}, rawHexReverse)
 				d.FieldU32("vout")
 				scriptSigSize := d.FieldUintFn("scriptsig_size", decodeVarInt)
-				d.FieldFormatOrRawLen("scriptsig", int64(scriptSigSize)*8, bitcoinScriptFormat, nil)
+				d.FieldFormatOrRawLen("scriptsig", int64(scriptSigSize)*8, &bitcoinScriptGroup, nil)
 				// TODO: better way to know if there should be a valid script
 				d.FieldU32("sequence", scalar.UintHex)
 			})
@@ -76,7 +77,7 @@ func decodeBitcoinTranscation(d *decode.D) any {
 				d.FieldU64("value")
 				scriptSigSize := d.FieldUintFn("scriptpub_size", decodeVarInt)
 				// TODO: better way to know if there should be a valid script
-				d.FieldFormatOrRawLen("scriptpub", int64(scriptSigSize)*8, bitcoinScriptFormat, nil)
+				d.FieldFormatOrRawLen("scriptpub", int64(scriptSigSize)*8, &bitcoinScriptGroup, nil)
 			})
 		}
 	})

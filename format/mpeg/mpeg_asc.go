@@ -10,11 +10,12 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.MPEG_ASC,
-		Description: "MPEG-4 Audio Specific Config",
-		DecodeFn:    ascDecoder,
-	})
+	interp.RegisterFormat(
+		format.MpegAsc,
+		&decode.Format{
+			Description: "MPEG-4 Audio Specific Config",
+			DecodeFn:    ascDecoder,
+		})
 }
 
 var frequencyIndexHzMap = scalar.UintMapSymUint{

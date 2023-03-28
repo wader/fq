@@ -36,19 +36,20 @@ import (
 var xmlFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.XML,
-		Description: "Extensible Markup Language",
-		ProbeOrder:  format.ProbeOrderTextFuzzy,
-		Groups:      []string{format.PROBE},
-		DecodeFn:    decodeXML,
-		DefaultInArg: format.XMLIn{
-			Seq:             false,
-			Array:           false,
-			AttributePrefix: "@",
-		},
-		Functions: []string{"_todisplay"},
-	})
+	interp.RegisterFormat(
+		format.Xml,
+		&decode.Format{
+			Description: "Extensible Markup Language",
+			ProbeOrder:  format.ProbeOrderTextFuzzy,
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    decodeXML,
+			DefaultInArg: format.XMLIn{
+				Seq:             false,
+				Array:           false,
+				AttributePrefix: "@",
+			},
+			Functions: []string{"_todisplay"},
+		})
 	interp.RegisterFS(xmlFS)
 	interp.RegisterFunc1("to_xml", toXML)
 	interp.RegisterFunc0("from_xmlentities", func(_ *interp.Interp, c string) any {

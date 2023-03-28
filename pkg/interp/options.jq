@@ -43,7 +43,7 @@ def _opt_build_default_fixed:
       },
       compact:            false,
       completion_timeout: (env.COMPLETION_TIMEOUT | if . != null then tonumber else 1 end),
-      decode_format:      "probe",
+      decode_group:       "probe",
       decode_progress:    (env.NO_DECODE_PROGRESS == null),
       depth:              0,
       expr:               ".",
@@ -83,7 +83,7 @@ def _opt_options:
     colors:             "csv_kv_obj",
     compact:            "boolean",
     completion_timeout: "number",
-    decode_format:      "string",
+    decode_group:       "string",
     decode_progress:    "boolean",
     depth:              "number",
     display_bytes:      "number",
@@ -409,10 +409,10 @@ def _opt_cli_opts:
       description: "Force color output",
       bool: true
     },
-    "decode_format": {
+    "decode_group": {
       short: "-d",
       long: "--decode",
-      description: "Decode format (probe)",
+      description: "Decode format or group (probe)",
       string: "NAME"
     },
     "expr_file": {

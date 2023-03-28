@@ -19,17 +19,18 @@ import (
 	"golang.org/x/text/encoding/unicode"
 )
 
-var imageFormat decode.Group
+var imageGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.ID3V2,
-		Description: "ID3v2 metadata",
-		DecodeFn:    id3v2Decode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.IMAGE}, Group: &imageFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.Id3v2,
+		&decode.Format{
+			Description: "ID3v2 metadata",
+			DecodeFn:    id3v2Decode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.Image}, Out: &imageGroup},
+			},
+		})
 }
 
 var idDescriptions = scalar.StrMapDescription{
@@ -449,7 +450,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			d.FieldUTF8("image_format", 3)
 			d.FieldU8("picture_type") // TODO: table
 			d.FieldStrFn("description", textNullFn(int(encoding)))
-			d.FieldFormatOrRawLen("picture", d.BitsLeft(), imageFormat, nil)
+			d.FieldFormatOrRawLen("picture", d.BitsLeft(), &imageGroup, nil)
 		},
 
 		// <Header for 'Attached picture', ID: "APIC">
@@ -463,7 +464,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			d.FieldStrFn("mime_type", textNullFn(encodingUTF8))
 			d.FieldU8("picture_type") // TODO: table
 			d.FieldStrFn("description", textNullFn(int(encoding)))
-			d.FieldFormatOrRawLen("picture", d.BitsLeft(), imageFormat, nil)
+			d.FieldFormatOrRawLen("picture", d.BitsLeft(), &imageGroup, nil)
 		},
 
 		// <Header for 'General encapsulated object', ID: "GEOB">
@@ -477,7 +478,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			d.FieldStrFn("mime_type", textNullFn(encodingUTF8))
 			d.FieldStrFn("filename", textNullFn(int(encoding)))
 			d.FieldStrFn("description", textNullFn(int(encoding)))
-			d.FieldFormatOrRawLen("data", d.BitsLeft(), imageFormat, nil)
+			d.FieldFormatOrRawLen("data", d.BitsLeft(), &imageGroup, nil)
 		},
 
 		// Unsynced lyrics/text "ULT"

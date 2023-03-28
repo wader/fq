@@ -20,14 +20,15 @@ import (
 var jsonFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.JSON,
-		Description: "JavaScript Object Notation",
-		ProbeOrder:  format.ProbeOrderTextJSON,
-		Groups:      []string{format.PROBE},
-		DecodeFn:    decodeJSON,
-		Functions:   []string{"_todisplay"},
-	})
+	interp.RegisterFormat(
+		format.Json,
+		&decode.Format{
+			Description: "JavaScript Object Notation",
+			ProbeOrder:  format.ProbeOrderTextJSON,
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    decodeJSON,
+			Functions:   []string{"_todisplay"},
+		})
 	interp.RegisterFS(jsonFS)
 	interp.RegisterFunc1("_to_json", toJSON)
 }

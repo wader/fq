@@ -9,11 +9,12 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.HEVC_PPS,
-		Description: "H.265/HEVC Picture Parameter Set",
-		DecodeFn:    hevcPPSDecode,
-	})
+	interp.RegisterFormat(
+		format.HevcPps,
+		&decode.Format{
+			Description: "H.265/HEVC Picture Parameter Set",
+			DecodeFn:    hevcPPSDecode,
+		})
 }
 
 // H.265 page 36

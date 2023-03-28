@@ -15,11 +15,12 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.MPEG_SPU,
-		Description: "Sub Picture Unit (DVD subtitle)",
-		DecodeFn:    spuDecode,
-	})
+	interp.RegisterFormat(
+		format.MpegSpu,
+		&decode.Format{
+			Description: "Sub Picture Unit (DVD subtitle)",
+			DecodeFn:    spuDecode,
+		})
 }
 
 const (

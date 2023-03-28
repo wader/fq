@@ -10,11 +10,12 @@ import (
 // TODO: comment 28 long, zero byte, track number
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.ID3V1,
-		Description: "ID3v1 metadata",
-		DecodeFn:    id3v1Decode,
-	})
+	interp.RegisterFormat(
+		format.Id3v1,
+		&decode.Format{
+			Description: "ID3v1 metadata",
+			DecodeFn:    id3v1Decode,
+		})
 }
 
 // Decode ID3v1 tag

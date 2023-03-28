@@ -10,11 +10,12 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.AMF0,
-		Description: "Action Message Format 0",
-		DecodeFn:    amf0Decode,
-	})
+	interp.RegisterFormat(
+		format.Amf0,
+		&decode.Format{
+			Description: "Action Message Format 0",
+			DecodeFn:    amf0Decode,
+		})
 }
 
 const (

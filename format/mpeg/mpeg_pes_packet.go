@@ -11,11 +11,12 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.MPEG_PES_PACKET,
-		Description: "MPEG Packetized elementary stream packet",
-		DecodeFn:    pesPacketDecode,
-	})
+	interp.RegisterFormat(
+		format.MpegPesPacket,
+		&decode.Format{
+			Description: "MPEG Packetized elementary stream packet",
+			DecodeFn:    pesPacketDecode,
+		})
 }
 
 const (

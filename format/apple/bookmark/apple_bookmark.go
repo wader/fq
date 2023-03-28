@@ -15,14 +15,14 @@ import (
 var bookmarkFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.APPLE_BOOKMARK,
-		ProbeOrder:  format.ProbeOrderBinUnique,
-		Description: "Apple BookmarkData",
-		Groups:      []string{format.PROBE},
-		DecodeFn:    bookmarkDecode,
-		Functions:   []string{"torepr"},
-	})
+	interp.RegisterFormat(format.AppleBookmark,
+		&decode.Format{
+			ProbeOrder:  format.ProbeOrderBinUnique,
+			Description: "Apple BookmarkData",
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    bookmarkDecode,
+			Functions:   []string{"torepr"},
+		})
 	interp.RegisterFS(bookmarkFS)
 }
 

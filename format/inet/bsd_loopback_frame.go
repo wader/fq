@@ -12,15 +12,15 @@ import (
 var bsdLoopbackFrameInetPacketGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.BSD_LOOPBACK_FRAME,
-		Description: "BSD loopback frame",
-		Groups:      []string{format.LINK_FRAME},
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.INET_PACKET}, Group: &bsdLoopbackFrameInetPacketGroup},
-		},
-		DecodeFn: decodeLoopbackFrame,
-	})
+	interp.RegisterFormat(
+		format.BsdLoopbackFrame, &decode.Format{
+			Description: "BSD loopback frame",
+			Groups:      []*decode.Group{format.LinkFrame},
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.InetPacket}, Out: &bsdLoopbackFrameInetPacketGroup},
+			},
+			DecodeFn: decodeLoopbackFrame,
+		})
 }
 
 const (
@@ -56,7 +56,7 @@ func decodeLoopbackFrame(d *decode.D) any {
 	d.FieldFormatOrRawLen(
 		"payload",
 		d.BitsLeft(),
-		bsdLoopbackFrameInetPacketGroup,
+		&bsdLoopbackFrameInetPacketGroup,
 		// TODO: unknown mapped to ether type 0 is ok?
 		format.InetPacketIn{EtherType: bsdLoopbackFrameNetworkLayerEtherType[networkLayer]},
 	)

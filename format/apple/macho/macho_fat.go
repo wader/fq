@@ -12,15 +12,16 @@ import (
 var machoFormat decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.MACHO_FAT,
-		Description: "Fat Mach-O macOS executable (multi-architecture)",
-		Groups:      []string{format.PROBE},
-		DecodeFn:    machoFatDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.MACHO}, Group: &machoFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.MachoFat,
+		&decode.Format{
+			Description: "Fat Mach-O macOS executable (multi-architecture)",
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    machoFatDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.Macho}, Out: &machoFormat},
+			},
+		})
 }
 
 const FAT_MAGIC = 0xcafe_babe
@@ -55,7 +56,7 @@ func machoFatDecode(d *decode.D) any {
 	d.FieldArray("files", func(d *decode.D) {
 		for _, o := range ofiles {
 			d.RangeFn(o.offset*8, o.size*8, func(d *decode.D) {
-				d.FieldFormat("file", machoFormat, nil)
+				d.FieldFormat("file", &machoFormat, nil)
 			})
 		}
 	})

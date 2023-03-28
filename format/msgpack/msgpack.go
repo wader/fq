@@ -18,12 +18,13 @@ import (
 var msgPackFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.MSGPACK,
-		Description: "MessagePack",
-		DecodeFn:    decodeMsgPack,
-		Functions:   []string{"torepr"},
-	})
+	interp.RegisterFormat(
+		format.Msgpack,
+		&decode.Format{
+			Description: "MessagePack",
+			DecodeFn:    decodeMsgPack,
+			Functions:   []string{"torepr"},
+		})
 	interp.RegisterFS(msgPackFS)
 }
 

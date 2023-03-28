@@ -33,12 +33,13 @@ import (
 var asn1FS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.ASN1_BER,
-		Description: "ASN1 BER (basic encoding rules, also CER and DER)",
-		DecodeFn:    decodeASN1BER,
-		Functions:   []string{"torepr"},
-	})
+	interp.RegisterFormat(
+		format.Asn1Ber,
+		&decode.Format{
+			Description: "ASN1 BER (basic encoding rules, also CER and DER)",
+			DecodeFn:    decodeASN1BER,
+			Functions:   []string{"torepr"},
+		})
 	interp.RegisterFS(asn1FS)
 }
 

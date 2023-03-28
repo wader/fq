@@ -12,15 +12,16 @@ import (
 var tiffIccProfile decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.TIFF,
-		Description: "Tag Image File Format",
-		Groups:      []string{format.PROBE, format.IMAGE},
-		DecodeFn:    tiffDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.ICC_PROFILE}, Group: &tiffIccProfile},
-		},
-	})
+	interp.RegisterFormat(
+		format.Tiff,
+		&decode.Format{
+			Description: "Tag Image File Format",
+			Groups:      []*decode.Group{format.Probe, format.Image},
+			DecodeFn:    tiffDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.IccProfile}, Out: &tiffIccProfile},
+			},
+		})
 }
 
 const littleEndian = 0x49492a00 // "II*\0"
@@ -138,7 +139,7 @@ func decodeIfd(d *decode.D, s *strips, tagNames scalar.UintMapSymStr) int64 {
 							case typ == UNDEFINED:
 								switch tag {
 								case InterColorProfile:
-									d.FieldFormatRange("icc", int64(valueByteOffset)*8, int64(valueByteSize)*8, tiffIccProfile, nil)
+									d.FieldFormatRange("icc", int64(valueByteOffset)*8, int64(valueByteSize)*8, &tiffIccProfile, nil)
 								default:
 									d.RangeFn(int64(valueByteOffset*8), int64(valueByteSize*8), func(d *decode.D) {
 										d.FieldRawLen("value", d.BitsLeft())

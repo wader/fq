@@ -10,12 +10,13 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.TCP_SEGMENT,
-		Description: "Transmission control protocol segment",
-		Groups:      []string{format.IP_PACKET},
-		DecodeFn:    decodeTCP,
-	})
+	interp.RegisterFormat(
+		format.TcpSegment,
+		&decode.Format{
+			Description: "Transmission control protocol segment",
+			Groups:      []*decode.Group{format.IpPacket},
+			DecodeFn:    decodeTCP,
+		})
 }
 
 const (

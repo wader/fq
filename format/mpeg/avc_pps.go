@@ -8,11 +8,12 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.AVC_PPS,
-		Description: "H.264/AVC Picture Parameter Set",
-		DecodeFn:    avcPPSDecode,
-	})
+	interp.RegisterFormat(
+		format.AvcPps,
+		&decode.Format{
+			Description: "H.264/AVC Picture Parameter Set",
+			DecodeFn:    avcPPSDecode,
+		})
 }
 
 func moreRBSPData(d *decode.D) bool {

@@ -16,9 +16,9 @@ import (
 //go:embed pcap.md
 var pcapFS embed.FS
 
-var pcapLinkFrameFormat decode.Group
-var pcapTCPStreamFormat decode.Group
-var pcapIPv4PacketFormat decode.Group
+var pcapLinkFrameGroup decode.Group
+var pcapTCPStreamGroup decode.Group
+var pcapIPv4PacketGroup decode.Group
 
 // writing application writes 0xa1b2c3d4 in native endian
 const (
@@ -39,17 +39,18 @@ var endianMap = scalar.UintMapSymStr{
 }
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.PCAP,
-		Description: "PCAP packet capture",
-		Groups:      []string{format.PROBE},
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.LINK_FRAME}, Group: &pcapLinkFrameFormat},
-			{Names: []string{format.TCP_STREAM}, Group: &pcapTCPStreamFormat},
-			{Names: []string{format.IPV4_PACKET}, Group: &pcapIPv4PacketFormat},
-		},
-		DecodeFn: decodePcap,
-	})
+	interp.RegisterFormat(
+		format.Pcap,
+		&decode.Format{
+			Description: "PCAP packet capture",
+			Groups:      []*decode.Group{format.Probe},
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.LinkFrame}, Out: &pcapLinkFrameGroup},
+				{Groups: []*decode.Group{format.TcpStream}, Out: &pcapTCPStreamGroup},
+				{Groups: []*decode.Group{format.Ipv4Packet}, Out: &pcapIPv4PacketGroup},
+			},
+			DecodeFn: decodePcap,
+		})
 	interp.RegisterFS(pcapFS)
 }
 
@@ -122,7 +123,8 @@ func decodePcap(d *decode.D) any {
 				d.FieldFormatOrRawLen(
 					"packet",
 					int64(inclLen)*8,
-					pcapLinkFrameFormat, format.LinkFrameIn{
+					&pcapLinkFrameGroup,
+					format.LinkFrameIn{
 						Type:           linkType,
 						IsLittleEndian: d.Endian == decode.LittleEndian,
 					},
@@ -132,7 +134,7 @@ func decodePcap(d *decode.D) any {
 	})
 	fd.Flush()
 
-	fieldFlows(d, fd, pcapTCPStreamFormat, pcapIPv4PacketFormat)
+	fieldFlows(d, fd, pcapTCPStreamGroup, pcapIPv4PacketGroup)
 
 	return nil
 }

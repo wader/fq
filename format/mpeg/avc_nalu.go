@@ -16,16 +16,17 @@ var avcPPSFormat decode.Group
 var avcSEIFormat decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.AVC_NALU,
-		Description: "H.264/AVC Network Access Layer Unit",
-		DecodeFn:    avcNALUDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.AVC_SPS}, Group: &avcSPSFormat},
-			{Names: []string{format.AVC_PPS}, Group: &avcPPSFormat},
-			{Names: []string{format.AVC_SEI}, Group: &avcSEIFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.AvcNalu,
+		&decode.Format{
+			Description: "H.264/AVC Network Access Layer Unit",
+			DecodeFn:    avcNALUDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.AvcSps}, Out: &avcSPSFormat},
+				{Groups: []*decode.Group{format.AvcPps}, Out: &avcPPSFormat},
+				{Groups: []*decode.Group{format.AvcSei}, Out: &avcSEIFormat},
+			},
+		})
 }
 
 // 14496-10 9.1 Parsing process for Exp-Golomb codes
@@ -119,11 +120,11 @@ func avcNALUDecode(d *decode.D) any {
 			// TODO: if ( separate_colour_plane_flag from SPS ) colour_plane_id; frame_num
 		})
 	case avcNALSupplementalEnhancementInformation:
-		d.FieldFormatBitBuf("sei", unescapedBR, avcSEIFormat, nil)
+		d.FieldFormatBitBuf("sei", unescapedBR, &avcSEIFormat, nil)
 	case avcNALSequenceParameterSet:
-		d.FieldFormatBitBuf("sps", unescapedBR, avcSPSFormat, nil)
+		d.FieldFormatBitBuf("sps", unescapedBR, &avcSPSFormat, nil)
 	case avcNALPictureParameterSet:
-		d.FieldFormatBitBuf("pps", unescapedBR, avcPPSFormat, nil)
+		d.FieldFormatBitBuf("pps", unescapedBR, &avcPPSFormat, nil)
 	}
 	d.FieldRawLen("data", d.BitsLeft())
 

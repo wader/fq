@@ -8,11 +8,12 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.AVC_SEI,
-		Description: "H.264/AVC Supplemental Enhancement Information",
-		DecodeFn:    avcSEIDecode,
-	})
+	interp.RegisterFormat(
+		format.AvcSei,
+		&decode.Format{
+			Description: "H.264/AVC Supplemental Enhancement Information",
+			DecodeFn:    avcSEIDecode,
+		})
 }
 
 const (

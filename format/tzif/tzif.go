@@ -14,12 +14,13 @@ import (
 var tzifFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.TZIF,
-		Description: "Time Zone Information Format",
-		DecodeFn:    decodeTZIF,
-		Groups:      []string{format.PROBE},
-	})
+	interp.RegisterFormat(
+		format.Tzif,
+		&decode.Format{
+			Description: "Time Zone Information Format",
+			DecodeFn:    decodeTZIF,
+			Groups:      []*decode.Group{format.Probe},
+		})
 	interp.RegisterFS(tzifFS)
 }
 

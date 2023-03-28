@@ -19,12 +19,13 @@ import (
 var markdownFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.MARKDOWN,
-		Description: "Markdown",
-		DecodeFn:    decodeMarkdown,
-		Functions:   []string{"_todisplay"},
-	})
+	interp.RegisterFormat(
+		format.Markdown,
+		&decode.Format{
+			Description: "Markdown",
+			DecodeFn:    decodeMarkdown,
+			Functions:   []string{"_todisplay"},
+		})
 	interp.RegisterFS(markdownFS)
 }
 

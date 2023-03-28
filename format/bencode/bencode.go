@@ -17,12 +17,13 @@ import (
 var bencodeFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.BENCODE,
-		Description: "BitTorrent bencoding",
-		DecodeFn:    decodeBencode,
-		Functions:   []string{"torepr"},
-	})
+	interp.RegisterFormat(
+		format.Bencode,
+		&decode.Format{
+			Description: "BitTorrent bencoding",
+			DecodeFn:    decodeBencode,
+			Functions:   []string{"torepr"},
+		})
 	interp.RegisterFS(bencodeFS)
 }
 

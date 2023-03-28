@@ -676,7 +676,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			i++
 		})
 	case "avcC":
-		_, v := d.FieldFormat("descriptor", avcDCRFormat, nil)
+		_, v := d.FieldFormat("descriptor", &avcDCRGroup, nil)
 		avcDcrOut, ok := v.(format.AvcDcrOut)
 		if !ok {
 			panic(fmt.Sprintf("expected AvcDcrOut got %#+v", v))
@@ -685,7 +685,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			t.formatInArg = format.AvcAuIn{LengthSize: avcDcrOut.LengthSize} //nolint:gosimple
 		}
 	case "hvcC":
-		_, v := d.FieldFormat("descriptor", hevcCDCRFormat, nil)
+		_, v := d.FieldFormat("descriptor", &hevcCDCRGroup, nil)
 		hevcDcrOut, ok := v.(format.HevcDcrOut)
 		if !ok {
 			panic(fmt.Sprintf("expected HevcDcrOut got %#+v", v))
@@ -696,7 +696,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 	case "dfLa":
 		d.FieldU8("version")
 		d.FieldU24("flags")
-		_, v := d.FieldFormat("descriptor", flacMetadatablocksFormat, nil)
+		_, v := d.FieldFormat("descriptor", &flacMetadatablocksGroup, nil)
 		flacMetadatablockOut, ok := v.(format.FlacMetadatablocksOut)
 		if !ok {
 			panic(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
@@ -707,16 +707,16 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			}
 		}
 	case "dOps":
-		d.FieldFormat("descriptor", opusPacketFrameFormat, nil)
+		d.FieldFormat("descriptor", &opusPacketFrameGroup, nil)
 	case "av1C":
-		d.FieldFormat("descriptor", av1CCRFormat, nil)
+		d.FieldFormat("descriptor", &av1CCRGroup, nil)
 	case "vpcC":
 		d.FieldU8("version")
 		d.FieldU24("flags")
-		d.FieldFormat("descriptor", vpxCCRFormat, nil)
+		d.FieldFormat("descriptor", &vpxCCRGroup, nil)
 	case "esds":
 		d.FieldU32("version")
-		_, v := d.FieldFormat("descriptor", mpegESFormat, nil)
+		_, v := d.FieldFormat("descriptor", &mpegESGroup, nil)
 		mpegEsOut, ok := v.(format.MpegEsOut)
 		if !ok {
 			panic(fmt.Sprintf("expected mpegEsOut got %#+v", v))
@@ -936,7 +936,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		d.FieldU24("flags")
 		d.FieldU32("reserved")
 		if ctx.isParent("covr") {
-			d.FieldFormatOrRawLen("data", d.BitsLeft(), imageFormat, nil)
+			d.FieldFormatOrRawLen("data", d.BitsLeft(), &imageGroup, nil)
 		} else {
 			d.FieldUTF8("data", int(d.BitsLeft()/8))
 		}
@@ -1239,7 +1239,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			}
 			return s
 		})
-		d.FieldFormat("data", id3v2Format, nil)
+		d.FieldFormat("data", &id3v2Group, nil)
 	case "mehd":
 		version := d.FieldU8("version")
 		d.FieldU24("flags")
@@ -1282,9 +1282,9 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 
 		switch {
 		case bytes.Equal(systemID, systemIDWidevine[:]):
-			d.FieldFormatLen("data", int64(dataLen)*8, protoBufWidevineFormat, nil)
+			d.FieldFormatLen("data", int64(dataLen)*8, &protoBufWidevineGroup, nil)
 		case bytes.Equal(systemID, systemIDPlayReady[:]):
-			d.FieldFormatLen("data", int64(dataLen)*8, psshPlayreadyFormat, nil)
+			d.FieldFormatLen("data", int64(dataLen)*8, &psshPlayreadyGroup, nil)
 		case systemID == nil:
 			fallthrough
 		default:
@@ -1605,7 +1605,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 				d.FieldU8("color_range")
 			}
 		case "prof":
-			d.FieldFormat("profile", iccProfileFormat, nil)
+			d.FieldFormat("profile", &iccProfileGroup, nil)
 		default:
 			d.FieldRawLen("data", d.BitsLeft())
 		}

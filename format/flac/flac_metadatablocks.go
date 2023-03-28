@@ -8,19 +8,20 @@ import (
 	"github.com/wader/fq/pkg/interp"
 )
 
-var flacMetadatablockFormat decode.Group
+var flacMetadatablockGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.FLAC_METADATABLOCKS,
-		Description: "FLAC metadatablocks",
-		DecodeFn:    metadatablocksDecode,
-		RootArray:   true,
-		RootName:    "metadatablocks",
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.FLAC_METADATABLOCK}, Group: &flacMetadatablockFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.FlacMetadatablocks,
+		&decode.Format{
+			Description: "FLAC metadatablocks",
+			DecodeFn:    metadatablocksDecode,
+			RootArray:   true,
+			RootName:    "metadatablocks",
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.FlacMetadatablock}, Out: &flacMetadatablockGroup},
+			},
+		})
 }
 
 func metadatablocksDecode(d *decode.D) any {
@@ -28,7 +29,7 @@ func metadatablocksDecode(d *decode.D) any {
 
 	isLastBlock := false
 	for !isLastBlock {
-		_, v := d.FieldFormat("metadatablock", flacMetadatablockFormat, nil)
+		_, v := d.FieldFormat("metadatablock", &flacMetadatablockGroup, nil)
 		flacMetadatablockOut, ok := v.(format.FlacMetadatablockOut)
 		if !ok {
 			panic(fmt.Sprintf("expected FlacMetadatablocksOut, got %#+v", flacMetadatablockOut))

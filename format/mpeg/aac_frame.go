@@ -14,16 +14,17 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.AAC_FRAME,
-		Description: "Advanced Audio Coding frame",
-		DecodeFn:    aacDecode,
-		DefaultInArg: format.AACFrameIn{
-			ObjectType: format.MPEGAudioObjectTypeMain,
-		},
-		RootArray: true,
-		RootName:  "elements",
-	})
+	interp.RegisterFormat(
+		format.AacFrame,
+		&decode.Format{
+			Description: "Advanced Audio Coding frame",
+			DecodeFn:    aacDecode,
+			DefaultInArg: format.AACFrameIn{
+				ObjectType: format.MPEGAudioObjectTypeMain,
+			},
+			RootArray: true,
+			RootName:  "elements",
+		})
 }
 
 const (

@@ -19,24 +19,25 @@ import (
 )
 
 var rtmpAmf0Group decode.Group
-var rtmpMpegASCFormat decode.Group
+var rtmpMpegASCGroup decode.Group
 
 //go:embed rtmp.md
 var rtmpFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.RTMP,
-		Description: "Real-Time Messaging Protocol",
-		Groups: []string{
-			format.TCP_STREAM,
-		},
-		DecodeFn: rtmpDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.AMF0}, Group: &rtmpAmf0Group},
-			{Names: []string{format.MPEG_ASC}, Group: &rtmpMpegASCFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.Rtmp,
+		&decode.Format{
+			Description: "Real-Time Messaging Protocol",
+			Groups: []*decode.Group{
+				format.TcpStream,
+			},
+			DecodeFn: rtmpDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.Amf0}, Out: &rtmpAmf0Group},
+				{Groups: []*decode.Group{format.MpegAsc}, Out: &rtmpMpegASCGroup},
+			},
+		})
 	interp.RegisterFS(rtmpFS)
 }
 
@@ -242,16 +243,16 @@ func rtmpDecodeMessageType(d *decode.D, typ int, chunkSize *int) {
 	case messageTypeDataMessage:
 		d.FieldArray("messages", func(d *decode.D) {
 			for !d.End() {
-				d.FieldFormat("message", rtmpAmf0Group, nil)
+				d.FieldFormat("message", &rtmpAmf0Group, nil)
 			}
 		})
 	case messageTypeCommandMessage:
-		d.FieldFormat("command_name", rtmpAmf0Group, nil)
-		d.FieldFormat("transaction_id", rtmpAmf0Group, nil)
-		d.FieldFormat("command_object", rtmpAmf0Group, nil)
+		d.FieldFormat("command_name", &rtmpAmf0Group, nil)
+		d.FieldFormat("transaction_id", &rtmpAmf0Group, nil)
+		d.FieldFormat("command_object", &rtmpAmf0Group, nil)
 		d.FieldArray("arguments", func(d *decode.D) {
 			for !d.End() {
-				d.FieldFormat("argument", rtmpAmf0Group, nil)
+				d.FieldFormat("argument", &rtmpAmf0Group, nil)
 			}
 		})
 	case messageTypeAggregateMessage:
@@ -282,7 +283,7 @@ func rtmpDecodeMessageType(d *decode.D, typ int, chunkSize *int) {
 		if codec == audioMessageCodecAAC {
 			switch d.FieldU8("type", audioMessageAACPacketTypeNames) {
 			case audioMessageAACPacketTypeASC:
-				d.FieldFormat("data", rtmpMpegASCFormat, nil)
+				d.FieldFormat("data", &rtmpMpegASCGroup, nil)
 			default:
 				d.FieldRawLen("data", d.BitsLeft())
 			}

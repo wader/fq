@@ -38,7 +38,7 @@ func annexBDecode(d *decode.D, format decode.Group) any {
 		}
 
 		naluLen := nextOffset
-		d.FieldFormatLen("nalu", naluLen, format, nil)
+		d.FieldFormatLen("nalu", naluLen, &format, nil)
 
 		currentPrefixLen = nextPrefixLen
 	}

@@ -14,12 +14,13 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.DNS,
-		Description: "DNS packet",
-		Groups:      []string{format.UDP_PAYLOAD},
-		DecodeFn:    dnsUDPDecode,
-	})
+	interp.RegisterFormat(
+		format.Dns,
+		&decode.Format{
+			Description: "DNS packet",
+			Groups:      []*decode.Group{format.UdpPayload},
+			DecodeFn:    dnsUDPDecode,
+		})
 }
 
 const (

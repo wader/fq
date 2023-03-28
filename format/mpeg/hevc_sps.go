@@ -9,11 +9,12 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.HEVC_SPS,
-		Description: "H.265/HEVC Sequence Parameter Set",
-		DecodeFn:    hevcSPSDecode,
-	})
+	interp.RegisterFormat(
+		format.HevcSps,
+		&decode.Format{
+			Description: "H.265/HEVC Sequence Parameter Set",
+			DecodeFn:    hevcSPSDecode,
+		})
 }
 
 func profileLayerDecode(d *decode.D, prefix string, profilePresent bool, levelPresent bool, isSublayer bool) {

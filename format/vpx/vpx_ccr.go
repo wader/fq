@@ -9,11 +9,12 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.VPX_CCR,
-		Description: "VPX Codec Configuration Record",
-		DecodeFn:    vpxCCRDecode,
-	})
+	interp.RegisterFormat(
+		format.VpxCcr,
+		&decode.Format{
+			Description: "VPX Codec Configuration Record",
+			DecodeFn:    vpxCCRDecode,
+		})
 }
 
 func vpxCCRDecode(d *decode.D) any {

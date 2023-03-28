@@ -13,10 +13,10 @@ import (
 )
 
 func init() {
-	registry.MustRegister(decode.Format{
+	registry.MustRegister(&decode.Format{
 		Name:        format.FLV,
 		Description: "Flash video",
-		Groups:      []string{format.PROBE},
+		Groups:      []*decode.Group{format.Probe},
 		DecodeFn:    flvDecode,
 	})
 }

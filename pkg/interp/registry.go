@@ -14,7 +14,8 @@ import (
 type EnvFuncFn func(env *Interp) gojqex.Function
 
 type Registry struct {
-	FormatGroups      map[string]decode.Group
+	allGroup          *decode.Group
+	groups            map[string]*decode.Group
 	formatResolveOnce sync.Once
 	formatResolved    bool
 
@@ -25,35 +26,31 @@ type Registry struct {
 
 func NewRegistry() *Registry {
 	return &Registry{
-		FormatGroups:      map[string]decode.Group{},
+		allGroup:          &decode.Group{Name: "all"},
+		groups:            map[string]*decode.Group{},
 		formatResolveOnce: sync.Once{},
 	}
 }
 
-func (r *Registry) format(groupName string, format decode.Format, single bool) {
+func (r *Registry) Format(group *decode.Group, format *decode.Format) *decode.Format {
 	if r.formatResolved {
 		// for now can't change after resolved
 		panic("registry already resolved")
 	}
 
-	group, ok := r.FormatGroups[groupName]
-	if ok {
-		if !single {
-			panic(fmt.Sprintf("%s: format already registered", groupName))
-		}
-	} else {
-		group = decode.Group{}
+	if _, ok := r.groups[group.Name]; ok {
+		panic(fmt.Sprintf("%s: format already registered", group.Name))
 	}
+	group.Formats = append(group.Formats, format)
+	r.groups[group.Name] = group
+	format.Name = group.Name
 
-	r.FormatGroups[groupName] = append(group, format)
-}
-
-func (r *Registry) Format(format decode.Format) decode.Format {
-	r.format(format.Name, format, false)
 	for _, g := range format.Groups {
-		r.format(g, format, true)
+		r.groups[g.Name] = g
+		g.Formats = append(g.Formats, format)
 	}
-	r.format("all", format, true)
+
+	r.allGroup.Formats = append(r.allGroup.Formats, format)
 
 	return format
 }
@@ -66,8 +63,8 @@ func (r *Registry) Func(funcFn EnvFuncFn) {
 	r.EnvFuncFns = append(r.EnvFuncFns, funcFn)
 }
 
-func sortFormats(g decode.Group) {
-	slices.SortFunc(g, func(a, b decode.Format) bool {
+func sortFormats(g *decode.Group) {
+	slices.SortFunc(g.Formats, func(a, b *decode.Format) bool {
 		if a.ProbeOrder == b.ProbeOrder {
 			return a.Name < b.Name
 		}
@@ -75,55 +72,54 @@ func sortFormats(g decode.Group) {
 	})
 }
 
-func (r *Registry) resolveFormats() error {
-	for _, fs := range r.FormatGroups {
-		for _, f := range fs {
-			for _, d := range f.Dependencies {
-				var group decode.Group
-				for _, dName := range d.Names {
-					df, ok := r.FormatGroups[dName]
-					if !ok {
-						return fmt.Errorf("%s: can't find format dependency %s", f.Name, dName)
+func (r *Registry) resolveGroups() {
+	r.formatResolveOnce.Do(func() {
+		for _, g := range r.groups {
+			for _, f := range g.Formats {
+				for _, d := range f.Dependencies {
+					if len(d.Out.Formats) != 0 {
+						// already resolved
+						continue
 					}
-					group = append(group, df...)
-				}
 
-				sortFormats(group)
-				*d.Group = group
+					for _, dg := range d.Groups {
+						d.Out.Formats = append(d.Out.Formats, dg.Formats...)
+					}
+					sortFormats(d.Out)
+				}
 			}
 		}
-	}
 
-	for _, fs := range r.FormatGroups {
-		sortFormats(fs)
-	}
+		for _, g := range r.groups {
+			sortFormats(g)
+		}
 
-	r.formatResolved = true
-
-	return nil
+		r.formatResolved = true
+	})
 }
 
-func (r *Registry) FormatGroup(name string) (decode.Group, error) {
-	r.formatResolveOnce.Do(func() {
-		if err := r.resolveFormats(); err != nil {
-			panic(err)
-		}
-	})
-
-	if g, ok := r.FormatGroups[name]; ok {
+func (r *Registry) Group(name string) (*decode.Group, error) {
+	r.resolveGroups()
+	if g, ok := r.groups[name]; ok {
 		return g, nil
 	}
 	return nil, errors.New("format group not found")
 }
 
-func (r *Registry) MustFormatGroup(name string) decode.Group {
-	g, err := r.FormatGroup(name)
+func (r *Registry) MustGroup(name string) *decode.Group {
+	g, err := r.Group(name)
 	if err == nil {
 		return g
 	}
 	panic(err)
 }
 
-func (r *Registry) MustAll() decode.Group {
-	return r.MustFormatGroup("all")
+func (r *Registry) Groups() map[string]*decode.Group {
+	r.resolveGroups()
+	return r.groups
+}
+
+func (r *Registry) MustAll() *decode.Group {
+	r.resolveGroups()
+	return r.allGroup
 }

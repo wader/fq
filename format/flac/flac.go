@@ -16,20 +16,21 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var flacMetadatablocksFormat decode.Group
-var flacFrameFormat decode.Group
+var flacMetadatablocksGroup decode.Group
+var flacFrameGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.FLAC,
-		Description: "Free Lossless Audio Codec file",
-		Groups:      []string{format.PROBE},
-		DecodeFn:    flacDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.FLAC_METADATABLOCKS}, Group: &flacMetadatablocksFormat},
-			{Names: []string{format.FLAC_FRAME}, Group: &flacFrameFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.Flac,
+		&decode.Format{
+			Description: "Free Lossless Audio Codec file",
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    flacDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.FlacMetadatablocks}, Out: &flacMetadatablocksGroup},
+				{Groups: []*decode.Group{format.FlacFrame}, Out: &flacFrameGroup},
+			},
+		})
 }
 
 func flacDecode(d *decode.D) any {
@@ -41,7 +42,7 @@ func flacDecode(d *decode.D) any {
 	var streamTotalSamples uint64
 	var streamDecodedSamples uint64
 
-	_, v := d.FieldFormat("metadatablocks", flacMetadatablocksFormat, nil)
+	_, v := d.FieldFormat("metadatablocks", &flacMetadatablocksGroup, nil)
 	flacMetadatablockOut, ok := v.(format.FlacMetadatablocksOut)
 	if !ok {
 		panic(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
@@ -56,7 +57,7 @@ func flacDecode(d *decode.D) any {
 	d.FieldArray("frames", func(d *decode.D) {
 		for d.NotEnd() {
 			// flac frame might need some fields from stream info to decode
-			_, v := d.FieldFormat("frame", flacFrameFormat, flacFrameIn)
+			_, v := d.FieldFormat("frame", &flacFrameGroup, flacFrameIn)
 			ffo, ok := v.(format.FlacFrameOut)
 			if !ok {
 				panic(fmt.Sprintf("expected FlacFrameOut got %#+v", v))

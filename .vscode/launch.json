@@ -10,12 +10,7 @@
             "program": ".",
             "cwd": "${workspaceFolder}",
             "env": {},
-            "args": [
-                "-d",
-                "mp4",
-                ".",
-                "file"
-            ],
+            "args": [".", "doc/file.mp3"]
         }
     ]
 }

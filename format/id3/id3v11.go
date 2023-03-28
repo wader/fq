@@ -8,11 +8,12 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.ID3V11,
-		Description: "ID3v1.1 metadata",
-		DecodeFn:    id3v11Decode,
-	})
+	interp.RegisterFormat(
+		format.Id3v11,
+		&decode.Format{
+			Description: "ID3v1.1 metadata",
+			DecodeFn:    id3v11Decode,
+		})
 }
 
 func id3v11Decode(d *decode.D) any {

@@ -45,15 +45,15 @@ type DecodeValue interface {
 }
 
 func (i *Interp) _registry(c any) any {
-	uniqueFormats := map[string]decode.Format{}
+	uniqueFormats := map[string]*decode.Format{}
 
 	groups := map[string]any{}
 	formats := map[string]any{}
 
-	for groupName := range i.Registry.FormatGroups {
+	for _, g := range i.Registry.Groups() {
 		var group []any
 
-		for _, f := range i.Registry.MustFormatGroup(groupName) {
+		for _, f := range g.Formats {
 			group = append(group, f.Name)
 			if _, ok := uniqueFormats[f.Name]; ok {
 				continue
@@ -61,7 +61,7 @@ func (i *Interp) _registry(c any) any {
 			uniqueFormats[f.Name] = f
 		}
 
-		groups[groupName] = group
+		groups[g.Name] = group
 	}
 
 	for _, f := range uniqueFormats {
@@ -77,8 +77,8 @@ func (i *Interp) _registry(c any) any {
 		var dependenciesVs []any
 		for _, d := range f.Dependencies {
 			var dNamesVs []any
-			for _, n := range d.Names {
-				dNamesVs = append(dNamesVs, n)
+			for _, g := range d.Groups {
+				dNamesVs = append(dNamesVs, g.Name)
 			}
 			dependenciesVs = append(dependenciesVs, dNamesVs)
 		}
@@ -86,8 +86,8 @@ func (i *Interp) _registry(c any) any {
 			vf["dependencies"] = dependenciesVs
 		}
 		var groupsVs []any
-		for _, n := range f.Groups {
-			groupsVs = append(groupsVs, n)
+		for _, g := range f.Groups {
+			groupsVs = append(groupsVs, g.Name)
 		}
 		if len(groupsVs) > 0 {
 			vf["groups"] = groupsVs
@@ -229,12 +229,12 @@ func (i *Interp) _decode(c any, format string, opts decodeOpts) any {
 	if err != nil {
 		return err
 	}
-	decodeFormat, err := i.Registry.FormatGroup(formatName)
+	decodeGroup, err := i.Registry.Group(formatName)
 	if err != nil {
 		return err
 	}
 
-	dv, formatOut, err := decode.Decode(i.EvalInstance.Ctx, bv.br, decodeFormat,
+	dv, formatOut, err := decode.Decode(i.EvalInstance.Ctx, bv.br, decodeGroup,
 		decode.Options{
 			IsRoot:      true,
 			FillGaps:    true,

@@ -60,7 +60,7 @@ $ fq -n options
   },
   "compact": false,
   "completion_timeout": 10,
-  "decode_format": "probe",
+  "decode_group": "probe",
   "decode_progress": false,
   "depth": 0,
   "display_bytes": 16,

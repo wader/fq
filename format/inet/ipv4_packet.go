@@ -15,18 +15,19 @@ import (
 var ipv4IpPacketGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.IPV4_PACKET,
-		Description: "Internet protocol v4 packet",
-		Groups: []string{
-			format.INET_PACKET,
-			format.LINK_FRAME,
-		},
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.IP_PACKET}, Group: &ipv4IpPacketGroup},
-		},
-		DecodeFn: decodeIPv4,
-	})
+	interp.RegisterFormat(
+		format.Ipv4Packet,
+		&decode.Format{
+			Description: "Internet protocol v4 packet",
+			Groups: []*decode.Group{
+				format.InetPacket,
+				format.LinkFrame,
+			},
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.IpPacket}, Out: &ipv4IpPacketGroup},
+			},
+			DecodeFn: decodeIPv4,
+		})
 }
 
 const (
@@ -113,7 +114,7 @@ func decodeIPv4(d *decode.D) any {
 		d.FieldFormatOrRawLen(
 			"payload",
 			dataLen,
-			ipv4IpPacketGroup,
+			&ipv4IpPacketGroup,
 			format.IPPacketIn{Protocol: int(protocol)},
 		)
 	}

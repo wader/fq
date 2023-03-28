@@ -12,11 +12,12 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.OGG_PAGE,
-		Description: "OGG page",
-		DecodeFn:    pageDecode,
-	})
+	interp.RegisterFormat(
+		format.OggPage,
+		&decode.Format{
+			Description: "OGG page",
+			DecodeFn:    pageDecode,
+		})
 }
 
 func pageDecode(d *decode.D) any {

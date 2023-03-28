@@ -17,16 +17,17 @@ var flacPicture decode.Group
 var vorbisCommentFormat decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.FLAC_METADATABLOCK,
-		Description: "FLAC metadatablock",
-		DecodeFn:    metadatablockDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.FLAC_STREAMINFO}, Group: &flacStreaminfoFormat},
-			{Names: []string{format.FLAC_PICTURE}, Group: &flacPicture},
-			{Names: []string{format.VORBIS_COMMENT}, Group: &vorbisCommentFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.FlacMetadatablock,
+		&decode.Format{
+			Description: "FLAC metadatablock",
+			DecodeFn:    metadatablockDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.FlacStreaminfo}, Out: &flacStreaminfoFormat},
+				{Groups: []*decode.Group{format.FlacPicture}, Out: &flacPicture},
+				{Groups: []*decode.Group{format.VorbisComment}, Out: &vorbisCommentFormat},
+			},
+		})
 }
 
 const (
@@ -59,16 +60,16 @@ func metadatablockDecode(d *decode.D) any {
 
 	switch typ {
 	case MetadataBlockStreaminfo:
-		flacStreaminfoOut, ok := d.Format(flacStreaminfoFormat, nil).(format.FlacStreaminfoOut)
+		flacStreaminfoOut, ok := d.Format(&flacStreaminfoFormat, nil).(format.FlacStreaminfoOut)
 		if !ok {
 			panic(fmt.Sprintf("expected FlacStreaminfoOut, got %#+v", flacStreaminfoOut))
 		}
 		hasStreamInfo = true
 		streamInfo = flacStreaminfoOut.StreamInfo
 	case MetadataBlockVorbisComment:
-		d.FieldFormatLen("comment", int64(length*8), vorbisCommentFormat, nil)
+		d.FieldFormatLen("comment", int64(length*8), &vorbisCommentFormat, nil)
 	case MetadataBlockPicture:
-		d.FieldFormatLen("picture", int64(length*8), flacPicture, nil)
+		d.FieldFormatLen("picture", int64(length*8), &flacPicture, nil)
 	case MetadataBlockSeektable:
 		seektableCount := length / 18
 		d.FieldArray("seekpoints", func(d *decode.D) {

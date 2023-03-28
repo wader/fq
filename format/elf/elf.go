@@ -17,12 +17,13 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.ELF,
-		Description: "Executable and Linkable Format",
-		Groups:      []string{format.PROBE},
-		DecodeFn:    elfDecode,
-	})
+	interp.RegisterFormat(
+		format.Elf,
+		&decode.Format{
+			Description: "Executable and Linkable Format",
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    elfDecode,
+		})
 }
 
 const (

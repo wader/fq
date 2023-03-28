@@ -9,11 +9,12 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.FAIRPLAY_SPC,
-		Description: "FairPlay Server Playback Context",
-		DecodeFn:    fairPlaySPCDecode,
-	})
+	interp.RegisterFormat(
+		format.FairplaySpc,
+		&decode.Format{
+			Description: "FairPlay Server Playback Context",
+			DecodeFn:    fairPlaySPCDecode,
+		})
 }
 
 func fairPlaySPCDecode(d *decode.D) any {

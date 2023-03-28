@@ -23,7 +23,7 @@ func (fuzzFS) Open(name string) (fs.File, error) {
 
 type fuzzTest struct {
 	b []byte
-	f decode.Format
+	f *decode.Format
 }
 
 type fuzzTestInput struct {
@@ -102,12 +102,12 @@ func FuzzFormats(f *testing.F) {
 		f.Fatal(f)
 	}
 
-	gi := 0
-	var g decode.Group
+	fi := 0
+	var g *decode.Group
 
 	if n := os.Getenv("GROUP"); n != "" {
 		var err error
-		g, err = interp.DefaultRegistry.FormatGroup(n)
+		g, err = interp.DefaultRegistry.Group(n)
 		if err != nil {
 			f.Fatal(err)
 		}
@@ -117,18 +117,18 @@ func FuzzFormats(f *testing.F) {
 	}
 
 	f.Fuzz(func(t *testing.T, b []byte) {
-		fz := &fuzzTest{b: b, f: g[gi]}
+		fz := &fuzzTest{b: b, f: g.Formats[fi]}
 		q, err := interp.New(fz, interp.DefaultRegistry)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		_ = q.Main(context.Background(), fz.Stdout(), "dev")
+		_ = q.Main(context.Background(), fz.Stdout(), "fuzz")
 		// if err != nil {
 		// 	// TODO: expect error
 		// 	t.Fatal(err)
 		// }
 
-		gi = (gi + 1) % len(g)
+		fi = (fi + 1) % len(g.Formats)
 	})
 }

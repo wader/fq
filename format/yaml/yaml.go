@@ -20,14 +20,15 @@ import (
 var yamlFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.YAML,
-		Description: "YAML Ain't Markup Language",
-		ProbeOrder:  format.ProbeOrderTextFuzzy,
-		Groups:      []string{format.PROBE},
-		DecodeFn:    decodeYAML,
-		Functions:   []string{"_todisplay"},
-	})
+	interp.RegisterFormat(
+		format.Yaml,
+		&decode.Format{
+			Description: "YAML Ain't Markup Language",
+			ProbeOrder:  format.ProbeOrderTextFuzzy,
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    decodeYAML,
+			Functions:   []string{"_todisplay"},
+		})
 	interp.RegisterFS(yamlFS)
 	interp.RegisterFunc0("to_yaml", toYAML)
 }

@@ -14,21 +14,22 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var wavHeaderFormat decode.Group
-var wavFooterFormat decode.Group
+var wavHeaderGroup decode.Group
+var wavFooterGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.WAV,
-		ProbeOrder:  format.ProbeOrderBinFuzzy, // after most others (overlap some with webp)
-		Description: "WAV file",
-		Groups:      []string{format.PROBE},
-		DecodeFn:    wavDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.ID3V2}, Group: &wavHeaderFormat},
-			{Names: []string{format.ID3V1, format.ID3V11}, Group: &wavFooterFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.Wav,
+		&decode.Format{
+			ProbeOrder:  format.ProbeOrderBinFuzzy, // after most others (overlap some with webp)
+			Description: "WAV file",
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    wavDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.Id3v2}, Out: &wavHeaderGroup},
+				{Groups: []*decode.Group{format.Id3v1, format.Id3v11}, Out: &wavFooterGroup},
+			},
+		})
 }
 
 const (
@@ -51,7 +52,7 @@ func wavDecode(d *decode.D) any {
 	d.Endian = decode.LittleEndian
 
 	// there are wav files in the wild with id3v2 header id3v1 footer
-	_, _, _ = d.TryFieldFormat("header", wavHeaderFormat, nil)
+	_, _, _ = d.TryFieldFormat("header", &wavHeaderGroup, nil)
 
 	var riffType string
 	riffDecode(
@@ -153,7 +154,7 @@ func wavDecode(d *decode.D) any {
 	if riffType != wavRiffType {
 		d.Errorf("wrong or no WAV riff type found (%s)", riffType)
 	}
-	_, _, _ = d.TryFieldFormat("footer", wavFooterFormat, nil)
+	_, _, _ = d.TryFieldFormat("footer", &wavFooterGroup, nil)
 
 	return nil
 }

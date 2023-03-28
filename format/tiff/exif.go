@@ -12,10 +12,11 @@ import (
 // currently just a alias for tiff
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.EXIF,
-		Description: "Exchangeable Image File Format",
-		Groups:      []string{},
-		DecodeFn:    tiffDecode,
-	})
+	interp.RegisterFormat(
+		format.Exif,
+		&decode.Format{
+			Description: "Exchangeable Image File Format",
+			Groups:      []*decode.Group{},
+			DecodeFn:    tiffDecode,
+		})
 }

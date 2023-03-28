@@ -30,27 +30,28 @@ import (
 //go:embed avi.md
 var aviFS embed.FS
 
-var aviMp3FrameFormat decode.Group
-var aviMpegAVCAUFormat decode.Group
-var aviMpegHEVCAUFormat decode.Group
-var aviFLACFrameFormat decode.Group
+var aviMp3FrameGroup decode.Group
+var aviMpegAVCAUGroup decode.Group
+var aviMpegHEVCAUGroup decode.Group
+var aviFLACFrameGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.AVI,
-		Description: "Audio Video Interleaved",
-		DecodeFn:    aviDecode,
-		DefaultInArg: format.AviIn{
-			DecodeSamples: true,
-		},
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.AVC_AU}, Group: &aviMpegAVCAUFormat},
-			{Names: []string{format.HEVC_AU}, Group: &aviMpegHEVCAUFormat},
-			{Names: []string{format.MP3_FRAME}, Group: &aviMp3FrameFormat},
-			{Names: []string{format.FLAC_FRAME}, Group: &aviFLACFrameFormat},
-		},
-		Groups: []string{format.PROBE},
-	})
+	interp.RegisterFormat(
+		format.Avi,
+		&decode.Format{
+			Description: "Audio Video Interleaved",
+			DecodeFn:    aviDecode,
+			DefaultInArg: format.AviIn{
+				DecodeSamples: true,
+			},
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.AvcAu}, Out: &aviMpegAVCAUGroup},
+				{Groups: []*decode.Group{format.HevcAu}, Out: &aviMpegHEVCAUGroup},
+				{Groups: []*decode.Group{format.Mp3Frame}, Out: &aviMp3FrameGroup},
+				{Groups: []*decode.Group{format.FlacFrame}, Out: &aviFLACFrameGroup},
+			},
+			Groups: []*decode.Group{format.Probe},
+		})
 	interp.RegisterFS(aviFS)
 }
 
@@ -389,11 +390,11 @@ func aviDecode(d *decode.D) any {
 						format.BMPTagH264_UMSV,
 						format.BMPTagH264_tshd,
 						format.BMPTagH264_INMC:
-						s.format = aviMpegAVCAUFormat
+						s.format = aviMpegAVCAUGroup
 						s.hasFormat = true
 					case format.BMPTagHEVC,
 						format.BMPTagHEVC_H265:
-						s.format = aviMpegHEVCAUFormat
+						s.format = aviMpegHEVCAUGroup
 						s.hasFormat = true
 					}
 
@@ -416,11 +417,11 @@ func aviDecode(d *decode.D) any {
 
 					switch formatTag {
 					case format.WAVTagMP3:
-						s.format = aviMp3FrameFormat
+						s.format = aviMp3FrameGroup
 						s.hasFormat = true
 					case format.WAVTagFLAC:
 						// TODO: can flac in avi have streaminfo somehow?
-						s.format = aviFLACFrameFormat
+						s.format = aviFLACFrameGroup
 						s.hasFormat = true
 					}
 				case "iavs":
@@ -520,7 +521,7 @@ func aviDecode(d *decode.D) any {
 					index < len(streams) &&
 					streams[index].hasFormat:
 					s := streams[index]
-					d.FieldFormatLen("data", d.BitsLeft(), s.format, s.formatInArg)
+					d.FieldFormatLen("data", d.BitsLeft(), &s.format, s.formatInArg)
 				default:
 					d.FieldRawLen("data", d.BitsLeft())
 				}
@@ -558,7 +559,7 @@ func aviDecode(d *decode.D) any {
 				decodeSample := func(d *decode.D, sr ranges.Range) {
 					d.RangeFn(sr.Start, sr.Len, func(d *decode.D) {
 						if sr.Len > 0 && ai.DecodeSamples && s.hasFormat {
-							d.FieldFormat("sample", s.format, s.formatInArg)
+							d.FieldFormat("sample", &s.format, s.formatInArg)
 						} else {
 							d.FieldRawLen("sample", d.BitsLeft())
 						}

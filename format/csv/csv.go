@@ -21,17 +21,18 @@ import (
 var csvFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.CSV,
-		Description: "Comma separated values",
-		ProbeOrder:  format.ProbeOrderTextFuzzy,
-		DecodeFn:    decodeCSV,
-		DefaultInArg: format.CSVLIn{
-			Comma:   ",",
-			Comment: "#",
-		},
-		Functions: []string{"_todisplay"},
-	})
+	interp.RegisterFormat(
+		format.Csv,
+		&decode.Format{
+			Description: "Comma separated values",
+			ProbeOrder:  format.ProbeOrderTextFuzzy,
+			DecodeFn:    decodeCSV,
+			DefaultInArg: format.CSVLIn{
+				Comma:   ",",
+				Comment: "#",
+			},
+			Functions: []string{"_todisplay"},
+		})
 	interp.RegisterFS(csvFS)
 	interp.RegisterFunc1("_to_csv", toCSV)
 }

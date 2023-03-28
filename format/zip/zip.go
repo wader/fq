@@ -18,21 +18,22 @@ import (
 //go:embed zip.md
 var zipFS embed.FS
 
-var probeFormat decode.Group
+var probeGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.ZIP,
-		Description: "ZIP archive",
-		Groups:      []string{format.PROBE},
-		DecodeFn:    zipDecode,
-		DefaultInArg: format.ZipIn{
-			Uncompress: true,
-		},
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.PROBE}, Group: &probeFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.Zip,
+		&decode.Format{
+			Description: "ZIP archive",
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    zipDecode,
+			DefaultInArg: format.ZipIn{
+				Uncompress: true,
+			},
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.Probe}, Out: &probeGroup},
+			},
+		})
 	interp.RegisterFS(zipFS)
 }
 
@@ -359,7 +360,7 @@ func zipDecode(d *decode.D) any {
 				}
 
 				if compressionMethod == compressionMethodNone {
-					d.FieldFormatOrRawLen("uncompressed", compressedSize, probeFormat, nil)
+					d.FieldFormatOrRawLen("uncompressed", compressedSize, &probeGroup, nil)
 				} else {
 					var rFn func(r io.Reader) io.Reader
 					if zi.Uncompress {
@@ -372,7 +373,8 @@ func zipDecode(d *decode.D) any {
 					}
 
 					if rFn != nil {
-						readCompressedSize, uncompressedBR, dv, _, _ := d.TryFieldReaderRangeFormat("uncompressed", d.Pos(), compressedLimit, rFn, probeFormat, nil)
+						readCompressedSize, uncompressedBR, dv, _, _ :=
+							d.TryFieldReaderRangeFormat("uncompressed", d.Pos(), compressedLimit, rFn, &probeGroup, nil)
 						if dv == nil && uncompressedBR != nil {
 							d.FieldRootBitBuf("uncompressed", uncompressedBR)
 						}

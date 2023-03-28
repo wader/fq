@@ -7,18 +7,19 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var probeFormat decode.Group
+var probeGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.AR,
-		Description: "Unix archive",
-		Groups:      []string{format.PROBE},
-		DecodeFn:    decodeAr,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.PROBE}, Group: &probeFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.Ar,
+		&decode.Format{
+			Description: "Unix archive",
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    decodeAr,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.Probe}, Out: &probeGroup},
+			},
+		})
 }
 
 func decodeAr(d *decode.D) any {
@@ -37,7 +38,7 @@ func decodeAr(d *decode.D) any {
 				}
 				size := int64(sizeStr.SymUint()) * 8
 				d.FieldUTF8("ending_characters", 2)
-				d.FieldFormatOrRawLen("data", size, probeFormat, nil)
+				d.FieldFormatOrRawLen("data", size, &probeGroup, nil)
 				padding := d.AlignBits(16)
 				if padding > 0 {
 					d.FieldRawLen("padding", int64(padding))

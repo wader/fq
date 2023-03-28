@@ -14,7 +14,7 @@ type RecoverableErrorer interface {
 
 type FormatError struct {
 	Err        error
-	Format     Format
+	Format     *Format
 	Stacktrace recoverfn.Raw
 }
 

@@ -17,17 +17,18 @@ import (
 var htmlFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.HTML,
-		Description: "HyperText Markup Language",
-		DecodeFn:    decodeHTML,
-		DefaultInArg: format.HTMLIn{
-			Seq:             false,
-			Array:           false,
-			AttributePrefix: "@",
-		},
-		Functions: []string{"_todisplay"},
-	})
+	interp.RegisterFormat(
+		format.Html,
+		&decode.Format{
+			Description: "HyperText Markup Language",
+			DecodeFn:    decodeHTML,
+			DefaultInArg: format.HTMLIn{
+				Seq:             false,
+				Array:           false,
+				AttributePrefix: "@",
+			},
+			Functions: []string{"_todisplay"},
+		})
 	interp.RegisterFS(htmlFS)
 }
 

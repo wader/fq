@@ -1,5 +1,7 @@
 package format
 
+import "github.com/wader/fq/pkg/decode"
+
 // TODO: do before-format somehow and topology sort?
 const (
 	ProbeOrderBinUnique = 0   // binary with unlikely overlap
@@ -8,140 +10,162 @@ const (
 	ProbeOrderTextFuzzy = 300 // text with possible overlap
 )
 
-// TODO: change to CamelCase?
-const (
-	ALL = "all"
+// TODO: move to group package somehow?
 
-	IMAGE          = "image"
-	PROBE          = "probe"
-	LINK_FRAME     = "link_frame"  // ex: ethernet
-	INET_PACKET    = "inet_packet" // ex: ipv4
-	IP_PACKET      = "ip_packet"   // ex: tcp
-	TCP_STREAM     = "tcp_stream"  // ex: http
-	UDP_PAYLOAD    = "udp_payload" // ex: dns
-	MP3_FRAME_TAGS = "mp3_frame_tags"
+var (
+	All = &decode.Group{Name: "all"}
 
-	BYTES = "bytes"
-	BITS  = "bits"
+	Image        = &decode.Group{Name: "image"}
+	Probe        = &decode.Group{Name: "probe"}
+	LinkFrame    = &decode.Group{Name: "link_frame", DefaultInArg: LinkFrameIn{}}   // ex: ethernet
+	InetPacket   = &decode.Group{Name: "inet_packet", DefaultInArg: InetPacketIn{}} // ex: ipv4
+	IpPacket     = &decode.Group{Name: "ip_packet", DefaultInArg: InetPacketIn{}}   // ex: tcp
+	TcpStream    = &decode.Group{Name: "tcp_stream", DefaultInArg: TCPStreamIn{}}   // ex: http
+	UdpPayload   = &decode.Group{Name: "udp_payload", DefaultInArg: UDPPayloadIn{}} // ex: dns
+	Mp3FrameTags = &decode.Group{Name: "mp3_frame_tags"}
 
-	AAC_FRAME           = "aac_frame"
-	ADTS                = "adts"
-	ADTS_FRAME          = "adts_frame"
-	AIFF                = "aiff"
-	AMF0                = "amf0"
-	APEV2               = "apev2"
-	APPLE_BOOKMARK      = "apple_bookmark"
-	AR                  = "ar"
-	ASN1_BER            = "asn1_ber"
-	AV1_CCR             = "av1_ccr"
-	AV1_FRAME           = "av1_frame"
-	AV1_OBU             = "av1_obu"
-	AVC_ANNEXB          = "avc_annexb"
-	AVC_AU              = "avc_au"
-	AVC_DCR             = "avc_dcr"
-	AVC_NALU            = "avc_nalu"
-	AVC_PPS             = "avc_pps"
-	AVC_SEI             = "avc_sei"
-	AVC_SPS             = "avc_sps"
-	AVI                 = "avi"
-	AVRO_OCF            = "avro_ocf"
-	BENCODE             = "bencode"
-	BITCOIN_BLKDAT      = "bitcoin_blkdat"
-	BITCOIN_BLOCK       = "bitcoin_block"
-	BITCOIN_SCRIPT      = "bitcoin_script"
-	BITCOIN_TRANSACTION = "bitcoin_transaction"
-	BPLIST              = "bplist"
-	BSD_LOOPBACK_FRAME  = "bsd_loopback_frame"
-	BSON                = "bson"
-	BZIP2               = "bzip2"
-	CBOR                = "cbor"
-	CSV                 = "csv"
-	DNS                 = "dns"
-	DNS_TCP             = "dns_tcp"
-	ELF                 = "elf"
-	ETHER8023_FRAME     = "ether8023_frame"
-	EXIF                = "exif"
-	FAIRPLAY_SPC        = "fairplay_spc"
-	FLAC                = "flac"
-	FLAC_FRAME          = "flac_frame"
-	FLAC_METADATABLOCK  = "flac_metadatablock"
-	FLAC_METADATABLOCKS = "flac_metadatablocks"
-	FLAC_PICTURE        = "flac_picture"
-	FLAC_STREAMINFO     = "flac_streaminfo"
-	FLV                 = "flv" // TODO:
-	GIF                 = "gif"
-	GZIP                = "gzip"
-	HEVC_ANNEXB         = "hevc_annexb"
-	HEVC_AU             = "hevc_au"
-	HEVC_DCR            = "hevc_dcr"
-	HEVC_NALU           = "hevc_nalu"
-	HEVC_PPS            = "hevc_pps"
-	HEVC_SPS            = "hevc_sps"
-	HEVC_VPS            = "hevc_vps"
-	HTML                = "html"
-	ICC_PROFILE         = "icc_profile"
-	ICMP                = "icmp"
-	ICMPV6              = "icmpv6"
-	ID3V1               = "id3v1"
-	ID3V11              = "id3v11"
-	ID3V2               = "id3v2"
-	IPV4_PACKET         = "ipv4_packet"
-	IPV6_PACKET         = "ipv6_packet"
-	JPEG                = "jpeg"
-	JSON                = "json"
-	JSONL               = "jsonl"
-	MACHO               = "macho"
-	MACHO_FAT           = "macho_fat"
-	MARKDOWN            = "markdown"
-	MATROSKA            = "matroska"
-	MP3                 = "mp3"
-	MP3_FRAME           = "mp3_frame"
-	MP3_FRAME_VBRI      = "mp3_frame_vbri"
-	MP3_FRAME_XING      = "mp3_frame_xing"
-	MP4                 = "mp4"
-	MPEG_ASC            = "mpeg_asc"
-	MPEG_ES             = "mpeg_es"
-	MPEG_PES            = "mpeg_pes"
-	MPEG_PES_PACKET     = "mpeg_pes_packet"
-	MPEG_SPU            = "mpeg_spu"
-	MPEG_TS             = "mpeg_ts"
-	MSGPACK             = "msgpack"
-	OGG                 = "ogg"
-	OGG_PAGE            = "ogg_page"
-	OPUS_PACKET         = "opus_packet"
-	PCAP                = "pcap"
-	PCAPNG              = "pcapng"
-	PNG                 = "png"
-	PRORES_FRAME        = "prores_frame"
-	PROTOBUF            = "protobuf"
-	PROTOBUF_WIDEVINE   = "protobuf_widevine"
-	PSSH_PLAYREADY      = "pssh_playready"
-	RTMP                = "rtmp"
-	SLL_PACKET          = "sll_packet"
-	SLL2_PACKET         = "sll2_packet"
-	TAR                 = "tar"
-	TCP_SEGMENT         = "tcp_segment"
-	TIFF                = "tiff"
-	TLS                 = "tls"
-	TOML                = "toml"
-	TZIF                = "tzif"
-	UDP_DATAGRAM        = "udp_datagram"
-	VORBIS_COMMENT      = "vorbis_comment"
-	VORBIS_PACKET       = "vorbis_packet"
-	VP8_FRAME           = "vp8_frame"
-	VP9_CFM             = "vp9_cfm"
-	VP9_FRAME           = "vp9_frame"
-	VPX_CCR             = "vpx_ccr"
-	WASM                = "wasm"
-	WAV                 = "wav"
-	WEBP                = "webp"
-	XML                 = "xml"
-	YAML                = "yaml"
-	ZIP                 = "zip"
+	Bytes = &decode.Group{Name: "bytes"}
+	Bits  = &decode.Group{Name: "bits"}
+
+	AacFrame           = &decode.Group{Name: "aac_frame"}
+	Adts               = &decode.Group{Name: "adts"}
+	AdtsFrame          = &decode.Group{Name: "adts_frame"}
+	Aiff               = &decode.Group{Name: "aiff"}
+	Amf0               = &decode.Group{Name: "amf0"}
+	Apev2              = &decode.Group{Name: "apev2"}
+	AppleBookmark      = &decode.Group{Name: "apple_bookmark"}
+	Ar                 = &decode.Group{Name: "ar"}
+	Asn1Ber            = &decode.Group{Name: "asn1_ber"}
+	Av1Ccr             = &decode.Group{Name: "av1_ccr"}
+	Av1Frame           = &decode.Group{Name: "av1_frame"}
+	Av1Obu             = &decode.Group{Name: "av1_obu"}
+	AvcAnnexb          = &decode.Group{Name: "avc_annexb"}
+	AvcAu              = &decode.Group{Name: "avc_au"}
+	AvcDcr             = &decode.Group{Name: "avc_dcr"}
+	AvcNalu            = &decode.Group{Name: "avc_nalu"}
+	AvcPps             = &decode.Group{Name: "avc_pps"}
+	AvcSei             = &decode.Group{Name: "avc_sei"}
+	AvcSps             = &decode.Group{Name: "avc_sps"}
+	Avi                = &decode.Group{Name: "avi"}
+	AvroOcf            = &decode.Group{Name: "avro_ocf"}
+	Bencode            = &decode.Group{Name: "bencode"}
+	BitcoinBlkdat      = &decode.Group{Name: "bitcoin_blkdat"}
+	BitcoinBlock       = &decode.Group{Name: "bitcoin_block"}
+	BitcoinScript      = &decode.Group{Name: "bitcoin_script"}
+	BitcoinTransaction = &decode.Group{Name: "bitcoin_transaction"}
+	Bplist             = &decode.Group{Name: "bplist"}
+	BsdLoopbackFrame   = &decode.Group{Name: "bsd_loopback_frame"}
+	Bson               = &decode.Group{Name: "bson"}
+	Bzip2              = &decode.Group{Name: "bzip2"}
+	Cbor               = &decode.Group{Name: "cbor"}
+	Csv                = &decode.Group{Name: "csv"}
+	Dns                = &decode.Group{Name: "dns"}
+	DnsTcp             = &decode.Group{Name: "dns_tcp"}
+	Elf                = &decode.Group{Name: "elf"}
+	Ether8023Frame     = &decode.Group{Name: "ether8023_frame"}
+	Exif               = &decode.Group{Name: "exif"}
+	FairplaySpc        = &decode.Group{Name: "fairplay_spc"}
+	Flac               = &decode.Group{Name: "flac"}
+	FlacFrame          = &decode.Group{Name: "flac_frame"}
+	FlacMetadatablock  = &decode.Group{Name: "flac_metadatablock"}
+	FlacMetadatablocks = &decode.Group{Name: "flac_metadatablocks"}
+	FlacPicture        = &decode.Group{Name: "flac_picture"}
+	FlacStreaminfo     = &decode.Group{Name: "flac_streaminfo"}
+	Flv                = &decode.Group{Name: "flv"}
+	Gif                = &decode.Group{Name: "gif"}
+	Gzip               = &decode.Group{Name: "gzip"}
+	HevcAnnexb         = &decode.Group{Name: "hevc_annexb"}
+	HevcAu             = &decode.Group{Name: "hevc_au"}
+	HevcDcr            = &decode.Group{Name: "hevc_dcr"}
+	HevcNalu           = &decode.Group{Name: "hevc_nalu"}
+	HevcPps            = &decode.Group{Name: "hevc_pps"}
+	HevcSps            = &decode.Group{Name: "hevc_sps"}
+	HevcVps            = &decode.Group{Name: "hevc_vps"}
+	Html               = &decode.Group{Name: "html"}
+	IccProfile         = &decode.Group{Name: "icc_profile"}
+	Icmp               = &decode.Group{Name: "icmp"}
+	Icmpv6             = &decode.Group{Name: "icmpv6"}
+	Id3v1              = &decode.Group{Name: "id3v1"}
+	Id3v11             = &decode.Group{Name: "id3v11"}
+	Id3v2              = &decode.Group{Name: "id3v2"}
+	Ipv4Packet         = &decode.Group{Name: "ipv4_packet"}
+	Ipv6Packet         = &decode.Group{Name: "ipv6_packet"}
+	Jpeg               = &decode.Group{Name: "jpeg"}
+	Json               = &decode.Group{Name: "json"}
+	Jsonl              = &decode.Group{Name: "jsonl"}
+	Macho              = &decode.Group{Name: "macho"}
+	MachoFat           = &decode.Group{Name: "macho_fat"}
+	Markdown           = &decode.Group{Name: "markdown"}
+	Matroska           = &decode.Group{Name: "matroska"}
+	Mp3                = &decode.Group{Name: "mp3"}
+	Mp3Frame           = &decode.Group{Name: "mp3_frame"}
+	Mp3FrameVbri       = &decode.Group{Name: "mp3_frame_vbri"}
+	Mp3FrameXing       = &decode.Group{Name: "mp3_frame_xing"}
+	Mp4                = &decode.Group{Name: "mp4"}
+	MpegAsc            = &decode.Group{Name: "mpeg_asc"}
+	MpegEs             = &decode.Group{Name: "mpeg_es"}
+	MpegPes            = &decode.Group{Name: "mpeg_pes"}
+	MpegPesPacket      = &decode.Group{Name: "mpeg_pes_packet"}
+	MpegSpu            = &decode.Group{Name: "mpeg_spu"}
+	MpegTs             = &decode.Group{Name: "mpeg_ts"}
+	Msgpack            = &decode.Group{Name: "msgpack"}
+	Ogg                = &decode.Group{Name: "ogg"}
+	OggPage            = &decode.Group{Name: "ogg_page"}
+	OpusPacket         = &decode.Group{Name: "opus_packet"}
+	Pcap               = &decode.Group{Name: "pcap"}
+	Pcapng             = &decode.Group{Name: "pcapng"}
+	Png                = &decode.Group{Name: "png"}
+	ProresFrame        = &decode.Group{Name: "prores_frame"}
+	Protobuf           = &decode.Group{Name: "protobuf"}
+	ProtobufWidevine   = &decode.Group{Name: "protobuf_widevine"}
+	PsshPlayready      = &decode.Group{Name: "pssh_playready"}
+	Rtmp               = &decode.Group{Name: "rtmp"}
+	SllPacket          = &decode.Group{Name: "sll_packet"}
+	Sll2Packet         = &decode.Group{Name: "sll2_packet"}
+	Tar                = &decode.Group{Name: "tar"}
+	TcpSegment         = &decode.Group{Name: "tcp_segment"}
+	Tiff               = &decode.Group{Name: "tiff"}
+	Tls                = &decode.Group{Name: "tls"}
+	Toml               = &decode.Group{Name: "toml"}
+	Tzif               = &decode.Group{Name: "tzif"}
+	UdpDatagram        = &decode.Group{Name: "udp_datagram"}
+	VorbisComment      = &decode.Group{Name: "vorbis_comment"}
+	VorbisPacket       = &decode.Group{Name: "vorbis_packet"}
+	Vp8Frame           = &decode.Group{Name: "vp8_frame"}
+	Vp9Cfm             = &decode.Group{Name: "vp9_cfm"}
+	Vp9Frame           = &decode.Group{Name: "vp9_frame"}
+	VpxCcr             = &decode.Group{Name: "vpx_ccr"}
+	Wasm               = &decode.Group{Name: "wasm"}
+	Wav                = &decode.Group{Name: "wav"}
+	Webp               = &decode.Group{Name: "webp"}
+	Xml                = &decode.Group{Name: "xml"}
+	Yaml               = &decode.Group{Name: "yaml"}
+	Zip                = &decode.Group{Name: "zip"}
 )
 
 // below are data types used to communicate between formats <FormatName>In/Out
 
+type AACFrameIn struct {
+	ObjectType int `doc:"Audio object type"`
+}
+type AvcAuIn struct {
+	LengthSize uint64 `doc:"Length value size"`
+}
+
+type AvcDcrOut struct {
+	LengthSize uint64
+}
+type FlacFrameIn struct {
+	SamplesBuf    []byte
+	BitsPerSample int `doc:"Bits per sample"`
+}
+
+type FlacFrameOut struct {
+	SamplesBuf    []byte
+	Samples       uint64
+	Channels      int
+	BitsPerSample int
+}
 type FlacStreamInfo struct {
 	SampleRate           uint64
 	BitsPerSample        uint64
@@ -164,16 +188,12 @@ type FlacMetadatablocksOut struct {
 	StreamInfo    FlacStreamInfo
 }
 
-type FlacFrameIn struct {
-	SamplesBuf    []byte
-	BitsPerSample int `doc:"Bits per sample"`
+type HevcAuIn struct {
+	LengthSize uint64 `doc:"Length value size"`
 }
 
-type FlacFrameOut struct {
-	SamplesBuf    []byte
-	Samples       uint64
-	Channels      int
-	BitsPerSample int
+type HevcDcrOut struct {
+	LengthSize uint64
 }
 
 type OggPageOut struct {
@@ -185,45 +205,12 @@ type OggPageOut struct {
 	Segments           [][]byte
 }
 
-type AvcAuIn struct {
-	LengthSize uint64 `doc:"Length value size"`
-}
-
-type AvcDcrOut struct {
-	LengthSize uint64
-}
-
-type HevcAuIn struct {
-	LengthSize uint64 `doc:"Length value size"`
-}
-
-type HevcDcrOut struct {
-	LengthSize uint64
-}
-
 type ProtoBufIn struct {
 	Message ProtoBufMessage
 }
 
 type MatroskaIn struct {
 	DecodeSamples bool `doc:"Decode samples"`
-}
-
-type MpegDecoderConfig struct {
-	ObjectType    int
-	ASCObjectType int
-}
-
-type MpegEsOut struct {
-	DecoderConfigs []MpegDecoderConfig
-}
-
-type MPEGASCOut struct {
-	ObjectType int
-}
-
-type AACFrameIn struct {
-	ObjectType int `doc:"Audio object type"`
 }
 
 type Mp3In struct {
@@ -239,6 +226,19 @@ type MP3FrameOut struct {
 	SampleRate       int
 	ChannelsIndex    int
 	ChannelModeIndex int
+}
+
+type MpegDecoderConfig struct {
+	ObjectType    int
+	ASCObjectType int
+}
+
+type MpegEsOut struct {
+	DecoderConfigs []MpegDecoderConfig
+}
+
+type MPEGASCOut struct {
+	ObjectType int
 }
 
 type LinkFrameIn struct {
