@@ -17,30 +17,8 @@ type Format struct {
 	RootArray          bool
 	RootName           string
 	Dependencies       []Dependency
-	Help               FormatHelp
 	Functions          []string
 	SkipDecodeFunction bool
-}
-
-type HelpExample struct {
-	Comment string
-	Code    string
-}
-
-type HelpFunction struct {
-	Name     string
-	Examples []HelpExample
-}
-
-type HelpReference struct {
-	Title string
-	URL   string
-}
-
-type FormatHelp struct {
-	Notes      string
-	Functions  []HelpFunction
-	References []HelpReference
 }
 
 func FormatFn(d func(d *D) any) Group {
