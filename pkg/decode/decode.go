@@ -106,27 +106,29 @@ func decode(ctx context.Context, br bitio.ReaderAtSeeker, group Group, opts Opti
 		}
 
 		if !rOk {
-			if re, ok := r.RecoverV.(RecoverableErrorer); ok && re.IsRecoverableError() {
-				panicErr, _ := re.(error)
-				formatErr := FormatError{
-					Err:        panicErr,
-					Format:     f,
-					Stacktrace: r,
-				}
-				formatsErr.Errs = append(formatsErr.Errs, formatErr)
-
-				switch vv := d.Value.V.(type) {
-				case *Compound:
-					// TODO: hack, changes V
-					d.Value.V = vv
-					d.Value.Err = formatErr
-				}
-
-				if len(group) != 1 {
-					continue
-				}
+			var panicErr error
+			if err, ok := r.RecoverV.(error); ok {
+				panicErr = err
 			} else {
-				r.RePanic()
+				panicErr = fmt.Errorf("recoverable non-panic error :%v", r.RecoverV)
+			}
+
+			formatErr := FormatError{
+				Err:        panicErr,
+				Format:     f,
+				Stacktrace: r,
+			}
+			formatsErr.Errs = append(formatsErr.Errs, formatErr)
+
+			switch vv := d.Value.V.(type) {
+			case *Compound:
+				// TODO: hack, changes V
+				d.Value.V = vv
+				d.Value.Err = formatErr
+			}
+
+			if len(group) != 1 {
+				continue
 			}
 		}
 

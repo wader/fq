@@ -8,12 +8,16 @@ import (
 )
 
 func test1() {
-	panic("hello")
+	panic(testError(true))
 }
 
 func test2() {
 	test1()
 }
+
+type testError bool
+
+func (t testError) IsRecoverableError() bool { return bool(t) }
 
 func TestNormal(t *testing.T) {
 	_, rOk := recoverfn.Run(func() {})
@@ -31,9 +35,8 @@ func TestPanic(t *testing.T) {
 		t.Errorf("expected v %v, got %v", expectedROK, rOk)
 	}
 
-	expectedV := "hello"
-	if !reflect.DeepEqual(expectedV, r.RecoverV) {
-		t.Errorf("expected v %v, got %v", expectedV, r.RecoverV)
+	if _, ok := r.RecoverV.(testError); !ok {
+		t.Errorf("expected v %v, got %v", testError(true), r.RecoverV)
 	}
 
 	frames := r.Frames()

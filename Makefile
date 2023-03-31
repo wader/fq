@@ -92,7 +92,7 @@ update-gomod: always
 # fq -n '"..." | from_base64 | ...'
 fuzz: always
 # in other terminal: tail -f /tmp/repanic
-	FUZZTEST=1 REPANIC_LOG=/tmp/repanic go test -v -run Fuzz -fuzz=Fuzz ./format/
+	FUZZTEST=1 go test -v -run Fuzz -fuzz=Fuzz ./format/
 
 # usage: make release VERSION=0.0.1
 # tag forked dependeces for history and to make then stay around
