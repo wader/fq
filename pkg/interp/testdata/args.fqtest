@@ -99,6 +99,7 @@ repl                false
 show_formats        false
 show_help           options
 sizebase            10
+skip_gaps           false
 slurp               false
 string_input        false
 unicode             false

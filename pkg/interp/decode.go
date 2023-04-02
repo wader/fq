@@ -163,9 +163,12 @@ func (i *Interp) _registry(c any) any {
 	}
 }
 
-func (i *Interp) _toValue(c any, opts map[string]any) any {
+func (i *Interp) _toValue(c any, om map[string]any) any {
 	return toValue(
-		func() Options { return OptionsFromValue(opts) },
+		func() *Options {
+			opts := OptionsFromValue(om)
+			return &opts
+		},
 		c,
 	)
 }
@@ -307,7 +310,7 @@ func valueHas(key any, a func(name string) any, b func(key any) any) any {
 
 // TODO: make more efficient somehow? shallow values but might be hard
 // when things like tovalue.key should behave like a jq value and not a decode value etc
-func toValue(optsFn func() Options, v any) any {
+func toValue(optsFn func() *Options, v any) any {
 	nv, _ := gojqex.ToGoJQValueFn(v, func(v any) (any, bool) {
 		switch v := v.(type) {
 		case JQValueEx:
@@ -540,7 +543,7 @@ func (dvb decodeValueBase) JQValueKey(name string) any {
 	case "_gap":
 		switch vv := dv.V.(type) {
 		case Scalarable:
-			return vv.ScalarGap()
+			return vv.ScalarIsGap()
 		default:
 			return false
 		}
@@ -606,7 +609,7 @@ func (v decodeValue) JQValueKey(name string) any {
 func (v decodeValue) JQValueHas(key any) any {
 	return valueHas(key, v.decodeValueBase.JQValueKey, v.JQValue.JQValueHas)
 }
-func (v decodeValue) JQValueToGoJQEx(optsFn func() Options) any {
+func (v decodeValue) JQValueToGoJQEx(optsFn func() *Options) any {
 	if !v.bitsFormat {
 		return v.JQValueToGoJQ()
 	}
@@ -695,12 +698,25 @@ func (v ArrayDecodeValue) JQValueHas(key any) any {
 			return intKey >= 0 && intKey < len(v.Compound.Children)
 		})
 }
-func (v ArrayDecodeValue) JQValueToGoJQ() any {
-	vs := make([]any, len(v.Compound.Children))
-	for i, f := range v.Compound.Children {
-		vs[i] = makeDecodeValue(f, decodeValueValue)
+func (v ArrayDecodeValue) JQValueToGoJQEx(optsFn func() *Options) any {
+	opts := optsFn()
+
+	vs := make([]any, 0, len(v.Compound.Children))
+	for _, f := range v.Compound.Children {
+		switch s := f.V.(type) {
+		case Scalarable:
+			if s.ScalarIsGap() && opts.SkipGaps {
+				// skip, note for arrays this will affect indexes
+				continue
+			}
+		}
+
+		vs = append(vs, makeDecodeValue(f, decodeValueValue))
 	}
 	return vs
+}
+func (v ArrayDecodeValue) JQValueToGoJQ() any {
+	return v.JQValueToGoJQEx(func() *Options { return &Options{} })
 }
 
 // decode value struct
@@ -767,10 +783,22 @@ func (v StructDecodeValue) JQValueHas(key any) any {
 		},
 	)
 }
-func (v StructDecodeValue) JQValueToGoJQ() any {
+func (v StructDecodeValue) JQValueToGoJQEx(optsFn func() *Options) any {
+	opts := optsFn()
+
 	vm := make(map[string]any, len(v.Compound.Children))
 	for _, f := range v.Compound.Children {
+		switch s := f.V.(type) {
+		case Scalarable:
+			if s.ScalarIsGap() && opts.SkipGaps {
+				continue
+			}
+		}
+
 		vm[f.Name] = makeDecodeValue(f, decodeValueValue)
 	}
 	return vm
+}
+func (v StructDecodeValue) JQValueToGoJQ() any {
+	return v.JQValueToGoJQEx(func() *Options { return &Options{} })
 }
