@@ -1,0 +1,211 @@
+# fq -n '["", "a" * range(1;34)]' | json2msgpack > strs.msgpack
+$ fq -d msgpack 'dv,torepr' strs.msgpack
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: strs.msgpack (msgpack) 0x0-0x257.7 (600)
+0x000|dc                                             |.               |  type: "array16" (0xdc) 0x0-0x0.7 (1)
+0x000|   00 22                                       | ."             |  length: 34 0x1-0x2.7 (2)
+     |                                               |                |  elements[0:34]: 0x3-0x257.7 (597)
+     |                                               |                |    [0]{}: element 0x3-0x3.7 (1)
+0x000|         a0                                    |   .            |      type: "fixstr" (0xa0) 0x3-0x3.7 (1)
+0x000|         a0                                    |   .            |      length: 0 0x3.3-0x3.7 (0.5)
+     |                                               |                |      value: "" 0x4-NA (0)
+     |                                               |                |    [1]{}: element 0x4-0x5.7 (2)
+0x000|            a1                                 |    .           |      type: "fixstr" (0xa1) 0x4-0x4.7 (1)
+0x000|            a1                                 |    .           |      length: 1 0x4.3-0x4.7 (0.5)
+0x000|               61                              |     a          |      value: "a" 0x5-0x5.7 (1)
+     |                                               |                |    [2]{}: element 0x6-0x8.7 (3)
+0x000|                  a2                           |      .         |      type: "fixstr" (0xa2) 0x6-0x6.7 (1)
+0x000|                  a2                           |      .         |      length: 2 0x6.3-0x6.7 (0.5)
+0x000|                     61 61                     |       aa       |      value: "aa" 0x7-0x8.7 (2)
+     |                                               |                |    [3]{}: element 0x9-0xc.7 (4)
+0x000|                           a3                  |         .      |      type: "fixstr" (0xa3) 0x9-0x9.7 (1)
+0x000|                           a3                  |         .      |      length: 3 0x9.3-0x9.7 (0.5)
+0x000|                              61 61 61         |          aaa   |      value: "aaa" 0xa-0xc.7 (3)
+     |                                               |                |    [4]{}: element 0xd-0x11.7 (5)
+0x000|                                       a4      |             .  |      type: "fixstr" (0xa4) 0xd-0xd.7 (1)
+0x000|                                       a4      |             .  |      length: 4 0xd.3-0xd.7 (0.5)
+0x000|                                          61 61|              aa|      value: "aaaa" 0xe-0x11.7 (4)
+0x010|61 61                                          |aa              |
+     |                                               |                |    [5]{}: element 0x12-0x17.7 (6)
+0x010|      a5                                       |  .             |      type: "fixstr" (0xa5) 0x12-0x12.7 (1)
+0x010|      a5                                       |  .             |      length: 5 0x12.3-0x12.7 (0.5)
+0x010|         61 61 61 61 61                        |   aaaaa        |      value: "aaaaa" 0x13-0x17.7 (5)
+     |                                               |                |    [6]{}: element 0x18-0x1e.7 (7)
+0x010|                        a6                     |        .       |      type: "fixstr" (0xa6) 0x18-0x18.7 (1)
+0x010|                        a6                     |        .       |      length: 6 0x18.3-0x18.7 (0.5)
+0x010|                           61 61 61 61 61 61   |         aaaaaa |      value: "aaaaaa" 0x19-0x1e.7 (6)
+     |                                               |                |    [7]{}: element 0x1f-0x26.7 (8)
+0x010|                                             a7|               .|      type: "fixstr" (0xa7) 0x1f-0x1f.7 (1)
+0x010|                                             a7|               .|      length: 7 0x1f.3-0x1f.7 (0.5)
+0x020|61 61 61 61 61 61 61                           |aaaaaaa         |      value: "aaaaaaa" 0x20-0x26.7 (7)
+     |                                               |                |    [8]{}: element 0x27-0x2f.7 (9)
+0x020|                     a8                        |       .        |      type: "fixstr" (0xa8) 0x27-0x27.7 (1)
+0x020|                     a8                        |       .        |      length: 8 0x27.3-0x27.7 (0.5)
+0x020|                        61 61 61 61 61 61 61 61|        aaaaaaaa|      value: "aaaaaaaa" 0x28-0x2f.7 (8)
+     |                                               |                |    [9]{}: element 0x30-0x39.7 (10)
+0x030|a9                                             |.               |      type: "fixstr" (0xa9) 0x30-0x30.7 (1)
+0x030|a9                                             |.               |      length: 9 0x30.3-0x30.7 (0.5)
+0x030|   61 61 61 61 61 61 61 61 61                  | aaaaaaaaa      |      value: "aaaaaaaaa" 0x31-0x39.7 (9)
+     |                                               |                |    [10]{}: element 0x3a-0x44.7 (11)
+0x030|                              aa               |          .     |      type: "fixstr" (0xaa) 0x3a-0x3a.7 (1)
+0x030|                              aa               |          .     |      length: 10 0x3a.3-0x3a.7 (0.5)
+0x030|                                 61 61 61 61 61|           aaaaa|      value: "aaaaaaaaaa" 0x3b-0x44.7 (10)
+0x040|61 61 61 61 61                                 |aaaaa           |
+     |                                               |                |    [11]{}: element 0x45-0x50.7 (12)
+0x040|               ab                              |     .          |      type: "fixstr" (0xab) 0x45-0x45.7 (1)
+0x040|               ab                              |     .          |      length: 11 0x45.3-0x45.7 (0.5)
+0x040|                  61 61 61 61 61 61 61 61 61 61|      aaaaaaaaaa|      value: "aaaaaaaaaaa" 0x46-0x50.7 (11)
+0x050|61                                             |a               |
+     |                                               |                |    [12]{}: element 0x51-0x5d.7 (13)
+0x050|   ac                                          | .              |      type: "fixstr" (0xac) 0x51-0x51.7 (1)
+0x050|   ac                                          | .              |      length: 12 0x51.3-0x51.7 (0.5)
+0x050|      61 61 61 61 61 61 61 61 61 61 61 61      |  aaaaaaaaaaaa  |      value: "aaaaaaaaaaaa" 0x52-0x5d.7 (12)
+     |                                               |                |    [13]{}: element 0x5e-0x6b.7 (14)
+0x050|                                          ad   |              . |      type: "fixstr" (0xad) 0x5e-0x5e.7 (1)
+0x050|                                          ad   |              . |      length: 13 0x5e.3-0x5e.7 (0.5)
+0x050|                                             61|               a|      value: "aaaaaaaaaaaaa" 0x5f-0x6b.7 (13)
+0x060|61 61 61 61 61 61 61 61 61 61 61 61            |aaaaaaaaaaaa    |
+     |                                               |                |    [14]{}: element 0x6c-0x7a.7 (15)
+0x060|                                    ae         |            .   |      type: "fixstr" (0xae) 0x6c-0x6c.7 (1)
+0x060|                                    ae         |            .   |      length: 14 0x6c.3-0x6c.7 (0.5)
+0x060|                                       61 61 61|             aaa|      value: "aaaaaaaaaaaaaa" 0x6d-0x7a.7 (14)
+0x070|61 61 61 61 61 61 61 61 61 61 61               |aaaaaaaaaaa     |
+     |                                               |                |    [15]{}: element 0x7b-0x8a.7 (16)
+0x070|                                 af            |           .    |      type: "fixstr" (0xaf) 0x7b-0x7b.7 (1)
+0x070|                                 af            |           .    |      length: 15 0x7b.3-0x7b.7 (0.5)
+0x070|                                    61 61 61 61|            aaaa|      value: "aaaaaaaaaaaaaaa" 0x7c-0x8a.7 (15)
+0x080|61 61 61 61 61 61 61 61 61 61 61               |aaaaaaaaaaa     |
+     |                                               |                |    [16]{}: element 0x8b-0x9b.7 (17)
+0x080|                                 b0            |           .    |      type: "fixstr" (0xb0) 0x8b-0x8b.7 (1)
+0x080|                                 b0            |           .    |      length: 16 0x8b.3-0x8b.7 (0.5)
+0x080|                                    61 61 61 61|            aaaa|      value: "aaaaaaaaaaaaaaaa" 0x8c-0x9b.7 (16)
+0x090|61 61 61 61 61 61 61 61 61 61 61 61            |aaaaaaaaaaaa    |
+     |                                               |                |    [17]{}: element 0x9c-0xad.7 (18)
+0x090|                                    b1         |            .   |      type: "fixstr" (0xb1) 0x9c-0x9c.7 (1)
+0x090|                                    b1         |            .   |      length: 17 0x9c.3-0x9c.7 (0.5)
+0x090|                                       61 61 61|             aaa|      value: "aaaaaaaaaaaaaaaaa" 0x9d-0xad.7 (17)
+0x0a0|61 61 61 61 61 61 61 61 61 61 61 61 61 61      |aaaaaaaaaaaaaa  |
+     |                                               |                |    [18]{}: element 0xae-0xc0.7 (19)
+0x0a0|                                          b2   |              . |      type: "fixstr" (0xb2) 0xae-0xae.7 (1)
+0x0a0|                                          b2   |              . |      length: 18 0xae.3-0xae.7 (0.5)
+0x0a0|                                             61|               a|      value: "aaaaaaaaaaaaaaaaaa" 0xaf-0xc0.7 (18)
+0x0b0|61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61|aaaaaaaaaaaaaaaa|
+0x0c0|61                                             |a               |
+     |                                               |                |    [19]{}: element 0xc1-0xd4.7 (20)
+0x0c0|   b3                                          | .              |      type: "fixstr" (0xb3) 0xc1-0xc1.7 (1)
+0x0c0|   b3                                          | .              |      length: 19 0xc1.3-0xc1.7 (0.5)
+0x0c0|      61 61 61 61 61 61 61 61 61 61 61 61 61 61|  aaaaaaaaaaaaaa|      value: "aaaaaaaaaaaaaaaaaaa" 0xc2-0xd4.7 (19)
+0x0d0|61 61 61 61 61                                 |aaaaa           |
+     |                                               |                |    [20]{}: element 0xd5-0xe9.7 (21)
+0x0d0|               b4                              |     .          |      type: "fixstr" (0xb4) 0xd5-0xd5.7 (1)
+0x0d0|               b4                              |     .          |      length: 20 0xd5.3-0xd5.7 (0.5)
+0x0d0|                  61 61 61 61 61 61 61 61 61 61|      aaaaaaaaaa|      value: "aaaaaaaaaaaaaaaaaaaa" 0xd6-0xe9.7 (20)
+0x0e0|61 61 61 61 61 61 61 61 61 61                  |aaaaaaaaaa      |
+     |                                               |                |    [21]{}: element 0xea-0xff.7 (22)
+0x0e0|                              b5               |          .     |      type: "fixstr" (0xb5) 0xea-0xea.7 (1)
+0x0e0|                              b5               |          .     |      length: 21 0xea.3-0xea.7 (0.5)
+0x0e0|                                 61 61 61 61 61|           aaaaa|      value: "aaaaaaaaaaaaaaaaaaaaa" 0xeb-0xff.7 (21)
+0x0f0|61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61|aaaaaaaaaaaaaaaa|
+     |                                               |                |    [22]{}: element 0x100-0x116.7 (23)
+0x100|b6                                             |.               |      type: "fixstr" (0xb6) 0x100-0x100.7 (1)
+0x100|b6                                             |.               |      length: 22 0x100.3-0x100.7 (0.5)
+0x100|   61 61 61 61 61 61 61 61 61 61 61 61 61 61 61| aaaaaaaaaaaaaaa|      value: "aaaaaaaaaaaaaaaaaaaaaa" 0x101-0x116.7 (22)
+0x110|61 61 61 61 61 61 61                           |aaaaaaa         |
+     |                                               |                |    [23]{}: element 0x117-0x12e.7 (24)
+0x110|                     b7                        |       .        |      type: "fixstr" (0xb7) 0x117-0x117.7 (1)
+0x110|                     b7                        |       .        |      length: 23 0x117.3-0x117.7 (0.5)
+0x110|                        61 61 61 61 61 61 61 61|        aaaaaaaa|      value: "aaaaaaaaaaaaaaaaaaaaaaa" 0x118-0x12e.7 (23)
+0x120|61 61 61 61 61 61 61 61 61 61 61 61 61 61 61   |aaaaaaaaaaaaaaa |
+     |                                               |                |    [24]{}: element 0x12f-0x147.7 (25)
+0x120|                                             b8|               .|      type: "fixstr" (0xb8) 0x12f-0x12f.7 (1)
+0x120|                                             b8|               .|      length: 24 0x12f.3-0x12f.7 (0.5)
+0x130|61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61|aaaaaaaaaaaaaaaa|      value: "aaaaaaaaaaaaaaaaaaaaaaaa" 0x130-0x147.7 (24)
+0x140|61 61 61 61 61 61 61 61                        |aaaaaaaa        |
+     |                                               |                |    [25]{}: element 0x148-0x161.7 (26)
+0x140|                        b9                     |        .       |      type: "fixstr" (0xb9) 0x148-0x148.7 (1)
+0x140|                        b9                     |        .       |      length: 25 0x148.3-0x148.7 (0.5)
+0x140|                           61 61 61 61 61 61 61|         aaaaaaa|      value: "aaaaaaaaaaaaaaaaaaaaaaaaa" 0x149-0x161.7 (25)
+0x150|61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61|aaaaaaaaaaaaaaaa|
+0x160|61 61                                          |aa              |
+     |                                               |                |    [26]{}: element 0x162-0x17c.7 (27)
+0x160|      ba                                       |  .             |      type: "fixstr" (0xba) 0x162-0x162.7 (1)
+0x160|      ba                                       |  .             |      length: 26 0x162.3-0x162.7 (0.5)
+0x160|         61 61 61 61 61 61 61 61 61 61 61 61 61|   aaaaaaaaaaaaa|      value: "aaaaaaaaaaaaaaaaaaaaaaaaaa" 0x163-0x17c.7 (26)
+0x170|61 61 61 61 61 61 61 61 61 61 61 61 61         |aaaaaaaaaaaaa   |
+     |                                               |                |    [27]{}: element 0x17d-0x198.7 (28)
+0x170|                                       bb      |             .  |      type: "fixstr" (0xbb) 0x17d-0x17d.7 (1)
+0x170|                                       bb      |             .  |      length: 27 0x17d.3-0x17d.7 (0.5)
+0x170|                                          61 61|              aa|      value: "aaaaaaaaaaaaaaaaaaaaaaaaaaa" 0x17e-0x198.7 (27)
+0x180|61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61|aaaaaaaaaaaaaaaa|
+0x190|61 61 61 61 61 61 61 61 61                     |aaaaaaaaa       |
+     |                                               |                |    [28]{}: element 0x199-0x1b5.7 (29)
+0x190|                           bc                  |         .      |      type: "fixstr" (0xbc) 0x199-0x199.7 (1)
+0x190|                           bc                  |         .      |      length: 28 0x199.3-0x199.7 (0.5)
+0x190|                              61 61 61 61 61 61|          aaaaaa|      value: "aaaaaaaaaaaaaaaaaaaaaaaaaaaa" 0x19a-0x1b5.7 (28)
+0x1a0|61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61|aaaaaaaaaaaaaaaa|
+0x1b0|61 61 61 61 61 61                              |aaaaaa          |
+     |                                               |                |    [29]{}: element 0x1b6-0x1d3.7 (30)
+0x1b0|                  bd                           |      .         |      type: "fixstr" (0xbd) 0x1b6-0x1b6.7 (1)
+0x1b0|                  bd                           |      .         |      length: 29 0x1b6.3-0x1b6.7 (0.5)
+0x1b0|                     61 61 61 61 61 61 61 61 61|       aaaaaaaaa|      value: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaa" 0x1b7-0x1d3.7 (29)
+0x1c0|61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61|aaaaaaaaaaaaaaaa|
+0x1d0|61 61 61 61                                    |aaaa            |
+     |                                               |                |    [30]{}: element 0x1d4-0x1f2.7 (31)
+0x1d0|            be                                 |    .           |      type: "fixstr" (0xbe) 0x1d4-0x1d4.7 (1)
+0x1d0|            be                                 |    .           |      length: 30 0x1d4.3-0x1d4.7 (0.5)
+0x1d0|               61 61 61 61 61 61 61 61 61 61 61|     aaaaaaaaaaa|      value: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" 0x1d5-0x1f2.7 (30)
+0x1e0|61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61|aaaaaaaaaaaaaaaa|
+0x1f0|61 61 61                                       |aaa             |
+     |                                               |                |    [31]{}: element 0x1f3-0x212.7 (32)
+0x1f0|         bf                                    |   .            |      type: "fixstr" (0xbf) 0x1f3-0x1f3.7 (1)
+0x1f0|         bf                                    |   .            |      length: 31 0x1f3.3-0x1f3.7 (0.5)
+0x1f0|            61 61 61 61 61 61 61 61 61 61 61 61|    aaaaaaaaaaaa|      value: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" 0x1f4-0x212.7 (31)
+0x200|61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61|aaaaaaaaaaaaaaaa|
+0x210|61 61 61                                       |aaa             |
+     |                                               |                |    [32]{}: element 0x213-0x234.7 (34)
+0x210|         d9                                    |   .            |      type: "str8" (0xd9) 0x213-0x213.7 (1)
+0x210|            20                                 |                |      length: 32 0x214-0x214.7 (1)
+0x210|               61 61 61 61 61 61 61 61 61 61 61|     aaaaaaaaaaa|      value: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" 0x215-0x234.7 (32)
+0x220|61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61|aaaaaaaaaaaaaaaa|
+0x230|61 61 61 61 61                                 |aaaaa           |
+     |                                               |                |    [33]{}: element 0x235-0x257.7 (35)
+0x230|               d9                              |     .          |      type: "str8" (0xd9) 0x235-0x235.7 (1)
+0x230|                  21                           |      !         |      length: 33 0x236-0x236.7 (1)
+0x230|                     61 61 61 61 61 61 61 61 61|       aaaaaaaaa|      value: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" 0x237-0x257.7 (33)
+0x240|61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61|aaaaaaaaaaaaaaaa|
+0x250|61 61 61 61 61 61 61 61|                       |aaaaaaaa|       |
+[
+  "",
+  "a",
+  "aa",
+  "aaa",
+  "aaaa",
+  "aaaaa",
+  "aaaaaa",
+  "aaaaaaa",
+  "aaaaaaaa",
+  "aaaaaaaaa",
+  "aaaaaaaaaa",
+  "aaaaaaaaaaa",
+  "aaaaaaaaaaaa",
+  "aaaaaaaaaaaaa",
+  "aaaaaaaaaaaaaa",
+  "aaaaaaaaaaaaaaa",
+  "aaaaaaaaaaaaaaaa",
+  "aaaaaaaaaaaaaaaaa",
+  "aaaaaaaaaaaaaaaaaa",
+  "aaaaaaaaaaaaaaaaaaa",
+  "aaaaaaaaaaaaaaaaaaaa",
+  "aaaaaaaaaaaaaaaaaaaaa",
+  "aaaaaaaaaaaaaaaaaaaaaa",
+  "aaaaaaaaaaaaaaaaaaaaaaa",
+  "aaaaaaaaaaaaaaaaaaaaaaaa",
+  "aaaaaaaaaaaaaaaaaaaaaaaaa",
+  "aaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "aaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "aaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "aaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+]

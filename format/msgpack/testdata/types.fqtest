@@ -1,7 +1,7 @@
 # msgpack-tools
-# echo '{"array": [1,2,3], "object": {"key": "value"}, "number": 123, "string": "abc", "true": true, "false": false, "null": null}' | json2msgpack > test.msgpack
-$ fq -d msgpack dv test.msgpack
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: test.msgpack (msgpack) 0x0-0x42.7 (67)
+# echo '{"array": [1,2,3], "object": {"key": "value"}, "number": 123, "string": "abc", "true": true, "false": false, "null": null}' | json2msgpack > types.msgpack
+$ fq -d msgpack 'dv,torepr' types.msgpack
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: types.msgpack (msgpack) 0x0-0x42.7 (67)
 0x00|87                                             |.               |  type: "fixmap" (0x87) 0x0-0x0.7 (1)
 0x00|87                                             |.               |  length: 7 0x0.4-0x0.7 (0.4)
     |                                               |                |  pairs[0:7]: 0x1-0x42.7 (66)
@@ -85,7 +85,6 @@ $ fq -d msgpack dv test.msgpack
     |                                               |                |      value{}: 0x42-0x42.7 (1)
 0x40|      c0|                                      |  .|            |        type: "nil" (0xc0) 0x42-0x42.7 (1)
     |                                               |                |        value: null 0x43-NA (0)
-$ fq -d msgpack torepr test.msgpack
 {
   "array": [
     1,

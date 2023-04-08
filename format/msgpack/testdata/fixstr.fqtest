@@ -1,8 +1,0 @@
-# Msgpack: fixstr gets wrong length
-# https://github.com/wader/fq/issues/634
-$ fq -n '"b3737472696e67206f66206c656e677468203139" | from_hex | msgpack | dv'
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (msgpack) 0x0-0x13.7 (20)
-0x00|b3                                             |.               |  type: "fixstr" (0xb3) 0x0-0x0.7 (1)
-0x00|b3                                             |.               |  length: 19 0x0.3-0x0.7 (0.5)
-0x00|   73 74 72 69 6e 67 20 6f 66 20 6c 65 6e 67 74| string of lengt|  value: "string of length 19" 0x1-0x13.7 (19)
-0x10|68 20 31 39|                                   |h 19|           |
