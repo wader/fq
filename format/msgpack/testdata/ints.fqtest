@@ -1,5 +1,5 @@
 # fq -n '[0,1,2,3,4,5,6,7,8,9,127,128,-1,-2,-3,-4,-5,-6,-7,-8,-31,-32,0xffff_ffff,-0xffff_ffff,0x7fff_ffff,-0x7fff_ffff]' | json2msgpack > ints.msgpack
-$ fq -d msgpack dv ints.msgpack
+$ fq -d msgpack 'dv,torepr' ints.msgpack
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: ints.msgpack (msgpack) 0x0-0x31.7 (50)
 0x00|dc                                             |.               |  type: "array16" (0xdc) 0x0-0x0.7 (1)
 0x00|   00 1a                                       | ..             |  length: 26 0x1-0x2.7 (2)
@@ -83,6 +83,34 @@ $ fq -d msgpack dv ints.msgpack
 0x20|                                       d2      |             .  |      type: "int32" (0xd2) 0x2d-0x2d.7 (1)
 0x20|                                          80 00|              ..|      value: -2147483647 0x2e-0x31.7 (4)
 0x30|00 01|                                         |..|             |
+[
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  127,
+  128,
+  -1,
+  -2,
+  -3,
+  -4,
+  -5,
+  -6,
+  -7,
+  -8,
+  -31,
+  -32,
+  4294967295,
+  -4294967295,
+  2147483647,
+  -2147483647
+]
 $ fq -d msgpack torepr ints.msgpack
 [
   0,
