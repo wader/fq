@@ -96,8 +96,8 @@ func decodeMsgPackValue(d *decode.D) {
 		{r: [2]byte{0x80, 0x8f}, s: scalar.Uint{Sym: "fixmap"}, d: mapFn(-4, 4)},
 		{r: [2]byte{0x90, 0x9f}, s: scalar.Uint{Sym: "fixarray"}, d: arrayFn(-4, 4)},
 		{r: [2]byte{0xa0, 0xbf}, s: scalar.Uint{Sym: "fixstr"}, d: func(d *decode.D) {
-			d.SeekRel(-4)
-			length := d.FieldU4("length")
+			d.SeekRel(-5)
+			length := d.FieldU5("length")
 			d.FieldUTF8("value", int(length))
 		}},
 		{r: [2]byte{0xc0, 0xc0}, s: scalar.Uint{Sym: "nil"}, d: func(d *decode.D) {
