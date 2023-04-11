@@ -82,12 +82,7 @@ func wavDecode(d *decode.D) any {
 				return true, nil
 
 			case "LIST":
-				typ := d.FieldUTF8("type", 4)
-				switch typ {
-				case "strl":
-					return true, &aviStrl{}
-				}
-
+				d.FieldUTF8("type", 4)
 				return true, nil
 
 			case "fmt ":
@@ -156,7 +151,7 @@ func wavDecode(d *decode.D) any {
 	)
 
 	if riffType != wavRiffType {
-		d.Errorf("wrong or no AVI riff type found (%s)", riffType)
+		d.Errorf("wrong or no WAV riff type found (%s)", riffType)
 	}
 	_, _, _ = d.TryFieldFormat("footer", wavFooterFormat, nil)
 
