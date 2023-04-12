@@ -262,4 +262,8 @@ mp3> .headers._index
 error: expected a extkey but got: _index
 mp3> ._index
 error: expected a extkey but got: _index
+mp3> .headers[0].header.version as $r | {a:12} | tojson({indent: $r}) | println
+{
+    "a": 12
+}
 mp3> ^D
