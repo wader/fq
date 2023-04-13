@@ -84,12 +84,12 @@ def _help($arg0; $topic):
       ( "Example usages:"
       , "  fq . file"
       , "  fq d file"
+      , "  fq -V '.path[1].value' file"
       , "  fq tovalue file"
       , "  fq -r to_toml file.yml"
       , "  fq -s -d html 'map(.html.head.title?)' *.html"
       , "  cat file.cbor | fq -d cbor torepr"
       , "  fq 'grep(\"^main$\") | parent' /bin/ls"
-      , "  fq -r 'grep_by(.protocol==\"icmp\").source_ip | tovalue' *.pcap"
       , "  fq -i"
       )
     elif . == "banner" then

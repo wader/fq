@@ -16,12 +16,12 @@ Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 Example usages:
   fq . file
   fq d file
+  fq -V '.path[1].value' file
   fq tovalue file
   fq -r to_toml file.yml
   fq -s -d html 'map(.html.head.title?)' *.html
   cat file.cbor | fq -d cbor torepr
   fq 'grep("^main$") | parent' /bin/ls
-  fq -r 'grep_by(.protocol=="icmp").source_ip | tovalue' *.pcap
   fq -i
 
 --arg NAME VALUE             Set variable $NAME to string VALUE
@@ -44,6 +44,7 @@ Example usages:
 --repl,-i                    Interactive REPL
 --slurp,-s                   Slurp all inputs into an array or string (-Rs)
 --unicode-output,-U          Force unicode output
+--value-output,-V            Output JSON value (-Vr for raw string)
 --version,-v                 Show version
 $ fq -i
 null> ^D
@@ -101,6 +102,7 @@ sizebase            10
 slurp               false
 string_input        false
 unicode             false
+value_output        false
 verbose             false
 width               135
 $ fq -X

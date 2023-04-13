@@ -65,6 +65,7 @@ def _opt_build_default_fixed:
       slurp:              false,
       string_input:       false,
       unicode:            ($stdout.is_terminal and env.CLIUNICODE != null),
+      value_output:       false,
       verbose:            false,
     }
   );
@@ -106,6 +107,7 @@ def _opt_options:
     slurp:              "boolean",
     string_input:       "boolean",
     unicode:            "boolean",
+    value_output:       "boolean",
     verbose:            "boolean",
     width:              "number",
   };
@@ -216,6 +218,11 @@ def _opt_eval($rest):
       ),
       unicode: (
         if .unicode_output == true then true
+        else null
+        end
+      ),
+      value_output: (
+        if .value_output == true then true
         else null
         end
       ),
@@ -474,8 +481,8 @@ def _opt_cli_opts:
     },
     "raw_string": {
       short: "-r",
-      # for jq compat, is called raw string internally, "raw output" is if
-      # we can output raw bytes or not
+      # for jq compat, is called raw string internally, is different from "raw output" which
+      # is if we can output raw bytes or not
       long: "--raw-output",
       description: "Raw string output (without quotes)",
       bool: true
@@ -496,6 +503,12 @@ def _opt_cli_opts:
       short: "-U",
       long: "--unicode-output",
       description: "Force unicode output",
+      bool: true
+    },
+    "value_output": {
+      short: "-V",
+      long: "--value-output",
+      description: "Output JSON value (-Vr for raw string)",
       bool: true
     },
     "show_version": {
