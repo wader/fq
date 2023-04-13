@@ -1,3 +1,87 @@
+# 0.5.0
+
+Mostly a bug fix release but adds `-V` for easy JSON output.
+
+## Changes
+
+- Add `-V` argument to default output JSON instead of decode tree in case of decode value. #385 Thanks @peterwaller-arm for reminding me to merge this.
+  ```sh
+  # default in case of decode value is to show a hexdump tree
+  $ fq '.headers | grep_by(.id=="TSSE").text' file.mp3
+      │00 01 02 03 04 05 06 07 08 09 0a 0b│0123456789ab│
+  0x0c│                           4c 61 76│         Lav│.headers[0].frames[0].text: "Lavf58.76.100"
+  0x18│66 35 38 2e 37 36 2e 31 30 30 00   │f58.76.100. │
+
+  # with -V an implicit "tovalue" is done
+  $ fq -V '.headers | grep_by(.id=="TSSE").text' file.mp3
+  "Lavf58.76.100"
+
+  # and in combination with -r will for strings output a "raw string" without quotes
+  # for other types like number, object, array etc -r makes not difference (same as jq)
+  $ fq -Vr '.headers | grep_by(.id=="TSSE").text' file.mp3
+  Lavf58.76.100
+  ```
+
+  As a side note `-V` can be used with binary type also. Then the binary data will be interpreted as UTF-8 and turned into a string.
+  ```sh
+  # trailing null terminator ends up as codepoint zero `\u0000`
+  $ fq -V '.headers | grep_by(.id=="TSSE").text | tobytes' file.mp3
+  "Lavf58.76.100\u0000"
+
+  # with -r null terminator and a new line is outputted
+  $ fq -Vr '.headers | grep_by(.id=="TSSE").text | tobytes' file.mp3 | hexdump -C
+  00000000  4c 61 76 66 35 38 2e 37  36 2e 31 30 30 00 0a     |Lavf58.76.100..|
+  0000000f
+
+  # in contrast raw binary output has no new line separator
+  $ fq '.headers | grep_by(.id=="TSSE").text | tobytes' doc/file.mp3 | hexdump -C
+  00000000  4c 61 76 66 35 38 2e 37  36 2e 31 30 30 00        |Lavf58.76.100.|
+  0000000e
+  ```
+- Fix issue using decode value in object passed as argument to internal function. #638
+  ```sh
+  # this used to fail but now works
+  fq '.tracks[0].samples[10] | avc_au({length_size: <decode value>})' file.mp4
+  ```
+- Some typo fixes. Thanks @retokromer and @peterwaller-arm
+
+## Decoder changes
+
+- `aiff` Basic AIFF decoder added. #614
+- `matroska` Update to latest specification. #640
+- `msgpack` Fix bug decoding some fixstr lengths. #636 Thanks @schmee for reporting.
+
+## Changelog
+
+* 4ad1cced Update docker-golang to 1.20.3 from 1.20.2
+* f7dca477 Update github-go-version to 1.20.3 from 1.20.2
+* c9608939 Update github-golangci-lint to 1.52.0 from 1.51.2
+* 0a6b46c8 Update github-golangci-lint to 1.52.1 from 1.52.0
+* c4eb67d9 Update github-golangci-lint to 1.52.2 from 1.52.1
+* 19140a6f Update gomod-creasty-defaults to 1.7.0 from 1.6.0
+* 6e5df724 Update gomod-golang-x-crypto to 0.8.0 from 0.7.0
+* 6c4aebfe Update gomod-golang-x-net to 0.9.0 from 0.8.0
+* f13cc979 Update gomod-golang/text to 0.9.0 from 0.8.0
+* e2af57ee Update gomod-gopacket to 1.1.0 from 1.0.0
+* a63fd684 Update make-golangci-lint to 1.52.0 from 1.51.2
+* d3d1f0e8 Update make-golangci-lint to 1.52.1 from 1.52.0
+* f0b08457 Update make-golangci-lint to 1.52.2 from 1.52.1
+* dc4a82ee aiff: Add basic decoder
+* c5f6809b decode,fuzz,dev: Move recoverable error check to recoverfn.Run
+* 980ecdba decode: Add float 80 reader
+* a6c4db75 decode: Cleanup old unused help system code
+* 87e5bb14 fix typo
+* 0b6ef2a9 golangci-lint: Disable revive unused-parameter and update for new default config
+* 427ce78d interp: Add --value-output/-V option to do tovalue before output
+* 9a1ef84c interp: Allow and convert JQValues:s (ex decode value) in function arg objects
+* 3dd2c61d interp: Fix input completion regression in sub-REPLs
+* 5415bfca interp: Make completion work again
+* 2a2b64dd matroska: Update ebml specification
+* 82da99c9 msgpack: Add str, array and object type tests
+* 97360d6f msgpack: fixstr length field is 5 bits
+* ffc66db0 readline: remove direct access to (*Instance).Config
+* e1b02312 wav: Cleanup avi leftovers
+
 # 0.4.0
 
 TLS decode and decryption, better streaming matroska/webm support, support raw IP in PCAP and bug fixes.
