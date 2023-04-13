@@ -14,7 +14,7 @@
     <documentation lang="en" purpose="definition">Contains a single seek entry to an EBML Element.</documentation>
     <extension type="webmproject.org" webm="1"/>
   </element>
-  <element name="SeekID" path="\Segment\SeekHead\Seek\SeekID" id="0x53AB" type="binary" length="&lt;= 4" minOccurs="1" maxOccurs="1">
+  <element name="SeekID" path="\Segment\SeekHead\Seek\SeekID" id="0x53AB" type="binary" length="4" minOccurs="1" maxOccurs="1">
     <documentation lang="en" purpose="definition">The binary EBML ID of a Top-Level Element.</documentation>
     <extension type="webmproject.org" webm="1"/>
   </element>
@@ -26,18 +26,17 @@
     <documentation lang="en" purpose="definition">Contains general information about the Segment.</documentation>
     <extension type="webmproject.org" webm="1"/>
   </element>
-  <element name="SegmentUUID" path="\Segment\Info\SegmentUUID" id="0x73A4" type="binary" range="not 0" length="16" maxOccurs="1">
-    <documentation lang="en" purpose="definition">A randomly generated unique ID to identify the Segment amongst many others (128 bits).
-It is effectively a Universally Unique IDentifier stored in binary form [@!RFC4122].</documentation>
-    <documentation lang="en" purpose="usage notes">If the Segment is a part of a Linked Segment, then this Element is **REQUIRED**.</documentation>
+  <element name="SegmentUUID" path="\Segment\Info\SegmentUUID" id="0x73A4" type="binary" length="16" maxOccurs="1">
+    <documentation lang="en" purpose="definition">A randomly generated unique ID to identify the Segment amongst many others (128 bits). It is equivalent to a UUID v4 [@!RFC4122] with all bits randomly (or pseudo-randomly) chosen.  An actual UUID v4 value, where some bits are not random, **MAY** also be used.</documentation>
+    <documentation lang="en" purpose="usage notes">If the Segment is a part of a Linked Segment, then this Element is **REQUIRED**.
+The value of the unique ID **MUST** contain at least one bit set to 1.</documentation>
     <extension type="libmatroska" cppname="SegmentUID"/>
   </element>
   <element name="SegmentFilename" path="\Segment\Info\SegmentFilename" id="0x7384" type="utf-8" maxOccurs="1">
     <documentation lang="en" purpose="definition">A filename corresponding to this Segment.</documentation>
   </element>
   <element name="PrevUUID" path="\Segment\Info\PrevUUID" id="0x3CB923" type="binary" length="16" maxOccurs="1">
-    <documentation lang="en" purpose="definition">A unique ID to identify the previous Segment of a Linked Segment (128 bits).
-Like the SegmentUUID, it is a Universally Unique IDentifier stored in binary form [@!RFC4122].</documentation>
+    <documentation lang="en" purpose="definition">An ID to identify the previous Segment of a Linked Segment.</documentation>
     <documentation lang="en" purpose="usage notes">If the Segment is a part of a Linked Segment that uses Hard Linking ((#hard-linking)),
 then either the PrevUUID or the NextUUID Element is **REQUIRED**. If a Segment contains a PrevUUID but not a NextUUID,
 then it **MAY** be considered as the last Segment of the Linked Segment. The PrevUUID **MUST NOT** be equal to the SegmentUUID.</documentation>
@@ -49,8 +48,7 @@ then it **MAY** be considered as the last Segment of the Linked Segment. The Pre
 but PrevUUID **SHOULD** be considered authoritative for identifying the previous Segment in a Linked Segment.</documentation>
   </element>
   <element name="NextUUID" path="\Segment\Info\NextUUID" id="0x3EB923" type="binary" length="16" maxOccurs="1">
-    <documentation lang="en" purpose="definition">A unique ID to identify the next Segment of a Linked Segment (128 bits).
-Like the SegmentUUID, it is a Universally Unique IDentifier stored in binary form [@!RFC4122].</documentation>
+    <documentation lang="en" purpose="definition">An ID to identify the next Segment of a Linked Segment.</documentation>
     <documentation lang="en" purpose="usage notes">If the Segment is a part of a Linked Segment that uses Hard Linking ((#hard-linking)),
 then either the PrevUUID or the NextUUID Element is **REQUIRED**. If a Segment contains a NextUUID but not a PrevUUID,
 then it **MAY** be considered as the first Segment of the Linked Segment. The NextUUID **MUST NOT** be equal to the SegmentUUID.</documentation>
@@ -62,8 +60,7 @@ then it **MAY** be considered as the first Segment of the Linked Segment. The Ne
 but NextUUID **SHOULD** be considered authoritative for identifying the Next Segment.</documentation>
   </element>
   <element name="SegmentFamily" path="\Segment\Info\SegmentFamily" id="0x4444" type="binary" length="16">
-    <documentation lang="en" purpose="definition">A randomly generated unique ID that all Segments of a Linked Segment **MUST** share (128 bits).
-It is effectively a Universally Unique IDentifier stored in binary form [@!RFC4122].</documentation>
+    <documentation lang="en" purpose="definition">A unique ID that all Segments of a Linked Segment **MUST** share (128 bits). It is equivalent to a UUID v4 [@!RFC4122] with all bits randomly (or pseudo-randomly) chosen. An actual UUID v4 value, where some bits are not random, **MAY** also be used.</documentation>
     <documentation lang="en" purpose="usage notes">If the Segment Info contains a `ChapterTranslate` element, this Element is **REQUIRED**.</documentation>
   </element>
   <element name="ChapterTranslate" path="\Segment\Info\ChapterTranslate" id="0x6924" type="master">
@@ -165,7 +162,7 @@ see (#block-structure) on Block Structure.</documentation>
     <extension type="webmproject.org" webm="1"/>
   </element>
   <element name="BlockVirtual" path="\Segment\Cluster\BlockGroup\BlockVirtual" id="0xA2" type="binary" minver="0" maxver="0" maxOccurs="1">
-    <documentation lang="en" purpose="definition">A Block with no data. It **MUST** be stored in the stream at the place the real Block would be in display order.
+    <documentation lang="en" purpose="definition">A Block with no data. It must be stored in the stream at the place the real Block would be in display order.
 </documentation>
   </element>
   <element name="BlockAdditions" path="\Segment\Cluster\BlockGroup\BlockAdditions" id="0x75A1" type="master" maxOccurs="1">
@@ -230,11 +227,11 @@ The duration of DiscardPadding is not calculated in the duration of the TrackEnt
   </element>
   <element name="TimeSlice" path="\Segment\Cluster\BlockGroup\Slices\TimeSlice" id="0xE8" type="master" minver="0" maxver="0">
     <documentation lang="en" purpose="definition">Contains extra time information about the data contained in the Block.
-Being able to interpret this Element is not **REQUIRED** for playback.</documentation>
+Being able to interpret this Element is not required for playback.</documentation>
   </element>
   <element name="LaceNumber" path="\Segment\Cluster\BlockGroup\Slices\TimeSlice\LaceNumber" id="0xCC" type="uinteger" minver="0" maxver="0" maxOccurs="1">
     <documentation lang="en" purpose="definition">The reverse number of the frame in the lace (0 is the last frame, 1 is the next to last, etc.).
-Being able to interpret this Element is not **REQUIRED** for playback.</documentation>
+Being able to interpret this Element is not required for playback.</documentation>
     <extension type="libmatroska" cppname="SliceLaceNumber"/>
   </element>
   <element name="FrameNumber" path="\Segment\Cluster\BlockGroup\Slices\TimeSlice\FrameNumber" id="0xCD" type="uinteger" minver="0" maxver="0" default="0" maxOccurs="1">
@@ -358,7 +355,7 @@ See (#default-track-selection) for more details.</documentation>
     <extension type="webmproject.org" webm="1"/>
   </element>
   <element name="MinCache" path="\Segment\Tracks\TrackEntry\MinCache" id="0x6DE7" type="uinteger" minver="0" maxver="0" default="0" minOccurs="1" maxOccurs="1">
-    <documentation lang="en" purpose="definition">The minimum number of frames a player **SHOULD** be able to cache during playback.
+    <documentation lang="en" purpose="definition">The minimum number of frames a player should be able to cache during playback.
 If set to 0, the reference pseudo-cache system is not used.</documentation>
     <extension type="libmatroska" cppname="TrackMinCache"/>
   </element>
@@ -468,11 +465,11 @@ see [@?MatroskaCodec] for more info.</documentation>
   <element name="CodecDecodeAll" path="\Segment\Tracks\TrackEntry\CodecDecodeAll" id="0xAA" type="uinteger" maxver="0" range="0-1" default="1" minOccurs="1" maxOccurs="1">
     <documentation lang="en" purpose="definition">Set to 1 if the codec can decode potentially damaged data.</documentation>
   </element>
-  <element name="TrackOverlay" path="\Segment\Tracks\TrackEntry\TrackOverlay" id="0x6FAB" type="uinteger">
+  <element name="TrackOverlay" path="\Segment\Tracks\TrackEntry\TrackOverlay" id="0x6FAB" type="uinteger" maxver="0">
     <documentation lang="en" purpose="definition">Specify that this track is an overlay track for the Track specified (in the u-integer).
-That means when this track has a gap, see (#silenttracks-element) on SilentTracks,
-the overlay track **SHOULD** be used instead. The order of multiple TrackOverlay matters, the first one is the one that **SHOULD** be used.
-If not found it **SHOULD** be the second, etc.</documentation>
+That means when this track has a gap on SilentTracks,
+the overlay track should be used instead. The order of multiple TrackOverlay matters, the first one is the one that should be used.
+If not found it should be the second, etc.</documentation>
   </element>
   <element name="CodecDelay" path="\Segment\Tracks\TrackEntry\CodecDelay" id="0x56AA" type="uinteger" minver="4" default="0" minOccurs="1" maxOccurs="1">
     <documentation lang="en" purpose="definition">CodecDelay is The codec-built-in delay, expressed in Matroska Ticks -- i.e., in nanoseconds; see (#timestamp-ticks).
@@ -698,7 +695,7 @@ This value is similar in scope to the biCompression value of AVI's `BITMAPINFO` 
     <extension type="libmatroska" cppname="VideoGamma"/>
   </element>
   <element name="FrameRate" path="\Segment\Tracks\TrackEntry\Video\FrameRate" id="0x2383E3" type="float" minver="0" maxver="0" range="&gt; 0x0p+0" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Number of frames per second. This value is Informational only. It is intended for constant frame rate streams, and **SHOULD NOT** be used for a variable frame rate TrackEntry.</documentation>
+    <documentation lang="en" purpose="definition">Number of frames per second. This value is Informational only. It is intended for constant frame rate streams, and should not be used for a variable frame rate TrackEntry.</documentation>
     <extension type="libmatroska" cppname="VideoFrameRate"/>
   </element>
   <element name="Colour" path="\Segment\Tracks\TrackEntry\Video\Colour" id="0x55B0" type="master" minver="4" maxOccurs="1">
@@ -871,49 +868,49 @@ in candelas per square meter (cd/m^2^).</documentation>
     <extension type="libmatroska" cppname="VideoColourMasterMeta"/>
     <extension type="stream copy" keep="1"/>
   </element>
-  <element name="PrimaryRChromaticityX" path="\Segment\Tracks\TrackEntry\Video\Colour\MasteringMetadata\PrimaryRChromaticityX" id="0x55D1" type="float" minver="4" range="0-1" maxOccurs="1">
+  <element name="PrimaryRChromaticityX" path="\Segment\Tracks\TrackEntry\Video\Colour\MasteringMetadata\PrimaryRChromaticityX" id="0x55D1" type="float" minver="4" range="0x0p+0-0x1p+0" maxOccurs="1">
     <documentation lang="en" purpose="definition">Red X chromaticity coordinate, as defined by [@!CIE-1931].</documentation>
     <extension type="webmproject.org" webm="1"/>
     <extension type="libmatroska" cppname="VideoRChromaX"/>
     <extension type="stream copy" keep="1"/>
   </element>
-  <element name="PrimaryRChromaticityY" path="\Segment\Tracks\TrackEntry\Video\Colour\MasteringMetadata\PrimaryRChromaticityY" id="0x55D2" type="float" minver="4" range="0-1" maxOccurs="1">
+  <element name="PrimaryRChromaticityY" path="\Segment\Tracks\TrackEntry\Video\Colour\MasteringMetadata\PrimaryRChromaticityY" id="0x55D2" type="float" minver="4" range="0x0p+0-0x1p+0" maxOccurs="1">
     <documentation lang="en" purpose="definition">Red Y chromaticity coordinate, as defined by [@!CIE-1931].</documentation>
     <extension type="webmproject.org" webm="1"/>
     <extension type="libmatroska" cppname="VideoRChromaY"/>
     <extension type="stream copy" keep="1"/>
   </element>
-  <element name="PrimaryGChromaticityX" path="\Segment\Tracks\TrackEntry\Video\Colour\MasteringMetadata\PrimaryGChromaticityX" id="0x55D3" type="float" minver="4" range="0-1" maxOccurs="1">
+  <element name="PrimaryGChromaticityX" path="\Segment\Tracks\TrackEntry\Video\Colour\MasteringMetadata\PrimaryGChromaticityX" id="0x55D3" type="float" minver="4" range="0x0p+0-0x1p+0" maxOccurs="1">
     <documentation lang="en" purpose="definition">Green X chromaticity coordinate, as defined by [@!CIE-1931].</documentation>
     <extension type="webmproject.org" webm="1"/>
     <extension type="libmatroska" cppname="VideoGChromaX"/>
     <extension type="stream copy" keep="1"/>
   </element>
-  <element name="PrimaryGChromaticityY" path="\Segment\Tracks\TrackEntry\Video\Colour\MasteringMetadata\PrimaryGChromaticityY" id="0x55D4" type="float" minver="4" range="0-1" maxOccurs="1">
+  <element name="PrimaryGChromaticityY" path="\Segment\Tracks\TrackEntry\Video\Colour\MasteringMetadata\PrimaryGChromaticityY" id="0x55D4" type="float" minver="4" range="0x0p+0-0x1p+0" maxOccurs="1">
     <documentation lang="en" purpose="definition">Green Y chromaticity coordinate, as defined by [@!CIE-1931].</documentation>
     <extension type="webmproject.org" webm="1"/>
     <extension type="libmatroska" cppname="VideoGChromaY"/>
     <extension type="stream copy" keep="1"/>
   </element>
-  <element name="PrimaryBChromaticityX" path="\Segment\Tracks\TrackEntry\Video\Colour\MasteringMetadata\PrimaryBChromaticityX" id="0x55D5" type="float" minver="4" range="0-1" maxOccurs="1">
+  <element name="PrimaryBChromaticityX" path="\Segment\Tracks\TrackEntry\Video\Colour\MasteringMetadata\PrimaryBChromaticityX" id="0x55D5" type="float" minver="4" range="0x0p+0-0x1p+0" maxOccurs="1">
     <documentation lang="en" purpose="definition">Blue X chromaticity coordinate, as defined by [@!CIE-1931].</documentation>
     <extension type="webmproject.org" webm="1"/>
     <extension type="libmatroska" cppname="VideoBChromaX"/>
     <extension type="stream copy" keep="1"/>
   </element>
-  <element name="PrimaryBChromaticityY" path="\Segment\Tracks\TrackEntry\Video\Colour\MasteringMetadata\PrimaryBChromaticityY" id="0x55D6" type="float" minver="4" range="0-1" maxOccurs="1">
+  <element name="PrimaryBChromaticityY" path="\Segment\Tracks\TrackEntry\Video\Colour\MasteringMetadata\PrimaryBChromaticityY" id="0x55D6" type="float" minver="4" range="0x0p+0-0x1p+0" maxOccurs="1">
     <documentation lang="en" purpose="definition">Blue Y chromaticity coordinate, as defined by [@!CIE-1931].</documentation>
     <extension type="webmproject.org" webm="1"/>
     <extension type="libmatroska" cppname="VideoBChromaY"/>
     <extension type="stream copy" keep="1"/>
   </element>
-  <element name="WhitePointChromaticityX" path="\Segment\Tracks\TrackEntry\Video\Colour\MasteringMetadata\WhitePointChromaticityX" id="0x55D7" type="float" minver="4" range="0-1" maxOccurs="1">
+  <element name="WhitePointChromaticityX" path="\Segment\Tracks\TrackEntry\Video\Colour\MasteringMetadata\WhitePointChromaticityX" id="0x55D7" type="float" minver="4" range="0x0p+0-0x1p+0" maxOccurs="1">
     <documentation lang="en" purpose="definition">White X chromaticity coordinate, as defined by [@!CIE-1931].</documentation>
     <extension type="webmproject.org" webm="1"/>
     <extension type="libmatroska" cppname="VideoWhitePointChromaX"/>
     <extension type="stream copy" keep="1"/>
   </element>
-  <element name="WhitePointChromaticityY" path="\Segment\Tracks\TrackEntry\Video\Colour\MasteringMetadata\WhitePointChromaticityY" id="0x55D8" type="float" minver="4" range="0-1" maxOccurs="1">
+  <element name="WhitePointChromaticityY" path="\Segment\Tracks\TrackEntry\Video\Colour\MasteringMetadata\WhitePointChromaticityY" id="0x55D8" type="float" minver="4" range="0x0p+0-0x1p+0" maxOccurs="1">
     <documentation lang="en" purpose="definition">White Y chromaticity coordinate, as defined by [@!CIE-1931].</documentation>
     <extension type="webmproject.org" webm="1"/>
     <extension type="libmatroska" cppname="VideoWhitePointChromaY"/>
@@ -1456,9 +1453,8 @@ the last frame it includes, especially for the `ChapterAtom` using the last fram
 When disabled, the movie **SHOULD** skip all the content between the TimeStart and TimeEnd of this chapter; see (#chapter-flags) on Chapter flags.</documentation>
     <extension type="other document" spec="control-track"/>
   </element>
-  <element name="ChapterSegmentUUID" path="\Segment\Chapters\EditionEntry\+ChapterAtom\ChapterSegmentUUID" id="0x6E67" type="binary" range="&gt;0" length="16" maxOccurs="1">
-    <documentation lang="en" purpose="definition">The SegmentUUID of another Segment to play during this chapter (128 bits).
-Like the SegmentUUID, it is a Universally Unique IDentifier stored in binary form [@!RFC4122].</documentation>
+  <element name="ChapterSegmentUUID" path="\Segment\Chapters\EditionEntry\+ChapterAtom\ChapterSegmentUUID" id="0x6E67" type="binary" length="16" maxOccurs="1">
+    <documentation lang="en" purpose="definition">The SegmentUUID of another Segment to play during this chapter.</documentation>
     <documentation lang="en" purpose="usage notes">The value **MUST NOT** be the `SegmentUUID` value of the `Segment` it belongs to.</documentation>
     <implementation_note note_attribute="minOccurs">ChapterSegmentUUID **MUST** be set (minOccurs=1) if ChapterSegmentEditionUID is used; see (#medium-linking) on medium-linking Segments.</implementation_note>
     <extension type="libmatroska" cppname="ChapterSegmentUID"/>
@@ -1608,8 +1604,8 @@ If empty or omitted, then the Tag describes everything in the Segment.</document
       <enum value="30" label="TRACK / SONG / CHAPTER">
         <documentation lang="en" purpose="definition">The common parts of an album or movie.</documentation>
       </enum>
-      <enum value="20" label="SUBTRACK / PART / MOVEMENT / SCENE">
-        <documentation lang="en" purpose="definition">Corresponds to parts of a track for audio (like a movement).</documentation>
+      <enum value="20" label="SUBTRACK / MOVEMENT / SCENE">
+        <documentation lang="en" purpose="definition">Corresponds to parts of a track for audio like a movement, or a scene in a movie.</documentation>
       </enum>
       <enum value="10" label="SHOT">
         <documentation lang="en" purpose="definition">The lowest hierarchy found in music or movies.</documentation>
@@ -1640,7 +1636,6 @@ If empty or omitted, then the Tag describes everything in the Segment.</document
       <enum value="SONG" label="TargetTypeValue 30"/>
       <enum value="CHAPTER" label="TargetTypeValue 30"/>
       <enum value="SUBTRACK" label="TargetTypeValue 20"/>
-      <enum value="PART" label="TargetTypeValue 20"/>
       <enum value="MOVEMENT" label="TargetTypeValue 20"/>
       <enum value="SCENE" label="TargetTypeValue 20"/>
       <enum value="SHOT" label="TargetTypeValue 10"/>

@@ -155,7 +155,7 @@ $ fq -d matroska dv opus.mkv
 0x0f0|                              4c 61 76 66 35 38|          Lavf58|              value: "Lavf58.45.100" 0xfa-0x106.7 (13)
 0x100|2e 34 35 2e 31 30 30                           |.45.100         |
      |                                               |                |            [4]{}: element 0x107-0x119.7 (19)
-0x100|                     73 a4                     |       s.       |              id: "segment_uuid" (0x73a4) (A randomly generated unique ID to identify the Segment amongst many others (128 bits)) 0x107-0x108.7 (2)
+0x100|                     73 a4                     |       s.       |              id: "segment_uuid" (0x73a4) (A randomly generated unique ID to identify the Segment amongst many others chosen) 0x107-0x108.7 (2)
      |                                               |                |              type: "binary" 0x109-NA (0)
 0x100|                           90                  |         .      |              size: 16 0x109-0x109.7 (1)
 0x100|                              a0 33 a6 65 a7 8d|          .3.e..|              value: raw bits 0x10a-0x119.7 (16)
