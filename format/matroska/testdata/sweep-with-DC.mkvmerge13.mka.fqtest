@@ -161,7 +161,7 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
 0x10a0|                     88                        |       .        |              size: 8 0x10a7-0x10a7.7 (1)
 0x10a0|                        09 7b f0 a0 97 43 d2 00|        .{...C..|              value: raw bits 0x10a8-0x10af.7 (8)
       |                                               |                |            [5]{}: element 0x10b0-0x10c2.7 (19)
-0x10b0|73 a4                                          |s.              |              id: "segment_uuid" (0x73a4) (A randomly generated unique ID to identify the Segment amongst many others (128 bits)) 0x10b0-0x10b1.7 (2)
+0x10b0|73 a4                                          |s.              |              id: "segment_uuid" (0x73a4) (A randomly generated unique ID to identify the Segment amongst many others chosen) 0x10b0-0x10b1.7 (2)
       |                                               |                |              type: "binary" 0x10b2-NA (0)
 0x10b0|      90                                       |  .             |              size: 16 0x10b2-0x10b2.7 (1)
 0x10b0|         3b 9f 28 c7 c4 90 8a e0 cd 66 8f 11 8f|   ;.(......f...|              value: raw bits 0x10b3-0x10c2.7 (16)

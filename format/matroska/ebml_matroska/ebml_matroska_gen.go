@@ -371,7 +371,7 @@ var SegmentUUIDElement = &ebml.Binary{
 		ID:         SegmentUUIDID,
 		ParentID:   InfoID,
 		Name:       "segment_uuid",
-		Definition: "A randomly generated unique ID to identify the Segment amongst many others (128 bits)",
+		Definition: "A randomly generated unique ID to identify the Segment amongst many others chosen",
 	},
 }
 var SegmentFilenameElement = &ebml.UTF8{
@@ -387,7 +387,7 @@ var PrevUUIDElement = &ebml.Binary{
 		ID:         PrevUUIDID,
 		ParentID:   InfoID,
 		Name:       "prev_uuid",
-		Definition: "A unique ID to identify the previous Segment of a Linked Segment (128 bits)",
+		Definition: "An ID to identify the previous Segment of a Linked Segment",
 	},
 }
 var PrevFilenameElement = &ebml.UTF8{
@@ -403,7 +403,7 @@ var NextUUIDElement = &ebml.Binary{
 		ID:         NextUUIDID,
 		ParentID:   InfoID,
 		Name:       "next_uuid",
-		Definition: "A unique ID to identify the next Segment of a Linked Segment (128 bits)",
+		Definition: "An ID to identify the next Segment of a Linked Segment",
 	},
 }
 var NextFilenameElement = &ebml.UTF8{
@@ -419,7 +419,7 @@ var SegmentFamilyElement = &ebml.Binary{
 		ID:         SegmentFamilyID,
 		ParentID:   InfoID,
 		Name:       "segment_family",
-		Definition: "A randomly generated unique ID that all Segments of a Linked Segment **MUST** share (128 bits)",
+		Definition: "A unique ID that all Segments of a Linked Segment **MUST** share chosen",
 	},
 }
 var TimestampScaleElement = &ebml.Uinteger{
@@ -992,7 +992,7 @@ var MinCacheElement = &ebml.Uinteger{
 		ID:         MinCacheID,
 		ParentID:   TrackEntryID,
 		Name:       "min_cache",
-		Definition: "The minimum number of frames a player **SHOULD** be able to cache during playback",
+		Definition: "The minimum number of frames a player should be able to cache during playback",
 	},
 }
 var MaxCacheElement = &ebml.Uinteger{
@@ -2643,7 +2643,7 @@ var ChapterSegmentUUIDElement = &ebml.Binary{
 		ID:         ChapterSegmentUUIDID,
 		ParentID:   ChapterAtomID,
 		Name:       "chapter_segment_uuid",
-		Definition: "The SegmentUUID of another Segment to play during this chapter (128 bits)",
+		Definition: "The SegmentUUID of another Segment to play during this chapter",
 	},
 }
 var ChapterSkipTypeElement = &ebml.Uinteger{
@@ -2865,7 +2865,7 @@ var TargetTypeValueElement = &ebml.Uinteger{
 		50: {Name: "album_opera_concert_movie_episode", Description: "The most common grouping level of music and video"},
 		40: {Name: "part_session", Description: "When an album or episode has different logical parts"},
 		30: {Name: "track_song_chapter", Description: "The common parts of an album or movie"},
-		20: {Name: "subtrack_part_movement_scene", Description: "Corresponds to parts of a track for audio (like a movement)"},
+		20: {Name: "subtrack_movement_scene", Description: "Corresponds to parts of a track for audio like a movement"},
 		10: {Name: "shot", Description: "The lowest hierarchy found in music or movies"},
 	},
 }
