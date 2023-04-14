@@ -33,6 +33,13 @@ fq da file
 # same as
 fq 'd({array_truncate: 0})' file
 
+# display a specific decode tree one level
+fq '.path[1].to.value' file
+# display a specific decode tree all levels
+fq '.path[1].to.value | d' file
+fq '.path[1].to.value | dd' file
+fq '.path[1].to.value | da' file
+
 # recursively and verbosely display decode tree
 fq dv file
 # same as
