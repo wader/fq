@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"embed"
+	"github.com/wader/fq/format/postgres/flavours/pgproee15"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/postgres/common"
@@ -56,16 +57,19 @@ const (
 	PG_FLAVOUR_POSTGRES12 = "postgres12"
 	PG_FLAVOUR_POSTGRES13 = "postgres13"
 	PG_FLAVOUR_POSTGRES14 = "postgres14"
+	PG_FLAVOUR_POSTGRES15 = "postgres15"
 	PG_FLAVOUR_PGPRO10    = "pgpro10"
 	PG_FLAVOUR_PGPRO11    = "pgpro11"
 	PG_FLAVOUR_PGPRO12    = "pgpro12"
 	PG_FLAVOUR_PGPRO13    = "pgpro13"
 	PG_FLAVOUR_PGPRO14    = "pgpro14"
+	PG_FLAVOUR_PGPRO15    = "pgpro15"
 	PG_FLAVOUR_PGPROEE10  = "pgproee10"
 	PG_FLAVOUR_PGPROEE11  = "pgproee11"
 	PG_FLAVOUR_PGPROEE12  = "pgproee12"
 	PG_FLAVOUR_PGPROEE13  = "pgproee13"
 	PG_FLAVOUR_PGPROEE14  = "pgproee14"
+	PG_FLAVOUR_PGPROEE15  = "pgproee15"
 )
 
 func decodePgControl(d *decode.D, in any) any {
@@ -85,7 +89,7 @@ func decodePgControl(d *decode.D, in any) any {
 		return postgres12.DecodePgControl(d, in)
 	case PG_FLAVOUR_POSTGRES13:
 		return postgres13.DecodePgControl(d, in)
-	case PG_FLAVOUR_POSTGRES14:
+	case PG_FLAVOUR_POSTGRES14, PG_FLAVOUR_POSTGRES15, PG_FLAVOUR_PGPRO15:
 		return postgres14.DecodePgControl(d, in)
 	case PG_FLAVOUR_PGPRO10:
 		return pgpro10.DecodePgControl(d, in)
@@ -107,6 +111,8 @@ func decodePgControl(d *decode.D, in any) any {
 		return pgproee13.DecodePgControl(d, in)
 	case PG_FLAVOUR_PGPROEE14:
 		return pgproee14.DecodePgControl(d, in)
+	case PG_FLAVOUR_PGPROEE15:
+		return pgproee15.DecodePgControl(d, in)
 	default:
 		break
 	}
