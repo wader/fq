@@ -853,13 +853,18 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			}
 		})
 	case "ctts":
-		d.FieldU8("version")
+		version := d.FieldU8("version")
 		d.FieldU24("flags")
 		entryCount := d.FieldU32("entry_count")
 		var i uint64
 		d.FieldStructArrayLoop("entries", "entry", func() bool { return i < entryCount }, func(d *decode.D) {
 			d.FieldS32("sample_count")
-			d.FieldS32("sample_offset")
+			switch version {
+			case 0:
+				d.FieldU32("sample_offset")
+			case 1:
+				d.FieldS32("sample_offset")
+			}
 			i++
 		})
 		// TODO: refactor: merge with stco?
@@ -1006,7 +1011,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			m = t.moof
 		}
 
-		d.FieldU8("version")
+		version := d.FieldU8("version")
 		sampleCompositionTimeOffsetsPresent := false
 		sampleFlagsPresent := false
 		sampleSizePresent := false
@@ -1054,7 +1059,11 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 						d.FieldStruct("sample_flags", decodeSampleFlags)
 					}
 					if sampleCompositionTimeOffsetsPresent {
-						d.FieldU32("sample_composition_time_offset")
+						if version == 0 {
+							d.FieldU32("sample_composition_time_offset")
+						} else {
+							d.FieldS32("sample_composition_time_offset")
+						}
 					}
 				})
 
@@ -1166,27 +1175,54 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			}
 		})
 	case "infe":
-		d.FieldU8("version")
+		version := d.FieldU8("version")
 		d.FieldU24("flags")
-		d.FieldU16("id")
-		d.FieldU16("protection_index")
-		d.FieldUTF8Null("item_name")
-		// TODO: really optional? seems so
-		if d.NotEnd() {
+		if version == 0 || version == 1 {
+			d.FieldU16("item_id")
+			d.FieldU16("item_protection_index")
+			d.FieldUTF8Null("item_name")
 			d.FieldUTF8Null("content_type")
+			if !d.End() {
+				d.FieldUTF8Null("content_encoding")
+			}
 		}
-		if d.NotEnd() {
-			d.FieldUTF8Null("content_encoding")
+		if version == 1 {
+			if !d.End() {
+				d.FieldU32("extension_type")
+			}
+			if !d.End() {
+				d.FieldU32("extension_type_extra")
+			}
+		}
+		if version >= 2 {
+			switch version {
+			case 2:
+				d.FieldU16("item_id")
+			case 3:
+				d.FieldU32("item_id")
+			}
+			d.FieldU16("item_protection_index")
+			itemType := d.FieldUTF8("item_type", 4)
+			d.FieldUTF8Null("item_name")
+			switch itemType {
+			case "mime":
+				d.FieldUTF8Null("content_type")
+				if !d.End() {
+					d.FieldUTF8Null("content_encoding")
+				}
+			case "uri ":
+				d.FieldUTF8Null("item_uri_type")
+			}
 		}
 	case "iinf":
 		version := d.FieldU8("version")
 		d.FieldU24("flags")
 		if version == 0 {
-			_ = d.FieldU16("entry_count")
-			decodeBoxes(ctx, d)
+			d.FieldU16("entry_count")
 		} else {
-			d.FieldRawLen("data", d.BitsLeft())
+			d.FieldU32("entry_count")
 		}
+		decodeBoxes(ctx, d)
 	case "iprp":
 		decodeBoxes(ctx, d)
 	case "ipco":
@@ -1609,7 +1645,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 	case "pitm":
 		version := d.FieldU8("version")
 		d.FieldU24("flags")
-		if version < 1 {
+		if version == 0 {
 			d.FieldU16("item_id")
 		} else {
 			d.FieldU32("item_id")
