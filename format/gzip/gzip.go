@@ -30,10 +30,10 @@ func init() {
 	})
 }
 
-const delfateMethod = 8
+const deflateMethod = 8
 
 var compressionMethodNames = scalar.UintMapSymStr{
-	delfateMethod: "deflate",
+	deflateMethod: "deflate",
 }
 
 var osNames = scalar.UintMapSymStr{
@@ -77,7 +77,7 @@ func gzDecode(d *decode.D) any {
 	})
 	d.FieldU32("mtime", scalar.UintActualUnixTime(time.RFC3339))
 	switch compressionMethod {
-	case delfateMethod:
+	case deflateMethod:
 		d.FieldU8("extra_flags", deflateExtraFlagsNames)
 	default:
 		d.FieldU8("extra_flags")
@@ -101,7 +101,7 @@ func gzDecode(d *decode.D) any {
 
 	var rFn func(r io.Reader) io.Reader
 	switch compressionMethod {
-	case delfateMethod:
+	case deflateMethod:
 		// bitio.NewIOReadSeeker implements io.ByteReader so that deflate don't do own
 		// buffering and might read more than needed messing up knowing compressed size
 		rFn = func(r io.Reader) io.Reader { return flate.NewReader(r) }
