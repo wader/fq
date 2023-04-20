@@ -427,7 +427,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, elm *ebml.Master, unknownSize bo
 						}
 						d.SeekRel(int64(tagSize) * 8)
 					case ebml_matroska.FileDataID:
-						d.FieldFormatLen("value", int64(tagSize)*8, imageFormat, nil)
+						d.FieldFormatOrRawLen("value", int64(tagSize)*8, imageFormat, nil)
 					default:
 						d.FieldRawLen("value", int64(tagSize)*8)
 					}
