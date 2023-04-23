@@ -341,7 +341,6 @@ docker --context 2016-box run --rm -ti -v "C:${PWD//\//\\}:C:${PWD//\//\\}" -w "
 ## Implementation details
 
 - fq uses a gojq fork that can be found at https://github.com/wader/gojq/tree/fq (the "fq" branch)
-- fq uses a readline fork that can be found at https://github.com/wader/readline/tree/fq (the "fq" branch)
 - cli readline uses raw mode to blocks ctrl-c to become a SIGINT
 
 ## Dependencies and source origins
@@ -363,7 +362,6 @@ Issues and PR:s related to fq:<br>
 [#125](https://github.com/itchyny/gojq/pull/125) improve performance of join by make it internal<br>
 [#141](https://github.com/itchyny/gojq/issues/141) Empty array flatten regression since "improve flatten performance by reducing copy"
 
-- [readline](https://github.com/chzyer/readline) fork that can be found at https://github.com/wader/readline/tree/fq
 - [gopacket](https://github.com/gopacket/gopacket) for TCP and IPv4 reassembly
 - [mapstructure](https://github.com/mitchellh/mapstructure) for convenient JSON/map conversion
 - [go-difflib](https://github.com/pmezard/go-difflib) for diff tests

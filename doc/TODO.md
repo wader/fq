@@ -119,12 +119,6 @@
 - Do something similar to `builtin.go` in gojq to speedup a bit
 - remove `scopedump`?
 
-#### Readline
-
-- Use something else than `github.com/chzyer/readline`?
-- Fixes for readline
-  - Undo (ctrl+-) normal readline bahave differently for backspace (history for each character)
-
 #### Big things
 
 - fq play website?
