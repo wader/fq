@@ -20,3 +20,7 @@ ID3
   "unused": 0
 }
 35
+$ fq -o bits_format=base64 -V '.frames[0].audio_data' test.mp3
+"AAAAAAA="
+$ fq -o bits_format=base64 -Vr '.frames[0].audio_data' test.mp3
+AAAAAAA=

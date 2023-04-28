@@ -24,6 +24,17 @@ func IsNull(x any) bool {
 }
 
 func ToGoJQValue(v any) (any, bool) {
+	return ToGoJQValueFn(v, func(v any) (any, bool) {
+		switch v := v.(type) {
+		case gojq.JQValue:
+			return v.JQValueToGoJQ(), true
+		default:
+			return nil, false
+		}
+	})
+}
+
+func ToGoJQValueFn(v any, valueFn func(v any) (any, bool)) (any, bool) {
 	switch vv := v.(type) {
 	case nil:
 		return vv, true
@@ -51,25 +62,16 @@ func ToGoJQValue(v any) (any, bool) {
 			if vv >= math.MinInt && vv <= math.MaxInt {
 				return int(vv), true
 			}
-			return vv, true
-		} else if vv.IsUint64() {
-			vv := vv.Uint64()
-			if vv <= math.MaxInt {
-				return int(vv), true
-			}
-			return vv, true
 		}
 		return vv, true
 	case string:
 		return vv, true
 	case []byte:
 		return string(vv), true
-	case gojq.JQValue:
-		return ToGoJQValue(vv.JQValueToGoJQ())
 	case []any:
 		vvs := make([]any, len(vv))
 		for i, v := range vv {
-			v, ok := ToGoJQValue(v)
+			v, ok := ToGoJQValueFn(v, valueFn)
 			if !ok {
 				return nil, false
 			}
@@ -79,7 +81,7 @@ func ToGoJQValue(v any) (any, bool) {
 	case map[string]any:
 		vvs := make(map[string]any, len(vv))
 		for k, v := range vv {
-			v, ok := ToGoJQValue(v)
+			v, ok := ToGoJQValueFn(v, valueFn)
 			if !ok {
 				return nil, false
 			}
@@ -87,6 +89,9 @@ func ToGoJQValue(v any) (any, bool) {
 		}
 		return vvs, true
 	default:
+		if nv, ok := valueFn(vv); ok {
+			return ToGoJQValueFn(nv, valueFn)
+		}
 		return nil, false
 	}
 }

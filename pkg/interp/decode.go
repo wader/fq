@@ -305,19 +305,23 @@ func valueHas(key any, a func(name string) any, b func(key any) any) any {
 	return b(key)
 }
 
-// optsFn is a function as toValue is used by tovalue/0 so needs to be fast
+// TODO: make more efficient somehow? shallow values but might be hard
+// when things like tovalue.key should behave like a jq value and not a decode value etc
 func toValue(optsFn func() Options, v any) any {
-	switch v := v.(type) {
-	case JQValueEx:
-		if optsFn == nil {
-			return v.JQValueToGoJQ()
+	nv, _ := gojqex.ToGoJQValueFn(v, func(v any) (any, bool) {
+		switch v := v.(type) {
+		case JQValueEx:
+			if optsFn == nil {
+				return v.JQValueToGoJQ(), true
+			}
+			return v.JQValueToGoJQEx(optsFn), true
+		case gojq.JQValue:
+			return v.JQValueToGoJQ(), true
+		default:
+			return v, true
 		}
-		return v.JQValueToGoJQEx(optsFn)
-	case gojq.JQValue:
-		return v.JQValueToGoJQ()
-	default:
-		return v
-	}
+	})
+	return nv
 }
 
 type decodeValueKind int
