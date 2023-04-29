@@ -1,79 +1,175 @@
-# https://github.com/dwight/bsontools
-# echo '{array: [1,2,3], object: {key: "value"}, number: 123, string: "abc", true: true, false: false, null: null}' | fromjson test.bson
+# Run the code at https://go.dev/play/p/8YuESN04ACr and copy the base64 output. Then run:
+#
+#   echo "<base64 output>" | base64 -D > test.bson
+#
 $ fq -d bson dv test.bson
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: test.bson (bson) 0x0-0x72.7 (115)
-0x00|73 00 00 00                                    |s...            |  size: 115 0x0-0x3.7 (4)
-    |                                               |                |  elements[0:7]: 0x4-0x71.7 (110)
-    |                                               |                |    [0]{}: element 0x4-0x24.7 (33)
-0x00|            04                                 |    .           |      type: "array" (4) (Array) 0x4-0x4.7 (1)
-0x00|               61 72 72 61 79 00               |     array.     |      name: "array" 0x5-0xa.7 (6)
-    |                                               |                |      value{}: 0xb-0x24.7 (26)
-0x00|                                 1a 00 00 00   |           .... |        size: 26 0xb-0xe.7 (4)
-    |                                               |                |        elements[0:3]: 0xf-0x23.7 (21)
-    |                                               |                |          [0]{}: element 0xf-0x15.7 (7)
-0x00|                                             10|               .|            type: "int32" (16) (32-bit integer) 0xf-0xf.7 (1)
-0x10|30 00                                          |0.              |            name: "0" 0x10-0x11.7 (2)
-0x10|      01 00 00 00                              |  ....          |            value: 1 0x12-0x15.7 (4)
-    |                                               |                |          [1]{}: element 0x16-0x1c.7 (7)
-0x10|                  10                           |      .         |            type: "int32" (16) (32-bit integer) 0x16-0x16.7 (1)
-0x10|                     31 00                     |       1.       |            name: "1" 0x17-0x18.7 (2)
-0x10|                           02 00 00 00         |         ....   |            value: 2 0x19-0x1c.7 (4)
-    |                                               |                |          [2]{}: element 0x1d-0x23.7 (7)
-0x10|                                       10      |             .  |            type: "int32" (16) (32-bit integer) 0x1d-0x1d.7 (1)
-0x10|                                          32 00|              2.|            name: "2" 0x1e-0x1f.7 (2)
-0x20|03 00 00 00                                    |....            |            value: 3 0x20-0x23.7 (4)
-0x20|            00                                 |    .           |        terminator: 0 (valid) 0x24-0x24.7 (1)
-    |                                               |                |    [1]{}: element 0x25-0x40.7 (28)
-0x20|               03                              |     .          |      type: "document" (3) (Embedded document) 0x25-0x25.7 (1)
-0x20|                  6f 62 6a 65 63 74 00         |      object.   |      name: "object" 0x26-0x2c.7 (7)
-    |                                               |                |      value{}: 0x2d-0x40.7 (20)
-0x20|                                       14 00 00|             ...|        size: 20 0x2d-0x30.7 (4)
-0x30|00                                             |.               |
-    |                                               |                |        elements[0:1]: 0x31-0x3f.7 (15)
-    |                                               |                |          [0]{}: element 0x31-0x3f.7 (15)
-0x30|   02                                          | .              |            type: "string" (2) (UTF-8 string) 0x31-0x31.7 (1)
-0x30|      6b 65 79 00                              |  key.          |            name: "key" 0x32-0x35.7 (4)
-0x30|                  06 00 00 00                  |      ....      |            length: 6 0x36-0x39.7 (4)
-0x30|                              76 61 6c 75 65 00|          value.|            value: "value" 0x3a-0x3f.7 (6)
-0x40|00                                             |.               |        terminator: 0 (valid) 0x40-0x40.7 (1)
-    |                                               |                |    [2]{}: element 0x41-0x4c.7 (12)
-0x40|   10                                          | .              |      type: "int32" (16) (32-bit integer) 0x41-0x41.7 (1)
-0x40|      6e 75 6d 62 65 72 00                     |  number.       |      name: "number" 0x42-0x48.7 (7)
-0x40|                           7b 00 00 00         |         {...   |      value: 123 0x49-0x4c.7 (4)
-    |                                               |                |    [3]{}: element 0x4d-0x5c.7 (16)
-0x40|                                       02      |             .  |      type: "string" (2) (UTF-8 string) 0x4d-0x4d.7 (1)
-0x40|                                          73 74|              st|      name: "string" 0x4e-0x54.7 (7)
-0x50|72 69 6e 67 00                                 |ring.           |
-0x50|               04 00 00 00                     |     ....       |      length: 4 0x55-0x58.7 (4)
-0x50|                           61 62 63 00         |         abc.   |      value: "abc" 0x59-0x5c.7 (4)
-    |                                               |                |    [4]{}: element 0x5d-0x63.7 (7)
-0x50|                                       08      |             .  |      type: "boolean" (8) (Boolean) 0x5d-0x5d.7 (1)
-0x50|                                          74 72|              tr|      name: "true" 0x5e-0x62.7 (5)
-0x60|75 65 00                                       |ue.             |
-0x60|         01                                    |   .            |      value: 1 0x63-0x63.7 (1)
-    |                                               |                |    [5]{}: element 0x64-0x6b.7 (8)
-0x60|            08                                 |    .           |      type: "boolean" (8) (Boolean) 0x64-0x64.7 (1)
-0x60|               66 61 6c 73 65 00               |     false.     |      name: "false" 0x65-0x6a.7 (6)
-0x60|                                 00            |           .    |      value: 0 0x6b-0x6b.7 (1)
-    |                                               |                |    [6]{}: element 0x6c-0x71.7 (6)
-0x60|                                    0a         |            .   |      type: "null" (10) (Null value) 0x6c-0x6c.7 (1)
-0x60|                                       6e 75 6c|             nul|      name: "null" 0x6d-0x71.7 (5)
-0x70|6c 00                                          |l.              |
-    |                                               |                |      value: null 0x72-NA (0)
-0x70|      00|                                      |  .|            |  terminator: 0 (valid) 0x72-0x72.7 (1)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: test.bson (bson) 0x0-0x140.7 (321)
+0x000|41 01 00 00                                    |A...            |  size: 321 0x0-0x3.7 (4)
+     |                                               |                |  elements[0:17]: 0x4-0x13f.7 (316)
+     |                                               |                |    [0]{}: element 0x4-0x10.7 (13)
+0x000|            01                                 |    .           |      type: "double" (1) (64-bit binary floating point) 0x4-0x4.7 (1)
+0x000|               64 6f 75 00                     |     dou.       |      name: "dou" 0x5-0x8.7 (4)
+0x000|                           29 5c 8f c2 f5 b0 58|         )\....X|      value: 98.765 0x9-0x10.7 (8)
+0x010|40                                             |@               |
+     |                                               |                |    [1]{}: element 0x11-0x23.7 (19)
+0x010|   02                                          | .              |      type: "string" (2) (UTF-8 string) 0x11-0x11.7 (1)
+0x010|      73 74 72 00                              |  str.          |      name: "str" 0x12-0x15.7 (4)
+0x010|                  0a 00 00 00                  |      ....      |      length: 10 0x16-0x19.7 (4)
+0x010|                              6d 79 20 73 74 72|          my str|      value: "my string" 0x1a-0x23.7 (10)
+0x020|69 6e 67 00                                    |ing.            |
+     |                                               |                |    [2]{}: element 0x24-0x65.7 (66)
+0x020|            03                                 |    .           |      type: "document" (3) (Embedded document) 0x24-0x24.7 (1)
+0x020|               64 6f 63 00                     |     doc.       |      name: "doc" 0x25-0x28.7 (4)
+     |                                               |                |      value{}: 0x29-0x65.7 (61)
+0x020|                           3d 00 00 00         |         =...   |        size: 61 0x29-0x2c.7 (4)
+     |                                               |                |        elements[0:3]: 0x2d-0x64.7 (56)
+     |                                               |                |          [0]{}: element 0x2d-0x44.7 (24)
+0x020|                                       02      |             .  |            type: "string" (2) (UTF-8 string) 0x2d-0x2d.7 (1)
+0x020|                                          6e 73|              ns|            name: "nstr" 0x2e-0x32.7 (5)
+0x030|74 72 00                                       |tr.             |
+0x030|         0e 00 00 00                           |   ....         |            length: 14 0x33-0x36.7 (4)
+0x030|                     6e 65 73 74 65 64 20 73 74|       nested st|            value: "nested string" 0x37-0x44.7 (14)
+0x040|72 69 6e 67 00                                 |ring.           |
+     |                                               |                |          [1]{}: element 0x45-0x56.7 (18)
+0x040|               04                              |     .          |            type: "array" (4) (Array) 0x45-0x45.7 (1)
+0x040|                  6e 61 72 72 00               |      narr.     |            name: "narr" 0x46-0x4a.7 (5)
+     |                                               |                |            value{}: 0x4b-0x56.7 (12)
+0x040|                                 0c 00 00 00   |           .... |              size: 12 0x4b-0x4e.7 (4)
+     |                                               |                |              elements[0:1]: 0x4f-0x55.7 (7)
+     |                                               |                |                [0]{}: element 0x4f-0x55.7 (7)
+0x040|                                             10|               .|                  type: "int32" (16) (32-bit integer) 0x4f-0x4f.7 (1)
+0x050|30 00                                          |0.              |                  name: "0" 0x50-0x51.7 (2)
+0x050|      85 ff ff ff                              |  ....          |                  value: -123 0x52-0x55.7 (4)
+0x050|                  00                           |      .         |              terminator: 0 (valid) 0x56-0x56.7 (1)
+     |                                               |                |          [2]{}: element 0x57-0x64.7 (14)
+0x050|                     01                        |       .        |            type: "double" (1) (64-bit binary floating point) 0x57-0x57.7 (1)
+0x050|                        6e 64 6f 75 00         |        ndou.   |            name: "ndou" 0x58-0x5c.7 (5)
+0x050|                                       29 5c 8f|             )\.|            value: 98.765 0x5d-0x64.7 (8)
+0x060|c2 f5 b0 58 40                                 |...X@           |
+0x060|               00                              |     .          |        terminator: 0 (valid) 0x65-0x65.7 (1)
+     |                                               |                |    [3]{}: element 0x66-0x9e.7 (57)
+0x060|                  04                           |      .         |      type: "array" (4) (Array) 0x66-0x66.7 (1)
+0x060|                     61 72 72 00               |       arr.     |      name: "arr" 0x67-0x6a.7 (4)
+     |                                               |                |      value{}: 0x6b-0x9e.7 (52)
+0x060|                                 34 00 00 00   |           4... |        size: 52 0x6b-0x6e.7 (4)
+     |                                               |                |        elements[0:3]: 0x6f-0x9d.7 (47)
+     |                                               |                |          [0]{}: element 0x6f-0x80.7 (18)
+0x060|                                             02|               .|            type: "string" (2) (UTF-8 string) 0x6f-0x6f.7 (1)
+0x070|30 00                                          |0.              |            name: "0" 0x70-0x71.7 (2)
+0x070|      0b 00 00 00                              |  ....          |            length: 11 0x72-0x75.7 (4)
+0x070|                  61 72 72 20 73 74 72 69 6e 67|      arr string|            value: "arr string" 0x76-0x80.7 (11)
+0x080|00                                             |.               |
+     |                                               |                |          [1]{}: element 0x81-0x92.7 (18)
+0x080|   03                                          | .              |            type: "document" (3) (Embedded document) 0x81-0x81.7 (1)
+0x080|      31 00                                    |  1.            |            name: "1" 0x82-0x83.7 (2)
+     |                                               |                |            value{}: 0x84-0x92.7 (15)
+0x080|            0f 00 00 00                        |    ....        |              size: 15 0x84-0x87.7 (4)
+     |                                               |                |              elements[0:1]: 0x88-0x91.7 (10)
+     |                                               |                |                [0]{}: element 0x88-0x91.7 (10)
+0x080|                        10                     |        .       |                  type: "int32" (16) (32-bit integer) 0x88-0x88.7 (1)
+0x080|                           6e 69 33 32 00      |         ni32.  |                  name: "ni32" 0x89-0x8d.7 (5)
+0x080|                                          85 ff|              ..|                  value: -123 0x8e-0x91.7 (4)
+0x090|ff ff                                          |..              |
+0x090|      00                                       |  .             |              terminator: 0 (valid) 0x92-0x92.7 (1)
+     |                                               |                |          [2]{}: element 0x93-0x9d.7 (11)
+0x090|         01                                    |   .            |            type: "double" (1) (64-bit binary floating point) 0x93-0x93.7 (1)
+0x090|            32 00                              |    2.          |            name: "2" 0x94-0x95.7 (2)
+0x090|                  29 5c 8f c2 f5 b0 58 40      |      )\....X@  |            value: 98.765 0x96-0x9d.7 (8)
+0x090|                                          00   |              . |        terminator: 0 (valid) 0x9e-0x9e.7 (1)
+     |                                               |                |    [4]{}: element 0x9f-0xad.7 (15)
+0x090|                                             05|               .|      type: "binary" (5) (Binary data) 0x9f-0x9f.7 (1)
+0x0a0|62 69 6e 00                                    |bin.            |      name: "bin" 0xa0-0xa3.7 (4)
+0x0a0|            05 00 00 00                        |    ....        |      length: 5 0xa4-0xa7.7 (4)
+0x0a0|                        00                     |        .       |      subtype: 0 0xa8-0xa8.7 (1)
+0x0a0|                           00 01 02 03 04      |         .....  |      value: raw bits 0xa9-0xad.7 (5)
+     |                                               |                |    [5]{}: element 0xae-0xbe.7 (17)
+0x0a0|                                          07   |              . |      type: "object_id" (7) (ObjectId) 0xae-0xae.7 (1)
+0x0a0|                                             5f|               _|      name: "_id" 0xaf-0xb2.7 (4)
+0x0b0|69 64 00                                       |id.             |
+0x0b0|         64 4b 16 19 25 1b e7 40 e8 55 22 d6   |   dK..%..@.U". |      value: raw bits 0xb3-0xbe.7 (12)
+     |                                               |                |    [6]{}: element 0xbf-0xc4.7 (6)
+0x0b0|                                             08|               .|      type: "boolean" (8) (Boolean) 0xbf-0xbf.7 (1)
+0x0c0|62 6f 6f 00                                    |boo.            |      name: "boo" 0xc0-0xc3.7 (4)
+0x0c0|            01                                 |    .           |      value: 1 0xc4-0xc4.7 (1)
+     |                                               |                |    [7]{}: element 0xc5-0xd1.7 (13)
+0x0c0|               09                              |     .          |      type: "datetime" (9) (UTC datetime) 0xc5-0xc5.7 (1)
+0x0c0|                  64 61 74 00                  |      dat.      |      name: "dat" 0xc6-0xc9.7 (4)
+0x0c0|                              da d8 50 c5 87 01|          ..P...|      value: 1682642622682 0xca-0xd1.7 (8)
+0x0d0|00 00                                          |..              |
+     |                                               |                |    [8]{}: element 0xd2-0xd6.7 (5)
+0x0d0|      0a                                       |  .             |      type: "null" (10) (Null value) 0xd2-0xd2.7 (1)
+0x0d0|         6e 75 6c 00                           |   nul.         |      name: "nul" 0xd3-0xd6.7 (4)
+     |                                               |                |      value: null 0xd7-NA (0)
+     |                                               |                |    [9]{}: element 0xd7-0xe9.7 (19)
+0x0d0|                     0b                        |       .        |      type: "regexp" (11) (Regular expression) 0xd7-0xd7.7 (1)
+0x0d0|                        72 65 67 00            |        reg.    |      name: "reg" 0xd8-0xdb.7 (4)
+0x0d0|                                    6d 79 20 70|            my p|      value: "my pattern" 0xdc-0xe6.7 (11)
+0x0e0|61 74 74 65 72 6e 00                           |attern.         |
+0x0e0|                     69 78 00                  |       ix.      |      options: "ix" 0xe7-0xe9.7 (3)
+     |                                               |                |    [10]{}: element 0xea-0xfd.7 (20)
+0x0e0|                              0d               |          .     |      type: "javascript" (13) (JavaScript code) 0xea-0xea.7 (1)
+0x0e0|                                 6a 61 76 00   |           jav. |      name: "jav" 0xeb-0xee.7 (4)
+0x0e0|                                             0b|               .|      length: 11 0xef-0xf2.7 (4)
+0x0f0|00 00 00                                       |...             |
+0x0f0|         76 61 72 20 78 20 3d 20 35 3b 00      |   var x = 5;.  |      value: "var x = 5;" 0xf3-0xfd.7 (11)
+     |                                               |                |    [11]{}: element 0xfe-0x106.7 (9)
+0x0f0|                                          10   |              . |      type: "int32" (16) (32-bit integer) 0xfe-0xfe.7 (1)
+0x0f0|                                             69|               i|      name: "i32" 0xff-0x102.7 (4)
+0x100|33 32 00                                       |32.             |
+0x100|         85 ff ff ff                           |   ....         |      value: -123 0x103-0x106.7 (4)
+     |                                               |                |    [12]{}: element 0x107-0x113.7 (13)
+0x100|                     11                        |       .        |      type: "timestamp" (17) (Timestamp) 0x107-0x107.7 (1)
+0x100|                        74 69 6d 00            |        tim.    |      name: "tim" 0x108-0x10b.7 (4)
+0x100|                                    9e 17 4b 64|            ..Kd|      value: 529963620254 0x10c-0x113.7 (8)
+0x110|7b 00 00 00                                    |{...            |
+     |                                               |                |    [13]{}: element 0x114-0x120.7 (13)
+0x110|            12                                 |    .           |      type: "int64" (18) (64-bit integer) 0x114-0x114.7 (1)
+0x110|               69 36 34 00                     |     i64.       |      name: "i64" 0x115-0x118.7 (4)
+0x110|                           38 fe ff ff ff ff ff|         8......|      value: -456 0x119-0x120.7 (8)
+0x120|ff                                             |.               |
+     |                                               |                |    [14]{}: element 0x121-0x135.7 (21)
+0x120|   13                                          | .              |      type: "decimal128" (19) (128-bit decimal floating point) 0x121-0x121.7 (1)
+0x120|      64 65 63 00                              |  dec.          |      name: "dec" 0x122-0x125.7 (4)
+0x120|                  40 e2 01 00 00 00 00 00 00 00|      @.........|      value: raw bits 0x126-0x135.7 (16)
+0x130|00 00 00 00 3a 30                              |....:0          |
+     |                                               |                |    [15]{}: element 0x136-0x13a.7 (5)
+0x130|                  ff                           |      .         |      type: "minkey" (255) (Min key) 0x136-0x136.7 (1)
+0x130|                     6d 69 6e 00               |       min.     |      name: "min" 0x137-0x13a.7 (4)
+     |                                               |                |      value: null 0x13b-NA (0)
+     |                                               |                |    [16]{}: element 0x13b-0x13f.7 (5)
+0x130|                                 7f            |           .    |      type: "maxkey" (127) (Max key) 0x13b-0x13b.7 (1)
+0x130|                                    6d 61 78 00|            max.|      name: "max" 0x13c-0x13f.7 (4)
+     |                                               |                |      value: null 0x140-NA (0)
+0x140|00|                                            |.|              |  terminator: 0 (valid) 0x140-0x140.7 (1)
 $ fq -d bson torepr test.bson
 {
-  "array": [
-    1,
-    2,
-    3
+  "_id": "dK\u0016\u0019%\u001b\ufffd@\ufffdU\"\ufffd",
+  "arr": [
+    "arr string",
+    {
+      "ni32": -123
+    },
+    98.765
   ],
-  "false": false,
-  "null": null,
-  "number": 123,
-  "object": {
-    "key": "value"
+  "bin": "\u0000\u0001\u0002\u0003\u0004",
+  "boo": true,
+  "dat": 1682642622682,
+  "dec": "@\ufffd\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000:0",
+  "doc": {
+    "narr": [
+      -123
+    ],
+    "ndou": 98.765,
+    "nstr": "nested string"
   },
-  "string": "abc",
-  "true": true
+  "dou": 98.765,
+  "i32": -123,
+  "i64": -456,
+  "jav": "var x = 5;",
+  "max": null,
+  "min": null,
+  "nul": null,
+  "reg": "my pattern",
+  "str": "my string",
+  "tim": 529963620254
 }
