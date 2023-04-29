@@ -18,16 +18,17 @@ var exifFormat decode.Group
 var iccProfileFormat decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.JPEG,
-		Description: "Joint Photographic Experts Group file",
-		Groups:      []string{format.PROBE, format.IMAGE},
-		DecodeFn:    jpegDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.EXIF}, Group: &exifFormat},
-			{Names: []string{format.ICC_PROFILE}, Group: &iccProfileFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.Jpeg,
+		&decode.Format{
+			Description: "Joint Photographic Experts Group file",
+			Groups:      []*decode.Group{format.Probe, format.Image},
+			DecodeFn:    jpegDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.Exif}, Out: &exifFormat},
+				{Groups: []*decode.Group{format.IccProfile}, Out: &iccProfileFormat},
+			},
+		})
 }
 
 const (
@@ -296,7 +297,7 @@ func jpegDecode(d *decode.D) any {
 								d.FieldRawLen("data", int64(xThumbnail*yThumbnail)*3*8)
 							case markerCode == APP1 && d.TryHasBytes(app1ExifPrefix):
 								d.FieldUTF8("exif_prefix", len(app1ExifPrefix))
-								d.FieldFormatLen("exif", d.BitsLeft(), exifFormat, nil)
+								d.FieldFormatLen("exif", d.BitsLeft(), &exifFormat, nil)
 							case markerCode == APP1 && d.TryHasBytes(extendedXMPPrefix):
 								d.FieldStruct("extended_xmp_chunk", func(d *decode.D) {
 									d.FieldUTF8("signature", len(extendedXMPPrefix))
@@ -318,7 +319,7 @@ func jpegDecode(d *decode.D) any {
 								// TODO: support multimarker?
 								d.FieldU8("cur_marker")
 								d.FieldU8("num_markers")
-								d.FieldFormatLen("icc_profile", d.BitsLeft(), iccProfileFormat, nil)
+								d.FieldFormatLen("icc_profile", d.BitsLeft(), &iccProfileFormat, nil)
 							case markerCode == APP13 && d.TryHasBytes(app13PhotoshopPrefix):
 								d.FieldUTF8("identifier", len(app13PhotoshopPrefix))
 								signature := d.FieldUTF8("signature", 4)

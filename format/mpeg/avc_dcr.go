@@ -15,14 +15,15 @@ import (
 var avcDCRNALFormat decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.AVC_DCR,
-		Description: "H.264/AVC Decoder Configuration Record",
-		DecodeFn:    avcDcrDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.AVC_NALU}, Group: &avcDCRNALFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.AvcDcr,
+		&decode.Format{
+			Description: "H.264/AVC Decoder Configuration Record",
+			DecodeFn:    avcDcrDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.AvcNalu}, Out: &avcDCRNALFormat},
+			},
+		})
 }
 
 var avcProfileNames = scalar.UintMapSymStr{
@@ -111,7 +112,7 @@ func avcDcrParameterSet(d *decode.D, numParamSets uint64) {
 	for i := uint64(0); i < numParamSets; i++ {
 		d.FieldStruct("set", func(d *decode.D) {
 			paramSetLen := d.FieldU16("length")
-			d.FieldFormatLen("nal", int64(paramSetLen)*8, avcDCRNALFormat, nil)
+			d.FieldFormatLen("nal", int64(paramSetLen)*8, &avcDCRNALFormat, nil)
 		})
 	}
 }

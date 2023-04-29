@@ -13,14 +13,15 @@ import (
 var vorbisComment decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.OPUS_PACKET,
-		Description: "Opus packet",
-		DecodeFn:    opusDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.VORBIS_COMMENT}, Group: &vorbisComment},
-		},
-	})
+	interp.RegisterFormat(
+		format.OpusPacket,
+		&decode.Format{
+			Description: "Opus packet",
+			DecodeFn:    opusDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.VorbisComment}, Out: &vorbisComment},
+			},
+		})
 }
 
 func opusDecode(d *decode.D) any {
@@ -51,7 +52,7 @@ func opusDecode(d *decode.D) any {
 	case bytes.Equal(prefix, []byte("OpusTags")):
 		d.FieldValueStr("type", "tags")
 		d.FieldUTF8("prefix", 8)
-		d.FieldFormat("comment", vorbisComment, nil)
+		d.FieldFormat("comment", &vorbisComment, nil)
 	default:
 		d.FieldValueStr("type", "audio")
 		d.FieldStruct("toc", func(d *decode.D) {

@@ -17,12 +17,13 @@ import (
 var wasmFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.WASM,
-		Description: "WebAssembly Binary Format",
-		DecodeFn:    decodeWASM,
-		Groups:      []string{format.PROBE},
-	})
+	interp.RegisterFormat(
+		format.Wasm,
+		&decode.Format{
+			Description: "WebAssembly Binary Format",
+			DecodeFn:    decodeWASM,
+			Groups:      []*decode.Group{format.Probe},
+		})
 	interp.RegisterFS(wasmFS)
 }
 

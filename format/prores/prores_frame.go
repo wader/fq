@@ -10,11 +10,12 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.PRORES_FRAME,
-		Description: "Apple ProRes frame",
-		DecodeFn:    decodeProResFrame,
-	})
+	interp.RegisterFormat(
+		format.ProresFrame,
+		&decode.Format{
+			Description: "Apple ProRes frame",
+			DecodeFn:    decodeProResFrame,
+		})
 }
 
 func decodeProResFrame(d *decode.D) any {

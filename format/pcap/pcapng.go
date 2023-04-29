@@ -13,23 +13,24 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var pcapngLinkFrameFormat decode.Group
-var pcapngTCPStreamFormat decode.Group
-var pcapngIPvPacket4Format decode.Group
+var pcapngLinkFrameGroup decode.Group
+var pcapngTCPStreamGroup decode.Group
+var pcapngIPvPacket4Group decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.PCAPNG,
-		Description: "PCAPNG packet capture",
-		RootArray:   true,
-		Groups:      []string{format.PROBE},
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.LINK_FRAME}, Group: &pcapngLinkFrameFormat},
-			{Names: []string{format.TCP_STREAM}, Group: &pcapngTCPStreamFormat},
-			{Names: []string{format.IPV4_PACKET}, Group: &pcapngIPvPacket4Format},
-		},
-		DecodeFn: decodePcapng,
-	})
+	interp.RegisterFormat(
+		format.Pcapng,
+		&decode.Format{
+			Description: "PCAPNG packet capture",
+			RootArray:   true,
+			Groups:      []*decode.Group{format.Probe},
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.LinkFrame}, Out: &pcapngLinkFrameGroup},
+				{Groups: []*decode.Group{format.TcpStream}, Out: &pcapngTCPStreamGroup},
+				{Groups: []*decode.Group{format.Ipv4Packet}, Out: &pcapngIPvPacket4Group},
+			},
+			DecodeFn: decodePcapng,
+		})
 }
 
 const (
@@ -242,7 +243,7 @@ var blockFns = map[uint64]func(d *decode.D, dc *decodeContext){
 		d.FieldFormatOrRawLen(
 			"packet",
 			int64(capturedLength)*8,
-			pcapngLinkFrameFormat,
+			&pcapngLinkFrameGroup,
 			format.LinkFrameIn{
 				Type:           linkType,
 				IsLittleEndian: d.Endian == decode.LittleEndian,
@@ -373,7 +374,7 @@ func decodePcapng(d *decode.D) any {
 		d.FieldStruct("section", func(d *decode.D) {
 			decodeSection(d, &dc)
 			fd.Flush()
-			fieldFlows(d, dc.flowDecoder, pcapngTCPStreamFormat, pcapngIPvPacket4Format)
+			fieldFlows(d, dc.flowDecoder, pcapngTCPStreamGroup, pcapngIPvPacket4Group)
 		})
 		if dc.sectionHeaderFound {
 			sectionHeaders++

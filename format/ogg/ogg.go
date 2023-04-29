@@ -12,26 +12,27 @@ import (
 	"github.com/wader/fq/pkg/interp"
 )
 
-var oggPageFormat decode.Group
-var vorbisPacketFormat decode.Group
-var opusPacketFormat decode.Group
-var flacMetadatablockFormat decode.Group
-var flacFrameFormat decode.Group
+var oggPageGroup decode.Group
+var vorbisPacketGroup decode.Group
+var opusPacketGroup decode.Group
+var flacMetadatablockGroup decode.Group
+var flacFrameGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.OGG,
-		Description: "OGG file",
-		Groups:      []string{format.PROBE},
-		DecodeFn:    decodeOgg,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.OGG_PAGE}, Group: &oggPageFormat},
-			{Names: []string{format.VORBIS_PACKET}, Group: &vorbisPacketFormat},
-			{Names: []string{format.OPUS_PACKET}, Group: &opusPacketFormat},
-			{Names: []string{format.FLAC_METADATABLOCK}, Group: &flacMetadatablockFormat},
-			{Names: []string{format.FLAC_FRAME}, Group: &flacFrameFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.Ogg,
+		&decode.Format{
+			Description: "OGG file",
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    decodeOgg,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.OggPage}, Out: &oggPageGroup},
+				{Groups: []*decode.Group{format.VorbisPacket}, Out: &vorbisPacketGroup},
+				{Groups: []*decode.Group{format.OpusPacket}, Out: &opusPacketGroup},
+				{Groups: []*decode.Group{format.FlacMetadatablock}, Out: &flacMetadatablockGroup},
+				{Groups: []*decode.Group{format.FlacFrame}, Out: &flacFrameGroup},
+			},
+		})
 }
 
 var (
@@ -64,7 +65,7 @@ func decodeOgg(d *decode.D) any {
 
 	d.FieldArray("pages", func(d *decode.D) {
 		for !d.End() {
-			_, dv, _ := d.TryFieldFormat("page", oggPageFormat, nil)
+			_, dv, _ := d.TryFieldFormat("page", &oggPageGroup, nil)
 			if dv == nil {
 				break
 			}
@@ -120,12 +121,12 @@ func decodeOgg(d *decode.D) any {
 					switch s.codec {
 					case codecVorbis:
 						// TODO: err
-						if _, _, err := s.packetD.TryFieldFormatBitBuf("packet", br, vorbisPacketFormat, nil); err != nil {
+						if _, _, err := s.packetD.TryFieldFormatBitBuf("packet", br, &vorbisPacketGroup, nil); err != nil {
 							s.packetD.FieldRootBitBuf("packet", br)
 						}
 					case codecOpus:
 						// TODO: err
-						if _, _, err := s.packetD.TryFieldFormatBitBuf("packet", br, opusPacketFormat, nil); err != nil {
+						if _, _, err := s.packetD.TryFieldFormatBitBuf("packet", br, &opusPacketGroup, nil); err != nil {
 							s.packetD.FieldRootBitBuf("packet", br)
 						}
 					case codecFlac:
@@ -142,7 +143,7 @@ func decodeOgg(d *decode.D) any {
 								d.FieldU8("minor")
 								d.FieldU16("header_packets")
 								d.FieldUTF8("flac_signature", 4)
-								_, v := d.FieldFormat("metadatablock", flacMetadatablockFormat, nil)
+								_, v := d.FieldFormat("metadatablock", &flacMetadatablockGroup, nil)
 								flacMetadatablockOut, ok := v.(format.FlacMetadatablockOut)
 								if !ok {
 									panic(fmt.Sprintf("expected FlacMetadatablockOut, got %#+v", flacMetadatablockOut))
@@ -150,9 +151,9 @@ func decodeOgg(d *decode.D) any {
 								s.flacStreamInfo = flacMetadatablockOut.StreamInfo
 							})
 						case s.packetBuf[0] == 0xff:
-							s.packetD.FieldFormatBitBuf("packet", br, flacFrameFormat, nil)
+							s.packetD.FieldFormatBitBuf("packet", br, &flacFrameGroup, nil)
 						default:
-							s.packetD.FieldFormatBitBuf("packet", br, flacMetadatablockFormat, nil)
+							s.packetD.FieldFormatBitBuf("packet", br, &flacMetadatablockGroup, nil)
 						}
 					case codecUnknown:
 						s.packetD.FieldRootBitBuf("packet", br)

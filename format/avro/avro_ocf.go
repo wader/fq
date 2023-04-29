@@ -20,12 +20,13 @@ import (
 var avroOcfFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.AVRO_OCF,
-		Description: "Avro object container file",
-		Groups:      []string{format.PROBE},
-		DecodeFn:    decodeAvroOCF,
-	})
+	interp.RegisterFormat(
+		format.AvroOcf,
+		&decode.Format{
+			Description: "Avro object container file",
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    decodeAvroOCF,
+		})
 	interp.RegisterFS(avroOcfFS)
 }
 

@@ -7,7 +7,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var images decode.Group
+var imageGroup decode.Group
 
 var pictureTypeNames = scalar.UintMapSymStr{
 	0:  "Other",
@@ -34,14 +34,15 @@ var pictureTypeNames = scalar.UintMapSymStr{
 }
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.FLAC_PICTURE,
-		Description: "FLAC metadatablock picture",
-		DecodeFn:    pictureDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.IMAGE}, Group: &images},
-		},
-	})
+	interp.RegisterFormat(
+		format.FlacPicture,
+		&decode.Format{
+			Description: "FLAC metadatablock picture",
+			DecodeFn:    pictureDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.Image}, Out: &imageGroup},
+			},
+		})
 }
 
 func pictureDecode(d *decode.D) any {
@@ -57,7 +58,7 @@ func pictureDecode(d *decode.D) any {
 	d.FieldU32("color_depth")
 	d.FieldU32("number_of_index_colors")
 	pictureLen := d.FieldU32("picture_length")
-	d.FieldFormatOrRawLen("picture_data", int64(pictureLen)*8, images, nil)
+	d.FieldFormatOrRawLen("picture_data", int64(pictureLen)*8, &imageGroup, nil)
 
 	return nil
 }

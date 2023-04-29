@@ -8,11 +8,12 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.AV1_OBU,
-		Description: "AV1 Open Bitstream Unit",
-		DecodeFn:    obuDecode,
-	})
+	interp.RegisterFormat(
+		format.Av1Obu,
+		&decode.Format{
+			Description: "AV1 Open Bitstream Unit",
+			DecodeFn:    obuDecode,
+		})
 }
 
 const (

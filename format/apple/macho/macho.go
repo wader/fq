@@ -18,12 +18,13 @@ import (
 var machoFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.MACHO,
-		Description: "Mach-O macOS executable",
-		Groups:      []string{format.PROBE},
-		DecodeFn:    machoDecode,
-	})
+	interp.RegisterFormat(
+		format.Macho,
+		&decode.Format{
+			Description: "Mach-O macOS executable",
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    machoDecode,
+		})
 	interp.RegisterFS(machoFS)
 }
 

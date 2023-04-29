@@ -13,14 +13,15 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.FLAC_FRAME,
-		Description: "FLAC frame",
-		DecodeFn:    frameDecode,
-		DefaultInArg: format.FlacFrameIn{
-			BitsPerSample: 16, // TODO: maybe should not have a default value?
-		},
-	})
+	interp.RegisterFormat(
+		format.FlacFrame,
+		&decode.Format{
+			Description: "FLAC frame",
+			DecodeFn:    frameDecode,
+			DefaultInArg: format.FlacFrameIn{
+				BitsPerSample: 16, // TODO: maybe should not have a default value?
+			},
+		})
 }
 
 const (

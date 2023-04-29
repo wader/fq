@@ -8,21 +8,22 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var hevcVPSFormat decode.Group
-var hevcPPSFormat decode.Group
-var hevcSPSFormat decode.Group
+var hevcVPSGroup decode.Group
+var hevcPPSGroup decode.Group
+var hevcSPSGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.HEVC_NALU,
-		Description: "H.265/HEVC Network Access Layer Unit",
-		DecodeFn:    hevcNALUDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.HEVC_VPS}, Group: &hevcVPSFormat},
-			{Names: []string{format.HEVC_PPS}, Group: &hevcPPSFormat},
-			{Names: []string{format.HEVC_SPS}, Group: &hevcSPSFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.HevcNalu,
+		&decode.Format{
+			Description: "H.265/HEVC Network Access Layer Unit",
+			DecodeFn:    hevcNALUDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.HevcVps}, Out: &hevcVPSGroup},
+				{Groups: []*decode.Group{format.HevcPps}, Out: &hevcPPSGroup},
+				{Groups: []*decode.Group{format.HevcSps}, Out: &hevcSPSGroup},
+			},
+		})
 }
 
 const (
@@ -91,11 +92,11 @@ func hevcNALUDecode(d *decode.D) any {
 
 	switch nalType {
 	case hevcNALNUTVPS:
-		d.FieldFormatBitBuf("vps", unescapedBR, hevcVPSFormat, nil)
+		d.FieldFormatBitBuf("vps", unescapedBR, &hevcVPSGroup, nil)
 	case hevcNALNUTPPS:
-		d.FieldFormatBitBuf("pps", unescapedBR, hevcPPSFormat, nil)
+		d.FieldFormatBitBuf("pps", unescapedBR, &hevcPPSGroup, nil)
 	case hevcNALNUTSPS:
-		d.FieldFormatBitBuf("sps", unescapedBR, hevcSPSFormat, nil)
+		d.FieldFormatBitBuf("sps", unescapedBR, &hevcSPSGroup, nil)
 	}
 	d.FieldRawLen("data", d.BitsLeft())
 

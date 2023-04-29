@@ -11,11 +11,12 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.ICC_PROFILE,
-		Description: "International Color Consortium profile",
-		DecodeFn:    iccProfileDecode,
-	})
+	interp.RegisterFormat(
+		format.IccProfile,
+		&decode.Format{
+			Description: "International Color Consortium profile",
+			DecodeFn:    iccProfileDecode,
+		})
 }
 
 func xyzType(_ int64, d *decode.D) {

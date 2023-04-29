@@ -15,14 +15,15 @@ var jsonlFS embed.FS
 // TODO: not strictly JSONL, allows any whitespace between
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.JSONL,
-		Description: "JavaScript Object Notation Lines",
-		ProbeOrder:  format.ProbeOrderTextFuzzy,
-		Groups:      []string{format.PROBE},
-		DecodeFn:    decodeJSONL,
-		Functions:   []string{"_todisplay"},
-	})
+	interp.RegisterFormat(
+		format.Jsonl,
+		&decode.Format{
+			Description: "JavaScript Object Notation Lines",
+			ProbeOrder:  format.ProbeOrderTextFuzzy,
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    decodeJSONL,
+			Functions:   []string{"_todisplay"},
+		})
 	interp.RegisterFS(jsonlFS)
 	interp.RegisterFunc0("to_jsonl", toJSONL)
 }

@@ -11,17 +11,18 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var aacFrameFormat decode.Group
+var aacFrameGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.ADTS_FRAME,
-		Description: "Audio Data Transport Stream frame",
-		DecodeFn:    adtsFrameDecoder,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.AAC_FRAME}, Group: &aacFrameFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.AdtsFrame,
+		&decode.Format{
+			Description: "Audio Data Transport Stream frame",
+			DecodeFn:    adtsFrameDecoder,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.AacFrame}, Out: &aacFrameGroup},
+			},
+		})
 }
 
 var protectionAbsentNames = scalar.BoolMapDescription{
@@ -97,7 +98,7 @@ func adtsFrameDecoder(d *decode.D) any {
 
 	d.FieldArray("raw_data_blocks", func(d *decode.D) {
 		for i := uint64(0); i < numberOfRDBs; i++ {
-			d.FieldFormatLen("raw_data_block", dataLength*8, aacFrameFormat, format.AACFrameIn{ObjectType: int(objectType)})
+			d.FieldFormatLen("raw_data_block", dataLength*8, &aacFrameGroup, format.AACFrameIn{ObjectType: int(objectType)})
 		}
 	})
 

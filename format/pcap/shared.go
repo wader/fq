@@ -25,7 +25,7 @@ func fieldFlows(d *decode.D, fd *flowsdecoder.Decoder, tcpStreamFormat decode.Gr
 			if dv, _, _ := d.TryFieldFormatBitBuf(
 				"ipv4_packet",
 				br,
-				ipv4PacketFormat,
+				&ipv4PacketFormat,
 				nil,
 			); dv == nil {
 				d.FieldRootBitBuf("ipv4_packet", br)
@@ -47,7 +47,7 @@ func fieldFlows(d *decode.D, fd *flowsdecoder.Decoder, tcpStreamFormat decode.Gr
 					dv, outV, _ := d.TryFieldFormatBitBuf(
 						"stream",
 						br,
-						tcpStreamFormat,
+						&tcpStreamFormat,
 						tsi,
 					)
 					if dv == nil {

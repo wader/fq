@@ -28,75 +28,76 @@ import (
 //go:embed matroska.md
 var matroskaFS embed.FS
 
-var aacFrameFormat decode.Group
-var av1CCRFormat decode.Group
-var av1FrameFormat decode.Group
-var flacFrameFormat decode.Group
-var flacMetadatablocksFormat decode.Group
-var imageFormat decode.Group
-var mp3FrameFormat decode.Group
-var mpegASCFrameFormat decode.Group
-var mpegAVCAUFormat decode.Group
-var mpegAVCDCRFormat decode.Group
-var mpegHEVCDCRFormat decode.Group
-var mpegHEVCSampleFormat decode.Group
-var mpegPESPacketSampleFormat decode.Group
-var mpegSPUFrameFormat decode.Group
-var opusPacketFrameFormat decode.Group
-var vorbisPacketFormat decode.Group
-var vp8FrameFormat decode.Group
-var vp9CFMFormat decode.Group
-var vp9FrameFormat decode.Group
+var aacFrameGroup decode.Group
+var av1CCRGroup decode.Group
+var av1FrameGroup decode.Group
+var flacFrameGroup decode.Group
+var flacMetadatablocksGroup decode.Group
+var imageGroup decode.Group
+var mp3FrameGroup decode.Group
+var mpegASCFrameGroup decode.Group
+var mpegAVCAUGroup decode.Group
+var mpegAVCDCRGroup decode.Group
+var mpegHEVCDCRGroup decode.Group
+var mpegHEVCSampleGroup decode.Group
+var mpegPESPacketSampleGroup decode.Group
+var mpegSPUFrameGroup decode.Group
+var opusPacketFrameGroup decode.Group
+var vorbisPacketGroup decode.Group
+var vp8FrameGroup decode.Group
+var vp9CFMGroup decode.Group
+var vp9FrameGroup decode.Group
 
-var codecToFormat map[string]*decode.Group
+var codecToGroup map[string]*decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.MATROSKA,
-		Description: "Matroska file",
-		Groups:      []string{format.PROBE},
-		DecodeFn:    matroskaDecode,
-		DefaultInArg: format.MatroskaIn{
-			DecodeSamples: true,
-		},
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.AAC_FRAME}, Group: &aacFrameFormat},
-			{Names: []string{format.AV1_CCR}, Group: &av1CCRFormat},
-			{Names: []string{format.AV1_FRAME}, Group: &av1FrameFormat},
-			{Names: []string{format.AVC_AU}, Group: &mpegAVCAUFormat},
-			{Names: []string{format.AVC_DCR}, Group: &mpegAVCDCRFormat},
-			{Names: []string{format.FLAC_FRAME}, Group: &flacFrameFormat},
-			{Names: []string{format.FLAC_METADATABLOCKS}, Group: &flacMetadatablocksFormat},
-			{Names: []string{format.HEVC_AU}, Group: &mpegHEVCSampleFormat},
-			{Names: []string{format.HEVC_DCR}, Group: &mpegHEVCDCRFormat},
-			{Names: []string{format.IMAGE}, Group: &imageFormat},
-			{Names: []string{format.MP3_FRAME}, Group: &mp3FrameFormat},
-			{Names: []string{format.MPEG_ASC}, Group: &mpegASCFrameFormat},
-			{Names: []string{format.MPEG_PES_PACKET}, Group: &mpegPESPacketSampleFormat},
-			{Names: []string{format.MPEG_SPU}, Group: &mpegSPUFrameFormat},
-			{Names: []string{format.OPUS_PACKET}, Group: &opusPacketFrameFormat},
-			{Names: []string{format.VORBIS_PACKET}, Group: &vorbisPacketFormat},
-			{Names: []string{format.VP8_FRAME}, Group: &vp8FrameFormat},
-			{Names: []string{format.VP9_CFM}, Group: &vp9CFMFormat},
-			{Names: []string{format.VP9_FRAME}, Group: &vp9FrameFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.Matroska,
+		&decode.Format{
+			Description: "Matroska file",
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    matroskaDecode,
+			DefaultInArg: format.MatroskaIn{
+				DecodeSamples: true,
+			},
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.AacFrame}, Out: &aacFrameGroup},
+				{Groups: []*decode.Group{format.Av1Ccr}, Out: &av1CCRGroup},
+				{Groups: []*decode.Group{format.Av1Frame}, Out: &av1FrameGroup},
+				{Groups: []*decode.Group{format.AvcAu}, Out: &mpegAVCAUGroup},
+				{Groups: []*decode.Group{format.AvcDcr}, Out: &mpegAVCDCRGroup},
+				{Groups: []*decode.Group{format.FlacFrame}, Out: &flacFrameGroup},
+				{Groups: []*decode.Group{format.FlacMetadatablocks}, Out: &flacMetadatablocksGroup},
+				{Groups: []*decode.Group{format.HevcAu}, Out: &mpegHEVCSampleGroup},
+				{Groups: []*decode.Group{format.HevcDcr}, Out: &mpegHEVCDCRGroup},
+				{Groups: []*decode.Group{format.Image}, Out: &imageGroup},
+				{Groups: []*decode.Group{format.Mp3Frame}, Out: &mp3FrameGroup},
+				{Groups: []*decode.Group{format.MpegAsc}, Out: &mpegASCFrameGroup},
+				{Groups: []*decode.Group{format.MpegPesPacket}, Out: &mpegPESPacketSampleGroup},
+				{Groups: []*decode.Group{format.MpegSpu}, Out: &mpegSPUFrameGroup},
+				{Groups: []*decode.Group{format.OpusPacket}, Out: &opusPacketFrameGroup},
+				{Groups: []*decode.Group{format.VorbisPacket}, Out: &vorbisPacketGroup},
+				{Groups: []*decode.Group{format.Vp8Frame}, Out: &vp8FrameGroup},
+				{Groups: []*decode.Group{format.Vp9Cfm}, Out: &vp9CFMGroup},
+				{Groups: []*decode.Group{format.Vp9Frame}, Out: &vp9FrameGroup},
+			},
+		})
 	interp.RegisterFS(matroskaFS)
 
-	codecToFormat = map[string]*decode.Group{
-		"A_VORBIS":         &vorbisPacketFormat,
-		"A_MPEG/L3":        &mp3FrameFormat,
-		"A_FLAC":           &flacFrameFormat,
-		"A_AAC":            &aacFrameFormat,
-		"A_OPUS":           &opusPacketFrameFormat,
-		"V_VP8":            &vp8FrameFormat,
-		"V_VP9":            &vp9FrameFormat,
-		"V_AV1":            &av1FrameFormat,
-		"V_VOBSUB":         &mpegSPUFrameFormat,
-		"V_MPEG4/ISO/AVC":  &mpegAVCAUFormat,
-		"V_MPEGH/ISO/HEVC": &mpegHEVCSampleFormat,
-		"V_MPEG2":          &mpegPESPacketSampleFormat,
-		"S_VOBSUB":         &mpegSPUFrameFormat,
+	codecToGroup = map[string]*decode.Group{
+		"A_VORBIS":         &vorbisPacketGroup,
+		"A_MPEG/L3":        &mp3FrameGroup,
+		"A_FLAC":           &flacFrameGroup,
+		"A_AAC":            &aacFrameGroup,
+		"A_OPUS":           &opusPacketFrameGroup,
+		"V_VP8":            &vp8FrameGroup,
+		"V_VP9":            &vp9FrameGroup,
+		"V_AV1":            &av1FrameGroup,
+		"V_VOBSUB":         &mpegSPUFrameGroup,
+		"V_MPEG4/ISO/AVC":  &mpegAVCAUGroup,
+		"V_MPEGH/ISO/HEVC": &mpegHEVCSampleGroup,
+		"V_MPEG2":          &mpegPESPacketSampleGroup,
+		"S_VOBSUB":         &mpegSPUFrameGroup,
 	}
 }
 
@@ -427,7 +428,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, elm *ebml.Master, unknownSize bo
 						}
 						d.SeekRel(int64(tagSize) * 8)
 					case ebml_matroska.FileDataID:
-						d.FieldFormatOrRawLen("value", int64(tagSize)*8, imageFormat, nil)
+						d.FieldFormatOrRawLen("value", int64(tagSize)*8, &imageGroup, nil)
 					default:
 						d.FieldRawLen("value", int64(tagSize)*8)
 					}
@@ -468,14 +469,14 @@ func matroskaDecode(d *decode.D) any {
 			t.parentD.RangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
 				decodeLacingFn(d, lacingTypeXiph, func(d *decode.D) {
 					if mi.DecodeSamples {
-						d.FieldFormat("packet", vorbisPacketFormat, nil)
+						d.FieldFormat("packet", &vorbisPacketGroup, nil)
 					} else {
 						d.FieldRawLen("packet", d.BitsLeft())
 					}
 				})
 			})
 		case "A_AAC":
-			_, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegASCFrameFormat, nil)
+			_, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, &mpegASCFrameGroup, nil)
 			mpegASCOut, ok := v.(format.MPEGASCOut)
 			if !ok {
 				panic(fmt.Sprintf("expected mpegASCOut got %#+v", v))
@@ -483,12 +484,12 @@ func matroskaDecode(d *decode.D) any {
 			//nolint:gosimple
 			t.formatInArg = format.AACFrameIn{ObjectType: mpegASCOut.ObjectType}
 		case "A_OPUS":
-			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, opusPacketFrameFormat, nil)
+			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, &opusPacketFrameGroup, nil)
 		case "A_FLAC":
 			t.parentD.RangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
 				d.FieldStruct("value", func(d *decode.D) {
 					d.FieldUTF8("magic", 4, d.StrAssert("fLaC"))
-					_, v := d.FieldFormat("metadatablocks", flacMetadatablocksFormat, nil)
+					_, v := d.FieldFormat("metadatablocks", &flacMetadatablocksGroup, nil)
 					flacMetadatablockOut, ok := v.(format.FlacMetadatablocksOut)
 					if !ok {
 						panic(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
@@ -499,23 +500,23 @@ func matroskaDecode(d *decode.D) any {
 				})
 			})
 		case "V_MPEG4/ISO/AVC":
-			_, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegAVCDCRFormat, nil)
+			_, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, &mpegAVCDCRGroup, nil)
 			avcDcrOut, ok := v.(format.AvcDcrOut)
 			if !ok {
 				panic(fmt.Sprintf("expected AvcDcrOut got %#+v", v))
 			}
 			t.formatInArg = format.AvcAuIn{LengthSize: avcDcrOut.LengthSize} //nolint:gosimple
 		case "V_MPEGH/ISO/HEVC":
-			_, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegHEVCDCRFormat, nil)
+			_, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, &mpegHEVCDCRGroup, nil)
 			hevcDcrOut, ok := v.(format.HevcDcrOut)
 			if !ok {
 				panic(fmt.Sprintf("expected HevcDcrOut got %#+v", v))
 			}
 			t.formatInArg = format.HevcAuIn{LengthSize: hevcDcrOut.LengthSize} //nolint:gosimple
 		case "V_AV1":
-			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, av1CCRFormat, nil)
+			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, &av1CCRGroup, nil)
 		case "V_VP9":
-			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, vp9CFMFormat, nil)
+			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, &vp9CFMGroup, nil)
 		default:
 			t.parentD.RangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
 				d.FieldRawLen("value", d.BitsLeft())
@@ -549,12 +550,12 @@ func matroskaDecode(d *decode.D) any {
 			var track *track
 			track, trackOk := trackNumberToTrack[int(trackNumber)]
 			if trackOk {
-				f = codecToFormat[track.codec]
+				f = codecToGroup[track.codec]
 			}
 
 			decodeLacingFn(d, int(lacing), func(d *decode.D) {
 				if mi.DecodeSamples && f != nil {
-					d.FieldFormat("packet", *f, track.formatInArg)
+					d.FieldFormat("packet", f, track.formatInArg)
 				} else {
 					d.FieldRawLen("packet", d.BitsLeft())
 				}

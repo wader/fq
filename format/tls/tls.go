@@ -39,19 +39,20 @@ import (
 //go:embed tls.md
 var tlsFS embed.FS
 
-var asn1BerFormat decode.Group
+var asn1BerGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:         format.TLS,
-		Description:  "Transport layer security",
-		Groups:       []string{format.TCP_STREAM},
-		DecodeFn:     decodeTLS,
-		DefaultInArg: format.TLSIn{},
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.ASN1_BER}, Group: &asn1BerFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.Tls,
+		&decode.Format{
+			Description:  "Transport layer security",
+			Groups:       []*decode.Group{format.TcpStream},
+			DecodeFn:     decodeTLS,
+			DefaultInArg: format.TLSIn{},
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.Asn1Ber}, Out: &asn1BerGroup},
+			},
+		})
 	interp.RegisterFS(tlsFS)
 }
 
@@ -366,7 +367,7 @@ func decodeTLSHandshake(d *decode.D, tc *tlsCtx) {
 					for !d.End() {
 						d.FieldStruct("certificate", func(d *decode.D) {
 							length := d.FieldU24("length")
-							d.FieldFormatLen("data", int64(length)*8, asn1BerFormat, nil)
+							d.FieldFormatLen("data", int64(length)*8, &asn1BerGroup, nil)
 						})
 					}
 				})

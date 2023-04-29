@@ -15,15 +15,16 @@ import (
 var ether8023FrameInetPacketGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.ETHER8023_FRAME,
-		Description: "Ethernet 802.3 frame",
-		Groups:      []string{format.LINK_FRAME},
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.INET_PACKET}, Group: &ether8023FrameInetPacketGroup},
-		},
-		DecodeFn: decodeEthernetFrame,
-	})
+	interp.RegisterFormat(
+		format.Ether8023Frame,
+		&decode.Format{
+			Description: "Ethernet 802.3 frame",
+			Groups:      []*decode.Group{format.LinkFrame},
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.InetPacket}, Out: &ether8023FrameInetPacketGroup},
+			},
+			DecodeFn: decodeEthernetFrame,
+		})
 }
 
 // TODO: move to shared?
@@ -49,7 +50,7 @@ func decodeEthernetFrame(d *decode.D) any {
 	d.FieldFormatOrRawLen(
 		"payload",
 		d.BitsLeft(),
-		ether8023FrameInetPacketGroup,
+		&ether8023FrameInetPacketGroup,
 		format.InetPacketIn{EtherType: int(etherType)},
 	)
 

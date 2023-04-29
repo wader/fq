@@ -9,16 +9,17 @@ import (
 var annexBAVCNALUFormat decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.AVC_ANNEXB,
-		Description: "H.264/AVC Annex B",
-		DecodeFn: func(d *decode.D) any {
-			return annexBDecode(d, annexBAVCNALUFormat)
-		},
-		RootArray: true,
-		RootName:  "stream",
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.AVC_NALU}, Group: &annexBAVCNALUFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.AvcAnnexb,
+		&decode.Format{
+			Description: "H.264/AVC Annex B",
+			DecodeFn: func(d *decode.D) any {
+				return annexBDecode(d, annexBAVCNALUFormat)
+			},
+			RootArray: true,
+			RootName:  "stream",
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.AvcNalu}, Out: &annexBAVCNALUFormat},
+			},
+		})
 }

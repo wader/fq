@@ -17,12 +17,13 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.GIF,
-		Description: "Graphics Interchange Format",
-		Groups:      []string{format.PROBE, format.IMAGE},
-		DecodeFn:    gifDecode,
-	})
+	interp.RegisterFormat(
+		format.Gif,
+		&decode.Format{
+			Description: "Graphics Interchange Format",
+			Groups:      []*decode.Group{format.Probe, format.Image},
+			DecodeFn:    gifDecode,
+		})
 }
 
 const (

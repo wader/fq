@@ -12,20 +12,21 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var bitcoinTranscationFormat decode.Group
+var bitcoinTranscationGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.BITCOIN_BLOCK,
-		Description: "Bitcoin block",
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.BITCOIN_TRANSACTION}, Group: &bitcoinTranscationFormat},
-		},
-		DecodeFn: decodeBitcoinBlock,
-		DefaultInArg: format.BitCoinBlockIn{
-			HasHeader: false,
-		},
-	})
+	interp.RegisterFormat(
+		format.BitcoinBlock,
+		&decode.Format{
+			Description: "Bitcoin block",
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.BitcoinTransaction}, Out: &bitcoinTranscationGroup},
+			},
+			DecodeFn: decodeBitcoinBlock,
+			DefaultInArg: format.BitCoinBlockIn{
+				HasHeader: false,
+			},
+		})
 }
 
 var rawHexReverse = scalar.BitBufFn(func(s scalar.BitBuf) (scalar.BitBuf, error) {
@@ -78,7 +79,7 @@ func decodeBitcoinBlock(d *decode.D) any {
 		txCount := d.FieldUintFn("tx_count", decodeVarInt)
 		d.FieldArray("transactions", func(d *decode.D) {
 			for i := uint64(0); i < txCount; i++ {
-				d.FieldFormat("transaction", bitcoinTranscationFormat, nil)
+				d.FieldFormat("transaction", &bitcoinTranscationGroup, nil)
 			}
 		})
 	})

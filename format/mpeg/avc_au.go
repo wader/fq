@@ -11,19 +11,20 @@ import (
 var avcNALUFormat decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.AVC_AU,
-		Description: "H.264/AVC Access Unit",
-		DecodeFn:    avcAUDecode,
-		DefaultInArg: format.AvcAuIn{
-			LengthSize: 0,
-		},
-		RootArray: true,
-		RootName:  "access_unit",
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.AVC_NALU}, Group: &avcNALUFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.AvcAu,
+		&decode.Format{
+			Description: "H.264/AVC Access Unit",
+			DecodeFn:    avcAUDecode,
+			DefaultInArg: format.AvcAuIn{
+				LengthSize: 0,
+			},
+			RootArray: true,
+			RootName:  "access_unit",
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.AvcNalu}, Out: &avcNALUFormat},
+			},
+		})
 }
 
 func avcAUDecode(d *decode.D) any {
@@ -39,7 +40,7 @@ func avcAUDecode(d *decode.D) any {
 	for d.NotEnd() {
 		d.FieldStruct("nalu", func(d *decode.D) {
 			l := int64(d.FieldU("length", int(ai.LengthSize)*8)) * 8
-			d.FieldFormatLen("nalu", l, avcNALUFormat, nil)
+			d.FieldFormatLen("nalu", l, &avcNALUFormat, nil)
 		})
 	}
 

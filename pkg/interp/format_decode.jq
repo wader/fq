@@ -8,9 +8,8 @@
 [ _registry as $r
 | $r.groups
 | to_entries[]
-# TODO: nicer way to skip "all" which also would override builtin all/*
 # skip_decode_function is used to skip bits/bytes as they are special tobits/tobytes
-| select(.key != "all" and ($r.formats[.key].skip_decode_function | not))
+| select($r.formats[.key].skip_decode_function | not)
 | "def \(.key)($opts): decode(\(.key | tojson); $opts);"
 , "def \(.key): decode(\(.key | tojson); {});"
 , "def from_\(.key)($opts): decode(\(.key | tojson); $opts) | if ._error then error(._error.error) end;"

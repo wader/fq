@@ -9,13 +9,14 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.VP9_CFM,
-		Description: "VP9 Codec Feature Metadata",
-		DecodeFn:    vp9CFMDecode,
-		RootArray:   true,
-		RootName:    "features",
-	})
+	interp.RegisterFormat(
+		format.Vp9Cfm,
+		&decode.Format{
+			Description: "VP9 Codec Feature Metadata",
+			DecodeFn:    vp9CFMDecode,
+			RootArray:   true,
+			RootName:    "features",
+		})
 }
 
 func vp9CFMDecode(d *decode.D) any {

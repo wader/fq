@@ -12,11 +12,12 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.AV1_CCR,
-		Description: "AV1 Codec Configuration Record",
-		DecodeFn:    ccrDecode,
-	})
+	interp.RegisterFormat(
+		format.Av1Ccr,
+		&decode.Format{
+			Description: "AV1 Codec Configuration Record",
+			DecodeFn:    ccrDecode,
+		})
 }
 
 func ccrDecode(d *decode.D) any {

@@ -8,11 +8,12 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.FLAC_STREAMINFO,
-		Description: "FLAC streaminfo",
-		DecodeFn:    streaminfoDecode,
-	})
+	interp.RegisterFormat(
+		format.FlacStreaminfo,
+		&decode.Format{
+			Description: "FLAC streaminfo",
+			DecodeFn:    streaminfoDecode,
+		})
 }
 
 func streaminfoDecode(d *decode.D) any {

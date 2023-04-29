@@ -17,11 +17,12 @@ import (
 var protobufFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.PROTOBUF,
-		Description: "Protobuf",
-		DecodeFn:    protobufDecode,
-	})
+	interp.RegisterFormat(
+		format.Protobuf,
+		&decode.Format{
+			Description: "Protobuf",
+			DecodeFn:    protobufDecode,
+		})
 	interp.RegisterFS(protobufFS)
 }
 

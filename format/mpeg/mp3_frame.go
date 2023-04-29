@@ -21,17 +21,18 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var mp3FrameTagsHeader decode.Group
+var mp3FrameTagsGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.MP3_FRAME,
-		Description: "MPEG audio layer 3 frame",
-		DecodeFn:    frameDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.MP3_FRAME_TAGS}, Group: &mp3FrameTagsHeader},
-		},
-	})
+	interp.RegisterFormat(
+		format.Mp3Frame,
+		&decode.Format{
+			Description: "MPEG audio layer 3 frame",
+			DecodeFn:    frameDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.Mp3FrameTags}, Out: &mp3FrameTagsGroup},
+			},
+		})
 }
 
 // TODO: keep track of main data buffer and decode huffman tables
@@ -375,7 +376,7 @@ func frameDecode(d *decode.D) any {
 	// audio data size, may include audio data from other frames also if main_data_begin is used
 	restBytes := frameBytes - headerBytes - crcBytes - sideInfoBytes
 	d.FramedFn(int64(restBytes)*8, func(d *decode.D) {
-		_, _, _ = d.TryFieldFormat("tag", mp3FrameTagsHeader, nil)
+		_, _, _ = d.TryFieldFormat("tag", &mp3FrameTagsGroup, nil)
 		d.FieldRawLen("audio_data", d.BitsLeft())
 	})
 

@@ -17,12 +17,13 @@ import (
 var bsonFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.BSON,
-		Description: "Binary JSON",
-		DecodeFn:    decodeBSON,
-		Functions:   []string{"torepr"},
-	})
+	interp.RegisterFormat(
+		format.Bson,
+		&decode.Format{
+			Description: "Binary JSON",
+			DecodeFn:    decodeBSON,
+			Functions:   []string{"torepr"},
+		})
 	interp.RegisterFS(bsonFS)
 }
 

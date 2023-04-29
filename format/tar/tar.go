@@ -13,18 +13,19 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var probeFormat decode.Group
+var probeGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.TAR,
-		Description: "Tar archive",
-		Groups:      []string{format.PROBE},
-		DecodeFn:    tarDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.PROBE}, Group: &probeFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.Tar,
+		&decode.Format{
+			Description: "Tar archive",
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    tarDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.Probe}, Out: &probeGroup},
+			},
+		})
 }
 
 var unixTimeEpochDate = time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC)
@@ -75,7 +76,7 @@ func tarDecode(d *decode.D) any {
 				d.FieldUTF8("prefix", 155, mapTrimSpaceNull)
 				d.FieldRawLen("header_block_padding", blockPadding(d), d.BitBufIsZero())
 
-				d.FieldFormatOrRawLen("data", int64(size), probeFormat, nil)
+				d.FieldFormatOrRawLen("data", int64(size), &probeGroup, nil)
 
 				d.FieldRawLen("data_block_padding", blockPadding(d), d.BitBufIsZero())
 			})

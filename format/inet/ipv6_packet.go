@@ -14,18 +14,19 @@ import (
 var ipv6IpPacketGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.IPV6_PACKET,
-		Description: "Internet protocol v6 packet",
-		Groups: []string{
-			format.INET_PACKET,
-			format.LINK_FRAME,
-		},
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.IP_PACKET}, Group: &ipv6IpPacketGroup},
-		},
-		DecodeFn: decodeIPv6,
-	})
+	interp.RegisterFormat(
+		format.Ipv6Packet,
+		&decode.Format{
+			Description: "Internet protocol v6 packet",
+			Groups: []*decode.Group{
+				format.InetPacket,
+				format.LinkFrame,
+			},
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.IpPacket}, Out: &ipv6IpPacketGroup},
+			},
+			DecodeFn: decodeIPv6,
+		})
 }
 
 const (
@@ -172,7 +173,7 @@ func decodeIPv6(d *decode.D) any {
 	d.FieldFormatOrRawLen(
 		"payload",
 		payloadLen,
-		ipv4IpPacketGroup,
+		&ipv4IpPacketGroup,
 		format.IPPacketIn{Protocol: int(nextHeader)},
 	)
 

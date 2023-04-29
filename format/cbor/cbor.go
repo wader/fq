@@ -25,12 +25,13 @@ import (
 var cborFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.CBOR,
-		Description: "Concise Binary Object Representation",
-		DecodeFn:    decodeCBOR,
-		Functions:   []string{"torepr"},
-	})
+	interp.RegisterFormat(
+		format.Cbor,
+		&decode.Format{
+			Description: "Concise Binary Object Representation",
+			DecodeFn:    decodeCBOR,
+			Functions:   []string{"torepr"},
+		})
 	interp.RegisterFS(cborFS)
 }
 

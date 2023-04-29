@@ -43,7 +43,7 @@ def input:
       catch
         ( . as $err
         | _input_decode_errors(. += {($name): $err}) as $_
-        | [ $opts.decode_format
+        | [ $opts.decode_group
           , if $err | _is_string then ": \($err)"
             # TODO: if not string assume decode itself failed for now
             else ": failed to decode: try fq -d FORMAT to force format, see fq -h formats for list"

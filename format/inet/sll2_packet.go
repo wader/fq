@@ -13,15 +13,16 @@ import (
 var sllPacket2InetPacketGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.SLL2_PACKET,
-		Description: "Linux cooked capture encapsulation v2",
-		Groups:      []string{format.LINK_FRAME},
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.INET_PACKET}, Group: &sllPacket2InetPacketGroup},
-		},
-		DecodeFn: decodeSLL2,
-	})
+	interp.RegisterFormat(
+		format.Sll2Packet,
+		&decode.Format{
+			Description: "Linux cooked capture encapsulation v2",
+			Groups:      []*decode.Group{format.LinkFrame},
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.InetPacket}, Out: &sllPacket2InetPacketGroup},
+			},
+			DecodeFn: decodeSLL2,
+		})
 }
 
 func decodeSLL2(d *decode.D) any {
@@ -54,7 +55,7 @@ func decodeSLL2(d *decode.D) any {
 		d.FieldFormatOrRawLen(
 			"payload",
 			d.BitsLeft(),
-			sllPacket2InetPacketGroup,
+			&sllPacket2InetPacketGroup,
 			format.InetPacketIn{EtherType: int(protcolType)},
 		)
 	default:

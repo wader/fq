@@ -9,19 +9,20 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var mpegASCFormat decode.Group
-var vorbisPacketFormat decode.Group
+var mpegASCGroup decode.Group
+var vorbisPacketGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.MPEG_ES,
-		Description: "MPEG Elementary Stream",
-		DecodeFn:    esDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.MPEG_ASC}, Group: &mpegASCFormat},
-			{Names: []string{format.VORBIS_PACKET}, Group: &vorbisPacketFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.MpegEs,
+		&decode.Format{
+			Description: "MPEG Elementary Stream",
+			DecodeFn:    esDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.MpegAsc}, Out: &mpegASCGroup},
+				{Groups: []*decode.Group{format.VorbisPacket}, Out: &vorbisPacketGroup},
+			},
+		})
 }
 
 const (
@@ -234,16 +235,16 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, _ int, fn func(d *decode.D))
 						})
 						d.FieldArray("packets", func(d *decode.D) {
 							for _, l := range packetLengths {
-								d.FieldFormatLen("packet", l*8, vorbisPacketFormat, nil)
+								d.FieldFormatLen("packet", l*8, &vorbisPacketGroup, nil)
 							}
-							d.FieldFormatLen("packet", d.BitsLeft(), vorbisPacketFormat, nil)
+							d.FieldFormatLen("packet", d.BitsLeft(), &vorbisPacketGroup, nil)
 						})
 					})
 				default:
 					switch format.MpegObjectTypeStreamType[objectType] {
 					case format.MPEGStreamTypeAudio:
 						fieldODDecodeTag(d, edc, "decoder_specific_info", -1, func(d *decode.D) {
-							_, v := d.FieldFormat("audio_specific_config", mpegASCFormat, nil)
+							_, v := d.FieldFormat("audio_specific_config", &mpegASCGroup, nil)
 							mpegASCout, ok := v.(format.MPEGASCOut)
 							if !ok {
 								panic(fmt.Sprintf("expected MPEGASCOut got %#+v", v))

@@ -16,18 +16,19 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var probeFormat decode.Group
+var probeGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.GZIP,
-		Description: "gzip compression",
-		Groups:      []string{format.PROBE},
-		DecodeFn:    gzDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.PROBE}, Group: &probeFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.Gzip,
+		&decode.Format{
+			Description: "gzip compression",
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    gzDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.Probe}, Out: &probeGroup},
+			},
+		})
 }
 
 const deflateMethod = 8
@@ -108,7 +109,8 @@ func gzDecode(d *decode.D) any {
 	}
 
 	if rFn != nil {
-		readCompressedSize, uncompressedBR, dv, _, _ := d.TryFieldReaderRangeFormat("uncompressed", d.Pos(), d.BitsLeft(), rFn, probeFormat, nil)
+		readCompressedSize, uncompressedBR, dv, _, _ :=
+			d.TryFieldReaderRangeFormat("uncompressed", d.Pos(), d.BitsLeft(), rFn, &probeGroup, nil)
 		if uncompressedBR != nil {
 			if dv == nil {
 				d.FieldRootBitBuf("uncompressed", uncompressedBR)

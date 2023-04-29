@@ -10,15 +10,16 @@ import (
 var udpPayloadGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.UDP_DATAGRAM,
-		Description: "User datagram protocol",
-		Groups:      []string{format.IP_PACKET},
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.UDP_PAYLOAD}, Group: &udpPayloadGroup},
-		},
-		DecodeFn: decodeUDP,
-	})
+	interp.RegisterFormat(
+		format.UdpDatagram,
+		&decode.Format{
+			Description: "User datagram protocol",
+			Groups:      []*decode.Group{format.IpPacket},
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.UdpPayload}, Out: &udpPayloadGroup},
+			},
+			DecodeFn: decodeUDP,
+		})
 }
 
 func decodeUDP(d *decode.D) any {
@@ -36,7 +37,7 @@ func decodeUDP(d *decode.D) any {
 	d.FieldFormatOrRawLen(
 		"payload",
 		payloadLen,
-		udpPayloadGroup,
+		&udpPayloadGroup,
 		format.UDPPayloadIn{
 			SourcePort:      int(sourcePort),
 			DestinationPort: int(destPort),

@@ -15,20 +15,21 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var iccProfileFormat decode.Group
-var exifFormat decode.Group
+var iccProfileGroup decode.Group
+var exifGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.PNG,
-		Description: "Portable Network Graphics file",
-		Groups:      []string{format.PROBE, format.IMAGE},
-		DecodeFn:    pngDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.ICC_PROFILE}, Group: &iccProfileFormat},
-			{Names: []string{format.EXIF}, Group: &exifFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.Png,
+		&decode.Format{
+			Description: "Portable Network Graphics file",
+			Groups:      []*decode.Group{format.Probe, format.Image},
+			DecodeFn:    pngDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.IccProfile}, Out: &iccProfileGroup},
+				{Groups: []*decode.Group{format.Exif}, Out: &exifGroup},
+			},
+		})
 }
 
 const (
@@ -144,7 +145,7 @@ func pngDecode(d *decode.D) any {
 
 				switch compressionMethod {
 				case compressionDeflate:
-					d.FieldFormatReaderLen("uncompressed", dataLen, zlib.NewReader, iccProfileFormat)
+					d.FieldFormatReaderLen("uncompressed", dataLen, zlib.NewReader, &iccProfileGroup)
 				default:
 					d.FieldRawLen("data", dataLen)
 				}
@@ -176,7 +177,7 @@ func pngDecode(d *decode.D) any {
 				d.FieldFltFn("blue_x", df)
 				d.FieldFltFn("blue_y", df)
 			case "eXIf":
-				d.FieldFormatLen("exif", d.BitsLeft(), exifFormat, nil)
+				d.FieldFormatLen("exif", d.BitsLeft(), &exifGroup, nil)
 			case "acTL":
 				d.FieldU32("num_frames")
 				d.FieldU32("num_plays")

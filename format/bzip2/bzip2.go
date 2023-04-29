@@ -22,15 +22,16 @@ import (
 var probeGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.BZIP2,
-		Description: "bzip2 compression",
-		Groups:      []string{format.PROBE},
-		DecodeFn:    bzip2Decode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.PROBE}, Group: &probeGroup},
-		},
-	})
+	interp.RegisterFormat(
+		format.Bzip2,
+		&decode.Format{
+			Description: "bzip2 compression",
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    bzip2Decode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.Probe}, Out: &probeGroup},
+			},
+		})
 }
 
 const blockMagic = 0x31_41_59_26_53_59
@@ -109,7 +110,8 @@ func bzip2Decode(d *decode.D) any {
 
 	compressedStart := d.Pos()
 
-	readCompressedSize, uncompressedBR, dv, _, _ := d.TryFieldReaderRangeFormat("uncompressed", 0, d.Len(), bzip2.NewReader, probeGroup, nil)
+	readCompressedSize, uncompressedBR, dv, _, _ :=
+		d.TryFieldReaderRangeFormat("uncompressed", 0, d.Len(), bzip2.NewReader, &probeGroup, nil)
 	if uncompressedBR != nil {
 		if dv == nil {
 			d.FieldRootBitBuf("uncompressed", uncompressedBR)

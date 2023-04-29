@@ -21,14 +21,15 @@ import (
 var tomlFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.TOML,
-		Description: "Tom's Obvious, Minimal Language",
-		ProbeOrder:  format.ProbeOrderTextFuzzy,
-		Groups:      []string{format.PROBE},
-		DecodeFn:    decodeTOML,
-		Functions:   []string{"_todisplay"},
-	})
+	interp.RegisterFormat(
+		format.Toml,
+		&decode.Format{
+			Description: "Tom's Obvious, Minimal Language",
+			ProbeOrder:  format.ProbeOrderTextFuzzy,
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    decodeTOML,
+			Functions:   []string{"_todisplay"},
+		})
 	interp.RegisterFS(tomlFS)
 	interp.RegisterFunc0("to_toml", toTOML)
 }

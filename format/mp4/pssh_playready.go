@@ -8,11 +8,12 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.PSSH_PLAYREADY,
-		Description: "PlayReady PSSH",
-		DecodeFn:    playreadyPsshDecode,
-	})
+	interp.RegisterFormat(
+		format.PsshPlayready,
+		&decode.Format{
+			Description: "PlayReady PSSH",
+			DecodeFn:    playreadyPsshDecode,
+		})
 }
 
 const (

@@ -10,13 +10,14 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.AIFF,
-		ProbeOrder:  format.ProbeOrderBinFuzzy,
-		Description: "Audio Interchange File Format",
-		Groups:      []string{format.PROBE},
-		DecodeFn:    aiffDecode,
-	})
+	interp.RegisterFormat(
+		format.Aiff,
+		&decode.Format{
+			ProbeOrder:  format.ProbeOrderBinFuzzy,
+			Description: "Audio Interchange File Format",
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    aiffDecode,
+		})
 }
 
 const aiffRiffType = "AIFF"

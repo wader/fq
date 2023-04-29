@@ -12,11 +12,12 @@ import (
 // TODO: vpx frame?
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.VP8_FRAME,
-		Description: "VP8 frame",
-		DecodeFn:    vp8Decode,
-	})
+	interp.RegisterFormat(
+		format.Vp8Frame,
+		&decode.Format{
+			Description: "VP8 frame",
+			DecodeFn:    vp8Decode,
+		})
 }
 
 func vp8Decode(d *decode.D) any {

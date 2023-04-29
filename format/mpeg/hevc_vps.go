@@ -9,11 +9,12 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.HEVC_VPS,
-		Description: "H.265/HEVC Video Parameter Set",
-		DecodeFn:    hevcVPSDecode,
-	})
+	interp.RegisterFormat(
+		format.HevcVps,
+		&decode.Format{
+			Description: "H.265/HEVC Video Parameter Set",
+			DecodeFn:    hevcVPSDecode,
+		})
 }
 
 const maxVpsLayers = 1000

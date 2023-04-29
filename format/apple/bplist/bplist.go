@@ -17,14 +17,15 @@ import (
 var bplistFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.BPLIST,
-		ProbeOrder:  format.ProbeOrderBinUnique,
-		Description: "Apple Binary Property List",
-		Groups:      []string{format.PROBE},
-		DecodeFn:    bplistDecode,
-		Functions:   []string{"torepr"},
-	})
+	interp.RegisterFormat(
+		format.Bplist,
+		&decode.Format{
+			ProbeOrder:  format.ProbeOrderBinUnique,
+			Description: "Apple Binary Property List",
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    bplistDecode,
+			Functions:   []string{"torepr"},
+		})
 	interp.RegisterFS(bplistFS)
 }
 

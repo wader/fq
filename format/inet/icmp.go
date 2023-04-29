@@ -8,12 +8,13 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.ICMP,
-		Description: "Internet Control Message Protocol",
-		Groups:      []string{format.IP_PACKET},
-		DecodeFn:    decodeICMP,
-	})
+	interp.RegisterFormat(
+		format.Icmp,
+		&decode.Format{
+			Description: "Internet Control Message Protocol",
+			Groups:      []*decode.Group{format.IpPacket},
+			DecodeFn:    decodeICMP,
+		})
 }
 
 // based on https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol

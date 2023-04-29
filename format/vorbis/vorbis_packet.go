@@ -14,14 +14,15 @@ import (
 var vorbisComment decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.VORBIS_PACKET,
-		Description: "Vorbis packet",
-		DecodeFn:    vorbisDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.VORBIS_COMMENT}, Group: &vorbisComment},
-		},
-	})
+	interp.RegisterFormat(
+		format.VorbisPacket,
+		&decode.Format{
+			Description: "Vorbis packet",
+			DecodeFn:    vorbisDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.VorbisComment}, Out: &vorbisComment},
+			},
+		})
 }
 
 const (
@@ -114,7 +115,7 @@ func vorbisDecode(d *decode.D) any {
 		// }
 
 	case packetTypeComment:
-		d.FieldFormat("comment", vorbisComment, nil)
+		d.FieldFormat("comment", &vorbisComment, nil)
 
 		// note this uses vorbis bitpacking convention, bits are added LSB first per byte
 		d.FieldRawLen("padding0", 7, d.BitBufIsZero())

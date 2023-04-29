@@ -7,12 +7,13 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.DNS_TCP,
-		Description: "DNS packet (TCP)",
-		Groups:      []string{format.TCP_STREAM},
-		DecodeFn:    dnsTCPDecode,
-	})
+	interp.RegisterFormat(
+		format.DnsTcp,
+		&decode.Format{
+			Description: "DNS packet (TCP)",
+			Groups:      []*decode.Group{format.TcpStream},
+			DecodeFn:    dnsTCPDecode,
+		})
 }
 
 func dnsTCPDecode(d *decode.D) any {

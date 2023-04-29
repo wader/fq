@@ -29,7 +29,7 @@ Example usages:
 --argjson NAME JSON          Set variable $NAME to JSON
 --color-output,-C            Force color output
 --compact-output,-c          Compact output
---decode,-d NAME             Decode format (probe)
+--decode,-d NAME             Decode format or group (probe)
 --from-file,-f PATH          Read EXPR from file
 --help,-h [TOPIC]            Show help for TOPIC (ex: -h formats, -h mp4)
 --include-path,-L PATH       Include search path
@@ -78,7 +78,7 @@ color               false
 colors              array=white,dumpaddr=yellow,dumpheader=yellow+underline,error=brightred,false=yellow,index=white,null=brightblack,number=cyan,object=white,objectkey=brightblue,prompt_repl_level=brightblack,prompt_value=white,string=green,true=yellow,value=white
 compact             false
 completion_timeout  10
-decode_format       probe
+decode_group        probe
 decode_progress     false
 depth               0
 display_bytes       16

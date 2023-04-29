@@ -8,11 +8,12 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.AVC_SPS,
-		Description: "H.264/AVC Sequence Parameter Set",
-		DecodeFn:    avcSPSDecode,
-	})
+	interp.RegisterFormat(
+		format.AvcSps,
+		&decode.Format{
+			Description: "H.264/AVC Sequence Parameter Set",
+			DecodeFn:    avcSPSDecode,
+		})
 }
 
 var avcVideoFormatMap = scalar.UintMapSymStr{

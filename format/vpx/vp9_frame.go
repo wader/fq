@@ -55,11 +55,12 @@ var vp9ProfilesMap = scalar.UintMapDescription{
 }
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.VP9_FRAME,
-		Description: "VP9 frame",
-		DecodeFn:    vp9Decode,
-	})
+	interp.RegisterFormat(
+		format.Vp9Frame,
+		&decode.Format{
+			Description: "VP9 frame",
+			DecodeFn:    vp9Decode,
+		})
 }
 
 func vp9DecodeFrameSyncCode(d *decode.D) {
