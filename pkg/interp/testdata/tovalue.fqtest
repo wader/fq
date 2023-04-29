@@ -1,4 +1,8 @@
 # TODO: use test format
+$ fq -i . test.mp3
+mp3> .headers[0] | tovalue.header.magic
+"ID3"
+mp3> ^D
 $ fq -i
 null> "aaa" | mp3_frame | .gap0 | tovalue, tovalue({sizebase: 2})
 "aaa"
