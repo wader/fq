@@ -82,7 +82,7 @@ type Scalarable interface {
 	ScalarValue() any
 	ScalarSym() any
 	ScalarDescription() string
-	ScalarGap() bool
+	ScalarIsGap() bool
 	ScalarDisplayFormat() scalar.DisplayFormat
 }
 
@@ -210,7 +210,7 @@ type Display interface {
 
 type JQValueEx interface {
 	gojq.JQValue
-	JQValueToGoJQEx(optsFn func() Options) any
+	JQValueToGoJQEx(optsFn func() *Options) any
 }
 
 func valuePath(v *decode.Value) []any {
@@ -682,7 +682,7 @@ func (i *Interp) _printColorJSON(c any, v any) gojq.Iter {
 		Color:   opts.Color,
 		Tab:     false,
 		Indent:  indent,
-		ValueFn: func(v any) any { return toValue(func() Options { return opts }, v) },
+		ValueFn: func(v any) any { return toValue(func() *Options { return &opts }, v) },
 		Colors: colorjson.Colors{
 			Reset:     []byte(ansi.Reset.SetString),
 			Null:      []byte(opts.Decorator.Null.SetString),
@@ -1034,6 +1034,7 @@ type Options struct {
 	DisplayBytes int
 	Addrbase     int
 	Sizebase     int
+	SkipGaps     bool
 
 	Decorator    Decorator
 	BitsFormatFn func(br bitio.ReaderAtSeeker) (any, error)

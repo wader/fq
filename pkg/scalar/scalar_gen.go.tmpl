@@ -31,7 +31,7 @@ import (
 	}
 	func (s {{$name}}) ScalarSym() any { return s.Sym }
 	func (s {{$name}}) ScalarDescription() string { return s.Description }
-	func (s {{$name}}) ScalarGap() bool { return s.Gap }
+	func (s {{$name}}) ScalarIsGap() bool { return s.Gap }
 	{{- if $t.display_format}}
 	func (s {{$name}}) ScalarDisplayFormat() DisplayFormat { return s.DisplayFormat }
 	{{- else }}

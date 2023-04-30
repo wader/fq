@@ -796,15 +796,35 @@ fq has some general options in addition to decode and decoders specific options.
 
 `<value>` is fuzzily parsed based on the type of the option. Ex: a string can be specified as `-o name=string` or `-o name="string"`.
 
-### `bits_format`
+### `-o bits_format=<string>`
 
-How to represent raw bits as JSON.
+How to represent raw binary as JSON.
 
-- `-o bits_foramt=string` String with raw bytes (zero bit padded). The string is binary safe internally in fq but bytes not representable as UTF-8 will be lost if turn to JSON.
+- `-o bits_foramt=string` String with raw bytes (zero bit padded if size is not byte aligned). The string is binary safe internally in fq but bytes not representable as UTF-8 will be lost if turn to JSON.
 - `-o bits_format=md5` MD5 hex string (zero bit padded).
 - `-o bits_format=base64` Base64 string.
 - `-p bits_foramt=truncate` Truncated string.
 - `-o bits_format=snippet` Truncated Base64 string prefixed with bit length.
+
+```sh
+$ fq -V -o bits_format=base64 . file`
+```
+In query
+```jq
+tovalue({bits_format: "md5"})
+```
+
+### `-o skip_gaps=<boolean>`
+
+Skip gaps fields (`gap0` etc) when using `tovalue` or `-V`. Note that this might affect array indexes if one more more gaps fields are skipped in an array.
+
+```sh
+$ fq -V -o skip_gaps=true . file`
+```
+In query
+```jq
+tovalue({skip_gaps: true})
+```
 
 ## Color and unicode output
 

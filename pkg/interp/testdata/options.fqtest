@@ -83,6 +83,7 @@ $ fq -n options
   "show_formats": false,
   "show_help": false,
   "sizebase": 10,
+  "skip_gaps": false,
   "slurp": false,
   "string_input": false,
   "unicode": false,
