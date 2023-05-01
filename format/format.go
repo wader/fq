@@ -35,6 +35,7 @@ var (
 	Apev2              = &decode.Group{Name: "apev2"}
 	AppleBookmark      = &decode.Group{Name: "apple_bookmark"}
 	Ar                 = &decode.Group{Name: "ar"}
+	Arm64              = &decode.Group{Name: "arm64"}
 	Asn1Ber            = &decode.Group{Name: "asn1_ber"}
 	Av1Ccr             = &decode.Group{Name: "av1_ccr"}
 	Av1Frame           = &decode.Group{Name: "av1_frame"}
@@ -120,8 +121,8 @@ var (
 	ProtobufWidevine   = &decode.Group{Name: "protobuf_widevine"}
 	PsshPlayready      = &decode.Group{Name: "pssh_playready"}
 	Rtmp               = &decode.Group{Name: "rtmp"}
-	SllPacket          = &decode.Group{Name: "sll_packet"}
 	Sll2Packet         = &decode.Group{Name: "sll2_packet"}
+	SllPacket          = &decode.Group{Name: "sll_packet"}
 	Tar                = &decode.Group{Name: "tar"}
 	TcpSegment         = &decode.Group{Name: "tcp_segment"}
 	Tiff               = &decode.Group{Name: "tiff"}
@@ -138,6 +139,9 @@ var (
 	Wasm               = &decode.Group{Name: "wasm"}
 	Wav                = &decode.Group{Name: "wav"}
 	Webp               = &decode.Group{Name: "webp"}
+	X86_16             = &decode.Group{Name: "x86_16"}
+	X86_32             = &decode.Group{Name: "x86_32"}
+	X86_64             = &decode.Group{Name: "x86_64"}
 	Xml                = &decode.Group{Name: "xml"}
 	Yaml               = &decode.Group{Name: "yaml"}
 	Zip                = &decode.Group{Name: "zip"}
@@ -340,4 +344,14 @@ type BitCoinBlockIn struct {
 
 type TLSIn struct {
 	Keylog string `doc:"NSS Key Log content"`
+}
+
+type X86_64In struct {
+	SymLookup func(symAddr uint64) (string, uint64)
+	Base      int64
+}
+
+type ARM64In struct {
+	SymLookup func(symAddr uint64) (string, uint64)
+	Base      int64
 }

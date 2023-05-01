@@ -27,6 +27,7 @@ import (
 	_ "github.com/wader/fq/format/icc"
 	_ "github.com/wader/fq/format/id3"
 	_ "github.com/wader/fq/format/inet"
+	_ "github.com/wader/fq/format/isa"
 	_ "github.com/wader/fq/format/jpeg"
 	_ "github.com/wader/fq/format/json"
 	_ "github.com/wader/fq/format/markdown"
