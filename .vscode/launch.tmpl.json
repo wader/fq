@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0", 
+    "configurations": [
+        {
+            "name": "Debug fq", 
+            "type": "go", 
+            "request": "launch", 
+            "mode": "auto", 
+            "showLog": true, 
+            "program": ".", 
+            "cwd": "${workspaceFolder}", 
+            "env": {}, 
+            "args": ["-d", "mp4", ".", "file"]
+        }
+    ]
+}

@@ -11,7 +11,7 @@ to `format/format.go` and don't forget to change the string constant.
 ### Some general tips
 
 - Main goal is to produce a tree structure that is user-friendly and easy to work with.
-Prefer a nice and easy query tree structure over nice decoder implementation.
+Prefer a nice and easy tree structure over nice decoder implementation.
 - Use same names, symbols, constant number bases etc as in specification.
 But maybe in lowercase to be jq/JSON-ish.
 - Decode only ranges you know what they are. If possible let "parent" decide what to do with unknown gaps
@@ -21,17 +21,16 @@ it finds gaps.
 - Try to not decode too much as one value.
 A length encoded int could be two fields, but maybe a length prefixed string should be one.
 Flags can be struct with bit-fields.
-- Map as many value as possible to more symbolic values.
+- Map as many value as possible to symbolic values.
 - Endian is inherited inside one format decoder, defaults to big endian for new format decoder
-- Make sure zero length or no frames found etc fails decoding
+- Make sure zero length or no frames/packets etc fails decoding
 - If format is in the probe group make sure to validate input to make it non-ambiguous with other decoders
-- Try keep decoder code as declarative as possible
+- Try keep decoder code "declarative" if possible
 - Split into multiple sub formats if possible. Makes it possible to use them separately.
 - Validate/Assert
 - Error/Fatal/panic
-- Is format probeable or not
-- Can new formats be added to other formats
-- Does the new format include existing formats
+- Can new formats be added to other formats?
+- Does the new format include existing formats?
 
 ### Checklist
 
@@ -39,13 +38,13 @@ Flags can be struct with bit-fields.
   - Use commit messages with a context prefix to make it easier to find and understand, ex:<br>
   `mp3: Validate sync correctly`
 - Tests:
-  - If possible use a pair of `testdata/file` and `testdata/file.fqtest` where `file.fqtest` is `$ fq dv file` and optionally `$ fq torepr file` if there is `torepr` support.
+  - If possible use a pair of `testdata/file` and `testdata/file.fqtest` where `file.fqtest` is `$ fq dv file` or `$ fq 'dv,torepr' file` if there is `torepr` support.
   - If `dv` produces a lof of output maybe use `dv({array_truncate: 50})` etc
   - Run `go test ./format -run TestFormats/<name>` to test expected output.
   - Run `WRITE_ACTUAL=1 go test ./format -run TestFormats/<name>` to write current output as expected output.
 - If you have format specific documentation:
   - Put it in `format/*/<name>.md` and use `//go:embed <name>.md`/`interp.RegisterFS(..)` to embed/register it.
-  - Use simple markdown, just sections (depth starts at 3, `### Section`),  paragraphs, lists and links.
+  - Use simple markdown, just sections (depth starts at 3, `### Section`), paragraphs, lists and links.
   - No heading section is needs with format name, will be added by `make doc` and fq cli help system.
   - Add a `testdata/<name>_help.fqtest` with just `$ fq -h <name>` to test CLI help.
   - If in doubt look at `mp4.md`/`mp4.go` etc.
