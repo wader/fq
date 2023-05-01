@@ -1,0 +1,21 @@
+$ fq -h pcap
+pcap: PCAP packet capture decoder
+
+Decode examples
+===============
+
+  # Decode file as pcap
+  $ fq -d pcap . file
+  # Decode value as pcap
+  ... | pcap
+
+Build object with number of (reassembled) TCP bytes sent to/from client IP
+==========================================================================
+
+  # for a pcapng file you would use .[0].tcp_connections for first section
+  $ fq '.tcp_connections | group_by(.client.ip) | map({key: .[0].client.ip, value: map(.client.stream, .server.stream | tobytes.size) | add}) | from_entries'
+  {
+    "10.1.0.22": 15116,
+    "10.99.12.136": 234,
+    "10.99.12.150": 218
+  }
