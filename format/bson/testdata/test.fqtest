@@ -1,7 +1,4 @@
-# Run the code at https://go.dev/play/p/8YuESN04ACr and copy the base64 output. Then run:
-#
-#   echo "<base64 output>" | base64 -D > test.bson
-#
+# go run -modfile generate_testbson/go.mod generate_testbson/main.go > test.bson
 $ fq -d bson dv test.bson
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: test.bson (bson) 0x0-0x140.7 (321)
 0x000|41 01 00 00                                    |A...            |  size: 321 0x0-0x3.7 (4)

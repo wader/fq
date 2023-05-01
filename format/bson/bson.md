@@ -1,3 +1,7 @@
+Limitations:
+
+- The decimal128 type is not supported for decoding, will just be treated as binary
+
 ### Convert represented value to JSON
 
 ```
