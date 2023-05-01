@@ -330,5 +330,5 @@ var boxDescriptions = scalar.StrMapDescription{
 	"©wrn": "Warning",
 	"©xyz": "Location",
 
-	"\x00\x00\x00\x00": "Terminator Atom",
+	"\x00\x00\x00\x00": "QuickTime terminator atom",
 }
