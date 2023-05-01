@@ -11,7 +11,7 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.ProresFrame,
+		format.Prores_Frame,
 		&decode.Format{
 			Description: "Apple ProRes frame",
 			DecodeFn:    decodeProResFrame,

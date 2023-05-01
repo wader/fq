@@ -12,7 +12,7 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.MpegPesPacket,
+		format.MPEG_PES_Packet,
 		&decode.Format{
 			Description: "MPEG Packetized elementary stream packet",
 			DecodeFn:    pesPacketDecode,

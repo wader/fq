@@ -17,7 +17,7 @@ var probeGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.Tar,
+		format.TAR,
 		&decode.Format{
 			Description: "Tar archive",
 			Groups:      []*decode.Group{format.Probe},

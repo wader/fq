@@ -26,11 +26,11 @@ func init() {
 			Groups:      []*decode.Group{format.Probe},
 			DecodeFn:    decodeOgg,
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.OggPage}, Out: &oggPageGroup},
-				{Groups: []*decode.Group{format.VorbisPacket}, Out: &vorbisPacketGroup},
-				{Groups: []*decode.Group{format.OpusPacket}, Out: &opusPacketGroup},
-				{Groups: []*decode.Group{format.FlacMetadatablock}, Out: &flacMetadatablockGroup},
-				{Groups: []*decode.Group{format.FlacFrame}, Out: &flacFrameGroup},
+				{Groups: []*decode.Group{format.Ogg_Page}, Out: &oggPageGroup},
+				{Groups: []*decode.Group{format.Vorbis_Packet}, Out: &vorbisPacketGroup},
+				{Groups: []*decode.Group{format.Opus_Packet}, Out: &opusPacketGroup},
+				{Groups: []*decode.Group{format.FLAC_Metadatablock}, Out: &flacMetadatablockGroup},
+				{Groups: []*decode.Group{format.FLAC_Frame}, Out: &flacFrameGroup},
 			},
 		})
 }
@@ -55,7 +55,7 @@ type stream struct {
 	packetBuf      []byte
 	packetD        *decode.D
 	codec          streamCodec
-	flacStreamInfo format.FlacStreamInfo
+	flacStreamInfo format.FLAC_Stream_Info
 }
 
 func decodeOgg(d *decode.D) any {
@@ -69,7 +69,7 @@ func decodeOgg(d *decode.D) any {
 			if dv == nil {
 				break
 			}
-			oggPageOut, ok := dv.(format.OggPageOut)
+			oggPageOut, ok := dv.(format.Ogg_Page_Out)
 			if !ok {
 				panic("page decode is not a oggPageOut")
 			}
@@ -144,7 +144,7 @@ func decodeOgg(d *decode.D) any {
 								d.FieldU16("header_packets")
 								d.FieldUTF8("flac_signature", 4)
 								_, v := d.FieldFormat("metadatablock", &flacMetadatablockGroup, nil)
-								flacMetadatablockOut, ok := v.(format.FlacMetadatablockOut)
+								flacMetadatablockOut, ok := v.(format.FLAC_Metadatablock_Out)
 								if !ok {
 									panic(fmt.Sprintf("expected FlacMetadatablockOut, got %#+v", flacMetadatablockOut))
 								}

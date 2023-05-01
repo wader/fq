@@ -11,7 +11,7 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.MpegAsc,
+		format.MPEG_ASC,
 		&decode.Format{
 			Description: "MPEG-4 Audio Specific Config",
 			DecodeFn:    ascDecoder,
@@ -52,5 +52,5 @@ func ascDecoder(d *decode.D) any {
 	// TODO: GASpecificConfig etc
 	d.FieldRawLen("var_aot_or_byte_align", d.BitsLeft())
 
-	return format.MPEGASCOut{ObjectType: int(objectType)}
+	return format.MPEG_ASC_Out{ObjectType: int(objectType)}
 }

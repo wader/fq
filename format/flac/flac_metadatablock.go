@@ -18,14 +18,14 @@ var vorbisCommentFormat decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.FlacMetadatablock,
+		format.FLAC_Metadatablock,
 		&decode.Format{
 			Description: "FLAC metadatablock",
 			DecodeFn:    metadatablockDecode,
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.FlacStreaminfo}, Out: &flacStreaminfoFormat},
-				{Groups: []*decode.Group{format.FlacPicture}, Out: &flacPicture},
-				{Groups: []*decode.Group{format.VorbisComment}, Out: &vorbisCommentFormat},
+				{Groups: []*decode.Group{format.FLAC_Streaminfo}, Out: &flacStreaminfoFormat},
+				{Groups: []*decode.Group{format.FLAC_Picture}, Out: &flacPicture},
+				{Groups: []*decode.Group{format.Vorbis_Comment}, Out: &vorbisCommentFormat},
 			},
 		})
 }
@@ -52,7 +52,7 @@ var metadataBlockNames = scalar.UintMapSymStr{
 
 func metadatablockDecode(d *decode.D) any {
 	var hasStreamInfo bool
-	var streamInfo format.FlacStreamInfo
+	var streamInfo format.FLAC_Stream_Info
 
 	isLastBlock := d.FieldBool("last_block")
 	typ := d.FieldU7("type", metadataBlockNames)
@@ -60,7 +60,7 @@ func metadatablockDecode(d *decode.D) any {
 
 	switch typ {
 	case MetadataBlockStreaminfo:
-		flacStreaminfoOut, ok := d.Format(&flacStreaminfoFormat, nil).(format.FlacStreaminfoOut)
+		flacStreaminfoOut, ok := d.Format(&flacStreaminfoFormat, nil).(format.FLAC_Streaminfo_Out)
 		if !ok {
 			panic(fmt.Sprintf("expected FlacStreaminfoOut, got %#+v", flacStreaminfoOut))
 		}
@@ -90,7 +90,7 @@ func metadatablockDecode(d *decode.D) any {
 		d.FieldRawLen("data", int64(length*8))
 	}
 
-	return format.FlacMetadatablockOut{
+	return format.FLAC_Metadatablock_Out{
 		IsLastBlock:   isLastBlock,
 		HasStreamInfo: hasStreamInfo,
 		StreamInfo:    streamInfo,

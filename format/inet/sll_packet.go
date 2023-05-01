@@ -14,12 +14,12 @@ var sllPacketInetPacketGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.SllPacket,
+		format.SLL_Packet,
 		&decode.Format{
 			Description: "Linux cooked capture encapsulation",
-			Groups:      []*decode.Group{format.LinkFrame},
+			Groups:      []*decode.Group{format.Link_Frame},
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.InetPacket}, Out: &sllPacketInetPacketGroup},
+				{Groups: []*decode.Group{format.INET_Packet}, Out: &sllPacketInetPacketGroup},
 			},
 			DecodeFn: decodeSLL,
 		})
@@ -110,7 +110,7 @@ var arpHdrTypeMAp = scalar.UintMap{
 }
 
 func decodeSLL(d *decode.D) any {
-	var lfi format.LinkFrameIn
+	var lfi format.Link_Frame_In
 	if d.ArgAs(&lfi) && lfi.Type != format.LinkTypeLINUX_SLL {
 		d.Fatalf("wrong link type %d", lfi.Type)
 	}
@@ -133,7 +133,7 @@ func decodeSLL(d *decode.D) any {
 			"payload",
 			d.BitsLeft(),
 			&sllPacketInetPacketGroup,
-			format.InetPacketIn{EtherType: int(protcolType)},
+			format.INET_Packet_In{EtherType: int(protcolType)},
 		)
 	default:
 		d.FieldU16LE("protocol_type")

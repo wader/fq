@@ -12,23 +12,23 @@ var avcNALUFormat decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.AvcAu,
+		format.AVC_AU,
 		&decode.Format{
 			Description: "H.264/AVC Access Unit",
 			DecodeFn:    avcAUDecode,
-			DefaultInArg: format.AvcAuIn{
+			DefaultInArg: format.AVC_AU_In{
 				LengthSize: 0,
 			},
 			RootArray: true,
 			RootName:  "access_unit",
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.AvcNalu}, Out: &avcNALUFormat},
+				{Groups: []*decode.Group{format.AVC_NALU}, Out: &avcNALUFormat},
 			},
 		})
 }
 
 func avcAUDecode(d *decode.D) any {
-	var ai format.AvcAuIn
+	var ai format.AVC_AU_In
 	d.ArgAs(&ai)
 
 	if ai.LengthSize == 0 {

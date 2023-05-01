@@ -11,10 +11,10 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.Mp3FrameVbri,
+		format.MP3_Frame_VBRI,
 		&decode.Format{
 			Description: "MP3 frame Fraunhofer encoder variable bitrate tag",
-			Groups:      []*decode.Group{format.Mp3FrameTags},
+			Groups:      []*decode.Group{format.MP3_Frame_Tags},
 			DecodeFn:    mp3FrameTagVBRIDecode,
 		})
 }

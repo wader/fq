@@ -22,7 +22,7 @@ var tomlFS embed.FS
 
 func init() {
 	interp.RegisterFormat(
-		format.Toml,
+		format.TOML,
 		&decode.Format{
 			Description: "Tom's Obvious, Minimal Language",
 			ProbeOrder:  format.ProbeOrderTextFuzzy,

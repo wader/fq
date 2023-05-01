@@ -14,14 +14,14 @@ var av1FrameObuGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.Av1Frame,
+		format.AV1_Frame,
 		&decode.Format{
 			Description: "AV1 frame",
 			DecodeFn:    frameDecode,
 			RootArray:   true,
 			RootName:    "frame",
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.Av1Obu}, Out: &av1FrameObuGroup},
+				{Groups: []*decode.Group{format.AV1_OBU}, Out: &av1FrameObuGroup},
 			},
 		})
 }

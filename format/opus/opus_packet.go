@@ -14,12 +14,12 @@ var vorbisComment decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.OpusPacket,
+		format.Opus_Packet,
 		&decode.Format{
 			Description: "Opus packet",
 			DecodeFn:    opusDecode,
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.VorbisComment}, Out: &vorbisComment},
+				{Groups: []*decode.Group{format.Vorbis_Comment}, Out: &vorbisComment},
 			},
 		})
 }

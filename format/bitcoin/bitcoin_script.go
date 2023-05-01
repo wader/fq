@@ -35,7 +35,7 @@ func (ops opcodeEntries) MapUint(s scalar.Uint) (scalar.Uint, error) {
 
 func init() {
 	interp.RegisterFormat(
-		format.BitcoinScript,
+		format.Bitcoin_Script,
 		&decode.Format{
 			Description: "Bitcoin script",
 			DecodeFn:    decodeBitcoinScript,

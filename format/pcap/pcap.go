@@ -40,14 +40,14 @@ var endianMap = scalar.UintMapSymStr{
 
 func init() {
 	interp.RegisterFormat(
-		format.Pcap,
+		format.PCAP,
 		&decode.Format{
 			Description: "PCAP packet capture",
 			Groups:      []*decode.Group{format.Probe},
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.LinkFrame}, Out: &pcapLinkFrameGroup},
-				{Groups: []*decode.Group{format.TcpStream}, Out: &pcapTCPStreamGroup},
-				{Groups: []*decode.Group{format.Ipv4Packet}, Out: &pcapIPv4PacketGroup},
+				{Groups: []*decode.Group{format.Link_Frame}, Out: &pcapLinkFrameGroup},
+				{Groups: []*decode.Group{format.TCP_Stream}, Out: &pcapTCPStreamGroup},
+				{Groups: []*decode.Group{format.IPv4Packet}, Out: &pcapIPv4PacketGroup},
 			},
 			DecodeFn: decodePcap,
 		})
@@ -124,7 +124,7 @@ func decodePcap(d *decode.D) any {
 					"packet",
 					int64(inclLen)*8,
 					&pcapLinkFrameGroup,
-					format.LinkFrameIn{
+					format.Link_Frame_In{
 						Type:           linkType,
 						IsLittleEndian: d.Endian == decode.LittleEndian,
 					},

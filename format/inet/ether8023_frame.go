@@ -16,12 +16,12 @@ var ether8023FrameInetPacketGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.Ether8023Frame,
+		format.Ether_8023_Frame,
 		&decode.Format{
 			Description: "Ethernet 802.3 frame",
-			Groups:      []*decode.Group{format.LinkFrame},
+			Groups:      []*decode.Group{format.Link_Frame},
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.InetPacket}, Out: &ether8023FrameInetPacketGroup},
+				{Groups: []*decode.Group{format.INET_Packet}, Out: &ether8023FrameInetPacketGroup},
 			},
 			DecodeFn: decodeEthernetFrame,
 		})
@@ -36,7 +36,7 @@ var mapUToEtherSym = scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
 })
 
 func decodeEthernetFrame(d *decode.D) any {
-	var lfi format.LinkFrameIn
+	var lfi format.Link_Frame_In
 	if d.ArgAs(&lfi) {
 		if lfi.Type != format.LinkTypeETHERNET {
 			d.Fatalf("wrong link type %d", lfi.Type)
@@ -51,7 +51,7 @@ func decodeEthernetFrame(d *decode.D) any {
 		"payload",
 		d.BitsLeft(),
 		&ether8023FrameInetPacketGroup,
-		format.InetPacketIn{EtherType: int(etherType)},
+		format.INET_Packet_In{EtherType: int(etherType)},
 	)
 
 	return nil

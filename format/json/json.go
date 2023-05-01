@@ -21,7 +21,7 @@ var jsonFS embed.FS
 
 func init() {
 	interp.RegisterFormat(
-		format.Json,
+		format.JSON,
 		&decode.Format{
 			Description: "JavaScript Object Notation",
 			ProbeOrder:  format.ProbeOrderTextJSON,

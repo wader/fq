@@ -16,34 +16,34 @@ var mp3FrameGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.Mp3,
+		format.MP3,
 		&decode.Format{
 			ProbeOrder:  format.ProbeOrderBinFuzzy, // after most others (silent samples and jpeg header can look like mp3 sync)
 			Description: "MP3 file",
 			Groups:      []*decode.Group{format.Probe},
 			DecodeFn:    mp3Decode,
-			DefaultInArg: format.Mp3In{
+			DefaultInArg: format.MP3_In{
 				MaxUniqueHeaderConfigs: 5,
 				MaxUnknown:             50,
 				MaxSyncSeek:            4 * 1024 * 8,
 			},
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.Id3v2}, Out: &headerGroup},
+				{Groups: []*decode.Group{format.ID3v2}, Out: &headerGroup},
 				{
 					Groups: []*decode.Group{
-						format.Id3v1,
-						format.Id3v11,
+						format.ID3v1,
+						format.ID3v11,
 						format.Apev2,
 					},
 					Out: &footerGroup,
 				},
-				{Groups: []*decode.Group{format.Mp3Frame}, Out: &mp3FrameGroup},
+				{Groups: []*decode.Group{format.MP3_Frame}, Out: &mp3FrameGroup},
 			},
 		})
 }
 
 func mp3Decode(d *decode.D) any {
-	var mi format.Mp3In
+	var mi format.MP3_In
 	d.ArgAs(&mi)
 
 	// things in a mp3 stream usually have few unique combinations of.
@@ -93,7 +93,7 @@ func mp3Decode(d *decode.D) any {
 				d.SeekRel(8)
 				continue
 			}
-			mfo, ok := v.(format.MP3FrameOut)
+			mfo, ok := v.(format.MP3_Frame_Out)
 			if !ok {
 				panic(fmt.Sprintf("expected MP3FrameOut got %#+v", v))
 			}

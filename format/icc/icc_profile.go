@@ -12,7 +12,7 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.IccProfile,
+		format.ICC_Profile,
 		&decode.Format{
 			Description: "International Color Consortium profile",
 			DecodeFn:    iccProfileDecode,

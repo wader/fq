@@ -16,7 +16,7 @@ var jsonlFS embed.FS
 
 func init() {
 	interp.RegisterFormat(
-		format.Jsonl,
+		format.JSONL,
 		&decode.Format{
 			Description: "JavaScript Object Notation Lines",
 			ProbeOrder:  format.ProbeOrderTextFuzzy,

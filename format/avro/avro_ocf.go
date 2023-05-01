@@ -21,7 +21,7 @@ var avroOcfFS embed.FS
 
 func init() {
 	interp.RegisterFormat(
-		format.AvroOcf,
+		format.Avro_Ocf,
 		&decode.Format{
 			Description: "Avro object container file",
 			Groups:      []*decode.Group{format.Probe},

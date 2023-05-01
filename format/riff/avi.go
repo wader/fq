@@ -37,18 +37,18 @@ var aviFLACFrameGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.Avi,
+		format.AVI,
 		&decode.Format{
 			Description: "Audio Video Interleaved",
 			DecodeFn:    aviDecode,
-			DefaultInArg: format.AviIn{
+			DefaultInArg: format.AVI_In{
 				DecodeSamples: true,
 			},
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.AvcAu}, Out: &aviMpegAVCAUGroup},
-				{Groups: []*decode.Group{format.HevcAu}, Out: &aviMpegHEVCAUGroup},
-				{Groups: []*decode.Group{format.Mp3Frame}, Out: &aviMp3FrameGroup},
-				{Groups: []*decode.Group{format.FlacFrame}, Out: &aviFLACFrameGroup},
+				{Groups: []*decode.Group{format.AVC_AU}, Out: &aviMpegAVCAUGroup},
+				{Groups: []*decode.Group{format.HEVC_AU}, Out: &aviMpegHEVCAUGroup},
+				{Groups: []*decode.Group{format.MP3_Frame}, Out: &aviMp3FrameGroup},
+				{Groups: []*decode.Group{format.FLAC_Frame}, Out: &aviFLACFrameGroup},
 			},
 			Groups: []*decode.Group{format.Probe},
 		})
@@ -215,7 +215,7 @@ func aviDecodeChunkIndex(d *decode.D) []ranges.Range {
 }
 
 func aviDecode(d *decode.D) any {
-	var ai format.AviIn
+	var ai format.AVI_In
 	d.ArgAs(&ai)
 
 	d.Endian = decode.LittleEndian

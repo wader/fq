@@ -9,7 +9,7 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.AvcPps,
+		format.AVC_PPS,
 		&decode.Format{
 			Description: "H.264/AVC Picture Parameter Set",
 			DecodeFn:    avcPPSDecode,

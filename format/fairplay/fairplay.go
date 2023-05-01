@@ -10,7 +10,7 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.FairplaySpc,
+		format.Fairplay_SPC,
 		&decode.Format{
 			Description: "FairPlay Server Playback Context",
 			DecodeFn:    fairPlaySPCDecode,

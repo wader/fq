@@ -17,14 +17,14 @@ var avcSEIFormat decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.AvcNalu,
+		format.AVC_NALU,
 		&decode.Format{
 			Description: "H.264/AVC Network Access Layer Unit",
 			DecodeFn:    avcNALUDecode,
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.AvcSps}, Out: &avcSPSFormat},
-				{Groups: []*decode.Group{format.AvcPps}, Out: &avcPPSFormat},
-				{Groups: []*decode.Group{format.AvcSei}, Out: &avcSEIFormat},
+				{Groups: []*decode.Group{format.AVC_SPS}, Out: &avcSPSFormat},
+				{Groups: []*decode.Group{format.AVC_PPS}, Out: &avcPPSFormat},
+				{Groups: []*decode.Group{format.AVC_SEI}, Out: &avcSEIFormat},
 			},
 		})
 }

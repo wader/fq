@@ -34,7 +34,7 @@ var asn1FS embed.FS
 
 func init() {
 	interp.RegisterFormat(
-		format.Asn1Ber,
+		format.ASN1_BER,
 		&decode.Format{
 			Description: "ASN1 BER (basic encoding rules, also CER and DER)",
 			DecodeFn:    decodeASN1BER,

@@ -16,7 +16,7 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.MpegSpu,
+		format.MPEG_SPU,
 		&decode.Format{
 			Description: "Sub Picture Unit (DVD subtitle)",
 			DecodeFn:    spuDecode,

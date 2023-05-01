@@ -9,7 +9,7 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.Av1Obu,
+		format.AV1_OBU,
 		&decode.Format{
 			Description: "AV1 Open Bitstream Unit",
 			DecodeFn:    obuDecode,

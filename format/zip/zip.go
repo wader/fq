@@ -27,7 +27,7 @@ func init() {
 			Description: "ZIP archive",
 			Groups:      []*decode.Group{format.Probe},
 			DecodeFn:    zipDecode,
-			DefaultInArg: format.ZipIn{
+			DefaultInArg: format.Zip_In{
 				Uncompress: true,
 			},
 			Dependencies: []decode.Dependency{
@@ -144,7 +144,7 @@ func fieldMSDOSDate(d *decode.D) {
 }
 
 func zipDecode(d *decode.D) any {
-	var zi format.ZipIn
+	var zi format.Zip_In
 	d.ArgAs(&zi)
 
 	d.Endian = decode.LittleEndian

@@ -14,13 +14,13 @@ var vorbisPacketGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.MpegEs,
+		format.MPEG_ES,
 		&decode.Format{
 			Description: "MPEG Elementary Stream",
 			DecodeFn:    esDecode,
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.MpegAsc}, Out: &mpegASCGroup},
-				{Groups: []*decode.Group{format.VorbisPacket}, Out: &vorbisPacketGroup},
+				{Groups: []*decode.Group{format.MPEG_ASC}, Out: &mpegASCGroup},
+				{Groups: []*decode.Group{format.Vorbis_Packet}, Out: &vorbisPacketGroup},
 			},
 		})
 }
@@ -169,8 +169,8 @@ func fieldODDecodeTag(d *decode.D, edc *esDecodeContext, name string, expectedTa
 }
 
 type esDecodeContext struct {
-	currentDecoderConfig *format.MpegDecoderConfig
-	decoderConfigs       []format.MpegDecoderConfig
+	currentDecoderConfig *format.MPEG_Decoder_Config
+	decoderConfigs       []format.MPEG_Decoder_Config
 }
 
 func odDecodeTag(d *decode.D, edc *esDecodeContext, _ int, fn func(d *decode.D)) {
@@ -196,7 +196,7 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, _ int, fn func(d *decode.D))
 		},
 		DecoderConfigDescrTag: func(d *decode.D) {
 			objectType := d.FieldU8("object_type_indication", format.MpegObjectTypeNames)
-			edc.decoderConfigs = append(edc.decoderConfigs, format.MpegDecoderConfig{
+			edc.decoderConfigs = append(edc.decoderConfigs, format.MPEG_Decoder_Config{
 				ObjectType: int(objectType),
 			})
 			edc.currentDecoderConfig = &edc.decoderConfigs[len(edc.decoderConfigs)-1]
@@ -245,7 +245,7 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, _ int, fn func(d *decode.D))
 					case format.MPEGStreamTypeAudio:
 						fieldODDecodeTag(d, edc, "decoder_specific_info", -1, func(d *decode.D) {
 							_, v := d.FieldFormat("audio_specific_config", &mpegASCGroup, nil)
-							mpegASCout, ok := v.(format.MPEGASCOut)
+							mpegASCout, ok := v.(format.MPEG_ASC_Out)
 							if !ok {
 								panic(fmt.Sprintf("expected MPEGASCOut got %#+v", v))
 							}
@@ -280,5 +280,5 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, _ int, fn func(d *decode.D))
 func esDecode(d *decode.D) any {
 	var edc esDecodeContext
 	odDecodeTag(d, &edc, -1, nil)
-	return format.MpegEsOut{DecoderConfigs: edc.decoderConfigs}
+	return format.MPEG_ES_Out{DecoderConfigs: edc.decoderConfigs}
 }

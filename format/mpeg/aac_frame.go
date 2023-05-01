@@ -15,11 +15,11 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.AacFrame,
+		format.AAC_Frame,
 		&decode.Format{
 			Description: "Advanced Audio Coding frame",
 			DecodeFn:    aacDecode,
-			DefaultInArg: format.AACFrameIn{
+			DefaultInArg: format.AAC_Frame_In{
 				ObjectType: format.MPEGAudioObjectTypeMain,
 			},
 			RootArray: true,
@@ -272,7 +272,7 @@ func aacFillElement(d *decode.D) {
 }
 
 func aacDecode(d *decode.D) any {
-	var ai format.AACFrameIn
+	var ai format.AAC_Frame_In
 	d.ArgAs(&ai)
 
 	// TODO: seems tricky to know length of blocks

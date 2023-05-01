@@ -11,7 +11,7 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.Aiff,
+		format.AIFF,
 		&decode.Format{
 			ProbeOrder:  format.ProbeOrderBinFuzzy,
 			Description: "Audio Interchange File Format",

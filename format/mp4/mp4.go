@@ -56,7 +56,7 @@ var vpxCCRGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.Mp4,
+		format.MP4,
 		&decode.Format{
 			Description: "ISOBMFF, QuickTime and similar",
 			Groups: []*decode.Group{
@@ -64,35 +64,35 @@ func init() {
 				format.Image, // avif
 			},
 			DecodeFn: mp4Decode,
-			DefaultInArg: format.Mp4In{
+			DefaultInArg: format.MP4_In{
 				DecodeSamples:  true,
 				AllowTruncated: false,
 			},
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.AacFrame}, Out: &aacFrameGroup},
-				{Groups: []*decode.Group{format.Av1Ccr}, Out: &av1CCRGroup},
-				{Groups: []*decode.Group{format.Av1Frame}, Out: &av1FrameGroup},
-				{Groups: []*decode.Group{format.AvcAu}, Out: &avcAUGroup},
-				{Groups: []*decode.Group{format.AvcDcr}, Out: &avcDCRGroup},
-				{Groups: []*decode.Group{format.FlacFrame}, Out: &flacFrameGroup},
-				{Groups: []*decode.Group{format.FlacMetadatablocks}, Out: &flacMetadatablocksGroup},
-				{Groups: []*decode.Group{format.HevcAu}, Out: &hevcAUGroup},
-				{Groups: []*decode.Group{format.HevcDcr}, Out: &hevcCDCRGroup},
-				{Groups: []*decode.Group{format.IccProfile}, Out: &iccProfileGroup},
-				{Groups: []*decode.Group{format.Id3v2}, Out: &id3v2Group},
+				{Groups: []*decode.Group{format.AAC_Frame}, Out: &aacFrameGroup},
+				{Groups: []*decode.Group{format.AV1_CCR}, Out: &av1CCRGroup},
+				{Groups: []*decode.Group{format.AV1_Frame}, Out: &av1FrameGroup},
+				{Groups: []*decode.Group{format.AVC_AU}, Out: &avcAUGroup},
+				{Groups: []*decode.Group{format.AVC_DCR}, Out: &avcDCRGroup},
+				{Groups: []*decode.Group{format.FLAC_Frame}, Out: &flacFrameGroup},
+				{Groups: []*decode.Group{format.FLAC_Metadatablocks}, Out: &flacMetadatablocksGroup},
+				{Groups: []*decode.Group{format.HEVC_AU}, Out: &hevcAUGroup},
+				{Groups: []*decode.Group{format.HEVC_DCR}, Out: &hevcCDCRGroup},
+				{Groups: []*decode.Group{format.ICC_Profile}, Out: &iccProfileGroup},
+				{Groups: []*decode.Group{format.ID3v2}, Out: &id3v2Group},
 				{Groups: []*decode.Group{format.Image}, Out: &imageGroup},
-				{Groups: []*decode.Group{format.Jpeg}, Out: &jpegGroup},
-				{Groups: []*decode.Group{format.Mp3Frame}, Out: &mp3FrameGroup},
-				{Groups: []*decode.Group{format.MpegEs}, Out: &mpegESGroup},
-				{Groups: []*decode.Group{format.MpegPesPacket}, Out: &mpegPESPacketSampleGroup},
-				{Groups: []*decode.Group{format.OpusPacket}, Out: &opusPacketFrameGroup},
-				{Groups: []*decode.Group{format.Png}, Out: &pngGroup},
-				{Groups: []*decode.Group{format.ProresFrame}, Out: &proResFrameGroup},
+				{Groups: []*decode.Group{format.JPEG}, Out: &jpegGroup},
+				{Groups: []*decode.Group{format.MP3_Frame}, Out: &mp3FrameGroup},
+				{Groups: []*decode.Group{format.MPEG_ES}, Out: &mpegESGroup},
+				{Groups: []*decode.Group{format.MPEG_PES_Packet}, Out: &mpegPESPacketSampleGroup},
+				{Groups: []*decode.Group{format.Opus_Packet}, Out: &opusPacketFrameGroup},
+				{Groups: []*decode.Group{format.PNG}, Out: &pngGroup},
+				{Groups: []*decode.Group{format.Prores_Frame}, Out: &proResFrameGroup},
 				{Groups: []*decode.Group{format.ProtobufWidevine}, Out: &protoBufWidevineGroup},
-				{Groups: []*decode.Group{format.PsshPlayready}, Out: &psshPlayreadyGroup},
-				{Groups: []*decode.Group{format.VorbisPacket}, Out: &vorbisPacketGroup},
-				{Groups: []*decode.Group{format.Vp9Frame}, Out: &vp9FrameGroup},
-				{Groups: []*decode.Group{format.VpxCcr}, Out: &vpxCCRGroup},
+				{Groups: []*decode.Group{format.PSSH_Playready}, Out: &psshPlayreadyGroup},
+				{Groups: []*decode.Group{format.Vorbis_Packet}, Out: &vorbisPacketGroup},
+				{Groups: []*decode.Group{format.VP9_Frame}, Out: &vp9FrameGroup},
+				{Groups: []*decode.Group{format.VPX_CCR}, Out: &vpxCCRGroup},
 			},
 		})
 	interp.RegisterFS(mp4FS)
@@ -151,7 +151,7 @@ type pathEntry struct {
 }
 
 type decodeContext struct {
-	opts   format.Mp4In
+	opts   format.MP4_In
 	path   []pathEntry
 	tracks map[int]*track
 }
@@ -419,7 +419,7 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 }
 
 func mp4Decode(d *decode.D) any {
-	var mi format.Mp4In
+	var mi format.MP4_In
 	d.ArgAs(&mi)
 
 	ctx := &decodeContext{

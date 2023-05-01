@@ -13,13 +13,13 @@ var machoFormat decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.MachoFat,
+		format.MachO_Fat,
 		&decode.Format{
 			Description: "Fat Mach-O macOS executable (multi-architecture)",
 			Groups:      []*decode.Group{format.Probe},
 			DecodeFn:    machoFatDecode,
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.Macho}, Out: &machoFormat},
+				{Groups: []*decode.Group{format.MachO}, Out: &machoFormat},
 			},
 		})
 }

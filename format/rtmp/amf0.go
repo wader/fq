@@ -11,7 +11,7 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.Amf0,
+		format.AMF0,
 		&decode.Format{
 			Description: "Action Message Format 0",
 			DecodeFn:    amf0Decode,

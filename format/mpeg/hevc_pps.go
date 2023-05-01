@@ -10,7 +10,7 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.HevcPps,
+		format.HEVC_PPS,
 		&decode.Format{
 			Description: "H.265/HEVC Picture Parameter Set",
 			DecodeFn:    hevcPPSDecode,

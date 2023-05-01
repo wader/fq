@@ -25,12 +25,12 @@ var mp3FrameTagsGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.Mp3Frame,
+		format.MP3_Frame,
 		&decode.Format{
 			Description: "MPEG audio layer 3 frame",
 			DecodeFn:    frameDecode,
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.Mp3FrameTags}, Out: &mp3FrameTagsGroup},
+				{Groups: []*decode.Group{format.MP3_Frame_Tags}, Out: &mp3FrameTagsGroup},
 			},
 		})
 }
@@ -391,7 +391,7 @@ func frameDecode(d *decode.D) any {
 
 	d.FieldValueBitBuf("crc_calculated", bitio.NewBitReader(crcHash.Sum(nil), -1), scalar.RawHex)
 
-	return format.MP3FrameOut{
+	return format.MP3_Frame_Out{
 		MPEGVersion:      int(mpegVersionNr),
 		ProtectionAbsent: protectionAbsent,
 		BitRate:          bitRate,

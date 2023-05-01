@@ -36,7 +36,7 @@ func fieldFlows(d *decode.D, fd *flowsdecoder.Decoder, tcpStreamFormat decode.Gr
 	d.FieldArray("tcp_connections", func(d *decode.D) {
 		for _, s := range fd.TCPConnections {
 			d.FieldStruct("tcp_connection", func(d *decode.D) {
-				f := func(d *decode.D, td *flowsdecoder.TCPDirection, tsi format.TCPStreamIn) any {
+				f := func(d *decode.D, td *flowsdecoder.TCPDirection, tsi format.TCP_Stream_In) any {
 					d.FieldValueStr("ip", td.Endpoint.IP.String())
 					d.FieldValueUint("port", uint64(td.Endpoint.Port), format.TCPPortMap)
 					d.FieldValueBool("has_start", td.HasStart)
@@ -59,7 +59,7 @@ func fieldFlows(d *decode.D, fd *flowsdecoder.Decoder, tcpStreamFormat decode.Gr
 				var clientV any
 				var serverV any
 				d.FieldStruct("client", func(d *decode.D) {
-					clientV = f(d, &s.Client, format.TCPStreamIn{
+					clientV = f(d, &s.Client, format.TCP_Stream_In{
 						IsClient:        true,
 						HasStart:        s.Client.HasStart,
 						HasEnd:          s.Client.HasEnd,
@@ -69,7 +69,7 @@ func fieldFlows(d *decode.D, fd *flowsdecoder.Decoder, tcpStreamFormat decode.Gr
 					})
 				})
 				d.FieldStruct("server", func(d *decode.D) {
-					serverV = f(d, &s.Server, format.TCPStreamIn{
+					serverV = f(d, &s.Server, format.TCP_Stream_In{
 						IsClient:        false,
 						HasStart:        s.Server.HasStart,
 						HasEnd:          s.Server.HasEnd,
@@ -79,8 +79,8 @@ func fieldFlows(d *decode.D, fd *flowsdecoder.Decoder, tcpStreamFormat decode.Gr
 					})
 				})
 
-				clientTo, clientToOk := clientV.(format.TCPStreamOut)
-				serverTo, serverToOk := serverV.(format.TCPStreamOut)
+				clientTo, clientToOk := clientV.(format.TCP_Stream_Out)
+				serverTo, serverToOk := serverV.(format.TCP_Stream_Out)
 				if clientToOk && serverToOk {
 					if clientTo.PostFn != nil {
 						clientTo.PostFn(serverTo.InArg)

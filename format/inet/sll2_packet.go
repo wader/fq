@@ -14,19 +14,19 @@ var sllPacket2InetPacketGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.Sll2Packet,
+		format.SLL2_Packet,
 		&decode.Format{
 			Description: "Linux cooked capture encapsulation v2",
-			Groups:      []*decode.Group{format.LinkFrame},
+			Groups:      []*decode.Group{format.Link_Frame},
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.InetPacket}, Out: &sllPacket2InetPacketGroup},
+				{Groups: []*decode.Group{format.INET_Packet}, Out: &sllPacket2InetPacketGroup},
 			},
 			DecodeFn: decodeSLL2,
 		})
 }
 
 func decodeSLL2(d *decode.D) any {
-	var lfi format.LinkFrameIn
+	var lfi format.Link_Frame_In
 	if d.ArgAs(&lfi) && lfi.Type != format.LinkTypeLINUX_SLL2 {
 		d.Fatalf("wrong link type %d", lfi.Type)
 	}
@@ -56,7 +56,7 @@ func decodeSLL2(d *decode.D) any {
 			"payload",
 			d.BitsLeft(),
 			&sllPacket2InetPacketGroup,
-			format.InetPacketIn{EtherType: int(protcolType)},
+			format.INET_Packet_In{EtherType: int(protcolType)},
 		)
 	default:
 		d.FieldRawLen("payload", d.BitsLeft())

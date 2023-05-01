@@ -15,11 +15,11 @@ var bitcoinScriptGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.BitcoinTransaction,
+		format.Bitcoin_Transaction,
 		&decode.Format{
 			Description: "Bitcoin transaction",
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.BitcoinScript}, Out: &bitcoinScriptGroup},
+				{Groups: []*decode.Group{format.Bitcoin_Script}, Out: &bitcoinScriptGroup},
 			},
 			DecodeFn: decodeBitcoinTranscation,
 		})

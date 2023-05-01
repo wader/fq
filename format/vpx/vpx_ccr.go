@@ -10,7 +10,7 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.VpxCcr,
+		format.VPX_CCR,
 		&decode.Format{
 			Description: "VPX Codec Configuration Record",
 			DecodeFn:    vpxCCRDecode,

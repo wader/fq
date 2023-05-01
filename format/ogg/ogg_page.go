@@ -13,7 +13,7 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.OggPage,
+		format.Ogg_Page,
 		&decode.Format{
 			Description: "OGG page",
 			DecodeFn:    pageDecode,
@@ -21,7 +21,7 @@ func init() {
 }
 
 func pageDecode(d *decode.D) any {
-	p := format.OggPageOut{}
+	p := format.Ogg_Page_Out{}
 	startPos := d.Pos()
 
 	d.Endian = decode.LittleEndian

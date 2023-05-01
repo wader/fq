@@ -15,10 +15,10 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.Dns,
+		format.DNS,
 		&decode.Format{
 			Description: "DNS packet",
-			Groups:      []*decode.Group{format.UdpPayload},
+			Groups:      []*decode.Group{format.UDP_Payload},
 			DecodeFn:    dnsUDPDecode,
 		})
 }
@@ -263,7 +263,7 @@ func dnsDecode(d *decode.D, hasLengthHeader bool) any {
 }
 
 func dnsUDPDecode(d *decode.D) any {
-	var upi format.UDPPayloadIn
+	var upi format.UDP_Payload_In
 	if d.ArgAs(&upi) {
 		upi.MustIsPort(d.Fatalf, format.UDPPortDomain, format.UDPPortMDNS)
 	}

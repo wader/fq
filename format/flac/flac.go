@@ -21,14 +21,14 @@ var flacFrameGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.Flac,
+		format.FLAC,
 		&decode.Format{
 			Description: "Free Lossless Audio Codec file",
 			Groups:      []*decode.Group{format.Probe},
 			DecodeFn:    flacDecode,
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.FlacMetadatablocks}, Out: &flacMetadatablocksGroup},
-				{Groups: []*decode.Group{format.FlacFrame}, Out: &flacFrameGroup},
+				{Groups: []*decode.Group{format.FLAC_Metadatablocks}, Out: &flacMetadatablocksGroup},
+				{Groups: []*decode.Group{format.FLAC_Frame}, Out: &flacFrameGroup},
 			},
 		})
 }
@@ -36,21 +36,21 @@ func init() {
 func flacDecode(d *decode.D) any {
 	d.FieldUTF8("magic", 4, d.StrAssert("fLaC"))
 
-	var streamInfo format.FlacStreamInfo
-	var flacFrameIn format.FlacFrameIn
+	var streamInfo format.FLAC_Stream_Info
+	var flacFrameIn format.FLAC_Frame_In
 	var framesNDecodedSamples uint64
 	var streamTotalSamples uint64
 	var streamDecodedSamples uint64
 
 	_, v := d.FieldFormat("metadatablocks", &flacMetadatablocksGroup, nil)
-	flacMetadatablockOut, ok := v.(format.FlacMetadatablocksOut)
+	flacMetadatablockOut, ok := v.(format.FLAC_Metadatablocks_Out)
 	if !ok {
 		panic(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
 	}
 	if flacMetadatablockOut.HasStreamInfo {
 		streamInfo = flacMetadatablockOut.StreamInfo
 		streamTotalSamples = streamInfo.TotalSamplesInStream
-		flacFrameIn = format.FlacFrameIn{BitsPerSample: int(streamInfo.BitsPerSample)}
+		flacFrameIn = format.FLAC_Frame_In{BitsPerSample: int(streamInfo.BitsPerSample)}
 	}
 
 	md5Samples := md5.New()
@@ -58,7 +58,7 @@ func flacDecode(d *decode.D) any {
 		for d.NotEnd() {
 			// flac frame might need some fields from stream info to decode
 			_, v := d.FieldFormat("frame", &flacFrameGroup, flacFrameIn)
-			ffo, ok := v.(format.FlacFrameOut)
+			ffo, ok := v.(format.FLAC_Frame_Out)
 			if !ok {
 				panic(fmt.Sprintf("expected FlacFrameOut got %#+v", v))
 			}

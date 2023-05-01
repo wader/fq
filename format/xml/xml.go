@@ -37,13 +37,13 @@ var xmlFS embed.FS
 
 func init() {
 	interp.RegisterFormat(
-		format.Xml,
+		format.XML,
 		&decode.Format{
 			Description: "Extensible Markup Language",
 			ProbeOrder:  format.ProbeOrderTextFuzzy,
 			Groups:      []*decode.Group{format.Probe},
 			DecodeFn:    decodeXML,
-			DefaultInArg: format.XMLIn{
+			DefaultInArg: format.XML_In{
 				Seq:             false,
 				Array:           false,
 				AttributePrefix: "@",
@@ -116,7 +116,7 @@ func elmName(space, local string) string {
 	return space + ":" + local
 }
 
-func fromXMLToObject(n xmlNode, xi format.XMLIn) any {
+func fromXMLToObject(n xmlNode, xi format.XML_In) any {
 	var f func(n xmlNode, seq int, nss xmlNNStack) (string, any)
 	f = func(n xmlNode, seq int, nss xmlNNStack) (string, any) {
 		attrs := map[string]any{}
@@ -283,7 +283,7 @@ func decodeXMLSeekFirstValidRune(br io.ReadSeeker) error {
 }
 
 func decodeXML(d *decode.D) any {
-	var xi format.XMLIn
+	var xi format.XML_In
 	d.ArgAs(&xi)
 
 	bbr := d.RawLen(d.Len())

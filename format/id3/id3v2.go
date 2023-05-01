@@ -23,7 +23,7 @@ var imageGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.Id3v2,
+		format.ID3v2,
 		&decode.Format{
 			Description: "ID3v2 metadata",
 			DecodeFn:    id3v2Decode,

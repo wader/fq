@@ -6,20 +6,20 @@ import (
 	"github.com/wader/fq/pkg/interp"
 )
 
-var annexBAVCNALUFormat decode.Group
+var annexBAVCNALUGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.AvcAnnexb,
+		format.AVC_Annexb,
 		&decode.Format{
 			Description: "H.264/AVC Annex B",
 			DecodeFn: func(d *decode.D) any {
-				return annexBDecode(d, annexBAVCNALUFormat)
+				return annexBDecode(d, annexBAVCNALUGroup)
 			},
 			RootArray: true,
 			RootName:  "stream",
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.AvcNalu}, Out: &annexBAVCNALUFormat},
+				{Groups: []*decode.Group{format.AVC_NALU}, Out: &annexBAVCNALUGroup},
 			},
 		})
 }
