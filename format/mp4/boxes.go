@@ -677,33 +677,33 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		})
 	case "avcC":
 		_, v := d.FieldFormat("descriptor", &avcDCRGroup, nil)
-		avcDcrOut, ok := v.(format.AvcDcrOut)
+		avcDcrOut, ok := v.(format.AVC_DCR_Out)
 		if !ok {
 			panic(fmt.Sprintf("expected AvcDcrOut got %#+v", v))
 		}
 		if t := ctx.currentTrack(); t != nil {
-			t.formatInArg = format.AvcAuIn{LengthSize: avcDcrOut.LengthSize} //nolint:gosimple
+			t.formatInArg = format.AVC_AU_In{LengthSize: avcDcrOut.LengthSize} //nolint:gosimple
 		}
 	case "hvcC":
 		_, v := d.FieldFormat("descriptor", &hevcCDCRGroup, nil)
-		hevcDcrOut, ok := v.(format.HevcDcrOut)
+		hevcDcrOut, ok := v.(format.HEVC_DCR_Out)
 		if !ok {
 			panic(fmt.Sprintf("expected HevcDcrOut got %#+v", v))
 		}
 		if t := ctx.currentTrack(); t != nil {
-			t.formatInArg = format.HevcAuIn{LengthSize: hevcDcrOut.LengthSize} //nolint:gosimple
+			t.formatInArg = format.HEVC_AU_In{LengthSize: hevcDcrOut.LengthSize} //nolint:gosimple
 		}
 	case "dfLa":
 		d.FieldU8("version")
 		d.FieldU24("flags")
 		_, v := d.FieldFormat("descriptor", &flacMetadatablocksGroup, nil)
-		flacMetadatablockOut, ok := v.(format.FlacMetadatablocksOut)
+		flacMetadatablockOut, ok := v.(format.FLAC_Metadatablocks_Out)
 		if !ok {
 			panic(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
 		}
 		if flacMetadatablockOut.HasStreamInfo {
 			if t := ctx.currentTrack(); t != nil {
-				t.formatInArg = format.FlacFrameIn{BitsPerSample: int(flacMetadatablockOut.StreamInfo.BitsPerSample)}
+				t.formatInArg = format.FLAC_Frame_In{BitsPerSample: int(flacMetadatablockOut.StreamInfo.BitsPerSample)}
 			}
 		}
 	case "dOps":
@@ -717,7 +717,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 	case "esds":
 		d.FieldU32("version")
 		_, v := d.FieldFormat("descriptor", &mpegESGroup, nil)
-		mpegEsOut, ok := v.(format.MpegEsOut)
+		mpegEsOut, ok := v.(format.MPEG_ES_Out)
 		if !ok {
 			panic(fmt.Sprintf("expected mpegEsOut got %#+v", v))
 		}
@@ -725,7 +725,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		if t := ctx.currentTrack(); t != nil && len(mpegEsOut.DecoderConfigs) > 0 {
 			dc := mpegEsOut.DecoderConfigs[0]
 			t.objectType = dc.ObjectType
-			t.formatInArg = format.AACFrameIn{ObjectType: dc.ASCObjectType}
+			t.formatInArg = format.AAC_Frame_In{ObjectType: dc.ASCObjectType}
 		}
 	case "stts":
 		d.FieldU8("version")

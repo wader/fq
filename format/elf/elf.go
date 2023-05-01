@@ -18,7 +18,7 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.Elf,
+		format.ELF,
 		&decode.Format{
 			Description: "Executable and Linkable Format",
 			Groups:      []*decode.Group{format.Probe},

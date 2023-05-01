@@ -18,7 +18,7 @@ var wasmFS embed.FS
 
 func init() {
 	interp.RegisterFormat(
-		format.Wasm,
+		format.WASM,
 		&decode.Format{
 			Description: "WebAssembly Binary Format",
 			DecodeFn:    decodeWASM,

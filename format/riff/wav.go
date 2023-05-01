@@ -19,15 +19,15 @@ var wavFooterGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.Wav,
+		format.WAV,
 		&decode.Format{
 			ProbeOrder:  format.ProbeOrderBinFuzzy, // after most others (overlap some with webp)
 			Description: "WAV file",
 			Groups:      []*decode.Group{format.Probe},
 			DecodeFn:    wavDecode,
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.Id3v2}, Out: &wavHeaderGroup},
-				{Groups: []*decode.Group{format.Id3v1, format.Id3v11}, Out: &wavFooterGroup},
+				{Groups: []*decode.Group{format.ID3v2}, Out: &wavHeaderGroup},
+				{Groups: []*decode.Group{format.ID3v1, format.ID3v11}, Out: &wavFooterGroup},
 			},
 		})
 }

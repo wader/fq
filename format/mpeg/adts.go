@@ -10,7 +10,7 @@ var adtsFrameGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.Adts,
+		format.ADTS,
 		&decode.Format{
 			Description: "Audio Data Transport Stream",
 			Groups:      []*decode.Group{format.Probe},
@@ -18,7 +18,7 @@ func init() {
 			RootArray:   true,
 			RootName:    "frames",
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.AdtsFrame}, Out: &adtsFrameGroup},
+				{Groups: []*decode.Group{format.ADTS_Frame}, Out: &adtsFrameGroup},
 			},
 		})
 }

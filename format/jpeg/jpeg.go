@@ -19,14 +19,14 @@ var iccProfileFormat decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.Jpeg,
+		format.JPEG,
 		&decode.Format{
 			Description: "Joint Photographic Experts Group file",
 			Groups:      []*decode.Group{format.Probe, format.Image},
 			DecodeFn:    jpegDecode,
 			Dependencies: []decode.Dependency{
 				{Groups: []*decode.Group{format.Exif}, Out: &exifFormat},
-				{Groups: []*decode.Group{format.IccProfile}, Out: &iccProfileFormat},
+				{Groups: []*decode.Group{format.ICC_Profile}, Out: &iccProfileFormat},
 			},
 		})
 }

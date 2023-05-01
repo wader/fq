@@ -11,10 +11,10 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.TcpSegment,
+		format.TCP_Segment,
 		&decode.Format{
 			Description: "Transmission control protocol segment",
-			Groups:      []*decode.Group{format.IpPacket},
+			Groups:      []*decode.Group{format.IP_Packet},
 			DecodeFn:    decodeTCP,
 		})
 }
@@ -40,7 +40,7 @@ var tcpOptionsMap = scalar.UintMap{
 }
 
 func decodeTCP(d *decode.D) any {
-	var ipi format.IPPacketIn
+	var ipi format.IP_Packet_In
 	if d.ArgAs(&ipi) && ipi.Protocol != format.IPv4ProtocolTCP {
 		d.Fatalf("incorrect protocol %d", ipi.Protocol)
 	}

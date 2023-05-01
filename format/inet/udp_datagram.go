@@ -11,19 +11,19 @@ var udpPayloadGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.UdpDatagram,
+		format.UDP_Datagram,
 		&decode.Format{
 			Description: "User datagram protocol",
-			Groups:      []*decode.Group{format.IpPacket},
+			Groups:      []*decode.Group{format.IP_Packet},
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.UdpPayload}, Out: &udpPayloadGroup},
+				{Groups: []*decode.Group{format.UDP_Payload}, Out: &udpPayloadGroup},
 			},
 			DecodeFn: decodeUDP,
 		})
 }
 
 func decodeUDP(d *decode.D) any {
-	var ipi format.IPPacketIn
+	var ipi format.IP_Packet_In
 	if d.ArgAs(&ipi) && ipi.Protocol != format.IPv4ProtocolUDP {
 		d.Fatalf("incorrect protocol %d", ipi.Protocol)
 	}
@@ -38,7 +38,7 @@ func decodeUDP(d *decode.D) any {
 		"payload",
 		payloadLen,
 		&udpPayloadGroup,
-		format.UDPPayloadIn{
+		format.UDP_Payload_In{
 			SourcePort:      int(sourcePort),
 			DestinationPort: int(destPort),
 		},

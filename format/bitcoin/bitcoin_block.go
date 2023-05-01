@@ -16,14 +16,14 @@ var bitcoinTranscationGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.BitcoinBlock,
+		format.Bitcoin_Block,
 		&decode.Format{
 			Description: "Bitcoin block",
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.BitcoinTransaction}, Out: &bitcoinTranscationGroup},
+				{Groups: []*decode.Group{format.Bitcoin_Transaction}, Out: &bitcoinTranscationGroup},
 			},
 			DecodeFn: decodeBitcoinBlock,
-			DefaultInArg: format.BitCoinBlockIn{
+			DefaultInArg: format.Bitcoin_Block_In{
 				HasHeader: false,
 			},
 		})
@@ -37,7 +37,7 @@ var rawHexReverse = scalar.BitBufFn(func(s scalar.BitBuf) (scalar.BitBuf, error)
 })
 
 func decodeBitcoinBlock(d *decode.D) any {
-	var bbi format.BitCoinBlockIn
+	var bbi format.Bitcoin_Block_In
 	d.ArgAs(&bbi)
 
 	size := d.BitsLeft()

@@ -56,7 +56,7 @@ var vp9ProfilesMap = scalar.UintMapDescription{
 
 func init() {
 	interp.RegisterFormat(
-		format.Vp9Frame,
+		format.VP9_Frame,
 		&decode.Format{
 			Description: "VP9 frame",
 			DecodeFn:    vp9Decode,

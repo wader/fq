@@ -14,12 +14,12 @@ var flacPicture decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.VorbisComment,
+		format.Vorbis_Comment,
 		&decode.Format{
 			Description: "Vorbis comment",
 			DecodeFn:    commentDecode,
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.FlacPicture}, Out: &flacPicture},
+				{Groups: []*decode.Group{format.FLAC_Picture}, Out: &flacPicture},
 			},
 		})
 }

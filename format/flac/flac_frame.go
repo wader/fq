@@ -14,11 +14,11 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.FlacFrame,
+		format.FLAC_Frame,
 		&decode.Format{
 			Description: "FLAC frame",
 			DecodeFn:    frameDecode,
-			DefaultInArg: format.FlacFrameIn{
+			DefaultInArg: format.FLAC_Frame_In{
 				BitsPerSample: 16, // TODO: maybe should not have a default value?
 			},
 		})
@@ -109,7 +109,7 @@ func frameDecode(d *decode.D) any {
 	sampleSize := 0
 	sideChannelIndex := -1
 
-	var ffi format.FlacFrameIn
+	var ffi format.FLAC_Frame_In
 	if d.ArgAs(&ffi) {
 		sampleSize = ffi.BitsPerSample
 	}
@@ -642,7 +642,7 @@ func frameDecode(d *decode.D) any {
 		}
 	}
 
-	return format.FlacFrameOut{
+	return format.FLAC_Frame_Out{
 		SamplesBuf:    interleavedSamplesBuf,
 		Samples:       uint64(streamSamples),
 		Channels:      channels,

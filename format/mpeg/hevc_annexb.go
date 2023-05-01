@@ -10,7 +10,7 @@ var annexBHEVCNALUFormat decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.HevcAnnexb,
+		format.HEVC_Annexb,
 		&decode.Format{
 			Description: "H.265/HEVC Annex B",
 			DecodeFn: func(d *decode.D) any {
@@ -19,7 +19,7 @@ func init() {
 			RootArray: true,
 			RootName:  "stream",
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.HevcNalu}, Out: &annexBHEVCNALUFormat},
+				{Groups: []*decode.Group{format.HEVC_NALU}, Out: &annexBHEVCNALUFormat},
 			},
 		})
 }

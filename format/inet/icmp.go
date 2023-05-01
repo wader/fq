@@ -9,10 +9,10 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.Icmp,
+		format.ICMP,
 		&decode.Format{
 			Description: "Internet Control Message Protocol",
-			Groups:      []*decode.Group{format.IpPacket},
+			Groups:      []*decode.Group{format.IP_Packet},
 			DecodeFn:    decodeICMP,
 		})
 }
@@ -94,7 +94,7 @@ var icmpCodeMapMap = map[uint64]scalar.UintMapDescription{
 }
 
 func decodeICMP(d *decode.D) any {
-	var ipi format.IPPacketIn
+	var ipi format.IP_Packet_In
 	if d.ArgAs(&ipi) && ipi.Protocol != format.IPv4ProtocolICMP {
 		d.Fatalf("incorrect protocol %d", ipi.Protocol)
 	}

@@ -22,12 +22,12 @@ var csvFS embed.FS
 
 func init() {
 	interp.RegisterFormat(
-		format.Csv,
+		format.CSV,
 		&decode.Format{
 			Description: "Comma separated values",
 			ProbeOrder:  format.ProbeOrderTextFuzzy,
 			DecodeFn:    decodeCSV,
-			DefaultInArg: format.CSVLIn{
+			DefaultInArg: format.CSV_In{
 				Comma:   ",",
 				Comment: "#",
 			},
@@ -38,7 +38,7 @@ func init() {
 }
 
 func decodeCSV(d *decode.D) any {
-	var ci format.CSVLIn
+	var ci format.CSV_In
 	d.ArgAs(&ci)
 
 	var rvs []any

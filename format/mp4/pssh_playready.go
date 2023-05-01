@@ -9,7 +9,7 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.PsshPlayready,
+		format.PSSH_Playready,
 		&decode.Format{
 			Description: "PlayReady PSSH",
 			DecodeFn:    playreadyPsshDecode,

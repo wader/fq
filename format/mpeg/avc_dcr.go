@@ -16,12 +16,12 @@ var avcDCRNALFormat decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.AvcDcr,
+		format.AVC_DCR,
 		&decode.Format{
 			Description: "H.264/AVC Decoder Configuration Record",
 			DecodeFn:    avcDcrDecode,
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.AvcNalu}, Out: &avcDCRNALFormat},
+				{Groups: []*decode.Group{format.AVC_NALU}, Out: &avcDCRNALFormat},
 			},
 		})
 }
@@ -146,5 +146,5 @@ func avcDcrDecode(d *decode.D) any {
 	// TODO: something wrong here, seen files with profileIdc = 100 with no bytes after picture_parameter_sets
 	// https://github.com/FFmpeg/FFmpeg/blob/069d2b4a50a6eb2f925f36884e6b9bd9a1e54670/libavcodec/h264_ps.c#L333
 
-	return format.AvcDcrOut{LengthSize: lengthSize}
+	return format.AVC_DCR_Out{LengthSize: lengthSize}
 }

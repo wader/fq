@@ -13,7 +13,7 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.Vp8Frame,
+		format.VP8_Frame,
 		&decode.Format{
 			Description: "VP8 frame",
 			DecodeFn:    vp8Decode,

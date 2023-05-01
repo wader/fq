@@ -16,15 +16,15 @@ var mpegSpuGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.MpegPes,
+		format.MPES_PES,
 		&decode.Format{
 			Description: "MPEG Packetized elementary stream",
 			DecodeFn:    pesDecode,
 			RootArray:   true,
 			RootName:    "packets",
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.MpegPesPacket}, Out: &pesPacketGroup},
-				{Groups: []*decode.Group{format.MpegSpu}, Out: &mpegSpuGroup},
+				{Groups: []*decode.Group{format.MPEG_PES_Packet}, Out: &pesPacketGroup},
+				{Groups: []*decode.Group{format.MPEG_SPU}, Out: &mpegSpuGroup},
 			},
 		})
 }

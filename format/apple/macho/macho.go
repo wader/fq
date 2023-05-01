@@ -19,7 +19,7 @@ var machoFS embed.FS
 
 func init() {
 	interp.RegisterFormat(
-		format.Macho,
+		format.MachO,
 		&decode.Format{
 			Description: "Mach-O macOS executable",
 			Groups:      []*decode.Group{format.Probe},

@@ -12,10 +12,10 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.Mp3FrameXing,
+		format.MP3_Frame_XING,
 		&decode.Format{
 			Description: "MP3 frame Xing/Info tag",
-			Groups:      []*decode.Group{format.Mp3FrameTags},
+			Groups:      []*decode.Group{format.MP3_Frame_Tags},
 			DecodeFn:    mp3FrameTagXingDecode,
 		})
 }

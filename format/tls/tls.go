@@ -43,14 +43,14 @@ var asn1BerGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.Tls,
+		format.TLS,
 		&decode.Format{
 			Description:  "Transport layer security",
-			Groups:       []*decode.Group{format.TcpStream},
+			Groups:       []*decode.Group{format.TCP_Stream},
 			DecodeFn:     decodeTLS,
-			DefaultInArg: format.TLSIn{},
+			DefaultInArg: format.TLS_In{},
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.Asn1Ber}, Out: &asn1BerGroup},
+				{Groups: []*decode.Group{format.ASN1_BER}, Out: &asn1BerGroup},
 			},
 		})
 	interp.RegisterFS(tlsFS)
@@ -676,12 +676,12 @@ func decodeV2ClientHello(d *decode.D, tc *tlsCtx) {
 }
 
 func decodeTLS(d *decode.D) any {
-	var ti format.TLSIn
+	var ti format.TLS_In
 	d.ArgAs(&ti)
 
 	isClient := false
 
-	var tsi format.TCPStreamIn
+	var tsi format.TCP_Stream_In
 	if d.ArgAs(&tsi) {
 		if !tsi.HasStart {
 			d.Fatalf("tls requires start of byte stream")
@@ -717,10 +717,10 @@ func decodeTLS(d *decode.D) any {
 
 	// client side will do post for both
 	if !isClient {
-		return format.TCPStreamOut{InArg: tc}
+		return format.TCP_Stream_Out{InArg: tc}
 	}
 
-	return format.TCPStreamOut{
+	return format.TCP_Stream_Out{
 		PostFn: func(peerIn any) {
 			// peerIn will be the other peers outArg, the server *tlsCtx
 			clientTc := tc

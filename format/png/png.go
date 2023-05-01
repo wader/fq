@@ -20,13 +20,13 @@ var exifGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.Png,
+		format.PNG,
 		&decode.Format{
 			Description: "Portable Network Graphics file",
 			Groups:      []*decode.Group{format.Probe, format.Image},
 			DecodeFn:    pngDecode,
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.IccProfile}, Out: &iccProfileGroup},
+				{Groups: []*decode.Group{format.ICC_Profile}, Out: &iccProfileGroup},
 				{Groups: []*decode.Group{format.Exif}, Out: &exifGroup},
 			},
 		})

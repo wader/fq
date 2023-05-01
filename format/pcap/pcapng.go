@@ -19,15 +19,15 @@ var pcapngIPvPacket4Group decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.Pcapng,
+		format.PCAPNG,
 		&decode.Format{
 			Description: "PCAPNG packet capture",
 			RootArray:   true,
 			Groups:      []*decode.Group{format.Probe},
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.LinkFrame}, Out: &pcapngLinkFrameGroup},
-				{Groups: []*decode.Group{format.TcpStream}, Out: &pcapngTCPStreamGroup},
-				{Groups: []*decode.Group{format.Ipv4Packet}, Out: &pcapngIPvPacket4Group},
+				{Groups: []*decode.Group{format.Link_Frame}, Out: &pcapngLinkFrameGroup},
+				{Groups: []*decode.Group{format.TCP_Stream}, Out: &pcapngTCPStreamGroup},
+				{Groups: []*decode.Group{format.IPv4Packet}, Out: &pcapngIPvPacket4Group},
 			},
 			DecodeFn: decodePcapng,
 		})
@@ -244,7 +244,7 @@ var blockFns = map[uint64]func(d *decode.D, dc *decodeContext){
 			"packet",
 			int64(capturedLength)*8,
 			&pcapngLinkFrameGroup,
-			format.LinkFrameIn{
+			format.Link_Frame_In{
 				Type:           linkType,
 				IsLittleEndian: d.Endian == decode.LittleEndian,
 			},

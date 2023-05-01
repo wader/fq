@@ -14,14 +14,14 @@ var hevcSPSGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.HevcNalu,
+		format.HEVC_NALU,
 		&decode.Format{
 			Description: "H.265/HEVC Network Access Layer Unit",
 			DecodeFn:    hevcNALUDecode,
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.HevcVps}, Out: &hevcVPSGroup},
-				{Groups: []*decode.Group{format.HevcPps}, Out: &hevcPPSGroup},
-				{Groups: []*decode.Group{format.HevcSps}, Out: &hevcSPSGroup},
+				{Groups: []*decode.Group{format.HEVC_VPS}, Out: &hevcVPSGroup},
+				{Groups: []*decode.Group{format.HEVC_PPS}, Out: &hevcPPSGroup},
+				{Groups: []*decode.Group{format.HEVC_SPS}, Out: &hevcSPSGroup},
 			},
 		})
 }

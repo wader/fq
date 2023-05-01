@@ -26,16 +26,16 @@ var rtmpFS embed.FS
 
 func init() {
 	interp.RegisterFormat(
-		format.Rtmp,
+		format.RTMP,
 		&decode.Format{
 			Description: "Real-Time Messaging Protocol",
 			Groups: []*decode.Group{
-				format.TcpStream,
+				format.TCP_Stream,
 			},
 			DecodeFn: rtmpDecode,
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.Amf0}, Out: &rtmpAmf0Group},
-				{Groups: []*decode.Group{format.MpegAsc}, Out: &rtmpMpegASCGroup},
+				{Groups: []*decode.Group{format.AMF0}, Out: &rtmpAmf0Group},
+				{Groups: []*decode.Group{format.MPEG_ASC}, Out: &rtmpMpegASCGroup},
 			},
 		})
 	interp.RegisterFS(rtmpFS)
@@ -311,7 +311,7 @@ func rtmpDecodeMessageType(d *decode.D, typ int, chunkSize *int) {
 func rtmpDecode(d *decode.D) any {
 	var isClient bool
 
-	var tsi format.TCPStreamIn
+	var tsi format.TCP_Stream_In
 	if d.ArgAs(&tsi) {
 		tsi.MustIsPort(d.Fatalf, format.TCPPortRTMP)
 		isClient = tsi.IsClient

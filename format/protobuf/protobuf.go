@@ -130,7 +130,7 @@ func protobufDecodeFields(d *decode.D, pbm *format.ProtoBufMessage) {
 }
 
 func protobufDecode(d *decode.D) any {
-	var pbi format.ProtoBufIn
+	var pbi format.Protobuf_In
 	d.ArgAs(&pbi)
 
 	protobufDecodeFields(d, &pbi.Message)

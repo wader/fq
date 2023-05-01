@@ -9,7 +9,7 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.FlacStreaminfo,
+		format.FLAC_Streaminfo,
 		&decode.Format{
 			Description: "FLAC streaminfo",
 			DecodeFn:    streaminfoDecode,
@@ -30,8 +30,8 @@ func streaminfoDecode(d *decode.D) any {
 	md5BR := d.FieldRawLen("md5", 16*8, scalar.RawHex)
 	md5b := d.ReadAllBits(md5BR)
 
-	return format.FlacStreaminfoOut{
-		StreamInfo: format.FlacStreamInfo{
+	return format.FLAC_Streaminfo_Out{
+		StreamInfo: format.FLAC_Stream_Info{
 			SampleRate:           sampleRate,
 			BitsPerSample:        bitsPerSample,
 			TotalSamplesInStream: totalSamplesInStream,

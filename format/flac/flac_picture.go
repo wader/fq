@@ -35,7 +35,7 @@ var pictureTypeNames = scalar.UintMapSymStr{
 
 func init() {
 	interp.RegisterFormat(
-		format.FlacPicture,
+		format.FLAC_Picture,
 		&decode.Format{
 			Description: "FLAC metadatablock picture",
 			DecodeFn:    pictureDecode,

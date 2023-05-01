@@ -19,7 +19,7 @@ var msgPackFS embed.FS
 
 func init() {
 	interp.RegisterFormat(
-		format.Msgpack,
+		format.MsgPack,
 		&decode.Format{
 			Description: "MessagePack",
 			DecodeFn:    decodeMsgPack,

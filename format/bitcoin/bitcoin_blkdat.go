@@ -10,12 +10,12 @@ var bitcoinBlockGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.BitcoinBlkdat,
+		format.Bitcoin_Blkdat,
 		&decode.Format{
 			Description: "Bitcoin blk.dat",
 			Groups:      []*decode.Group{format.Probe},
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.BitcoinBlock}, Out: &bitcoinBlockGroup},
+				{Groups: []*decode.Group{format.Bitcoin_Block}, Out: &bitcoinBlockGroup},
 			},
 			DecodeFn:  decodeBlkDat,
 			RootArray: true,
@@ -26,7 +26,7 @@ func init() {
 func decodeBlkDat(d *decode.D) any {
 	validBlocks := 0
 	for !d.End() {
-		d.FieldFormat("block", &bitcoinBlockGroup, format.BitCoinBlockIn{HasHeader: true})
+		d.FieldFormat("block", &bitcoinBlockGroup, format.Bitcoin_Block_In{HasHeader: true})
 		validBlocks++
 	}
 

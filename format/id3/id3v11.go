@@ -9,7 +9,7 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.Id3v11,
+		format.ID3v11,
 		&decode.Format{
 			Description: "ID3v1.1 metadata",
 			DecodeFn:    id3v11Decode,

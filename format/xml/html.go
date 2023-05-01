@@ -18,11 +18,11 @@ var htmlFS embed.FS
 
 func init() {
 	interp.RegisterFormat(
-		format.Html,
+		format.HTML,
 		&decode.Format{
 			Description: "HyperText Markup Language",
 			DecodeFn:    decodeHTML,
-			DefaultInArg: format.HTMLIn{
+			DefaultInArg: format.HTML_In{
 				Seq:             false,
 				Array:           false,
 				AttributePrefix: "@",
@@ -32,7 +32,7 @@ func init() {
 	interp.RegisterFS(htmlFS)
 }
 
-func fromHTMLToObject(n *html.Node, hi format.HTMLIn) any {
+func fromHTMLToObject(n *html.Node, hi format.HTML_In) any {
 	var f func(n *html.Node, seq int) any
 	f = func(n *html.Node, seq int) any {
 		attrs := map[string]any{}
@@ -194,7 +194,7 @@ func fromHTMLToArray(n *html.Node) any {
 }
 
 func decodeHTML(d *decode.D) any {
-	var hi format.HTMLIn
+	var hi format.HTML_In
 	d.ArgAs(&hi)
 
 	br := d.RawLen(d.Len())

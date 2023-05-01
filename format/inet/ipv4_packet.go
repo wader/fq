@@ -16,15 +16,15 @@ var ipv4IpPacketGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.Ipv4Packet,
+		format.IPv4Packet,
 		&decode.Format{
 			Description: "Internet protocol v4 packet",
 			Groups: []*decode.Group{
-				format.InetPacket,
-				format.LinkFrame,
+				format.INET_Packet,
+				format.Link_Frame,
 			},
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.IpPacket}, Out: &ipv4IpPacketGroup},
+				{Groups: []*decode.Group{format.IP_Packet}, Out: &ipv4IpPacketGroup},
 			},
 			DecodeFn: decodeIPv4,
 		})
@@ -54,8 +54,8 @@ var mapUToIPv4Sym = scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
 })
 
 func decodeIPv4(d *decode.D) any {
-	var ipi format.InetPacketIn
-	var lfi format.LinkFrameIn
+	var ipi format.INET_Packet_In
+	var lfi format.Link_Frame_In
 	if d.ArgAs(&ipi) && ipi.EtherType != format.EtherTypeIPv4 {
 		d.Fatalf("incorrect ethertype %d", ipi.EtherType)
 	} else if d.ArgAs(&lfi) && lfi.Type != format.LinkTypeIPv4 && lfi.Type != format.LinkTypeRAW {
@@ -115,7 +115,7 @@ func decodeIPv4(d *decode.D) any {
 			"payload",
 			dataLen,
 			&ipv4IpPacketGroup,
-			format.IPPacketIn{Protocol: int(protocol)},
+			format.IP_Packet_In{Protocol: int(protocol)},
 		)
 	}
 

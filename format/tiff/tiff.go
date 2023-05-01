@@ -13,13 +13,13 @@ var tiffIccProfile decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.Tiff,
+		format.TIFF,
 		&decode.Format{
 			Description: "Tag Image File Format",
 			Groups:      []*decode.Group{format.Probe, format.Image},
 			DecodeFn:    tiffDecode,
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.IccProfile}, Out: &tiffIccProfile},
+				{Groups: []*decode.Group{format.ICC_Profile}, Out: &tiffIccProfile},
 			},
 		})
 }

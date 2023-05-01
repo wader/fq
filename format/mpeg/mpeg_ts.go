@@ -9,7 +9,7 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.MpegTs,
+		format.MPEG_TS,
 		&decode.Format{
 			ProbeOrder:  format.ProbeOrderBinFuzzy, // make sure to be after gif, both start with 0x47
 			Description: "MPEG Transport Stream",

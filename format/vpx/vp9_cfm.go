@@ -10,7 +10,7 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.Vp9Cfm,
+		format.VP9_CFM,
 		&decode.Format{
 			Description: "VP9 Codec Feature Metadata",
 			DecodeFn:    vp9CFMDecode,

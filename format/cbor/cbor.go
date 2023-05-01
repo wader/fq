@@ -26,7 +26,7 @@ var cborFS embed.FS
 
 func init() {
 	interp.RegisterFormat(
-		format.Cbor,
+		format.CBOR,
 		&decode.Format{
 			Description: "Concise Binary Object Representation",
 			DecodeFn:    decodeCBOR,

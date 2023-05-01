@@ -18,7 +18,7 @@ import (
 
 func init() {
 	interp.RegisterFormat(
-		format.Gif,
+		format.GIF,
 		&decode.Format{
 			Description: "Graphics Interchange Format",
 			Groups:      []*decode.Group{format.Probe, format.Image},

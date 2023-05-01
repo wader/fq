@@ -10,24 +10,24 @@ var hevcAUNALGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.HevcAu,
+		format.HEVC_AU,
 		&decode.Format{
 			Description: "H.265/HEVC Access Unit",
 			DecodeFn:    hevcAUDecode,
-			DefaultInArg: format.HevcAuIn{
+			DefaultInArg: format.HEVC_AU_In{
 				LengthSize: 4,
 			},
 			RootArray: true,
 			RootName:  "access_unit",
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.HevcNalu}, Out: &hevcAUNALGroup},
+				{Groups: []*decode.Group{format.HEVC_NALU}, Out: &hevcAUNALGroup},
 			},
 		})
 }
 
 // TODO: share/refactor with avcAUDecode?
 func hevcAUDecode(d *decode.D) any {
-	var hi format.HevcAuIn
+	var hi format.HEVC_AU_In
 	d.ArgAs(&hi)
 
 	if hi.LengthSize == 0 {

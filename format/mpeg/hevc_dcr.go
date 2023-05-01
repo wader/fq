@@ -11,12 +11,12 @@ var hevcDCRNALGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.HevcDcr,
+		format.HEVC_DCR,
 		&decode.Format{
 			Description: "H.265/HEVC Decoder Configuration Record",
 			DecodeFn:    hevcDcrDecode,
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.HevcNalu}, Out: &hevcDCRNALGroup},
+				{Groups: []*decode.Group{format.HEVC_NALU}, Out: &hevcDCRNALGroup},
 			},
 		})
 }
@@ -64,5 +64,5 @@ func hevcDcrDecode(d *decode.D) any {
 		}
 	})
 
-	return format.HevcDcrOut{LengthSize: lengthSize}
+	return format.HEVC_DCR_Out{LengthSize: lengthSize}
 }

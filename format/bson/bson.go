@@ -18,7 +18,7 @@ var bsonFS embed.FS
 
 func init() {
 	interp.RegisterFormat(
-		format.Bson,
+		format.BSON,
 		&decode.Format{
 			Description: "Binary JSON",
 			DecodeFn:    decodeBSON,

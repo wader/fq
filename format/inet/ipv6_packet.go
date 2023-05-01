@@ -15,15 +15,15 @@ var ipv6IpPacketGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.Ipv6Packet,
+		format.IPv6Packet,
 		&decode.Format{
 			Description: "Internet protocol v6 packet",
 			Groups: []*decode.Group{
-				format.InetPacket,
-				format.LinkFrame,
+				format.INET_Packet,
+				format.Link_Frame,
 			},
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.IpPacket}, Out: &ipv6IpPacketGroup},
+				{Groups: []*decode.Group{format.IP_Packet}, Out: &ipv6IpPacketGroup},
 			},
 			DecodeFn: decodeIPv6,
 		})
@@ -113,8 +113,8 @@ var mapUToIPv6Sym = scalar.BitBufFn(func(s scalar.BitBuf) (scalar.BitBuf, error)
 })
 
 func decodeIPv6(d *decode.D) any {
-	var ipi format.InetPacketIn
-	var lfi format.LinkFrameIn
+	var ipi format.INET_Packet_In
+	var lfi format.Link_Frame_In
 	if d.ArgAs(&ipi) && ipi.EtherType != format.EtherTypeIPv6 {
 		d.Fatalf("incorrect ethertype %d", ipi.EtherType)
 	} else if d.ArgAs(&lfi) && lfi.Type != format.LinkTypeIPv6 && lfi.Type != format.LinkTypeRAW {
@@ -174,7 +174,7 @@ func decodeIPv6(d *decode.D) any {
 		"payload",
 		payloadLen,
 		&ipv4IpPacketGroup,
-		format.IPPacketIn{Protocol: int(nextHeader)},
+		format.IP_Packet_In{Protocol: int(nextHeader)},
 	)
 
 	return nil

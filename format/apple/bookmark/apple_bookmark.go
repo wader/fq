@@ -15,7 +15,7 @@ import (
 var bookmarkFS embed.FS
 
 func init() {
-	interp.RegisterFormat(format.AppleBookmark,
+	interp.RegisterFormat(format.Apple_Bookmark,
 		&decode.Format{
 			ProbeOrder:  format.ProbeOrderBinUnique,
 			Description: "Apple BookmarkData",

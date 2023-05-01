@@ -21,7 +21,7 @@ var yamlFS embed.FS
 
 func init() {
 	interp.RegisterFormat(
-		format.Yaml,
+		format.YAML,
 		&decode.Format{
 			Description: "YAML Ain't Markup Language",
 			ProbeOrder:  format.ProbeOrderTextFuzzy,

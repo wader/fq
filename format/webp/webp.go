@@ -15,13 +15,13 @@ var vp8FrameGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.Webp,
+		format.WebP,
 		&decode.Format{
 			Description: "WebP image",
 			Groups:      []*decode.Group{format.Probe, format.Image},
 			DecodeFn:    webpDecode,
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.Vp8Frame}, Out: &vp8FrameGroup},
+				{Groups: []*decode.Group{format.VP8_Frame}, Out: &vp8FrameGroup},
 			},
 		})
 }
