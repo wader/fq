@@ -425,9 +425,23 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			d.FieldU32("end_offset")
 			decodeFrames(d, version, uint64(d.BitsLeft()/8))
 		},
+
+		// <ID3v2.3 or ID3v2.4 frame header, ID: "CTOC">   (10 bytes)
+		// Element ID      <text string> $00
+		// Flags           %000000ab
+		// Entry count     $xx  (8-bit unsigned int)
+		// <Child Element ID list>
+		// <Optional embedded sub-frames>
+		//
+		// flag a: Top-level bit
+		// flag b: Ordered bit
 		"CTOC": func(d *decode.D) {
 			d.FieldStrFn("element_id", textNullFn(encodingUTF8))
-			d.FieldU8("ctoc_flags")
+			d.FieldStruct("ctoc_flags", func(d *decode.D) {
+				d.FieldU6("unused0")
+				d.FieldBool("top_level")
+				d.FieldBool("order")
+			})
 			entryCount := d.FieldU8("entry_count")
 			d.FieldArray("entries", func(d *decode.D) {
 				for i := uint64(0); i < entryCount; i++ {
