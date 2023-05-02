@@ -434,7 +434,7 @@ bplist> from_ns_keyed_archiver(1)
 
 ## bson
 
-Limitations:
+### Limitations:
 
 - The decimal128 type is not supported for decoding, will just be treated as binary
 
