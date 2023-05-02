@@ -527,6 +527,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			encoding := d.FieldU8("text_encoding", encodingNames)
 			d.FieldStrFn("text", textFn(int(encoding), int(d.BitsLeft()/8)))
 		},
+
 		// User defined...   "TXX"
 		// Frame size        $xx xx xx
 		// Text encoding     $xx
@@ -543,6 +544,23 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			d.FieldStrFn("description", textNullLenFn(int(encoding), int(d.BitsLeft()/8)))
 			d.FieldStrFn("value", textFn(int(encoding), int(d.BitsLeft()/8)))
 		},
+
+		// User defined...   "WXX"
+		// Frame size        $xx xx xx
+		// Text encoding     $xx
+		// Description       <textstring> $00 (00)
+		// URL               <textstring>
+		//
+		// <Header for 'User defined URL link frame', ID: "WXXX">
+		// Text encoding     $xx
+		// Description       <text string according to encoding> $00 (00)
+		// URL               <text string>
+		"WXXX": func(d *decode.D) {
+			encoding := d.FieldU8("text_encoding", encodingNames)
+			d.FieldStrFn("description", textNullLenFn(int(encoding), int(d.BitsLeft()/8)))
+			d.FieldStrFn("url", textFn(int(encoding), int(d.BitsLeft()/8)))
+		},
+
 		// <Header for 'Private frame', ID: "PRIV">
 		// Owner identifier      <text string> $00
 		// The private data      <binary data>
@@ -559,6 +577,8 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		idNormalized = "COMM"
 	case id == "TXX", id == "TXXX":
 		idNormalized = "TXXX"
+	case id == "WXX", id == "WXXX":
+		idNormalized = "WXXX"
 	case len(id) > 0 && id[0] == 'T':
 		idNormalized = "T000"
 	}
