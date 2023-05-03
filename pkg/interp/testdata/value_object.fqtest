@@ -1,6 +1,6 @@
 $ fq -i -d mp3 . test.mp3
-mp3> .headers[0].flags | ., tovalue, toactual, tosym, type, length?
-   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.headers[0].flags{}:
+mp3> .headers[0].header.flags | ., tovalue, toactual, tosym, type, length?
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.headers[0].header.flags{}:
 0x0|               00                              |     .          |  unsynchronisation: false
 0x0|               00                              |     .          |  extended_header: false
 0x0|               00                              |     .          |  experimental_indicator: false
@@ -15,105 +15,106 @@ null
 null
 "object"
 4
-mp3> .headers[0].flags[0] | ., type, length?
+mp3> .headers[0].header.flags[0] | ., type, length?
 error: expected an array with index 0 but got: object
-mp3> .headers[0].flags[-1000] | ., type, length?
+mp3> .headers[0].header.flags[-1000] | ., type, length?
 error: expected an array with index -2 but got: object
-mp3> .headers[0].flags[1000] | ., type, length?
+mp3> .headers[0].header.flags[1000] | ., type, length?
 error: expected an array with index -1 but got: object
-mp3> .headers[0].flags[1:3] | ., type, length?
+mp3> .headers[0].header.flags[1:3] | ., type, length?
 error: expected an array but got: object
-mp3> .headers[0].flags[0:-1] | ., type, length?
+mp3> .headers[0].header.flags[0:-1] | ., type, length?
 error: expected an array but got: object
-mp3> .headers[0].flags[-1000:2000] | ., type, length?
+mp3> .headers[0].header.flags[-1000:2000] | ., type, length?
 error: expected an array but got: object
-mp3> .headers[0].flags["test"] | ., type, length?
+mp3> .headers[0].header.flags["test"] | ., type, length?
 null
 "null"
 0
-mp3> [.headers[0].flags[]] | type, length?
+mp3> [.headers[0].header.flags[]] | type, length?
 "array"
 4
-mp3> .headers[0].flags | keys
+mp3> .headers[0].header.flags | keys
 [
   "unsynchronisation",
   "extended_header",
   "experimental_indicator",
   "unused"
 ]
-mp3> .headers[0].flags | has("a")
+mp3> .headers[0].header.flags | has("a")
 false
-mp3> .headers[0].flags | has(0)
+mp3> .headers[0].header.flags | has(0)
 error: cannot check whether object has a key: 0
-mp3> .headers[0].flags | type
+mp3> .headers[0].header.flags | type
 "object"
-mp3> .headers[0].flags | tonumber
+mp3> .headers[0].header.flags | tonumber
 error: tonumber cannot be applied to: object
-mp3> .headers[0].flags | tostring
+mp3> .headers[0].header.flags | tostring
 "{\"experimental_indicator\":false,\"extended_header\":false,\"unsynchronisation\":false,\"unused\":0}"
-mp3> .headers[0].flags + ""
+mp3> .headers[0].header.flags + ""
 error: cannot add: object ({"experimental_indicator" ...}) and string ("")
-mp3> .headers[0].flags + 1
+mp3> .headers[0].header.flags + 1
 error: cannot add: object ({"experimental_indicator" ...}) and number (1)
-mp3> .headers[0].flags._start | ., type, length?
+mp3> .headers[0].header.flags._start | ., type, length?
 40
 "number"
 40
-mp3> .headers[0].flags._stop | ., type, length?
+mp3> .headers[0].header.flags._stop | ., type, length?
 48
 "number"
 48
-mp3> .headers[0].flags._len | ., type, length?
+mp3> .headers[0].header.flags._len | ., type, length?
 8
 "number"
 8
-mp3> .headers[0].flags._name | ., type, length?
+mp3> .headers[0].header.flags._name | ., type, length?
 "flags"
 "string"
 5
-mp3> .headers[0].flags._actual | ., type, length?
+mp3> .headers[0].header.flags._actual | ., type, length?
 null
 "null"
 0
-mp3> .headers[0].flags._sym | ., type, length?
+mp3> .headers[0].header.flags._sym | ., type, length?
 null
 "null"
 0
-mp3> .headers[0].flags._description | ., type, length?
+mp3> .headers[0].header.flags._description | ., type, length?
 null
 "null"
 0
-mp3> .headers[0].flags._path | ., type, length?
+mp3> .headers[0].header.flags._path | ., type, length?
 [
   "headers",
   0,
+  "header",
   "flags"
 ]
 "array"
-3
-mp3> .headers[0].flags._bits | ., type, length?
+4
+mp3> .headers[0].header.flags._bits | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|               00                              |     .          |.: raw bits 0x5-0x5.7 (1)
 "string"
 8
-mp3> .headers[0].flags._bytes | ., type, length?
+mp3> .headers[0].header.flags._bytes | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|               00                              |     .          |.: raw bits 0x5-0x5.7 (1)
 "string"
 1
-mp3> .headers[0].flags._error | ., type, length?
+mp3> .headers[0].header.flags._error | ., type, length?
 null
 "null"
 0
-mp3> .headers[0].flags._unknown | ., type, length?
+mp3> .headers[0].header.flags._gap | ., type, length?
 false
 "boolean"
-mp3> .headers[0].flags.a = 1
+mp3> .headers[0].header.flags.a = 1
 {
   "footers": [],
   "frames": [
     {
-      "audio_data": "<5>AAAAAAA=",
+      "audio_data": "\u0000\u0000\u0000\u0000\u0000",
       "crc_calculated": "827a",
       "header": {
         "bitrate": 56000,
@@ -172,7 +173,7 @@ mp3> .headers[0].flags.a = 1
         "scfsi0": 0,
         "share": 0
       },
-      "tags": {
+      "tag": {
         "abr_vbr": 0,
         "audiophile_replay_gain": 0,
         "bytes": 599,
@@ -307,7 +308,7 @@ mp3> .headers[0].flags.a = 1
       }
     },
     {
-      "audio_data": "<187>B6rDjjOF02TxocEIHFgfXh8YHEYEHonlsy5aD6g7E2vw+GBQFAQDAoJEDE5o0aNsH3iAEAQxOD/BB050+c5fznL+7p93Lg+D4Ph8EAxKAMH9IAH///555554T7EPKQdc5TdRYNYihmqWGn6jVTNuL+Em0eAKJCYbPQRwVHtKrRk2Hogmi3/vFJwLDWJ//++4IUY5R/oJnyoaCgV9HgUESINnfuTyoCETQkEv/+OQSYPWtQkEQMCZSqCIEQ==",
+      "audio_data": "\u0007\ufffdÎ3\ufffd\ufffdd\ufffd\ufffd\ufffd\b\u001cX\u001f^\u001f\u0018\u001cF\u0004\u001e\ufffd\ufffd\ufffd.Z\u000f\ufffd;\u0013k\ufffd\ufffd`P\u0014\u0004\u0003\u0002\ufffdD\fNhѣl\u001fx\ufffd\u0010\u000418?\ufffd\u0007Nt\ufffd\ufffd_\ufffdr\ufffd\ufffd\ufffdw.\u000f\ufffd\ufffd\ufffd|\u0010\fJ\u0000\ufffd\ufffd \u0001\ufffd\ufffd\ufffdy\ufffd\ufffdxO\ufffd\u000f)\u0007\\\ufffd7Q`\ufffd\"\ufffdj\ufffd\u001a~\ufffdU3n/\ufffd&\ufffd\ufffd\n$&\u001b=\u0004pT{J\ufffd\u00196\u001e\ufffd&\ufffd\u007f\ufffd\u0014\ufffd\u000b\rb\u007f\ufffd\ufffd\ufffd!F9G\ufffd\t\ufffd*\u001a\n\u0005}\u001e\u0005\u0004H\ufffdg~\ufffd\ufffd\ufffd!\u0013BA/\ufffd\ufffd\ufffdI\ufffdֵ\t\u0004@\ufffd\ufffdJ\ufffd\ufffd\u0011",
       "crc_calculated": "e5b0",
       "header": {
         "bitrate": 64000,
@@ -372,7 +373,7 @@ mp3> .headers[0].flags.a = 1
       }
     },
     {
-      "audio_data": "<188>EUs2SgiDWMkg1ClSmMjI+ROAQCS8kSNCUFYNGBEDQd6wVWCsRHiwdgr6P4lOlXKBqDUqdWdiL/BXlj3Ev//xEkxBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqo=",
+      "audio_data": "\u0011K6J\b\ufffdX\ufffd \ufffd)R\ufffd\ufffd\ufffd\ufffd\u0013\ufffd@$\ufffd\ufffd#BPV\r\u0018\u0011\u0003AްU`\ufffdDx\ufffdv\n\ufffd?\ufffdN\ufffdr\ufffd\ufffd5*ugb/\ufffdW\ufffd=Ŀ\ufffd\ufffd\u0012LAME3.100\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd",
       "crc_calculated": "61fd",
       "header": {
         "bitrate": 64000,
@@ -437,13 +438,6 @@ mp3> .headers[0].flags.a = 1
   ],
   "headers": [
     {
-      "flags": {
-        "a": 1,
-        "experimental_indicator": false,
-        "extended_header": false,
-        "unsynchronisation": false,
-        "unused": 0
-      },
       "frames": [
         {
           "flags": {
@@ -465,22 +459,31 @@ mp3> .headers[0].flags.a = 1
           "text_encoding": "utf8"
         }
       ],
-      "magic": "ID3",
-      "padding": "<10>AAAAAAAAAAAAAA==",
-      "revision": 0,
-      "size": 35,
-      "version": 4
+      "header": {
+        "flags": {
+          "a": 1,
+          "experimental_indicator": false,
+          "extended_header": false,
+          "unsynchronisation": false,
+          "unused": 0
+        },
+        "magic": "ID3",
+        "revision": 0,
+        "size": 35,
+        "version": 4
+      },
+      "padding": "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
     }
   ]
 }
-mp3> .headers[0].flags[0] = 1
+mp3> .headers[0].header.flags[0] = 1
 error: expected an array but got: object ({"experimental_indicator" ...})
-mp3> .headers[0].flags.a |= empty
+mp3> .headers[0].header.flags.a |= empty
 {
   "footers": [],
   "frames": [
     {
-      "audio_data": "<5>AAAAAAA=",
+      "audio_data": "\u0000\u0000\u0000\u0000\u0000",
       "crc_calculated": "827a",
       "header": {
         "bitrate": 56000,
@@ -539,7 +542,7 @@ mp3> .headers[0].flags.a |= empty
         "scfsi0": 0,
         "share": 0
       },
-      "tags": {
+      "tag": {
         "abr_vbr": 0,
         "audiophile_replay_gain": 0,
         "bytes": 599,
@@ -674,7 +677,7 @@ mp3> .headers[0].flags.a |= empty
       }
     },
     {
-      "audio_data": "<187>B6rDjjOF02TxocEIHFgfXh8YHEYEHonlsy5aD6g7E2vw+GBQFAQDAoJEDE5o0aNsH3iAEAQxOD/BB050+c5fznL+7p93Lg+D4Ph8EAxKAMH9IAH///555554T7EPKQdc5TdRYNYihmqWGn6jVTNuL+Em0eAKJCYbPQRwVHtKrRk2Hogmi3/vFJwLDWJ//++4IUY5R/oJnyoaCgV9HgUESINnfuTyoCETQkEv/+OQSYPWtQkEQMCZSqCIEQ==",
+      "audio_data": "\u0007\ufffdÎ3\ufffd\ufffdd\ufffd\ufffd\ufffd\b\u001cX\u001f^\u001f\u0018\u001cF\u0004\u001e\ufffd\ufffd\ufffd.Z\u000f\ufffd;\u0013k\ufffd\ufffd`P\u0014\u0004\u0003\u0002\ufffdD\fNhѣl\u001fx\ufffd\u0010\u000418?\ufffd\u0007Nt\ufffd\ufffd_\ufffdr\ufffd\ufffd\ufffdw.\u000f\ufffd\ufffd\ufffd|\u0010\fJ\u0000\ufffd\ufffd \u0001\ufffd\ufffd\ufffdy\ufffd\ufffdxO\ufffd\u000f)\u0007\\\ufffd7Q`\ufffd\"\ufffdj\ufffd\u001a~\ufffdU3n/\ufffd&\ufffd\ufffd\n$&\u001b=\u0004pT{J\ufffd\u00196\u001e\ufffd&\ufffd\u007f\ufffd\u0014\ufffd\u000b\rb\u007f\ufffd\ufffd\ufffd!F9G\ufffd\t\ufffd*\u001a\n\u0005}\u001e\u0005\u0004H\ufffdg~\ufffd\ufffd\ufffd!\u0013BA/\ufffd\ufffd\ufffdI\ufffdֵ\t\u0004@\ufffd\ufffdJ\ufffd\ufffd\u0011",
       "crc_calculated": "e5b0",
       "header": {
         "bitrate": 64000,
@@ -739,7 +742,7 @@ mp3> .headers[0].flags.a |= empty
       }
     },
     {
-      "audio_data": "<188>EUs2SgiDWMkg1ClSmMjI+ROAQCS8kSNCUFYNGBEDQd6wVWCsRHiwdgr6P4lOlXKBqDUqdWdiL/BXlj3Ev//xEkxBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqo=",
+      "audio_data": "\u0011K6J\b\ufffdX\ufffd \ufffd)R\ufffd\ufffd\ufffd\ufffd\u0013\ufffd@$\ufffd\ufffd#BPV\r\u0018\u0011\u0003AްU`\ufffdDx\ufffdv\n\ufffd?\ufffdN\ufffdr\ufffd\ufffd5*ugb/\ufffdW\ufffd=Ŀ\ufffd\ufffd\u0012LAME3.100\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd",
       "crc_calculated": "61fd",
       "header": {
         "bitrate": 64000,
@@ -804,12 +807,6 @@ mp3> .headers[0].flags.a |= empty
   ],
   "headers": [
     {
-      "flags": {
-        "experimental_indicator": false,
-        "extended_header": false,
-        "unsynchronisation": false,
-        "unused": 0
-      },
       "frames": [
         {
           "flags": {
@@ -831,17 +828,25 @@ mp3> .headers[0].flags.a |= empty
           "text_encoding": "utf8"
         }
       ],
-      "magic": "ID3",
-      "padding": "<10>AAAAAAAAAAAAAA==",
-      "revision": 0,
-      "size": 35,
-      "version": 4
+      "header": {
+        "flags": {
+          "experimental_indicator": false,
+          "extended_header": false,
+          "unsynchronisation": false,
+          "unused": 0
+        },
+        "magic": "ID3",
+        "revision": 0,
+        "size": 35,
+        "version": 4
+      },
+      "padding": "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
     }
   ]
 }
-mp3> .headers[0].flags[0] |= empty
+mp3> .headers[0].header.flags[0] |= empty
 error: expected an array with index 0 but got: object
-mp3> .headers[0].flags | setpath(["a"]; 1)
+mp3> .headers[0].header.flags | setpath(["a"]; 1)
 {
   "a": 1,
   "experimental_indicator": false,
@@ -849,15 +854,15 @@ mp3> .headers[0].flags | setpath(["a"]; 1)
   "unsynchronisation": false,
   "unused": 0
 }
-mp3> .headers[0].flags | setpath([0]; 1)
+mp3> .headers[0].header.flags | setpath([0]; 1)
 error: expected an array but got: object ({"experimental_indicator" ...})
-mp3> .headers[0].flags | delpaths([["a"]])
+mp3> .headers[0].header.flags | delpaths([["a"]])
 {
   "experimental_indicator": false,
   "extended_header": false,
   "unsynchronisation": false,
   "unused": 0
 }
-mp3> .headers[0].flags | delpaths([[0]])
+mp3> .headers[0].header.flags | delpaths([[0]])
 error: expected an array but got: object ({"experimental_indicator" ...})
 mp3> ^D

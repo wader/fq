@@ -11,21 +11,22 @@ import (
 	"github.com/wader/fq/pkg/interp"
 )
 
-var pesPacketFormat decode.Group
-var spuFormat decode.Group
+var pesPacketGroup decode.Group
+var mpegSpuGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.MPEG_PES,
-		Description: "MPEG Packetized elementary stream",
-		DecodeFn:    pesDecode,
-		RootArray:   true,
-		RootName:    "packets",
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.MPEG_PES_PACKET}, Group: &pesPacketFormat},
-			{Names: []string{format.MPEG_SPU}, Group: &spuFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.MPES_PES,
+		&decode.Format{
+			Description: "MPEG Packetized elementary stream",
+			DecodeFn:    pesDecode,
+			RootArray:   true,
+			RootName:    "packets",
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.MPEG_PES_Packet}, Out: &pesPacketGroup},
+				{Groups: []*decode.Group{format.MPEG_SPU}, Out: &mpegSpuGroup},
+			},
+		})
 }
 
 type subStream struct {
@@ -33,10 +34,10 @@ type subStream struct {
 	l int
 }
 
-func pesDecode(d *decode.D, _ any) any {
+func pesDecode(d *decode.D) any {
 	substreams := map[int]*subStream{}
 
-	prefix := d.PeekBits(24)
+	prefix := d.PeekUintBits(24)
 	if prefix != 0b0000_0000_0000_0000_0000_0001 {
 		d.Errorf("no pes prefix found")
 	}
@@ -46,7 +47,7 @@ func pesDecode(d *decode.D, _ any) any {
 	spuD := d.FieldArrayValue("spus")
 
 	for d.NotEnd() {
-		dv, v, err := d.TryFieldFormat("packet", pesPacketFormat, nil)
+		dv, v, err := d.TryFieldFormat("packet", &pesPacketGroup, nil)
 		if dv == nil || err != nil {
 			break
 		}
@@ -67,7 +68,7 @@ func pesDecode(d *decode.D, _ any) any {
 
 			// TODO: is this how spu end is signalled?
 			if s.l == len(s.b) {
-				spuD.FieldFormatBitBuf("spu", bitio.NewBitReader(s.b, -1), spuFormat, nil)
+				spuD.FieldFormatBitBuf("spu", bitio.NewBitReader(s.b, -1), &mpegSpuGroup, nil)
 				s.b = nil
 				s.l = 0
 			}

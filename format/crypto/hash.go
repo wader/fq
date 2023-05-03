@@ -23,7 +23,7 @@ import (
 var hashFS embed.FS
 
 func init() {
-	interp.RegisterFunc1("_tohash", toHash)
+	interp.RegisterFunc1("_to_hash", toHash)
 	interp.RegisterFS(hashFS)
 }
 

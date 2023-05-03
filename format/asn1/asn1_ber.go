@@ -33,12 +33,13 @@ import (
 var asn1FS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.ASN1_BER,
-		Description: "ASN1 BER (basic encoding rules, also CER and DER)",
-		DecodeFn:    decodeASN1BER,
-		Functions:   []string{"torepr"},
-	})
+	interp.RegisterFormat(
+		format.ASN1_BER,
+		&decode.Format{
+			Description: "ASN1 BER (basic encoding rules, also CER and DER)",
+			DecodeFn:    decodeASN1BER,
+			Functions:   []string{"torepr"},
+		})
 	interp.RegisterFS(asn1FS)
 }
 
@@ -49,7 +50,7 @@ const (
 	classPrivate     = 0b11
 )
 
-var tagClassMap = scalar.UToSymStr{
+var tagClassMap = scalar.UintMapSymStr{
 	classUniversal:   "universal",
 	classApplication: "application",
 	classContext:     "context",
@@ -61,7 +62,7 @@ const (
 	formConstructed = 1
 )
 
-var constructedPrimitiveMap = scalar.UToSymStr{
+var constructedPrimitiveMap = scalar.UintMapSymStr{
 	formConstructed: "constructed",
 	formPrimitive:   "primitive",
 }
@@ -95,7 +96,7 @@ const (
 	universalTypeUniversalString  = 0x1c // not encoded?
 )
 
-var universalTypeMap = scalar.UToSymStr{
+var universalTypeMap = scalar.UintMapSymStr{
 	universalTypeEndOfContent:     "end_of_content",
 	universalTypeBoolean:          "boolean",
 	universalTypeInteger:          "integer",
@@ -136,7 +137,7 @@ const (
 	decimalMinusZero     = 0b00_00_11
 )
 
-var lengthMap = scalar.UToSymStr{
+var lengthMap = scalar.UintMapSymStr{
 	0: "indefinite",
 }
 
@@ -179,12 +180,12 @@ func decodeASN1BERValue(d *decode.D, bib *bitio.Buffer, sb *strings.Builder, par
 	var tag uint64
 	switch class {
 	case classUniversal:
-		tag = d.FieldUFn("tag", decodeTagNumber, universalTypeMap, scalar.ActualHex)
+		tag = d.FieldUintFn("tag", decodeTagNumber, universalTypeMap, scalar.UintHex)
 	default:
-		tag = d.FieldUFn("tag", decodeTagNumber)
+		tag = d.FieldUintFn("tag", decodeTagNumber)
 	}
 
-	length := d.FieldUFn("length", decodeLength, lengthMap)
+	length := d.FieldUintFn("length", decodeLength, lengthMap)
 	var l int64
 	switch length {
 	case lengthIndefinite:
@@ -202,7 +203,7 @@ func decodeASN1BERValue(d *decode.D, bib *bitio.Buffer, sb *strings.Builder, par
 		case form == formConstructed || tag == universalTypeSequence || tag == universalTypeSet:
 			d.FieldArray("constructed", func(d *decode.D) {
 				for !d.End() {
-					if length == lengthIndefinite && d.PeekBits(16) == lengthEndMarker {
+					if length == lengthIndefinite && d.PeekUintBits(16) == lengthEndMarker {
 						break
 					}
 
@@ -261,9 +262,9 @@ func decodeASN1BERValue(d *decode.D, bib *bitio.Buffer, sb *strings.Builder, par
 		case class == classUniversal && tag == universalTypeEndOfContent:
 			// nop
 		case class == classUniversal && tag == universalTypeBoolean:
-			d.FieldU8("value", scalar.URangeToScalar{
-				{Range: [2]uint64{0, 0}, S: scalar.S{Sym: false}},
-				{Range: [2]uint64{0x01, 0xff1}, S: scalar.S{Sym: true}},
+			d.FieldU8("value", scalar.UintRangeToScalar{
+				{Range: [2]uint64{0, 0}, S: scalar.Uint{Sym: false}},
+				{Range: [2]uint64{0x01, 0xff1}, S: scalar.Uint{Sym: true}},
 			})
 		case class == classUniversal && tag == universalTypeInteger:
 			if length > 8 {
@@ -295,15 +296,15 @@ func decodeASN1BERValue(d *decode.D, bib *bitio.Buffer, sb *strings.Builder, par
 				}
 			}
 		case class == classUniversal && tag == universalTypeNull:
-			d.FieldValueNil("value")
+			d.FieldValueAny("value", nil)
 		case class == classUniversal && tag == universalTypeObjectIdentifier:
 			d.FieldArray("value", func(d *decode.D) {
 				// first byte is = oid0*40 + oid1
-				d.FieldUFn("oid", func(d *decode.D) uint64 { return d.U8() / 40 })
+				d.FieldUintFn("oid", func(d *decode.D) uint64 { return d.U8() / 40 })
 				d.SeekRel(-8)
-				d.FieldUFn("oid", func(d *decode.D) uint64 { return d.U8() % 40 })
+				d.FieldUintFn("oid", func(d *decode.D) uint64 { return d.U8() % 40 })
 				for !d.End() {
-					d.FieldUFn("oid", func(d *decode.D) uint64 {
+					d.FieldUintFn("oid", func(d *decode.D) uint64 {
 						more := true
 						var n uint64
 						for more {
@@ -322,20 +323,20 @@ func decodeASN1BERValue(d *decode.D, bib *bitio.Buffer, sb *strings.Builder, par
 		case class == classUniversal && tag == universalTypeReal:
 			switch {
 			case length == 0:
-				d.FieldValueU("value", 0)
+				d.FieldValueUint("value", 0)
 			default:
 				switch d.FieldBool("binary_encoding") {
 				case true:
-					s := d.FieldScalarBool("sign", scalar.BoolToSymS{
+					s := d.FieldScalarBool("sign", scalar.BoolMapSymSint{
 						true:  -1,
 						false: 1,
-					}).SymS()
-					base := d.FieldScalarU2("base", scalar.UToSymU{
+					}).SymSint()
+					base := d.FieldScalarU2("base", scalar.UintMapSymUint{
 						0b00: 2,
 						0b01: 8,
 						0b10: 16,
 						0b11: 0,
-					}).SymU()
+					}).SymUint()
 					scale := d.FieldU2("scale")
 					format := d.FieldU2("format")
 
@@ -354,15 +355,13 @@ func decodeASN1BERValue(d *decode.D, bib *bitio.Buffer, sb *strings.Builder, par
 					}
 
 					n := d.FieldU("n", int(d.BitsLeft()))
-
 					m := float64(s) * float64(n) * math.Pow(float64(base), float64(exp)) * float64(int(1)<<scale)
-
-					d.FieldValueFloat("value", m)
+					d.FieldValueFlt("value", m)
 
 				case false:
 					switch d.FieldBool("decimal_encoding") {
 					case true:
-						n := d.FieldU6("special", scalar.UToSymStr{
+						n := d.FieldU6("special", scalar.UintMapSymStr{
 							decimalPlusInfinity:  "plus_infinity",
 							decimalMinusInfinity: "minus_infinity",
 							decimalNan:           "nan",
@@ -371,21 +370,21 @@ func decodeASN1BERValue(d *decode.D, bib *bitio.Buffer, sb *strings.Builder, par
 
 						switch n {
 						case decimalPlusInfinity:
-							d.FieldValueFloat("value", math.Inf(1))
+							d.FieldValueFlt("value", math.Inf(1))
 						case decimalMinusInfinity:
-							d.FieldValueFloat("value", math.Inf(-1))
+							d.FieldValueFlt("value", math.Inf(-1))
 						case decimalNan:
-							d.FieldValueFloat("value", math.NaN())
+							d.FieldValueFlt("value", math.NaN())
 						case decimalMinusZero:
-							d.FieldValueFloat("value", -0)
+							d.FieldValueFlt("value", -0)
 						}
 					case false:
-						d.FieldU6("representation", scalar.UToSymStr{
+						d.FieldU6("representation", scalar.UintMapSymStr{
 							0b00_00_01: "nr1",
 							0b00_00_10: "nr2",
 							0b00_00_11: "nr3",
 						})
-						d.FieldFFn("value", func(d *decode.D) float64 {
+						d.FieldFltFn("value", func(d *decode.D) float64 {
 							// TODO: can ParseFloat do all ISO-6093 nr?
 							n, _ := strconv.ParseFloat(d.UTF8(int(d.BitsLeft()/8)), 64)
 							return n
@@ -415,7 +414,7 @@ func decodeASN1BERValue(d *decode.D, bib *bitio.Buffer, sb *strings.Builder, par
 	})
 }
 
-func decodeASN1BER(d *decode.D, _ any) any {
+func decodeASN1BER(d *decode.D) any {
 	decodeASN1BERValue(d, nil, nil, formConstructed, universalTypeSequence)
 	return nil
 }

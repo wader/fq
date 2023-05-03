@@ -28,6 +28,7 @@ import (
 	"github.com/wader/fq/internal/pos"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 
 	"github.com/wader/gojq"
 )
@@ -74,6 +75,15 @@ func init() {
 	RegisterIter1("_print_color_json", (*Interp)._printColorJSON)
 
 	RegisterFunc0("_is_completing", (*Interp)._isCompleting)
+}
+
+type Scalarable interface {
+	ScalarActual() any
+	ScalarValue() any
+	ScalarSym() any
+	ScalarDescription() string
+	ScalarIsGap() bool
+	ScalarDisplayFormat() scalar.DisplayFormat
 }
 
 type valueError struct {
@@ -140,9 +150,11 @@ type Platform struct {
 	Arch string
 }
 
+type CompleteFn func(line string, pos int) (newLine []string, shared int)
+
 type ReadlineOpts struct {
 	Prompt     string
-	CompleteFn func(line string, pos int) (newLine []string, shared int)
+	CompleteFn CompleteFn
 }
 
 type OS interface {
@@ -198,7 +210,7 @@ type Display interface {
 
 type JQValueEx interface {
 	gojq.JQValue
-	JQValueToGoJQEx(optsFn func() Options) any
+	JQValueToGoJQEx(optsFn func() *Options) any
 }
 
 func valuePath(v *decode.Value) []any {
@@ -661,11 +673,28 @@ func (i *Interp) _hexdump(c any, v any) gojq.Iter {
 
 func (i *Interp) _printColorJSON(c any, v any) gojq.Iter {
 	opts := OptionsFromValue(v)
-
-	cj, err := i.NewColorJSON(opts)
-	if err != nil {
-		return gojq.NewIter(err)
+	indent := 2
+	if opts.Compact {
+		indent = 0
 	}
+
+	cj := colorjson.NewEncoder(colorjson.Options{
+		Color:   opts.Color,
+		Tab:     false,
+		Indent:  indent,
+		ValueFn: func(v any) any { return toValue(func() *Options { return &opts }, v) },
+		Colors: colorjson.Colors{
+			Reset:     []byte(ansi.Reset.SetString),
+			Null:      []byte(opts.Decorator.Null.SetString),
+			False:     []byte(opts.Decorator.False.SetString),
+			True:      []byte(opts.Decorator.True.SetString),
+			Number:    []byte(opts.Decorator.Number.SetString),
+			String:    []byte(opts.Decorator.String.SetString),
+			ObjectKey: []byte(opts.Decorator.ObjectKey.SetString),
+			Array:     []byte(opts.Decorator.Array.SetString),
+			Object:    []byte(opts.Decorator.Object.SetString),
+		},
+	})
 	if err := cj.Marshal(c, i.EvalInstance.Output); err != nil {
 		return gojq.NewIter(err)
 	}
@@ -1005,6 +1034,7 @@ type Options struct {
 	DisplayBytes int
 	Addrbase     int
 	Sizebase     int
+	SkipGaps     bool
 
 	Decorator    Decorator
 	BitsFormatFn func(br bitio.ReaderAtSeeker) (any, error)
@@ -1110,34 +1140,4 @@ func (i *Interp) includePaths() []string {
 func (i *Interp) slurps() map[string]any {
 	slurpsAny, _ := i.lookupState("slurps").(map[string]any)
 	return slurpsAny
-}
-
-func (i *Interp) NewColorJSON(opts Options) (*colorjson.Encoder, error) {
-	indent := 2
-	if opts.Compact {
-		indent = 0
-	}
-
-	return colorjson.NewEncoder(
-		opts.Color,
-		false,
-		indent,
-		func(v any) any {
-			if v, ok := toValue(func() Options { return opts }, v); ok {
-				return v
-			}
-			panic(fmt.Sprintf("toValue not a JQValue value: %#v (%T)", v, v))
-		},
-		colorjson.Colors{
-			Reset:     []byte(ansi.Reset.SetString),
-			Null:      []byte(opts.Decorator.Null.SetString),
-			False:     []byte(opts.Decorator.False.SetString),
-			True:      []byte(opts.Decorator.True.SetString),
-			Number:    []byte(opts.Decorator.Number.SetString),
-			String:    []byte(opts.Decorator.String.SetString),
-			ObjectKey: []byte(opts.Decorator.ObjectKey.SetString),
-			Array:     []byte(opts.Decorator.Array.SetString),
-			Object:    []byte(opts.Decorator.Object.SetString),
-		},
-	), nil
 }

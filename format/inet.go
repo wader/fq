@@ -4,8 +4,6 @@ import "github.com/wader/fq/pkg/scalar"
 
 // from https://www.tcpdump.org/linktypes.html
 // TODO cleanup
-//
-//nolint:revive
 const (
 	LinkTypeNULL                       = 0
 	LinkTypeETHERNET                   = 1
@@ -84,8 +82,8 @@ const (
 	LinkTypeFC_2_WITH_FRAME_DELIMS     = 225
 	LinkTypeIPNET                      = 226
 	LinkTypeCAN_SOCKETCAN              = 227
-	LinkTypeIPV4                       = 228
-	LinkTypeIPV6                       = 229
+	LinkTypeIPv4                       = 228
+	LinkTypeIPv6                       = 229
 	LinkTypeIEEE802_15_4_NOFCS         = 230
 	LinkTypeDBUS                       = 231
 	LinkTypeDVB_CI                     = 235
@@ -140,7 +138,7 @@ const (
 	LinkTypeETW                        = 290
 )
 
-var LinkTypeMap = scalar.UToScalar{
+var LinkTypeMap = scalar.UintMap{
 	LinkTypeNULL:                       {Sym: "null", Description: `BSD loopback encapsulation`},
 	LinkTypeETHERNET:                   {Sym: "ethernet", Description: `IEEE 802.3 Ethernet`},
 	LinkTypeAX25:                       {Sym: "ax25", Description: `AX.25 packet, with nothing preceding it`},
@@ -218,8 +216,8 @@ var LinkTypeMap = scalar.UToScalar{
 	LinkTypeFC_2_WITH_FRAME_DELIMS:     {Sym: "fc_2_with_frame_delims", Description: `Fibre Channel FC-2 frames, beginning an encoding of the SOF, followed by a Frame_Header, and ending with an encoding of the SOF`},
 	LinkTypeIPNET:                      {Sym: "ipnet", Description: `Solaris ipnet pseudo-header, followed by an IPv4 or IPv6 datagram`},
 	LinkTypeCAN_SOCKETCAN:              {Sym: "can_socketcan", Description: `CAN (Controller Area Network) frames, with a pseudo-header followed by the frame payload`},
-	LinkTypeIPV4:                       {Sym: "ipv4", Description: `Raw IPv4`},
-	LinkTypeIPV6:                       {Sym: "ipv6", Description: `Raw IPv6`},
+	LinkTypeIPv4:                       {Sym: "ipv4", Description: `Raw IPv4`},
+	LinkTypeIPv6:                       {Sym: "ipv6", Description: `Raw IPv6`},
 	LinkTypeIEEE802_15_4_NOFCS:         {Sym: "ieee802_15_4_nofcs", Description: `IEEE 802.15.4 Low-Rate Wireless Network, without the FCS at the end of the frame`},
 	LinkTypeDBUS:                       {Sym: "dbus", Description: `Raw D-Bus messages`},
 	LinkTypeDVB_CI:                     {Sym: "dvb_ci", Description: `DVB-CI (DVB Common Interface for communication between a PC Card module and a DVB receiver)`},
@@ -281,7 +279,7 @@ const (
 
 // from https://en.wikipedia.org/wiki/EtherType
 // TODO: cleanup
-var EtherTypeMap = scalar.UToScalar{
+var EtherTypeMap = scalar.UintMap{
 	EtherTypeIPv4: {Sym: "ipv4", Description: `Internet Protocol version 4`},
 	0x0806:        {Sym: "arp", Description: `Address Resolution Protocol`},
 	0x0842:        {Sym: "wake", Description: `Wake-on-LAN[9]`},
@@ -350,7 +348,7 @@ const (
 	IPv4ProtocolICMPv6 = 58
 )
 
-var IPv4ProtocolMap = scalar.UToScalar{
+var IPv4ProtocolMap = scalar.UintMap{
 	0:                  {Sym: "ip", Description: "Internet protocol, pseudo protocol number"},
 	IPv4ProtocolICMP:   {Sym: "icmp", Description: "Internet control message protocol"},
 	IPv4ProtocolIGMP:   {Sym: "igmp", Description: "Internet group management protocol"},
@@ -498,7 +496,7 @@ const (
 	UDPPortMDNS   = 5353
 )
 
-var UDPPortMap = scalar.UToScalar{
+var UDPPortMap = scalar.UintMap{
 	1:             {Sym: "tcpmux", Description: "TCP Port Service Multiplexer"},
 	2:             {Sym: "compressnet", Description: "Management Utility"},
 	3:             {Sym: "compressnet", Description: "Compression Process"},
@@ -1186,7 +1184,7 @@ const (
 	TCPPortRTMP   = 1935
 )
 
-var TCPPortMap = scalar.UToScalar{
+var TCPPortMap = scalar.UintMap{
 	1:             {Sym: "tcpmux", Description: "TCP Port Service Multiplexer"},
 	2:             {Sym: "compressnet", Description: "Management Utility"},
 	3:             {Sym: "compressnet", Description: "Compression Process"},

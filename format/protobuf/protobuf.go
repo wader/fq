@@ -7,6 +7,7 @@ import (
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/internal/mathex"
+	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
@@ -16,11 +17,12 @@ import (
 var protobufFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.PROTOBUF,
-		Description: "Protobuf",
-		DecodeFn:    protobufDecode,
-	})
+	interp.RegisterFormat(
+		format.Protobuf,
+		&decode.Format{
+			Description: "Protobuf",
+			DecodeFn:    protobufDecode,
+		})
 	interp.RegisterFS(protobufFS)
 }
 
@@ -31,7 +33,7 @@ const (
 	wireType32Bit           = 5
 )
 
-var wireTypeNames = scalar.UToSymStr{
+var wireTypeNames = scalar.UintMapSymStr{
 	0: "varint",
 	1: "64bit",
 	2: "length_delimited",
@@ -43,8 +45,8 @@ func protobufDecodeField(d *decode.D, pbm *format.ProtoBufMessage) {
 		keyN := d.FieldULEB128("key_n")
 		fieldNumber := keyN >> 3
 		wireType := keyN & 0x7
-		d.FieldValueU("field_number", fieldNumber)
-		d.FieldValueU("wire_type", wireType, scalar.Sym(wireTypeNames[wireType]))
+		d.FieldValueUint("field_number", fieldNumber)
+		d.FieldValueUint("wire_type", wireType, scalar.UintSym(wireTypeNames[wireType]))
 
 		var value uint64
 		var length uint64
@@ -70,19 +72,19 @@ func protobufDecodeField(d *decode.D, pbm *format.ProtoBufMessage) {
 				switch pbf.Type {
 				case format.ProtoBufTypeInt32, format.ProtoBufTypeInt64:
 					v := mathex.ZigZag[uint64, int64](value)
-					d.FieldValueS("value", v)
+					d.FieldValueSint("value", v)
 					if len(pbf.Enums) > 0 {
 						d.FieldValueStr("enum", pbf.Enums[uint64(v)])
 					}
 				case format.ProtoBufTypeUInt32, format.ProtoBufTypeUInt64:
-					d.FieldValueU("value", value)
+					d.FieldValueUint("value", value)
 					if len(pbf.Enums) > 0 {
 						d.FieldValueStr("enum", pbf.Enums[value])
 					}
 				case format.ProtoBufTypeSInt32, format.ProtoBufTypeSInt64:
 					// TODO: correct? 32 different?
 					v := mathex.TwosComplement(64, value)
-					d.FieldValueS("value", v)
+					d.FieldValueSint("value", v)
 					if len(pbf.Enums) > 0 {
 						d.FieldValueStr("enum", pbf.Enums[uint64(v)])
 					}
@@ -99,7 +101,7 @@ func protobufDecodeField(d *decode.D, pbm *format.ProtoBufMessage) {
 				case format.ProtoBufTypeString:
 					d.FieldValueStr("value", string(d.BytesRange(valueStart, int(length))))
 				case format.ProtoBufTypeBytes:
-					d.FieldValueRaw("value", d.BytesRange(valueStart, int(length)))
+					d.FieldValueBitBuf("value", bitio.NewBitReader(d.BytesRange(valueStart, int(length)), -1))
 				case format.ProtoBufTypeMessage:
 					// TODO: test
 					d.FramedFn(int64(length)*8, func(d *decode.D) {
@@ -127,14 +129,11 @@ func protobufDecodeFields(d *decode.D, pbm *format.ProtoBufMessage) {
 	})
 }
 
-func protobufDecode(d *decode.D, in any) any {
-	var pbm *format.ProtoBufMessage
-	pbi, ok := in.(format.ProtoBufIn)
-	if ok {
-		pbm = &pbi.Message
-	}
+func protobufDecode(d *decode.D) any {
+	var pbi format.Protobuf_In
+	d.ArgAs(&pbi)
 
-	protobufDecodeFields(d, pbm)
+	protobufDecodeFields(d, &pbi.Message)
 
 	return nil
 }

@@ -10,38 +10,41 @@ import (
 	"github.com/wader/fq/pkg/interp"
 )
 
-var headerFormat decode.Group
-var footerFormat decode.Group
-var mp3Frame decode.Group
+var headerGroup decode.Group
+var footerGroup decode.Group
+var mp3FrameGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.MP3,
-		ProbeOrder:  format.ProbeOrderBinFuzzy, // after most others (silent samples and jpeg header can look like mp3 sync)
-		Description: "MP3 file",
-		Groups:      []string{format.PROBE},
-		DecodeFn:    mp3Decode,
-		DecodeInArg: format.Mp3In{
-			MaxUniqueHeaderConfigs: 5,
-			MaxSyncSeek:            4 * 1024 * 8,
-		},
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.ID3V2}, Group: &headerFormat},
-			{
-				Names: []string{
-					format.ID3V1,
-					format.ID3V11,
-					format.APEV2,
-				},
-				Group: &footerFormat,
+	interp.RegisterFormat(
+		format.MP3,
+		&decode.Format{
+			ProbeOrder:  format.ProbeOrderBinFuzzy, // after most others (silent samples and jpeg header can look like mp3 sync)
+			Description: "MP3 file",
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    mp3Decode,
+			DefaultInArg: format.MP3_In{
+				MaxUniqueHeaderConfigs: 5,
+				MaxUnknown:             50,
+				MaxSyncSeek:            4 * 1024 * 8,
 			},
-			{Names: []string{format.MP3_FRAME}, Group: &mp3Frame},
-		},
-	})
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.ID3v2}, Out: &headerGroup},
+				{
+					Groups: []*decode.Group{
+						format.ID3v1,
+						format.ID3v11,
+						format.Apev2,
+					},
+					Out: &footerGroup,
+				},
+				{Groups: []*decode.Group{format.MP3_Frame}, Out: &mp3FrameGroup},
+			},
+		})
 }
 
-func mp3Decode(d *decode.D, in any) any {
-	mi, _ := in.(format.Mp3In)
+func mp3Decode(d *decode.D) any {
+	var mi format.MP3_In
+	d.ArgAs(&mi)
 
 	// things in a mp3 stream usually have few unique combinations of.
 	// does not include bitrate on purpose
@@ -53,13 +56,16 @@ func mp3Decode(d *decode.D, in any) any {
 		ChannelModeIndex int
 	}
 	uniqueHeaderConfigs := map[headerConfig]struct{}{}
+	knownSize := int64(0)
 
 	// there are mp3s files in the wild with multiple headers, two id3v2 tags etc
 	d.FieldArray("headers", func(d *decode.D) {
 		for d.NotEnd() {
-			if dv, _, _ := d.TryFieldFormat("header", headerFormat, nil); dv == nil {
+			headerStart := d.Pos()
+			if dv, _, _ := d.TryFieldFormat("header", &headerGroup, nil); dv == nil {
 				return
 			}
+			knownSize += d.Pos() - headerStart
 		}
 	})
 
@@ -80,16 +86,18 @@ func mp3Decode(d *decode.D, in any) any {
 				d.SeekRel(syncLen)
 			}
 
-			dv, v, _ := d.TryFieldFormat("frame", mp3Frame, nil)
+			frameStart := d.Pos()
+			dv, v, _ := d.TryFieldFormat("frame", &mp3FrameGroup, nil)
 			if dv == nil {
 				decodeFailures++
 				d.SeekRel(8)
 				continue
 			}
-			mfo, ok := v.(format.MP3FrameOut)
+			mfo, ok := v.(format.MP3_Frame_Out)
 			if !ok {
 				panic(fmt.Sprintf("expected MP3FrameOut got %#+v", v))
 			}
+			knownSize += d.Pos() - frameStart
 			uniqueHeaderConfigs[headerConfig{
 				MPEGVersion:      mfo.MPEGVersion,
 				ProtectionAbsent: mfo.ProtectionAbsent,
@@ -115,11 +123,18 @@ func mp3Decode(d *decode.D, in any) any {
 
 	d.FieldArray("footers", func(d *decode.D) {
 		for d.NotEnd() {
-			if dv, _, _ := d.TryFieldFormat("footer", footerFormat, nil); dv == nil {
+			footerStart := d.Pos()
+			if dv, _, _ := d.TryFieldFormat("footer", &footerGroup, nil); dv == nil {
 				return
 			}
+			knownSize += d.Pos() - footerStart
 		}
 	})
+
+	unknownPercent := int(float64((d.Len() - knownSize)) / float64(d.Len()) * 100.0)
+	if unknownPercent > mi.MaxUnknown {
+		d.Errorf(fmt.Sprintf("exceeds max precent unknown bits, %d > %d", unknownPercent, mi.MaxUnknown))
+	}
 
 	return nil
 }

@@ -2,6 +2,7 @@ package decode
 
 import (
 	"bytes"
+	"encoding/binary"
 	"fmt"
 	"math"
 	"math/big"
@@ -20,7 +21,7 @@ func (d *D) tryUEndian(nBits int, endian Endian) (uint64, error) {
 	if nBits < 0 {
 		return 0, fmt.Errorf("tryUEndian nBits must be >= 0 (%d)", nBits)
 	}
-	n, err := d.TryBits(nBits)
+	n, err := d.TryUintBits(nBits)
 	if err != nil {
 		return 0, err
 	}
@@ -88,20 +89,22 @@ func (d *D) tryFEndian(nBits int, endian Endian) (float64, error) {
 	if nBits < 0 {
 		return 0, fmt.Errorf("tryFEndian nBits must be >= 0 (%d)", nBits)
 	}
-	n, err := d.TryBits(nBits)
+	b, err := d.TryBits(nBits)
 	if err != nil {
 		return 0, err
 	}
 	if endian == LittleEndian {
-		n = bitio.ReverseBytes64(nBits, n)
+		ReverseBytes(b)
 	}
 	switch nBits {
 	case 16:
-		return float64(mathex.Float16(uint16(n)).Float32()), nil
+		return float64(mathex.Float16(binary.BigEndian.Uint16(b)).Float32()), nil
 	case 32:
-		return float64(math.Float32frombits(uint32(n))), nil
+		return float64(math.Float32frombits(binary.BigEndian.Uint32(b))), nil
 	case 64:
-		return math.Float64frombits(n), nil
+		return math.Float64frombits(binary.BigEndian.Uint64(b)), nil
+	case 80:
+		return mathex.NewFloat80FromBytes(b).Float64(), nil
 	default:
 		return 0, fmt.Errorf("unsupported float size %d", nBits)
 	}
@@ -111,7 +114,7 @@ func (d *D) tryFPEndian(nBits int, fBits int, endian Endian) (float64, error) {
 	if nBits < 0 {
 		return 0, fmt.Errorf("tryFPEndian nBits must be >= 0 (%d)", nBits)
 	}
-	n, err := d.TryBits(nBits)
+	n, err := d.TryUintBits(nBits)
 	if err != nil {
 		return 0, err
 	}
@@ -160,7 +163,7 @@ func (d *D) tryTextLenPrefixed(lenBits int, fixedBytes int, e encoding.Encoding)
 	}
 
 	p := d.Pos()
-	l, err := d.TryBits(lenBits)
+	l, err := d.TryUintBits(lenBits)
 	if err != nil {
 		return "", err
 	}
@@ -228,7 +231,7 @@ func (d *D) tryUnary(ov uint64) (uint64, error) {
 	p := d.Pos()
 	var n uint64
 	for {
-		b, err := d.TryBits(1)
+		b, err := d.TryUintBits(1)
 		if err != nil {
 			d.SeekAbs(p)
 			return 0, err
@@ -242,7 +245,7 @@ func (d *D) tryUnary(ov uint64) (uint64, error) {
 }
 
 func (d *D) tryBool() (bool, error) {
-	n, err := d.TryBits(1)
+	n, err := d.TryUintBits(1)
 	if err != nil {
 		return false, err
 	}

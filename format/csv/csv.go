@@ -21,23 +21,25 @@ import (
 var csvFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.CSV,
-		Description: "Comma separated values",
-		ProbeOrder:  format.ProbeOrderTextFuzzy,
-		DecodeFn:    decodeCSV,
-		DecodeInArg: format.CSVLIn{
-			Comma:   ",",
-			Comment: "#",
-		},
-		Functions: []string{"_todisplay"},
-	})
+	interp.RegisterFormat(
+		format.CSV,
+		&decode.Format{
+			Description: "Comma separated values",
+			ProbeOrder:  format.ProbeOrderTextFuzzy,
+			DecodeFn:    decodeCSV,
+			DefaultInArg: format.CSV_In{
+				Comma:   ",",
+				Comment: "#",
+			},
+			Functions: []string{"_todisplay"},
+		})
 	interp.RegisterFS(csvFS)
-	interp.RegisterFunc1("_tocsv", toCSV)
+	interp.RegisterFunc1("_to_csv", toCSV)
 }
 
-func decodeCSV(d *decode.D, in any) any {
-	ci, _ := in.(format.CSVLIn)
+func decodeCSV(d *decode.D) any {
+	var ci format.CSV_In
+	d.ArgAs(&ci)
 
 	var rvs []any
 	br := d.RawLen(d.Len())
@@ -64,7 +66,7 @@ func decodeCSV(d *decode.D, in any) any {
 		rvs = append(rvs, vs)
 	}
 
-	d.Value.V = &scalar.S{Actual: rvs}
+	d.Value.V = &scalar.Any{Actual: rvs}
 	d.Value.Range.Len = d.Len()
 
 	return nil

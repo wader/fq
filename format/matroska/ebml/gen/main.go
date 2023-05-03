@@ -1,5 +1,7 @@
 package main
 
+// TODO: cleanup this mess
+
 import (
 	"encoding/xml"
 	"fmt"
@@ -61,10 +63,30 @@ type Documentation struct {
 	Value   string `xml:",cdata"`
 }
 
+var symLowerRE = regexp.MustCompile(`[^a-z0-9]+`)
+var newLineRE = regexp.MustCompile(`\n`)
+var doubleParanRE = regexp.MustCompile(`\(\(.+?\)\)`)
+var refsRE = regexp.MustCompile(`\[@[?!](.+?)\]`)
+var longParanRE = regexp.MustCompile(`\(.{20,}?\)`)
+var whitespaceRE = regexp.MustCompile(`\s+`)
+var quotesRE = regexp.MustCompile("`")
+
 func findDefintion(docs []Documentation) (string, bool) {
 	for _, d := range docs {
 		if d.Purpose == "definition" {
-			return strings.TrimSpace(d.Value), true
+			s := d.Value
+			s = doubleParanRE.ReplaceAllLiteralString(s, "")
+			s = longParanRE.ReplaceAllLiteralString(s, "")
+			s = refsRE.ReplaceAllString(s, "$1")
+			s = whitespaceRE.ReplaceAllLiteralString(s, " ")
+			s = quotesRE.ReplaceAllLiteralString(s, "")
+			s = strings.TrimRight(s, " .")
+
+			if i := strings.IndexAny(s, ".,;"); i != -1 {
+				s = s[0:i]
+			}
+
+			return s, true
 		}
 	}
 	return "", false
@@ -76,10 +98,6 @@ func title(s string) string {
 	}
 	return strings.ToUpper(s[0:1]) + s[1:]
 }
-
-var symLowerRE = regexp.MustCompile(`[^a-z0-9]+`)
-
-var newLineRE = regexp.MustCompile(`\n`)
 
 func symLower(s string) string {
 	s = strings.ToLower(s)
@@ -103,20 +121,24 @@ func main() {
 	}
 	pkgName := os.Args[2]
 	ebmlPkgPath := os.Args[3]
-	scalarPkgPath := os.Args[4]
-	root := os.Args[5]
+	root := os.Args[4]
 
 	fmt.Printf("// Code below generated from %s\n", xmlPath)
-	fmt.Printf("//nolint:revive\n")
 	fmt.Printf("package %s\n", pkgName)
 	fmt.Printf("import (\n")
-	fmt.Printf("\t%q\n", ebmlPkgPath)
-	fmt.Printf("\t%q\n", scalarPkgPath)
+	fmt.Printf("  %q\n", ebmlPkgPath)
 	fmt.Printf(")\n")
 
-	fmt.Printf("var Root = ebml.Tag{\n")
-	fmt.Printf("\tebml.HeaderID: {Name: \"ebml\", Type: ebml.Master, Tag: ebml.Header},\n")
-	fmt.Printf("\t%sID: {Name: \"%s\", Type: ebml.Master, Tag: %s},\n", root, camelToSnake(root), root)
+	fmt.Printf("var RootElement = &ebml.Master{\n")
+	fmt.Printf("  ElementType: ebml.ElementType{\n")
+	fmt.Printf("    ID: RootID,\n")
+	fmt.Printf("    ParentID: -1,\n")
+	fmt.Printf("    Name: \"\",\n")
+	fmt.Printf("  },\n")
+	fmt.Printf("  Master: map[ebml.ID]ebml.Element{\n")
+	fmt.Printf("    ebml.HeaderID: ebml.Header,\n")
+	fmt.Printf("    %sID: %sElement,\n", root, root)
+	fmt.Printf("   },\n")
 	fmt.Printf("}\n")
 
 	xd := xml.NewDecoder(r)
@@ -126,10 +148,14 @@ func main() {
 	}
 
 	fmt.Println("const (")
+	fmt.Printf("  RootID = ebml.RootID\n")
 	for _, e := range es.Elements {
-		fmt.Printf("\t%sID = %s\n", e.Name, strings.ToLower(e.ID))
+		fmt.Printf("  %sID = %s\n", e.Name, strings.ToLower(e.ID))
 	}
 	fmt.Println(")")
+
+	var names []string
+	names = append(names, "Root")
 
 	for _, e := range es.Elements {
 		var children []Element
@@ -144,33 +170,70 @@ func main() {
 			continue
 		}
 
-		fmt.Printf("var %s = ebml.Tag{\n", e.Name)
+		var parent Element
+		parentPath := e.Path[0:strings.LastIndex(e.Path, `\`)]
+		for _, c := range es.Elements {
+			if c.Path == parentPath {
+				parent = c
+				break
+			}
+		}
+
+		names = append(names, e.Name)
+		fmt.Printf("var %sElement = &ebml.Master{\n", e.Name)
+		fmt.Printf("  ElementType: ebml.ElementType{\n")
+		fmt.Printf("    ID: %sID,\n", e.Name)
+		if parent.Name != "" {
+			fmt.Printf("    ParentID: %sID,\n", parent.Name)
+		} else {
+			fmt.Printf("    ParentID: RootID,\n")
+		}
+		fmt.Printf("    Name: %q,\n", camelToSnake(e.Name))
+		if def, defOk := findDefintion(e.Documentations); defOk {
+			fmt.Printf("    Definition: %q,\n", newLineRE.ReplaceAllString(def, " "))
+		}
+		fmt.Printf("  },\n")
+		fmt.Printf("  Master: map[ebml.ID]ebml.Element{\n")
 		for _, c := range children {
-			def, defOk := findDefintion(c.Documentations)
-			extra := ""
+			fmt.Printf("    %sID: %sElement,\n", c.Name, c.Name)
+		}
+		fmt.Printf("  },\n")
+		fmt.Printf("}\n")
+
+		for _, c := range children {
+			if c.Type == "master" {
+				continue
+			}
+
 			typ := c.Type
 			switch typ {
-			case "master":
-				extra = ", Tag: " + c.Name
 			case "utf-8":
 				typ = "UTF8"
 			}
 
-			fmt.Printf("\t%sID: {\n", c.Name)
-			fmt.Printf("\t\tName: %q,\n", camelToSnake(c.Name))
-			if defOk {
-				fmt.Printf("\t\tDefinition: %q,\n", newLineRE.ReplaceAllString(def, " "))
+			enumType := "struct{}"
+			switch typ {
+			case "integer":
+				enumType = "int64"
+			case "uinteger":
+				enumType = "uint64"
+			case "string":
+				enumType = "string"
 			}
-			fmt.Printf("\t\tType: ebml.%s%s,\n", title(typ), extra)
+
+			names = append(names, c.Name)
+			fmt.Printf("var %sElement = &ebml.%s{\n", c.Name, title(typ))
+			fmt.Printf("  ElementType: ebml.ElementType{\n")
+			fmt.Printf("    ID: %sID,\n", c.Name)
+			fmt.Printf("    ParentID: %sID,\n", e.Name)
+			fmt.Printf("    Name: %q,\n", camelToSnake(c.Name))
+			def, defOk := findDefintion(c.Documentations)
+			if defOk {
+				fmt.Printf("  Definition: %q,\n", newLineRE.ReplaceAllString(def, " "))
+			}
+			fmt.Printf("  },\n")
 			if len(c.Enums) > 0 {
-				switch c.Type {
-				case "integer":
-					fmt.Printf("\t\tIntegerEnums: scalar.SToScalar{\n")
-				case "uinteger":
-					fmt.Printf("\t\tUintegerEnums: scalar.UToScalar{\n")
-				case "string":
-					fmt.Printf("\t\tStringEnums: scalar.StrToScalar{\n")
-				}
+				fmt.Printf("  Enums: map[%s]ebml.Enum{\n", enumType)
 
 				// matroska.xml has dup keys (e.g. PARTS)
 				enumDups := map[string]bool{}
@@ -186,34 +249,40 @@ func main() {
 					switch c.Type {
 					case "integer":
 						n, _ := strconv.ParseInt(e.Value, 10, 64)
-						fmt.Printf("\t\t\t%d:{\n", n)
+						fmt.Printf("    %d:{", n)
 					case "uinteger":
 						n, _ := strconv.ParseUint(e.Value, 10, 64)
-						fmt.Printf("\t\t\t%d:{\n", n)
+						fmt.Printf("    %d:{", n)
 					case "string":
-						fmt.Printf("\t\t\t%q:{\n", e.Value)
+						fmt.Printf("    %q:{", e.Value)
 					}
 
 					labelOk := !strings.ContainsAny(e.Label, "()")
 
 					if labelOk {
-						fmt.Printf("\t\t\t\tSym: %q,\n", symLower(e.Label))
+						fmt.Printf("      Name: %q,", symLower(e.Label))
 					}
 
 					if enumDefOk {
-						fmt.Printf("\t\t\t\tDescription: %q,\n", newLineRE.ReplaceAllString(enumDef, " "))
+						fmt.Printf("      Description: %q,", newLineRE.ReplaceAllString(enumDef, " "))
 					} else if !labelOk {
-						fmt.Printf("\t\t\t\tDescription: %q,\n", newLineRE.ReplaceAllString(e.Label, " "))
+						fmt.Printf("      Description: %q,", newLineRE.ReplaceAllString(e.Label, " "))
 					}
 
-					fmt.Printf("\t\t\t},\n")
+					fmt.Printf("    },\n")
 				}
-				fmt.Printf("\t\t},\n")
+				fmt.Printf("  },\n")
 			}
-			fmt.Printf("\t},\n")
+
+			fmt.Printf("}\n")
 		}
-		fmt.Printf("}\n")
 		fmt.Printf("\n")
 	}
 
+	fmt.Println("var IDToElement = map[ebml.ID]ebml.Element{")
+	for _, n := range names {
+		fmt.Printf("  %sID: %sElement,\n", n, n)
+	}
+
+	fmt.Println("}")
 }

@@ -8,16 +8,17 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.ICMPV6,
-		Description: "Internet Control Message Protocol v6",
-		Groups:      []string{format.IP_PACKET},
-		DecodeFn:    decodeICMPv6,
-	})
+	interp.RegisterFormat(
+		format.ICMPv6,
+		&decode.Format{
+			Description: "Internet Control Message Protocol v6",
+			Groups:      []*decode.Group{format.IP_Packet},
+			DecodeFn:    decodeICMPv6,
+		})
 }
 
 // based on https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol_for_IPv6
-var icmpv6TypeMap = scalar.UToScalar{
+var icmpv6TypeMap = scalar.UintMap{
 	1:   {Sym: "unreachable", Description: "Destination unreachable"},
 	2:   {Sym: "too_big", Description: "Packet too big"},
 	3:   {Sym: "time_exceeded", Description: "Time exceeded"},
@@ -56,7 +57,7 @@ var icmpv6TypeMap = scalar.UToScalar{
 	255: {Description: "Reserved for expansion of ICMPv6 informational messages"},
 }
 
-var icmpv6CodeMapMap = map[uint64]scalar.UToDescription{
+var icmpv6CodeMapMap = map[uint64]scalar.UintMapDescription{
 	1: {
 		1: "Communication with destination administratively prohibited",
 		2: "Beyond scope of source address",
@@ -77,8 +78,9 @@ var icmpv6CodeMapMap = map[uint64]scalar.UToDescription{
 	},
 }
 
-func decodeICMPv6(d *decode.D, in any) any {
-	if ipi, ok := in.(format.IPPacketIn); ok && ipi.Protocol != format.IPv4ProtocolICMPv6 {
+func decodeICMPv6(d *decode.D) any {
+	var ipi format.IP_Packet_In
+	if d.ArgAs(&ipi) && ipi.Protocol != format.IPv4ProtocolICMPv6 {
 		d.Fatalf("incorrect protocol %d", ipi.Protocol)
 	}
 

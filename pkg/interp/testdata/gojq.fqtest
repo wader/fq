@@ -1,5 +1,5 @@
 # TODO: various gojq fq fork regression tests, should probably be move to fork code instead
-# 0xf_ffff_ffff_fffff_fffff-1 | toradix(2,8,16)
+# 0xf_ffff_ffff_fffff_fffff-1 | to_radix(2,8,16)
 $ fq -n '0b1111111111111111111111111111111111111111111111111111111111111111111111111110, 0o17777777777777777777777776, 0xffffffffffffffffffe'
 75557863725914323419134
 75557863725914323419134
@@ -24,11 +24,11 @@ $ fq -n '{a:1, b: 2} | tostream'
     "b"
   ]
 ]
-$ fq -d mp3 '{(.headers[0].magic): 123}' test.mp3
+$ fq -d mp3 '{(.headers[0].header.magic): 123}' test.mp3
 {
   "ID3": 123
 }
-$ fq -d mp3 '{(.headers[0].magic): 123}' test.mp3
+$ fq -d mp3 '{(.headers[0].header.magic): 123}' test.mp3
 {
   "ID3": 123
 }
@@ -210,7 +210,7 @@ $ fq -d mp3 '.frames[0] | . + .header | keys, .bitrate' test.mp3
   "sample_rate",
   "side_info",
   "sync",
-  "tags"
+  "tag"
 ]
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x20|                                             40|               @|.frames[0].header.bitrate: 56000 (4)
@@ -234,7 +234,7 @@ $ fq -d mp3 '[.frames[0] | ., .header] | add | keys, .bitrate' test.mp3
   "sample_rate",
   "side_info",
   "sync",
-  "tags"
+  "tag"
 ]
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x20|                                             40|               @|.frames[0].header.bitrate: 56000 (4)
@@ -243,26 +243,20 @@ $ fq -d mp3 '.frames[0] | keys' test.mp3
 [
   "header",
   "side_info",
-  "tags",
+  "tag",
   "audio_data",
   "crc_calculated"
 ]
 $ fq -d mp3 '.frames[0] | to_entries[].key' test.mp3
 "header"
 "side_info"
-"tags"
+"tag"
 "audio_data"
 "crc_calculated"
 # xml, csv does string normalization, make sure it works with nested JQValue:s
 # TODO: move this test as it depends on xml
-$ fq -r '.headers[0] | toxml({indent: 2})' test.mp3
+$ fq -r '.headers[0] | to_xml({indent: 2})' test.mp3
 <doc>
-  <flags>
-    <experimental_indicator>false</experimental_indicator>
-    <extended_header>false</extended_header>
-    <unsynchronisation>false</unsynchronisation>
-    <unused>0</unused>
-  </flags>
   <frames>
     <flags>
       <compression>false</compression>
@@ -282,11 +276,19 @@ $ fq -r '.headers[0] | toxml({indent: 2})' test.mp3
     <text>Lavf58.45.100</text>
     <text_encoding>utf8</text_encoding>
   </frames>
-  <magic>ID3</magic>
+  <header>
+    <flags>
+      <experimental_indicator>false</experimental_indicator>
+      <extended_header>false</extended_header>
+      <unsynchronisation>false</unsynchronisation>
+      <unused>0</unused>
+    </flags>
+    <magic>ID3</magic>
+    <revision>0</revision>
+    <size>35</size>
+    <version>4</version>
+  </header>
   <padding>����������</padding>
-  <revision>0</revision>
-  <size>35</size>
-  <version>4</version>
 </doc>
 $ fq -i
 null> 0b0_1
@@ -308,3 +310,6 @@ null> 0xf_0000_0000_0000_0000_0000_0000_0000_0000
 null> 0x012_3456789abcdefx
                          ^ unexpected token "x"
 null> ^D
+# test JQValue in assign/update path
+$ fq -c -d mp3 '.headers[0].header.version as $i | [] | .[$i] = 1 | .[$i] += 2' test.mp3
+[null,null,null,null,3]

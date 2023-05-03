@@ -25,24 +25,25 @@ import (
 var cborFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.CBOR,
-		Description: "Concise Binary Object Representation",
-		DecodeFn:    decodeCBOR,
-		Functions:   []string{"torepr"},
-	})
+	interp.RegisterFormat(
+		format.CBOR,
+		&decode.Format{
+			Description: "Concise Binary Object Representation",
+			DecodeFn:    decodeCBOR,
+			Functions:   []string{"torepr"},
+		})
 	interp.RegisterFS(cborFS)
 }
 
 type majorTypeEntry struct {
-	s scalar.S
+	s scalar.Uint
 	d func(d *decode.D, shortCount uint64, count uint64) any
 }
 
 type majorTypeEntries map[uint64]majorTypeEntry
 
-func (mts majorTypeEntries) MapScalar(s scalar.S) (scalar.S, error) {
-	u := s.ActualU()
+func (mts majorTypeEntries) MapUint(s scalar.Uint) (scalar.Uint, error) {
+	u := s.Actual
 	if fe, ok := mts[u]; ok {
 		s = fe.s
 		s.Actual = u
@@ -67,7 +68,7 @@ const (
 	shortCountSpecialFloat64Bit = 27
 )
 
-var shortCountMap = scalar.UToSymStr{
+var shortCountMap = scalar.UintMapSymStr{
 	shortCountVariable8Bit:  "8bit",
 	shortCountVariable16Bit: "16bit",
 	shortCountVariable32Bit: "32bit",
@@ -75,7 +76,7 @@ var shortCountMap = scalar.UToSymStr{
 	shortCountIndefinite:    "indefinite",
 }
 
-var tagMap = scalar.UToSymStr{
+var tagMap = scalar.UintMapSymStr{
 	0:     "date_time",
 	1:     "epoch_date_time",
 	2:     "unsigned_bignum",
@@ -110,21 +111,21 @@ const (
 
 func decodeCBORValue(d *decode.D) any {
 	majorTypeMap := majorTypeEntries{
-		majorTypePositiveInt: {s: scalar.S{Sym: "positive_int"}, d: func(d *decode.D, shortCount uint64, count uint64) any {
-			d.FieldValueU("value", count)
+		majorTypePositiveInt: {s: scalar.Uint{Sym: "positive_int"}, d: func(d *decode.D, shortCount uint64, count uint64) any {
+			d.FieldValueUint("value", count)
 			return nil
 		}},
-		majorTypeNegativeInt: {s: scalar.S{Sym: "negative_int"}, d: func(d *decode.D, shortCount uint64, count uint64) any {
+		majorTypeNegativeInt: {s: scalar.Uint{Sym: "negative_int"}, d: func(d *decode.D, shortCount uint64, count uint64) any {
 			n := new(big.Int)
 			n.SetUint64(count).Neg(n).Sub(n, mathex.BigIntOne)
 			d.FieldValueBigInt("value", n)
 			return nil
 		}},
-		majorTypeBytes: {s: scalar.S{Sym: "bytes"}, d: func(d *decode.D, shortCount uint64, count uint64) any {
+		majorTypeBytes: {s: scalar.Uint{Sym: "bytes"}, d: func(d *decode.D, shortCount uint64, count uint64) any {
 			if shortCount == shortCountIndefinite {
 				bb := &bytes.Buffer{}
 				d.FieldArray("items", func(d *decode.D) {
-					for d.PeekBits(8) != breakMarker {
+					for d.PeekUintBits(8) != breakMarker {
 						d.FieldStruct("item", func(d *decode.D) {
 							v := decodeCBORValue(d)
 							switch v := v.(type) {
@@ -145,11 +146,11 @@ func decodeCBORValue(d *decode.D) any {
 
 			return buf
 		}},
-		majorTypeUTF8: {s: scalar.S{Sym: "utf8"}, d: func(d *decode.D, shortCount uint64, count uint64) any {
+		majorTypeUTF8: {s: scalar.Uint{Sym: "utf8"}, d: func(d *decode.D, shortCount uint64, count uint64) any {
 			if shortCount == shortCountIndefinite {
 				sb := &strings.Builder{}
 				d.FieldArray("items", func(d *decode.D) {
-					for d.PeekBits(8) != breakMarker {
+					for d.PeekUintBits(8) != breakMarker {
 						d.FieldStruct("item", func(d *decode.D) {
 							v := decodeCBORValue(d)
 							switch v := v.(type) {
@@ -168,10 +169,10 @@ func decodeCBORValue(d *decode.D) any {
 
 			return d.FieldUTF8("value", int(count))
 		}},
-		majorTypeArray: {s: scalar.S{Sym: "array"}, d: func(d *decode.D, shortCount uint64, count uint64) any {
+		majorTypeArray: {s: scalar.Uint{Sym: "array"}, d: func(d *decode.D, shortCount uint64, count uint64) any {
 			d.FieldArray("elements", func(d *decode.D) {
 				for i := uint64(0); true; i++ {
-					if shortCount == shortCountIndefinite && d.PeekBits(8) == breakMarker {
+					if shortCount == shortCountIndefinite && d.PeekUintBits(8) == breakMarker {
 						break
 					} else if i >= count {
 						break
@@ -184,10 +185,10 @@ func decodeCBORValue(d *decode.D) any {
 			}
 			return nil
 		}},
-		majorTypeMap: {s: scalar.S{Sym: "map"}, d: func(d *decode.D, shortCount uint64, count uint64) any {
+		majorTypeMap: {s: scalar.Uint{Sym: "map"}, d: func(d *decode.D, shortCount uint64, count uint64) any {
 			d.FieldArray("pairs", func(d *decode.D) {
 				for i := uint64(0); true; i++ {
-					if shortCount == shortCountIndefinite && d.PeekBits(8) == breakMarker {
+					if shortCount == shortCountIndefinite && d.PeekUintBits(8) == breakMarker {
 						break
 					} else if i >= count {
 						break
@@ -203,12 +204,12 @@ func decodeCBORValue(d *decode.D) any {
 			}
 			return nil
 		}},
-		majorTypeSematic: {s: scalar.S{Sym: "semantic"}, d: func(d *decode.D, shortCount uint64, count uint64) any {
-			d.FieldValueU("tag", count, tagMap)
+		majorTypeSematic: {s: scalar.Uint{Sym: "semantic"}, d: func(d *decode.D, shortCount uint64, count uint64) any {
+			d.FieldValueUint("tag", count, tagMap)
 			d.FieldStruct("value", func(d *decode.D) { decodeCBORValue(d) })
 			return nil
 		}},
-		majorTypeSpecialFloat: {s: scalar.S{Sym: "special_float"}, d: func(d *decode.D, shortCount uint64, count uint64) any {
+		majorTypeSpecialFloat: {s: scalar.Uint{Sym: "special_float"}, d: func(d *decode.D, shortCount uint64, count uint64) any {
 			switch shortCount {
 			// TODO: 0-19
 			case shortCountSpecialFalse:
@@ -216,7 +217,7 @@ func decodeCBORValue(d *decode.D) any {
 			case shortCountSpecialTrue:
 				d.FieldValueBool("value", true)
 			case shortCountSpecialNull:
-				d.FieldValueNil("value")
+				d.FieldValueAny("value", nil)
 			case shortCountSpecialUndefined:
 				// TODO: undefined
 			case 24:
@@ -263,7 +264,7 @@ func decodeCBORValue(d *decode.D) any {
 	panic("unreachable")
 }
 
-func decodeCBOR(d *decode.D, _ any) any {
+func decodeCBOR(d *decode.D) any {
 	decodeCBORValue(d)
 	return nil
 }

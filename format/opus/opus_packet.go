@@ -13,17 +13,18 @@ import (
 var vorbisComment decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.OPUS_PACKET,
-		Description: "Opus packet",
-		DecodeFn:    opusDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.VORBIS_COMMENT}, Group: &vorbisComment},
-		},
-	})
+	interp.RegisterFormat(
+		format.Opus_Packet,
+		&decode.Format{
+			Description: "Opus packet",
+			DecodeFn:    opusDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.Vorbis_Comment}, Out: &vorbisComment},
+			},
+		})
 }
 
-func opusDecode(d *decode.D, _ any) any {
+func opusDecode(d *decode.D) any {
 	d.Endian = decode.LittleEndian
 
 	var prefix []byte
@@ -51,7 +52,7 @@ func opusDecode(d *decode.D, _ any) any {
 	case bytes.Equal(prefix, []byte("OpusTags")):
 		d.FieldValueStr("type", "tags")
 		d.FieldUTF8("prefix", 8)
-		d.FieldFormat("comment", vorbisComment, nil)
+		d.FieldFormat("comment", &vorbisComment, nil)
 	default:
 		d.FieldValueStr("type", "audio")
 		d.FieldStruct("toc", func(d *decode.D) {
@@ -98,7 +99,7 @@ func opusDecode(d *decode.D, _ any) any {
 				config := configurations[n]
 				d.FieldValueStr("mode", config.mode)
 				d.FieldValueStr("bandwidth", config.bandwidth)
-				d.FieldValueFloat("frame_size", config.frameSize)
+				d.FieldValueFlt("frame_size", config.frameSize)
 			})
 			d.FieldBool("stereo")
 			d.FieldStruct("frames_per_packet", func(d *decode.D) {
@@ -113,7 +114,7 @@ func opusDecode(d *decode.D, _ any) any {
 				}
 				n := d.FieldU2("config")
 				config := framesPerPacketConfigs[n]
-				d.FieldValueU("frames", config.frames)
+				d.FieldValueUint("frames", config.frames)
 				d.FieldValueStr("mode", config.mode)
 			})
 			d.FieldRawLen("data", d.BitsLeft())

@@ -23,7 +23,12 @@ linters:
         - unconvert
         - unparam
         - wastedassign
+
 linters-settings:
+    revive:
+        rules:
+            - name: unused-parameter
+              disabled: true
     exhaustive:
         default-signifies-exhaustive: true
     gosec:
@@ -36,9 +41,12 @@ linters-settings:
             - rela
             - equalisation
             - synchronisation
+
 run:
     timeout: 5m
     skip-dirs:
         # allow md5
         - dev
         - doc
+        # ignore warnings in code from crypto/tls and zmap/zcrypto
+        - format/tls/tlsdecrypt

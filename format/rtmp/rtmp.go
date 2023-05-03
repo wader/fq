@@ -19,24 +19,25 @@ import (
 )
 
 var rtmpAmf0Group decode.Group
-var rtmpMpegASCFormat decode.Group
+var rtmpMpegASCGroup decode.Group
 
 //go:embed rtmp.md
 var rtmpFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.RTMP,
-		Description: "Real-Time Messaging Protocol",
-		Groups: []string{
-			format.TCP_STREAM,
-		},
-		DecodeFn: rtmpDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.AMF0}, Group: &rtmpAmf0Group},
-			{Names: []string{format.MPEG_ASC}, Group: &rtmpMpegASCFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.RTMP,
+		&decode.Format{
+			Description: "Real-Time Messaging Protocol",
+			Groups: []*decode.Group{
+				format.TCP_Stream,
+			},
+			DecodeFn: rtmpDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.AMF0}, Out: &rtmpAmf0Group},
+				{Groups: []*decode.Group{format.MPEG_ASC}, Out: &rtmpMpegASCGroup},
+			},
+		})
 	interp.RegisterFS(rtmpFS)
 }
 
@@ -65,7 +66,7 @@ const (
 	messageTypePresent                     = 23 // TODO: not in spec but in wikipedia article
 )
 
-var rtmpMessageTypeIDNames = scalar.UToSymStr{
+var rtmpMessageTypeIDNames = scalar.UintMapSymStr{
 	messageTypeSetChunkSize:                "set_chunk_size",
 	messageTypeAbortMessage:                "abort_message",
 	messageTypeAcknowledgment:              "acknowledgment",
@@ -96,7 +97,7 @@ const (
 	userControlEvenTypePingResponse     = 7
 )
 
-var userControlEvenTypNames = scalar.UToSymStr{
+var userControlEvenTypNames = scalar.UintMapSymStr{
 	userControlEvenTypeStreamBegin:      "stream_begin",
 	userControlEvenTypeStreamEOF:        "stream_eof",
 	userControlEvenTypeStreamDry:        "stream_dry",
@@ -106,7 +107,7 @@ var userControlEvenTypNames = scalar.UToSymStr{
 	userControlEvenTypePingResponse:     "ping_response",
 }
 
-var setPeerBandwidthLimitTypeName = scalar.UToSymStr{
+var setPeerBandwidthLimitTypeName = scalar.UintMapSymStr{
 	0: "hard",
 	1: "soft",
 	2: "dynamic",
@@ -114,7 +115,7 @@ var setPeerBandwidthLimitTypeName = scalar.UToSymStr{
 
 const timestampExtended = 0xff_ff_ff
 
-var timestampDescription = scalar.UToDescription{
+var timestampUintDescription = scalar.UintMapDescription{
 	timestampExtended: "extended",
 }
 
@@ -124,7 +125,7 @@ const (
 
 // based on https://github.com/wireshark/wireshark/blob/master/epan/dissectors/packet-rtmpt.c
 // which in turn is based on rtmp and swf specifications and FLV v10.1 section E.4.3.1
-var audioMessageCodecNames = scalar.UToSymStr{
+var audioMessageCodecNames = scalar.UintMapSymStr{
 	0:                    "uncompressed",
 	1:                    "adpcm",
 	2:                    "mp3",
@@ -144,29 +145,29 @@ const (
 	audioMessageAACPacketTypeRaw = 1
 )
 
-var audioMessageAACPacketTypeNames = scalar.UToSymStr{
+var audioMessageAACPacketTypeNames = scalar.UintMapSymStr{
 	audioMessageAACPacketTypeASC: "asc",
 	audioMessageAACPacketTypeRaw: "raw",
 }
 
-var audioMessageRateNames = scalar.UToSymU{
+var audioMessageRateNames = scalar.UintMapSymUint{
 	0: 5500,
 	1: 11025,
 	2: 22050,
 	3: 44100,
 }
 
-var audioMessageSampleSize = scalar.UToSymU{
+var audioMessageSampleSize = scalar.UintMapSymUint{
 	0: 8,
 	1: 16,
 }
 
-var audioMessageChannels = scalar.UToSymU{
+var audioMessageChannels = scalar.UintMapSymUint{
 	0: 1,
 	1: 2,
 }
 
-var videoMessageTypeNames = scalar.UToSymStr{
+var videoMessageTypeNames = scalar.UintMapSymStr{
 	1: "keyframe",
 	2: "inter_frame",
 	3: "disposable_inter_frame",
@@ -178,7 +179,7 @@ const (
 	videoMessageCodecH264 = 7
 )
 
-var videoMessageCodecNames = scalar.UToSymStr{
+var videoMessageCodecNames = scalar.UintMapSymStr{
 	2:                     "h263",
 	3:                     "screen_video",
 	4:                     "vp6",
@@ -187,7 +188,7 @@ var videoMessageCodecNames = scalar.UToSymStr{
 	videoMessageCodecH264: "h264",
 }
 
-var videoMessageH264PacketTypeNames = scalar.UToSymStr{
+var videoMessageH264PacketTypeNames = scalar.UintMapSymStr{
 	0: "dcr",
 	1: "au", // TODO: is access unit?
 	2: "empty",
@@ -242,16 +243,16 @@ func rtmpDecodeMessageType(d *decode.D, typ int, chunkSize *int) {
 	case messageTypeDataMessage:
 		d.FieldArray("messages", func(d *decode.D) {
 			for !d.End() {
-				d.FieldFormat("message", rtmpAmf0Group, nil)
+				d.FieldFormat("message", &rtmpAmf0Group, nil)
 			}
 		})
 	case messageTypeCommandMessage:
-		d.FieldFormat("command_name", rtmpAmf0Group, nil)
-		d.FieldFormat("transaction_id", rtmpAmf0Group, nil)
-		d.FieldFormat("command_object", rtmpAmf0Group, nil)
+		d.FieldFormat("command_name", &rtmpAmf0Group, nil)
+		d.FieldFormat("transaction_id", &rtmpAmf0Group, nil)
+		d.FieldFormat("command_object", &rtmpAmf0Group, nil)
 		d.FieldArray("arguments", func(d *decode.D) {
 			for !d.End() {
-				d.FieldFormat("argument", rtmpAmf0Group, nil)
+				d.FieldFormat("argument", &rtmpAmf0Group, nil)
 			}
 		})
 	case messageTypeAggregateMessage:
@@ -261,7 +262,7 @@ func rtmpDecodeMessageType(d *decode.D, typ int, chunkSize *int) {
 					var h messageHeader
 					h.messageTypeID = d.FieldU8("message_type_id", rtmpMessageTypeIDNames)
 					h.messageLength = d.FieldU24("message_length")
-					h.timestamp = d.FieldU32("timestamp", timestampDescription)
+					h.timestamp = d.FieldU32("timestamp", timestampUintDescription)
 					h.messageStreamID = d.FieldU24("message_stream_id")
 					// TODO: possible to set chunk size in aggregated message?
 					d.FramedFn(int64(h.messageLength*8), func(d *decode.D) {
@@ -282,7 +283,7 @@ func rtmpDecodeMessageType(d *decode.D, typ int, chunkSize *int) {
 		if codec == audioMessageCodecAAC {
 			switch d.FieldU8("type", audioMessageAACPacketTypeNames) {
 			case audioMessageAACPacketTypeASC:
-				d.FieldFormat("data", rtmpMpegASCFormat, nil)
+				d.FieldFormat("data", &rtmpMpegASCGroup, nil)
 			default:
 				d.FieldRawLen("data", d.BitsLeft())
 			}
@@ -307,9 +308,11 @@ func rtmpDecodeMessageType(d *decode.D, typ int, chunkSize *int) {
 	}
 }
 
-func rtmpDecode(d *decode.D, in any) any {
+func rtmpDecode(d *decode.D) any {
 	var isClient bool
-	if tsi, ok := in.(format.TCPStreamIn); ok {
+
+	var tsi format.TCP_Stream_In
+	if d.ArgAs(&tsi) {
 		tsi.MustIsPort(d.Fatalf, format.TCPPortRTMP)
 		isClient = tsi.IsClient
 	}
@@ -366,15 +369,15 @@ func rtmpDecode(d *decode.D, in any) any {
 				var chunkSteamID uint64
 
 				fmt := d.FieldU2("fmt")
-				switch d.PeekBits(6) {
+				switch d.PeekUintBits(6) {
 				case 0:
 					// 64-319: 2 byte
 					d.FieldU6("chunk_stream_id_prefix")
-					chunkSteamID = d.FieldU8("chunk_stream_id", scalar.ActualUAdd(64))
+					chunkSteamID = d.FieldU8("chunk_stream_id", scalar.UintActualAdd(64))
 				case 1:
 					// 64-65599: 3 byte
 					d.FieldU6("chunk_stream_id_prefix")
-					chunkSteamID = d.FieldU16("chunk_stream_id", scalar.ActualUAdd(64))
+					chunkSteamID = d.FieldU16("chunk_stream_id", scalar.UintActualAdd(64))
 				default:
 					// 2-63: 1 byte
 					chunkSteamID = d.FieldU6("chunk_stream_id")
@@ -392,7 +395,7 @@ func rtmpDecode(d *decode.D, in any) any {
 
 				switch fmt {
 				case 0:
-					h.timestamp = d.FieldU24("timestamp", timestampDescription)
+					h.timestamp = d.FieldU24("timestamp", timestampUintDescription)
 					h.messageLength = d.FieldU24("message_length")
 					h.messageTypeID = d.FieldU8("message_type_id", rtmpMessageTypeIDNames)
 					h.messageStreamID = d.FieldU32LE("message_stream_id")
@@ -400,7 +403,7 @@ func rtmpDecode(d *decode.D, in any) any {
 						h.timestamp = d.FieldU32("extended_timestamp")
 					}
 				case 1:
-					h.timestampDelta = d.FieldU24("timestamp_delta", timestampDescription)
+					h.timestampDelta = d.FieldU24("timestamp_delta", timestampUintDescription)
 					h.messageLength = d.FieldU24("message_length")
 					h.messageTypeID = d.FieldU8("message_type_id", rtmpMessageTypeIDNames)
 					if h.timestamp == timestampExtended {
@@ -408,10 +411,10 @@ func rtmpDecode(d *decode.D, in any) any {
 					}
 					h.timestamp = cs.prevHeader.timestamp
 					h.messageStreamID = cs.prevHeader.messageStreamID
-					d.FieldValueU("message_stream_id", h.messageStreamID, scalar.Description("previous"))
+					d.FieldValueUint("message_stream_id", h.messageStreamID, scalar.UintDescription("previous"))
 
 				case 2:
-					h.timestampDelta = d.FieldU24("timestamp_delta", timestampDescription)
+					h.timestampDelta = d.FieldU24("timestamp_delta", timestampUintDescription)
 					if h.timestamp == timestampExtended {
 						h.timestampDelta = d.FieldU32("extended_timestamp")
 					}
@@ -419,23 +422,23 @@ func rtmpDecode(d *decode.D, in any) any {
 					h.messageLength = cs.prevHeader.messageLength
 					h.messageStreamID = cs.prevHeader.messageStreamID
 					h.messageTypeID = cs.prevHeader.messageTypeID
-					d.FieldValueU("message_length", h.messageLength, scalar.Description("previous"))
-					d.FieldValueU("message_type_id", h.messageTypeID, scalar.Description("previous"))
-					d.FieldValueU("message_stream_id", h.messageStreamID, scalar.Description("previous"))
+					d.FieldValueUint("message_length", h.messageLength, scalar.UintDescription("previous"))
+					d.FieldValueUint("message_type_id", h.messageTypeID, scalar.UintDescription("previous"))
+					d.FieldValueUint("message_stream_id", h.messageStreamID, scalar.UintDescription("previous"))
 				case 3:
 					h.timestamp = cs.prevHeader.timestamp
 					h.timestampDelta = cs.prevHeader.timestampDelta
 					h.messageLength = cs.prevHeader.messageLength
 					h.messageStreamID = cs.prevHeader.messageStreamID
 					h.messageTypeID = cs.prevHeader.messageTypeID
-					d.FieldValueU("message_length", h.messageLength, scalar.Description("previous"))
-					d.FieldValueU("message_type_id", h.messageTypeID, scalar.Description("previous"))
-					d.FieldValueU("message_stream_id", h.messageStreamID, scalar.Description("previous"))
+					d.FieldValueUint("message_length", h.messageLength, scalar.UintDescription("previous"))
+					d.FieldValueUint("message_type_id", h.messageTypeID, scalar.UintDescription("previous"))
+					d.FieldValueUint("message_stream_id", h.messageStreamID, scalar.UintDescription("previous"))
 				}
 
 				h.timestamp += h.timestampDelta
 
-				d.FieldValueU("calculated_timestamp", h.timestamp)
+				d.FieldValueUint("calculated_timestamp", h.timestamp)
 
 				m, ok := cs.messageSteams[h.messageStreamID]
 				if !ok {
@@ -465,8 +468,8 @@ func rtmpDecode(d *decode.D, in any) any {
 				if m.l == uint64(m.b.Len()) {
 					messageBR := bitio.NewBitReader(m.b.Bytes(), -1)
 					messages.FieldStructRootBitBufFn("message", messageBR, func(d *decode.D) {
-						d.FieldValueU("message_stream_id", h.messageStreamID)
-						d.FieldValueU("message_type_id", m.typ, rtmpMessageTypeIDNames)
+						d.FieldValueUint("message_stream_id", h.messageStreamID)
+						d.FieldValueUint("message_type_id", m.typ, rtmpMessageTypeIDNames)
 						rtmpDecodeMessageType(d, int(m.typ), &chunkSize)
 					})
 

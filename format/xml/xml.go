@@ -7,15 +7,18 @@ package xml
 // TODO: rewrite ns stack
 
 import (
+	"bufio"
 	"bytes"
 	"embed"
 	"encoding/xml"
 	"errors"
+	"fmt"
 	"html"
 	"io"
 	"regexp"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/internal/gojqex"
@@ -33,25 +36,26 @@ import (
 var xmlFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.XML,
-		Description: "Extensible Markup Language",
-		ProbeOrder:  format.ProbeOrderTextFuzzy,
-		Groups:      []string{format.PROBE},
-		DecodeFn:    decodeXML,
-		DecodeInArg: format.XMLIn{
-			Seq:             false,
-			Array:           false,
-			AttributePrefix: "@",
-		},
-		Functions: []string{"_todisplay"},
-	})
+	interp.RegisterFormat(
+		format.XML,
+		&decode.Format{
+			Description: "Extensible Markup Language",
+			ProbeOrder:  format.ProbeOrderTextFuzzy,
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    decodeXML,
+			DefaultInArg: format.XML_In{
+				Seq:             false,
+				Array:           false,
+				AttributePrefix: "@",
+			},
+			Functions: []string{"_todisplay"},
+		})
 	interp.RegisterFS(xmlFS)
-	interp.RegisterFunc1("toxml", toXML)
-	interp.RegisterFunc0("fromxmlentities", func(_ *interp.Interp, c string) any {
+	interp.RegisterFunc1("to_xml", toXML)
+	interp.RegisterFunc0("from_xmlentities", func(_ *interp.Interp, c string) any {
 		return html.UnescapeString(c)
 	})
-	interp.RegisterFunc0("toxmlentities", func(_ *interp.Interp, c string) any {
+	interp.RegisterFunc0("to_xmlentities", func(_ *interp.Interp, c string) any {
 		return html.EscapeString(c)
 	})
 }
@@ -112,7 +116,7 @@ func elmName(space, local string) string {
 	return space + ":" + local
 }
 
-func fromXMLToObject(n xmlNode, xi format.XMLIn) any {
+func fromXMLToObject(n xmlNode, xi format.XML_In) any {
 	var f func(n xmlNode, seq int, nss xmlNNStack) (string, any)
 	f = func(n xmlNode, seq int, nss xmlNNStack) (string, any) {
 		attrs := map[string]any{}
@@ -247,14 +251,54 @@ func fromXMLToArray(n xmlNode) any {
 	return f(n, nil)
 }
 
-func decodeXML(d *decode.D, in any) any {
-	xi, _ := in.(format.XMLIn)
+// from golang encoding/xml, copyright 2009 The Go Authors
+// the Char production of https://www.xml.com/axml/testaxml.htm,
+// Section 2.2 Characters.
+func isInCharacterRange(r rune) (inrange bool) {
+	return r == 0x09 ||
+		r == 0x0A ||
+		r == 0x0D ||
+		r >= 0x20 && r <= 0xD7FF ||
+		r >= 0xE000 && r <= 0xFFFD ||
+		r >= 0x10000 && r <= 0x10FFFF
+}
 
-	br := d.RawLen(d.Len())
+func decodeXMLSeekFirstValidRune(br io.ReadSeeker) error {
+	buf := bufio.NewReader(br)
+	r, sz, err := buf.ReadRune()
+	if err != nil {
+		return err
+	}
+	if _, err := br.Seek(0, io.SeekStart); err != nil {
+		return err
+	}
+	if r == utf8.RuneError && sz == 1 {
+		return fmt.Errorf("invalid UTF-8")
+	}
+	if !isInCharacterRange(r) {
+		return fmt.Errorf("illegal character code %U", r)
+	}
+
+	return nil
+}
+
+func decodeXML(d *decode.D) any {
+	var xi format.XML_In
+	d.ArgAs(&xi)
+
+	bbr := d.RawLen(d.Len())
 	var r any
 	var err error
 
-	xd := xml.NewDecoder(bitio.NewIOReader(br))
+	br := bitio.NewIOReadSeeker(bbr)
+
+	// this reimplements same xml rune range validation as ecoding/xml but fails faster
+	if err := decodeXMLSeekFirstValidRune(br); err != nil {
+		d.Fatalf("%s", err)
+	}
+
+	xd := xml.NewDecoder(br)
+
 	xd.Strict = false
 	var n xmlNode
 	if err := xd.Decode(&n); err != nil {
@@ -269,7 +313,7 @@ func decodeXML(d *decode.D, in any) any {
 	if err != nil {
 		d.Fatalf("%s", err)
 	}
-	var s scalar.S
+	var s scalar.Any
 	s.Actual = r
 
 	switch s.Actual.(type) {
@@ -488,12 +532,12 @@ func toXMLFromArray(c any, opts ToXMLOpts) any {
 
 	ca, ok := c.([]any)
 	if !ok {
-		return gojqex.FuncTypeError{Name: "toxml", V: c}
+		return gojqex.FuncTypeError{Name: "to_xml", V: c}
 	}
 	n, ok := f(ca)
 	if !ok {
 		// TODO: better error
-		return gojqex.FuncTypeError{Name: "toxml", V: c}
+		return gojqex.FuncTypeError{Name: "to_xml", V: c}
 	}
 	bb := &bytes.Buffer{}
 	e := xml.NewEncoder(bb)
@@ -514,5 +558,5 @@ func toXML(_ *interp.Interp, c any, opts ToXMLOpts) any {
 	} else if v, ok := gojqex.Cast[[]any](c); ok {
 		return toXMLFromArray(gojqex.NormalizeToStrings(v), opts)
 	}
-	return gojqex.FuncTypeError{Name: "toxml", V: c}
+	return gojqex.FuncTypeError{Name: "to_xml", V: c}
 }

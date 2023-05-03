@@ -11,18 +11,19 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var vp8Frame decode.Group
+var vp8FrameGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.WEBP,
-		Description: "WebP image",
-		Groups:      []string{format.PROBE, format.IMAGE},
-		DecodeFn:    webpDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.VP8_FRAME}, Group: &vp8Frame},
-		},
-	})
+	interp.RegisterFormat(
+		format.WebP,
+		&decode.Format{
+			Description: "WebP image",
+			Groups:      []*decode.Group{format.Probe, format.Image},
+			DecodeFn:    webpDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.VP8_Frame}, Out: &vp8FrameGroup},
+			},
+		})
 }
 
 func decodeChunk(d *decode.D, expectedChunkID string, fn func(d *decode.D)) {
@@ -39,12 +40,12 @@ func decodeChunk(d *decode.D, expectedChunkID string, fn func(d *decode.D)) {
 	}
 }
 
-func webpDecode(d *decode.D, _ any) any {
+func webpDecode(d *decode.D) any {
 	d.Endian = decode.LittleEndian
 
-	d.FieldUTF8("riff_id", 4, d.AssertStr("RIFF"))
+	d.FieldUTF8("riff_id", 4, d.StrAssert("RIFF"))
 	riffLength := d.FieldU32("riff_length")
-	d.FieldUTF8("webp_id", 4, d.AssertStr("WEBP"))
+	d.FieldUTF8("webp_id", 4, d.StrAssert("WEBP"))
 
 	d.FramedFn(int64(riffLength-4)*8, func(d *decode.D) {
 		p := d.PeekBytes(4)
@@ -55,7 +56,7 @@ func webpDecode(d *decode.D, _ any) any {
 		case bytes.Equal(p, []byte("VP8 ")):
 			d.FieldStruct("image", func(d *decode.D) {
 				decodeChunk(d, "VP8", func(d *decode.D) {
-					d.Format(vp8Frame, nil)
+					d.Format(&vp8FrameGroup, nil)
 				})
 			})
 		case bytes.Equal(p, []byte("VP8L")):

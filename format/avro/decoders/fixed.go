@@ -9,7 +9,7 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-func decodeFixedFn(schema schema.SimplifiedSchema, sms ...scalar.Mapper) (DecodeFn, error) {
+func decodeFixedFn(schema schema.SimplifiedSchema, sms ...scalar.BitBufMapper) (DecodeFn, error) {
 	if schema.Size < 0 {
 		return nil, errors.New("fixed size must be greater than or equal to zero")
 	}

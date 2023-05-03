@@ -11,8 +11,8 @@ import (
 // DefaultRegistry global registry used by formats
 var DefaultRegistry = NewRegistry()
 
-func RegisterFormat(format decode.Format) {
-	DefaultRegistry.Format(format)
+func RegisterFormat(group *decode.Group, format *decode.Format) {
+	DefaultRegistry.Format(group, format)
 }
 
 func RegisterFS(fs fs.ReadDirFS) {

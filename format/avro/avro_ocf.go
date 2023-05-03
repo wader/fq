@@ -20,12 +20,13 @@ import (
 var avroOcfFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.AVRO_OCF,
-		Description: "Avro object container file",
-		Groups:      []string{format.PROBE},
-		DecodeFn:    decodeAvroOCF,
-	})
+	interp.RegisterFormat(
+		format.Avro_Ocf,
+		&decode.Format{
+			Description: "Avro object container file",
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    decodeAvroOCF,
+		})
 	interp.RegisterFS(avroOcfFS)
 }
 
@@ -119,16 +120,16 @@ func decodeBlockCodec(d *decode.D, dataSize int64, codec string) *bytes.Buffer {
 		// Check the checksum
 		crc32W := crc32.NewIEEE()
 		d.Copy(crc32W, bytes.NewReader(bb.Bytes()))
-		d.FieldU32("crc", d.ValidateUBytes(crc32W.Sum(nil)), scalar.ActualHex)
+		d.FieldU32("crc", d.UintValidateBytes(crc32W.Sum(nil)), scalar.UintHex)
 	} else {
 		// Unknown codec, just dump the compressed data.
-		d.FieldRawLen("compressed", dataSize*8, scalar.Description(codec+" encoded"))
+		d.FieldRawLen("compressed", dataSize*8, scalar.BitBufDescription(codec+" encoded"))
 		return nil
 	}
 	return bb
 }
 
-func decodeAvroOCF(d *decode.D, _ any) any {
+func decodeAvroOCF(d *decode.D) any {
 	header := decodeHeader(d)
 
 	decodeFn, err := decoders.DecodeFnForSchema(header.Schema)
@@ -137,11 +138,11 @@ func decodeAvroOCF(d *decode.D, _ any) any {
 	}
 
 	d.FieldStructArrayLoop("blocks", "block", func() bool { return d.NotEnd() }, func(d *decode.D) {
-		count := d.FieldSFn("count", decoders.VarZigZag)
+		count := d.FieldSintFn("count", decoders.VarZigZag)
 		if count <= 0 {
 			return
 		}
-		size := d.FieldSFn("size", decoders.VarZigZag)
+		size := d.FieldSintFn("size", decoders.VarZigZag)
 		i := int64(0)
 
 		if header.Codec != "null" {

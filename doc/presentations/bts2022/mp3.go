@@ -1,4 +1,4 @@
-func decode(d *decode.D, _ any) any {
+func decode(d *decode.D) any {
 	d.FieldArray("headers", func(d *decode.D) {
 		for !d.End() {
 			d.TryFieldFormat("header", headerGroup)

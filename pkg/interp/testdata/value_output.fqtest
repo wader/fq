@@ -1,0 +1,26 @@
+$ fq -V '.headers[0].header[]' test.mp3
+"ID3"
+4
+0
+{
+  "experimental_indicator": false,
+  "extended_header": false,
+  "unsynchronisation": false,
+  "unused": 0
+}
+35
+$ fq -Vr '.headers[0].header[]' test.mp3
+ID3
+4
+0
+{
+  "experimental_indicator": false,
+  "extended_header": false,
+  "unsynchronisation": false,
+  "unused": 0
+}
+35
+$ fq -o bits_format=base64 -V '.frames[0].audio_data' test.mp3
+"AAAAAAA="
+$ fq -o bits_format=base64 -Vr '.frames[0].audio_data' test.mp3
+AAAAAAA=

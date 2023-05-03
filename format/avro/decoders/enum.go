@@ -11,8 +11,8 @@ type EnumMapper struct {
 	Symbols []string
 }
 
-func (e EnumMapper) MapScalar(s scalar.S) (scalar.S, error) {
-	v := int(s.ActualS())
+func (e EnumMapper) MapSint(s scalar.Sint) (scalar.Sint, error) {
+	v := int(s.Actual)
 	if v < 0 || v >= len(e.Symbols) {
 		return s, errors.New("enum value of out range")
 	}
@@ -20,7 +20,7 @@ func (e EnumMapper) MapScalar(s scalar.S) (scalar.S, error) {
 	return s, nil
 }
 
-func decodeEnumFn(schema schema.SimplifiedSchema, sms ...scalar.Mapper) (DecodeFn, error) {
+func decodeEnumFn(schema schema.SimplifiedSchema, sms ...scalar.SintMapper) (DecodeFn, error) {
 	if len(schema.Symbols) == 0 {
 		return nil, errors.New("enum requires symbols")
 	}
@@ -29,6 +29,6 @@ func decodeEnumFn(schema schema.SimplifiedSchema, sms ...scalar.Mapper) (DecodeF
 	// For example, consider the enum:
 	//	      {"type": "enum", "name": "Foo", "symbols": ["A", "B", "C", "D"] }
 	// This would be encoded by an int between zero and three, with zero indicating "A", and 3 indicating "D".
-	sms = append([]scalar.Mapper{EnumMapper{Symbols: schema.Symbols}}, sms...)
+	sms = append([]scalar.SintMapper{EnumMapper{Symbols: schema.Symbols}}, sms...)
 	return decodeIntFn(sms...)
 }

@@ -27,6 +27,7 @@ func maybeLogFile() {
 	}
 }
 
+// function implementing readline.AutoComplete interface
 type autoCompleterFn func(line []rune, pos int) (newLine [][]rune, length int)
 
 func (a autoCompleterFn) Do(line []rune, pos int) (newLine [][]rune, length int) {
@@ -35,8 +36,10 @@ func (a autoCompleterFn) Do(line []rune, pos int) (newLine [][]rune, length int)
 
 type stdOS struct {
 	rl            *readline.Instance
+	historyFile   string
 	closeChan     chan struct{}
 	interruptChan chan struct{}
+	completerFn   interp.CompleteFn
 }
 
 func newStandardOS() *stdOS {
@@ -169,18 +172,16 @@ func (o *stdOS) Readline(opts interp.ReadlineOpts) (string, error) {
 		historyFile = filepath.Join(cacheDir, "fq/history")
 		_ = os.MkdirAll(filepath.Dir(historyFile), 0700)
 
-		o.rl, err = readline.NewEx(&readline.Config{
+		cfg := &readline.Config{
 			HistoryFile:       historyFile,
 			HistorySearchFold: true,
-		})
-		if err != nil {
-			return "", err
 		}
-	}
+		cfg.AutoComplete = autoCompleterFn(func(line []rune, pos int) (newLine [][]rune, length int) {
+			if o.completerFn == nil {
+				return nil, 0
+			}
 
-	if opts.CompleteFn != nil {
-		o.rl.Config.AutoComplete = autoCompleterFn(func(line []rune, pos int) (newLine [][]rune, length int) {
-			names, shared := opts.CompleteFn(string(line), pos)
+			names, shared := o.completerFn(string(line), pos)
 			var runeNames [][]rune
 			for _, name := range names {
 				runeNames = append(runeNames, []rune(name[shared:]))
@@ -188,7 +189,15 @@ func (o *stdOS) Readline(opts interp.ReadlineOpts) (string, error) {
 
 			return runeNames, shared
 		})
+		o.rl, err = readline.NewEx(cfg)
+		if err != nil {
+			return "", err
+		}
+		o.historyFile = historyFile
 	}
+
+	// inject completer to autocompleter
+	o.completerFn = opts.CompleteFn
 
 	o.rl.SetPrompt(opts.Prompt)
 	line, err := o.rl.Readline()
@@ -205,7 +214,7 @@ func (o *stdOS) Readline(opts interp.ReadlineOpts) (string, error) {
 
 func (o *stdOS) History() ([]string, error) {
 	// TODO: refactor history handling to use internal fs?
-	r, err := os.Open(o.rl.Config.HistoryFile)
+	r, err := os.Open(o.historyFile)
 	if err != nil {
 		return nil, err
 	}

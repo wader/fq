@@ -27,7 +27,7 @@ func decodeUnionFn(schema schema.SimplifiedSchema) (DecodeFn, error) {
 	return func(name string, d *decode.D) any {
 		var val any
 		d.FieldStruct(name, func(d *decode.D) {
-			v := int(d.FieldSFn("type", VarZigZag))
+			v := int(d.FieldSintFn("type", VarZigZag))
 			if v < 0 || v >= len(decoders) {
 				d.Fatalf("invalid union value: %d", v)
 			}

@@ -14,30 +14,31 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.DNS,
-		Description: "DNS packet",
-		Groups:      []string{format.UDP_PAYLOAD},
-		DecodeFn:    dnsUDPDecode,
-	})
+	interp.RegisterFormat(
+		format.DNS,
+		&decode.Format{
+			Description: "DNS packet",
+			Groups:      []*decode.Group{format.UDP_Payload},
+			DecodeFn:    dnsUDPDecode,
+		})
 }
 
 const (
 	classIN = 1
 )
 
-var classNames = scalar.URangeToScalar{
-	{Range: [2]uint64{0x0000, 0x0000}, S: scalar.S{Sym: "reserved", Description: "Reserved"}},
-	{Range: [2]uint64{classIN, classIN}, S: scalar.S{Sym: "in", Description: "Internet"}},
-	{Range: [2]uint64{0x0002, 0x0002}, S: scalar.S{Sym: "unassigned", Description: "Unassigned"}},
-	{Range: [2]uint64{0x0003, 0x0003}, S: scalar.S{Sym: "chaos", Description: "Chaos"}},
-	{Range: [2]uint64{0x0004, 0x0004}, S: scalar.S{Sym: "hesiod", Description: "Hesiod"}},
-	{Range: [2]uint64{0x0005, 0x00fd}, S: scalar.S{Sym: "unassigned", Description: "Unassigned"}},
-	{Range: [2]uint64{0x00fe, 0x00fe}, S: scalar.S{Sym: "qclass_none", Description: "QCLASS NONE"}},
-	{Range: [2]uint64{0x00ff, 0x00ff}, S: scalar.S{Sym: "qclass_any", Description: "QCLASS ANY"}},
-	{Range: [2]uint64{0x0100, 0xfeff}, S: scalar.S{Sym: "unassigned", Description: "Unassigned"}},
-	{Range: [2]uint64{0xff00, 0xfffe}, S: scalar.S{Sym: "private", Description: "Reserved for Private Use"}},
-	{Range: [2]uint64{0xffff, 0xffff}, S: scalar.S{Sym: "reserved", Description: "Reserved"}},
+var classNames = scalar.UintRangeToScalar{
+	{Range: [2]uint64{0x0000, 0x0000}, S: scalar.Uint{Sym: "reserved", Description: "Reserved"}},
+	{Range: [2]uint64{classIN, classIN}, S: scalar.Uint{Sym: "in", Description: "Internet"}},
+	{Range: [2]uint64{0x0002, 0x0002}, S: scalar.Uint{Sym: "unassigned", Description: "Unassigned"}},
+	{Range: [2]uint64{0x0003, 0x0003}, S: scalar.Uint{Sym: "chaos", Description: "Chaos"}},
+	{Range: [2]uint64{0x0004, 0x0004}, S: scalar.Uint{Sym: "hesiod", Description: "Hesiod"}},
+	{Range: [2]uint64{0x0005, 0x00fd}, S: scalar.Uint{Sym: "unassigned", Description: "Unassigned"}},
+	{Range: [2]uint64{0x00fe, 0x00fe}, S: scalar.Uint{Sym: "qclass_none", Description: "QCLASS NONE"}},
+	{Range: [2]uint64{0x00ff, 0x00ff}, S: scalar.Uint{Sym: "qclass_any", Description: "QCLASS ANY"}},
+	{Range: [2]uint64{0x0100, 0xfeff}, S: scalar.Uint{Sym: "unassigned", Description: "Unassigned"}},
+	{Range: [2]uint64{0xff00, 0xfffe}, S: scalar.Uint{Sym: "private", Description: "Reserved for Private Use"}},
+	{Range: [2]uint64{0xffff, 0xffff}, S: scalar.Uint{Sym: "reserved", Description: "Reserved"}},
 }
 
 const (
@@ -50,7 +51,7 @@ const (
 	typeAAAA  = 28
 )
 
-var typeNames = scalar.UToSymStr{
+var typeNames = scalar.UintMapSymStr{
 	typeA:     "a",
 	typeAAAA:  "aaaa",
 	18:        "afsdb",
@@ -100,7 +101,7 @@ var typeNames = scalar.UToSymStr{
 	65:        "https",
 }
 
-var rcodeNames = scalar.UToScalar{
+var rcodeNames = scalar.UintMap{
 	0:  {Sym: "no_error", Description: "No error"},
 	1:  {Sym: "form_err", Description: "Format error"},
 	2:  {Sym: "serv_fail", Description: "Server failure"},
@@ -141,7 +142,7 @@ func fieldDecodeLabel(d *decode.D, pointerOffset int64, name string) {
 			seenTermintor := false
 			for !seenTermintor {
 				d.FieldStruct("label", func(d *decode.D) {
-					if d.PeekBits(2) == 0b11 {
+					if d.PeekUintBits(2) == 0b11 {
 						d.FieldU2("is_pointer")
 						pointer := d.FieldU14("pointer")
 						if endPos == 0 {
@@ -230,11 +231,11 @@ func dnsDecode(d *decode.D, hasLengthHeader bool) any {
 			d.FieldU16("length")
 		}
 		d.FieldU16("id")
-		d.FieldU1("qr", scalar.UToSymStr{
+		d.FieldU1("qr", scalar.UintMapSymStr{
 			0: "query",
 			1: "response",
 		})
-		d.FieldU4("opcode", scalar.UToSymStr{
+		d.FieldU4("opcode", scalar.UintMapSymStr{
 			0: "query",
 			1: "iquery",
 			2: "status",
@@ -261,9 +262,11 @@ func dnsDecode(d *decode.D, hasLengthHeader bool) any {
 	return nil
 }
 
-func dnsUDPDecode(d *decode.D, in any) any {
-	if upi, ok := in.(format.UDPPayloadIn); ok {
+func dnsUDPDecode(d *decode.D) any {
+	var upi format.UDP_Payload_In
+	if d.ArgAs(&upi) {
 		upi.MustIsPort(d.Fatalf, format.UDPPortDomain, format.UDPPortMDNS)
 	}
+
 	return dnsDecode(d, false)
 }

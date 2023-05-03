@@ -1,4 +1,4 @@
-$ fq -r '. as $a | ., (toxml({indent: 2}) | ., (fromxml | ., (diff($a; .) // "no diff")))' test.svg
+$ fq -r '. as $a | ., (to_xml({indent: 2}) | ., (from_xml | ., (diff($a; .) // "no diff")))' test.svg
 {
   "svg": {
     "@height": "2500",
@@ -50,7 +50,7 @@ $ fq -r '. as $a | ., (toxml({indent: 2}) | ., (fromxml | ., (diff($a; .) // "no
   }
 }
 no diff
-$ fq -r -o array=true '. as $a | ., (toxml({indent: 2}) | ., (fromxml | ., (diff($a; .) // "no diff")))' test.svg
+$ fq -r -o array=true '. as $a | ., (to_xml({indent: 2}) | ., (from_xml | ., (diff($a; .) // "no diff")))' test.svg
 [
   "svg",
   {

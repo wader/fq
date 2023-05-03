@@ -45,7 +45,7 @@ _description
 _error
 _format
 _format_root
-_index
+_gap
 _len
 _name
 _out
@@ -55,7 +55,6 @@ _root
 _start
 _stop
 _sym
-_unknown
 mp3> .frames\t
 frames[]
 mp3> .frames[]\t
@@ -69,4 +68,8 @@ color
 colors
 compact
 completion_timeout
+mp3> .frames[0] | repl
+> .frames[0] mp3_frame> .he\t
+header
+> .frames[0] mp3_frame> ^D
 mp3> ^D

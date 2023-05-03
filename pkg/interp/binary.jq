@@ -15,17 +15,9 @@ def _re_quote_meta:
 
 # helper for overloading regex/string functions to support binary
 def _binary_or_orig(bfn; fn):
-  ( _exttype as $exttype
-  | if . == null or $exttype == "string" then fn
-    elif $exttype == "binary" then bfn
-    else
-      ( . as $s
-      | try
-          (tobytesrange | bfn)
-        catch ($s | fn)
-      )
-    end
-  );
+  if _exttype == "binary" then bfn
+  else fn
+  end;
 
 def _orig_explode: explode;
 def explode: _binary_or_orig([.[range(.size)]]; _orig_explode);

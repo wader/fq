@@ -15,27 +15,28 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var iccProfileFormat decode.Group
-var exifFormat decode.Group
+var iccProfileGroup decode.Group
+var exifGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.PNG,
-		Description: "Portable Network Graphics file",
-		Groups:      []string{format.PROBE, format.IMAGE},
-		DecodeFn:    pngDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.ICC_PROFILE}, Group: &iccProfileFormat},
-			{Names: []string{format.EXIF}, Group: &exifFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.PNG,
+		&decode.Format{
+			Description: "Portable Network Graphics file",
+			Groups:      []*decode.Group{format.Probe, format.Image},
+			DecodeFn:    pngDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.ICC_Profile}, Out: &iccProfileGroup},
+				{Groups: []*decode.Group{format.Exif}, Out: &exifGroup},
+			},
+		})
 }
 
 const (
 	compressionDeflate = 0
 )
 
-var compressionNames = scalar.UToSymStr{
+var compressionNames = scalar.UintMapSymStr{
 	compressionDeflate: "deflate",
 }
 
@@ -45,7 +46,7 @@ const (
 	disposeOpPrevious   = 2
 )
 
-var disposeOpNames = scalar.UToSymStr{
+var disposeOpNames = scalar.UintMapSymStr{
 	disposeOpNone:       "none",
 	disposeOpBackground: "background",
 	disposeOpPrevious:   "previous",
@@ -56,7 +57,7 @@ const (
 	blendOpBackground = 1
 )
 
-var blendOpNames = scalar.UToSymStr{
+var blendOpNames = scalar.UintMapSymStr{
 	blendOpNone:       "source",
 	blendOpBackground: "over",
 }
@@ -69,7 +70,7 @@ const (
 	colorTypeRGBA               = 6
 )
 
-var colorTypeMap = scalar.UToSymStr{
+var colorTypeMap = scalar.UintMapSymStr{
 	colorTypeGrayscale:          "grayscale",
 	colorTypeRGB:                "rgb",
 	colorTypePalette:            "palette",
@@ -77,7 +78,7 @@ var colorTypeMap = scalar.UToSymStr{
 	colorTypeRGBA:               "rgba",
 }
 
-func pngDecode(d *decode.D, _ any) any {
+func pngDecode(d *decode.D) any {
 	iEndFound := false
 	var colorType uint64
 
@@ -106,10 +107,10 @@ func pngDecode(d *decode.D, _ any) any {
 				d.FieldU8("bit_depth")
 				colorType = d.FieldU8("color_type", colorTypeMap)
 				d.FieldU8("compression_method", compressionNames)
-				d.FieldU8("filter_method", scalar.UToSymStr{
+				d.FieldU8("filter_method", scalar.UintMapSymStr{
 					0: "adaptive_filtering",
 				})
-				d.FieldU8("interlace_method", scalar.UToSymStr{
+				d.FieldU8("interlace_method", scalar.UintMapSymStr{
 					0: "none",
 					1: "adam7",
 				})
@@ -127,7 +128,7 @@ func pngDecode(d *decode.D, _ any) any {
 
 				switch compressionMethod {
 				case compressionDeflate:
-					d.FieldFormatReaderLen("uncompressed", dataLen, zlib.NewReader, decode.FormatFn(func(d *decode.D, _ any) any {
+					d.FieldFormatReaderLen("uncompressed", dataLen, zlib.NewReader, decode.FormatFn(func(d *decode.D) any {
 						d.FieldUTF8("text", int(d.BitsLeft()/8))
 						return nil
 					}))
@@ -144,7 +145,7 @@ func pngDecode(d *decode.D, _ any) any {
 
 				switch compressionMethod {
 				case compressionDeflate:
-					d.FieldFormatReaderLen("uncompressed", dataLen, zlib.NewReader, iccProfileFormat)
+					d.FieldFormatReaderLen("uncompressed", dataLen, zlib.NewReader, &iccProfileGroup)
 				default:
 					d.FieldRawLen("data", dataLen)
 				}
@@ -167,16 +168,16 @@ func pngDecode(d *decode.D, _ any) any {
 				d.FieldU32("value")
 			case "cHRM":
 				df := func(d *decode.D) float64 { return float64(d.U32()) / 1000.0 }
-				d.FieldFFn("white_point_x", df)
-				d.FieldFFn("white_point_y", df)
-				d.FieldFFn("red_x", df)
-				d.FieldFFn("red_y", df)
-				d.FieldFFn("green_x", df)
-				d.FieldFFn("green_y", df)
-				d.FieldFFn("blue_x", df)
-				d.FieldFFn("blue_y", df)
+				d.FieldFltFn("white_point_x", df)
+				d.FieldFltFn("white_point_y", df)
+				d.FieldFltFn("red_x", df)
+				d.FieldFltFn("red_y", df)
+				d.FieldFltFn("green_x", df)
+				d.FieldFltFn("green_y", df)
+				d.FieldFltFn("blue_x", df)
+				d.FieldFltFn("blue_y", df)
 			case "eXIf":
-				d.FieldFormatLen("exif", d.BitsLeft(), exifFormat, nil)
+				d.FieldFormatLen("exif", d.BitsLeft(), &exifGroup, nil)
 			case "acTL":
 				d.FieldU32("num_frames")
 				d.FieldU32("num_plays")
@@ -229,7 +230,7 @@ func pngDecode(d *decode.D, _ any) any {
 
 		chunkCRC := crc32.NewIEEE()
 		d.Copy(chunkCRC, bitio.NewIOReader(d.BitBufRange(crcStartPos, d.Pos()-crcStartPos)))
-		d.FieldU32("crc", d.ValidateUBytes(chunkCRC.Sum(nil)), scalar.ActualHex)
+		d.FieldU32("crc", d.UintValidateBytes(chunkCRC.Sum(nil)), scalar.UintHex)
 	})
 
 	return nil

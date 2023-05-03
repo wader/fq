@@ -9,7 +9,7 @@ $ fq -d csv . /test
   ]
 ]
 $ fq -i
-null> "a,b,c,d" | fromcsv | ., tocsv
+null> "a,b,c,d" | from_csv | ., to_csv
 [
   [
     "a",
@@ -19,7 +19,7 @@ null> "a,b,c,d" | fromcsv | ., tocsv
   ]
 ]
 "a,b,c,d\n"
-null> "a,\"b, c\",d" | fromcsv | ., tocsv
+null> "a,\"b, c\",d" | from_csv | ., to_csv
 [
   [
     "a",
@@ -28,7 +28,7 @@ null> "a,\"b, c\",d" | fromcsv | ., tocsv
   ]
 ]
 "a,\"b, c\",d\n"
-null> "a\t\"b\t c\"\td" | fromcsv({comma:"\t"}) | ., tocsv({comma: "\t"})
+null> "a\t\"b\t c\"\td" | from_csv({comma:"\t"}) | ., to_csv({comma: "\t"})
 [
   [
     "a",
@@ -37,7 +37,7 @@ null> "a\t\"b\t c\"\td" | fromcsv({comma:"\t"}) | ., tocsv({comma: "\t"})
   ]
 ]
 "a\t\"b\t c\"\td\n"
-null> [[bsl(1;100)]] | tocsv | ., fromcsv
+null> [[bsl(1;100)]] | to_csv | ., from_csv
 "1267650600228229401496703205376\n"
 [
   [

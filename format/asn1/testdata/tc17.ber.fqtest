@@ -11,5 +11,5 @@ $ fq -d asn1_ber d tc17.ber
 0x00|      af                                       |  .             |  scale: 3
 0x00|      af                                       |  .             |  format: 3
 0x00|         09                                    |   .            |  exp_bytes: 9
-0x00|            fe ff ff ff ff ff ff ff ff 05 05 05|    ............|  unknown0: raw bits
+0x00|            fe ff ff ff ff ff ff ff ff 05 05 05|    ............|  gap0: raw bits
 0x10|05 05 05 05 05 05|                             |......|         |

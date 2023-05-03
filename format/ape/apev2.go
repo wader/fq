@@ -8,26 +8,27 @@ import (
 	"github.com/wader/fq/pkg/interp"
 )
 
-var imageFormat decode.Group
+var imageGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.APEV2,
-		Description: "APEv2 metadata tag",
-		DecodeFn:    apev2Decode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.IMAGE}, Group: &imageFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.Apev2,
+		&decode.Format{
+			Description: "APEv2 metadata tag",
+			DecodeFn:    apev2Decode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.Image}, Out: &imageGroup},
+			},
+		})
 }
 
-func apev2Decode(d *decode.D, _ any) any {
+func apev2Decode(d *decode.D) any {
 	d.Endian = decode.LittleEndian
 
 	headerFooterFn := func(d *decode.D, name string) uint64 {
 		var tagCount uint64
 		d.FieldStruct(name, func(d *decode.D) {
-			d.FieldUTF8("preamble", 8, d.AssertStr("APETAGEX"))
+			d.FieldUTF8("preamble", 8, d.StrAssert("APETAGEX"))
 			d.FieldU32("version")
 			d.FieldU32("tag_size")
 			tagCount = d.FieldU32("item_count")
@@ -59,7 +60,7 @@ func apev2Decode(d *decode.D, _ any) any {
 					d.FramedFn(int64(itemSize)*8, func(d *decode.D) {
 						d.FieldUTF8Null("filename")
 						// assume image if binary
-						d.FieldFormatOrRaw("value", imageFormat, nil)
+						d.FieldFormatOrRaw("value", &imageGroup, nil)
 					})
 				} else {
 					d.FieldUTF8("value", int(itemSize))

@@ -1,3 +1,5 @@
+/filea:
+aaa
 $ fq -n options
 {
   "addrbase": 16,
@@ -5,7 +7,7 @@ $ fq -n options
   "argdecode": [],
   "argjson": [],
   "array_truncate": 50,
-  "bits_format": "snippet",
+  "bits_format": "string",
   "byte_colors": [
     {
       "ranges": [
@@ -58,13 +60,14 @@ $ fq -n options
   },
   "compact": false,
   "completion_timeout": 10,
-  "decode_format": "probe",
+  "decode_group": "probe",
   "decode_progress": false,
   "depth": 0,
   "display_bytes": 16,
   "expr": "options",
   "expr_eval_path": "arg",
   "expr_file": null,
+  "expr_given": true,
   "filenames": [
     null
   ],
@@ -80,9 +83,11 @@ $ fq -n options
   "show_formats": false,
   "show_help": false,
   "sizebase": 10,
+  "skip_gaps": false,
   "slurp": false,
   "string_input": false,
   "unicode": false,
+  "value_output": false,
   "verbose": false,
   "width": 135
 }
@@ -216,3 +221,9 @@ null> _STDOUT_WIDTH=160 _STDOUT_HEIGHT=40 options | {display_bytes, line_bytes}
   "line_bytes": 20
 }
 null> ^D
+$ fq -n -o from_file=@filea options.from_file
+"aaa\n"
+$ fq -n -o from_file=@does_not_exist options.from_file
+exitcode: 2
+stderr:
+error: -o from_file=@does_not_exist: no such file or directory

@@ -130,7 +130,7 @@ func (err *ArrayIndexTooLargeError) Error() string {
 	return fmt.Sprintf("array index too large: %v", err.V)
 }
 
-func TypeErrorPreview(v interface{}) string {
+func TypeErrorPreview(v any) string {
 	switch v.(type) {
 	case nil:
 		return "null"

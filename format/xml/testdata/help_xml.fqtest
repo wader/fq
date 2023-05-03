@@ -4,9 +4,9 @@ xml: Extensible Markup Language decoder
 Options
 =======
 
-  array=false         Decode as nested arrays
-  attribute_prefix=@  Prefix for attribute keys
-  seq=false           Use seq attribute to preserve element order
+  array=false           Decode as nested arrays
+  attribute_prefix="@"  Prefix for attribute keys
+  seq=false             Use seq attribute to preserve element order
 
 Decode examples
 ===============
@@ -20,14 +20,16 @@ Decode examples
   # Decode value as xml
   ... | xml({array:false,attribute_prefix:"@",seq:false})
 
-XML can be decoded and encoded into jq values in two ways, elements as object or array. Which variant to use depends a bit what you want to do. The object variant
-might be easier to query for a specific value but array might be easier to use to generate xml or to query after all elements of some kind etc.
+XML can be decoded and encoded into jq values in two ways, elements as object or array. Which variant to use depends a bit what you
+want to do. The object variant might be easier to query for a specific value but array might be easier to use to generate xml or to
+query after all elements of some kind etc.
 
-Encoding is done using the toxml function and it will figure what variant that is used based on the input value. Is has two optional options indent and
-attribute_prefix.
+Encoding is done using the to_xml function and it will figure what variant that is used based on the input value. Is has two optional
+options indent and attribute_prefix.
 
 Elements as object
 ==================
+
 Element can have different shapes depending on body text, attributes and children:
 
 - <a key="value">text</a> is {"a":{"#text":"text","@key":"value"}}, has text (#text) and attributes (@key)
@@ -36,8 +38,8 @@ Element can have different shapes depending on body text, attributes and childre
 - <a><b/><b>text</b></a> is {"a":{"b":["","text"]}} two children with same name end up in an array
 - <a><b/><b key="value">text</b></a> is {"a":{"b":["",{"#text":"text","@key":"value"}]}}
 
-If there is #seq attribute it encodes the child element order. Use -o seq=true to include sequence number when decoding, otherwise order might be lost.
-
+If there is #seq attribute it encodes the child element order. Use -o seq=true to include sequence number when decoding, otherwise
+order might be lost.
 
   # decode as object is the default
   $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -d xml -o seq=true
@@ -65,17 +67,17 @@ If there is #seq attribute it encodes the child element order. Use -o seq=true t
   "ccc"
   
   # decode to object and encode to xml
-  $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -r -d xml -o seq=true 'toxml({indent:2})'
+  $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -r -d xml -o seq=true 'to_xml({indent:2})'
   <a>
     <b></b>
     <b>bbb</b>
     <c attr="value">ccc</c>
   </a>
-  
+
 Elements as array
 =================
-Elements are arrays of the shape ["#text": "body text", "attr_name", {key: "attr value"}|null, [<child element>, ...]].
 
+Elements are arrays of the shape ["#text": "body text", "attr_name", {key: "attr value"}|null, [<child element>, ...]].
 
   # decode as array
   $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -d xml -o array=true
@@ -107,7 +109,7 @@ Elements are arrays of the shape ["#text": "body text", "attr_name", {key: "attr
   ]
   
   # decode to array and encode to xml
-  $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -r -d xml -o array=true -o seq=true 'toxml({indent:2})'
+  $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -r -d xml -o array=true -o seq=true 'to_xml({indent:2})'
   <a>
     <b></b>
     <b>bbb</b>
@@ -117,8 +119,8 @@ Elements are arrays of the shape ["#text": "body text", "attr_name", {key: "attr
   # access text of the <c> element, the object variant above is probably easier to use
   $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -o array=true '.[2][2][1]["#text"]'
   "ccc"
-  
+
 References
 ==========
-- xml.com's Converting Between XML and JSON (https://www.xml.com/pub/a/2006/05/31/converting-between-xml-and-json.html)
 
+- xml.com's Converting Between XML and JSON (https://www.xml.com/pub/a/2006/05/31/converting-between-xml-and-json.html)

@@ -10,11 +10,12 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.AMF0,
-		Description: "Action Message Format 0",
-		DecodeFn:    amf0Decode,
-	})
+	interp.RegisterFormat(
+		format.AMF0,
+		&decode.Format{
+			Description: "Action Message Format 0",
+			DecodeFn:    amf0Decode,
+		})
 }
 
 const (
@@ -37,7 +38,7 @@ const (
 	typeTypedObject = 0x10
 )
 
-var typeNames = scalar.UToSymStr{
+var typeNames = scalar.UintMapSymStr{
 	typeNumber:      "number",
 	typeBoolean:     "boolean",
 	typeString:      "string",
@@ -77,15 +78,15 @@ func amf0DecodeValue(d *decode.D) {
 						l := d.FieldU16("length")
 						d.FieldUTF8("value", int(l))
 					})
-					typ = d.PeekBits(8)
+					typ = d.PeekUintBits(8)
 					d.FieldStruct("value", amf0DecodeValue)
 				})
 			}
 		})
 	case typeNull:
-		d.FieldValueNil("value")
+		d.FieldValueAny("value", nil)
 	case typeUndefined:
-		d.FieldValueNil("value") // TODO: ?
+		d.FieldValueAny("value", nil) // TODO: ?
 	case typeReference:
 		d.FieldU16("value") // TODO: index pointer
 	case typeECMAArray:
@@ -98,7 +99,7 @@ func amf0DecodeValue(d *decode.D) {
 						l := d.FieldU16("length")
 						d.FieldUTF8("value", int(l))
 					})
-					typ = d.PeekBits(8)
+					typ = d.PeekUintBits(8)
 					d.FieldStruct("value", amf0DecodeValue)
 				})
 			}
@@ -134,7 +135,7 @@ func amf0DecodeValue(d *decode.D) {
 						l := d.FieldU16("length")
 						d.FieldUTF8("value", int(l))
 					})
-					typ = d.PeekBits(8)
+					typ = d.PeekUintBits(8)
 					d.FieldStruct("value", amf0DecodeValue)
 				})
 			}
@@ -144,7 +145,7 @@ func amf0DecodeValue(d *decode.D) {
 	}
 }
 
-func amf0Decode(d *decode.D, _ any) any {
+func amf0Decode(d *decode.D) any {
 	amf0DecodeValue(d)
 	return nil
 }

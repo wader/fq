@@ -4,7 +4,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var sectionIDToSym = scalar.UToSymStr{
+var sectionIDToSym = scalar.UintMapSymStr{
 	sectionIDCustom:    "custom_section",
 	sectionIDType:      "type_section",
 	sectionIDImport:    "import_section",
@@ -35,7 +35,7 @@ var sectionIDToSym = scalar.UToSymStr{
 //
 //	reftype ::= 0x70 => funcref
 //	         |  0x6F => externref
-var valtypeToSymMapper = scalar.UToSymStr{
+var valtypeToSymMapper = scalar.UintMapSymStr{
 	0x7f: "i32",
 	0x7e: "i64",
 	0x7d: "f32",
@@ -51,7 +51,7 @@ var valtypeToSymMapper = scalar.UToSymStr{
 //	            |  0x01 tt:tabletype  => table tt
 //	            |  0x02 mt:memtype    => mem mt
 //	            |  0x03 gt:globaltype => global gt
-var importdescTagToSym = scalar.UToSymStr{
+var importdescTagToSym = scalar.UintMapSymStr{
 	0x00: "func",
 	0x01: "table",
 	0x02: "mem",
@@ -64,7 +64,7 @@ var importdescTagToSym = scalar.UToSymStr{
 //	            |  0x01 x:tableidx  => table x
 //	            |  0x02 x:memidx    => mem x
 //	            |  0x03 x:globalidx => global x
-var exportdescTagToSym = scalar.UToSymStr{
+var exportdescTagToSym = scalar.UintMapSymStr{
 	0x00: "funcidx",
 	0x01: "tableidx",
 	0x02: "memidx",
@@ -75,7 +75,7 @@ var exportdescTagToSym = scalar.UToSymStr{
 //
 //	reftype ::= 0x70 => funcref
 //	         |  0x6F => externref
-var reftypeTagToSym = scalar.UToSymStr{
+var reftypeTagToSym = scalar.UintMapSymStr{
 	0x70: "funcref",
 	0x6f: "externref",
 }
@@ -84,7 +84,7 @@ var reftypeTagToSym = scalar.UToSymStr{
 //
 //	mut ::= 0x00 => const
 //	     |  0x01 => var
-var mutToSym = scalar.UToSymStr{
+var mutToSym = scalar.UintMapSymStr{
 	0x00: "const",
 	0x01: "var",
 }
@@ -92,6 +92,6 @@ var mutToSym = scalar.UToSymStr{
 // A map to convert elemkind to symbols.
 //
 //	elemkind ::= 0x00 => funcref
-var elemkindTagToSym = scalar.UToSymStr{
+var elemkindTagToSym = scalar.UintMapSymStr{
 	0x00: "funcref",
 }

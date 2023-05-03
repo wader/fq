@@ -343,7 +343,7 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
   0x000|af                                             |.               |      channels: 2 (1) 0x0.7-0x0.7 (0.1)
   0x000|   00                                          | .              |      type: "asc" (0) 0x1-0x1.7 (1)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      data{}: (mpeg_asc) 0x2-0x6.7 (5)
-  0x000|      12                                       |  .             |        object_type: "aac_lc" (2) (AAC Low Complexity)) 0x2-0x2.4 (0.5)
+  0x000|      12                                       |  .             |        object_type: "aac_lc" (2) (AAC Low Complexity) 0x2-0x2.4 (0.5)
   0x000|      12 10                                    |  ..            |        sampling_frequency: 44100 (4) 0x2.5-0x3 (0.4)
   0x000|         10                                    |   .            |        channel_configuration: 2 (front-left, front-right) 0x3.1-0x3.4 (0.4)
   0x000|         10 56 e5 00|                          |   .V..|        |        var_aot_or_byte_align: raw bits 0x3.5-0x6.7 (3.3)

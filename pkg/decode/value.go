@@ -2,6 +2,7 @@ package decode
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/ranges"
@@ -219,19 +220,68 @@ func (v *Value) postProcess() {
 	}
 }
 
-func (v *Value) TryScalarFn(sms ...scalar.Mapper) error {
+// TODO: rethink this
+func (v *Value) TryUintScalarFn(sms ...scalar.UintMapper) error {
 	var err error
-	sr, ok := v.V.(*scalar.S)
+	sr, ok := v.V.(*scalar.Uint)
 	if !ok {
 		panic("not a scalar value")
 	}
 	s := *sr
 	for _, sm := range sms {
-		s, err = sm.MapScalar(s)
+		s, err = sm.MapUint(s)
 		if err != nil {
 			break
 		}
 	}
 	v.V = &s
 	return err
+}
+
+func (v *Value) TryBitBufScalarFn(sms ...scalar.BitBufMapper) error {
+	var err error
+	sr, ok := v.V.(*scalar.BitBuf)
+	if !ok {
+		panic("not a scalar value")
+	}
+	s := *sr
+	for _, sm := range sms {
+		s, err = sm.MapBitBuf(s)
+		if err != nil {
+			break
+		}
+	}
+	v.V = &s
+	return err
+}
+
+func (v *Value) Remove() error {
+	p := v.Parent
+	if p == nil {
+		return fmt.Errorf("d has no parent")
+	}
+
+	switch fv := p.V.(type) {
+	case *Compound:
+		if !fv.IsArray {
+			if _, ok := fv.ByName[v.Name]; !ok {
+				return fmt.Errorf("d not in parent ByName")
+			}
+			delete(fv.ByName, p.Name)
+		}
+		found := false
+		var cs []*Value
+		for _, c := range fv.Children {
+			if c == v {
+				found = true
+				continue
+			}
+			cs = append(cs, c)
+		}
+		if !found {
+			return fmt.Errorf("d not in parent children")
+		}
+		fv.Children = cs
+	}
+	return nil
 }

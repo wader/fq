@@ -3,7 +3,7 @@ package jpeg
 import "github.com/wader/fq/pkg/scalar"
 
 // based on https://www.adobe.com/devnet-apps/photoshop/fileformatashtml
-var psImageResourceBlockNames = scalar.UToDescription{
+var psImageResourceBlockNames = scalar.UintMapDescription{
 	0x03E8: `Contains five 2-byte values: number of channels, rows, columns, depth, and mode`,
 	0x03E9: `Macintosh print manager print info record`,
 	0x03EA: `Macintosh page format information. No longer read by Photoshop. (Obsolete)`,

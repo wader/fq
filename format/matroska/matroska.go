@@ -8,8 +8,6 @@ package matroska
 
 // TODO: refactor simepleblock/block to just defer decode etc?
 // TODO: CRC
-// TODO: value to names (TrackType etc)
-// TODO: lacing
 // TODO: handle garbage (see tcl and example files)
 // TODO: could use md5 here somehow, see flac.go
 
@@ -30,72 +28,76 @@ import (
 //go:embed matroska.md
 var matroskaFS embed.FS
 
-var aacFrameFormat decode.Group
-var av1CCRFormat decode.Group
-var av1FrameFormat decode.Group
-var flacFrameFormat decode.Group
-var flacMetadatablocksFormat decode.Group
-var imageFormat decode.Group
-var mp3FrameFormat decode.Group
-var mpegASCFrameFormat decode.Group
-var mpegAVCAUFormat decode.Group
-var mpegAVCDCRFormat decode.Group
-var mpegHEVCDCRFormat decode.Group
-var mpegHEVCSampleFormat decode.Group
-var mpegPESPacketSampleFormat decode.Group
-var mpegSPUFrameFormat decode.Group
-var opusPacketFrameFormat decode.Group
-var vorbisPacketFormat decode.Group
-var vp8FrameFormat decode.Group
-var vp9CFMFormat decode.Group
-var vp9FrameFormat decode.Group
+var aacFrameGroup decode.Group
+var av1CCRGroup decode.Group
+var av1FrameGroup decode.Group
+var flacFrameGroup decode.Group
+var flacMetadatablocksGroup decode.Group
+var imageGroup decode.Group
+var mp3FrameGroup decode.Group
+var mpegASCFrameGroup decode.Group
+var mpegAVCAUGroup decode.Group
+var mpegAVCDCRGroup decode.Group
+var mpegHEVCDCRGroup decode.Group
+var mpegHEVCSampleGroup decode.Group
+var mpegPESPacketSampleGroup decode.Group
+var mpegSPUFrameGroup decode.Group
+var opusPacketFrameGroup decode.Group
+var vorbisPacketGroup decode.Group
+var vp8FrameGroup decode.Group
+var vp9CFMGroup decode.Group
+var vp9FrameGroup decode.Group
 
-var codecToFormat map[string]*decode.Group
+var codecToGroup map[string]*decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.MATROSKA,
-		Description: "Matroska file",
-		Groups:      []string{format.PROBE},
-		DecodeFn:    matroskaDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.AAC_FRAME}, Group: &aacFrameFormat},
-			{Names: []string{format.AV1_CCR}, Group: &av1CCRFormat},
-			{Names: []string{format.AV1_FRAME}, Group: &av1FrameFormat},
-			{Names: []string{format.AVC_AU}, Group: &mpegAVCAUFormat},
-			{Names: []string{format.AVC_DCR}, Group: &mpegAVCDCRFormat},
-			{Names: []string{format.FLAC_FRAME}, Group: &flacFrameFormat},
-			{Names: []string{format.FLAC_METADATABLOCKS}, Group: &flacMetadatablocksFormat},
-			{Names: []string{format.HEVC_AU}, Group: &mpegHEVCSampleFormat},
-			{Names: []string{format.HEVC_DCR}, Group: &mpegHEVCDCRFormat},
-			{Names: []string{format.IMAGE}, Group: &imageFormat},
-			{Names: []string{format.MP3_FRAME}, Group: &mp3FrameFormat},
-			{Names: []string{format.MPEG_ASC}, Group: &mpegASCFrameFormat},
-			{Names: []string{format.MPEG_PES_PACKET}, Group: &mpegPESPacketSampleFormat},
-			{Names: []string{format.MPEG_SPU}, Group: &mpegSPUFrameFormat},
-			{Names: []string{format.OPUS_PACKET}, Group: &opusPacketFrameFormat},
-			{Names: []string{format.VORBIS_PACKET}, Group: &vorbisPacketFormat},
-			{Names: []string{format.VP8_FRAME}, Group: &vp8FrameFormat},
-			{Names: []string{format.VP9_CFM}, Group: &vp9CFMFormat},
-			{Names: []string{format.VP9_FRAME}, Group: &vp9FrameFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.Matroska,
+		&decode.Format{
+			Description: "Matroska file",
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    matroskaDecode,
+			DefaultInArg: format.Matroska_In{
+				DecodeSamples: true,
+			},
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.AAC_Frame}, Out: &aacFrameGroup},
+				{Groups: []*decode.Group{format.AV1_CCR}, Out: &av1CCRGroup},
+				{Groups: []*decode.Group{format.AV1_Frame}, Out: &av1FrameGroup},
+				{Groups: []*decode.Group{format.AVC_AU}, Out: &mpegAVCAUGroup},
+				{Groups: []*decode.Group{format.AVC_DCR}, Out: &mpegAVCDCRGroup},
+				{Groups: []*decode.Group{format.FLAC_Frame}, Out: &flacFrameGroup},
+				{Groups: []*decode.Group{format.FLAC_Metadatablocks}, Out: &flacMetadatablocksGroup},
+				{Groups: []*decode.Group{format.HEVC_AU}, Out: &mpegHEVCSampleGroup},
+				{Groups: []*decode.Group{format.HEVC_DCR}, Out: &mpegHEVCDCRGroup},
+				{Groups: []*decode.Group{format.Image}, Out: &imageGroup},
+				{Groups: []*decode.Group{format.MP3_Frame}, Out: &mp3FrameGroup},
+				{Groups: []*decode.Group{format.MPEG_ASC}, Out: &mpegASCFrameGroup},
+				{Groups: []*decode.Group{format.MPEG_PES_Packet}, Out: &mpegPESPacketSampleGroup},
+				{Groups: []*decode.Group{format.MPEG_SPU}, Out: &mpegSPUFrameGroup},
+				{Groups: []*decode.Group{format.Opus_Packet}, Out: &opusPacketFrameGroup},
+				{Groups: []*decode.Group{format.Vorbis_Packet}, Out: &vorbisPacketGroup},
+				{Groups: []*decode.Group{format.VP8_Frame}, Out: &vp8FrameGroup},
+				{Groups: []*decode.Group{format.VP9_CFM}, Out: &vp9CFMGroup},
+				{Groups: []*decode.Group{format.VP9_Frame}, Out: &vp9FrameGroup},
+			},
+		})
 	interp.RegisterFS(matroskaFS)
 
-	codecToFormat = map[string]*decode.Group{
-		"A_VORBIS":         &vorbisPacketFormat,
-		"A_MPEG/L3":        &mp3FrameFormat,
-		"A_FLAC":           &flacFrameFormat,
-		"A_AAC":            &aacFrameFormat,
-		"A_OPUS":           &opusPacketFrameFormat,
-		"V_VP8":            &vp8FrameFormat,
-		"V_VP9":            &vp9FrameFormat,
-		"V_AV1":            &av1FrameFormat,
-		"V_VOBSUB":         &mpegSPUFrameFormat,
-		"V_MPEG4/ISO/AVC":  &mpegAVCAUFormat,
-		"V_MPEGH/ISO/HEVC": &mpegHEVCSampleFormat,
-		"V_MPEG2":          &mpegPESPacketSampleFormat,
-		"S_VOBSUB":         &mpegSPUFrameFormat,
+	codecToGroup = map[string]*decode.Group{
+		"A_VORBIS":         &vorbisPacketGroup,
+		"A_MPEG/L3":        &mp3FrameGroup,
+		"A_FLAC":           &flacFrameGroup,
+		"A_AAC":            &aacFrameGroup,
+		"A_OPUS":           &opusPacketFrameGroup,
+		"V_VP8":            &vp8FrameGroup,
+		"V_VP9":            &vp9FrameGroup,
+		"V_AV1":            &av1FrameGroup,
+		"V_VOBSUB":         &mpegSPUFrameGroup,
+		"V_MPEG4/ISO/AVC":  &mpegAVCAUGroup,
+		"V_MPEGH/ISO/HEVC": &mpegHEVCSampleGroup,
+		"V_MPEG2":          &mpegPESPacketSampleGroup,
+		"S_VOBSUB":         &mpegSPUFrameGroup,
 	}
 }
 
@@ -106,12 +108,14 @@ const (
 	lacingTypeEBML  = 0b11
 )
 
-var lacingTypeNames = scalar.UToSymStr{
+var lacingTypeNames = scalar.UintMapSymStr{
 	lacingTypeNone:  "none",
 	lacingTypeXiph:  "xiph",
 	lacingTypeFixed: "fixed",
 	lacingTypeEBML:  "ebml",
 }
+
+const tagSizeUnknown = 0xffffffffffffff
 
 func decodeLacingFn(d *decode.D, lacingType int, fn func(d *decode.D)) {
 	if lacingType == lacingTypeNone {
@@ -127,7 +131,7 @@ func decodeLacingFn(d *decode.D, lacingType int, fn func(d *decode.D)) {
 		numLaces := int(d.FieldU8("num_laces"))
 		d.FieldArray("lace_sizes", func(d *decode.D) {
 			for i := 0; i < numLaces; i++ {
-				s := int64(d.FieldUFn("lace_size", decodeXiphLaceSize))
+				s := int64(d.FieldUintFn("lace_size", decodeXiphLaceSize))
 				laceSizes = append(laceSizes, s)
 			}
 			laceSizes = append(laceSizes, -1)
@@ -135,10 +139,10 @@ func decodeLacingFn(d *decode.D, lacingType int, fn func(d *decode.D)) {
 	case lacingTypeEBML:
 		numLaces := int(d.FieldU8("num_laces"))
 		d.FieldArray("lace_sizes", func(d *decode.D) {
-			s := int64(d.FieldUFn("lace_size", decodeVint)) // first is unsigned, not ranged shifted
+			s := int64(d.FieldUintFn("lace_size", decodeVint)) // first is unsigned, not ranged shifted
 			laceSizes = append(laceSizes, s)
 			for i := 0; i < numLaces-1; i++ {
-				d := int64(d.FieldUFn("lace_size_delta", decodeRawVint))
+				d := int64(d.FieldUintFn("lace_size_delta", decodeRawVint))
 				// range shifting
 				switch {
 				case d&0b1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1000_0000 == 0b0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1000_0000:
@@ -207,6 +211,12 @@ func decodeRawVint(d *decode.D) uint64 {
 	return n
 }
 
+func peekRawVint(d *decode.D) uint64 {
+	n, w := decodeRawVintWidth(d)
+	d.SeekRel(int64(-w) * 8)
+	return n
+}
+
 func decodeVint(d *decode.D) uint64 {
 	n, w := decodeRawVintWidth(d)
 	m := (uint64(1<<((w-1)*8+(8-w))) - 1)
@@ -245,99 +255,134 @@ type decodeContext struct {
 	blocks       []block
 }
 
-func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext) {
+func decodeMaster(d *decode.D, bitsLimit int64, elm *ebml.Master, unknownSize bool, dc *decodeContext) {
 	tagEndBit := d.Pos() + bitsLimit
 
 	d.FieldArray("elements", func(d *decode.D) {
-		// var crcD *decode.D
-		// var crcStart int64
-
-		for d.Pos() < tagEndBit && d.NotEnd() {
-			d.FieldStruct("element", func(d *decode.D) {
-				a := ebml.Attribute{
-					Type: ebml.Unknown,
+		for d.Pos() < tagEndBit && !d.End() {
+			// current we assume master with unknown size has ended if a valid parent is found
+			// TODO:
+			// https://github.com/ietf-wg-cellar/ebml-specification/blob/master/specification.markdown#unknown-data-size
+			// > Any valid EBML Element according to the EBML Schema, Global Elements excluded, that
+			// > is not a Descendant Element of the Unknown-Sized Element but shares a common direct
+			// > parent, such as a Top-Level Element.
+			// TODO: What to do if peeked is unknown?
+			// TODO: Handle garbage between element
+			if unknownSize {
+				peekTagID := peekRawVint(d)
+				_, validParent := ebml.FindParentID(ebml_matroska.IDToElement, elm.GetID(), ebml.ID(peekTagID))
+				if validParent {
+					break
 				}
+			}
 
-				tagID := d.FieldUFn("id", decodeRawVint, scalar.Fn(func(s scalar.S) (scalar.S, error) {
-					n := s.ActualU()
+			d.FieldStruct("element", func(d *decode.D) {
+				var childElm ebml.Element
+				childElm = &ebml.Unknown{}
+
+				tagID := d.FieldUintFn("id", decodeRawVint, scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
+					n := s.Actual
 					var ok bool
-					a, ok = tag[n]
+					childElm, ok = elm.Master[ebml.ID(n)]
 					if !ok {
-						a, ok = ebml.Global[n]
+						childElm, ok = ebml.Global.Master[ebml.ID(n)]
 						if !ok {
-							a = ebml.Attribute{
-								Type: ebml.Unknown,
-							}
-							return scalar.S{Actual: n, ActualDisplay: scalar.NumberHex, Description: "Unknown"}, nil
+							childElm = &ebml.Unknown{}
+							return scalar.Uint{Actual: n, DisplayFormat: scalar.NumberHex, Description: "Unknown"}, nil
 						}
 					}
-					return scalar.S{Actual: n, ActualDisplay: scalar.NumberHex, Sym: a.Name, Description: a.Definition}, nil
+					return scalar.Uint{
+						Actual:        n,
+						DisplayFormat: scalar.NumberHex,
+						Sym:           childElm.GetName(),
+						Description:   childElm.GetDefinition(),
+					}, nil
 				}))
-				d.FieldValueStr("type", ebml.TypeNames[a.Type])
+				d.FieldValueStr("type", childElm.GetType())
 
 				if tagID == ebml_matroska.TrackEntryID {
 					dc.currentTrack = &track{}
 					dc.tracks = append(dc.tracks, dc.currentTrack)
 				}
 
-				// tagSize could be 0xffffffffffffff which means "unknown" size, then we will read until eof
-				// TODO: should read until unknown id:
-				//    The end of a Master-element with unknown size is determined by the beginning of the next
-				//    element that is not a valid sub-element of that Master-element
-				// TODO: should also handle garbage between
 				const maxStringTagSize = 100 * 1024 * 1024
-				tagSize := d.FieldUFn("size", decodeVint)
+				tagSize := d.FieldUintFn("size", decodeVint, scalar.UintMapDescription{
+					0xffffffffffffff: "Unknown size",
+				})
+				unknownSize := tagSize == tagSizeUnknown
+				if unknownSize {
+					tagSize = uint64(d.BitsLeft() / 8)
+				}
 
 				// assert sane tag size
 				// TODO: strings are limited for now because they are read into memory
-				switch a.Type {
-				case ebml.Integer,
-					ebml.Uinteger,
-					ebml.Float:
+				switch childElm.(type) {
+				case *ebml.Integer,
+					*ebml.Uinteger,
+					*ebml.Float:
 					if tagSize > 8 {
 						d.Fatalf("invalid tagSize %d for number type", tagSize)
 					}
-				case ebml.String,
-					ebml.UTF8:
+				case *ebml.String,
+					*ebml.UTF8:
 					if tagSize > maxStringTagSize {
 						d.Errorf("tagSize %d > maxStringTagSize %d", tagSize, maxStringTagSize)
 					}
-				case ebml.Unknown,
-					ebml.Binary,
-					ebml.Date,
-					ebml.Master:
+				case *ebml.Unknown,
+					*ebml.Binary,
+					*ebml.Date,
+					*ebml.Master:
 					// nop
 				}
 
-				optionalMap := func(sm scalar.Mapper) scalar.Mapper {
-					return scalar.Fn(func(s scalar.S) (scalar.S, error) {
-						if sm != nil {
-							return sm.MapScalar(s)
-						}
-						return s, nil
-					})
-				}
-
-				switch a.Type {
-				case ebml.Unknown:
+				switch childElm := childElm.(type) {
+				case *ebml.Unknown:
 					d.FieldRawLen("data", int64(tagSize)*8)
-				case ebml.Integer:
-					d.FieldS("value", int(tagSize)*8, optionalMap(a.IntegerEnums))
-				case ebml.Uinteger:
-					v := d.FieldU("value", int(tagSize)*8, optionalMap(a.UintegerEnums))
+				case *ebml.Integer:
+					var sm []scalar.SintMapper
+					if childElm.Enums != nil {
+						sm = append(sm, scalar.SintFn(func(s scalar.Sint) (scalar.Sint, error) {
+							if e, ok := childElm.Enums[s.Actual]; ok {
+								s.Sym = e.Name
+								s.Description = e.Description
+							}
+							return s, nil
+						}))
+					}
+					d.FieldS("value", int(tagSize)*8, sm...)
+				case *ebml.Uinteger:
+					var sm []scalar.UintMapper
+					if childElm.Enums != nil {
+						sm = append(sm, scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
+							if e, ok := childElm.Enums[s.Actual]; ok {
+								s.Sym = e.Name
+								s.Description = e.Description
+							}
+							return s, nil
+						}))
+					}
+					v := d.FieldU("value", int(tagSize)*8, sm...)
 					if dc.currentTrack != nil && tagID == ebml_matroska.TrackNumberID {
 						dc.currentTrack.number = int(v)
 					}
-				case ebml.Float:
+				case *ebml.Float:
 					d.FieldF("value", int(tagSize)*8)
-				case ebml.String:
-					v := d.FieldUTF8("value", int(tagSize), optionalMap(a.StringEnums))
+				case *ebml.String:
+					var sm []scalar.StrMapper
+					sm = append(sm, scalar.StrFn(func(s scalar.Str) (scalar.Str, error) {
+						if e, ok := childElm.Enums[s.Actual]; ok {
+							s.Sym = e.Name
+							s.Description = e.Description
+						}
+						return s, nil
+					}))
+					v := d.FieldUTF8("value", int(tagSize), sm...)
 					if dc.currentTrack != nil && tagID == ebml_matroska.CodecIDID {
 						dc.currentTrack.codec = v
 					}
-				case ebml.UTF8:
+				case *ebml.UTF8:
 					d.FieldUTF8NullFixedLen("value", int(tagSize))
-				case ebml.Date:
+				case *ebml.Date:
 					// TODO:
 					/*
 						proc type_date {size label _extra} {
@@ -360,7 +405,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 						}
 					*/
 					d.FieldRawLen("value", int64(tagSize)*8)
-				case ebml.Binary:
+				case *ebml.Binary:
 					switch tagID {
 					case ebml_matroska.SimpleBlockID:
 						dc.blocks = append(dc.blocks, block{
@@ -383,39 +428,29 @@ func decodeMaster(d *decode.D, bitsLimit int64, tag ebml.Tag, dc *decodeContext)
 						}
 						d.SeekRel(int64(tagSize) * 8)
 					case ebml_matroska.FileDataID:
-						d.FieldFormatLen("value", int64(tagSize)*8, imageFormat, nil)
+						d.FieldFormatOrRawLen("value", int64(tagSize)*8, &imageGroup, nil)
 					default:
 						d.FieldRawLen("value", int64(tagSize)*8)
-						// if tagID == CRC {
-						// 	crcD = d
-						// 	crcStart = d.Pos()
-						// }
 					}
 
-				case ebml.Master:
-					decodeMaster(d, int64(tagSize)*8, a.Tag, dc)
+				case *ebml.Master:
+					decodeMaster(d, int64(tagSize)*8, childElm, unknownSize, dc)
 				}
 			})
 		}
-
-		// if crcD != nil {
-		// 	crcValue := crcD.FieldMustRemove("value")
-		// 	elementCRC := &crc.CRC{Bits: 32, Current: 0xffff_ffff, Table: crc.IEEELETable}
-		// 	//log.Printf("crc: %x-%x %d\n", crcStart/8, d.Pos()/8, (d.Pos()-crcStart)/8)
-		// 	ioex.MustCopy(elementCRC, d.BitBufRange(crcStart, d.Pos()-crcStart))
-		// 	crcD.FieldChecksumRange("value", crcValue.Range.Start, crcValue.Range.Len, elementCRC.Sum(nil), decode.LittleEndian)
-		// }
 	})
-
 }
 
-func matroskaDecode(d *decode.D, _ any) any {
+func matroskaDecode(d *decode.D) any {
+	var mi format.Matroska_In
+	d.ArgAs(&mi)
+
 	ebmlHeaderID := uint64(0x1a45dfa3)
-	if d.PeekBits(32) != ebmlHeaderID {
+	if d.PeekUintBits(32) != ebmlHeaderID {
 		d.Errorf("no EBML header found")
 	}
 	dc := &decodeContext{tracks: []*track{}}
-	decodeMaster(d, d.BitsLeft(), ebml_matroska.Root, dc)
+	decodeMaster(d, d.BitsLeft(), ebml_matroska.RootElement, false, dc)
 
 	trackNumberToTrack := map[int]*track{}
 	for _, t := range dc.tracks {
@@ -429,56 +464,59 @@ func matroskaDecode(d *decode.D, _ any) any {
 		}
 
 		// TODO: refactor, one DecodeRangeFn or refactor to add FieldFormatRangeFn?
-
 		switch t.codec {
 		case "A_VORBIS":
 			t.parentD.RangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
 				decodeLacingFn(d, lacingTypeXiph, func(d *decode.D) {
-					d.FieldFormat("packet", vorbisPacketFormat, nil)
+					if mi.DecodeSamples {
+						d.FieldFormat("packet", &vorbisPacketGroup, nil)
+					} else {
+						d.FieldRawLen("packet", d.BitsLeft())
+					}
 				})
 			})
 		case "A_AAC":
-			dv, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegASCFrameFormat, nil)
-			mpegASCOut, ok := v.(format.MPEGASCOut)
-			if dv != nil && !ok {
+			_, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, &mpegASCFrameGroup, nil)
+			mpegASCOut, ok := v.(format.MPEG_ASC_Out)
+			if !ok {
 				panic(fmt.Sprintf("expected mpegASCOut got %#+v", v))
 			}
 			//nolint:gosimple
-			t.formatInArg = format.AACFrameIn{ObjectType: mpegASCOut.ObjectType}
+			t.formatInArg = format.AAC_Frame_In{ObjectType: mpegASCOut.ObjectType}
 		case "A_OPUS":
-			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, opusPacketFrameFormat, nil)
+			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, &opusPacketFrameGroup, nil)
 		case "A_FLAC":
 			t.parentD.RangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
 				d.FieldStruct("value", func(d *decode.D) {
-					d.FieldUTF8("magic", 4, d.AssertStr("fLaC"))
-					dv, v := d.FieldFormat("metadatablocks", flacMetadatablocksFormat, nil)
-					flacMetadatablockOut, ok := v.(format.FlacMetadatablocksOut)
-					if dv != nil && !ok {
+					d.FieldUTF8("magic", 4, d.StrAssert("fLaC"))
+					_, v := d.FieldFormat("metadatablocks", &flacMetadatablocksGroup, nil)
+					flacMetadatablockOut, ok := v.(format.FLAC_Metadatablocks_Out)
+					if !ok {
 						panic(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
 					}
 					if flacMetadatablockOut.HasStreamInfo {
-						t.formatInArg = format.FlacFrameIn{BitsPerSample: int(flacMetadatablockOut.StreamInfo.BitsPerSample)}
+						t.formatInArg = format.FLAC_Frame_In{BitsPerSample: int(flacMetadatablockOut.StreamInfo.BitsPerSample)}
 					}
 				})
 			})
 		case "V_MPEG4/ISO/AVC":
-			dv, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegAVCDCRFormat, nil)
-			avcDcrOut, ok := v.(format.AvcDcrOut)
-			if dv != nil && !ok {
+			_, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, &mpegAVCDCRGroup, nil)
+			avcDcrOut, ok := v.(format.AVC_DCR_Out)
+			if !ok {
 				panic(fmt.Sprintf("expected AvcDcrOut got %#+v", v))
 			}
-			t.formatInArg = format.AvcAuIn{LengthSize: avcDcrOut.LengthSize} //nolint:gosimple
+			t.formatInArg = format.AVC_AU_In{LengthSize: avcDcrOut.LengthSize} //nolint:gosimple
 		case "V_MPEGH/ISO/HEVC":
-			dv, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, mpegHEVCDCRFormat, nil)
-			hevcDcrOut, ok := v.(format.HevcDcrOut)
-			if dv != nil && !ok {
+			_, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, &mpegHEVCDCRGroup, nil)
+			hevcDcrOut, ok := v.(format.HEVC_DCR_Out)
+			if !ok {
 				panic(fmt.Sprintf("expected HevcDcrOut got %#+v", v))
 			}
-			t.formatInArg = format.HevcAuIn{LengthSize: hevcDcrOut.LengthSize} //nolint:gosimple
+			t.formatInArg = format.HEVC_AU_In{LengthSize: hevcDcrOut.LengthSize} //nolint:gosimple
 		case "V_AV1":
-			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, av1CCRFormat, nil)
+			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, &av1CCRGroup, nil)
 		case "V_VP9":
-			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, vp9CFMFormat, nil)
+			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, &vp9CFMGroup, nil)
 		default:
 			t.parentD.RangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
 				d.FieldRawLen("value", d.BitsLeft())
@@ -489,7 +527,7 @@ func matroskaDecode(d *decode.D, _ any) any {
 	for _, b := range dc.blocks {
 		b.d.RangeFn(b.r.Start, b.r.Len, func(d *decode.D) {
 			var lacing uint64
-			trackNumber := d.FieldUFn("track_number", decodeVint)
+			trackNumber := d.FieldUintFn("track_number", decodeVint)
 			d.FieldU16("timestamp")
 			if b.simple {
 				d.FieldStruct("flags", func(d *decode.D) {
@@ -512,12 +550,12 @@ func matroskaDecode(d *decode.D, _ any) any {
 			var track *track
 			track, trackOk := trackNumberToTrack[int(trackNumber)]
 			if trackOk {
-				f = codecToFormat[track.codec]
+				f = codecToGroup[track.codec]
 			}
 
 			decodeLacingFn(d, int(lacing), func(d *decode.D) {
-				if f != nil {
-					d.FieldFormat("packet", *f, track.formatInArg)
+				if mi.DecodeSamples && f != nil {
+					d.FieldFormat("packet", f, track.formatInArg)
 				} else {
 					d.FieldRawLen("packet", d.BitsLeft())
 				}

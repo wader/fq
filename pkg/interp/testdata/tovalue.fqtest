@@ -1,6 +1,22 @@
 # TODO: use test format
-$ fq -i
-null> "aaa" | mp3_frame | .unknown0 | tovalue, tovalue({sizebase: 2})
-"<3>YWFh"
-"<0b11>YWFh"
-null> ^D
+$ fq -i . test.mp3
+mp3> .headers[0] | tovalue.header.magic
+"ID3"
+mp3> [tobytes, "abc"] | mp3 | tovalue, tovalue({skip_gaps: true}) | keys
+[
+  "footers",
+  "frames",
+  "gap0",
+  "headers"
+]
+[
+  "footers",
+  "frames",
+  "headers"
+]
+mp3> "abc" | mpeg_ts | tovalue, tovalue({skip_gaps: true}) | keys
+[
+  "gap0"
+]
+[]
+mp3> ^D

@@ -26,4 +26,4 @@ $ fq -d asn1_ber d tc48.ber
 0x00|                              03               |          .     |      tag: "bit_string" (0x3)
 0x00|                                 02            |           .    |      length: 2
 0x00|                                    0f         |            .   |      unused_bits_count: 15
-0x00|                                       0f 00 00|             ...|  unknown0: raw bits
+0x00|                                       0f 00 00|             ...|  gap0: raw bits

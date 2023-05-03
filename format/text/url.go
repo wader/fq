@@ -8,25 +8,25 @@ import (
 )
 
 func init() {
-	interp.RegisterFunc0("fromurlencode", func(_ *interp.Interp, c string) any {
+	interp.RegisterFunc0("from_urlencode", func(_ *interp.Interp, c string) any {
 		u, err := url.QueryUnescape(c)
 		if err != nil {
 			return err
 		}
 		return u
 	})
-	interp.RegisterFunc0("tourlencode", func(_ *interp.Interp, c string) any {
+	interp.RegisterFunc0("to_urlencode", func(_ *interp.Interp, c string) any {
 		return url.QueryEscape(c)
 	})
 
-	interp.RegisterFunc0("fromurlpath", func(_ *interp.Interp, c string) any {
+	interp.RegisterFunc0("from_urlpath", func(_ *interp.Interp, c string) any {
 		u, err := url.PathUnescape(c)
 		if err != nil {
 			return err
 		}
 		return u
 	})
-	interp.RegisterFunc0("tourlpath", func(_ *interp.Interp, c string) any {
+	interp.RegisterFunc0("to_urlpath", func(_ *interp.Interp, c string) any {
 		return url.PathEscape(c)
 	})
 
@@ -46,7 +46,7 @@ func init() {
 
 		return qm
 	}
-	interp.RegisterFunc0("fromurlquery", func(_ *interp.Interp, c string) any {
+	interp.RegisterFunc0("from_urlquery", func(_ *interp.Interp, c string) any {
 		q, err := url.ParseQuery(c)
 		if err != nil {
 			return err
@@ -70,7 +70,7 @@ func init() {
 		}
 		return qv
 	}
-	interp.RegisterFunc0("tourlquery", func(_ *interp.Interp, c map[string]any) any {
+	interp.RegisterFunc0("to_urlquery", func(_ *interp.Interp, c map[string]any) any {
 		// TODO: nicer
 		c, ok := gojqex.NormalizeToStrings(c).(map[string]any)
 		if !ok {
@@ -79,7 +79,7 @@ func init() {
 		return toURLValues(c).Encode()
 	})
 
-	interp.RegisterFunc0("fromurl", func(_ *interp.Interp, c string) any {
+	interp.RegisterFunc0("from_url", func(_ *interp.Interp, c string) any {
 		u, err := url.Parse(c)
 		if err != nil {
 			return err
@@ -116,7 +116,7 @@ func init() {
 		}
 		return m
 	})
-	interp.RegisterFunc0("tourl", func(_ *interp.Interp, c map[string]any) any {
+	interp.RegisterFunc0("to_url", func(_ *interp.Interp, c map[string]any) any {
 		// TODO: nicer
 		c, ok := gojqex.NormalizeToStrings(c).(map[string]any)
 		if !ok {

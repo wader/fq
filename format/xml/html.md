@@ -2,7 +2,7 @@ HTML is decoded in HTML5 mode and will always include `<html>`, `<body>` and `<h
 
 See xml format for more examples and how to preserve element order and how to encode to xml.
 
-There is no `tohtml` function, see `toxml` instead.
+There is no `to_html` function, see `to_xml` instead.
 
 ### Element as object
 

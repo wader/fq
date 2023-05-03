@@ -10,18 +10,19 @@ import (
 // TODO: comment 28 long, zero byte, track number
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.ID3V1,
-		Description: "ID3v1 metadata",
-		DecodeFn:    id3v1Decode,
-	})
+	interp.RegisterFormat(
+		format.ID3v1,
+		&decode.Format{
+			Description: "ID3v1 metadata",
+			DecodeFn:    id3v1Decode,
+		})
 }
 
 // Decode ID3v1 tag
-func id3v1Decode(d *decode.D, _ any) any {
+func id3v1Decode(d *decode.D) any {
 	d.AssertAtLeastBitsLeft(128 * 8)
-	d.FieldUTF8("magic", 3, d.AssertStr("TAG"))
-	if d.PeekBits(8) == uint64('+') {
+	d.FieldUTF8("magic", 3, d.StrAssert("TAG"))
+	if d.PeekUintBits(8) == uint64('+') {
 		d.Errorf("looks like id3v11")
 	}
 	d.FieldUTF8NullFixedLen("song_name", 30)
@@ -30,7 +31,7 @@ func id3v1Decode(d *decode.D, _ any) any {
 	d.FieldUTF8NullFixedLen("year", 4)
 	d.FieldUTF8NullFixedLen("comment", 30)
 	// from https://en.wikipedia.org/wiki/List_of_ID3v1_Genres
-	d.FieldU8("genre", scalar.UToScalar{
+	d.FieldU8("genre", scalar.UintMap{
 		0:   {Sym: "blues", Description: "Blues"},
 		1:   {Sym: "classic_rock", Description: "Classic Rock"},
 		2:   {Sym: "country", Description: "Country"},

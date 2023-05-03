@@ -124,22 +124,11 @@ func CastFn[T any](v any, structFn func(input any, result any) error) (T, bool) 
 	default:
 		ft := reflect.TypeOf(&t)
 		if ft.Elem().Kind() == reflect.Struct {
-			m := map[string]any{}
-			switch v := v.(type) {
-			case map[string]any:
-				m = v
-			case nil:
-				// nop use instantiated map
-			case gojq.JQValue:
-				if jm, ok := Cast[map[string]any](v.JQValueToGoJQ()); ok {
-					m = jm
-				} else {
-					return t, false
-				}
-			default:
+			// TODO: some way to allow decode value passthru?
+			m, ok := ToGoJQValue(v)
+			if !ok {
 				return t, false
 			}
-
 			if structFn == nil {
 				panic("structFn nil")
 			}
@@ -350,7 +339,7 @@ func (v Number) JQValueToNumber() any { return v.V }
 func (v Number) JQValueToString() any {
 	b := &bytes.Buffer{}
 	// uses colorjson encode based on gojq encoder to support big.Int
-	if err := colorjson.NewEncoder(false, false, 0, nil, colorjson.Colors{}).Marshal(v.V, b); err != nil {
+	if err := colorjson.NewEncoder(colorjson.Options{}).Marshal(v.V, b); err != nil {
 		return err
 	}
 	return b.String()

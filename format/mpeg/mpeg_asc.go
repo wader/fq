@@ -10,14 +10,15 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.MPEG_ASC,
-		Description: "MPEG-4 Audio Specific Config",
-		DecodeFn:    ascDecoder,
-	})
+	interp.RegisterFormat(
+		format.MPEG_ASC,
+		&decode.Format{
+			Description: "MPEG-4 Audio Specific Config",
+			DecodeFn:    ascDecoder,
+		})
 }
 
-var frequencyIndexHzMap = scalar.UToSymU{
+var frequencyIndexHzMap = scalar.UintMapSymUint{
 	0x0: 96000,
 	0x1: 88200,
 	0x2: 64000,
@@ -33,7 +34,7 @@ var frequencyIndexHzMap = scalar.UToSymU{
 	0xc: 7350,
 }
 
-var channelConfigurationNames = scalar.UToDescription{
+var channelConfigurationNames = scalar.UintMapDescription{
 	0: "defined in AOT Specifc Config",
 	1: "front-center",
 	2: "front-left, front-right",
@@ -44,12 +45,12 @@ var channelConfigurationNames = scalar.UToDescription{
 	7: "front-center, front-left, front-right, side-left, side-right, back-left, back-right, LFE-channel",
 }
 
-func ascDecoder(d *decode.D, _ any) any {
-	objectType := d.FieldUFn("object_type", decodeEscapeValueCarryFn(5, 6, 0), format.MPEGAudioObjectTypeNames)
-	d.FieldUFn("sampling_frequency", decodeEscapeValueAbsFn(4, 24, 0), frequencyIndexHzMap)
+func ascDecoder(d *decode.D) any {
+	objectType := d.FieldUintFn("object_type", decodeEscapeValueCarryFn(5, 6, 0), format.MPEGAudioObjectTypeNames)
+	d.FieldUintFn("sampling_frequency", decodeEscapeValueAbsFn(4, 24, 0), frequencyIndexHzMap)
 	d.FieldU4("channel_configuration", channelConfigurationNames)
 	// TODO: GASpecificConfig etc
 	d.FieldRawLen("var_aot_or_byte_align", d.BitsLeft())
 
-	return format.MPEGASCOut{ObjectType: int(objectType)}
+	return format.MPEG_ASC_Out{ObjectType: int(objectType)}
 }

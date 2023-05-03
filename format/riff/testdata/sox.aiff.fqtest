@@ -1,0 +1,35 @@
+# ffmpeg -f lavfi -i sine -t 100ms -f wav sox.wav; sox sox.wav six.aiff
+$ fq dv sox.aiff
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: sox.aiff (aiff) 0x0-0x22cb.7 (8908)
+0x0000|46 4f 52 4d                                    |FORM            |  id: "FORM" 0x0-0x3.7 (4)
+0x0000|            00 00 22 c4                        |    ..".        |  size: 8900 0x4-0x7.7 (4)
+0x0000|                        41 49 46 46            |        AIFF    |  format: "AIFF" (valid) 0x8-0xb.7 (4)
+      |                                               |                |  chunks[0:3]: 0xc-0x22cb.7 (8896)
+      |                                               |                |    [0]{}: chunk 0xc-0x2d.7 (34)
+0x0000|                                    43 4f 4d 54|            COMT|      id: "COMT" 0xc-0xf.7 (4)
+0x0010|00 00 00 1a                                    |....            |      size: 26 0x10-0x13.7 (4)
+0x0010|            00 01                              |    ..          |      num_comments: 1 0x14-0x15.7 (2)
+      |                                               |                |      comments[0:1]: 0x16-0x2d.7 (24)
+      |                                               |                |        [0]{}: comment 0x16-0x2d.7 (24)
+0x0010|                  e0 2f 99 4b                  |      ./.K      |          timestamp: 3761215819 0x16-0x19.7 (4)
+0x0010|                              00 00            |          ..    |          marker_id: 0 0x1a-0x1b.7 (2)
+0x0010|                                    00 10      |            ..  |          count: 16 0x1c-0x1d.7 (2)
+0x0010|                                          50 72|              Pr|          text: "Processed by SoX" 0x1e-0x2d.7 (16)
+0x0020|6f 63 65 73 73 65 64 20 62 79 20 53 6f 58      |ocessed by SoX  |
+      |                                               |                |    [1]{}: chunk 0x2e-0x47.7 (26)
+0x0020|                                          43 4f|              CO|      id: "COMM" 0x2e-0x31.7 (4)
+0x0030|4d 4d                                          |MM              |
+0x0030|      00 00 00 12                              |  ....          |      size: 18 0x32-0x35.7 (4)
+0x0030|                  00 01                        |      ..        |      num_channels: 1 0x36-0x37.7 (2)
+0x0030|                        00 00 11 3a            |        ...:    |      num_sample_frames: 4410 0x38-0x3b.7 (4)
+0x0030|                                    00 10      |            ..  |      sample_size: 16 0x3c-0x3d.7 (2)
+0x0030|                                          40 0e|              @.|      sample_rate: 44100 0x3e-0x47.7 (10)
+0x0040|ac 44 00 00 00 00 00 00                        |.D......        |
+      |                                               |                |    [2]{}: chunk 0x48-0x22cb.7 (8836)
+0x0040|                        53 53 4e 44            |        SSND    |      id: "SSND" 0x48-0x4b.7 (4)
+0x0040|                                    00 00 22 7c|            .."||      size: 8828 0x4c-0x4f.7 (4)
+0x0050|00 00 00 00                                    |....            |      offset: 0 0x50-0x53.7 (4)
+0x0050|            00 00 00 00                        |    ....        |      block_size: 0 0x54-0x57.7 (4)
+0x0050|                        00 00 01 00 01 ff 02 fd|        ........|      data: raw bits 0x58-0x22cb.7 (8820)
+0x0060|03 f8 04 ee 05 e0 06 cc 07 b0 08 8d 09 62 0a 2d|.............b.-|
+*     |until 0x22cb.7 (end) (8820)                    |                |

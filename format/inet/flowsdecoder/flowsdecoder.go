@@ -5,6 +5,7 @@ package flowsdecoder
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 	"net"
 
 	"github.com/gopacket/gopacket"
@@ -30,7 +31,7 @@ type TCPConnection struct {
 	Client     TCPDirection
 	Server     TCPDirection
 	tcpState   *reassembly.TCPSimpleFSM
-	optChecker reassembly.TCPOptionCheck
+	optChecker *reassembly.TCPOptionCheck
 	net        gopacket.Flow
 	transport  gopacket.Flow
 }
@@ -41,10 +42,12 @@ func (t *TCPConnection) Accept(tcp *layers.TCP, ci gopacket.CaptureInfo, dir rea
 		// TODO: handle err?
 		return false
 	}
-	// has ok options?
-	if err := t.optChecker.Accept(tcp, ci, dir, nextSeq, start); err != nil {
-		// TODO: handle err?
-		return false
+	if t.optChecker != nil {
+		// has ok options?
+		if err := t.optChecker.Accept(tcp, ci, dir, nextSeq, start); err != nil {
+			// TODO: handle err?
+			return false
+		}
 	}
 	// TODO: checksum?
 
@@ -127,10 +130,14 @@ func (fd *Decoder) New(net, transport gopacket.Flow, tcp *layers.TCP, ac reassem
 			Buffer: &bytes.Buffer{},
 		},
 
-		net:        net,
-		transport:  transport,
-		tcpState:   reassembly.NewTCPSimpleFSM(fsmOptions),
-		optChecker: reassembly.NewTCPOptionCheck(),
+		net:       net,
+		transport: transport,
+		tcpState:  reassembly.NewTCPSimpleFSM(fsmOptions),
+	}
+
+	if fd.Options.CheckTCPOptions {
+		c := reassembly.NewTCPOptionCheck()
+		stream.optChecker = &c
 	}
 
 	fd.TCPConnections = append(fd.TCPConnections, stream)
@@ -139,6 +146,8 @@ func (fd *Decoder) New(net, transport gopacket.Flow, tcp *layers.TCP, ac reassem
 }
 
 type Decoder struct {
+	Options DecoderOptions
+
 	TCPConnections  []*TCPConnection
 	IPV4Reassembled []IPV4Reassembled
 
@@ -146,14 +155,32 @@ type Decoder struct {
 	tcpAssembler *reassembly.Assembler
 }
 
-func New() *Decoder {
-	flowDecoder := &Decoder{}
+type DecoderOptions struct {
+	CheckTCPOptions bool
+}
+
+func New(options DecoderOptions) *Decoder {
+	flowDecoder := &Decoder{
+		Options: options,
+	}
 	streamPool := reassembly.NewStreamPool(flowDecoder)
 	tcpAssembler := reassembly.NewAssembler(streamPool)
 	flowDecoder.tcpAssembler = tcpAssembler
 	flowDecoder.ipv4Defrag = ip4defrag.NewIPv4Defragmenter()
 
 	return flowDecoder
+}
+
+func (fd *Decoder) EthernetFrame(bs []byte) error {
+	return fd.packet(gopacket.NewPacket(bs, layers.LayerTypeEthernet, gopacket.Lazy))
+}
+
+func (fd *Decoder) IPv4Packet(bs []byte) error {
+	return fd.packet(gopacket.NewPacket(bs, layers.LayerTypeIPv4, gopacket.Lazy))
+}
+
+func (fd *Decoder) IPv6Packet(bs []byte) error {
+	return fd.packet(gopacket.NewPacket(bs, layers.LayerTypeIPv6, gopacket.Lazy))
 }
 
 func (fd *Decoder) SLLPacket(bs []byte) error {
@@ -164,12 +191,20 @@ func (fd *Decoder) SLL2Packet(bs []byte) error {
 	return fd.packet(gopacket.NewPacket(bs, layers.LayerTypeLinuxSLL2, gopacket.Lazy))
 }
 
-func (fd *Decoder) EthernetFrame(bs []byte) error {
-	return fd.packet(gopacket.NewPacket(bs, layers.LayerTypeEthernet, gopacket.Lazy))
-}
-
 func (fd *Decoder) LoopbackFrame(bs []byte) error {
 	return fd.packet(gopacket.NewPacket(bs, layers.LayerTypeLoopback, gopacket.Lazy))
+}
+
+// LinkTypeRAW IPv4 or Ipv6
+func (fd *Decoder) RAWIPFrame(bs []byte) error {
+	version := bs[0] >> 4
+	switch version {
+	case 4:
+		return fd.IPv4Packet(bs)
+	case 6:
+		return fd.IPv6Packet(bs)
+	}
+	return fmt.Errorf("invalid ip version %v", version)
 }
 
 func (fd *Decoder) packet(p gopacket.Packet) error {
@@ -201,6 +236,9 @@ func (fd *Decoder) packet(p gopacket.Packet) error {
 					Datagram:      sb.Bytes(),
 				})
 
+				// i think this replaces p with the newly defragmented ip packet and is
+				// used below when reassembling tcp streams
+				// see gopacket reassemblydump example
 				pb, ok := p.(gopacket.PacketBuilder)
 				if !ok {
 					panic("not a PacketBuilder")

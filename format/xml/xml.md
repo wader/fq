@@ -3,7 +3,7 @@ Which variant to use depends a bit what you want to do. The object variant might
 to query for a specific value but array might be easier to use to generate xml or to query
 after all elements of some kind etc.
 
-Encoding is done using the `toxml` function and it will figure what variant that is used based on the input value.
+Encoding is done using the `to_xml` function and it will figure what variant that is used based on the input value.
 Is has two optional options `indent` and `attribute_prefix`.
 
 ### Elements as object
@@ -46,7 +46,7 @@ $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq '.a.c["#text"]'
 "ccc"
 
 # decode to object and encode to xml
-$ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -r -d xml -o seq=true 'toxml({indent:2})'
+$ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -r -d xml -o seq=true 'to_xml({indent:2})'
 <a>
   <b></b>
   <b>bbb</b>
@@ -89,7 +89,7 @@ $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -d xml -o array=true
 ]
 
 # decode to array and encode to xml
-$ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -r -d xml -o array=true -o seq=true 'toxml({indent:2})'
+$ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -r -d xml -o array=true -o seq=true 'to_xml({indent:2})'
 <a>
   <b></b>
   <b>bbb</b>

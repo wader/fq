@@ -13,17 +13,18 @@ import (
 var flacPicture decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.VORBIS_COMMENT,
-		Description: "Vorbis comment",
-		DecodeFn:    commentDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.FLAC_PICTURE}, Group: &flacPicture},
-		},
-	})
+	interp.RegisterFormat(
+		format.Vorbis_Comment,
+		&decode.Format{
+			Description: "Vorbis comment",
+			DecodeFn:    commentDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.FLAC_Picture}, Out: &flacPicture},
+			},
+		})
 }
 
-func commentDecode(d *decode.D, _ any) any {
+func commentDecode(d *decode.D) any {
 	d.Endian = decode.LittleEndian
 
 	vendorLen := d.FieldU32("vendor_length")
@@ -46,7 +47,7 @@ func commentDecode(d *decode.D, _ any) any {
 				"picture",
 				userCommentStart+base64Offset, base64Len,
 				func(r io.Reader) io.Reader { return base64.NewDecoder(base64.StdEncoding, r) },
-				flacPicture, nil,
+				&flacPicture, nil,
 			)
 			if dv == nil && base64Br != nil {
 				d.FieldRootBitBuf("picture", base64Br)

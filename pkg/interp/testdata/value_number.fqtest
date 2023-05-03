@@ -1,113 +1,114 @@
 $ fq -i -d mp3 . test.mp3
-mp3> .headers[0].version | ., tovalue, toactual, tosym, type, length?
+mp3> .headers[0].header.version | ., tovalue, toactual, tosym, type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|         04                                    |   .            |.headers[0].version: 4
+0x0|         04                                    |   .            |.headers[0].header.version: 4 (valid)
 4
 4
 null
 "number"
 4
-mp3> .headers[0].version[0] | ., type, length?
+mp3> .headers[0].header.version[0] | ., type, length?
 error: expected an array but got: number
-mp3> .headers[0].version[-1000] | ., type, length?
+mp3> .headers[0].header.version[-1000] | ., type, length?
 error: expected an array but got: number
-mp3> .headers[0].version[1000] | ., type, length?
+mp3> .headers[0].header.version[1000] | ., type, length?
 error: expected an array but got: number
-mp3> .headers[0].version[1:3] | ., type, length?
+mp3> .headers[0].header.version[1:3] | ., type, length?
 error: expected an array but got: number
-mp3> .headers[0].version[0:-1] | ., type, length?
+mp3> .headers[0].header.version[0:-1] | ., type, length?
 error: expected an array but got: number
-mp3> .headers[0].version[-1000:2000] | ., type, length?
+mp3> .headers[0].header.version[-1000:2000] | ., type, length?
 error: expected an array but got: number
-mp3> .headers[0].version["test"] | ., type, length?
+mp3> .headers[0].header.version["test"] | ., type, length?
 error: expected an object but got: number
-mp3> [.headers[0].version[]] | type, length?
+mp3> [.headers[0].header.version[]] | type, length?
 error: cannot iterate over: number
-mp3> .headers[0].version | keys
+mp3> .headers[0].header.version | keys
 error: keys cannot be applied to: number
-mp3> .headers[0].version | has("a")
+mp3> .headers[0].header.version | has("a")
 error: has cannot be applied to: number
-mp3> .headers[0].version | has(0)
+mp3> .headers[0].header.version | has(0)
 error: has cannot be applied to: number
-mp3> .headers[0].version | type
+mp3> .headers[0].header.version | type
 "number"
-mp3> .headers[0].version | tonumber
+mp3> .headers[0].header.version | tonumber
 4
-mp3> .headers[0].version | tostring
+mp3> .headers[0].header.version | tostring
 "4"
-mp3> .headers[0].version + ""
+mp3> .headers[0].header.version + ""
 error: cannot add: number (4) and string ("")
-mp3> .headers[0].version + 1
+mp3> .headers[0].header.version + 1
 5
-mp3> .headers[0].version._start | ., type, length?
+mp3> .headers[0].header.version._start | ., type, length?
 24
 "number"
 24
-mp3> .headers[0].version._stop | ., type, length?
+mp3> .headers[0].header.version._stop | ., type, length?
 32
 "number"
 32
-mp3> .headers[0].version._len | ., type, length?
+mp3> .headers[0].header.version._len | ., type, length?
 8
 "number"
 8
-mp3> .headers[0].version._name | ., type, length?
+mp3> .headers[0].header.version._name | ., type, length?
 "version"
 "string"
 7
-mp3> .headers[0].version._actual | ., type, length?
+mp3> .headers[0].header.version._actual | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|         04                                    |   .            |.headers[0].version: 4
+0x0|         04                                    |   .            |.headers[0].header.version: 4 (valid)
 "number"
 4
-mp3> .headers[0].version._sym | ., type, length?
+mp3> .headers[0].header.version._sym | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|         04                                    |   .            |.headers[0].version: 4
+0x0|         04                                    |   .            |.headers[0].header.version: 4 (valid)
 "null"
 0
-mp3> .headers[0].version._description | ., type, length?
-null
-"null"
-0
-mp3> .headers[0].version._path | ., type, length?
+mp3> .headers[0].header.version._description | ., type, length?
+"valid"
+"string"
+5
+mp3> .headers[0].header.version._path | ., type, length?
 [
   "headers",
   0,
+  "header",
   "version"
 ]
 "array"
-3
-mp3> .headers[0].version._bits | ., type, length?
+4
+mp3> .headers[0].header.version._bits | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|         04                                    |   .            |.: raw bits 0x3-0x3.7 (1)
 "string"
 8
-mp3> .headers[0].version._bytes | ., type, length?
+mp3> .headers[0].header.version._bytes | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|         04                                    |   .            |.: raw bits 0x3-0x3.7 (1)
 "string"
 1
-mp3> .headers[0].version._error | ., type, length?
+mp3> .headers[0].header.version._error | ., type, length?
 null
 "null"
 0
-mp3> .headers[0].version._unknown | ., type, length?
+mp3> .headers[0].header.version._gap | ., type, length?
 false
 "boolean"
-mp3> .headers[0].version.a = 1
+mp3> .headers[0].header.version.a = 1
 error: expected an object but got: number (4)
-mp3> .headers[0].version[0] = 1
+mp3> .headers[0].header.version[0] = 1
 error: expected an array but got: number (4)
-mp3> .headers[0].version.a |= empty
+mp3> .headers[0].header.version.a |= empty
 error: expected an object but got: number
-mp3> .headers[0].version[0] |= empty
+mp3> .headers[0].header.version[0] |= empty
 error: expected an array but got: number
-mp3> .headers[0].version | setpath(["a"]; 1)
+mp3> .headers[0].header.version | setpath(["a"]; 1)
 error: expected an object but got: number (4)
-mp3> .headers[0].version | setpath([0]; 1)
+mp3> .headers[0].header.version | setpath([0]; 1)
 error: expected an array but got: number (4)
-mp3> .headers[0].version | delpaths([["a"]])
+mp3> .headers[0].header.version | delpaths([["a"]])
 error: expected an object but got: number (4)
-mp3> .headers[0].version | delpaths([[0]])
+mp3> .headers[0].header.version | delpaths([[0]])
 error: expected an array but got: number (4)
 mp3> ^D

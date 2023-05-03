@@ -143,7 +143,6 @@ func (c BarColumn) Write(p []byte) (int, error) { return len(p), nil } // TODO: 
 func (c BarColumn) Lines() int                  { return 1 }
 func (c BarColumn) PreFlush()                   {}
 func (c BarColumn) FlushLine(w io.Writer, lineNr int, lastColumn bool) error {
-
 	if _, err := w.Write([]byte(c)); err != nil {
 		return err
 	}

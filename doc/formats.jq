@@ -60,8 +60,8 @@ def formats_table:
       , .uses
       ];
       [ ""
-      , (.[0] | . as $rc | $rc.string | rpad(" "; $rc.maxwidth))
-      , (.[1] | . as $rc | $rc.string | rpad(" "; $rc.maxwidth))
+      , (.[0] | . as $rc | $rc.string | rpad(" "; $rc.maxwidth | [., .+20] | max))
+      , (.[1] | . as $rc | $rc.string | rpad(" "; $rc.maxwidth | [., .+20] | max))
       , .[2].string
       , ""
       ] | join("|")

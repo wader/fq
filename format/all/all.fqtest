@@ -1,6 +1,7 @@
 $ fq -n _registry.groups.probe
 [
   "adts",
+  "apple_bookmark",
   "ar",
   "avi",
   "avro_ocf",
@@ -22,9 +23,11 @@ $ fq -n _registry.groups.probe
   "png",
   "tar",
   "tiff",
+  "tzif",
   "wasm",
   "webp",
   "zip",
+  "aiff",
   "mp3",
   "mpeg_ts",
   "wav",
@@ -38,8 +41,10 @@ $ fq --help formats
 aac_frame            Advanced Audio Coding frame
 adts                 Audio Data Transport Stream
 adts_frame           Audio Data Transport Stream frame
+aiff                 Audio Interchange File Format
 amf0                 Action Message Format 0
 apev2                APEv2 metadata tag
+apple_bookmark       Apple BookmarkData
 ar                   Unix archive
 asn1_ber             ASN1 BER (basic encoding rules, also CER and DER)
 av1_ccr              AV1 Codec Configuration Record
@@ -106,7 +111,8 @@ markdown             Markdown
 matroska             Matroska file
 mp3                  MP3 file
 mp3_frame            MPEG audio layer 3 frame
-mp3_frame_tags       MP3 frame info/xing tags
+mp3_frame_vbri       MP3 frame Fraunhofer encoder variable bitrate tag
+mp3_frame_xing       MP3 frame Xing/Info tag
 mp4                  ISOBMFF, QuickTime and similar
 mpeg_asc             MPEG-4 Audio Specific Config
 mpeg_es              MPEG Elementary Stream
@@ -131,7 +137,9 @@ sll_packet           Linux cooked capture encapsulation
 tar                  Tar archive
 tcp_segment          Transmission control protocol segment
 tiff                 Tag Image File Format
+tls                  Transport layer security
 toml                 Tom's Obvious, Minimal Language
+tzif                 Time Zone Information Format
 udp_datagram         User datagram protocol
 vorbis_comment       Vorbis comment
 vorbis_packet        Vorbis packet

@@ -7,16 +7,18 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.DNS_TCP,
-		Description: "DNS packet (TCP)",
-		Groups:      []string{format.TCP_STREAM},
-		DecodeFn:    dnsTCPDecode,
-	})
+	interp.RegisterFormat(
+		format.DNS_TCP,
+		&decode.Format{
+			Description: "DNS packet (TCP)",
+			Groups:      []*decode.Group{format.TCP_Stream},
+			DecodeFn:    dnsTCPDecode,
+		})
 }
 
-func dnsTCPDecode(d *decode.D, in any) any {
-	if tsi, ok := in.(format.TCPStreamIn); ok {
+func dnsTCPDecode(d *decode.D) any {
+	var tsi format.TCP_Stream_In
+	if d.ArgAs(&tsi) {
 		tsi.MustIsPort(d.Fatalf, format.TCPPortDomain)
 	}
 	return dnsDecode(d, true)

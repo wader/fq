@@ -371,6 +371,6 @@ $ fq -d elf dv coredump
 0x31000|48 c7 c0 60 00 00 00 0f 05 c3 cc cc cc cc cc cc|H..`............|      data: raw bits 0x31000-0x31fff.7 (4096)
 *      |until 0x31fff.7 (end) (4096)                   |                |
        |                                               |                |  section_headers[0:0]: 0x430-NA (0)
-0x01000|                        00 00 00 00 00 00 00 00|        ........|  unknown0: raw bits 0x1008-0x1fff.7 (4088)
+0x01000|                        00 00 00 00 00 00 00 00|        ........|  gap0: raw bits 0x1008-0x1fff.7 (4088)
 0x01010|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
 *      |until 0x1fff.7 (4088)                          |                |

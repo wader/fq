@@ -1,9 +1,9 @@
 def _markdown__todisplay: tovalue;
 
-def word_break($width):
+def _word_break($width):
   def _f($a; $acc; $l):
     ( $a[0] as $w
-    | ($w // "" | length) as $wl
+    | ($w // "" | length+1) as $wl
     | if $w == null then $acc
       elif ($l + $wl) >= $width then
         ( $acc
@@ -17,42 +17,36 @@ def word_break($width):
   );
 
 def _markdown_to_text($width; $header_depth):
-  def lb: if $width > 0 then word_break($width) | join("\n") end;
-  def _f($pln):
+  def lb: if $width > 0 then _word_break($width) | join("\n") end;
+  def _f:
     if type == "string" then gsub("\n"; " ")
-    elif .type == "document" then .children[] | _f("\n\n")
+    elif .type == "document" then .children[] | _f
     elif .type == "heading" then
-      ( (.children[] | _f("\n\n")) as $title
-      | $title
-      , "\n"
-      , ("=" * ($title | length))
-      , "\n"
+      ( (.children[] | _f) as $title
+      | "\($title)\n\("=" * ($title | length))"
       )
     elif .type == "paragraph" then
-      ( ( [.children[] | _f("\n\n")]
-        | join("")
-        | lb
-        )
-      , $pln
+      ( [.children[] | _f]
+      | join("")
+      | lb
       )
     elif .type == "link" then
       ( ( [ .children[]
-          | _f("")
+          | _f
           ]
         | join("")
         ) as $text
-      | $text
-      , if $text != .destination then " (", .destination, ")"
-        else empty
+      | if $text == .destination then $text
+        else "\($text) (\(.destination))"
         end
       )
-    elif .type == "code_block" then "\n", ("  ", .literal | split("\n") | join("\n  ")), "\n"
+    elif .type == "code_block" then .literal | rtrimstr("\n") | split("\n") | "  " + join("\n  ")
     elif .type == "code" then .literal
-    elif .type == "list" then (.children[] | _f("\n\n")), "\n" # TODO: delim
-    elif .type == "list_item" then .bullet_char, " ", (.children[] | _f("\n"))
+    elif .type == "list" then ([.children[] | _f] | join("\n")) # TODO: delim
+    elif .type == "list_item" then "\(.bullet_char) \(.children[] | _f)"
     elif .type == "html_span" then .literal | gsub("<br>"; "\n") # TODO: more?
     else empty
     end;
-  [_f("\n\n")] | join("");
+  [_f] | join("\n\n");
 def _markdown_to_text:
   _markdown_to_text(-1; 0);

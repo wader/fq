@@ -9,16 +9,17 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.VP9_CFM,
-		Description: "VP9 Codec Feature Metadata",
-		DecodeFn:    vp9CFMDecode,
-		RootArray:   true,
-		RootName:    "features",
-	})
+	interp.RegisterFormat(
+		format.VP9_CFM,
+		&decode.Format{
+			Description: "VP9 Codec Feature Metadata",
+			DecodeFn:    vp9CFMDecode,
+			RootArray:   true,
+			RootName:    "features",
+		})
 }
 
-func vp9CFMDecode(d *decode.D, _ any) any {
+func vp9CFMDecode(d *decode.D) any {
 	for d.NotEnd() {
 		d.FieldStruct("feature", func(d *decode.D) {
 			id := d.FieldU8("id", vp9FeatureIDNames)

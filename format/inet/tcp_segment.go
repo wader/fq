@@ -10,31 +10,38 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.TCP_SEGMENT,
-		Description: "Transmission control protocol segment",
-		Groups:      []string{format.IP_PACKET},
-		DecodeFn:    decodeTCP,
-	})
+	interp.RegisterFormat(
+		format.TCP_Segment,
+		&decode.Format{
+			Description: "Transmission control protocol segment",
+			Groups:      []*decode.Group{format.IP_Packet},
+			DecodeFn:    decodeTCP,
+		})
 }
 
 const (
-	tcpOptionEnd = 0
-	tcpOptionNop = 1
+	tcpOptionEnd           = 0
+	tcpOptionNop           = 1
+	tcpOptionMSS           = 2
+	tcpOptionWinscale      = 3
+	tcpOptionSackPermitted = 4
+	tcpOptionSack          = 5
+	tcpOptionTimestamp     = 8
 )
 
-var tcpOptionsMap = scalar.UToScalar{
-	tcpOptionEnd: {Sym: "end", Description: "End of options list"},
-	tcpOptionNop: {Sym: "nop", Description: "No operation"},
-	2:            {Sym: "maxseg", Description: "Maximum segment size"},
-	3:            {Sym: "winscale", Description: "Window scale"},
-	4:            {Sym: "sack_permitted", Description: "Selective Acknowledgement permitted"},
-	5:            {Sym: "sack", Description: "Selective ACKnowledgement"},
-	8:            {Sym: "timestamp", Description: "Timestamp and echo of previous timestamp"},
+var tcpOptionsMap = scalar.UintMap{
+	tcpOptionEnd:           {Sym: "end", Description: "End of options list"},
+	tcpOptionNop:           {Sym: "nop", Description: "No operation"},
+	tcpOptionMSS:           {Sym: "mss", Description: "Maximum segment size"},
+	tcpOptionWinscale:      {Sym: "winscale", Description: "Window scale"},
+	tcpOptionSackPermitted: {Sym: "sack_permitted", Description: "Selective Acknowledgement permitted"},
+	tcpOptionSack:          {Sym: "sack", Description: "Selective Acknowledgement"},
+	tcpOptionTimestamp:     {Sym: "timestamp", Description: "Timestamp and echo of previous timestamp"},
 }
 
-func decodeTCP(d *decode.D, in any) any {
-	if ipi, ok := in.(format.IPPacketIn); ok && ipi.Protocol != format.IPv4ProtocolTCP {
+func decodeTCP(d *decode.D) any {
+	var ipi format.IP_Packet_In
+	if d.ArgAs(&ipi) && ipi.Protocol != format.IPv4ProtocolTCP {
 		d.Fatalf("incorrect protocol %d", ipi.Protocol)
 	}
 
@@ -55,7 +62,7 @@ func decodeTCP(d *decode.D, in any) any {
 	d.FieldBool("fin")
 	d.FieldU16("window_size")
 	// checksumStart := d.Pos()
-	d.FieldU16("checksum", scalar.ActualHex)
+	d.FieldU16("checksum", scalar.UintHex)
 	// checksumEnd := d.Pos()
 	d.FieldU16("urgent_pointer")
 	optionsLen := (int64(dataOffset) - 5) * 8 * 4
@@ -67,9 +74,33 @@ func decodeTCP(d *decode.D, in any) any {
 						kind := d.FieldU8("kind", tcpOptionsMap)
 						switch kind {
 						case tcpOptionEnd, tcpOptionNop:
+							// has no length or data
 						default:
 							l := d.FieldU8("length")
-							d.FieldRawLen("data", (int64(l-2))*8)
+							switch kind {
+							case tcpOptionMSS:
+								d.FieldU16("size")
+							case tcpOptionWinscale:
+								d.FieldU8("shift")
+							case tcpOptionSackPermitted:
+								// none
+							case tcpOptionSack:
+								d.FramedFn((int64(l-2))*8, func(d *decode.D) {
+									d.FieldArray("blocks", func(d *decode.D) {
+										for !d.End() {
+											d.FieldStruct("block", func(d *decode.D) {
+												d.FieldU32("left_edge")
+												d.FieldU32("right_edge")
+											})
+										}
+									})
+								})
+							case tcpOptionTimestamp:
+								d.FieldU32("value")
+								d.FieldU32("echo_reply")
+							default:
+								d.FieldRawLen("data", (int64(l-2))*8)
+							}
 						}
 					})
 				}
@@ -81,7 +112,7 @@ func decodeTCP(d *decode.D, in any) any {
 	// tcpChecksum := &checksum.IPv4{}
 	// d.MustCopy(tcpChecksum, d.BitBufRange(0, checksumStart))
 	// d.MustCopy(tcpChecksum, d.BitBufRange(checksumEnd, d.Len()-checksumEnd))
-	// _ = d.FieldMustGet("checksum").TryScalarFn(d.ValidateUBytes(tcpChecksum.Sum(nil)), scalar.Hex)
+	// _ = d.FieldMustGet("checksum").TryScalarFn(d.UintValidateBytes(tcpChecksum.Sum(nil)), scalar.Hex)
 
 	d.FieldRawLen("payload", d.BitsLeft())
 

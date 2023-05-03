@@ -1,4 +1,3 @@
-//nolint:revive
 package mpeg
 
 import (
@@ -10,19 +9,20 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var mpegASCFormat decode.Group
-var vorbisPacketFormat decode.Group
+var mpegASCGroup decode.Group
+var vorbisPacketGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.MPEG_ES,
-		Description: "MPEG Elementary Stream",
-		DecodeFn:    esDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.MPEG_ASC}, Group: &mpegASCFormat},
-			{Names: []string{format.VORBIS_PACKET}, Group: &vorbisPacketFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.MPEG_ES,
+		&decode.Format{
+			Description: "MPEG Elementary Stream",
+			DecodeFn:    esDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.MPEG_ASC}, Out: &mpegASCGroup},
+				{Groups: []*decode.Group{format.Vorbis_Packet}, Out: &vorbisPacketGroup},
+			},
+		})
 }
 
 const (
@@ -73,7 +73,7 @@ const (
 	Forbidden1                          = 0xFF
 )
 
-var odTagNames = scalar.UToSymStr{
+var odTagNames = scalar.UintMapSymStr{
 	Forbidden0:                          "Forbidden",
 	ObjectDescrTag:                      "ObjectDescrTag",
 	InitialObjectDescrTag:               "InitialObjectDescrTag",
@@ -136,7 +136,7 @@ const (
 	IPMPToolStream          = 0x0B
 )
 
-var streamTypeNames = scalar.UToSymStr{
+var streamTypeNames = scalar.UintMapSymStr{
 	Forbidden:               "Forbidden",
 	ObjectDescriptorStream:  "ObjectDescriptorStream",
 	ClockReferenceStream:    "ClockReferenceStream",
@@ -169,8 +169,8 @@ func fieldODDecodeTag(d *decode.D, edc *esDecodeContext, name string, expectedTa
 }
 
 type esDecodeContext struct {
-	currentDecoderConfig *format.MpegDecoderConfig
-	decoderConfigs       []format.MpegDecoderConfig
+	currentDecoderConfig *format.MPEG_Decoder_Config
+	decoderConfigs       []format.MPEG_Decoder_Config
 }
 
 func odDecodeTag(d *decode.D, edc *esDecodeContext, _ int, fn func(d *decode.D)) {
@@ -196,7 +196,7 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, _ int, fn func(d *decode.D))
 		},
 		DecoderConfigDescrTag: func(d *decode.D) {
 			objectType := d.FieldU8("object_type_indication", format.MpegObjectTypeNames)
-			edc.decoderConfigs = append(edc.decoderConfigs, format.MpegDecoderConfig{
+			edc.decoderConfigs = append(edc.decoderConfigs, format.MPEG_Decoder_Config{
 				ObjectType: int(objectType),
 			})
 			edc.currentDecoderConfig = &edc.decoderConfigs[len(edc.decoderConfigs)-1]
@@ -220,7 +220,7 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, _ int, fn func(d *decode.D))
 						// Xiph-style lacing (similar to ogg) of n-1 packets, last is reset of block
 						d.FieldArray("laces", func(d *decode.D) {
 							for i := uint64(0); i < numPackets; i++ {
-								l := d.FieldUFn("lace", func(d *decode.D) uint64 {
+								l := d.FieldUintFn("lace", func(d *decode.D) uint64 {
 									var l uint64
 									for {
 										n := d.U8()
@@ -235,18 +235,18 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, _ int, fn func(d *decode.D))
 						})
 						d.FieldArray("packets", func(d *decode.D) {
 							for _, l := range packetLengths {
-								d.FieldFormatLen("packet", l*8, vorbisPacketFormat, nil)
+								d.FieldFormatLen("packet", l*8, &vorbisPacketGroup, nil)
 							}
-							d.FieldFormatLen("packet", d.BitsLeft(), vorbisPacketFormat, nil)
+							d.FieldFormatLen("packet", d.BitsLeft(), &vorbisPacketGroup, nil)
 						})
 					})
 				default:
 					switch format.MpegObjectTypeStreamType[objectType] {
 					case format.MPEGStreamTypeAudio:
 						fieldODDecodeTag(d, edc, "decoder_specific_info", -1, func(d *decode.D) {
-							dv, v := d.FieldFormat("audio_specific_config", mpegASCFormat, nil)
-							mpegASCout, ok := v.(format.MPEGASCOut)
-							if dv != nil && !ok {
+							_, v := d.FieldFormat("audio_specific_config", &mpegASCGroup, nil)
+							mpegASCout, ok := v.(format.MPEG_ASC_Out)
+							if !ok {
 								panic(fmt.Sprintf("expected MPEGASCOut got %#+v", v))
 							}
 							if edc.currentDecoderConfig != nil {
@@ -266,7 +266,7 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, _ int, fn func(d *decode.D))
 	// TODO: expectedTagID
 
 	tagID := d.FieldU8("tag_id", odTagNames)
-	tagLen := d.FieldUFn("length", esLengthEncoding)
+	tagLen := d.FieldUintFn("length", esLengthEncoding)
 
 	if fn != nil {
 		d.FramedFn(int64(tagLen)*8, fn)
@@ -277,8 +277,8 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, _ int, fn func(d *decode.D))
 	}
 }
 
-func esDecode(d *decode.D, _ any) any {
+func esDecode(d *decode.D) any {
 	var edc esDecodeContext
 	odDecodeTag(d, &edc, -1, nil)
-	return format.MpegEsOut{DecoderConfigs: edc.decoderConfigs}
+	return format.MPEG_ES_Out{DecoderConfigs: edc.decoderConfigs}
 }

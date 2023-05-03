@@ -19,20 +19,21 @@ import (
 	"golang.org/x/text/encoding/unicode"
 )
 
-var imageFormat decode.Group
+var imageGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.ID3V2,
-		Description: "ID3v2 metadata",
-		DecodeFn:    id3v2Decode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.IMAGE}, Group: &imageFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.ID3v2,
+		&decode.Format{
+			Description: "ID3v2 metadata",
+			DecodeFn:    id3v2Decode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.Image}, Out: &imageGroup},
+			},
+		})
 }
 
-var idDescriptions = scalar.StrToDescription{
+var idDescriptions = scalar.StrMapDescription{
 	"BUF":  "Recommended buffer size",
 	"CNT":  "Play counter",
 	"COM":  "Comments",
@@ -236,7 +237,7 @@ const (
 //	Terminated with $00 00.
 //
 // $03 UTF-8 [UTF-8] encoded Unicode [UNICODE]. Terminated with $00.
-var encodingNames = scalar.UToSymStr{
+var encodingNames = scalar.UintMapSymStr{
 	encodingISO8859_1: "iso_8859-1",
 	encodingUTF16:     "utf16",
 	encodingUTF16BE:   "utf16be",
@@ -315,7 +316,7 @@ func textNullLenFn(encoding int, notFoundFixedBytes int) func(d *decode.D) strin
 
 		d.SeekRel(nullLen * 8)
 		// seems sometimes utf16 etc has one exta null byte
-		if nullLen > 1 && d.PeekBits(8) == 0 {
+		if nullLen > 1 && d.PeekUintBits(8) == 0 {
 			d.SeekRel(8)
 		}
 
@@ -370,7 +371,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// Size      4 * %0xxxxxxx  (synchsafe integer)
 		// Flags         $xx xx
 		id = d.FieldUTF8("id", 4, idDescriptions)
-		dataSize = d.FieldUFn("size", decodeSyncSafeU32)
+		dataSize = d.FieldUintFn("size", decodeSyncSafeU32)
 		var headerLen uint64 = 10
 
 		dataLenFlag := false
@@ -395,7 +396,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		})
 
 		if dataLenFlag {
-			d.FieldUFn("data_length_indicator", decodeSyncSafeU32)
+			d.FieldUintFn("data_length_indicator", decodeSyncSafeU32)
 			dataSize -= 4
 			headerLen += 4
 		}
@@ -424,15 +425,30 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			d.FieldU32("end_offset")
 			decodeFrames(d, version, uint64(d.BitsLeft()/8))
 		},
+
+		// <ID3v2.3 or ID3v2.4 frame header, ID: "CTOC">   (10 bytes)
+		// Element ID      <text string> $00
+		// Flags           %000000ab
+		// Entry count     $xx  (8-bit unsigned int)
+		// <Child Element ID list>
+		// <Optional embedded sub-frames>
+		//
+		// flag a: Top-level bit
+		// flag b: Ordered bit
 		"CTOC": func(d *decode.D) {
 			d.FieldStrFn("element_id", textNullFn(encodingUTF8))
-			d.FieldU8("ctoc_flags")
+			d.FieldStruct("ctoc_flags", func(d *decode.D) {
+				d.FieldU6("unused0")
+				d.FieldBool("top_level")
+				d.FieldBool("order")
+			})
 			entryCount := d.FieldU8("entry_count")
 			d.FieldArray("entries", func(d *decode.D) {
 				for i := uint64(0); i < entryCount; i++ {
 					d.FieldStrFn("entry", textNullFn(encodingUTF8))
 				}
 			})
+			decodeFrames(d, version, uint64(d.BitsLeft()/8))
 		},
 
 		// id3v2.0
@@ -448,7 +464,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			d.FieldUTF8("image_format", 3)
 			d.FieldU8("picture_type") // TODO: table
 			d.FieldStrFn("description", textNullFn(int(encoding)))
-			d.FieldFormatOrRawLen("picture", d.BitsLeft(), imageFormat, nil)
+			d.FieldFormatOrRawLen("picture", d.BitsLeft(), &imageGroup, nil)
 		},
 
 		// <Header for 'Attached picture', ID: "APIC">
@@ -462,7 +478,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			d.FieldStrFn("mime_type", textNullFn(encodingUTF8))
 			d.FieldU8("picture_type") // TODO: table
 			d.FieldStrFn("description", textNullFn(int(encoding)))
-			d.FieldFormatOrRawLen("picture", d.BitsLeft(), imageFormat, nil)
+			d.FieldFormatOrRawLen("picture", d.BitsLeft(), &imageGroup, nil)
 		},
 
 		// <Header for 'General encapsulated object', ID: "GEOB">
@@ -476,7 +492,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			d.FieldStrFn("mime_type", textNullFn(encodingUTF8))
 			d.FieldStrFn("filename", textNullFn(int(encoding)))
 			d.FieldStrFn("description", textNullFn(int(encoding)))
-			d.FieldFormatOrRawLen("data", d.BitsLeft(), imageFormat, nil)
+			d.FieldFormatOrRawLen("data", d.BitsLeft(), &imageGroup, nil)
 		},
 
 		// Unsynced lyrics/text "ULT"
@@ -525,6 +541,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			encoding := d.FieldU8("text_encoding", encodingNames)
 			d.FieldStrFn("text", textFn(int(encoding), int(d.BitsLeft()/8)))
 		},
+
 		// User defined...   "TXX"
 		// Frame size        $xx xx xx
 		// Text encoding     $xx
@@ -541,6 +558,23 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			d.FieldStrFn("description", textNullLenFn(int(encoding), int(d.BitsLeft()/8)))
 			d.FieldStrFn("value", textFn(int(encoding), int(d.BitsLeft()/8)))
 		},
+
+		// User defined...   "WXX"
+		// Frame size        $xx xx xx
+		// Text encoding     $xx
+		// Description       <textstring> $00 (00)
+		// URL               <textstring>
+		//
+		// <Header for 'User defined URL link frame', ID: "WXXX">
+		// Text encoding     $xx
+		// Description       <text string according to encoding> $00 (00)
+		// URL               <text string>
+		"WXXX": func(d *decode.D) {
+			encoding := d.FieldU8("text_encoding", encodingNames)
+			d.FieldStrFn("description", textNullLenFn(int(encoding), int(d.BitsLeft()/8)))
+			d.FieldStrFn("url", textFn(int(encoding), int(d.BitsLeft()/8)))
+		},
+
 		// <Header for 'Private frame', ID: "PRIV">
 		// Owner identifier      <text string> $00
 		// The private data      <binary data>
@@ -557,6 +591,8 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		idNormalized = "COMM"
 	case id == "TXX", id == "TXXX":
 		idNormalized = "TXXX"
+	case id == "WXX", id == "WXXX":
+		idNormalized = "WXXX"
 	case len(id) > 0 && id[0] == 'T':
 		idNormalized = "T000"
 	}
@@ -565,7 +601,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 		// TODO: DecodeFn
 		// TODO: unknown after frame decode
 		unsyncedBR := d.NewBitBufFromReader(unsyncReader{Reader: bitio.NewIOReader(d.BitBufRange(d.Pos(), int64(dataSize)*8))})
-		d.FieldFormatBitBuf("unsync", unsyncedBR, decode.FormatFn(func(d *decode.D, _ any) any {
+		d.FieldFormatBitBuf("unsync", unsyncedBR, decode.FormatFn(func(d *decode.D) any {
 			if fn, ok := frames[idNormalized]; ok {
 				fn(d)
 			} else {
@@ -591,7 +627,7 @@ func decodeFrame(d *decode.D, version int) uint64 {
 func decodeFrames(d *decode.D, version int, size uint64) {
 	d.FieldArray("frames", func(d *decode.D) {
 		for size > 0 {
-			if d.PeekBits(8) == 0 {
+			if d.PeekUintBits(8) == 0 {
 				return
 			}
 
@@ -606,24 +642,24 @@ func decodeFrames(d *decode.D, version int, size uint64) {
 	}
 }
 
-func id3v2Decode(d *decode.D, _ any) any {
-	d.AssertAtLeastBitsLeft(4 * 8)
-	d.FieldUTF8("magic", 3, d.AssertStr("ID3"))
-	version := int(d.FieldU8("version"))
-	versionValid := version == 2 || version == 3 || version == 4
-	if !versionValid {
-		d.Fatalf("unsupported version %d", version)
-	}
-
-	d.FieldU8("revision")
+func id3v2Decode(d *decode.D) any {
+	var version uint64
 	var extendedHeader bool
-	d.FieldStruct("flags", func(d *decode.D) {
-		d.FieldBool("unsynchronisation")
-		extendedHeader = d.FieldBool("extended_header")
-		d.FieldBool("experimental_indicator")
-		d.FieldU5("unused")
+	var size uint64
+
+	d.AssertAtLeastBitsLeft(4 * 8)
+	d.FieldStruct("header", func(d *decode.D) {
+		d.FieldUTF8("magic", 3, d.StrAssert("ID3"))
+		version = d.FieldU8("version", d.UintAssert(2, 3, 4))
+		d.FieldU8("revision")
+		d.FieldStruct("flags", func(d *decode.D) {
+			d.FieldBool("unsynchronisation")
+			extendedHeader = d.FieldBool("extended_header")
+			d.FieldBool("experimental_indicator")
+			d.FieldU5("unused")
+		})
+		size = d.FieldUintFn("size", decodeSyncSafeU32)
 	})
-	size := d.FieldUFn("size", decodeSyncSafeU32)
 
 	var extHeaderSize uint64
 	if extendedHeader {
@@ -633,14 +669,14 @@ func id3v2Decode(d *decode.D, _ any) any {
 				extHeaderSize = d.FieldU32("size")
 				d.FieldRawLen("data", int64(extHeaderSize)*8)
 			case 4:
-				extHeaderSize = d.FieldUFn("size", decodeSyncSafeU32)
+				extHeaderSize = d.FieldUintFn("size", decodeSyncSafeU32)
 				// in v4 synchsafe integer includes itself
 				d.FieldRawLen("data", (int64(extHeaderSize)-4)*8)
 			}
 		})
 	}
 
-	decodeFrames(d, version, size)
+	decodeFrames(d, int(version), size)
 
 	return nil
 }

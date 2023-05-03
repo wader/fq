@@ -8,14 +8,14 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.AV1_OBU,
-		Description: "AV1 Open Bitstream Unit",
-		DecodeFn:    obuDecode,
-	})
+	interp.RegisterFormat(
+		format.AV1_OBU,
+		&decode.Format{
+			Description: "AV1 Open Bitstream Unit",
+			DecodeFn:    obuDecode,
+		})
 }
 
-//nolint:revive
 const (
 	OBU_SEQUENCE_HEADER        = 1
 	OBU_TEMPORAL_DELIMITER     = 2
@@ -28,7 +28,7 @@ const (
 	OBU_PADDING                = 15
 )
 
-var obuTypeNames = scalar.UToSymStr{
+var obuTypeNames = scalar.UintMapSymStr{
 	OBU_SEQUENCE_HEADER:        "OBU_SEQUENCE_HEADER",
 	OBU_TEMPORAL_DELIMITER:     "OBU_TEMPORAL_DELIMITER",
 	OBU_FRAME_HEADER:           "OBU_FRAME_HEADER",
@@ -40,7 +40,7 @@ var obuTypeNames = scalar.UToSymStr{
 	OBU_PADDING:                "OBU_PADDING",
 }
 
-func obuDecode(d *decode.D, _ any) any {
+func obuDecode(d *decode.D) any {
 	var obuType uint64
 	var obuSize int64
 	hasExtension := false

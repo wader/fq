@@ -11,11 +11,12 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.ICC_PROFILE,
-		Description: "International Color Consortium profile",
-		DecodeFn:    iccProfileDecode,
-	})
+	interp.RegisterFormat(
+		format.ICC_Profile,
+		&decode.Format{
+			Description: "International Color Consortium profile",
+			DecodeFn:    iccProfileDecode,
+		})
 }
 
 func xyzType(_ int64, d *decode.D) {
@@ -81,7 +82,7 @@ func decodeBCDU8(d *decode.D) uint64 {
 	return (n>>4)*10 + n&0xf
 }
 
-func iccProfileDecode(d *decode.D, _ any) any {
+func iccProfileDecode(d *decode.D) any {
 	/*
 	   0..3 Profile size uInt32Number
 	   4..7 CMM Type signature see below
@@ -111,8 +112,8 @@ func iccProfileDecode(d *decode.D, _ any) any {
 		d.FieldStruct("header", func(d *decode.D) {
 			d.FieldU32("size")
 			d.FieldUTF8NullFixedLen("cmm_type_signature", 4)
-			d.FieldUFn("version_major", decodeBCDU8)
-			d.FieldUFn("version_minor", decodeBCDU8)
+			d.FieldUintFn("version_major", decodeBCDU8)
+			d.FieldUintFn("version_minor", decodeBCDU8)
 			d.FieldU16("version_reserved")
 			d.FieldUTF8NullFixedLen("device_class_signature", 4)
 			d.FieldUTF8NullFixedLen("color_space", 4)

@@ -25,7 +25,11 @@ def _tovalue($opts): empty;
 def open: empty;
 def scope: empty;
 
+# TODO: some functions below are from format/* refactor somehow?
+
 # used by help.jq
-def tojq: empty;
+def to_jq: empty;
+def markdown: empty;
+def _markdown_to_text($width; $header_depth): empty;
 # used by funcs.jq iprint
-def toradix($base): empty;
+def to_radix($base): empty;

@@ -51,7 +51,7 @@ def decode($name; $decode_opts):
     )
   );
 def decode($name): decode($name; {});
-def decode: decode(options.decode_format; {});
+def decode: decode(options.decode_group; {});
 
 def topath: _decode_value(._path);
 def tovalue($opts): _tovalue(options($opts));

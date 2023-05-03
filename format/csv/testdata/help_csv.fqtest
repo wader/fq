@@ -4,8 +4,8 @@ csv: Comma separated values decoder
 Options
 =======
 
-  comma=,    Separator character
-  comment=#  Comment line character
+  comma=","    Separator character
+  comment="#"  Comment line character
 
 Decode examples
 ===============
@@ -22,10 +22,9 @@ Decode examples
 TSV to CSV
 ==========
 
-  $ fq -d csv -o comma="\t" tocsv file.tsv
-  
+  $ fq -d csv -o comma="\t" to_csv file.tsv
+
 Convert rows to objects based on header row
 ===========================================
 
   $ fq -d csv '.[0] as $t | .[1:] | map(with_entries(.key = $t[.key]))' file.csv
-  

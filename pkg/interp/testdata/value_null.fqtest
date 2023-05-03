@@ -2,8 +2,8 @@ $ fq -i -d mp3 . test.mp3
 mp3> .headers[0].padding | ., tovalue, toactual, tosym, type, length?
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x20|         00 00 00 00 00 00 00 00 00 00         |   ..........   |.headers[0].padding: raw bits (all zero)
-"<10>AAAAAAAAAAAAAA=="
-"<10>AAAAAAAAAAAAAA=="
+"\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+"\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
 null
 "string"
 10
@@ -103,7 +103,7 @@ mp3> .headers[0].padding._error | ., type, length?
 null
 "null"
 0
-mp3> .headers[0].padding._unknown | ., type, length?
+mp3> .headers[0].padding._gap | ., type, length?
 false
 "boolean"
 mp3> .headers[0].padding.a = 1

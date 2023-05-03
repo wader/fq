@@ -1,125 +1,126 @@
 $ fq -i -d mp3 . test.mp3
-mp3> .headers[0].magic | ., tovalue, toactual, tosym, type, length?
+mp3> .headers[0].header.magic | ., tovalue, toactual, tosym, type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|49 44 33                                       |ID3             |.headers[0].magic: "ID3" (valid)
+0x0|49 44 33                                       |ID3             |.headers[0].header.magic: "ID3" (valid)
 "ID3"
 "ID3"
 null
 "string"
 3
-mp3> .headers[0].magic[0] | ., type, length?
+mp3> .headers[0].header.magic[0] | ., type, length?
 "I"
 "string"
 1
-mp3> .headers[0].magic[-1000] | ., type, length?
+mp3> .headers[0].header.magic[-1000] | ., type, length?
 ""
 "string"
 0
-mp3> .headers[0].magic[1000] | ., type, length?
+mp3> .headers[0].header.magic[1000] | ., type, length?
 ""
 "string"
 0
-mp3> .headers[0].magic[1:3] | ., type, length?
+mp3> .headers[0].header.magic[1:3] | ., type, length?
 "D3"
 "string"
 2
-mp3> .headers[0].magic[0:-1] | ., type, length?
+mp3> .headers[0].header.magic[0:-1] | ., type, length?
 "ID"
 "string"
 2
-mp3> .headers[0].magic[-1000:2000] | ., type, length?
+mp3> .headers[0].header.magic[-1000:2000] | ., type, length?
 "ID3"
 "string"
 3
-mp3> .headers[0].magic["test"] | ., type, length?
+mp3> .headers[0].header.magic["test"] | ., type, length?
 error: expected an object but got: string
-mp3> [.headers[0].magic[]] | type, length?
+mp3> [.headers[0].header.magic[]] | type, length?
 error: cannot iterate over: string
-mp3> .headers[0].magic | keys
+mp3> .headers[0].header.magic | keys
 error: keys cannot be applied to: string
-mp3> .headers[0].magic | has("a")
+mp3> .headers[0].header.magic | has("a")
 error: has cannot be applied to: string
-mp3> .headers[0].magic | has(0)
+mp3> .headers[0].header.magic | has(0)
 error: has cannot be applied to: string
-mp3> .headers[0].magic | type
+mp3> .headers[0].header.magic | type
 "string"
-mp3> .headers[0].magic | tonumber
+mp3> .headers[0].header.magic | tonumber
 error: invalid number: "ID3"
-mp3> .headers[0].magic | tostring
+mp3> .headers[0].header.magic | tostring
 "ID3"
-mp3> .headers[0].magic + ""
+mp3> .headers[0].header.magic + ""
 "ID3"
-mp3> .headers[0].magic + 1
+mp3> .headers[0].header.magic + 1
 error: cannot add: string ("ID3") and number (1)
-mp3> .headers[0].magic._start | ., type, length?
+mp3> .headers[0].header.magic._start | ., type, length?
 0
 "number"
 0
-mp3> .headers[0].magic._stop | ., type, length?
+mp3> .headers[0].header.magic._stop | ., type, length?
 24
 "number"
 24
-mp3> .headers[0].magic._len | ., type, length?
+mp3> .headers[0].header.magic._len | ., type, length?
 24
 "number"
 24
-mp3> .headers[0].magic._name | ., type, length?
+mp3> .headers[0].header.magic._name | ., type, length?
 "magic"
 "string"
 5
-mp3> .headers[0].magic._actual | ., type, length?
+mp3> .headers[0].header.magic._actual | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|49 44 33                                       |ID3             |.headers[0].magic: "ID3" (valid)
+0x0|49 44 33                                       |ID3             |.headers[0].header.magic: "ID3" (valid)
 "string"
 3
-mp3> .headers[0].magic._sym | ., type, length?
+mp3> .headers[0].header.magic._sym | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|49 44 33                                       |ID3             |.headers[0].magic: "ID3" (valid)
+0x0|49 44 33                                       |ID3             |.headers[0].header.magic: "ID3" (valid)
 "null"
 0
-mp3> .headers[0].magic._description | ., type, length?
+mp3> .headers[0].header.magic._description | ., type, length?
 "valid"
 "string"
 5
-mp3> .headers[0].magic._path | ., type, length?
+mp3> .headers[0].header.magic._path | ., type, length?
 [
   "headers",
   0,
+  "header",
   "magic"
 ]
 "array"
-3
-mp3> .headers[0].magic._bits | ., type, length?
+4
+mp3> .headers[0].header.magic._bits | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|49 44 33                                       |ID3             |.: raw bits 0x0-0x2.7 (3)
 "string"
 24
-mp3> .headers[0].magic._bytes | ., type, length?
+mp3> .headers[0].header.magic._bytes | ., type, length?
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|49 44 33                                       |ID3             |.: raw bits 0x0-0x2.7 (3)
 "string"
 3
-mp3> .headers[0].magic._error | ., type, length?
+mp3> .headers[0].header.magic._error | ., type, length?
 null
 "null"
 0
-mp3> .headers[0].magic._unknown | ., type, length?
+mp3> .headers[0].header.magic._gap | ., type, length?
 false
 "boolean"
-mp3> .headers[0].magic.a = 1
+mp3> .headers[0].header.magic.a = 1
 error: expected an object but got: string ("ID3")
-mp3> .headers[0].magic[0] = 1
+mp3> .headers[0].header.magic[0] = 1
 error: expected an array but got: string ("ID3")
-mp3> .headers[0].magic.a |= empty
+mp3> .headers[0].header.magic.a |= empty
 error: expected an object but got: string
-mp3> .headers[0].magic[0] |= empty
+mp3> .headers[0].header.magic[0] |= empty
 error: expected an array but got: string ("ID3")
-mp3> .headers[0].magic | setpath(["a"]; 1)
+mp3> .headers[0].header.magic | setpath(["a"]; 1)
 error: expected an object but got: string ("ID3")
-mp3> .headers[0].magic | setpath([0]; 1)
+mp3> .headers[0].header.magic | setpath([0]; 1)
 error: expected an array but got: string ("ID3")
-mp3> .headers[0].magic | delpaths([["a"]])
+mp3> .headers[0].header.magic | delpaths([["a"]])
 error: expected an object but got: string ("ID3")
-mp3> .headers[0].magic | delpaths([[0]])
+mp3> .headers[0].header.magic | delpaths([[0]])
 error: expected an array but got: string ("ID3")
 mp3> ^D

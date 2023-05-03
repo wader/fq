@@ -1,6 +1,7 @@
 package interp
 
 import (
+	"fmt"
 	"math/big"
 
 	"github.com/wader/fq/internal/ansi"
@@ -48,17 +49,24 @@ func decoratorFromOptions(opts Options) Decorator {
 					return d.True
 				}
 				return d.False
-			case string, bitio.Reader:
+			case string,
+				bitio.Reader,
+				Binary:
 				return d.String
-			case nil:
-				return d.Null
 			case int, float64, int64, uint64:
 				// TODO: clean up number types
 				return d.Number
 			case *big.Int:
 				return d.Number
+			case []any:
+				return d.Array
+			case map[string]any:
+				return d.Object
+			case nil:
+				return d.Null
+
 			default:
-				panic("unreachable")
+				panic(fmt.Sprintf("unreachable %v (%T)", v, v))
 			}
 		}
 		byteDefaultColor := ansi.FromString("")

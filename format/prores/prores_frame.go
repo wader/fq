@@ -10,18 +10,19 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.PRORES_FRAME,
-		Description: "Apple ProRes frame",
-		DecodeFn:    decodeProResFrame,
-	})
+	interp.RegisterFormat(
+		format.Prores_Frame,
+		&decode.Format{
+			Description: "Apple ProRes frame",
+			DecodeFn:    decodeProResFrame,
+		})
 }
 
-func decodeProResFrame(d *decode.D, _ any) any {
+func decodeProResFrame(d *decode.D) any {
 	var size int64
 	d.FieldStruct("container", func(d *decode.D) {
 		size = int64(d.FieldU32("size"))
-		d.FieldUTF8("type", 4, d.AssertStr("icpf"))
+		d.FieldUTF8("type", 4, d.StrAssert("icpf"))
 	})
 	d.FramedFn((size-8)*8, func(d *decode.D) {
 		d.FieldStruct("header", func(d *decode.D) {
@@ -31,12 +32,12 @@ func decodeProResFrame(d *decode.D, _ any) any {
 			d.FieldU16("width")
 			d.FieldU16("height")
 			d.FieldStruct("frame_flags", func(d *decode.D) {
-				d.FieldU2("chrominance_factor", scalar.UToSymStr{
+				d.FieldU2("chrominance_factor", scalar.UintMapSymStr{
 					2: "422",
 					3: "444",
 				})
 				d.FieldU2("unused0")
-				d.FieldU2("frame_type", scalar.UToSymStr{
+				d.FieldU2("frame_type", scalar.UintMapSymStr{
 					0: "progressive",
 					1: "interlaced_top_first",
 					2: "interlaced_bottom_first",

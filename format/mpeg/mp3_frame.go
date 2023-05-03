@@ -14,23 +14,25 @@ package mpeg
 
 import (
 	"github.com/wader/fq/format"
+	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/checksum"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var mp3FrameTagsHeader decode.Group
+var mp3FrameTagsGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.MP3_FRAME,
-		Description: "MPEG audio layer 3 frame",
-		DecodeFn:    frameDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.MP3_FRAME_TAGS}, Group: &mp3FrameTagsHeader},
-		},
-	})
+	interp.RegisterFormat(
+		format.MP3_Frame,
+		&decode.Format{
+			Description: "MPEG audio layer 3 frame",
+			DecodeFn:    frameDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.MP3_Frame_Tags}, Out: &mp3FrameTagsGroup},
+			},
+		})
 }
 
 // TODO: keep track of main data buffer and decode huffman tables
@@ -92,7 +94,7 @@ func init() {
 // 	15: {4, 3},
 // }
 
-var blockTypeNames = scalar.UToSymStr{
+var blockTypeNames = scalar.UintMapSymStr{
 	0: "reserved",
 	1: "start block",
 	2: "3 short windows",
@@ -105,7 +107,7 @@ const (
 	mpegVersion25 = 0b00
 )
 
-var mpegVersionNames = scalar.UToScalar{
+var mpegVersionNames = scalar.UintMap{
 	mpegVersion1:  {Sym: "1", Description: "MPEG Version 1"},
 	mpegVersion2:  {Sym: "2", Description: "MPEG Version 2"},
 	mpegVersion25: {Sym: "2.5", Description: "MPEG Version 2.5"},
@@ -123,7 +125,7 @@ const (
 	mpegLayer3 = 0b01
 )
 
-var mpegLayerNames = scalar.UToScalar{
+var mpegLayerNames = scalar.UintMap{
 	mpegLayer1: {Sym: 1, Description: "MPEG Layer 1"},
 	mpegLayer2: {Sym: 2, Description: "MPEG Layer 2"},
 	mpegLayer3: {Sym: 3, Description: "MPEG Layer 3"},
@@ -135,12 +137,12 @@ var mpegLayerN = map[uint64]uint64{
 	mpegLayer1: 1,
 }
 
-var protectionNames = scalar.BoolToDescription{
+var protectionNames = scalar.BoolMapDescription{
 	true:  "No CRC",
 	false: "Has CRC",
 }
 
-func frameDecode(d *decode.D, _ any) any {
+func frameDecode(d *decode.D) any {
 	const headerBytes = 4
 	var sideInfoBytes int
 	var isStereo bool
@@ -158,7 +160,7 @@ func frameDecode(d *decode.D, _ any) any {
 	var lsf bool // low sampling frequencies, 1 granule if true
 
 	d.FieldStruct("header", func(d *decode.D) {
-		d.FieldU11("sync", d.AssertU(0b111_1111_1111), scalar.ActualBin)
+		d.FieldU11("sync", d.UintAssert(0b111_1111_1111), scalar.UintBin)
 
 		// v = 3 means version 2.5
 		mpegVersion := d.FieldU2("mpeg_version", mpegVersionNames)
@@ -172,6 +174,11 @@ func frameDecode(d *decode.D, _ any) any {
 			lsf = true
 		}
 		mpegLayer := d.FieldU2("layer", mpegLayerNames)
+
+		if mpegLayer > 0 {
+			mpegLayer = 1
+		}
+
 		mpegLayerNr = mpegLayerN[mpegLayer]
 		if mpegLayerNr != 3 {
 			d.Errorf("Not layer 3")
@@ -185,7 +192,7 @@ func frameDecode(d *decode.D, _ any) any {
 			3: [...]int{0, 1152, 576, 576},
 		}
 		sampleCount = samplesFrameIndex[uint(mpegLayerNr)][uint(mpegVersionNr)]
-		d.FieldValueU("sample_count", uint64(sampleCount))
+		d.FieldValueUint("sample_count", uint64(sampleCount))
 		protection := d.FieldBool("protection_absent", protectionNames)
 		// note false mean has protection
 		hasCRC := !protection
@@ -206,8 +213,8 @@ func frameDecode(d *decode.D, _ any) any {
 			0b1101: [...]int{416, 320, 256, 224, 144, 144, 224, 144, 144},
 			0b1110: [...]int{448, 384, 320, 256, 160, 160, 256, 160, 160},
 		}
-		d.FieldU4("bitrate", scalar.Fn(func(s scalar.S) (scalar.S, error) {
-			u := s.ActualU()
+		d.FieldU("bitrate", 4, scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
+			u := s.Actual
 			switch u {
 			case 0b0000:
 				s.Description = "free"
@@ -231,46 +238,46 @@ func frameDecode(d *decode.D, _ any) any {
 			0b01: [...]int{48000, 24000, 12000},
 			0b10: [...]int{32000, 16000, 8000},
 		}
-		d.FieldU2("sample_rate", scalar.Fn(func(s scalar.S) (scalar.S, error) {
-			u := s.ActualU()
-			switch u {
+		d.FieldU2("sample_rate", scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
+			switch s.Actual {
 			case 0b11:
 				s.Description = "reserved"
 			default:
-				sampleRate = sampleRateIndex[uint(u)][mpegVersionNr-1]
+				sampleRate = sampleRateIndex[uint(s.Actual)][mpegVersionNr-1]
 				s.Sym = sampleRate
 			}
 			return s, nil
 		}))
 
-		paddingBytes = int(d.FieldU1("padding", scalar.UToSymStr{
+		paddingBytes = int(d.FieldU1("padding", scalar.UintMapSymStr{
 			0: "not_padded",
 			1: "padded",
-		}, scalar.ActualBin))
+		}, scalar.UintBin))
 		d.FieldU1("private")
-		channelsIndex = d.FieldU2("channels", scalar.UToSymStr{
+		channelsIndex = d.FieldU2("channels", scalar.UintMapSymStr{
 			0b00: "stereo",
 			0b01: "joint_stereo",
 			0b10: "dual",
 			0b11: "mono",
-		}, scalar.ActualBin)
+		}, scalar.UintBin)
 		isStereo = channelsIndex != 0b11
-		channelModeIndex = d.FieldU2("channel_mode", scalar.UToSymStr{
+		channelModeIndex = d.FieldU2("channel_mode", scalar.UintMapSymStr{
 			0b00: "none",
 			0b01: "intensity stereo",
 			0b10: "ms_stereo",
 			0b11: "intensity_stereo_ms_stereo",
-		}, scalar.ActualBin)
+		}, scalar.UintBin)
 		d.FieldU1("copyright")
 		d.FieldU1("original")
-		d.FieldU2("emphasis", scalar.UToSymStr{
+		d.FieldU2("emphasis", scalar.UintMapSymStr{
 			0b00: "none",
 			0b01: "50_15",
 			0b10: "reserved",
 			0b11: "ccit_j.17",
-		}, scalar.ActualBin)
+		}, scalar.UintBin)
+
 		if hasCRC {
-			d.FieldU16("crc", scalar.ActualHex)
+			d.FieldU16("crc", scalar.UintHex)
 			crcValue = d.FieldGet("crc")
 			crcBytes = 2
 		}
@@ -369,7 +376,7 @@ func frameDecode(d *decode.D, _ any) any {
 	// audio data size, may include audio data from other frames also if main_data_begin is used
 	restBytes := frameBytes - headerBytes - crcBytes - sideInfoBytes
 	d.FramedFn(int64(restBytes)*8, func(d *decode.D) {
-		_, _, _ = d.TryFieldFormat("tags", mp3FrameTagsHeader, nil)
+		_, _, _ = d.TryFieldFormat("tag", &mp3FrameTagsGroup, nil)
 		d.FieldRawLen("audio_data", d.BitsLeft())
 	})
 
@@ -379,11 +386,12 @@ func frameDecode(d *decode.D, _ any) any {
 	d.CopyBits(crcHash, d.BitBufRange(6*8, int64(sideInfoBytes)*8))
 
 	if crcValue != nil {
-		_ = crcValue.TryScalarFn(d.ValidateUBytes(crcHash.Sum(nil)))
+		_ = crcValue.TryUintScalarFn(d.UintValidateBytes(crcHash.Sum(nil)))
 	}
-	d.FieldValueRaw("crc_calculated", crcHash.Sum(nil), scalar.RawHex)
 
-	return format.MP3FrameOut{
+	d.FieldValueBitBuf("crc_calculated", bitio.NewBitReader(crcHash.Sum(nil), -1), scalar.RawHex)
+
+	return format.MP3_Frame_Out{
 		MPEGVersion:      int(mpegVersionNr),
 		ProtectionAbsent: protectionAbsent,
 		BitRate:          bitRate,

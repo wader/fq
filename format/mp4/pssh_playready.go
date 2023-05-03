@@ -8,11 +8,12 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.PSSH_PLAYREADY,
-		Description: "PlayReady PSSH",
-		DecodeFn:    playreadyPsshDecode,
-	})
+	interp.RegisterFormat(
+		format.PSSH_Playready,
+		&decode.Format{
+			Description: "PlayReady PSSH",
+			DecodeFn:    playreadyPsshDecode,
+		})
 }
 
 const (
@@ -20,12 +21,12 @@ const (
 	recordTypeLicenseStore           = 2
 )
 
-var recordTypeNames = scalar.UToSymStr{
+var recordTypeNames = scalar.UintMapSymStr{
 	recordTypeRightsManagementHeader: "Rights management header",
 	recordTypeLicenseStore:           "License store",
 }
 
-func playreadyPsshDecode(d *decode.D, _ any) any {
+func playreadyPsshDecode(d *decode.D) any {
 	d.Endian = decode.LittleEndian
 
 	d.FieldU32("size")

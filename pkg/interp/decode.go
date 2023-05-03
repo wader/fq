@@ -17,7 +17,6 @@ import (
 	"github.com/wader/fq/internal/mapstruct"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
-	"github.com/wader/fq/pkg/scalar"
 
 	"github.com/wader/gojq"
 )
@@ -46,15 +45,15 @@ type DecodeValue interface {
 }
 
 func (i *Interp) _registry(c any) any {
-	uniqueFormats := map[string]decode.Format{}
+	uniqueFormats := map[string]*decode.Format{}
 
 	groups := map[string]any{}
 	formats := map[string]any{}
 
-	for groupName := range i.Registry.FormatGroups {
+	for _, g := range i.Registry.Groups() {
 		var group []any
 
-		for _, f := range i.Registry.MustFormatGroup(groupName) {
+		for _, f := range g.Formats {
 			group = append(group, f.Name)
 			if _, ok := uniqueFormats[f.Name]; ok {
 				continue
@@ -62,7 +61,7 @@ func (i *Interp) _registry(c any) any {
 			uniqueFormats[f.Name] = f
 		}
 
-		groups[groupName] = group
+		groups[g.Name] = group
 	}
 
 	for _, f := range uniqueFormats {
@@ -78,8 +77,8 @@ func (i *Interp) _registry(c any) any {
 		var dependenciesVs []any
 		for _, d := range f.Dependencies {
 			var dNamesVs []any
-			for _, n := range d.Names {
-				dNamesVs = append(dNamesVs, n)
+			for _, g := range d.Groups {
+				dNamesVs = append(dNamesVs, g.Name)
 			}
 			dependenciesVs = append(dependenciesVs, dNamesVs)
 		}
@@ -87,15 +86,15 @@ func (i *Interp) _registry(c any) any {
 			vf["dependencies"] = dependenciesVs
 		}
 		var groupsVs []any
-		for _, n := range f.Groups {
-			groupsVs = append(groupsVs, n)
+		for _, g := range f.Groups {
+			groupsVs = append(groupsVs, g.Name)
 		}
 		if len(groupsVs) > 0 {
 			vf["groups"] = groupsVs
 		}
-		if f.DecodeInArg != nil {
+		if f.DefaultInArg != nil {
 			doc := map[string]any{}
-			st := reflect.TypeOf(f.DecodeInArg)
+			st := reflect.TypeOf(f.DefaultInArg)
 			for i := 0; i < st.NumField(); i++ {
 				f := st.Field(i)
 				if v, ok := f.Tag.Lookup("doc"); ok {
@@ -104,7 +103,7 @@ func (i *Interp) _registry(c any) any {
 			}
 			vf["decode_in_arg_doc"] = doc
 
-			args, err := mapstruct.ToMap(f.DecodeInArg)
+			args, err := mapstruct.ToMap(f.DefaultInArg)
 			if err != nil {
 				return err
 			}
@@ -164,12 +163,14 @@ func (i *Interp) _registry(c any) any {
 	}
 }
 
-func (i *Interp) _toValue(c any, opts map[string]any) any {
-	v, _ := toValue(
-		func() Options { return OptionsFromValue(opts) },
+func (i *Interp) _toValue(c any, om map[string]any) any {
+	return toValue(
+		func() *Options {
+			opts := OptionsFromValue(om)
+			return &opts
+		},
 		c,
 	)
-	return v
 }
 
 type decodeOpts struct {
@@ -231,39 +232,36 @@ func (i *Interp) _decode(c any, format string, opts decodeOpts) any {
 	if err != nil {
 		return err
 	}
-	decodeFormat, err := i.Registry.FormatGroup(formatName)
+	decodeGroup, err := i.Registry.Group(formatName)
 	if err != nil {
 		return err
 	}
 
-	dv, formatOut, err := decode.Decode(i.EvalInstance.Ctx, bv.br, decodeFormat,
+	dv, formatOut, err := decode.Decode(i.EvalInstance.Ctx, bv.br, decodeGroup,
 		decode.Options{
 			IsRoot:      true,
 			FillGaps:    true,
 			Force:       opts.Force,
 			Range:       bv.r,
 			Description: filename,
-			FormatInArgFn: func(f decode.Format) (any, error) {
-				inArg := f.DecodeInArg
-				if inArg == nil {
-					return nil, nil
-				}
-
-				var err error
-				inArg, err = copystructure.Copy(inArg)
+			FormatInArgFn: func(init any) any {
+				v, err := copystructure.Copy(init)
 				if err != nil {
-					return f.DecodeInArg, err
+					return nil
 				}
 
 				if len(opts.Remain) > 0 {
-					if err := mapstruct.ToStruct(opts.Remain, &inArg); err != nil {
+					if err := mapstruct.ToStruct(opts.Remain, &v); err != nil {
 						// TODO: currently ignores failed struct mappings
-						//nolint: nilerr
-						return f.DecodeInArg, nil
+						return nil
 					}
 				}
+				// nil if same as init
+				if reflect.DeepEqual(init, v) {
+					return nil
+				}
 
-				return inArg, nil
+				return v
 			},
 		},
 	)
@@ -310,21 +308,23 @@ func valueHas(key any, a func(name string) any, b func(key any) any) any {
 	return b(key)
 }
 
-// optsFn is a function as toValue is used by tovalue/0 so needs to be fast
-func toValue(optsFn func() Options, v any) (any, bool) {
-	switch v := v.(type) {
-	case JQValueEx:
-		if optsFn == nil {
+// TODO: make more efficient somehow? shallow values but might be hard
+// when things like tovalue.key should behave like a jq value and not a decode value etc
+func toValue(optsFn func() *Options, v any) any {
+	nv, _ := gojqex.ToGoJQValueFn(v, func(v any) (any, bool) {
+		switch v := v.(type) {
+		case JQValueEx:
+			if optsFn == nil {
+				return v.JQValueToGoJQ(), true
+			}
+			return v.JQValueToGoJQEx(optsFn), true
+		case gojq.JQValue:
 			return v.JQValueToGoJQ(), true
+		default:
+			return v, true
 		}
-		return v.JQValueToGoJQEx(optsFn), true
-	case gojq.JQValue:
-		return v.JQValueToGoJQ(), true
-	case nil, bool, float64, int, string, *big.Int, map[string]any, []any:
-		return v, true
-	default:
-		return nil, false
-	}
+	})
+	return nv
 }
 
 type decodeValueKind int
@@ -346,16 +346,17 @@ func makeDecodeValueOut(dv *decode.Value, kind decodeValueKind, out any) any {
 			return NewArrayDecodeValue(dv, out, vv)
 		}
 		return NewStructDecodeValue(dv, out, vv)
-	case *scalar.S:
+
+	case Scalarable:
 		// TODO: rethink value/actual/sym handling
 		var vvv any
 		switch kind {
 		case decodeValueValue:
-			vvv = vv.Value()
+			vvv = vv.ScalarValue()
 		case decodeValueActual:
-			vvv = vv.Actual
+			vvv = vv.ScalarActual()
 		case decodeValueSym:
-			vvv = vv.Sym
+			vvv = vv.ScalarSym()
 		}
 
 		switch vvv := vvv.(type) {
@@ -433,8 +434,11 @@ func makeDecodeValueOut(dv *decode.Value, kind decodeValueKind, out any) any {
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case Binary:
-			// used by bytes and bits format
-			return vvv
+			return decodeValue{
+				JQValue:         vvv,
+				decodeValueBase: decodeValueBase{dv: dv},
+			}
+
 		default:
 			panic(fmt.Sprintf("unreachable vv %#+v", vvv))
 		}
@@ -459,22 +463,21 @@ func (dvb decodeValueBase) ToBinary() (Binary, error) {
 func (decodeValueBase) ExtType() string { return "decode_value" }
 func (dvb decodeValueBase) ExtKeys() []string {
 	kv := []string{
-		"_start",
-		"_stop",
+		"_actual",
+		"_bits",
+		"_buffer_root",
+		"_bytes",
+		"_description",
+		"_format_root",
+		"_gap",
 		"_len",
 		"_name",
-		"_root",
-		"_buffer_root",
-		"_format_root",
 		"_parent",
-		"_actual",
-		"_sym",
-		"_description",
 		"_path",
-		"_bits",
-		"_bytes",
-		"_unknown",
-		"_index", // TODO: only if parent is array?
+		"_root",
+		"_start",
+		"_stop",
+		"_sym",
 	}
 
 	if _, ok := dvb.dv.V.(*decode.Compound); ok {
@@ -496,40 +499,27 @@ func (dvb decodeValueBase) JQValueKey(name string) any {
 	dv := dvb.dv
 
 	switch name {
-	case "_start":
-		return big.NewInt(dv.Range.Start)
-	case "_stop":
-		return big.NewInt(dv.Range.Stop())
-	case "_len":
-		return big.NewInt(dv.Range.Len)
-	case "_name":
-		return dv.Name
-	case "_root":
-		return makeDecodeValue(dv.Root(), decodeValueValue)
-	case "_buffer_root":
-		// TODO: rename?
-		return makeDecodeValue(dv.BufferRoot(), decodeValueValue)
-	case "_format_root":
-		// TODO: rename?
-		return makeDecodeValue(dv.FormatRoot(), decodeValueValue)
-	case "_parent":
-		if dv.Parent == nil {
-			return nil
-		}
-		return makeDecodeValue(dv.Parent, decodeValueValue)
 	case "_actual":
 		switch dv.V.(type) {
-		case *scalar.S:
+		case Scalarable:
 			return makeDecodeValue(dv, decodeValueActual)
 		default:
 			return nil
 		}
-	case "_sym":
-		switch dv.V.(type) {
-		case *scalar.S:
-			return makeDecodeValue(dv, decodeValueSym)
-		default:
-			return nil
+	case "_bits":
+		return Binary{
+			br:   dv.RootReader,
+			r:    dv.Range,
+			unit: 1,
+		}
+	case "_buffer_root":
+		// TODO: rename?
+		return makeDecodeValue(dv.BufferRoot(), decodeValueValue)
+	case "_bytes":
+		return Binary{
+			br:   dv.RootReader,
+			r:    dv.Range,
+			unit: 8,
 		}
 	case "_description":
 		switch vv := dv.V.(type) {
@@ -538,34 +528,56 @@ func (dvb decodeValueBase) JQValueKey(name string) any {
 				return nil
 			}
 			return vv.Description
-		case *scalar.S:
-			if vv.Description == "" {
+		case Scalarable:
+			desc := vv.ScalarDescription()
+			if desc == "" {
 				return nil
 			}
-			return vv.Description
+			return desc
 		default:
 			return nil
 		}
+	case "_format_root":
+		// TODO: rename?
+		return makeDecodeValue(dv.FormatRoot(), decodeValueValue)
+	case "_gap":
+		switch vv := dv.V.(type) {
+		case Scalarable:
+			return vv.ScalarIsGap()
+		default:
+			return false
+		}
+	case "_len":
+		return big.NewInt(dv.Range.Len)
+	case "_name":
+		return dv.Name
+	case "_parent":
+		if dv.Parent == nil {
+			return nil
+		}
+		return makeDecodeValue(dv.Parent, decodeValueValue)
 	case "_path":
 		return valuePath(dv)
+	case "_root":
+		return makeDecodeValue(dv.Root(), decodeValueValue)
+	case "_start":
+		return big.NewInt(dv.Range.Start)
+	case "_stop":
+		return big.NewInt(dv.Range.Stop())
+	case "_sym":
+		switch dv.V.(type) {
+		case Scalarable:
+			return makeDecodeValue(dv, decodeValueSym)
+		default:
+			return nil
+		}
+
 	case "_error":
 		var formatErr decode.FormatError
 		if errors.As(dv.Err, &formatErr) {
 			return formatErr.Value()
 		}
 		return nil
-	case "_bits":
-		return Binary{
-			br:   dv.RootReader,
-			r:    dv.Range,
-			unit: 1,
-		}
-	case "_bytes":
-		return Binary{
-			br:   dv.RootReader,
-			r:    dv.Range,
-			unit: 8,
-		}
 	case "_format":
 		if dv.Format != nil {
 			return dv.Format.Name
@@ -573,13 +585,7 @@ func (dvb decodeValueBase) JQValueKey(name string) any {
 		return nil
 	case "_out":
 		return dvb.out
-	case "_unknown":
-		switch vv := dv.V.(type) {
-		case *scalar.S:
-			return vv.Unknown
-		default:
-			return false
-		}
+
 	case "_index":
 		if dv.Index != -1 {
 			return dv.Index
@@ -603,7 +609,7 @@ func (v decodeValue) JQValueKey(name string) any {
 func (v decodeValue) JQValueHas(key any) any {
 	return valueHas(key, v.decodeValueBase.JQValueKey, v.JQValue.JQValueHas)
 }
-func (v decodeValue) JQValueToGoJQEx(optsFn func() Options) any {
+func (v decodeValue) JQValueToGoJQEx(optsFn func() *Options) any {
 	if !v.bitsFormat {
 		return v.JQValueToGoJQ()
 	}
@@ -692,12 +698,25 @@ func (v ArrayDecodeValue) JQValueHas(key any) any {
 			return intKey >= 0 && intKey < len(v.Compound.Children)
 		})
 }
-func (v ArrayDecodeValue) JQValueToGoJQ() any {
-	vs := make([]any, len(v.Compound.Children))
-	for i, f := range v.Compound.Children {
-		vs[i] = makeDecodeValue(f, decodeValueValue)
+func (v ArrayDecodeValue) JQValueToGoJQEx(optsFn func() *Options) any {
+	opts := optsFn()
+
+	vs := make([]any, 0, len(v.Compound.Children))
+	for _, f := range v.Compound.Children {
+		switch s := f.V.(type) {
+		case Scalarable:
+			if s.ScalarIsGap() && opts.SkipGaps {
+				// skip, note for arrays this will affect indexes
+				continue
+			}
+		}
+
+		vs = append(vs, makeDecodeValue(f, decodeValueValue))
 	}
 	return vs
+}
+func (v ArrayDecodeValue) JQValueToGoJQ() any {
+	return v.JQValueToGoJQEx(func() *Options { return &Options{} })
 }
 
 // decode value struct
@@ -764,10 +783,22 @@ func (v StructDecodeValue) JQValueHas(key any) any {
 		},
 	)
 }
-func (v StructDecodeValue) JQValueToGoJQ() any {
+func (v StructDecodeValue) JQValueToGoJQEx(optsFn func() *Options) any {
+	opts := optsFn()
+
 	vm := make(map[string]any, len(v.Compound.Children))
 	for _, f := range v.Compound.Children {
+		switch s := f.V.(type) {
+		case Scalarable:
+			if s.ScalarIsGap() && opts.SkipGaps {
+				continue
+			}
+		}
+
 		vm[f.Name] = makeDecodeValue(f, decodeValueValue)
 	}
 	return vm
+}
+func (v StructDecodeValue) JQValueToGoJQ() any {
+	return v.JQValueToGoJQEx(func() *Options { return &Options{} })
 }

@@ -10,7 +10,7 @@ def _opt_build_default_fixed:
       argdecode:      [],
       argjson:        [],
       array_truncate: 50,
-      bits_format:    "snippet",
+      bits_format:    "string",
       # 0-0xff=brightwhite,0=brightblack,32-126:9-13=white
       byte_colors:    [
         { ranges: [[0,255]],
@@ -43,10 +43,11 @@ def _opt_build_default_fixed:
       },
       compact:            false,
       completion_timeout: (env.COMPLETION_TIMEOUT | if . != null then tonumber else 1 end),
-      decode_format:      "probe",
+      decode_group:       "probe",
       decode_progress:    (env.NO_DECODE_PROGRESS == null),
       depth:              0,
       expr:               ".",
+      expr_given:         false,
       expr_eval_path:     "arg",
       expr_file:          null,
       filenames:          null,
@@ -58,12 +59,14 @@ def _opt_build_default_fixed:
       raw_output:         ($stdout.is_terminal | not),
       raw_string:         false,
       repl:               false,
+      skip_gaps:          false,
       sizebase:           10,
       show_formats:       false,
       show_help:          false,
       slurp:              false,
       string_input:       false,
       unicode:            ($stdout.is_terminal and env.CLIUNICODE != null),
+      value_output:       false,
       verbose:            false,
     }
   );
@@ -81,11 +84,12 @@ def _opt_options:
     colors:             "csv_kv_obj",
     compact:            "boolean",
     completion_timeout: "number",
-    decode_format:      "string",
+    decode_group:       "string",
     decode_progress:    "boolean",
     depth:              "number",
     display_bytes:      "number",
     expr:               "string",
+    expr_given:         "boolean",
     expr_eval_path:     "string",
     expr_file:          "string",
     filenames:          "array_string",
@@ -98,12 +102,14 @@ def _opt_options:
     raw_output:         "boolean",
     raw_string:         "boolean",
     repl:               "boolean",
-    sizebase:           "number",
     show_formats:       "boolean",
     show_help:          "boolean",
+    sizebase:           "number",
+    skip_gaps:          "boolean",
     slurp:              "boolean",
     string_input:       "boolean",
     unicode:            "boolean",
+    value_output:       "boolean",
     verbose:            "boolean",
     width:              "number",
   };
@@ -111,6 +117,7 @@ def _opt_options:
 def _opt_eval($rest):
   ( with_entries(
       ( select(.value | _is_string and startswith("@"))
+      | .key as $opt
       | .value |=
           ( . as $v
           | try
@@ -119,7 +126,10 @@ def _opt_eval($rest):
               | tobytes
               | tostring
               )
-            catch $v
+            catch
+              ( "-o \($opt)=@\($v[1:]): \(.)"
+              | halt_error(_exit_code_args_error)
+              )
           )
       )
     )
@@ -156,6 +166,10 @@ def _opt_eval($rest):
           else $rest[0] // null
           end
         )
+      ),
+      expr_given: (
+        # was a expr arg given
+        $rest[0] != null
       ),
       expr_eval_path: .expr_file,
       filenames: (
@@ -206,6 +220,11 @@ def _opt_eval($rest):
       ),
       unicode: (
         if .unicode_output == true then true
+        else null
+        end
+      ),
+      value_output: (
+        if .value_output == true then true
         else null
         end
       ),
@@ -392,10 +411,10 @@ def _opt_cli_opts:
       description: "Force color output",
       bool: true
     },
-    "decode_format": {
+    "decode_group": {
       short: "-d",
       long: "--decode",
-      description: "Decode format (probe)",
+      description: "Decode format or group (probe)",
       string: "NAME"
     },
     "expr_file": {
@@ -407,7 +426,7 @@ def _opt_cli_opts:
     "show_help": {
       short: "-h",
       long: "--help",
-      description: "Show help for TOPIC (ex: --help, --help formats)",
+      description: "Show help for TOPIC (ex: -h formats, -h mp4)",
       string: "[TOPIC]",
       optional: true
     },
@@ -447,7 +466,7 @@ def _opt_cli_opts:
       short: "-o",
       long: "--option",
       description: "Set option (ex: -o color=true, see --help options)",
-      object: "KEY=VALUE",
+      object: "KEY=VALUE/@PATH",
     },
     "string_input": {
       short: "-R",
@@ -464,8 +483,8 @@ def _opt_cli_opts:
     },
     "raw_string": {
       short: "-r",
-      # for jq compat, is called raw string internally, "raw output" is if
-      # we can output raw bytes or not
+      # for jq compat, is called raw string internally, is different from "raw output" which
+      # is if we can output raw bytes or not
       long: "--raw-output",
       description: "Raw string output (without quotes)",
       bool: true
@@ -486,6 +505,12 @@ def _opt_cli_opts:
       short: "-U",
       long: "--unicode-output",
       description: "Force unicode output",
+      bool: true
+    },
+    "value_output": {
+      short: "-V",
+      long: "--value-output",
+      description: "Output JSON value (-Vr for raw string)",
       bool: true
     },
     "show_version": {

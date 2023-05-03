@@ -8,16 +8,17 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.ICMP,
-		Description: "Internet Control Message Protocol",
-		Groups:      []string{format.IP_PACKET},
-		DecodeFn:    decodeICMP,
-	})
+	interp.RegisterFormat(
+		format.ICMP,
+		&decode.Format{
+			Description: "Internet Control Message Protocol",
+			Groups:      []*decode.Group{format.IP_Packet},
+			DecodeFn:    decodeICMP,
+		})
 }
 
 // based on https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol
-var icmpTypeMap = scalar.UToScalar{
+var icmpTypeMap = scalar.UintMap{
 	0:  {Sym: "echo_reply", Description: "Echo reply"},
 	3:  {Sym: "unreachable", Description: "Destination network unreachable"},
 	4:  {Sym: "source_quench", Description: "Source quench (congestion control)"},
@@ -50,7 +51,7 @@ var icmpTypeMap = scalar.UToScalar{
 	43: {Sym: "extended_echo_reply", Description: "No Error"},
 }
 
-var icmpCodeMapMap = map[uint64]scalar.UToDescription{
+var icmpCodeMapMap = map[uint64]scalar.UintMapDescription{
 	3: {
 		1:  "Destination host unreachable",
 		2:  "Destination protocol unreachable",
@@ -92,8 +93,9 @@ var icmpCodeMapMap = map[uint64]scalar.UToDescription{
 	},
 }
 
-func decodeICMP(d *decode.D, in any) any {
-	if ipi, ok := in.(format.IPPacketIn); ok && ipi.Protocol != format.IPv4ProtocolICMP {
+func decodeICMP(d *decode.D) any {
+	var ipi format.IP_Packet_In
+	if d.ArgAs(&ipi) && ipi.Protocol != format.IPv4ProtocolICMP {
 		d.Fatalf("incorrect protocol %d", ipi.Protocol)
 	}
 

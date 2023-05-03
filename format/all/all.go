@@ -1,10 +1,11 @@
 // Package all registers all builtin formats with the default registry
-//
-//nolint:revive
 package all
 
 import (
 	_ "github.com/wader/fq/format/ape"
+	_ "github.com/wader/fq/format/apple/bookmark"
+	_ "github.com/wader/fq/format/apple/bplist"
+	_ "github.com/wader/fq/format/apple/macho"
 	_ "github.com/wader/fq/format/ar"
 	_ "github.com/wader/fq/format/asn1"
 	_ "github.com/wader/fq/format/av1"
@@ -12,7 +13,6 @@ import (
 	_ "github.com/wader/fq/format/bencode"
 	_ "github.com/wader/fq/format/bitcoin"
 	_ "github.com/wader/fq/format/bits"
-	_ "github.com/wader/fq/format/bplist"
 	_ "github.com/wader/fq/format/bson"
 	_ "github.com/wader/fq/format/bzip2"
 	_ "github.com/wader/fq/format/cbor"
@@ -29,7 +29,6 @@ import (
 	_ "github.com/wader/fq/format/inet"
 	_ "github.com/wader/fq/format/jpeg"
 	_ "github.com/wader/fq/format/json"
-	_ "github.com/wader/fq/format/macho"
 	_ "github.com/wader/fq/format/markdown"
 	_ "github.com/wader/fq/format/math"
 	_ "github.com/wader/fq/format/matroska"
@@ -49,7 +48,9 @@ import (
 	_ "github.com/wader/fq/format/tar"
 	_ "github.com/wader/fq/format/text"
 	_ "github.com/wader/fq/format/tiff"
+	_ "github.com/wader/fq/format/tls"
 	_ "github.com/wader/fq/format/toml"
+	_ "github.com/wader/fq/format/tzif"
 	_ "github.com/wader/fq/format/vorbis"
 	_ "github.com/wader/fq/format/vpx"
 	_ "github.com/wader/fq/format/wasm"

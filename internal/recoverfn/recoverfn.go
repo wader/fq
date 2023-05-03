@@ -1,9 +1,6 @@
 package recoverfn
 
 import (
-	"fmt"
-	"io"
-	"os"
 	"runtime"
 )
 
@@ -15,8 +12,13 @@ type Raw struct {
 	PCs       []uintptr
 }
 
-// Run runs fn and return Raw{}, true on no-panic
-// on panic it recovers and return a raw stacktrace and panic value to inspect
+type RecoverableErrorer interface {
+	IsRecoverableError() bool
+}
+
+// Run runs fn and return Raw{}, true for no panic
+// If panic is recoverable raw stacktrace and panic value is returned
+// If panic is not recoverable we just panic again
 func Run(fn func()) (Raw, bool) {
 	// TODO: once?
 	var recoverPC [1]uintptr
@@ -24,10 +26,14 @@ func Run(fn func()) (Raw, bool) {
 
 	pc, v := func() (pcs []uintptr, v any) {
 		defer func() {
-			if recoverErr := recover(); recoverErr != nil {
-				pcs = make([]uintptr, stackSizeLimit)
-				pcs = pcs[0:runtime.Callers(0, pcs)]
-				v = recoverErr
+			if recoverV := recover(); recoverV != nil {
+				if re, ok := recoverV.(RecoverableErrorer); ok && re.IsRecoverableError() {
+					pcs = make([]uintptr, stackSizeLimit)
+					pcs = pcs[0:runtime.Callers(0, pcs)]
+					v = recoverV
+					return
+				}
+				panic(recoverV)
 			}
 		}()
 
@@ -80,22 +86,4 @@ func (r Raw) Frames() []runtime.Frame {
 	// 3 to skip runtime.Callers, Recover help function and runtime.gopanic
 	// 1 to skip Recover defer recover() function
 	return r.frames(3, 1, r.RecoverPC)
-}
-
-func (r Raw) RePanic() {
-	var o io.Writer
-	o = os.Stderr
-	if p := os.Getenv("REPANIC_LOG"); p != "" {
-		if f, err := os.Create(p); err == nil {
-			o = f
-			defer f.Close()
-		}
-	}
-
-	fmt.Fprintf(o, "repanic: %v\n", r.RecoverV)
-	for _, f := range r.frames(0, 0, 0) {
-		fmt.Fprintf(o, "%s\n", f.Function)
-		fmt.Fprintf(o, "\t%s:%d\n", f.File, f.Line)
-	}
-	panic(r.RecoverV)
 }

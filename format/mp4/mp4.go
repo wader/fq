@@ -29,69 +29,72 @@ import (
 //go:embed mp4.md
 var mp4FS embed.FS
 
-var aacFrameFormat decode.Group
-var av1CCRFormat decode.Group
-var av1FrameFormat decode.Group
-var flacFrameFormat decode.Group
-var flacMetadatablocksFormat decode.Group
-var iccProfileFormat decode.Group
-var id3v2Format decode.Group
-var imageFormat decode.Group
-var jpegFormat decode.Group
-var mp3FrameFormat decode.Group
-var mpegAVCAUFormat decode.Group
-var mpegAVCDCRFormat decode.Group
-var mpegESFormat decode.Group
-var mpegHEVCDCRFrameFormat decode.Group
-var mpegHEVCSampleFormat decode.Group
-var mpegPESPacketSampleFormat decode.Group
-var opusPacketFrameFormat decode.Group
-var proResFrameFormat decode.Group
-var protoBufWidevineFormat decode.Group
-var psshPlayreadyFormat decode.Group
-var vorbisPacketFormat decode.Group
-var vp9FrameFormat decode.Group
-var vpxCCRFormat decode.Group
+var aacFrameGroup decode.Group
+var av1CCRGroup decode.Group
+var av1FrameGroup decode.Group
+var avcAUGroup decode.Group
+var avcDCRGroup decode.Group
+var flacFrameGroup decode.Group
+var flacMetadatablocksGroup decode.Group
+var hevcAUGroup decode.Group
+var hevcCDCRGroup decode.Group
+var iccProfileGroup decode.Group
+var id3v2Group decode.Group
+var imageGroup decode.Group
+var jpegGroup decode.Group
+var mp3FrameGroup decode.Group
+var mpegESGroup decode.Group
+var mpegPESPacketSampleGroup decode.Group
+var opusPacketFrameGroup decode.Group
+var pngGroup decode.Group
+var proResFrameGroup decode.Group
+var protoBufWidevineGroup decode.Group
+var psshPlayreadyGroup decode.Group
+var vorbisPacketGroup decode.Group
+var vp9FrameGroup decode.Group
+var vpxCCRGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.MP4,
-		Description: "ISOBMFF, QuickTime and similar",
-		Groups: []string{
-			format.PROBE,
-			format.IMAGE, // avif
-		},
-		DecodeFn: mp4Decode,
-		DecodeInArg: format.Mp4In{
-			DecodeSamples:  true,
-			AllowTruncated: false,
-		},
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.AAC_FRAME}, Group: &aacFrameFormat},
-			{Names: []string{format.AV1_CCR}, Group: &av1CCRFormat},
-			{Names: []string{format.AV1_FRAME}, Group: &av1FrameFormat},
-			{Names: []string{format.AVC_AU}, Group: &mpegAVCAUFormat},
-			{Names: []string{format.AVC_DCR}, Group: &mpegAVCDCRFormat},
-			{Names: []string{format.FLAC_FRAME}, Group: &flacFrameFormat},
-			{Names: []string{format.FLAC_METADATABLOCKS}, Group: &flacMetadatablocksFormat},
-			{Names: []string{format.HEVC_AU}, Group: &mpegHEVCSampleFormat},
-			{Names: []string{format.HEVC_DCR}, Group: &mpegHEVCDCRFrameFormat},
-			{Names: []string{format.ICC_PROFILE}, Group: &iccProfileFormat},
-			{Names: []string{format.ID3V2}, Group: &id3v2Format},
-			{Names: []string{format.IMAGE}, Group: &imageFormat},
-			{Names: []string{format.JPEG}, Group: &jpegFormat},
-			{Names: []string{format.MP3_FRAME}, Group: &mp3FrameFormat},
-			{Names: []string{format.MPEG_ES}, Group: &mpegESFormat},
-			{Names: []string{format.MPEG_PES_PACKET}, Group: &mpegPESPacketSampleFormat},
-			{Names: []string{format.OPUS_PACKET}, Group: &opusPacketFrameFormat},
-			{Names: []string{format.PRORES_FRAME}, Group: &proResFrameFormat},
-			{Names: []string{format.PROTOBUF_WIDEVINE}, Group: &protoBufWidevineFormat},
-			{Names: []string{format.PSSH_PLAYREADY}, Group: &psshPlayreadyFormat},
-			{Names: []string{format.VORBIS_PACKET}, Group: &vorbisPacketFormat},
-			{Names: []string{format.VP9_FRAME}, Group: &vp9FrameFormat},
-			{Names: []string{format.VPX_CCR}, Group: &vpxCCRFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.MP4,
+		&decode.Format{
+			Description: "ISOBMFF, QuickTime and similar",
+			Groups: []*decode.Group{
+				format.Probe,
+				format.Image, // avif
+			},
+			DecodeFn: mp4Decode,
+			DefaultInArg: format.MP4_In{
+				DecodeSamples:  true,
+				AllowTruncated: false,
+			},
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.AAC_Frame}, Out: &aacFrameGroup},
+				{Groups: []*decode.Group{format.AV1_CCR}, Out: &av1CCRGroup},
+				{Groups: []*decode.Group{format.AV1_Frame}, Out: &av1FrameGroup},
+				{Groups: []*decode.Group{format.AVC_AU}, Out: &avcAUGroup},
+				{Groups: []*decode.Group{format.AVC_DCR}, Out: &avcDCRGroup},
+				{Groups: []*decode.Group{format.FLAC_Frame}, Out: &flacFrameGroup},
+				{Groups: []*decode.Group{format.FLAC_Metadatablocks}, Out: &flacMetadatablocksGroup},
+				{Groups: []*decode.Group{format.HEVC_AU}, Out: &hevcAUGroup},
+				{Groups: []*decode.Group{format.HEVC_DCR}, Out: &hevcCDCRGroup},
+				{Groups: []*decode.Group{format.ICC_Profile}, Out: &iccProfileGroup},
+				{Groups: []*decode.Group{format.ID3v2}, Out: &id3v2Group},
+				{Groups: []*decode.Group{format.Image}, Out: &imageGroup},
+				{Groups: []*decode.Group{format.JPEG}, Out: &jpegGroup},
+				{Groups: []*decode.Group{format.MP3_Frame}, Out: &mp3FrameGroup},
+				{Groups: []*decode.Group{format.MPEG_ES}, Out: &mpegESGroup},
+				{Groups: []*decode.Group{format.MPEG_PES_Packet}, Out: &mpegPESPacketSampleGroup},
+				{Groups: []*decode.Group{format.Opus_Packet}, Out: &opusPacketFrameGroup},
+				{Groups: []*decode.Group{format.PNG}, Out: &pngGroup},
+				{Groups: []*decode.Group{format.Prores_Frame}, Out: &proResFrameGroup},
+				{Groups: []*decode.Group{format.ProtobufWidevine}, Out: &protoBufWidevineGroup},
+				{Groups: []*decode.Group{format.PSSH_Playready}, Out: &psshPlayreadyGroup},
+				{Groups: []*decode.Group{format.Vorbis_Packet}, Out: &vorbisPacketGroup},
+				{Groups: []*decode.Group{format.VP9_Frame}, Out: &vp9FrameGroup},
+				{Groups: []*decode.Group{format.VPX_CCR}, Out: &vpxCCRGroup},
+			},
+		})
 	interp.RegisterFS(mp4FS)
 }
 
@@ -129,6 +132,7 @@ type stsz struct {
 }
 
 type track struct {
+	seenHdlr           bool
 	id                 int
 	sampleDescriptions []sampleDescription
 	subType            string
@@ -147,7 +151,7 @@ type pathEntry struct {
 }
 
 type decodeContext struct {
-	opts   format.Mp4In
+	opts   format.MP4_In
 	path   []pathEntry
 	tracks map[int]*track
 }
@@ -194,6 +198,11 @@ func (ctx *decodeContext) currentMoofBox() *moofBox {
 	return t
 }
 
+func (ctx *decodeContext) currentMetaBox() *metaBox {
+	t, _ := ctx.findParent("meta").(*metaBox)
+	return t
+}
+
 func (ctx *decodeContext) currentTrack() *track {
 	if t := ctx.currentTrakBox(); t != nil {
 		return ctx.lookupTrack(t.trackID)
@@ -223,36 +232,38 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 
 					switch {
 					case dataFormat == "fLaC":
-						d.FieldFormatLen(name, nBits, flacFrameFormat, inArg)
+						d.FieldFormatLen(name, nBits, &flacFrameGroup, inArg)
 					case dataFormat == "Opus":
-						d.FieldFormatLen(name, nBits, opusPacketFrameFormat, inArg)
+						d.FieldFormatLen(name, nBits, &opusPacketFrameGroup, inArg)
 					case dataFormat == "vp09":
-						d.FieldFormatLen(name, nBits, vp9FrameFormat, inArg)
+						d.FieldFormatLen(name, nBits, &vp9FrameGroup, inArg)
 					case dataFormat == "avc1":
-						d.FieldFormatLen(name, nBits, mpegAVCAUFormat, inArg)
+						d.FieldFormatLen(name, nBits, &avcAUGroup, inArg)
 					case dataFormat == "hev1",
 						dataFormat == "hvc1":
-						d.FieldFormatLen(name, nBits, mpegHEVCSampleFormat, inArg)
+						d.FieldFormatLen(name, nBits, &hevcAUGroup, inArg)
 					case dataFormat == "av01":
-						d.FieldFormatLen(name, nBits, av1FrameFormat, inArg)
+						d.FieldFormatLen(name, nBits, &av1FrameGroup, inArg)
 					case dataFormat == "mp4a" && t.objectType == format.MPEGObjectTypeMP3:
-						d.FieldFormatLen(name, nBits, mp3FrameFormat, inArg)
+						d.FieldFormatLen(name, nBits, &mp3FrameGroup, inArg)
 					case dataFormat == "mp4a" && t.objectType == format.MPEGObjectTypeAAC:
-						d.FieldFormatLen(name, nBits, aacFrameFormat, inArg)
+						d.FieldFormatLen(name, nBits, &aacFrameGroup, inArg)
 					case dataFormat == "mp4a" && t.objectType == format.MPEGObjectTypeVORBIS:
-						d.FieldFormatLen(name, nBits, vorbisPacketFormat, inArg)
+						d.FieldFormatLen(name, nBits, &vorbisPacketGroup, inArg)
 					case dataFormat == "mp4v" && t.objectType == format.MPEGObjectTypeMPEG2VideoMain:
-						d.FieldFormatLen(name, nBits, mpegPESPacketSampleFormat, inArg)
+						d.FieldFormatLen(name, nBits, &mpegPESPacketSampleGroup, inArg)
 					case dataFormat == "mp4v" && t.objectType == format.MPEGObjectTypeMJPEG:
-						d.FieldFormatLen(name, nBits, jpegFormat, inArg)
+						d.FieldFormatLen(name, nBits, &jpegGroup, inArg)
+					case dataFormat == "mp4v" && t.objectType == format.MPEGObjectTypePNG:
+						d.FieldFormatLen(name, nBits, &pngGroup, inArg)
 					case dataFormat == "jpeg":
-						d.FieldFormatLen(name, nBits, jpegFormat, inArg)
+						d.FieldFormatLen(name, nBits, &jpegGroup, inArg)
 					case dataFormat == "apch",
 						dataFormat == "apcn",
 						dataFormat == "scpa",
 						dataFormat == "apco",
 						dataFormat == "ap4h":
-						d.FieldFormatLen(name, nBits, proResFrameFormat, inArg)
+						d.FieldFormatLen(name, nBits, &proResFrameGroup, inArg)
 					default:
 						d.FieldRawLen(name, d.BitsLeft())
 					}
@@ -260,7 +271,7 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 			}
 
 			d.FieldStruct("track", func(d *decode.D) {
-				d.FieldValueU("id", uint64(t.id))
+				d.FieldValueUint("id", uint64(t.id))
 
 				trackSDDataFormat := "unknown"
 				if len(t.sampleDescriptions) > 0 {
@@ -407,8 +418,9 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 	})
 }
 
-func mp4Decode(d *decode.D, in any) any {
-	mi, _ := in.(format.Mp4In)
+func mp4Decode(d *decode.D) any {
+	var mi format.MP4_In
+	d.ArgAs(&mi)
 
 	ctx := &decodeContext{
 		opts:   mi,

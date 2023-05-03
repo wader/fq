@@ -6,26 +6,27 @@ import (
 	"github.com/wader/fq/pkg/interp"
 )
 
-var bitcoinBlockFormat decode.Group
+var bitcoinBlockGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.BITCOIN_BLKDAT,
-		Description: "Bitcoin blk.dat",
-		Groups:      []string{format.PROBE},
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.BITCOIN_BLOCK}, Group: &bitcoinBlockFormat},
-		},
-		DecodeFn:  decodeBlkDat,
-		RootArray: true,
-		RootName:  "blocks",
-	})
+	interp.RegisterFormat(
+		format.Bitcoin_Blkdat,
+		&decode.Format{
+			Description: "Bitcoin blk.dat",
+			Groups:      []*decode.Group{format.Probe},
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.Bitcoin_Block}, Out: &bitcoinBlockGroup},
+			},
+			DecodeFn:  decodeBlkDat,
+			RootArray: true,
+			RootName:  "blocks",
+		})
 }
 
-func decodeBlkDat(d *decode.D, in interface{}) interface{} {
+func decodeBlkDat(d *decode.D) any {
 	validBlocks := 0
 	for !d.End() {
-		d.FieldFormat("block", bitcoinBlockFormat, format.BitCoinBlockIn{HasHeader: true})
+		d.FieldFormat("block", &bitcoinBlockGroup, format.Bitcoin_Block_In{HasHeader: true})
 		validBlocks++
 	}
 

@@ -7,20 +7,21 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var hevcDCRNALFormat decode.Group
+var hevcDCRNALGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.HEVC_DCR,
-		Description: "H.265/HEVC Decoder Configuration Record",
-		DecodeFn:    hevcDcrDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.HEVC_NALU}, Group: &hevcDCRNALFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.HEVC_DCR,
+		&decode.Format{
+			Description: "H.265/HEVC Decoder Configuration Record",
+			DecodeFn:    hevcDcrDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.HEVC_NALU}, Out: &hevcDCRNALGroup},
+			},
+		})
 }
 
-func hevcDcrDecode(d *decode.D, _ any) any {
+func hevcDcrDecode(d *decode.D) any {
 	d.FieldU8("configuration_version")
 	d.FieldU2("general_profile_space")
 	d.FieldU1("general_tier_flag")
@@ -35,14 +36,14 @@ func hevcDcrDecode(d *decode.D, _ any) any {
 	d.FieldU6("reserved2")
 	d.FieldU2("chroma_format_idc")
 	d.FieldU5("reserved3")
-	d.FieldU3("bit_depth_luma", scalar.ActualUAdd(8))
+	d.FieldU3("bit_depth_luma", scalar.UintActualAdd(8))
 	d.FieldU5("reserved4")
-	d.FieldU3("bit_depth_chroma", scalar.ActualUAdd(8))
+	d.FieldU3("bit_depth_chroma", scalar.UintActualAdd(8))
 	d.FieldU16("avg_frame_rate")
 	d.FieldU2("constant_frame_rate")
 	d.FieldU3("num_temporal_layers")
 	d.FieldU1("temporal_id_nested")
-	lengthSize := d.FieldU2("length_size", scalar.ActualUAdd(1))
+	lengthSize := d.FieldU2("length_size", scalar.UintActualAdd(1))
 	numArrays := d.FieldU8("num_of_arrays")
 	d.FieldArray("arrays", func(d *decode.D) {
 		for i := uint64(0); i < numArrays; i++ {
@@ -55,7 +56,7 @@ func hevcDcrDecode(d *decode.D, _ any) any {
 					for i := uint64(0); i < numNals; i++ {
 						d.FieldStruct("nal", func(d *decode.D) {
 							nalUnitLength := int64(d.FieldU16("nal_unit_length"))
-							d.FieldFormatLen("nal", nalUnitLength*8, hevcDCRNALFormat, nil)
+							d.FieldFormatLen("nal", nalUnitLength*8, &hevcDCRNALGroup, nil)
 						})
 					}
 				})
@@ -63,5 +64,5 @@ func hevcDcrDecode(d *decode.D, _ any) any {
 		}
 	})
 
-	return format.HevcDcrOut{LengthSize: lengthSize}
+	return format.HEVC_DCR_Out{LengthSize: lengthSize}
 }

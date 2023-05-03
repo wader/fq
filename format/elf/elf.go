@@ -1,4 +1,3 @@
-//nolint:revive
 package elf
 
 // https://refspecs.linuxbase.org/elf/gabi4+/contents.html
@@ -18,12 +17,13 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.ELF,
-		Description: "Executable and Linkable Format",
-		Groups:      []string{format.PROBE},
-		DecodeFn:    elfDecode,
-	})
+	interp.RegisterFormat(
+		format.ELF,
+		&decode.Format{
+			Description: "Executable and Linkable Format",
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    elfDecode,
+		})
 }
 
 const (
@@ -31,12 +31,12 @@ const (
 	BIG_ENDIAN    = 2
 )
 
-var endianNames = scalar.UToSymStr{
+var endianNames = scalar.UintMapSymStr{
 	LITTLE_ENDIAN: "little_endian",
 	BIG_ENDIAN:    "big_endian",
 }
 
-var classBits = scalar.UToSymU{
+var classBits = scalar.UintMapSymUint{
 	1: 32,
 	2: 64,
 }
@@ -46,7 +46,7 @@ const (
 	CLASS_64 = 2
 )
 
-var osABINames = scalar.UToSymStr{
+var osABINames = scalar.UintMapSymStr{
 	0:   "sysv",
 	1:   "hpux",
 	2:   "netbsd",
@@ -72,14 +72,14 @@ const (
 	ET_CORE = 4
 )
 
-var typeNames = scalar.URangeToScalar{
-	{Range: [2]uint64{ET_NONE, ET_NONE}, S: scalar.S{Sym: "none"}},
-	{Range: [2]uint64{ET_REL, ET_REL}, S: scalar.S{Sym: "rel"}},
-	{Range: [2]uint64{ET_EXEC, ET_EXEC}, S: scalar.S{Sym: "exec"}},
-	{Range: [2]uint64{ET_DYN, ET_DYN}, S: scalar.S{Sym: "dyn"}},
-	{Range: [2]uint64{ET_CORE, ET_CORE}, S: scalar.S{Sym: "core"}},
-	{Range: [2]uint64{0xfe00, 0xfeff}, S: scalar.S{Sym: "os"}},
-	{Range: [2]uint64{0xff00, 0xffff}, S: scalar.S{Sym: "proc"}},
+var typeNames = scalar.UintRangeToScalar{
+	{Range: [2]uint64{ET_NONE, ET_NONE}, S: scalar.Uint{Sym: "none"}},
+	{Range: [2]uint64{ET_REL, ET_REL}, S: scalar.Uint{Sym: "rel"}},
+	{Range: [2]uint64{ET_EXEC, ET_EXEC}, S: scalar.Uint{Sym: "exec"}},
+	{Range: [2]uint64{ET_DYN, ET_DYN}, S: scalar.Uint{Sym: "dyn"}},
+	{Range: [2]uint64{ET_CORE, ET_CORE}, S: scalar.Uint{Sym: "core"}},
+	{Range: [2]uint64{0xfe00, 0xfeff}, S: scalar.Uint{Sym: "os"}},
+	{Range: [2]uint64{0xff00, 0xffff}, S: scalar.Uint{Sym: "proc"}},
 }
 
 const (
@@ -87,7 +87,7 @@ const (
 	EM_ARM64  = 0xb7
 )
 
-var machineNames = scalar.UToScalar{
+var machineNames = scalar.UintMap{
 	0x00:      {Description: "No specific instruction set"},
 	0x01:      {Sym: "we_32100", Description: "AT&T WE 32100"},
 	0x02:      {Sym: "sparc", Description: "SPARC"},
@@ -151,20 +151,20 @@ const (
 	PT_TLS     = 7
 )
 
-var phTypeNames = scalar.URangeToScalar{
-	{Range: [2]uint64{PT_NULL, PT_NULL}, S: scalar.S{Sym: "null", Description: "Unused element"}},
-	{Range: [2]uint64{PT_LOAD, PT_LOAD}, S: scalar.S{Sym: "load", Description: "Loadable segment"}},
-	{Range: [2]uint64{PT_DYNAMIC, PT_DYNAMIC}, S: scalar.S{Sym: "dynamic", Description: "Dynamic linking information"}},
-	{Range: [2]uint64{PT_INTERP, PT_INTERP}, S: scalar.S{Sym: "interp", Description: "Interpreter to invoke"}},
-	{Range: [2]uint64{PT_NOTE, PT_NOTE}, S: scalar.S{Sym: "note", Description: "Auxiliary information"}},
-	{Range: [2]uint64{PT_SHLIB, PT_SHLIB}, S: scalar.S{Sym: "shlib", Description: "Reserved but has unspecified"}},
-	{Range: [2]uint64{PT_PHDR, PT_PHDR}, S: scalar.S{Sym: "phdr", Description: "Program header location and size"}},
-	{Range: [2]uint64{PT_TLS, PT_TLS}, S: scalar.S{Sym: "tls", Description: "Thread-Local Storage template"}},
-	{Range: [2]uint64{0x6474e550, 0x6474e550}, S: scalar.S{Sym: "gnu_eh_frame", Description: "GNU frame unwind information"}},
-	{Range: [2]uint64{0x6474e551, 0x6474e551}, S: scalar.S{Sym: "gnu_stack", Description: "GNU stack permission"}},
-	{Range: [2]uint64{0x6474e552, 0x6474e552}, S: scalar.S{Sym: "gnu_relro", Description: "GNU read-only after relocation"}},
-	{Range: [2]uint64{0x60000000, 0x6fffffff}, S: scalar.S{Sym: "os", Description: "Operating system-specific"}},
-	{Range: [2]uint64{0x70000000, 0x7fffffff}, S: scalar.S{Sym: "proc", Description: "Processor-specific"}},
+var phTypeNames = scalar.UintRangeToScalar{
+	{Range: [2]uint64{PT_NULL, PT_NULL}, S: scalar.Uint{Sym: "null", Description: "Unused element"}},
+	{Range: [2]uint64{PT_LOAD, PT_LOAD}, S: scalar.Uint{Sym: "load", Description: "Loadable segment"}},
+	{Range: [2]uint64{PT_DYNAMIC, PT_DYNAMIC}, S: scalar.Uint{Sym: "dynamic", Description: "Dynamic linking information"}},
+	{Range: [2]uint64{PT_INTERP, PT_INTERP}, S: scalar.Uint{Sym: "interp", Description: "Interpreter to invoke"}},
+	{Range: [2]uint64{PT_NOTE, PT_NOTE}, S: scalar.Uint{Sym: "note", Description: "Auxiliary information"}},
+	{Range: [2]uint64{PT_SHLIB, PT_SHLIB}, S: scalar.Uint{Sym: "shlib", Description: "Reserved but has unspecified"}},
+	{Range: [2]uint64{PT_PHDR, PT_PHDR}, S: scalar.Uint{Sym: "phdr", Description: "Program header location and size"}},
+	{Range: [2]uint64{PT_TLS, PT_TLS}, S: scalar.Uint{Sym: "tls", Description: "Thread-Local Storage template"}},
+	{Range: [2]uint64{0x6474e550, 0x6474e550}, S: scalar.Uint{Sym: "gnu_eh_frame", Description: "GNU frame unwind information"}},
+	{Range: [2]uint64{0x6474e551, 0x6474e551}, S: scalar.Uint{Sym: "gnu_stack", Description: "GNU stack permission"}},
+	{Range: [2]uint64{0x6474e552, 0x6474e552}, S: scalar.Uint{Sym: "gnu_relro", Description: "GNU read-only after relocation"}},
+	{Range: [2]uint64{0x60000000, 0x6fffffff}, S: scalar.Uint{Sym: "os", Description: "Operating system-specific"}},
+	{Range: [2]uint64{0x70000000, 0x7fffffff}, S: scalar.Uint{Sym: "proc", Description: "Processor-specific"}},
 }
 
 const (
@@ -236,7 +236,7 @@ const (
 	NT_LOONGARCH_LBT        = 0xa04
 )
 
-var coreNoteNames = scalar.UToScalar{
+var coreNoteNames = scalar.UintMap{
 	NT_PRSTATUS:             {Sym: "prstatus"},
 	NT_PRFPREG:              {Sym: "prfpreg"},
 	NT_PRPSINFO:             {Sym: "prpsinfo"},
@@ -325,7 +325,7 @@ const (
 	SHT_GNU_HASH      = 0x6ffffff6
 )
 
-var sectionHeaderTypeMap = scalar.UToScalar{
+var sectionHeaderTypeMap = scalar.UintMap{
 	SHT_NULL:          {Sym: "null", Description: "Header inactive"},
 	SHT_PROGBITS:      {Sym: "progbits", Description: "Information defined by the program"},
 	SHT_SYMTAB:        {Sym: "symtab", Description: "Symbol table"},
@@ -402,7 +402,7 @@ const (
 type dtEntry struct {
 	r   [2]uint64
 	dUn int
-	s   scalar.S
+	s   scalar.Uint
 }
 
 type dynamicTableEntries []dtEntry
@@ -416,8 +416,8 @@ func (d dynamicTableEntries) lookup(u uint64) (dtEntry, bool) {
 	return dtEntry{}, false
 }
 
-func (d dynamicTableEntries) MapScalar(s scalar.S) (scalar.S, error) {
-	u := s.ActualU()
+func (d dynamicTableEntries) MapUint(s scalar.Uint) (scalar.Uint, error) {
+	u := s.Actual
 	if de, ok := d.lookup(u); ok {
 		s = de.s
 		s.Actual = u
@@ -426,44 +426,44 @@ func (d dynamicTableEntries) MapScalar(s scalar.S) (scalar.S, error) {
 }
 
 var dynamicTableMap = dynamicTableEntries{
-	{r: [2]uint64{DT_NULL, DT_NULL}, dUn: dUnIgnored, s: scalar.S{Sym: "null", Description: "Marks end of dynamic section"}},
-	{r: [2]uint64{DT_NEEDED, DT_NEEDED}, dUn: dUnVal, s: scalar.S{Sym: "needed", Description: "String table offset to name of a needed library"}},
-	{r: [2]uint64{DT_PLTRELSZ, DT_PLTRELSZ}, dUn: dUnVal, s: scalar.S{Sym: "pltrelsz", Description: "Size in bytes of PLT relocation entries"}},
-	{r: [2]uint64{DT_PLTGOT, DT_PLTGOT}, dUn: dUnPtr, s: scalar.S{Sym: "pltgot", Description: "Address of PLT and/or GOT"}},
-	{r: [2]uint64{DT_HASH, DT_HASH}, dUn: dUnPtr, s: scalar.S{Sym: "hash", Description: "Address of symbol hash table"}},
-	{r: [2]uint64{DT_STRTAB, DT_STRTAB}, dUn: dUnPtr, s: scalar.S{Sym: "strtab", Description: "Address of string table"}},
-	{r: [2]uint64{DT_SYMTAB, DT_SYMTAB}, dUn: dUnPtr, s: scalar.S{Sym: "symtab", Description: "Address of symbol table"}},
-	{r: [2]uint64{DT_RELA, DT_RELA}, dUn: dUnPtr, s: scalar.S{Sym: "rela", Description: "Address of Rela relocation table"}},
-	{r: [2]uint64{DT_RELASZ, DT_RELASZ}, dUn: dUnVal, s: scalar.S{Sym: "relasz", Description: "Size in bytes of the Rela relocation table"}},
-	{r: [2]uint64{DT_RELAENT, DT_RELAENT}, dUn: dUnVal, s: scalar.S{Sym: "relaent", Description: "Size in bytes of a Rela relocation table entry"}},
-	{r: [2]uint64{DT_STRSZ, DT_STRSZ}, dUn: dUnVal, s: scalar.S{Sym: "strsz", Description: "Size in bytes of string table"}},
-	{r: [2]uint64{DT_SYMENT, DT_SYMENT}, dUn: dUnVal, s: scalar.S{Sym: "syment", Description: "Size in bytes of a symbol table entry"}},
-	{r: [2]uint64{DT_INIT, DT_INIT}, dUn: dUnPtr, s: scalar.S{Sym: "init", Description: "Address of the initialization function"}},
-	{r: [2]uint64{DT_FINI, DT_FINI}, dUn: dUnPtr, s: scalar.S{Sym: "fini", Description: "Address of the termination function"}},
-	{r: [2]uint64{DT_SONAME, DT_SONAME}, dUn: dUnVal, s: scalar.S{Sym: "soname", Description: "String table offset to name of shared object"}},
-	{r: [2]uint64{DT_RPATH, DT_RPATH}, dUn: dUnVal, s: scalar.S{Sym: "rpath", Description: "String table offset to library search path (deprecated)"}},
-	{r: [2]uint64{DT_SYMBOLIC, DT_SYMBOLIC}, dUn: dUnIgnored, s: scalar.S{Sym: "symbolic", Description: "Alert linker to search this shared object before the executable for symbols DT_REL Address of Rel relocation table"}},
-	{r: [2]uint64{DT_REL, DT_REL}, dUn: dUnPtr, s: scalar.S{Sym: "rel", Description: ""}},
-	{r: [2]uint64{DT_RELSZ, DT_RELSZ}, dUn: dUnVal, s: scalar.S{Sym: "relsz", Description: "Size in bytes of Rel relocation table"}},
-	{r: [2]uint64{DT_RELENT, DT_RELENT}, dUn: dUnVal, s: scalar.S{Sym: "relent", Description: "Size in bytes of a Rel table entry"}},
-	{r: [2]uint64{DT_PLTREL, DT_PLTREL}, dUn: dUnVal, s: scalar.S{Sym: "pltrel", Description: "Type of relocation entry to which the PLT refers (Rela or Rel)"}},
-	{r: [2]uint64{DT_DEBUG, DT_DEBUG}, dUn: dUnPtr, s: scalar.S{Sym: "debug", Description: "Undefined use for debugging"}},
-	{r: [2]uint64{DT_TEXTREL, DT_TEXTREL}, dUn: dUnIgnored, s: scalar.S{Sym: "textrel", Description: "Absence of this entry indicates that no relocation entries should apply to a nonwritable segment"}},
-	{r: [2]uint64{DT_JMPREL, DT_JMPREL}, dUn: dUnPtr, s: scalar.S{Sym: "jmprel", Description: "Address of relocation entries associated solely with the PLT"}},
-	{r: [2]uint64{DT_BIND_NOW, DT_BIND_NOW}, dUn: dUnIgnored, s: scalar.S{Sym: "bind_now", Description: "Instruct dynamic linker to process all relocations before transferring control to the executable"}},
-	{r: [2]uint64{DT_INIT_ARRAY, DT_INIT_ARRAY}, dUn: dUnPtr, s: scalar.S{Sym: "init_array", Description: "Address of the array of pointers to initialization functions"}},
-	{r: [2]uint64{DT_FINI_ARRAY, DT_FINI_ARRAY}, dUn: dUnPtr, s: scalar.S{Sym: "fini_array", Description: "Address of the array of pointers to termination functions"}},
-	{r: [2]uint64{DT_INIT_ARRAYSZ, DT_INIT_ARRAYSZ}, dUn: dUnVal, s: scalar.S{Sym: "init_arraysz", Description: "Size in bytes of the array of initialization functions"}},
-	{r: [2]uint64{DT_FINI_ARRAYSZ, DT_FINI_ARRAYSZ}, dUn: dUnVal, s: scalar.S{Sym: "fini_arraysz", Description: "Size in bytes of the array of termination functions "}},
-	{r: [2]uint64{DT_RUNPATH, DT_RUNPATH}, dUn: dUnVal, s: scalar.S{Sym: "runpath", Description: "String table offset to library search path"}},
-	{r: [2]uint64{DT_FLAGS, DT_FLAGS}, dUn: dUnVal, s: scalar.S{Sym: "flags", Description: "Flag values specific to the object being loaded"}}, // TODO: flag ma}},
-	{r: [2]uint64{DT_ENCODING, DT_ENCODING}, dUn: dUnUnspecified, s: scalar.S{Sym: "encoding", Description: ""}},                               // or DT_PREINIT_ARRAY }},
-	{r: [2]uint64{DT_PREINIT_ARRAYSZ, DT_PREINIT_ARRAYSZ}, dUn: dUnVal, s: scalar.S{Sym: "preinit_arraysz", Description: "Address of the array of pointers to pre-initialization functions"}},
-	{r: [2]uint64{DT_LOOS, DT_HIOS}, dUn: dUnUnspecified, s: scalar.S{Sym: "lo", Description: "Operating system-specific semantics"}},
-	{r: [2]uint64{DT_LOPROC, DT_HIPROC}, dUn: dUnUnspecified, s: scalar.S{Sym: "proc", Description: "Processor-specific semantics"}},
+	{r: [2]uint64{DT_NULL, DT_NULL}, dUn: dUnIgnored, s: scalar.Uint{Sym: "null", Description: "Marks end of dynamic section"}},
+	{r: [2]uint64{DT_NEEDED, DT_NEEDED}, dUn: dUnVal, s: scalar.Uint{Sym: "needed", Description: "String table offset to name of a needed library"}},
+	{r: [2]uint64{DT_PLTRELSZ, DT_PLTRELSZ}, dUn: dUnVal, s: scalar.Uint{Sym: "pltrelsz", Description: "Size in bytes of PLT relocation entries"}},
+	{r: [2]uint64{DT_PLTGOT, DT_PLTGOT}, dUn: dUnPtr, s: scalar.Uint{Sym: "pltgot", Description: "Address of PLT and/or GOT"}},
+	{r: [2]uint64{DT_HASH, DT_HASH}, dUn: dUnPtr, s: scalar.Uint{Sym: "hash", Description: "Address of symbol hash table"}},
+	{r: [2]uint64{DT_STRTAB, DT_STRTAB}, dUn: dUnPtr, s: scalar.Uint{Sym: "strtab", Description: "Address of string table"}},
+	{r: [2]uint64{DT_SYMTAB, DT_SYMTAB}, dUn: dUnPtr, s: scalar.Uint{Sym: "symtab", Description: "Address of symbol table"}},
+	{r: [2]uint64{DT_RELA, DT_RELA}, dUn: dUnPtr, s: scalar.Uint{Sym: "rela", Description: "Address of Rela relocation table"}},
+	{r: [2]uint64{DT_RELASZ, DT_RELASZ}, dUn: dUnVal, s: scalar.Uint{Sym: "relasz", Description: "Size in bytes of the Rela relocation table"}},
+	{r: [2]uint64{DT_RELAENT, DT_RELAENT}, dUn: dUnVal, s: scalar.Uint{Sym: "relaent", Description: "Size in bytes of a Rela relocation table entry"}},
+	{r: [2]uint64{DT_STRSZ, DT_STRSZ}, dUn: dUnVal, s: scalar.Uint{Sym: "strsz", Description: "Size in bytes of string table"}},
+	{r: [2]uint64{DT_SYMENT, DT_SYMENT}, dUn: dUnVal, s: scalar.Uint{Sym: "syment", Description: "Size in bytes of a symbol table entry"}},
+	{r: [2]uint64{DT_INIT, DT_INIT}, dUn: dUnPtr, s: scalar.Uint{Sym: "init", Description: "Address of the initialization function"}},
+	{r: [2]uint64{DT_FINI, DT_FINI}, dUn: dUnPtr, s: scalar.Uint{Sym: "fini", Description: "Address of the termination function"}},
+	{r: [2]uint64{DT_SONAME, DT_SONAME}, dUn: dUnVal, s: scalar.Uint{Sym: "soname", Description: "String table offset to name of shared object"}},
+	{r: [2]uint64{DT_RPATH, DT_RPATH}, dUn: dUnVal, s: scalar.Uint{Sym: "rpath", Description: "String table offset to library search path (deprecated)"}},
+	{r: [2]uint64{DT_SYMBOLIC, DT_SYMBOLIC}, dUn: dUnIgnored, s: scalar.Uint{Sym: "symbolic", Description: "Alert linker to search this shared object before the executable for symbols DT_REL Address of Rel relocation table"}},
+	{r: [2]uint64{DT_REL, DT_REL}, dUn: dUnPtr, s: scalar.Uint{Sym: "rel", Description: ""}},
+	{r: [2]uint64{DT_RELSZ, DT_RELSZ}, dUn: dUnVal, s: scalar.Uint{Sym: "relsz", Description: "Size in bytes of Rel relocation table"}},
+	{r: [2]uint64{DT_RELENT, DT_RELENT}, dUn: dUnVal, s: scalar.Uint{Sym: "relent", Description: "Size in bytes of a Rel table entry"}},
+	{r: [2]uint64{DT_PLTREL, DT_PLTREL}, dUn: dUnVal, s: scalar.Uint{Sym: "pltrel", Description: "Type of relocation entry to which the PLT refers (Rela or Rel)"}},
+	{r: [2]uint64{DT_DEBUG, DT_DEBUG}, dUn: dUnPtr, s: scalar.Uint{Sym: "debug", Description: "Undefined use for debugging"}},
+	{r: [2]uint64{DT_TEXTREL, DT_TEXTREL}, dUn: dUnIgnored, s: scalar.Uint{Sym: "textrel", Description: "Absence of this entry indicates that no relocation entries should apply to a nonwritable segment"}},
+	{r: [2]uint64{DT_JMPREL, DT_JMPREL}, dUn: dUnPtr, s: scalar.Uint{Sym: "jmprel", Description: "Address of relocation entries associated solely with the PLT"}},
+	{r: [2]uint64{DT_BIND_NOW, DT_BIND_NOW}, dUn: dUnIgnored, s: scalar.Uint{Sym: "bind_now", Description: "Instruct dynamic linker to process all relocations before transferring control to the executable"}},
+	{r: [2]uint64{DT_INIT_ARRAY, DT_INIT_ARRAY}, dUn: dUnPtr, s: scalar.Uint{Sym: "init_array", Description: "Address of the array of pointers to initialization functions"}},
+	{r: [2]uint64{DT_FINI_ARRAY, DT_FINI_ARRAY}, dUn: dUnPtr, s: scalar.Uint{Sym: "fini_array", Description: "Address of the array of pointers to termination functions"}},
+	{r: [2]uint64{DT_INIT_ARRAYSZ, DT_INIT_ARRAYSZ}, dUn: dUnVal, s: scalar.Uint{Sym: "init_arraysz", Description: "Size in bytes of the array of initialization functions"}},
+	{r: [2]uint64{DT_FINI_ARRAYSZ, DT_FINI_ARRAYSZ}, dUn: dUnVal, s: scalar.Uint{Sym: "fini_arraysz", Description: "Size in bytes of the array of termination functions "}},
+	{r: [2]uint64{DT_RUNPATH, DT_RUNPATH}, dUn: dUnVal, s: scalar.Uint{Sym: "runpath", Description: "String table offset to library search path"}},
+	{r: [2]uint64{DT_FLAGS, DT_FLAGS}, dUn: dUnVal, s: scalar.Uint{Sym: "flags", Description: "Flag values specific to the object being loaded"}}, // TODO: flag ma}},
+	{r: [2]uint64{DT_ENCODING, DT_ENCODING}, dUn: dUnUnspecified, s: scalar.Uint{Sym: "encoding", Description: ""}},                               // or DT_PREINIT_ARRAY }},
+	{r: [2]uint64{DT_PREINIT_ARRAYSZ, DT_PREINIT_ARRAYSZ}, dUn: dUnVal, s: scalar.Uint{Sym: "preinit_arraysz", Description: "Address of the array of pointers to pre-initialization functions"}},
+	{r: [2]uint64{DT_LOOS, DT_HIOS}, dUn: dUnUnspecified, s: scalar.Uint{Sym: "lo", Description: "Operating system-specific semantics"}},
+	{r: [2]uint64{DT_LOPROC, DT_HIPROC}, dUn: dUnUnspecified, s: scalar.Uint{Sym: "proc", Description: "Processor-specific semantics"}},
 }
 
-var symbolTableBindingMap = scalar.UToSymStr{
+var symbolTableBindingMap = scalar.UintMapSymStr{
 	0:  "local",
 	1:  "global",
 	2:  "weak",
@@ -474,7 +474,7 @@ var symbolTableBindingMap = scalar.UToSymStr{
 	15: "proc",
 }
 
-var symbolTableTypeMap = scalar.UToSymStr{
+var symbolTableTypeMap = scalar.UintMapSymStr{
 	0:  "notype",
 	1:  "object",
 	2:  "func",
@@ -489,7 +489,7 @@ var symbolTableTypeMap = scalar.UToSymStr{
 	15: "proc",
 }
 
-var symbolTableVisibilityMap = scalar.UToSymStr{
+var symbolTableVisibilityMap = scalar.UintMapSymStr{
 	0: "default",
 	1: "internal",
 	2: "hidden",
@@ -509,8 +509,8 @@ func strIndexNull(idx int, s string) string {
 
 type strTable string
 
-func (m strTable) MapScalar(s scalar.S) (scalar.S, error) {
-	s.Sym = strIndexNull(int(s.ActualU()), string(m))
+func (m strTable) MapUint(s scalar.Uint) (scalar.Uint, error) {
+	s.Sym = strIndexNull(int(s.Actual), string(m))
 	return s, nil
 }
 
@@ -819,8 +819,8 @@ func elfDecodeHeader(d *decode.D, ec *elfContext) {
 		d.Fatalf("unknown endian %d", endian)
 	}
 
-	typ := d.FieldU16("type", typeNames, scalar.ActualHex)
-	machine := d.FieldU16("machine", machineNames, scalar.ActualHex)
+	typ := d.FieldU16("type", typeNames, scalar.UintHex)
+	machine := d.FieldU16("machine", machineNames, scalar.UintHex)
 	d.FieldU32("version")
 	d.FieldU("entry", archBits)
 	phOff := d.FieldU("phoff", archBits)
@@ -871,9 +871,9 @@ func elfDecodeProgramHeader(d *decode.D, ec elfContext) {
 	switch ec.archBits {
 	case 32:
 		typ = d.FieldU32("type", phTypeNames)
-		offset = d.FieldU("offset", ec.archBits, scalar.ActualHex)
-		d.FieldU("vaddr", ec.archBits, scalar.ActualHex)
-		d.FieldU("paddr", ec.archBits, scalar.ActualHex)
+		offset = d.FieldU("offset", ec.archBits, scalar.UintHex)
+		d.FieldU("vaddr", ec.archBits, scalar.UintHex)
+		d.FieldU("paddr", ec.archBits, scalar.UintHex)
 		size = d.FieldU32("filesz")
 		d.FieldU32("memsz")
 		pFlags(d)
@@ -881,9 +881,9 @@ func elfDecodeProgramHeader(d *decode.D, ec elfContext) {
 	case 64:
 		typ = d.FieldU32("type", phTypeNames)
 		pFlags(d)
-		offset = d.FieldU("offset", ec.archBits, scalar.ActualHex)
-		d.FieldU("vaddr", ec.archBits, scalar.ActualHex)
-		d.FieldU("paddr", ec.archBits, scalar.ActualHex)
+		offset = d.FieldU("offset", ec.archBits, scalar.UintHex)
+		d.FieldU("vaddr", ec.archBits, scalar.UintHex)
+		d.FieldU("paddr", ec.archBits, scalar.UintHex)
 		size = d.FieldU64("filesz")
 		d.FieldU64("memsz")
 		d.FieldU64("align")
@@ -900,9 +900,9 @@ func elfDecodeProgramHeader(d *decode.D, ec elfContext) {
 						nameSz := d.FieldU32("n_namesz")
 						descSz := d.FieldU32("n_descsz")
 						if ec.typ == ET_CORE {
-							d.FieldU32("n_type", coreNoteNames, scalar.ActualHex)
+							d.FieldU32("n_type", coreNoteNames, scalar.UintHex)
 						} else {
-							d.FieldU32("n_type", scalar.ActualHex)
+							d.FieldU32("n_type", scalar.UintHex)
 						}
 						d.FieldUTF8NullFixedLen("name", int(nameSz))
 						nameAlign := d.AlignBits(4 * 8)
@@ -935,14 +935,14 @@ func elfDecodeProgramHeaders(d *decode.D, ec elfContext) {
 func elfDecodeDynamicTag(d *decode.D, ec elfContext, dc dynamicContext) {
 	dtTag := d.FieldU("tag", ec.archBits, dynamicTableMap)
 	name := "unspecified"
-	dfMapper := scalar.ActualHex
+	dfMapper := scalar.UintHex
 	if de, ok := dynamicTableMap.lookup(dtTag); ok {
 		switch de.dUn {
 		case dUnIgnored:
 			name = "ignored"
 		case dUnVal:
 			name = "val"
-			dfMapper = scalar.ActualDec
+			dfMapper = scalar.UintDec
 		case dUnPtr:
 			name = "ptr"
 		}
@@ -954,7 +954,7 @@ func elfDecodeDynamicTag(d *decode.D, ec elfContext, dc dynamicContext) {
 	case DT_HASH:
 		v := d.FieldU(name, ec.archBits, dfMapper)
 		if i, ok := ec.sectionIndexByAddr(int64(v) * 8); ok {
-			d.FieldValueU("section_index", uint64(i))
+			d.FieldValueUint("section_index", uint64(i))
 		}
 	case DT_SYMTAB,
 		DT_STRTAB,
@@ -964,7 +964,7 @@ func elfDecodeDynamicTag(d *decode.D, ec elfContext, dc dynamicContext) {
 		DT_FINI:
 		v := d.FieldU(name, ec.archBits, dfMapper)
 		if i, ok := ec.sectionIndexByAddr(int64(v) * 8); ok {
-			d.FieldValueU("section_index", uint64(i))
+			d.FieldValueUint("section_index", uint64(i))
 		}
 	default:
 		d.FieldU(name, ec.archBits, dfMapper)
@@ -1033,21 +1033,21 @@ func elfDecodeSectionHeader(d *decode.D, ec elfContext, sh sectionHeader) {
 	switch ec.archBits {
 	case 32:
 		d.FieldU32("name", strTable(ec.strTabMap[STRTAB_SHSTRTAB]))
-		typ = d.FieldU32("type", sectionHeaderTypeMap, scalar.ActualHex)
+		typ = d.FieldU32("type", sectionHeaderTypeMap, scalar.UintHex)
 		shFlags(d, ec.archBits)
-		d.FieldU("addr", ec.archBits, scalar.ActualHex)
+		d.FieldU("addr", ec.archBits, scalar.UintHex)
 		offset = int64(d.FieldU("offset", ec.archBits)) * 8
-		size = int64(d.FieldU32("size", scalar.ActualHex) * 8)
+		size = int64(d.FieldU32("size", scalar.UintHex) * 8)
 		d.FieldU32("link")
 		d.FieldU32("info")
 		d.FieldU32("addralign")
 		entSize = int64(d.FieldU32("entsize") * 8)
 	case 64:
 		d.FieldU32("name", strTable(ec.strTabMap[STRTAB_SHSTRTAB]))
-		typ = d.FieldU32("type", sectionHeaderTypeMap, scalar.ActualHex)
+		typ = d.FieldU32("type", sectionHeaderTypeMap, scalar.UintHex)
 		shFlags(d, ec.archBits)
-		d.FieldU("addr", ec.archBits, scalar.ActualHex)
-		offset = int64(d.FieldU("offset", ec.archBits, scalar.ActualHex) * 8)
+		d.FieldU("addr", ec.archBits, scalar.UintHex)
+		offset = int64(d.FieldU("offset", ec.archBits, scalar.UintHex) * 8)
 		size = int64(d.FieldU64("size") * 8)
 		d.FieldU32("link")
 		d.FieldU32("info")
@@ -1100,7 +1100,7 @@ func elfDecodeSectionHeaders(d *decode.D, ec elfContext) {
 	}
 }
 
-func elfDecode(d *decode.D, _ any) any {
+func elfDecode(d *decode.D) any {
 	var ec elfContext
 
 	d.FieldStruct("header", func(d *decode.D) { elfDecodeHeader(d, &ec) })

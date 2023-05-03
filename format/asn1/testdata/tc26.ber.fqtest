@@ -5,4 +5,4 @@ $ fq -d asn1_ber dv tc26.ber
 0x0|01                                             |.               |  tag: "boolean" (0x1) 0x0.3-0x0.7 (0.5)
 0x0|   03                                          | .              |  length: 3 0x1-0x1.7 (1)
 0x0|      00                                       |  .             |  value: false (0) 0x2-0x2.7 (1)
-0x0|         00 01|                                |   ..|          |  unknown0: raw bits 0x3-0x4.7 (2)
+0x0|         00 01|                                |   ..|          |  gap0: raw bits 0x3-0x4.7 (2)

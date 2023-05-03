@@ -9,7 +9,7 @@ $ fq -d html . /test
 }
 $ fq -d bytes -ni . all.xml multi_diff.xml multi_same.xml ns.xml simple.xml escape.xml noscript.html
 null> inputs | {name: input_filename, str: tostring} | slurp("files")
-null> spew("files") | .name, (.str | fromhtml | ., (toxml({indent: 2}) | println))
+null> spew("files") | .name, (.str | from_html | ., (to_xml({indent: 2}) | println))
 "all.xml"
 {
   "html": {
@@ -174,7 +174,7 @@ null> spew("files") | .name, (.str | fromhtml | ., (toxml({indent: 2}) | println
     <noscript></noscript>
   </head>
 </html>
-null> spew("files") | .name, (.str | fromhtml({seq: true}) | ., (toxml({indent: 2}) | println))
+null> spew("files") | .name, (.str | from_html({seq: true}) | ., (to_xml({indent: 2}) | println))
 "all.xml"
 {
   "html": {
@@ -380,7 +380,7 @@ null> spew("files") | .name, (.str | fromhtml({seq: true}) | ., (toxml({indent: 
     <a>text</a>
   </body>
 </html>
-null> spew("files") | .name, (.str | fromhtml({array: true}) | ., (toxml({indent: 2}) | println))
+null> spew("files") | .name, (.str | from_html({array: true}) | ., (to_xml({indent: 2}) | println))
 "all.xml"
 [
   "html",

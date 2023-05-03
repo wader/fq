@@ -6,4 +6,4 @@ $ fq -d asn1_ber d tc33.ber
 0x0|03                                             |.               |  tag: "bit_string" (0x3)
 0x0|   02                                          | .              |  length: 2
 0x0|      0f                                       |  .             |  unused_bits_count: 15
-0x0|         0f|                                   |   .|           |  unknown0: raw bits
+0x0|         0f|                                   |   .|           |  gap0: raw bits

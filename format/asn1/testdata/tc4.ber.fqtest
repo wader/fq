@@ -4,4 +4,4 @@ $ fq -d asn1_ber d tc4.ber
 0x0|9f                                             |.               |  class: "context" (2)
 0x0|9f                                             |.               |  form: "primitive" (0)
 0x0|9f ff ff ff ff ff ff ff ff 7f                  |..........      |  tag: 18446744073709551615
-0x0|                              ff|              |          .|    |  unknown0: raw bits
+0x0|                              ff|              |          .|    |  gap0: raw bits

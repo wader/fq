@@ -5,9 +5,7 @@ import (
 	"embed"
 	stdjson "encoding/json"
 	"errors"
-	"fmt"
 	"io"
-	"math/big"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/internal/colorjson"
@@ -22,16 +20,17 @@ import (
 var jsonFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.JSON,
-		Description: "JavaScript Object Notation",
-		ProbeOrder:  format.ProbeOrderTextJSON,
-		Groups:      []string{format.PROBE},
-		DecodeFn:    decodeJSON,
-		Functions:   []string{"_todisplay"},
-	})
+	interp.RegisterFormat(
+		format.JSON,
+		&decode.Format{
+			Description: "JavaScript Object Notation",
+			ProbeOrder:  format.ProbeOrderTextJSON,
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    decodeJSON,
+			Functions:   []string{"_todisplay"},
+		})
 	interp.RegisterFS(jsonFS)
-	interp.RegisterFunc1("_tojson", toJSON)
+	interp.RegisterFunc1("_to_json", toJSON)
 }
 
 func decodeJSONEx(d *decode.D, lines bool) any {
@@ -66,7 +65,7 @@ func decodeJSONEx(d *decode.D, lines bool) any {
 		d.Fatalf("trialing data after top-level value")
 	}
 
-	var s scalar.S
+	var s scalar.Any
 	if lines {
 		if len(vs) == 0 {
 			d.Fatalf("not lines found")
@@ -81,7 +80,7 @@ func decodeJSONEx(d *decode.D, lines bool) any {
 	return nil
 }
 
-func decodeJSON(d *decode.D, _ any) any {
+func decodeJSON(d *decode.D) any {
 	return decodeJSONEx(d, false)
 }
 
@@ -91,22 +90,20 @@ type ToJSONOpts struct {
 
 // TODO: share with interp code
 func makeEncoder(opts ToJSONOpts) *colorjson.Encoder {
-	return colorjson.NewEncoder(
-		false,
-		false,
-		opts.Indent,
-		func(v any) any {
+	return colorjson.NewEncoder(colorjson.Options{
+		Color:  false,
+		Tab:    false,
+		Indent: opts.Indent,
+		ValueFn: func(v any) any {
 			switch v := v.(type) {
 			case gojq.JQValue:
 				return v.JQValueToGoJQ()
-			case nil, bool, float64, int, string, *big.Int, map[string]any, []any:
-				return v
 			default:
-				panic(fmt.Sprintf("toValue not a JQValue value: %#v %T", v, v))
+				return v
 			}
 		},
-		colorjson.Colors{},
-	)
+		Colors: colorjson.Colors{},
+	})
 }
 
 func toJSON(_ *interp.Interp, c any, opts ToJSONOpts) any {

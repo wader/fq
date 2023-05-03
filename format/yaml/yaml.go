@@ -20,19 +20,20 @@ import (
 var yamlFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.YAML,
-		Description: "YAML Ain't Markup Language",
-		ProbeOrder:  format.ProbeOrderTextFuzzy,
-		Groups:      []string{format.PROBE},
-		DecodeFn:    decodeYAML,
-		Functions:   []string{"_todisplay"},
-	})
+	interp.RegisterFormat(
+		format.YAML,
+		&decode.Format{
+			Description: "YAML Ain't Markup Language",
+			ProbeOrder:  format.ProbeOrderTextFuzzy,
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    decodeYAML,
+			Functions:   []string{"_todisplay"},
+		})
 	interp.RegisterFS(yamlFS)
-	interp.RegisterFunc0("toyaml", toYAML)
+	interp.RegisterFunc0("to_yaml", toYAML)
 }
 
-func decodeYAML(d *decode.D, _ any) any {
+func decodeYAML(d *decode.D) any {
 	br := d.RawLen(d.Len())
 	var r any
 
@@ -44,7 +45,7 @@ func decodeYAML(d *decode.D, _ any) any {
 		d.Fatalf("trialing data after top-level value")
 	}
 
-	var s scalar.S
+	var s scalar.Any
 	s.Actual = gojqex.Normalize(r)
 
 	switch s.Actual.(type) {

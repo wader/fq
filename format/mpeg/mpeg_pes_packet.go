@@ -11,11 +11,12 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.MPEG_PES_PACKET,
-		Description: "MPEG Packetized elementary stream packet",
-		DecodeFn:    pesPacketDecode,
-	})
+	interp.RegisterFormat(
+		format.MPEG_PES_Packet,
+		&decode.Format{
+			Description: "MPEG Packetized elementary stream packet",
+			DecodeFn:    pesPacketDecode,
+		})
 }
 
 const (
@@ -30,50 +31,50 @@ type subStreamPacket struct {
 	buf    []byte
 }
 
-var startAndStreamNames = scalar.URangeToScalar{
-	{Range: [2]uint64{0x00, 0x00}, S: scalar.S{Sym: "picture"}},
-	{Range: [2]uint64{0x01, 0xaf}, S: scalar.S{Sym: "slice"}},
-	{Range: [2]uint64{0xb0, 0xb1}, S: scalar.S{Sym: "reserved"}},
-	{Range: [2]uint64{0xb2, 0xb2}, S: scalar.S{Sym: "user_data"}},
-	{Range: [2]uint64{0xb3, 0xb3}, S: scalar.S{Sym: "sequence_header"}},
-	{Range: [2]uint64{0xb4, 0xb4}, S: scalar.S{Sym: "sequence_error"}},
-	{Range: [2]uint64{0xb5, 0xb5}, S: scalar.S{Sym: "extension"}},
-	{Range: [2]uint64{0xb6, 0xb6}, S: scalar.S{Sym: "reserved"}},
-	{Range: [2]uint64{0xb7, 0xb7}, S: scalar.S{Sym: "sequence_end"}},
-	{Range: [2]uint64{0xb8, 0xb8}, S: scalar.S{Sym: "group_of_pictures"}},
-	{Range: [2]uint64{0xb9, 0xb9}, S: scalar.S{Sym: "program_end"}},
-	{Range: [2]uint64{0xba, 0xba}, S: scalar.S{Sym: "pack_header"}},
-	{Range: [2]uint64{0xbb, 0xbb}, S: scalar.S{Sym: "system_header"}},
-	{Range: [2]uint64{0xbc, 0xbc}, S: scalar.S{Sym: "program_stream_map"}},
-	{Range: [2]uint64{0xbd, 0xbd}, S: scalar.S{Sym: "private_stream1"}},
-	{Range: [2]uint64{0xbe, 0xbe}, S: scalar.S{Sym: "padding_stream"}},
-	{Range: [2]uint64{0xbf, 0xbf}, S: scalar.S{Sym: "private_stream2"}},
-	{Range: [2]uint64{0xc0, 0xdf}, S: scalar.S{Sym: "audio_stream"}},
-	{Range: [2]uint64{0xe0, 0xef}, S: scalar.S{Sym: "video_stream"}},
-	{Range: [2]uint64{0xf0, 0xf0}, S: scalar.S{Sym: "ecm_stream"}},
-	{Range: [2]uint64{0xf1, 0xf1}, S: scalar.S{Sym: "emm_stream"}},
-	{Range: [2]uint64{0xf2, 0xf2}, S: scalar.S{Sym: "itu_t_rec_h_222_0"}},
-	{Range: [2]uint64{0xf3, 0xf3}, S: scalar.S{Sym: "iso_iec_13522_stream"}},
-	{Range: [2]uint64{0xf4, 0xf4}, S: scalar.S{Sym: "itu_t_rec_h_222_1_type_a"}},
-	{Range: [2]uint64{0xf5, 0xf5}, S: scalar.S{Sym: "itu_t_rec_h_222_1_type_b"}},
-	{Range: [2]uint64{0xf6, 0xf6}, S: scalar.S{Sym: "itu_t_rec_h_222_1_type_c"}},
-	{Range: [2]uint64{0xf7, 0xf7}, S: scalar.S{Sym: "itu_t_rec_h_222_1_type_d"}},
-	{Range: [2]uint64{0xf8, 0xf8}, S: scalar.S{Sym: "itu_t_rec_h_222_1_type_e"}},
-	{Range: [2]uint64{0xf9, 0xf9}, S: scalar.S{Sym: "ancillary_stream"}},
-	{Range: [2]uint64{0xfa, 0xfe}, S: scalar.S{Sym: "reserved"}},
-	{Range: [2]uint64{0xff, 0xff}, S: scalar.S{Sym: "program_stream_directory"}},
+var startAndStreamNames = scalar.UintRangeToScalar{
+	{Range: [2]uint64{0x00, 0x00}, S: scalar.Uint{Sym: "picture"}},
+	{Range: [2]uint64{0x01, 0xaf}, S: scalar.Uint{Sym: "slice"}},
+	{Range: [2]uint64{0xb0, 0xb1}, S: scalar.Uint{Sym: "reserved"}},
+	{Range: [2]uint64{0xb2, 0xb2}, S: scalar.Uint{Sym: "user_data"}},
+	{Range: [2]uint64{0xb3, 0xb3}, S: scalar.Uint{Sym: "sequence_header"}},
+	{Range: [2]uint64{0xb4, 0xb4}, S: scalar.Uint{Sym: "sequence_error"}},
+	{Range: [2]uint64{0xb5, 0xb5}, S: scalar.Uint{Sym: "extension"}},
+	{Range: [2]uint64{0xb6, 0xb6}, S: scalar.Uint{Sym: "reserved"}},
+	{Range: [2]uint64{0xb7, 0xb7}, S: scalar.Uint{Sym: "sequence_end"}},
+	{Range: [2]uint64{0xb8, 0xb8}, S: scalar.Uint{Sym: "group_of_pictures"}},
+	{Range: [2]uint64{0xb9, 0xb9}, S: scalar.Uint{Sym: "program_end"}},
+	{Range: [2]uint64{0xba, 0xba}, S: scalar.Uint{Sym: "pack_header"}},
+	{Range: [2]uint64{0xbb, 0xbb}, S: scalar.Uint{Sym: "system_header"}},
+	{Range: [2]uint64{0xbc, 0xbc}, S: scalar.Uint{Sym: "program_stream_map"}},
+	{Range: [2]uint64{0xbd, 0xbd}, S: scalar.Uint{Sym: "private_stream1"}},
+	{Range: [2]uint64{0xbe, 0xbe}, S: scalar.Uint{Sym: "padding_stream"}},
+	{Range: [2]uint64{0xbf, 0xbf}, S: scalar.Uint{Sym: "private_stream2"}},
+	{Range: [2]uint64{0xc0, 0xdf}, S: scalar.Uint{Sym: "audio_stream"}},
+	{Range: [2]uint64{0xe0, 0xef}, S: scalar.Uint{Sym: "video_stream"}},
+	{Range: [2]uint64{0xf0, 0xf0}, S: scalar.Uint{Sym: "ecm_stream"}},
+	{Range: [2]uint64{0xf1, 0xf1}, S: scalar.Uint{Sym: "emm_stream"}},
+	{Range: [2]uint64{0xf2, 0xf2}, S: scalar.Uint{Sym: "itu_t_rec_h_222_0"}},
+	{Range: [2]uint64{0xf3, 0xf3}, S: scalar.Uint{Sym: "iso_iec_13522_stream"}},
+	{Range: [2]uint64{0xf4, 0xf4}, S: scalar.Uint{Sym: "itu_t_rec_h_222_1_type_a"}},
+	{Range: [2]uint64{0xf5, 0xf5}, S: scalar.Uint{Sym: "itu_t_rec_h_222_1_type_b"}},
+	{Range: [2]uint64{0xf6, 0xf6}, S: scalar.Uint{Sym: "itu_t_rec_h_222_1_type_c"}},
+	{Range: [2]uint64{0xf7, 0xf7}, S: scalar.Uint{Sym: "itu_t_rec_h_222_1_type_d"}},
+	{Range: [2]uint64{0xf8, 0xf8}, S: scalar.Uint{Sym: "itu_t_rec_h_222_1_type_e"}},
+	{Range: [2]uint64{0xf9, 0xf9}, S: scalar.Uint{Sym: "ancillary_stream"}},
+	{Range: [2]uint64{0xfa, 0xfe}, S: scalar.Uint{Sym: "reserved"}},
+	{Range: [2]uint64{0xff, 0xff}, S: scalar.Uint{Sym: "program_stream_directory"}},
 }
 
-var mpegVersion = scalar.UToDescription{
+var mpegVersion = scalar.UintMapDescription{
 	0b01: "MPEG2",
 	0b10: "MPEG1",
 }
 
-func pesPacketDecode(d *decode.D, _ any) any {
+func pesPacketDecode(d *decode.D) any {
 	var v any
 
-	d.FieldU24("prefix", d.AssertU(0b0000_0000_0000_0000_0000_0001), scalar.ActualBin)
-	startCode := d.FieldU8("start_code", startAndStreamNames, scalar.ActualHex)
+	d.FieldU24("prefix", d.UintAssert(0b0000_0000_0000_0000_0000_0001), scalar.UintBin)
+	startCode := d.FieldU8("start_code", startAndStreamNames, scalar.UintHex)
 
 	switch {
 	case startCode == sequenceHeader:
@@ -97,7 +98,7 @@ func pesPacketDecode(d *decode.D, _ any) any {
 
 		}
 	case startCode == packHeader:
-		isMPEG2 := d.PeekBits(2) == 0b01
+		isMPEG2 := d.PeekUintBits(2) == 0b01
 		if isMPEG2 {
 			d.FieldU2("marker_bits0", mpegVersion)
 		} else {
@@ -114,7 +115,7 @@ func pesPacketDecode(d *decode.D, _ any) any {
 		}
 		d.FieldU1("marker_bits4")
 		scr := scr0<<30 | scr1<<15 | scr2
-		d.FieldValueU("scr", scr)
+		d.FieldValueUint("scr", scr)
 		d.FieldU22("mux_rate")
 		d.FieldU1("marker_bits5")
 		if isMPEG2 {
@@ -140,7 +141,7 @@ func pesPacketDecode(d *decode.D, _ any) any {
 		d.FieldU1("packet_rate_restriction_flag")
 		d.FieldU7("reserved")
 		d.FieldArray("stream_bound_entries", func(d *decode.D) {
-			for d.PeekBits(1) == 1 {
+			for d.PeekUintBits(1) == 1 {
 				d.FieldStruct("stream_bound_entry", func(d *decode.D) {
 					d.FieldU8("stream_id")
 					d.FieldU2("skip0")

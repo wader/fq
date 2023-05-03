@@ -11,15 +11,15 @@ mp3> grep(44100, "ID", "^ID3$", "^ID.?$", "Info", "magic", "\u00ff", [0x49, 0x44
 0x1d0|20 d4 29 52 98 c8 c8 f9 13 80 40 24 bc 91 23 42| .)R......@$..#B|
 *    |until 0x283.7 (end) (188)                      |                |
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|49 44 33                                       |ID3             |.headers[0].magic: "ID3" (valid)
+0x0|49 44 33                                       |ID3             |.headers[0].header.magic: "ID3" (valid)
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|49 44 33                                       |ID3             |.headers[0].magic: "ID3" (valid)
+0x0|49 44 33                                       |ID3             |.headers[0].header.magic: "ID3" (valid)
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|49 44 33                                       |ID3             |.headers[0].magic: "ID3" (valid)
+0x0|49 44 33                                       |ID3             |.headers[0].header.magic: "ID3" (valid)
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x40|      49 6e 66 6f                              |  Info          |.frames[0].tags.header: "Info"
+0x40|      49 6e 66 6f                              |  Info          |.frames[0].tag.header: "Info" (valid)
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|49 44 33                                       |ID3             |.headers[0].magic: "ID3" (valid)
+0x0|49 44 33                                       |ID3             |.headers[0].header.magic: "ID3" (valid)
 mp3> vgrep(44100, "ID", "^ID3$", "^ID.?$", "Info", "magic", "\u00ff", [0x49, 0x44])
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x20|                                             40|               @|.frames[0].header.sample_rate: 44100 (0)
@@ -28,31 +28,31 @@ mp3> vgrep(44100, "ID", "^ID3$", "^ID.?$", "Info", "magic", "\u00ff", [0x49, 0x4
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x1b0|               52                              |     R          |.frames[2].header.sample_rate: 44100 (0)
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|49 44 33                                       |ID3             |.headers[0].magic: "ID3" (valid)
+0x0|49 44 33                                       |ID3             |.headers[0].header.magic: "ID3" (valid)
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|49 44 33                                       |ID3             |.headers[0].magic: "ID3" (valid)
+0x0|49 44 33                                       |ID3             |.headers[0].header.magic: "ID3" (valid)
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|49 44 33                                       |ID3             |.headers[0].magic: "ID3" (valid)
+0x0|49 44 33                                       |ID3             |.headers[0].header.magic: "ID3" (valid)
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x40|      49 6e 66 6f                              |  Info          |.frames[0].tags.header: "Info"
+0x40|      49 6e 66 6f                              |  Info          |.frames[0].tag.header: "Info" (valid)
 mp3> fgrep(44100, "ID", "^ID3$", "^ID.?$", "Info", "magic", "\u00ff", [0x49, 0x44])
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|49 44 33                                       |ID3             |.headers[0].magic: "ID3" (valid)
+0x0|49 44 33                                       |ID3             |.headers[0].header.magic: "ID3" (valid)
 mp3> bgrep(44100, "ID", "^ID3$", "^ID.?$", "Info", "magic", "\u00ff", [0x49, 0x44])
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x1c0|                        11 4b 36 4a 08 83 58 c9|        .K6J..X.|.frames[2].audio_data: raw bits
 0x1d0|20 d4 29 52 98 c8 c8 f9 13 80 40 24 bc 91 23 42| .)R......@$..#B|
 *    |until 0x283.7 (end) (188)                      |                |
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|49 44 33                                       |ID3             |.headers[0].magic: "ID3" (valid)
+0x0|49 44 33                                       |ID3             |.headers[0].header.magic: "ID3" (valid)
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|49 44 33                                       |ID3             |.headers[0].magic: "ID3" (valid)
+0x0|49 44 33                                       |ID3             |.headers[0].header.magic: "ID3" (valid)
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|49 44 33                                       |ID3             |.headers[0].magic: "ID3" (valid)
+0x0|49 44 33                                       |ID3             |.headers[0].header.magic: "ID3" (valid)
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x40|      49 6e 66 6f                              |  Info          |.frames[0].tags.header: "Info"
+0x40|      49 6e 66 6f                              |  Info          |.frames[0].tag.header: "Info" (valid)
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|49 44 33                                       |ID3             |.headers[0].magic: "ID3" (valid)
+0x0|49 44 33                                       |ID3             |.headers[0].header.magic: "ID3" (valid)
 mp3> "64ff65ff66" | fromhex | bgrep("\u00ff"; "b")
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|64 ff 65 ff 66|                                |d.e.f|          |.: raw bits 0x0-0x4.7 (5)
@@ -65,11 +65,7 @@ mp3> grep_by(. == 44100)
 0x1b0|               52                              |     R          |.frames[2].header.sample_rate: 44100 (0)
 mp3> grep_by(format == "id3v2")
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.headers[0]{}: header (id3v2)
-0x00|49 44 33                                       |ID3             |  magic: "ID3" (valid)
-0x00|         04                                    |   .            |  version: 4
-0x00|            00                                 |    .           |  revision: 0
-0x00|               00                              |     .          |  flags{}:
-0x00|                  00 00 00 23                  |      ...#      |  size: 35
+0x00|49 44 33 04 00 00 00 00 00 23                  |ID3......#      |  header{}:
 0x00|                              54 53 53 45 00 00|          TSSE..|  frames[0:1]:
 0x10|00 0f 00 00 03 4c 61 76 66 35 38 2e 34 35 2e 31|.....Lavf58.45.1|
 0x20|30 30 00                                       |00.             |

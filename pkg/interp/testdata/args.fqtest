@@ -2,6 +2,10 @@ $ fq
 exitcode: 2
 stderr:
 Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
+$ _STDIN_IS_TERMINAL=1 fq type
+"number"
+stdin:
+123
 $ fq -h
 fq - jq for binary formats
 Tool, language and decoders for working with binary data.
@@ -12,35 +16,36 @@ Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
 Example usages:
   fq . file
   fq d file
+  fq -V '.path[1].value' file
   fq tovalue file
-  fq -r totoml file.yml
+  fq -r to_toml file.yml
   fq -s -d html 'map(.html.head.title?)' *.html
   cat file.cbor | fq -d cbor torepr
   fq 'grep("^main$") | parent' /bin/ls
-  fq -r 'grep_by(.protocol=="icmp").source_ip | tovalue' *.pcap
   fq -i
 
---arg NAME VALUE        Set variable $NAME to string VALUE
---argdecode NAME PATH   Set variable $NAME to decode of PATH
---argjson NAME JSON     Set variable $NAME to JSON
---color-output,-C       Force color output
---compact-output,-c     Compact output
---decode,-d NAME        Decode format (probe)
---from-file,-f PATH     Read EXPR from file
---help,-h [TOPIC]       Show help for TOPIC (ex: --help, --help formats)
---include-path,-L PATH  Include search path
---join-output,-j        No newline between outputs
---monochrome-output,-M  Force monochrome output
---null-input,-n         Null input (use input and inputs functions to read)
---null-output,-0        Null byte between outputs
---option,-o KEY=VALUE   Set option (ex: -o color=true, see --help options)
---raw-file NAME PATH    Set variable $NAME to string content of file
---raw-input,-R          Read raw input strings (don't decode)
---raw-output,-r         Raw string output (without quotes)
---repl,-i               Interactive REPL
---slurp,-s              Slurp all inputs into an array or string (-Rs)
---unicode-output,-U     Force unicode output
---version,-v            Show version
+--arg NAME VALUE             Set variable $NAME to string VALUE
+--argdecode NAME PATH        Set variable $NAME to decode of PATH
+--argjson NAME JSON          Set variable $NAME to JSON
+--color-output,-C            Force color output
+--compact-output,-c          Compact output
+--decode,-d NAME             Decode format or group (probe)
+--from-file,-f PATH          Read EXPR from file
+--help,-h [TOPIC]            Show help for TOPIC (ex: -h formats, -h mp4)
+--include-path,-L PATH       Include search path
+--join-output,-j             No newline between outputs
+--monochrome-output,-M       Force monochrome output
+--null-input,-n              Null input (use input and inputs functions to read)
+--null-output,-0             Null byte between outputs
+--option,-o KEY=VALUE/@PATH  Set option (ex: -o color=true, see --help options)
+--raw-file NAME PATH         Set variable $NAME to string content of file
+--raw-input,-R               Read raw input strings (don't decode)
+--raw-output,-r              Raw string output (without quotes)
+--repl,-i                    Interactive REPL
+--slurp,-s                   Slurp all inputs into an array or string (-Rs)
+--unicode-output,-U          Force unicode output
+--value-output,-V            Output JSON value (-Vr for raw string)
+--version,-v                 Show version
 $ fq -i
 null> ^D
 $ fq -i . test.mp3
@@ -67,19 +72,20 @@ arg                 []
 argdecode           []
 argjson             []
 array_truncate      50
-bits_format         snippet
+bits_format         string
 byte_colors         0-255=brightwhite,0=brightblack,32-126:9-13=white
 color               false
 colors              array=white,dumpaddr=yellow,dumpheader=yellow+underline,error=brightred,false=yellow,index=white,null=brightblack,number=cyan,object=white,objectkey=brightblue,prompt_repl_level=brightblack,prompt_value=white,string=green,true=yellow,value=white
 compact             false
 completion_timeout  10
-decode_format       probe
+decode_group        probe
 decode_progress     false
 depth               0
 display_bytes       16
 expr                .
 expr_eval_path      arg
 expr_file           
+expr_given          false
 filenames           [null]
 force               false
 include_path        
@@ -93,9 +99,11 @@ repl                false
 show_formats        false
 show_help           options
 sizebase            10
+skip_gaps           false
 slurp               false
 string_input        false
 unicode             false
+value_output        false
 verbose             false
 width               135
 $ fq -X

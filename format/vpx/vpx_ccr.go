@@ -9,14 +9,15 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.VPX_CCR,
-		Description: "VPX Codec Configuration Record",
-		DecodeFn:    vpxCCRDecode,
-	})
+	interp.RegisterFormat(
+		format.VPX_CCR,
+		&decode.Format{
+			Description: "VPX Codec Configuration Record",
+			DecodeFn:    vpxCCRDecode,
+		})
 }
 
-func vpxCCRDecode(d *decode.D, _ any) any {
+func vpxCCRDecode(d *decode.D) any {
 	d.FieldU8("profile")
 	d.FieldU8("level", vpxLevelNames)
 	d.FieldU4("bit_depth")

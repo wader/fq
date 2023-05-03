@@ -14,15 +14,19 @@ import (
 var ipv6IpPacketGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.IPV6_PACKET,
-		Description: "Internet protocol v6 packet",
-		Groups:      []string{format.INET_PACKET},
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.IP_PACKET}, Group: &ipv6IpPacketGroup},
-		},
-		DecodeFn: decodeIPv6,
-	})
+	interp.RegisterFormat(
+		format.IPv6Packet,
+		&decode.Format{
+			Description: "Internet protocol v6 packet",
+			Groups: []*decode.Group{
+				format.INET_Packet,
+				format.Link_Frame,
+			},
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.IP_Packet}, Out: &ipv6IpPacketGroup},
+			},
+			DecodeFn: decodeIPv6,
+		})
 }
 
 const (
@@ -41,7 +45,7 @@ const (
 // 253	Use for experimentation and testing	[RFC3692][RFC4727]
 // 254	Use for experimentation and testing	[RFC3692][RFC4727]
 
-var nextHeaderNames = scalar.UToSymStr{
+var nextHeaderNames = scalar.UintMapSymStr{
 	nextHeaderHopByHop:                     "hop_by_hop",
 	nextHeaderRouting:                      "routing",
 	nextHeaderFragment:                     "fragment",
@@ -53,11 +57,11 @@ var nextHeaderNames = scalar.UToSymStr{
 	nextHeaderShim6:                        "shim6",
 }
 
-var nextHeaderMap = scalar.Fn(func(s scalar.S) (scalar.S, error) {
-	if isIpv6Option(s.ActualU()) {
-		return nextHeaderNames.MapScalar(s)
+var nextHeaderMap = scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
+	if isIpv6Option(s.Actual) {
+		return nextHeaderNames.MapUint(s)
 	}
-	return format.IPv4ProtocolMap.MapScalar(s)
+	return format.IPv4ProtocolMap.MapUint(s)
 })
 
 func isIpv6Option(n uint64) bool {
@@ -78,7 +82,7 @@ func isIpv6Option(n uint64) bool {
 }
 
 // from https://www.iana.org/assignments/ipv6-parameters/ipv6-parameters.xhtml#ipv6-parameters-2
-var hopByHopTypeNames = scalar.UToSymStr{
+var hopByHopTypeNames = scalar.UintMapSymStr{
 	0x00: "pad1",
 	0x01: "padn",
 	0xc2: "jumbo_payload",
@@ -99,21 +103,25 @@ var hopByHopTypeNames = scalar.UToSymStr{
 	0x31: "ioam",
 }
 
-var mapUToIPv6Sym = scalar.Fn(func(s scalar.S) (scalar.S, error) {
+var mapUToIPv6Sym = scalar.BitBufFn(func(s scalar.BitBuf) (scalar.BitBuf, error) {
 	b := &bytes.Buffer{}
-	if _, err := bitioex.CopyBits(b, s.ActualBitBuf()); err != nil {
+	if _, err := bitioex.CopyBits(b, s.Actual); err != nil {
 		return s, err
 	}
 	s.Sym = net.IP(b.Bytes()).String()
 	return s, nil
 })
 
-func decodeIPv6(d *decode.D, in any) any {
-	if ipi, ok := in.(format.InetPacketIn); ok && ipi.EtherType != format.EtherTypeIPv6 {
+func decodeIPv6(d *decode.D) any {
+	var ipi format.INET_Packet_In
+	var lfi format.Link_Frame_In
+	if d.ArgAs(&ipi) && ipi.EtherType != format.EtherTypeIPv6 {
 		d.Fatalf("incorrect ethertype %d", ipi.EtherType)
+	} else if d.ArgAs(&lfi) && lfi.Type != format.LinkTypeIPv6 && lfi.Type != format.LinkTypeRAW {
+		d.Fatalf("incorrect linktype %d", lfi.Type)
 	}
 
-	d.FieldU4("version")
+	d.FieldU4("version", d.UintAssert(6))
 	d.FieldU6("ds")
 	d.FieldU2("ecn")
 	d.FieldU20("flow_label")
@@ -165,8 +173,8 @@ func decodeIPv6(d *decode.D, in any) any {
 	d.FieldFormatOrRawLen(
 		"payload",
 		payloadLen,
-		ipv4IpPacketGroup,
-		format.IPPacketIn{Protocol: int(nextHeader)},
+		&ipv4IpPacketGroup,
+		format.IP_Packet_In{Protocol: int(nextHeader)},
 	)
 
 	return nil

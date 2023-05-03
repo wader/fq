@@ -1,11 +1,6 @@
 def protobuf_to_value:
   .fields | map({(.name | tostring): (.enum // .value)}) | add;
 
-# hack to parse just a box
-# <binary> | mp4_box
-def mp4_box:
-  [0, 0, 0, 16, "ftyp", "isom", 0, 0 , 2 , 0, .] | mp4.boxes;
-
 # converted from https://github.com/FFmpeg/FFmpeg/blob/870bfe16a12bf09dca3a4ae27ef6f81a2de80c40/libavutil/display.c av_display_rotation_get
 def mp4_matrix_structure_rotation:
   ( .a as $s0
@@ -41,8 +36,8 @@ def urldecode:
 # ex: .frames | changes(.header.sample_rate)
 def changes(f): streaks_by(f)[].[0];
 
-def toradix62sp: toradix(62; "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
-def fromradix62sp: fromradix(62; {
+def to_radix62sp: to_radix(62; "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+def from_radix62sp: from_radix(62; {
     "0": 0, "1": 1, "2": 2, "3": 3,"4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9,
     "a": 10, "b": 11, "c": 12, "d": 13, "e": 14, "f": 15, "g": 16,
     "h": 17, "i": 18, "j": 19, "k": 20, "l": 21, "m": 22, "n": 23,

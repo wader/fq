@@ -8,21 +8,22 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var hevcVPSFormat decode.Group
-var hevcPPSFormat decode.Group
-var hevcSPSFormat decode.Group
+var hevcVPSGroup decode.Group
+var hevcPPSGroup decode.Group
+var hevcSPSGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.HEVC_NALU,
-		Description: "H.265/HEVC Network Access Layer Unit",
-		DecodeFn:    hevcNALUDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.HEVC_VPS}, Group: &hevcVPSFormat},
-			{Names: []string{format.HEVC_PPS}, Group: &hevcPPSFormat},
-			{Names: []string{format.HEVC_SPS}, Group: &hevcSPSFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.HEVC_NALU,
+		&decode.Format{
+			Description: "H.265/HEVC Network Access Layer Unit",
+			DecodeFn:    hevcNALUDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.HEVC_VPS}, Out: &hevcVPSGroup},
+				{Groups: []*decode.Group{format.HEVC_PPS}, Out: &hevcPPSGroup},
+				{Groups: []*decode.Group{format.HEVC_SPS}, Out: &hevcSPSGroup},
+			},
+		})
 }
 
 const (
@@ -31,7 +32,7 @@ const (
 	hevcNALNUTPPS = 34
 )
 
-var hevcNALNames = scalar.UToSymStr{
+var hevcNALNames = scalar.UintMapSymStr{
 	0:             "TRAIL_N",
 	1:             "TRAIL_R",
 	2:             "TSA_N",
@@ -82,7 +83,7 @@ var hevcNALNames = scalar.UToSymStr{
 	47:            "RSV_NVCL47",
 }
 
-func hevcNALUDecode(d *decode.D, _ any) any {
+func hevcNALUDecode(d *decode.D) any {
 	d.FieldBool("forbidden_zero_bit")
 	nalType := d.FieldU6("nal_unit_type", hevcNALNames)
 	d.FieldU6("nuh_layer_id")
@@ -91,11 +92,11 @@ func hevcNALUDecode(d *decode.D, _ any) any {
 
 	switch nalType {
 	case hevcNALNUTVPS:
-		d.FieldFormatBitBuf("vps", unescapedBR, hevcVPSFormat, nil)
+		d.FieldFormatBitBuf("vps", unescapedBR, &hevcVPSGroup, nil)
 	case hevcNALNUTPPS:
-		d.FieldFormatBitBuf("pps", unescapedBR, hevcPPSFormat, nil)
+		d.FieldFormatBitBuf("pps", unescapedBR, &hevcPPSGroup, nil)
 	case hevcNALNUTSPS:
-		d.FieldFormatBitBuf("sps", unescapedBR, hevcSPSFormat, nil)
+		d.FieldFormatBitBuf("sps", unescapedBR, &hevcSPSGroup, nil)
 	}
 	d.FieldRawLen("data", d.BitsLeft())
 

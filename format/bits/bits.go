@@ -13,9 +13,9 @@ import (
 //go:embed bytes.md
 var bitsFS embed.FS
 
-func decodeBits(unit int) func(d *decode.D, _ any) any {
-	return func(d *decode.D, _ any) any {
-		var s scalar.S
+func decodeBits(unit int) func(d *decode.D) any {
+	return func(d *decode.D) any {
+		var s scalar.Any
 		b, _ := interp.NewBinaryFromBitReader(d.BitBufRange(0, d.Len()), unit, 0)
 		s.Actual = b
 		d.Value.V = &s
@@ -25,17 +25,19 @@ func decodeBits(unit int) func(d *decode.D, _ any) any {
 }
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:               format.BITS,
-		Description:        "Raw bits",
-		DecodeFn:           decodeBits(1),
-		SkipDecodeFunction: true, // skip add bits and frombits function
-	})
-	interp.RegisterFormat(decode.Format{
-		Name:               format.BYTES,
-		Description:        "Raw bytes",
-		DecodeFn:           decodeBits(8),
-		SkipDecodeFunction: true, // skip add bytes and frombytes function
-	})
+	interp.RegisterFormat(
+		format.Bits,
+		&decode.Format{
+			Description:        "Raw bits",
+			DecodeFn:           decodeBits(1),
+			SkipDecodeFunction: true, // skip add bits and frombits function
+		})
+	interp.RegisterFormat(
+		format.Bytes,
+		&decode.Format{
+			Description:        "Raw bytes",
+			DecodeFn:           decodeBits(8),
+			SkipDecodeFunction: true, // skip add bytes and frombytes function
+		})
 	interp.RegisterFS(bitsFS)
 }

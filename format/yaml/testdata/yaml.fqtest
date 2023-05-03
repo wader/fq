@@ -8,7 +8,7 @@ $ fq . probe.yaml
   }
 }
 # TODO: add uint64 norm test
-$ fq -rRs 'fromjson[] | (try (toyaml | ., fromyaml) catch .), "----"' variants.json
+$ fq -rRs 'fromjson[] | (try (to_yaml | ., from_yaml) catch .), "----"' variants.json
 null
 
 error at position 0x5: root not object or array

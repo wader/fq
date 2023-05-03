@@ -1,3 +1,3 @@
-def tocsv($opts): _tocsv($opts);
-def tocsv: _tocsv(null);
+def to_csv($opts): _to_csv($opts);
+def to_csv: _to_csv(null);
 def _csv__todisplay: tovalue;

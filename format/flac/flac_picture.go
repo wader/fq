@@ -7,13 +7,13 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var images decode.Group
+var imageGroup decode.Group
 
-var pictureTypeNames = scalar.UToSymStr{
+var pictureTypeNames = scalar.UintMapSymStr{
 	0:  "Other",
 	1:  "32x32_pixels",
 	2:  "other_file_icon",
-	3:  "cover_front)",
+	3:  "cover_front",
 	4:  "cover_back",
 	5:  "leaflet_page",
 	6:  "media",
@@ -34,17 +34,18 @@ var pictureTypeNames = scalar.UToSymStr{
 }
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.FLAC_PICTURE,
-		Description: "FLAC metadatablock picture",
-		DecodeFn:    pictureDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.IMAGE}, Group: &images},
-		},
-	})
+	interp.RegisterFormat(
+		format.FLAC_Picture,
+		&decode.Format{
+			Description: "FLAC metadatablock picture",
+			DecodeFn:    pictureDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.Image}, Out: &imageGroup},
+			},
+		})
 }
 
-func pictureDecode(d *decode.D, _ any) any {
+func pictureDecode(d *decode.D) any {
 	lenStr := func(name string) {
 		l := d.FieldU32(name + "_length")
 		d.FieldUTF8(name, int(l))
@@ -57,7 +58,7 @@ func pictureDecode(d *decode.D, _ any) any {
 	d.FieldU32("color_depth")
 	d.FieldU32("number_of_index_colors")
 	pictureLen := d.FieldU32("picture_length")
-	d.FieldFormatOrRawLen("picture_data", int64(pictureLen)*8, images, nil)
+	d.FieldFormatOrRawLen("picture_data", int64(pictureLen)*8, &imageGroup, nil)
 
 	return nil
 }

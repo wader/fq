@@ -2,10 +2,10 @@ Dockerfile
 Makefile
 go.mod
 
-github-golangci-lint /GOLANGCILINT_VERSION: ([\d.]+)/ git:https://github.com/golangci/golangci-lint.git|^1
+github-golangci-lint /GOLANGCILINT_VERSION: "([\d.]+)"/ git:https://github.com/golangci/golangci-lint.git|^1
 github-golangci-lint link "Release notes" https://github.com/golangci/golangci-lint/releases/tag/v$LATEST
 
-github-go-version /go-version: ([\d.]+)/ git:https://github.com/actions/go-versions.git|/(.*)-.*/$1/|^1
+github-go-version /go-version: "([\d.]+)"/ git:https://github.com/actions/go-versions.git|/(.*)-.*/$1/|^1
 
 .github/workflows/ci.yml
 .github/workflows/release.yml

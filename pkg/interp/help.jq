@@ -70,7 +70,7 @@ def _help_format_enrich($arg0; $f; $include_basic):
           , shell: "\($arg0) -d \($f.name)\($f.decode_in_arg | to_entries | map(" -o ", .key, "=", (.value | tojson)) | join("")) . file"
           }
         , { comment: "Decode value as \($f.name)"
-          , expr: "\($f.name)(\($f.decode_in_arg | tojq))"
+          , expr: "\($f.name)(\($f.decode_in_arg | to_jq))"
           }
         ]
     end
@@ -84,12 +84,12 @@ def _help($arg0; $topic):
       ( "Example usages:"
       , "  fq . file"
       , "  fq d file"
+      , "  fq -V '.path[1].value' file"
       , "  fq tovalue file"
-      , "  fq -r totoml file.yml"
+      , "  fq -r to_toml file.yml"
       , "  fq -s -d html 'map(.html.head.title?)' *.html"
       , "  cat file.cbor | fq -d cbor torepr"
       , "  fq 'grep(\"^main$\") | parent' /bin/ls"
-      , "  fq -r 'grep_by(.protocol==\"icmp\").source_ip | tovalue' *.pcap"
       , "  fq -i"
       )
     elif . == "banner" then
@@ -144,7 +144,7 @@ def _help($arg0; $topic):
       , if $f.decode_in_arg then
           ( $f.decode_in_arg
           | to_entries
-          | map(["  \(.key)=\(.value)  ", $f.decode_in_arg_doc[.key]])
+          | map(["  \(.key)=\(.value | tojson)  ", $f.decode_in_arg_doc[.key]])
           | "Options"
           , "======="
           , ""
@@ -174,8 +174,7 @@ def _help($arg0; $topic):
           end
         )
       , ""
-      # TODO: [:-1] hack to remove extra newline as we use println later
-      , if $doc then $doc | markdown | _markdown_to_text(options.width; -2)[:-1]
+      , if $doc then $doc | markdown | _markdown_to_text(options.width; -2)
         else empty
         end
       )

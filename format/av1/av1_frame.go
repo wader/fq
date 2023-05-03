@@ -10,24 +10,25 @@ import (
 	"github.com/wader/fq/pkg/interp"
 )
 
-var obuFormat decode.Group
+var av1FrameObuGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.AV1_FRAME,
-		Description: "AV1 frame",
-		DecodeFn:    frameDecode,
-		RootArray:   true,
-		RootName:    "frame",
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.AV1_OBU}, Group: &obuFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.AV1_Frame,
+		&decode.Format{
+			Description: "AV1 frame",
+			DecodeFn:    frameDecode,
+			RootArray:   true,
+			RootName:    "frame",
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.AV1_OBU}, Out: &av1FrameObuGroup},
+			},
+		})
 }
 
-func frameDecode(d *decode.D, _ any) any {
+func frameDecode(d *decode.D) any {
 	for d.NotEnd() {
-		d.FieldFormat("obu", obuFormat, nil)
+		d.FieldFormat("obu", &av1FrameObuGroup, nil)
 	}
 
 	return nil

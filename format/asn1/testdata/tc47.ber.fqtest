@@ -18,4 +18,4 @@ $ fq -d asn1_ber d tc47.ber
 0x00|                  00                           |      .         |      form: "primitive" (0)
 0x00|                  00                           |      .         |      tag: "end_of_content" (0x0)
 0x00|                     00                        |       .        |      length: "indefinite" (0)
-0x00|                        03 02 00 01 03 02 04 0f|        ........|  unknown0: raw bits
+0x00|                        03 02 00 01 03 02 04 0f|        ........|  gap0: raw bits

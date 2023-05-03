@@ -6,7 +6,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-func decodeStringFn(schema schema.SimplifiedSchema, sms ...scalar.Mapper) (DecodeFn, error) {
+func decodeStringFn(schema schema.SimplifiedSchema, sms ...scalar.StrMapper) (DecodeFn, error) {
 	// String is encoded as a long followed by that many bytes of UTF-8 encoded character data.
 	// For example, the three-character string "foo" would be encoded as the long value 3 (encoded as hex 06) followed
 	// by the UTF-8 encoding of 'f', 'o', and 'o' (the hex bytes 66 6f 6f):
@@ -14,7 +14,7 @@ func decodeStringFn(schema schema.SimplifiedSchema, sms ...scalar.Mapper) (Decod
 	return func(name string, d *decode.D) any {
 		var val string
 		d.FieldStruct(name, func(d *decode.D) {
-			length := d.FieldSFn("length", VarZigZag)
+			length := d.FieldSintFn("length", VarZigZag)
 			val = d.FieldUTF8("data", int(length))
 		})
 		return val

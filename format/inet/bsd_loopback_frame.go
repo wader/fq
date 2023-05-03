@@ -12,15 +12,15 @@ import (
 var bsdLoopbackFrameInetPacketGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.BSD_LOOPBACK_FRAME,
-		Description: "BSD loopback frame",
-		Groups:      []string{format.LINK_FRAME},
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.INET_PACKET}, Group: &bsdLoopbackFrameInetPacketGroup},
-		},
-		DecodeFn: decodeLoopbackFrame,
-	})
+	interp.RegisterFormat(
+		format.BSD_Loopback_Frame, &decode.Format{
+			Description: "BSD loopback frame",
+			Groups:      []*decode.Group{format.Link_Frame},
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.INET_Packet}, Out: &bsdLoopbackFrameInetPacketGroup},
+			},
+			DecodeFn: decodeLoopbackFrame,
+		})
 }
 
 const (
@@ -33,13 +33,14 @@ var bsdLoopbackFrameNetworkLayerEtherType = map[uint64]int{
 	bsdLoopbackNetworkLayerIPv6: format.EtherTypeIPv6,
 }
 
-var bsdLookbackNetworkLayerMap = scalar.UToScalar{
+var bsdLookbackNetworkLayerMap = scalar.UintMap{
 	bsdLoopbackNetworkLayerIPv4: {Sym: "ipv4", Description: `Internet protocol v4`},
 	bsdLoopbackNetworkLayerIPv6: {Sym: "ipv6", Description: `Internet protocol v6`},
 }
 
-func decodeLoopbackFrame(d *decode.D, in any) any {
-	if lfi, ok := in.(format.LinkFrameIn); ok {
+func decodeLoopbackFrame(d *decode.D) any {
+	var lfi format.Link_Frame_In
+	if d.ArgAs(&lfi) {
 		if lfi.Type != format.LinkTypeNULL {
 			d.Fatalf("wrong link type %d", lfi.Type)
 		}
@@ -50,14 +51,14 @@ func decodeLoopbackFrame(d *decode.D, in any) any {
 	}
 	// if no LinkFrameIn assume big endian for now
 
-	networkLayer := d.FieldU32("network_layer", bsdLookbackNetworkLayerMap, scalar.ActualHex)
+	networkLayer := d.FieldU32("network_layer", bsdLookbackNetworkLayerMap, scalar.UintHex)
 
 	d.FieldFormatOrRawLen(
 		"payload",
 		d.BitsLeft(),
-		bsdLoopbackFrameInetPacketGroup,
+		&bsdLoopbackFrameInetPacketGroup,
 		// TODO: unknown mapped to ether type 0 is ok?
-		format.InetPacketIn{EtherType: bsdLoopbackFrameNetworkLayerEtherType[networkLayer]},
+		format.INET_Packet_In{EtherType: bsdLoopbackFrameNetworkLayerEtherType[networkLayer]},
 	)
 
 	return nil

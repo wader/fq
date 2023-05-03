@@ -16,16 +16,17 @@ var avcPPSFormat decode.Group
 var avcSEIFormat decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.AVC_NALU,
-		Description: "H.264/AVC Network Access Layer Unit",
-		DecodeFn:    avcNALUDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.AVC_SPS}, Group: &avcSPSFormat},
-			{Names: []string{format.AVC_PPS}, Group: &avcPPSFormat},
-			{Names: []string{format.AVC_SEI}, Group: &avcSEIFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.AVC_NALU,
+		&decode.Format{
+			Description: "H.264/AVC Network Access Layer Unit",
+			DecodeFn:    avcNALUDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.AVC_SPS}, Out: &avcSPSFormat},
+				{Groups: []*decode.Group{format.AVC_PPS}, Out: &avcPPSFormat},
+				{Groups: []*decode.Group{format.AVC_SEI}, Out: &avcSEIFormat},
+			},
+		})
 }
 
 // 14496-10 9.1 Parsing process for Exp-Golomb codes
@@ -65,7 +66,7 @@ const (
 	avcNALCodedSliceExtension                = 20
 )
 
-var avcNALNames = scalar.UToScalar{
+var avcNALNames = scalar.UintMap{
 	1:                                        {Sym: "slice", Description: "Coded slice of a non-IDR picture"},
 	2:                                        {Sym: "dpa", Description: "Coded slice data partition A"},
 	3:                                        {Sym: "dpb", Description: "Coded slice data partition B"},
@@ -85,7 +86,7 @@ var avcNALNames = scalar.UToScalar{
 	20:                                       {Sym: "exten_slice", Description: "Coded slice extension"},
 }
 
-var sliceNames = scalar.UToSymStr{
+var sliceNames = scalar.UintMapSymStr{
 	0: "p",
 	1: "b",
 	2: "i",
@@ -98,7 +99,7 @@ var sliceNames = scalar.UToSymStr{
 	9: "si",
 }
 
-func avcNALUDecode(d *decode.D, _ any) any {
+func avcNALUDecode(d *decode.D) any {
 	d.FieldBool("forbidden_zero_bit")
 	d.FieldU2("nal_ref_idc")
 	nalType := d.FieldU5("nal_unit_type", avcNALNames)
@@ -113,17 +114,17 @@ func avcNALUDecode(d *decode.D, _ any) any {
 		avcNALCodedSliceAuxWithoutPartition,
 		avcNALCodedSliceExtension:
 		d.FieldStruct("slice_header", func(d *decode.D) {
-			d.FieldUFn("first_mb_in_slice", uEV)
-			d.FieldUFn("slice_type", uEV, sliceNames)
-			d.FieldUFn("pic_parameter_set_id", uEV)
+			d.FieldUintFn("first_mb_in_slice", uEV)
+			d.FieldUintFn("slice_type", uEV, sliceNames)
+			d.FieldUintFn("pic_parameter_set_id", uEV)
 			// TODO: if ( separate_colour_plane_flag from SPS ) colour_plane_id; frame_num
 		})
 	case avcNALSupplementalEnhancementInformation:
-		d.FieldFormatBitBuf("sei", unescapedBR, avcSEIFormat, nil)
+		d.FieldFormatBitBuf("sei", unescapedBR, &avcSEIFormat, nil)
 	case avcNALSequenceParameterSet:
-		d.FieldFormatBitBuf("sps", unescapedBR, avcSPSFormat, nil)
+		d.FieldFormatBitBuf("sps", unescapedBR, &avcSPSFormat, nil)
 	case avcNALPictureParameterSet:
-		d.FieldFormatBitBuf("pps", unescapedBR, avcPPSFormat, nil)
+		d.FieldFormatBitBuf("pps", unescapedBR, &avcPPSFormat, nil)
 	}
 	d.FieldRawLen("data", d.BitsLeft())
 

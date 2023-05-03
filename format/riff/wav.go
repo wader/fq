@@ -14,21 +14,22 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var wavHeaderFormat decode.Group
-var wavFooterFormat decode.Group
+var wavHeaderGroup decode.Group
+var wavFooterGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.WAV,
-		ProbeOrder:  format.ProbeOrderBinFuzzy, // after most others (overlap some with webp)
-		Description: "WAV file",
-		Groups:      []string{format.PROBE},
-		DecodeFn:    wavDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.ID3V2}, Group: &wavHeaderFormat},
-			{Names: []string{format.ID3V1, format.ID3V11}, Group: &wavFooterFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.WAV,
+		&decode.Format{
+			ProbeOrder:  format.ProbeOrderBinFuzzy, // after most others (overlap some with webp)
+			Description: "WAV file",
+			Groups:      []*decode.Group{format.Probe},
+			DecodeFn:    wavDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.ID3v2}, Out: &wavHeaderGroup},
+				{Groups: []*decode.Group{format.ID3v1, format.ID3v11}, Out: &wavFooterGroup},
+			},
+		})
 }
 
 const (
@@ -42,16 +43,16 @@ var (
 
 const wavRiffType = "WAVE"
 
-var subFormatNames = scalar.BytesToScalar{
-	{Bytes: subFormatPCMBytes[:], Scalar: scalar.S{Sym: "pcm"}},
-	{Bytes: subFormatIEEEFloat[:], Scalar: scalar.S{Sym: "ieee_float"}},
+var subFormatNames = scalar.RawBytesMap{
+	{Bytes: subFormatPCMBytes[:], Scalar: scalar.BitBuf{Sym: "pcm"}},
+	{Bytes: subFormatIEEEFloat[:], Scalar: scalar.BitBuf{Sym: "ieee_float"}},
 }
 
-func wavDecode(d *decode.D, _ any) any {
+func wavDecode(d *decode.D) any {
 	d.Endian = decode.LittleEndian
 
 	// there are wav files in the wild with id3v2 header id3v1 footer
-	_, _, _ = d.TryFieldFormat("header", wavHeaderFormat, nil)
+	_, _, _ = d.TryFieldFormat("header", &wavHeaderGroup, nil)
 
 	var riffType string
 	riffDecode(
@@ -61,13 +62,13 @@ func wavDecode(d *decode.D, _ any) any {
 			id := d.FieldUTF8("id", 4, chunkIDDescriptions)
 
 			const restOfFileLen = 0xffffffff
-			size := int64(d.FieldUScalarFn("size", func(d *decode.D) scalar.S {
+			size := int64(d.FieldScalarUintFn("size", func(d *decode.D) scalar.Uint {
 				l := d.U32()
 				if l == restOfFileLen {
-					return scalar.S{Actual: l, ActualDisplay: scalar.NumberHex, Description: "Rest of file"}
+					return scalar.Uint{Actual: l, DisplayFormat: scalar.NumberHex, Description: "Rest of file"}
 				}
-				return scalar.S{Actual: l, ActualDisplay: scalar.NumberDecimal}
-			}))
+				return scalar.Uint{Actual: l, DisplayFormat: scalar.NumberDecimal}
+			}).Actual)
 
 			if size == restOfFileLen {
 				size = d.BitsLeft() / 8
@@ -78,16 +79,11 @@ func wavDecode(d *decode.D, _ any) any {
 		func(d *decode.D, id string, path path) (bool, any) {
 			switch id {
 			case "RIFF":
-				riffType = d.FieldUTF8("format", 4, d.AssertStr(wavRiffType))
+				riffType = d.FieldUTF8("format", 4, d.StrAssert(wavRiffType))
 				return true, nil
 
 			case "LIST":
-				typ := d.FieldUTF8("type", 4)
-				switch typ {
-				case "strl":
-					return true, &aviStrl{}
-				}
-
+				d.FieldUTF8("type", 4)
 				return true, nil
 
 			case "fmt ":
@@ -128,7 +124,7 @@ func wavDecode(d *decode.D, _ any) any {
 					for i := 0; i < numSampleLoops; i++ {
 						d.FieldStruct("sample_loop", func(d *decode.D) {
 							d.FieldUTF8("id", 4)
-							d.FieldU32("type", scalar.UToSymStr{
+							d.FieldU32("type", scalar.UintMapSymStr{
 								0: "forward",
 								1: "forward_backward",
 								2: "backward",
@@ -156,9 +152,9 @@ func wavDecode(d *decode.D, _ any) any {
 	)
 
 	if riffType != wavRiffType {
-		d.Errorf("wrong or no AVI riff type found (%s)", riffType)
+		d.Errorf("wrong or no WAV riff type found (%s)", riffType)
 	}
-	_, _, _ = d.TryFieldFormat("footer", wavFooterFormat, nil)
+	_, _, _ = d.TryFieldFormat("footer", &wavFooterGroup, nil)
 
 	return nil
 }

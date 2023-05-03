@@ -19,22 +19,23 @@ import (
 var markdownFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.MARKDOWN,
-		Description: "Markdown",
-		DecodeFn:    decodeMarkdown,
-		Functions:   []string{"_todisplay"},
-	})
+	interp.RegisterFormat(
+		format.Markdown,
+		&decode.Format{
+			Description: "Markdown",
+			DecodeFn:    decodeMarkdown,
+			Functions:   []string{"_todisplay"},
+		})
 	interp.RegisterFS(markdownFS)
 }
 
-func decodeMarkdown(d *decode.D, _ any) any {
+func decodeMarkdown(d *decode.D) any {
 	b, err := io.ReadAll(bitio.NewIOReader(d.RawLen(d.Len())))
 	if err != nil {
 		panic(err)
 	}
 
-	var s scalar.S
+	var s scalar.Any
 	s.Actual = node(markdown.Parse(b, nil))
 	d.Value.V = &s
 	d.Value.Range.Len = d.Len()

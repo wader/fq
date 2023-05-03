@@ -37,8 +37,10 @@ In summary it aims to be jq, hexdump, dd and gdb for files combined into one.
 [aac_frame](doc/formats.md#aac_frame),
 adts,
 adts_frame,
+aiff,
 amf0,
 apev2,
+[apple_bookmark](doc/formats.md#apple_bookmark),
 ar,
 [asn1_ber](doc/formats.md#asn1_ber),
 av1_ccr,
@@ -105,7 +107,8 @@ macho_fat,
 [matroska](doc/formats.md#matroska),
 [mp3](doc/formats.md#mp3),
 mp3_frame,
-mp3_frame_tags,
+mp3_frame_vbri,
+mp3_frame_xing,
 [mp4](doc/formats.md#mp4),
 mpeg_asc,
 mpeg_es,
@@ -134,7 +137,9 @@ sll_packet,
 tar,
 tcp_segment,
 tiff,
+[tls](doc/formats.md#tls),
 toml,
+[tzif](doc/formats.md#tzif),
 udp_datagram,
 vorbis_comment,
 vorbis_packet,
@@ -157,6 +162,7 @@ For details see [formats.md](doc/formats.md) and [usage.md](doc/usage.md).
 
 ## Presentations
 
+- "fq - jq for binary formats" at [FOSDEM 2023](https://fosdem.org/2023/) - [video & slides](https://fosdem.org/2023/schedule/event/bintools_fq/)
 - "fq - jq for binary formats" at [No time to wait 6](https://mediaarea.net/NoTimeToWait6) - [video](https://www.youtube.com/watch?v=-Pwt5KL-xRs&t=1450s) - [slides](doc/presentations/nttw6/fq-nttw6-slides.pdf)
 - "fq - jq for binary formats" at [Binary Tools Summit 2022](https://binary-tools.net/summit.html) - [video](https://www.youtube.com/watch?v=GJOq_b0eb-s&list=PLTj8twuHdQz-JcX7k6eOwyVPDB8CyfZc8&index=1) - [slides](doc/presentations/bts2022/fq-bts2022-v1.pdf)
 
@@ -164,7 +170,7 @@ For details see [formats.md](doc/formats.md) and [usage.md](doc/usage.md).
 
 Use one of the methods listed below or download a pre-built [release](https://github.com/wader/fq/releases) for macOS, Linux or Windows. Unarchive it and move the executable to `PATH` etc.
 
-On macOS if you don't install using a method below you might have to manually allow the binary to run. This can be done by trying to run the binary, ignore the warning and then go into security preference and allow it. Same can be done with this command:
+On macOS if you don't install using one of the method below you might have to manually allow the binary to run. This can be done by trying to run the binary, ignore the warning and then go into security preference and allow it. Same can be done with this command:
 
 ```sh
 xattr -d com.apple.quarantine fq && spctl --add fq
@@ -242,10 +248,10 @@ cp "$(go env GOPATH)/bin/fq" /usr/local/bin
 
 To build, run and test from source:
 ```sh
-# build an run
-go run fq.go
-# or
+# build and run
 go run .
+# build and run with arguments
+go run . -d mp3 . file.mp3
 # just build
 go build -o fq .
 # run all tests and build binary
@@ -267,7 +273,9 @@ jq implementation [gojq](https://github.com/itchyny/gojq). I also want to thank
 [HexFiend](https://github.com/HexFiend/HexFiend) for inspiration and ideas and [stedolan](https://github.com/stedolan)
 for inventing the [jq](https://github.com/stedolan/jq) language.
 
-### Similar or related projects
+### Similar or related works
+
+#### Tools
 
 - [HexFiend](https://github.com/HexFiend/HexFiend) Hex editor for macOS with format template support.
 - [binspector](https://github.com/binspector/binspector) Binary format analysis tool with query langauge and REPL.
@@ -280,6 +288,13 @@ for inventing the [jq](https://github.com/stedolan/jq) language.
 - [hex](https://git.janouch.name/p/hex) Interactive hex viewer with format support via lua.
 - [hachoir](https://github.com/vstinner/hachoir) General python library for working binary data.
 - [scapy](https://scapy.net) Decode/Encode formats, focus on network protocols.
+
+#### Projects and Standards
+
+- [Let's Solve the File Format Problem](http://fileformats.archiveteam.org)
+- [PRONOM](https://www.nationalarchives.gov.uk/PRONOM/) file format registry
+- [Sustainability of Digital Formats](https://www.loc.gov/preservation/digital/formats/) at Library of Congress
+- [Data Format Description Language](https://en.wikipedia.org/wiki/Data_Format_Description_Language)
 
 ## License
 
@@ -301,3 +316,4 @@ Licenses of direct dependencies:
 - golang/snappy https://github.com/golang/snappy/blob/master/LICENSE (BSD)
 - golang/x/* https://github.com/golang/text/blob/master/LICENSE (BSD)
 - gopkg.in/yaml.v3 https://github.com/go-yaml/yaml/blob/v3/LICENSE (MIT)
+- Parts of go crypto/tls and github.com/zmap/zcrypto https://github.com/zmap/zcrypto/blob/master/LICENSE (Apache)

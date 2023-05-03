@@ -1,13 +1,13 @@
-$ fq.go -n '"SUkqAAwAAAAwMDAwAQAwMDAwMDAwMDAwMDAhAAAAMDAwAAAhAAAA" | frombase64 | tiff'
+$ fq.go -n '"SUkqAAwAAAAwMDAwAQAwMDAwMDAwMDAwMDAhAAAAMDAwAAAhAAAA" | from_base64 | tiff'
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (tiff)
     |                                               |                |  error: tiff: error at position 0x27: ifd loop detected for 33
 0x00|49 49 2a 00                                    |II*.            |  endian: "little-endian" (0x49492a00)
 0x00|49 49                                          |II              |  order: "II" (valid)
 0x00|      2a 00                                    |  *.            |  integer_42: 42 (valid)
 0x00|            0c 00 00 00                        |    ....        |  first_ifd: 12
-0x00|                        30 30 30 30            |        0000    |  unknown0: raw bits
+0x00|                        30 30 30 30            |        0000    |  gap0: raw bits
 0x00|                                    01 00 30 30|            ..00|  ifds[0:2]:
 0x10|30 30 30 30 30 30 30 30 30 30 21 00 00 00 30 30|0000000000!...00|
 0x20|30 00 00 21 00 00 00|                          |0..!...|        |
-0x10|                                          30 30|              00|  unknown1: raw bits
+0x10|                                          30 30|              00|  gap1: raw bits
 0x20|30                                             |0               |

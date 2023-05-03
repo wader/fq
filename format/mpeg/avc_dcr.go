@@ -15,17 +15,18 @@ import (
 var avcDCRNALFormat decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.AVC_DCR,
-		Description: "H.264/AVC Decoder Configuration Record",
-		DecodeFn:    avcDcrDecode,
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.AVC_NALU}, Group: &avcDCRNALFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.AVC_DCR,
+		&decode.Format{
+			Description: "H.264/AVC Decoder Configuration Record",
+			DecodeFn:    avcDcrDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.AVC_NALU}, Out: &avcDCRNALFormat},
+			},
+		})
 }
 
-var avcProfileNames = scalar.UToSymStr{
+var avcProfileNames = scalar.UintMapSymStr{
 	// 66: "constrained_baseline_profile", // (CBP, 66 with constraint set 1)
 	66:  "baseline_profile",
 	88:  "extended_profile",
@@ -48,7 +49,7 @@ var avcProfileNames = scalar.UToSymStr{
 }
 
 // TODO: 1b contraint flag 1?
-var avcLevelNames = scalar.UToSymStr{
+var avcLevelNames = scalar.UintMapSymStr{
 	10: "1",
 	//10:  "1b"
 	11: "1.1",
@@ -111,18 +112,18 @@ func avcDcrParameterSet(d *decode.D, numParamSets uint64) {
 	for i := uint64(0); i < numParamSets; i++ {
 		d.FieldStruct("set", func(d *decode.D) {
 			paramSetLen := d.FieldU16("length")
-			d.FieldFormatLen("nal", int64(paramSetLen)*8, avcDCRNALFormat, nil)
+			d.FieldFormatLen("nal", int64(paramSetLen)*8, &avcDCRNALFormat, nil)
 		})
 	}
 }
 
-func avcDcrDecode(d *decode.D, _ any) any {
+func avcDcrDecode(d *decode.D) any {
 	d.FieldU8("configuration_version")
 	d.FieldU8("profile_indication", avcProfileNames)
 	d.FieldU8("profile_compatibility")
 	d.FieldU8("level_indication", avcLevelNames)
 	d.FieldU6("reserved0")
-	lengthSize := d.FieldU2("length_size", scalar.ActualUAdd(1))
+	lengthSize := d.FieldU2("length_size", scalar.UintActualAdd(1))
 	d.FieldU3("reserved1")
 	numSeqParamSets := d.FieldU5("num_of_sequence_parameter_sets")
 	d.FieldArray("sequence_parameter_sets", func(d *decode.D) {
@@ -145,5 +146,5 @@ func avcDcrDecode(d *decode.D, _ any) any {
 	// TODO: something wrong here, seen files with profileIdc = 100 with no bytes after picture_parameter_sets
 	// https://github.com/FFmpeg/FFmpeg/blob/069d2b4a50a6eb2f925f36884e6b9bd9a1e54670/libavcodec/h264_ps.c#L333
 
-	return format.AvcDcrOut{LengthSize: lengthSize}
+	return format.AVC_DCR_Out{LengthSize: lengthSize}
 }

@@ -1,0 +1,273 @@
+# fq -n '[(0,1,4,8,16,17) as $s | [range($s) | "a"]]' | json2msgpack > arrays.msgpack
+$ fq -d msgpack 'dv,torepr' arrays.msgpack
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: arrays.msgpack (msgpack) 0x0-0x66.7 (103)
+0x00|96                                             |.               |  type: "fixarray" (0x96) 0x0-0x0.7 (1)
+0x00|96                                             |.               |  length: 6 0x0.4-0x0.7 (0.4)
+    |                                               |                |  elements[0:6]: 0x1-0x66.7 (102)
+    |                                               |                |    [0]{}: element 0x1-0x1.7 (1)
+0x00|   90                                          | .              |      type: "fixarray" (0x90) 0x1-0x1.7 (1)
+0x00|   90                                          | .              |      length: 0 0x1.4-0x1.7 (0.4)
+    |                                               |                |      elements[0:0]: 0x2-NA (0)
+    |                                               |                |    [1]{}: element 0x2-0x4.7 (3)
+0x00|      91                                       |  .             |      type: "fixarray" (0x91) 0x2-0x2.7 (1)
+0x00|      91                                       |  .             |      length: 1 0x2.4-0x2.7 (0.4)
+    |                                               |                |      elements[0:1]: 0x3-0x4.7 (2)
+    |                                               |                |        [0]{}: element 0x3-0x4.7 (2)
+0x00|         a1                                    |   .            |          type: "fixstr" (0xa1) 0x3-0x3.7 (1)
+0x00|         a1                                    |   .            |          length: 1 0x3.3-0x3.7 (0.5)
+0x00|            61                                 |    a           |          value: "a" 0x4-0x4.7 (1)
+    |                                               |                |    [2]{}: element 0x5-0xd.7 (9)
+0x00|               94                              |     .          |      type: "fixarray" (0x94) 0x5-0x5.7 (1)
+0x00|               94                              |     .          |      length: 4 0x5.4-0x5.7 (0.4)
+    |                                               |                |      elements[0:4]: 0x6-0xd.7 (8)
+    |                                               |                |        [0]{}: element 0x6-0x7.7 (2)
+0x00|                  a1                           |      .         |          type: "fixstr" (0xa1) 0x6-0x6.7 (1)
+0x00|                  a1                           |      .         |          length: 1 0x6.3-0x6.7 (0.5)
+0x00|                     61                        |       a        |          value: "a" 0x7-0x7.7 (1)
+    |                                               |                |        [1]{}: element 0x8-0x9.7 (2)
+0x00|                        a1                     |        .       |          type: "fixstr" (0xa1) 0x8-0x8.7 (1)
+0x00|                        a1                     |        .       |          length: 1 0x8.3-0x8.7 (0.5)
+0x00|                           61                  |         a      |          value: "a" 0x9-0x9.7 (1)
+    |                                               |                |        [2]{}: element 0xa-0xb.7 (2)
+0x00|                              a1               |          .     |          type: "fixstr" (0xa1) 0xa-0xa.7 (1)
+0x00|                              a1               |          .     |          length: 1 0xa.3-0xa.7 (0.5)
+0x00|                                 61            |           a    |          value: "a" 0xb-0xb.7 (1)
+    |                                               |                |        [3]{}: element 0xc-0xd.7 (2)
+0x00|                                    a1         |            .   |          type: "fixstr" (0xa1) 0xc-0xc.7 (1)
+0x00|                                    a1         |            .   |          length: 1 0xc.3-0xc.7 (0.5)
+0x00|                                       61      |             a  |          value: "a" 0xd-0xd.7 (1)
+    |                                               |                |    [3]{}: element 0xe-0x1e.7 (17)
+0x00|                                          98   |              . |      type: "fixarray" (0x98) 0xe-0xe.7 (1)
+0x00|                                          98   |              . |      length: 8 0xe.4-0xe.7 (0.4)
+    |                                               |                |      elements[0:8]: 0xf-0x1e.7 (16)
+    |                                               |                |        [0]{}: element 0xf-0x10.7 (2)
+0x00|                                             a1|               .|          type: "fixstr" (0xa1) 0xf-0xf.7 (1)
+0x00|                                             a1|               .|          length: 1 0xf.3-0xf.7 (0.5)
+0x10|61                                             |a               |          value: "a" 0x10-0x10.7 (1)
+    |                                               |                |        [1]{}: element 0x11-0x12.7 (2)
+0x10|   a1                                          | .              |          type: "fixstr" (0xa1) 0x11-0x11.7 (1)
+0x10|   a1                                          | .              |          length: 1 0x11.3-0x11.7 (0.5)
+0x10|      61                                       |  a             |          value: "a" 0x12-0x12.7 (1)
+    |                                               |                |        [2]{}: element 0x13-0x14.7 (2)
+0x10|         a1                                    |   .            |          type: "fixstr" (0xa1) 0x13-0x13.7 (1)
+0x10|         a1                                    |   .            |          length: 1 0x13.3-0x13.7 (0.5)
+0x10|            61                                 |    a           |          value: "a" 0x14-0x14.7 (1)
+    |                                               |                |        [3]{}: element 0x15-0x16.7 (2)
+0x10|               a1                              |     .          |          type: "fixstr" (0xa1) 0x15-0x15.7 (1)
+0x10|               a1                              |     .          |          length: 1 0x15.3-0x15.7 (0.5)
+0x10|                  61                           |      a         |          value: "a" 0x16-0x16.7 (1)
+    |                                               |                |        [4]{}: element 0x17-0x18.7 (2)
+0x10|                     a1                        |       .        |          type: "fixstr" (0xa1) 0x17-0x17.7 (1)
+0x10|                     a1                        |       .        |          length: 1 0x17.3-0x17.7 (0.5)
+0x10|                        61                     |        a       |          value: "a" 0x18-0x18.7 (1)
+    |                                               |                |        [5]{}: element 0x19-0x1a.7 (2)
+0x10|                           a1                  |         .      |          type: "fixstr" (0xa1) 0x19-0x19.7 (1)
+0x10|                           a1                  |         .      |          length: 1 0x19.3-0x19.7 (0.5)
+0x10|                              61               |          a     |          value: "a" 0x1a-0x1a.7 (1)
+    |                                               |                |        [6]{}: element 0x1b-0x1c.7 (2)
+0x10|                                 a1            |           .    |          type: "fixstr" (0xa1) 0x1b-0x1b.7 (1)
+0x10|                                 a1            |           .    |          length: 1 0x1b.3-0x1b.7 (0.5)
+0x10|                                    61         |            a   |          value: "a" 0x1c-0x1c.7 (1)
+    |                                               |                |        [7]{}: element 0x1d-0x1e.7 (2)
+0x10|                                       a1      |             .  |          type: "fixstr" (0xa1) 0x1d-0x1d.7 (1)
+0x10|                                       a1      |             .  |          length: 1 0x1d.3-0x1d.7 (0.5)
+0x10|                                          61   |              a |          value: "a" 0x1e-0x1e.7 (1)
+    |                                               |                |    [4]{}: element 0x1f-0x41.7 (35)
+0x10|                                             dc|               .|      type: "array16" (0xdc) 0x1f-0x1f.7 (1)
+0x20|00 10                                          |..              |      length: 16 0x20-0x21.7 (2)
+    |                                               |                |      elements[0:16]: 0x22-0x41.7 (32)
+    |                                               |                |        [0]{}: element 0x22-0x23.7 (2)
+0x20|      a1                                       |  .             |          type: "fixstr" (0xa1) 0x22-0x22.7 (1)
+0x20|      a1                                       |  .             |          length: 1 0x22.3-0x22.7 (0.5)
+0x20|         61                                    |   a            |          value: "a" 0x23-0x23.7 (1)
+    |                                               |                |        [1]{}: element 0x24-0x25.7 (2)
+0x20|            a1                                 |    .           |          type: "fixstr" (0xa1) 0x24-0x24.7 (1)
+0x20|            a1                                 |    .           |          length: 1 0x24.3-0x24.7 (0.5)
+0x20|               61                              |     a          |          value: "a" 0x25-0x25.7 (1)
+    |                                               |                |        [2]{}: element 0x26-0x27.7 (2)
+0x20|                  a1                           |      .         |          type: "fixstr" (0xa1) 0x26-0x26.7 (1)
+0x20|                  a1                           |      .         |          length: 1 0x26.3-0x26.7 (0.5)
+0x20|                     61                        |       a        |          value: "a" 0x27-0x27.7 (1)
+    |                                               |                |        [3]{}: element 0x28-0x29.7 (2)
+0x20|                        a1                     |        .       |          type: "fixstr" (0xa1) 0x28-0x28.7 (1)
+0x20|                        a1                     |        .       |          length: 1 0x28.3-0x28.7 (0.5)
+0x20|                           61                  |         a      |          value: "a" 0x29-0x29.7 (1)
+    |                                               |                |        [4]{}: element 0x2a-0x2b.7 (2)
+0x20|                              a1               |          .     |          type: "fixstr" (0xa1) 0x2a-0x2a.7 (1)
+0x20|                              a1               |          .     |          length: 1 0x2a.3-0x2a.7 (0.5)
+0x20|                                 61            |           a    |          value: "a" 0x2b-0x2b.7 (1)
+    |                                               |                |        [5]{}: element 0x2c-0x2d.7 (2)
+0x20|                                    a1         |            .   |          type: "fixstr" (0xa1) 0x2c-0x2c.7 (1)
+0x20|                                    a1         |            .   |          length: 1 0x2c.3-0x2c.7 (0.5)
+0x20|                                       61      |             a  |          value: "a" 0x2d-0x2d.7 (1)
+    |                                               |                |        [6]{}: element 0x2e-0x2f.7 (2)
+0x20|                                          a1   |              . |          type: "fixstr" (0xa1) 0x2e-0x2e.7 (1)
+0x20|                                          a1   |              . |          length: 1 0x2e.3-0x2e.7 (0.5)
+0x20|                                             61|               a|          value: "a" 0x2f-0x2f.7 (1)
+    |                                               |                |        [7]{}: element 0x30-0x31.7 (2)
+0x30|a1                                             |.               |          type: "fixstr" (0xa1) 0x30-0x30.7 (1)
+0x30|a1                                             |.               |          length: 1 0x30.3-0x30.7 (0.5)
+0x30|   61                                          | a              |          value: "a" 0x31-0x31.7 (1)
+    |                                               |                |        [8]{}: element 0x32-0x33.7 (2)
+0x30|      a1                                       |  .             |          type: "fixstr" (0xa1) 0x32-0x32.7 (1)
+0x30|      a1                                       |  .             |          length: 1 0x32.3-0x32.7 (0.5)
+0x30|         61                                    |   a            |          value: "a" 0x33-0x33.7 (1)
+    |                                               |                |        [9]{}: element 0x34-0x35.7 (2)
+0x30|            a1                                 |    .           |          type: "fixstr" (0xa1) 0x34-0x34.7 (1)
+0x30|            a1                                 |    .           |          length: 1 0x34.3-0x34.7 (0.5)
+0x30|               61                              |     a          |          value: "a" 0x35-0x35.7 (1)
+    |                                               |                |        [10]{}: element 0x36-0x37.7 (2)
+0x30|                  a1                           |      .         |          type: "fixstr" (0xa1) 0x36-0x36.7 (1)
+0x30|                  a1                           |      .         |          length: 1 0x36.3-0x36.7 (0.5)
+0x30|                     61                        |       a        |          value: "a" 0x37-0x37.7 (1)
+    |                                               |                |        [11]{}: element 0x38-0x39.7 (2)
+0x30|                        a1                     |        .       |          type: "fixstr" (0xa1) 0x38-0x38.7 (1)
+0x30|                        a1                     |        .       |          length: 1 0x38.3-0x38.7 (0.5)
+0x30|                           61                  |         a      |          value: "a" 0x39-0x39.7 (1)
+    |                                               |                |        [12]{}: element 0x3a-0x3b.7 (2)
+0x30|                              a1               |          .     |          type: "fixstr" (0xa1) 0x3a-0x3a.7 (1)
+0x30|                              a1               |          .     |          length: 1 0x3a.3-0x3a.7 (0.5)
+0x30|                                 61            |           a    |          value: "a" 0x3b-0x3b.7 (1)
+    |                                               |                |        [13]{}: element 0x3c-0x3d.7 (2)
+0x30|                                    a1         |            .   |          type: "fixstr" (0xa1) 0x3c-0x3c.7 (1)
+0x30|                                    a1         |            .   |          length: 1 0x3c.3-0x3c.7 (0.5)
+0x30|                                       61      |             a  |          value: "a" 0x3d-0x3d.7 (1)
+    |                                               |                |        [14]{}: element 0x3e-0x3f.7 (2)
+0x30|                                          a1   |              . |          type: "fixstr" (0xa1) 0x3e-0x3e.7 (1)
+0x30|                                          a1   |              . |          length: 1 0x3e.3-0x3e.7 (0.5)
+0x30|                                             61|               a|          value: "a" 0x3f-0x3f.7 (1)
+    |                                               |                |        [15]{}: element 0x40-0x41.7 (2)
+0x40|a1                                             |.               |          type: "fixstr" (0xa1) 0x40-0x40.7 (1)
+0x40|a1                                             |.               |          length: 1 0x40.3-0x40.7 (0.5)
+0x40|   61                                          | a              |          value: "a" 0x41-0x41.7 (1)
+    |                                               |                |    [5]{}: element 0x42-0x66.7 (37)
+0x40|      dc                                       |  .             |      type: "array16" (0xdc) 0x42-0x42.7 (1)
+0x40|         00 11                                 |   ..           |      length: 17 0x43-0x44.7 (2)
+    |                                               |                |      elements[0:17]: 0x45-0x66.7 (34)
+    |                                               |                |        [0]{}: element 0x45-0x46.7 (2)
+0x40|               a1                              |     .          |          type: "fixstr" (0xa1) 0x45-0x45.7 (1)
+0x40|               a1                              |     .          |          length: 1 0x45.3-0x45.7 (0.5)
+0x40|                  61                           |      a         |          value: "a" 0x46-0x46.7 (1)
+    |                                               |                |        [1]{}: element 0x47-0x48.7 (2)
+0x40|                     a1                        |       .        |          type: "fixstr" (0xa1) 0x47-0x47.7 (1)
+0x40|                     a1                        |       .        |          length: 1 0x47.3-0x47.7 (0.5)
+0x40|                        61                     |        a       |          value: "a" 0x48-0x48.7 (1)
+    |                                               |                |        [2]{}: element 0x49-0x4a.7 (2)
+0x40|                           a1                  |         .      |          type: "fixstr" (0xa1) 0x49-0x49.7 (1)
+0x40|                           a1                  |         .      |          length: 1 0x49.3-0x49.7 (0.5)
+0x40|                              61               |          a     |          value: "a" 0x4a-0x4a.7 (1)
+    |                                               |                |        [3]{}: element 0x4b-0x4c.7 (2)
+0x40|                                 a1            |           .    |          type: "fixstr" (0xa1) 0x4b-0x4b.7 (1)
+0x40|                                 a1            |           .    |          length: 1 0x4b.3-0x4b.7 (0.5)
+0x40|                                    61         |            a   |          value: "a" 0x4c-0x4c.7 (1)
+    |                                               |                |        [4]{}: element 0x4d-0x4e.7 (2)
+0x40|                                       a1      |             .  |          type: "fixstr" (0xa1) 0x4d-0x4d.7 (1)
+0x40|                                       a1      |             .  |          length: 1 0x4d.3-0x4d.7 (0.5)
+0x40|                                          61   |              a |          value: "a" 0x4e-0x4e.7 (1)
+    |                                               |                |        [5]{}: element 0x4f-0x50.7 (2)
+0x40|                                             a1|               .|          type: "fixstr" (0xa1) 0x4f-0x4f.7 (1)
+0x40|                                             a1|               .|          length: 1 0x4f.3-0x4f.7 (0.5)
+0x50|61                                             |a               |          value: "a" 0x50-0x50.7 (1)
+    |                                               |                |        [6]{}: element 0x51-0x52.7 (2)
+0x50|   a1                                          | .              |          type: "fixstr" (0xa1) 0x51-0x51.7 (1)
+0x50|   a1                                          | .              |          length: 1 0x51.3-0x51.7 (0.5)
+0x50|      61                                       |  a             |          value: "a" 0x52-0x52.7 (1)
+    |                                               |                |        [7]{}: element 0x53-0x54.7 (2)
+0x50|         a1                                    |   .            |          type: "fixstr" (0xa1) 0x53-0x53.7 (1)
+0x50|         a1                                    |   .            |          length: 1 0x53.3-0x53.7 (0.5)
+0x50|            61                                 |    a           |          value: "a" 0x54-0x54.7 (1)
+    |                                               |                |        [8]{}: element 0x55-0x56.7 (2)
+0x50|               a1                              |     .          |          type: "fixstr" (0xa1) 0x55-0x55.7 (1)
+0x50|               a1                              |     .          |          length: 1 0x55.3-0x55.7 (0.5)
+0x50|                  61                           |      a         |          value: "a" 0x56-0x56.7 (1)
+    |                                               |                |        [9]{}: element 0x57-0x58.7 (2)
+0x50|                     a1                        |       .        |          type: "fixstr" (0xa1) 0x57-0x57.7 (1)
+0x50|                     a1                        |       .        |          length: 1 0x57.3-0x57.7 (0.5)
+0x50|                        61                     |        a       |          value: "a" 0x58-0x58.7 (1)
+    |                                               |                |        [10]{}: element 0x59-0x5a.7 (2)
+0x50|                           a1                  |         .      |          type: "fixstr" (0xa1) 0x59-0x59.7 (1)
+0x50|                           a1                  |         .      |          length: 1 0x59.3-0x59.7 (0.5)
+0x50|                              61               |          a     |          value: "a" 0x5a-0x5a.7 (1)
+    |                                               |                |        [11]{}: element 0x5b-0x5c.7 (2)
+0x50|                                 a1            |           .    |          type: "fixstr" (0xa1) 0x5b-0x5b.7 (1)
+0x50|                                 a1            |           .    |          length: 1 0x5b.3-0x5b.7 (0.5)
+0x50|                                    61         |            a   |          value: "a" 0x5c-0x5c.7 (1)
+    |                                               |                |        [12]{}: element 0x5d-0x5e.7 (2)
+0x50|                                       a1      |             .  |          type: "fixstr" (0xa1) 0x5d-0x5d.7 (1)
+0x50|                                       a1      |             .  |          length: 1 0x5d.3-0x5d.7 (0.5)
+0x50|                                          61   |              a |          value: "a" 0x5e-0x5e.7 (1)
+    |                                               |                |        [13]{}: element 0x5f-0x60.7 (2)
+0x50|                                             a1|               .|          type: "fixstr" (0xa1) 0x5f-0x5f.7 (1)
+0x50|                                             a1|               .|          length: 1 0x5f.3-0x5f.7 (0.5)
+0x60|61                                             |a               |          value: "a" 0x60-0x60.7 (1)
+    |                                               |                |        [14]{}: element 0x61-0x62.7 (2)
+0x60|   a1                                          | .              |          type: "fixstr" (0xa1) 0x61-0x61.7 (1)
+0x60|   a1                                          | .              |          length: 1 0x61.3-0x61.7 (0.5)
+0x60|      61                                       |  a             |          value: "a" 0x62-0x62.7 (1)
+    |                                               |                |        [15]{}: element 0x63-0x64.7 (2)
+0x60|         a1                                    |   .            |          type: "fixstr" (0xa1) 0x63-0x63.7 (1)
+0x60|         a1                                    |   .            |          length: 1 0x63.3-0x63.7 (0.5)
+0x60|            61                                 |    a           |          value: "a" 0x64-0x64.7 (1)
+    |                                               |                |        [16]{}: element 0x65-0x66.7 (2)
+0x60|               a1                              |     .          |          type: "fixstr" (0xa1) 0x65-0x65.7 (1)
+0x60|               a1                              |     .          |          length: 1 0x65.3-0x65.7 (0.5)
+0x60|                  61|                          |      a|        |          value: "a" 0x66-0x66.7 (1)
+[
+  [],
+  [
+    "a"
+  ],
+  [
+    "a",
+    "a",
+    "a",
+    "a"
+  ],
+  [
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a"
+  ],
+  [
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a"
+  ],
+  [
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a"
+  ]
+]

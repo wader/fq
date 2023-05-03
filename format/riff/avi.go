@@ -30,38 +30,39 @@ import (
 //go:embed avi.md
 var aviFS embed.FS
 
-var aviMp3FrameFormat decode.Group
-var aviMpegAVCAUFormat decode.Group
-var aviMpegHEVCAUFormat decode.Group
-var aviFLACFrameFormat decode.Group
+var aviMp3FrameGroup decode.Group
+var aviMpegAVCAUGroup decode.Group
+var aviMpegHEVCAUGroup decode.Group
+var aviFLACFrameGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.AVI,
-		Description: "Audio Video Interleaved",
-		DecodeFn:    aviDecode,
-		DecodeInArg: format.AviIn{
-			DecodeSamples: true,
-		},
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.AVC_AU}, Group: &aviMpegAVCAUFormat},
-			{Names: []string{format.HEVC_AU}, Group: &aviMpegHEVCAUFormat},
-			{Names: []string{format.MP3_FRAME}, Group: &aviMp3FrameFormat},
-			{Names: []string{format.FLAC_FRAME}, Group: &aviFLACFrameFormat},
-		},
-		Groups: []string{format.PROBE},
-	})
+	interp.RegisterFormat(
+		format.AVI,
+		&decode.Format{
+			Description: "Audio Video Interleaved",
+			DecodeFn:    aviDecode,
+			DefaultInArg: format.AVI_In{
+				DecodeSamples: true,
+			},
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.AVC_AU}, Out: &aviMpegAVCAUGroup},
+				{Groups: []*decode.Group{format.HEVC_AU}, Out: &aviMpegHEVCAUGroup},
+				{Groups: []*decode.Group{format.MP3_Frame}, Out: &aviMp3FrameGroup},
+				{Groups: []*decode.Group{format.FLAC_Frame}, Out: &aviFLACFrameGroup},
+			},
+			Groups: []*decode.Group{format.Probe},
+		})
 	interp.RegisterFS(aviFS)
 }
 
-var aviListTypeDescriptions = scalar.StrToDescription{
+var aviListTypeDescriptions = scalar.StrMapDescription{
 	"hdrl": "AVI main list",
 	"strl": "Stream list",
 	"movi": "Stream Data",
 	"rec ": "Chunk group",
 }
 
-var aviStrhTypeDescriptions = scalar.StrToDescription{
+var aviStrhTypeDescriptions = scalar.StrMapDescription{
 	"auds": "Audio stream",
 	"mids": "MIDI stream",
 	"txts": "Text stream",
@@ -73,7 +74,7 @@ const (
 	aviIndexTypeChunks  = 1
 )
 
-var aviIndexTypeNames = scalar.UToSymStr{
+var aviIndexTypeNames = scalar.UintMapSymStr{
 	aviIndexTypeIndexes: "indexes",
 	aviIndexTypeChunks:  "chunks",
 }
@@ -82,7 +83,7 @@ const (
 	aviIndexSubType2Fields = 1
 )
 
-var aviIndexSubTypeNames = scalar.UToSymStr{
+var aviIndexSubTypeNames = scalar.UintMapSymStr{
 	aviIndexSubType2Fields: "2fields",
 }
 
@@ -94,7 +95,7 @@ const (
 	aviStreamChunkTypeIndex             = "ix"
 )
 
-var aviStreamChunkTypeDescriptions = scalar.StrToDescription{
+var aviStreamChunkTypeDescriptions = scalar.StrMapDescription{
 	aviStreamChunkTypeUncompressedVideo: "Uncompressed video frame",
 	aviStreamChunkTypeCompressedVideo:   "Compressed video frame",
 	aviStreamChunkTypePaletteChange:     "Palette change",
@@ -176,7 +177,7 @@ func aviDecorateStreamID(d *decode.D, id string) (string, int) {
 	typ, index, ok := aviParseChunkID(id)
 	if ok && aviIsStreamType(typ) {
 		d.FieldValueStr("stream_type", typ, aviStreamChunkTypeDescriptions)
-		d.FieldValueU("stream_nr", uint64(index))
+		d.FieldValueUint("stream_nr", uint64(index))
 		return typ, index
 	}
 	return "", 0
@@ -200,7 +201,7 @@ func aviDecodeChunkIndex(d *decode.D) []ranges.Range {
 				offset := int64(d.FieldU32("offset"))
 				sizeKeyFrame := d.FieldU32("size_keyframe")
 				size := sizeKeyFrame & 0x7f_ff_ff_ff
-				d.FieldValueU("size", size)
+				d.FieldValueUint("size", size)
 				d.FieldValueBool("key_frame", sizeKeyFrame&0x80_00_00_00 == 0)
 				rs = append(rs, ranges.Range{
 					Start: baseOffset*8 + offset*8,
@@ -213,8 +214,9 @@ func aviDecodeChunkIndex(d *decode.D) []ranges.Range {
 	return rs
 }
 
-func aviDecode(d *decode.D, in any) any {
-	ai, _ := in.(format.AviIn)
+func aviDecode(d *decode.D) any {
+	var ai format.AVI_In
+	d.ArgAs(&ai)
 
 	d.Endian = decode.LittleEndian
 
@@ -235,7 +237,7 @@ func aviDecode(d *decode.D, in any) any {
 		func(d *decode.D, id string, path path) (bool, any) {
 			switch id {
 			case "RIFF":
-				riffType = d.FieldUTF8("type", 4, d.AssertStr(aviRiffType))
+				riffType = d.FieldUTF8("type", 4, d.StrAssert(aviRiffType))
 				return true, nil
 
 			case "LIST":
@@ -388,11 +390,11 @@ func aviDecode(d *decode.D, in any) any {
 						format.BMPTagH264_UMSV,
 						format.BMPTagH264_tshd,
 						format.BMPTagH264_INMC:
-						s.format = aviMpegAVCAUFormat
+						s.format = aviMpegAVCAUGroup
 						s.hasFormat = true
 					case format.BMPTagHEVC,
 						format.BMPTagHEVC_H265:
-						s.format = aviMpegHEVCAUFormat
+						s.format = aviMpegHEVCAUGroup
 						s.hasFormat = true
 					}
 
@@ -415,11 +417,11 @@ func aviDecode(d *decode.D, in any) any {
 
 					switch formatTag {
 					case format.WAVTagMP3:
-						s.format = aviMp3FrameFormat
+						s.format = aviMp3FrameGroup
 						s.hasFormat = true
 					case format.WAVTagFLAC:
 						// TODO: can flac in avi have streaminfo somehow?
-						s.format = aviFLACFrameFormat
+						s.format = aviFLACFrameGroup
 						s.hasFormat = true
 					}
 				case "iavs":
@@ -519,7 +521,7 @@ func aviDecode(d *decode.D, in any) any {
 					index < len(streams) &&
 					streams[index].hasFormat:
 					s := streams[index]
-					d.FieldFormatLen("data", d.BitsLeft(), s.format, s.formatInArg)
+					d.FieldFormatLen("data", d.BitsLeft(), &s.format, s.formatInArg)
 				default:
 					d.FieldRawLen("data", d.BitsLeft())
 				}
@@ -557,7 +559,7 @@ func aviDecode(d *decode.D, in any) any {
 				decodeSample := func(d *decode.D, sr ranges.Range) {
 					d.RangeFn(sr.Start, sr.Len, func(d *decode.D) {
 						if sr.Len > 0 && ai.DecodeSamples && s.hasFormat {
-							d.FieldFormat("sample", s.format, s.formatInArg)
+							d.FieldFormat("sample", &s.format, s.formatInArg)
 						} else {
 							d.FieldRawLen("sample", d.BitsLeft())
 						}

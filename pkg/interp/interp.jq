@@ -16,6 +16,7 @@ def display($opts):
   ( . as $c
   | options($opts) as $opts
   | try _todisplay catch $c
+  | if $opts.value_output then tovalue end
   | if _can_display then _display($opts)
     else
       ( if _is_string and $opts.raw_string then print

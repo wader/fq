@@ -5,8 +5,6 @@ import (
 )
 
 // based on ffmpeg libavformat/isom.c ff_mp4_obj_type
-//
-//nolint:revive
 const (
 	MPEGObjectTypeMOV_TEXT          = 0x08
 	MPEGObjectTypeMPEG4             = 0x20
@@ -46,7 +44,7 @@ const (
 	MPEGObjectTypeNONE              = 0
 )
 
-var MpegObjectTypeNames = scalar.UToSymStr{
+var MpegObjectTypeNames = scalar.UintMapSymStr{
 	MPEGObjectTypeMOV_TEXT:          "MPEGObjectTypeMOV_TEXT",
 	MPEGObjectTypeMPEG4:             "MPEGObjectTypeMPEG4",
 	MPEGObjectTypeH264:              "MPEGObjectTypeH264",
@@ -131,7 +129,6 @@ var MpegObjectTypeStreamType = map[uint64]int{
 	MPEGObjectTypeNONE:              MPEGStreamTypeUnknown,
 }
 
-//nolint:revive
 const (
 	MPEGAudioObjectTypeMain      = 1
 	MPEGAudioObjectTypeLC        = 2
@@ -142,10 +139,10 @@ const (
 	MPEGAudioObjectTypePS        = 29
 )
 
-var MPEGAudioObjectTypeNames = scalar.UToScalar{
+var MPEGAudioObjectTypeNames = scalar.UintMap{
 	0:                            {Sym: "mull", Description: "Null"},
 	MPEGAudioObjectTypeMain:      {Sym: "aac_main", Description: "AAC Main"},
-	MPEGAudioObjectTypeLC:        {Sym: "aac_lc", Description: "AAC Low Complexity)"},
+	MPEGAudioObjectTypeLC:        {Sym: "aac_lc", Description: "AAC Low Complexity"},
 	MPEGAudioObjectTypeSSR:       {Sym: "aac_ssr", Description: "AAC Scalable Sample Rate"},
 	MPEGAudioObjectTypeLTP:       {Sym: "aac_ltp", Description: "AAC Long Term Prediction"},
 	MPEGAudioObjectTypeSBR:       {Sym: "sbr", Description: "Spectral Band Replication"},
@@ -192,9 +189,7 @@ var MPEGAudioObjectTypeNames = scalar.UToScalar{
 }
 
 // based on ffmpeg/libavutil/pixfmt.h
-//
-//nolint:revive
-var ISO_23091_2_ColourPrimariesMap = scalar.UToScalar{
+var ISO_23091_2_ColourPrimariesMap = scalar.UintMap{
 	1:  {Sym: "bt709", Description: "ITU-R BT1361 / IEC 61966-2-4 / SMPTE RP 177 Annex B"},
 	2:  {Sym: "unspecified", Description: "Unspecified"},
 	3:  {Sym: "reserved", Description: "Reserved"},
@@ -210,8 +205,7 @@ var ISO_23091_2_ColourPrimariesMap = scalar.UToScalar{
 	22: {Sym: "ebu3213", Description: "EBU Tech. 3213-E (nothing there) / one of JEDEC P22 group phosphors"},
 }
 
-//nolint:revive
-var ISO_23091_2_TransferCharacteristicMap = scalar.UToScalar{
+var ISO_23091_2_TransferCharacteristicMap = scalar.UintMap{
 	1:  {Sym: "bt709", Description: "ITU-R BT1361"},
 	2:  {Sym: "unspecified", Description: "Unspecified"},
 	3:  {Sym: "reserved", Description: "Reserved"},
@@ -232,8 +226,7 @@ var ISO_23091_2_TransferCharacteristicMap = scalar.UToScalar{
 	18: {Sym: "arib_std_b67", Description: "ARIB STD-B67, known as Hybrid log-gamma"},
 }
 
-//nolint:revive
-var ISO_23091_2_MatrixCoefficients = scalar.UToScalar{
+var ISO_23091_2_MatrixCoefficients = scalar.UintMap{
 	0:  {Sym: "rgb", Description: "GBR, IEC 61966-2-1 (sRGB), YZX and ST 428-1"},
 	1:  {Sym: "bt709", Description: "ITU-R BT1361 / IEC 61966-2-4 xvYCC709 / derived in SMPTE RP 177 Annex B"},
 	2:  {Sym: "unspecified", Description: "Unspecified"},
@@ -252,8 +245,6 @@ var ISO_23091_2_MatrixCoefficients = scalar.UToScalar{
 }
 
 // based on ffmpeg libavformat/riff.c
-//
-//nolint:revive
 const (
 	WAVTagPCM_S16LE       = 0x0001
 	WAVTagADPCM_MS        = 0x0002
@@ -329,7 +320,7 @@ const (
 	WAVTagVORBIS          = 0x566f
 )
 
-var WAVTagNames = scalar.UToSymStr{
+var WAVTagNames = scalar.UintMapSymStr{
 	WAVTagPCM_S16LE:       "pcm_s16le",
 	WAVTagADPCM_MS:        "adpcm_ms",
 	WAVTagPCM_F32LE:       "pcm_f32le",
@@ -405,8 +396,6 @@ var WAVTagNames = scalar.UToSymStr{
 }
 
 // based on ffmpeg libavformat/riff.c
-//
-//nolint:revive
 const (
 	BMPTagH264                = "H264"
 	BMPTagH264_h264           = "h264"

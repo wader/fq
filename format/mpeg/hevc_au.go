@@ -6,38 +6,40 @@ import (
 	"github.com/wader/fq/pkg/interp"
 )
 
-var hevcAUNALFormat decode.Group
+var hevcAUNALGroup decode.Group
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.HEVC_AU,
-		Description: "H.265/HEVC Access Unit",
-		DecodeFn:    hevcAUDecode,
-		DecodeInArg: format.HevcAuIn{
-			LengthSize: 4,
-		},
-		RootArray: true,
-		RootName:  "access_unit",
-		Dependencies: []decode.Dependency{
-			{Names: []string{format.HEVC_NALU}, Group: &hevcAUNALFormat},
-		},
-	})
+	interp.RegisterFormat(
+		format.HEVC_AU,
+		&decode.Format{
+			Description: "H.265/HEVC Access Unit",
+			DecodeFn:    hevcAUDecode,
+			DefaultInArg: format.HEVC_AU_In{
+				LengthSize: 4,
+			},
+			RootArray: true,
+			RootName:  "access_unit",
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.HEVC_NALU}, Out: &hevcAUNALGroup},
+			},
+		})
 }
 
 // TODO: share/refactor with avcAUDecode?
-func hevcAUDecode(d *decode.D, in any) any {
-	hevcIn, _ := in.(format.HevcAuIn)
+func hevcAUDecode(d *decode.D) any {
+	var hi format.HEVC_AU_In
+	d.ArgAs(&hi)
 
-	if hevcIn.LengthSize == 0 {
+	if hi.LengthSize == 0 {
 		// TODO: is annexb the correct name?
-		annexBDecode(d, nil, hevcAUNALFormat)
+		annexBDecode(d, hevcAUNALGroup)
 		return nil
 	}
 
 	for d.NotEnd() {
 		d.FieldStruct("nalu", func(d *decode.D) {
-			l := int64(d.FieldU("length", int(hevcIn.LengthSize)*8)) * 8
-			d.FieldFormatLen("nalu", l, hevcAUNALFormat, nil)
+			l := int64(d.FieldU("length", int(hi.LengthSize)*8)) * 8
+			d.FieldFormatLen("nalu", l, &hevcAUNALGroup, nil)
 		})
 	}
 

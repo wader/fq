@@ -9,11 +9,12 @@ import (
 )
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.HEVC_SPS,
-		Description: "H.265/HEVC Sequence Parameter Set",
-		DecodeFn:    hevcSPSDecode,
-	})
+	interp.RegisterFormat(
+		format.HEVC_SPS,
+		&decode.Format{
+			Description: "H.265/HEVC Sequence Parameter Set",
+			DecodeFn:    hevcSPSDecode,
+		})
 }
 
 func profileLayerDecode(d *decode.D, prefix string, profilePresent bool, levelPresent bool, isSublayer bool) {
@@ -106,11 +107,11 @@ func profileTierLevelDecode(d *decode.D, profilePresentFlag bool, maxNumSubLayer
 func hevcSubLayerHrdParameters(d *decode.D, subPicHrdParamsPresentFlag bool, cpbCntMinus1 int) {
 	for i := 0; i <= cpbCntMinus1; i++ {
 		d.FieldStruct("parameters", func(d *decode.D) {
-			d.FieldUFn("bit_rate_value_minus1", uEV)
-			d.FieldUFn("cpb_size_value_minus1", uEV)
+			d.FieldUintFn("bit_rate_value_minus1", uEV)
+			d.FieldUintFn("cpb_size_value_minus1", uEV)
 			if subPicHrdParamsPresentFlag {
-				d.FieldUFn("cpb_size_du_value_minus1", uEV)
-				d.FieldUFn("bit_rate_du_value_minus1", uEV)
+				d.FieldUintFn("cpb_size_du_value_minus1", uEV)
+				d.FieldUintFn("bit_rate_du_value_minus1", uEV)
 			}
 			d.FieldBool("cbr_flag")
 		})
@@ -152,13 +153,13 @@ func hevcHrdParameters(d *decode.D, commonInfPresentFlag bool, maxNumSubLayersMi
 				}
 				var lowDelayHrdFlag bool
 				if fixedPicRateWithinCvsFlag {
-					d.FieldUFn("elemental_duration_in_tc_minus1", uEV)
+					d.FieldUintFn("elemental_duration_in_tc_minus1", uEV)
 				} else {
 					lowDelayHrdFlag = d.FieldBool("low_delay_hrd_flag")
 				}
 				var cpbCntMinus1 int
 				if !lowDelayHrdFlag {
-					cpbCntMinus1 = int(d.FieldUFn("cpb_cnt_minus1", uEV))
+					cpbCntMinus1 = int(d.FieldUintFn("cpb_cnt_minus1", uEV))
 				}
 				if nalHrdParametersPresentFlag {
 					hevcSubLayerHrdParameters(d, subPicHrdParamsPresentFlag, cpbCntMinus1)
@@ -198,8 +199,8 @@ func hevcVuiParameters(d *decode.D, spsMaxSubLayersMinus1 uint64) {
 	}
 	chromaLocInfoPresentFlag := d.FieldBool("chroma_loc_info_present_flag")
 	if chromaLocInfoPresentFlag {
-		d.FieldUFn("chroma_sample_loc_type_top_field", uEV)
-		d.FieldUFn("chroma_sample_loc_type_bottom_field", uEV)
+		d.FieldUintFn("chroma_sample_loc_type_top_field", uEV)
+		d.FieldUintFn("chroma_sample_loc_type_bottom_field", uEV)
 	}
 
 	d.FieldBool("neutral_chroma_indication_flag")
@@ -207,10 +208,10 @@ func hevcVuiParameters(d *decode.D, spsMaxSubLayersMinus1 uint64) {
 	d.FieldBool("frame_field_info_present_flag")
 	defaultDisplayWindowFlag := d.FieldBool("default_display_window_flag")
 	if defaultDisplayWindowFlag {
-		d.FieldUFn("def_disp_win_left_offset", uEV)
-		d.FieldUFn("def_disp_win_right_offset", uEV)
-		d.FieldUFn("def_disp_win_top_offset", uEV)
-		d.FieldUFn("def_disp_win_bottom_offset", uEV)
+		d.FieldUintFn("def_disp_win_left_offset", uEV)
+		d.FieldUintFn("def_disp_win_right_offset", uEV)
+		d.FieldUintFn("def_disp_win_top_offset", uEV)
+		d.FieldUintFn("def_disp_win_bottom_offset", uEV)
 	}
 
 	vuiTimingInfoPresentFlag := d.FieldBool("vui_timing_info_present_flag")
@@ -219,7 +220,7 @@ func hevcVuiParameters(d *decode.D, spsMaxSubLayersMinus1 uint64) {
 		d.FieldU32("vui_time_scale")
 		vuiPocProportionalToTimingFlag := d.FieldBool("vui_poc_proportional_to_timing_flag")
 		if vuiPocProportionalToTimingFlag {
-			d.FieldUFn("vui_num_ticks_poc_diff_one_minus1", uEV)
+			d.FieldUintFn("vui_num_ticks_poc_diff_one_minus1", uEV)
 		}
 		vuiHrdParametersPresentFlag := d.FieldBool("vui_hrd_parameters_present_flag")
 		if vuiHrdParametersPresentFlag {
@@ -232,37 +233,37 @@ func hevcVuiParameters(d *decode.D, spsMaxSubLayersMinus1 uint64) {
 		d.FieldBool("tiles_fixed_structure_flag")
 		d.FieldBool("motion_vectors_over_pic_boundaries_flag")
 		d.FieldBool("restricted_ref_pic_lists_flag")
-		d.FieldUFn("min_spatial_segmentation_idc", uEV)
-		d.FieldUFn("max_bytes_per_pic_denom", uEV)
-		d.FieldUFn("max_bits_per_min_cu_denom", uEV)
-		d.FieldUFn("log2_max_mv_length_horizontal", uEV)
-		d.FieldUFn("log2_max_mv_length_vertical", uEV)
+		d.FieldUintFn("min_spatial_segmentation_idc", uEV)
+		d.FieldUintFn("max_bytes_per_pic_denom", uEV)
+		d.FieldUintFn("max_bits_per_min_cu_denom", uEV)
+		d.FieldUintFn("log2_max_mv_length_horizontal", uEV)
+		d.FieldUintFn("log2_max_mv_length_vertical", uEV)
 	}
 }
 
 // H.265 page 34
-func hevcSPSDecode(d *decode.D, _ any) any {
+func hevcSPSDecode(d *decode.D) any {
 	d.FieldU4("sps_video_parameter_set_id")
 	spsMaxSubLayersMinus1 := d.FieldU3("sps_max_sub_layers_minus1")
 	d.FieldBool("sps_temporal_id_nesting_flag")
 	profileTierLevelDecode(d, true, spsMaxSubLayersMinus1)
-	d.FieldUFn("sps_seq_parameter_set_id", uEV)
-	chromaFormatIdc := d.FieldUFn("chroma_format_idc", uEV, chromaFormatMap)
+	d.FieldUintFn("sps_seq_parameter_set_id", uEV)
+	chromaFormatIdc := d.FieldUintFn("chroma_format_idc", uEV, chromaFormatMap)
 	if chromaFormatIdc == 3 {
 		d.FieldBool("separate_colour_plane_flag")
 	}
-	d.FieldUFn("pic_width_in_luma_samples", uEV)
-	d.FieldUFn("pic_height_in_luma_samples", uEV)
+	d.FieldUintFn("pic_width_in_luma_samples", uEV)
+	d.FieldUintFn("pic_height_in_luma_samples", uEV)
 	conformanceWindowFlag := d.FieldBool("conformance_window_flag")
 	if conformanceWindowFlag {
-		d.FieldUFn("conf_win_left_offset", uEV)
-		d.FieldUFn("conf_win_right_offset", uEV)
-		d.FieldUFn("conf_win_top_offset", uEV)
-		d.FieldUFn("conf_win_bottom_offset", uEV)
+		d.FieldUintFn("conf_win_left_offset", uEV)
+		d.FieldUintFn("conf_win_right_offset", uEV)
+		d.FieldUintFn("conf_win_top_offset", uEV)
+		d.FieldUintFn("conf_win_bottom_offset", uEV)
 	}
-	d.FieldUFn("bit_depth_luma_minus8", uEV)
-	d.FieldUFn("bit_depth_chroma_minus8", uEV)
-	d.FieldUFn("log2_max_pic_order_cnt_lsb_minus4", uEV)
+	d.FieldUintFn("bit_depth_luma_minus8", uEV)
+	d.FieldUintFn("bit_depth_chroma_minus8", uEV)
+	d.FieldUintFn("log2_max_pic_order_cnt_lsb_minus4", uEV)
 	spsSubLayerOrderingInfoPresentFlag := d.FieldBool("sps_sub_layer_ordering_info_present_flag")
 	d.FieldArray("sps_sub_layer_ordering_infos", func(d *decode.D) {
 		i := spsMaxSubLayersMinus1
@@ -271,18 +272,18 @@ func hevcSPSDecode(d *decode.D, _ any) any {
 		}
 		for ; i <= spsMaxSubLayersMinus1; i++ {
 			d.FieldStruct("sps_sub_layer_ordering_info", func(d *decode.D) {
-				d.FieldUFn("sps_max_dec_pic_buffering_minus1", uEV)
-				d.FieldUFn("sps_max_num_reorder_pics", uEV)
-				d.FieldUFn("sps_max_latency_increase_plus1", uEV)
+				d.FieldUintFn("sps_max_dec_pic_buffering_minus1", uEV)
+				d.FieldUintFn("sps_max_num_reorder_pics", uEV)
+				d.FieldUintFn("sps_max_latency_increase_plus1", uEV)
 			})
 		}
 	})
-	d.FieldUFn("log2_min_luma_coding_block_size_minus3", uEV)
-	d.FieldUFn("log2_diff_max_min_luma_coding_block_size", uEV)
-	d.FieldUFn("log2_min_luma_transform_block_size_minus2", uEV)
-	d.FieldUFn("log2_diff_max_min_luma_transform_block_size", uEV)
-	d.FieldUFn("max_transform_hierarchy_depth_inter", uEV)
-	d.FieldUFn("max_transform_hierarchy_depth_intra", uEV)
+	d.FieldUintFn("log2_min_luma_coding_block_size_minus3", uEV)
+	d.FieldUintFn("log2_diff_max_min_luma_coding_block_size", uEV)
+	d.FieldUintFn("log2_min_luma_transform_block_size_minus2", uEV)
+	d.FieldUintFn("log2_diff_max_min_luma_transform_block_size", uEV)
+	d.FieldUintFn("max_transform_hierarchy_depth_inter", uEV)
+	d.FieldUintFn("max_transform_hierarchy_depth_intra", uEV)
 	scalingListEnabledFlag := d.FieldBool("scaling_list_enabled_flag")
 	if scalingListEnabledFlag {
 		spsScalingListDataPresentFlag := d.FieldBool("sps_scaling_list_data_present_flag")
@@ -297,11 +298,11 @@ func hevcSPSDecode(d *decode.D, _ any) any {
 	if pcmEnabledFlag {
 		d.FieldU4("pcm_sample_bit_depth_luma_minus1")
 		d.FieldU4("pcm_sample_bit_depth_chroma_minus1")
-		d.FieldUFn("log2_min_pcm_luma_coding_block_size_minus3", uEV)
-		d.FieldUFn("log2_diff_max_min_pcm_luma_coding_block_size", uEV)
+		d.FieldUintFn("log2_min_pcm_luma_coding_block_size_minus3", uEV)
+		d.FieldUintFn("log2_diff_max_min_pcm_luma_coding_block_size", uEV)
 		d.FieldBool("pcm_loop_filter_disabled_flag")
 	}
-	numShortTermRefPicSets := d.FieldUFn("num_short_term_ref_pic_sets", uEV)
+	numShortTermRefPicSets := d.FieldUintFn("num_short_term_ref_pic_sets", uEV)
 	if numShortTermRefPicSets > 0 {
 		// TODO
 		return nil

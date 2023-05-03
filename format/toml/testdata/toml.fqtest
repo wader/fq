@@ -9,8 +9,8 @@ $ fq . probe.toml
 }
 # toml does not support null in arrays
 # TODO: add uint64 norm test
-$ fq -rRs 'fromjson[] | (walk(if type == "array" then map(select(. != null)) end) | try (totoml | ., fromtoml) catch .), "----"' variants.json
-totoml cannot be applied to: null
+$ fq -rRs 'fromjson[] | (walk(if type == "array" then map(select(. != null)) end) | try (to_toml | ., from_toml) catch .), "----"' variants.json
+to_toml cannot be applied to: null
 ----
 toml: top-level values must be Go maps or structs
 ----
@@ -63,9 +63,9 @@ true = true
 toml: top-level values must be Go maps or structs
 ----
 
-error at position 0x0: root object has no values
+error at position 0x0: EOF
 ----
-$ fq -n '"" | fromtoml'
+$ fq -n '" " | from_toml'
 exitcode: 5
 stderr:
-error: error at position 0x0: root object has no values
+error: error at position 0x1: root object has no values

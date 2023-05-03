@@ -23,25 +23,25 @@ const (
 	ProtoBufTypeFloat
 )
 
-var ProtoBufTypeNames = scalar.UToSymStr{
-	ProtoBufTypeInt32:          "Int32",
-	ProtoBufTypeInt64:          "Int64",
-	ProtoBufTypeUInt32:         "UInt32",
-	ProtoBufTypeUInt64:         "UInt64",
-	ProtoBufTypeSInt32:         "SInt32",
-	ProtoBufTypeSInt64:         "SInt64",
-	ProtoBufTypeBool:           "Bool",
-	ProtoBufTypeEnum:           "Enum",
-	ProtoBufTypeFixed64:        "Fixed64",
-	ProtoBufTypeSFixed64:       "SFixed64",
-	ProtoBufTypeDouble:         "Double",
-	ProtoBufTypeString:         "String",
-	ProtoBufTypeBytes:          "Bytes",
-	ProtoBufTypeMessage:        "Message",
-	ProtoBufTypePackedRepeated: "PackedRepeated",
-	ProtoBufTypeFixed32:        "Fixed32",
-	ProtoBufTypeSFixed32:       "SFixed32",
-	ProtoBufTypeFloat:          "Float",
+var ProtoBufTypeNames = scalar.UintMapSymStr{
+	ProtoBufTypeInt32:          "int32",
+	ProtoBufTypeInt64:          "int64",
+	ProtoBufTypeUInt32:         "uint32",
+	ProtoBufTypeUInt64:         "uint64",
+	ProtoBufTypeSInt32:         "sint32",
+	ProtoBufTypeSInt64:         "sint64",
+	ProtoBufTypeBool:           "bool",
+	ProtoBufTypeEnum:           "enum",
+	ProtoBufTypeFixed64:        "fixed64",
+	ProtoBufTypeSFixed64:       "sfixed64",
+	ProtoBufTypeDouble:         "double",
+	ProtoBufTypeString:         "string",
+	ProtoBufTypeBytes:          "bytes",
+	ProtoBufTypeMessage:        "message",
+	ProtoBufTypePackedRepeated: "packed_repeated",
+	ProtoBufTypeFixed32:        "fixed32",
+	ProtoBufTypeSFixed32:       "sfixed32",
+	ProtoBufTypeFloat:          "float",
 }
 
 type ProtoBufField struct {

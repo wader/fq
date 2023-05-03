@@ -3,13 +3,13 @@
 $ fq -i -d json . appendix_a.json
 json> length
 82
-json> map(select(.decoded) | (.cbor | frombase64 | cbor | torepr) as $a | select( .decoded != $a) | {test: ., actual: $a})
+json> map(select(.decoded) | (.cbor | from_base64 | cbor | torepr) as $a | select( .decoded != $a) | {test: ., actual: $a})
 [
   {
     "actual": {
       "major_type": "bytes",
       "short_count": 9,
-      "value": "<9>AQAAAAAAAAAA"
+      "value": "\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
     },
     "test": {
       "cbor": "wkkBAAAAAAAAAAA=",
@@ -22,7 +22,7 @@ json> map(select(.decoded) | (.cbor | frombase64 | cbor | torepr) as $a | select
     "actual": {
       "major_type": "bytes",
       "short_count": 9,
-      "value": "<9>AQAAAAAAAAAA"
+      "value": "\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
     },
     "test": {
       "cbor": "w0kBAAAAAAAAAAA=",
@@ -32,7 +32,7 @@ json> map(select(.decoded) | (.cbor | frombase64 | cbor | torepr) as $a | select
     }
   }
 ]
-json> .[] | select(.decoded) | .cbor | frombase64 | cbor | dv
+json> .[] | select(.decoded) | .cbor | from_base64 | cbor | dv
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (cbor) 0x0-0x0.7 (1)
 0x0|00|                                            |.|              |  major_type: "positive_int" (0) 0x0-0x0.2 (0.3)
 0x0|00|                                            |.|              |  short_count: 0 0x0.3-0x0.7 (0.5)
@@ -483,7 +483,7 @@ json> .[] | select(.decoded) | .cbor | frombase64 | cbor | dv
 0x0|                     64                        |       d        |      short_count: 4 0x7.3-0x7.7 (0.5)
 0x0|                        6d 69 6e 67            |        ming    |      value: "ming" 0x8-0xb.7 (4)
    |                                               |                |  value: "streaming" 0xc-NA (0)
-0x0|                                    ff|        |            .|  |  unknown0: raw bits 0xc-0xc.7 (1)
+0x0|                                    ff|        |            .|  |  gap0: raw bits 0xc-0xc.7 (1)
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: (cbor) 0x0-0x1.7 (2)
 0x0|9f                                             |.               |  major_type: "array" (4) 0x0-0x0.2 (0.3)
 0x0|9f                                             |.               |  short_count: "indefinite" (31) 0x0.3-0x0.7 (0.5)

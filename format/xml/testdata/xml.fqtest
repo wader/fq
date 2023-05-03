@@ -6,7 +6,7 @@ $ fq . probe.xml
 }
 $ fq -d bytes -ni . all.xml decl.xml multi_diff.xml multi_same.xml ns.xml simple.xml escape.xml
 null> inputs | {name: input_filename, str: tostring} | slurp("files")
-null> spew("files") | .name, try (.str | fromxml | ., (toxml({indent: 2}) | println)) catch .
+null> spew("files") | .name, try (.str | from_xml | ., (to_xml({indent: 2}) | println)) catch .
 "all.xml"
 {
   "elm": {
@@ -85,7 +85,7 @@ null> spew("files") | .name, try (.str | fromxml | ., (toxml({indent: 2}) | prin
   }
 }
 <a attr="&amp;&lt;&gt;">&amp;&lt;&gt;</a>
-null> spew("files") | .name, try (.str | fromxml({seq: true}) | ., (toxml({indent: 2}) | println)) catch .
+null> spew("files") | .name, try (.str | from_xml({seq: true}) | ., (to_xml({indent: 2}) | println)) catch .
 "all.xml"
 {
   "elm": {
@@ -177,7 +177,7 @@ null> spew("files") | .name, try (.str | fromxml({seq: true}) | ., (toxml({inden
   }
 }
 <a attr="&amp;&lt;&gt;">&amp;&lt;&gt;</a>
-null> spew("files") | .name, try (.str | fromxml({array: true}) | ., (toxml({indent: 2}) | println)) catch .
+null> spew("files") | .name, try (.str | from_xml({array: true}) | ., (to_xml({indent: 2}) | println)) catch .
 "all.xml"
 [
   "elm",
@@ -308,7 +308,7 @@ null> spew("files") | .name, try (.str | fromxml({array: true}) | ., (toxml({ind
   []
 ]
 <a attr="&amp;&lt;&gt;">&amp;&lt;&gt;</a>
-null> {doc: {a: "", "#text": "text", "#comment": "comment", "@attr": "value"}} | toxml, toxml({indent: 1}), toxml({indent: 8}) | println
+null> {doc: {a: "", "#text": "text", "#comment": "comment", "@attr": "value"}} | to_xml, to_xml({indent: 1}), to_xml({indent: 8}) | println
 <doc attr="value">text<!--comment--><a></a></doc>
 <doc attr="value">text
  <!--comment-->
@@ -318,7 +318,7 @@ null> {doc: {a: "", "#text": "text", "#comment": "comment", "@attr": "value"}} |
         <!--comment-->
         <a></a>
 </doc>
-null> ["doc", {"#text": "text", "#comment": "comment", attr: "value"}, [["a"]]] | toxml, toxml({indent: 1}), toxml({indent: 8}) | println
+null> ["doc", {"#text": "text", "#comment": "comment", attr: "value"}, [["a"]]] | to_xml, to_xml({indent: 1}), to_xml({indent: 8}) | println
 <doc attr="value">text<!--comment--><a></a></doc>
 <doc attr="value">text
  <!--comment-->
@@ -328,16 +328,16 @@ null> ["doc", {"#text": "text", "#comment": "comment", attr: "value"}, [["a"]]] 
         <!--comment-->
         <a></a>
 </doc>
-null> {a: ""} | toxml
+null> {a: ""} | to_xml
 "<a></a>"
-null> {a: [""]} | toxml
+null> {a: [""]} | to_xml
 "<a></a>"
-null> {a: {"@attr": "value", "#text": "text", "#comment": "comment"}} | toxml
+null> {a: {"@attr": "value", "#text": "text", "#comment": "comment"}} | to_xml
 "<a attr=\"value\">text<!--comment--></a>"
-null> {a: ["b", "c"]} | toxml
+null> {a: ["b", "c"]} | to_xml
 "<doc><a>b</a><a>c</a></doc>"
-null> {a: [123, null, true, false]} | toxml
+null> {a: [123, null, true, false]} | to_xml
 "<doc><a>123</a><a></a><a>true</a><a>false</a></doc>"
-null> 123 | toxml
-error: toxml cannot be applied to: number (123)
+null> 123 | to_xml
+error: to_xml cannot be applied to: number (123)
 null> ^D
