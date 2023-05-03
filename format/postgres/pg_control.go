@@ -29,11 +29,10 @@ import (
 var pgControlFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.PG_CONTROL,
+	interp.RegisterFormat(format.PG_CONTROL, &decode.Format{
 		Description: "PostgreSQL control file",
 		DecodeFn:    decodePgControl,
-		DecodeInArg: format.PostgresIn{
+		DefaultInArg: format.PostgresIn{
 			Flavour: "",
 		},
 	})
@@ -72,55 +71,55 @@ const (
 	PG_FLAVOUR_PGPROEE15  = "pgproee15"
 )
 
-func decodePgControl(d *decode.D, in any) any {
+func decodePgControl(d *decode.D) any {
 	d.Endian = decode.LittleEndian
 
-	pgIn, ok := in.(format.PostgresIn)
-	if !ok {
+	var pgIn format.PostgresIn
+	if !d.ArgAs(&pgIn) {
 		d.Fatalf("DecodeInArg must be PostgresIn!\n")
 	}
 
 	switch pgIn.Flavour {
 	case PG_FLAVOUR_POSTGRES10:
-		return postgres10.DecodePgControl(d, in)
+		return postgres10.DecodePgControl(d)
 	case PG_FLAVOUR_POSTGRES11:
-		return postgres11.DecodePgControl(d, in)
+		return postgres11.DecodePgControl(d)
 	case PG_FLAVOUR_POSTGRES12:
-		return postgres12.DecodePgControl(d, in)
+		return postgres12.DecodePgControl(d)
 	case PG_FLAVOUR_POSTGRES13:
-		return postgres13.DecodePgControl(d, in)
+		return postgres13.DecodePgControl(d)
 	case PG_FLAVOUR_POSTGRES14, PG_FLAVOUR_POSTGRES15, PG_FLAVOUR_PGPRO15:
-		return postgres14.DecodePgControl(d, in)
+		return postgres14.DecodePgControl(d)
 	case PG_FLAVOUR_PGPRO10:
-		return pgpro10.DecodePgControl(d, in)
+		return pgpro10.DecodePgControl(d)
 	case PG_FLAVOUR_PGPRO11:
-		return pgpro11.DecodePgControl(d, in)
+		return pgpro11.DecodePgControl(d)
 	case PG_FLAVOUR_PGPRO12:
-		return pgpro12.DecodePgControl(d, in)
+		return pgpro12.DecodePgControl(d)
 	case PG_FLAVOUR_PGPRO13:
-		return pgpro13.DecodePgControl(d, in)
+		return pgpro13.DecodePgControl(d)
 	case PG_FLAVOUR_PGPRO14:
-		return pgpro14.DecodePgControl(d, in)
+		return pgpro14.DecodePgControl(d)
 	case PG_FLAVOUR_PGPROEE10:
-		return pgproee10.DecodePgControl(d, in)
+		return pgproee10.DecodePgControl(d)
 	case PG_FLAVOUR_PGPROEE11:
-		return pgproee11.DecodePgControl(d, in)
+		return pgproee11.DecodePgControl(d)
 	case PG_FLAVOUR_PGPROEE12:
-		return pgproee12.DecodePgControl(d, in)
+		return pgproee12.DecodePgControl(d)
 	case PG_FLAVOUR_PGPROEE13:
-		return pgproee13.DecodePgControl(d, in)
+		return pgproee13.DecodePgControl(d)
 	case PG_FLAVOUR_PGPROEE14:
-		return pgproee14.DecodePgControl(d, in)
+		return pgproee14.DecodePgControl(d)
 	case PG_FLAVOUR_PGPROEE15:
-		return pgproee15.DecodePgControl(d, in)
+		return pgproee15.DecodePgControl(d)
 	default:
 		break
 	}
 
-	return probeForDecode(d, in)
+	return probeForDecode(d)
 }
 
-func probeForDecode(d *decode.D, in any) any {
+func probeForDecode(d *decode.D) any {
 	/*    0      |     8 */ // uint64 system_identifier;
 	/*    8      |     4 */ // uint32 pg_control_version;
 	d.U64()
@@ -132,39 +131,39 @@ func probeForDecode(d *decode.D, in any) any {
 	if pgProVersion == common.PG_ORIGINAL {
 		switch oriVersion {
 		case PG_CONTROL_VERSION_10:
-			return postgres10.DecodePgControl(d, in)
+			return postgres10.DecodePgControl(d)
 		case PG_CONTROL_VERSION_11:
-			return postgres11.DecodePgControl(d, in)
+			return postgres11.DecodePgControl(d)
 		case PG_CONTROL_VERSION_12:
-			return postgres12.DecodePgControl(d, in)
+			return postgres12.DecodePgControl(d)
 		case PG_CONTROL_VERSION_14:
-			return postgres14.DecodePgControl(d, in)
+			return postgres14.DecodePgControl(d)
 		}
 	}
 
 	if pgProVersion == common.PGPRO_STANDARD {
 		switch oriVersion {
 		case PG_CONTROL_VERSION_10:
-			return pgpro10.DecodePgControl(d, in)
+			return pgpro10.DecodePgControl(d)
 		case PG_CONTROL_VERSION_11:
-			return pgpro11.DecodePgControl(d, in)
+			return pgpro11.DecodePgControl(d)
 		case PG_CONTROL_VERSION_12:
-			return pgpro12.DecodePgControl(d, in)
+			return pgpro12.DecodePgControl(d)
 		case PG_CONTROL_VERSION_14:
-			return pgpro14.DecodePgControl(d, in)
+			return pgpro14.DecodePgControl(d)
 		}
 	}
 
 	if pgProVersion == common.PGPRO_ENTERPRISE {
 		switch oriVersion {
 		case PG_CONTROL_VERSION_10:
-			return pgproee10.DecodePgControl(d, in)
+			return pgproee10.DecodePgControl(d)
 		case PGPRO_CONTROL_VERSION_11:
-			return pgproee11.DecodePgControl(d, in)
+			return pgproee11.DecodePgControl(d)
 		case PG_CONTROL_VERSION_12:
-			return pgproee12.DecodePgControl(d, in)
+			return pgproee12.DecodePgControl(d)
 		case PG_CONTROL_VERSION_14:
-			return pgproee14.DecodePgControl(d, in)
+			return pgproee14.DecodePgControl(d)
 		}
 	}
 

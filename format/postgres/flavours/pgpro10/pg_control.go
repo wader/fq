@@ -6,7 +6,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-func DecodePgControl(d *decode.D, in any) any {
+func DecodePgControl(d *decode.D) any {
 	d.FieldU64("system_identifier")
 	d.FieldU32("pg_control_version", common.VersionMapper)
 	d.FieldU32("catalog_version_no")

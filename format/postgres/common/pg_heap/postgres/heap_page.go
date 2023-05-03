@@ -92,9 +92,9 @@ func decodeItemIdsInternal(page *HeapPage, d *decode.D) {
 			itemID.Flags = uint32((itemIDData >> 15) & 0x3)
 			itemID.Len = uint32((itemIDData >> 17) & 0x7fff)
 
-			d.FieldValueU("lp_off", uint64(itemID.Off))
-			d.FieldValueU("lp_flags", uint64(itemID.Flags), common.LpFlagsMapper)
-			d.FieldValueU("lp_len", uint64(itemID.Len))
+			d.FieldValueUint("lp_off", uint64(itemID.Off))
+			d.FieldValueUint("lp_flags", uint64(itemID.Flags), common.LpFlagsMapper)
+			d.FieldValueUint("lp_len", uint64(itemID.Len))
 
 			page.ItemIds = append(page.ItemIds, itemID)
 		})

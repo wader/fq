@@ -14,11 +14,10 @@ import (
 var pgBTreeFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.PG_BTREE,
+	interp.RegisterFormat(format.PG_BTREE, &decode.Format{
 		Description: "PostgreSQL btree index file",
 		DecodeFn:    decodePgBTree,
-		DecodeInArg: format.PostgresBTreeIn{
+		DefaultInArg: format.PostgresBTreeIn{
 			Page: 0,
 		},
 		RootArray: true,
@@ -27,10 +26,10 @@ func init() {
 	interp.RegisterFS(pgBTreeFS)
 }
 
-func decodePgBTree(d *decode.D, in any) any {
+func decodePgBTree(d *decode.D) any {
 	d.Endian = decode.LittleEndian
-	pgIn, ok := in.(format.PostgresBTreeIn)
-	if !ok {
+	var pgIn format.PostgresBTreeIn
+	if !d.ArgAs(&pgIn) {
 		d.Fatalf("DecodeInArg must be PostgresBTreeIn!\n")
 	}
 	return postgres.DecodePgBTree(d, pgIn)

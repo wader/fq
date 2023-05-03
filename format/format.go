@@ -112,9 +112,9 @@ var (
 	Opus_Packet         = &decode.Group{Name: "opus_packet"}
 	PCAP                = &decode.Group{Name: "pcap"}
 	PCAPNG              = &decode.Group{Name: "pcapng"}
-	PG_BTREE            = "pg_btree"
-	PG_CONTROL          = "pg_control"
-	PG_HEAP             = "pg_heap"
+	PG_BTREE            = &decode.Group{Name: "pg_btree"}
+	PG_CONTROL          = &decode.Group{Name: "pg_control"}
+	PG_HEAP             = &decode.Group{Name: "pg_heap"}
 	PNG                 = &decode.Group{Name: "png"}
 	Prores_Frame        = &decode.Group{Name: "prores_frame"}
 	Protobuf            = &decode.Group{Name: "protobuf"}

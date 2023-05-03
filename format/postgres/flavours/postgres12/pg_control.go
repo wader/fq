@@ -75,7 +75,7 @@ import (
 /* XXX  4-byte padding */
 //
 /* total size (bytes):   88 */
-func DecodePgControl(d *decode.D, in any) any {
+func DecodePgControl(d *decode.D) any {
 	/*    0      |     8 */ // uint64 system_identifier;
 	/*    8      |     4 */ // uint32 pg_control_version;
 	/*   12      |     4 */ // uint32 catalog_version_no;

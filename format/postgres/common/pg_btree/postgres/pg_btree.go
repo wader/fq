@@ -272,7 +272,7 @@ func decodeIndexTuples(btree *BTree, d *decode.D) {
 					d.FieldValueBool("has_nulls", hasNulls)
 					d.FieldValueBool("has_var_widths", hasVarWidths)
 				})
-				d.FieldValueU("size", size)
+				d.FieldValueUint("size", size)
 				if size < IndexTupleDataSize {
 					d.Fatalf("invalid size of tuple = %d\n", size)
 				}

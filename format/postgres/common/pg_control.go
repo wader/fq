@@ -8,17 +8,18 @@ import (
 	"time"
 )
 
-//typedef enum DBState
-//{
-//	DB_STARTUP = 0,
-//	DB_SHUTDOWNED,
-//	DB_SHUTDOWNED_IN_RECOVERY,
-//	DB_SHUTDOWNING,
-//	DB_IN_CRASH_RECOVERY,
-//	DB_IN_ARCHIVE_RECOVERY,
-//	DB_IN_PRODUCTION
-//} DBState;
-var DBState = scalar.UToScalar{
+// typedef enum DBState
+//
+//	{
+//		DB_STARTUP = 0,
+//		DB_SHUTDOWNED,
+//		DB_SHUTDOWNED_IN_RECOVERY,
+//		DB_SHUTDOWNING,
+//		DB_IN_CRASH_RECOVERY,
+//		DB_IN_ARCHIVE_RECOVERY,
+//		DB_IN_PRODUCTION
+//	} DBState;
+var DBState = scalar.UintMap{
 	0: {Sym: "DB_STARTUP"},
 	1: {Sym: "DB_SHUTDOWNED"},
 	2: {Sym: "DB_SHUTDOWNED_IN_RECOVERY"},
@@ -28,13 +29,14 @@ var DBState = scalar.UToScalar{
 	6: {Sym: "DB_IN_PRODUCTION"},
 }
 
-//typedef enum WalLevel
-//{
-//	WAL_LEVEL_MINIMAL = 0,
-//	WAL_LEVEL_REPLICA,
-//	WAL_LEVEL_LOGICAL
-//} WalLevel;
-var WalLevel = scalar.SToScalar{
+// typedef enum WalLevel
+//
+//	{
+//		WAL_LEVEL_MINIMAL = 0,
+//		WAL_LEVEL_REPLICA,
+//		WAL_LEVEL_LOGICAL
+//	} WalLevel;
+var WalLevel = scalar.SintMap{
 	0: {Sym: "WAL_LEVEL_MINIMAL"},
 	1: {Sym: "WAL_LEVEL_REPLICA"},
 	2: {Sym: "WAL_LEVEL_LOGICAL"},
@@ -42,8 +44,9 @@ var WalLevel = scalar.SToScalar{
 
 type icuVersionMapper struct{}
 
-func (m icuVersionMapper) MapScalar(s scalar.S) (scalar.S, error) {
-	a := s.ActualU()
+func (m icuVersionMapper) MapUint(s scalar.Uint) (scalar.Uint, error) {
+	s.ScalarActual()
+	a := s.Actual
 	major := a & 0xff
 	minor := (a >> 8) & 0xff
 	v1 := (a >> 16) & 0xff
@@ -56,8 +59,8 @@ var IcuVersionMapper = icuVersionMapper{}
 
 type xLogRecPtrMapper struct{}
 
-func (m xLogRecPtrMapper) MapScalar(s scalar.S) (scalar.S, error) {
-	v := s.ActualU()
+func (m xLogRecPtrMapper) MapUint(s scalar.Uint) (scalar.Uint, error) {
+	v := s.Actual
 	s.Sym = fmt.Sprintf("%X/%X", v>>32, uint32(v))
 	return s, nil
 }
@@ -67,8 +70,8 @@ var LocPtrMapper = xLogRecPtrMapper{}
 
 type nextFullXidMapper struct{}
 
-func (m nextFullXidMapper) MapScalar(s scalar.S) (scalar.S, error) {
-	v := s.ActualU()
+func (m nextFullXidMapper) MapUint(s scalar.Uint) (scalar.Uint, error) {
+	v := s.Actual
 	s.Sym = fmt.Sprintf("%d:%d", v>>32, uint32(v))
 	return s, nil
 }
@@ -77,8 +80,8 @@ var NextFullXidMapper = nextFullXidMapper{}
 
 type timeMapper struct{}
 
-func (m timeMapper) MapScalar(s scalar.S) (scalar.S, error) {
-	ut := s.ActualS()
+func (m timeMapper) MapSint(s scalar.Sint) (scalar.Sint, error) {
+	ut := s.Actual
 	t := time.Unix(ut, 0)
 	s.Sym = t.UTC().Format(time.RFC1123)
 	return s, nil
@@ -87,12 +90,14 @@ func (m timeMapper) MapScalar(s scalar.S) (scalar.S, error) {
 var TimeMapper = timeMapper{}
 
 // typedef enum
-//{
-//	PG_UNKNOWN					= 0xFFFF,
-//	PG_ORIGINAL					= 0,
-//	PGPRO_STANDARD				= ('P'<<8|'P'),
-//	PGPRO_ENTERPRISE			= ('P'<<8|'E'),
-//} PgEdition;
+//
+//	{
+//		PG_UNKNOWN					= 0xFFFF,
+//		PG_ORIGINAL					= 0,
+//		PGPRO_STANDARD				= ('P'<<8|'P'),
+//		PGPRO_ENTERPRISE			= ('P'<<8|'E'),
+//	} PgEdition;
+//
 //nolint:revive
 const (
 	PG_UNKNOWN       = 0xFFFF
@@ -108,8 +113,8 @@ const (
 
 type versionMapper struct{}
 
-func (m versionMapper) MapScalar(s scalar.S) (scalar.S, error) {
-	v := s.ActualU()
+func (m versionMapper) MapUint(s scalar.Uint) (scalar.Uint, error) {
+	v := s.Actual
 	v1, v2 := ParsePgProVersion(uint32(v))
 	switch v1 {
 	case PG_UNKNOWN:
@@ -134,8 +139,8 @@ func ParsePgProVersion(v uint32) (pgProVersion uint32, oriVer uint32) {
 
 type hexMapper struct{}
 
-func (m hexMapper) MapScalar(s scalar.S) (scalar.S, error) {
-	v := s.ActualU()
+func (m hexMapper) MapUint(s scalar.Uint) (scalar.Uint, error) {
+	v := s.Actual
 	s.Sym = fmt.Sprintf("%X", v)
 	return s, nil
 }

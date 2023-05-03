@@ -183,7 +183,7 @@ func decodeHeapPage(heap *Heap, d *decode.D, blockNumber uint32) {
 	d.FieldStruct("page_header", func(d *decode.D) {
 		heap.DecodePageHeaderData(page, d)
 
-		d.FieldValueU("pd_checksum_check", uint64(checkSum))
+		d.FieldValueUint("pd_checksum_check", uint64(checkSum))
 		sumEqual := page.PdChecksum == checkSum
 		d.FieldValueBool("pd_checksum_check_equal", sumEqual)
 	})
@@ -398,8 +398,8 @@ type TransactionMapper struct {
 	Tuple   *TupleD
 }
 
-func (m TransactionMapper) MapScalar(s scalar.S) (scalar.S, error) {
-	xid := s.ActualU()
+func (m TransactionMapper) MapUint(s scalar.Uint) (scalar.Uint, error) {
+	xid := s.Actual
 
 	if m.Special.PdXidBase != 0 && m.Tuple.IsMulti && common.TransactionIDIsNormal(xid) {
 		xid64 := xid + m.Special.PdXidBase

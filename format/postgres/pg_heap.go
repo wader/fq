@@ -18,11 +18,10 @@ import (
 var pgHeapFS embed.FS
 
 func init() {
-	interp.RegisterFormat(decode.Format{
-		Name:        format.PG_HEAP,
+	interp.RegisterFormat(format.PG_HEAP, &decode.Format{
 		Description: "PostgreSQL heap file",
 		DecodeFn:    decodePgheap,
-		DecodeInArg: format.PostgresHeapIn{
+		DefaultInArg: format.PostgresHeapIn{
 			Flavour: PG_FLAVOUR_POSTGRES14,
 			Page:    0,
 			Segment: 0,
@@ -33,11 +32,11 @@ func init() {
 	interp.RegisterFS(pgHeapFS)
 }
 
-func decodePgheap(d *decode.D, in any) any {
+func decodePgheap(d *decode.D) any {
 	d.Endian = decode.LittleEndian
 
-	pgIn, ok := in.(format.PostgresHeapIn)
-	if !ok {
+	var pgIn format.PostgresHeapIn
+	if !d.ArgAs(&pgIn) {
 		d.Fatalf("DecodeInArg must be PostgresIn!\n")
 	}
 

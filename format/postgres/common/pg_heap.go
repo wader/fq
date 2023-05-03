@@ -21,8 +21,8 @@ func TransactionIDIsNormal(xid uint64) bool {
 
 type lpFlagsMapper struct{}
 
-func (m lpFlagsMapper) MapScalar(s scalar.S) (scalar.S, error) {
-	switch s.ActualU() {
+func (m lpFlagsMapper) MapUint(s scalar.Uint) (scalar.Uint, error) {
+	switch s.Actual {
 	case LP_UNUSED:
 		s.Sym = "LP_UNUSED"
 	case LP_NORMAL:
@@ -41,8 +41,8 @@ type Mask struct {
 	Mask uint64
 }
 
-func (m Mask) MapScalar(s scalar.S) (scalar.S, error) {
-	m1 := s.ActualU()
+func (m Mask) MapUint(s scalar.Uint) (scalar.Uint, error) {
+	m1 := s.Actual
 	v := IsMaskSet(m1, m.Mask)
 	s.Actual = v
 	return s, nil
