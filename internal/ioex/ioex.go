@@ -54,3 +54,15 @@ func (o DiscardCtxWriter) Write(p []byte) (n int, err error) {
 	}
 	return n, nil
 }
+
+func Unwrap(r any) any {
+	for {
+		u, ok := r.(interface {
+			Unwrap() any
+		})
+		if !ok {
+			return r
+		}
+		r = u.Unwrap()
+	}
+}

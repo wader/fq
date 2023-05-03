@@ -35,20 +35,40 @@ def _decode_progress:
 
 def decode($name; $decode_opts):
   ( options as $opts
-  | _decode(
-      $name;
-      ( {
-          progress: (
-            if $opts.decode_progress and $opts.repl and stdout_tty.is_terminal then
+  | ( { progress:
+          ( if $opts.decode_progress and $opts.repl and stdout_tty.is_terminal then
               "_decode_progress"
             else null
             end
-          ),
-        }
+          )
+      }
       + $opts
       + $decode_opts
+    ) as $common_opts
+  | if _registry.groups | has($name) then
+      _decode(
+        $name;
+        ( $common_opts
+        # is_probe is to include Probe_In argument
+        + if $name == "probe" then
+            { is_probe: true
+            , filename: (tobytes?.name // null)
+            }
+          else {}
+          end
+        )
       )
-    )
+    else
+      # is_probe_args is to include Probe_Args_In argument
+      _decode(
+        "probe_args";
+        ( $common_opts
+        + { is_probe_args: true
+          , decode_group: $name
+          }
+        )
+      )
+    end
   );
 def decode($name): decode($name; {});
 def decode: decode(options.decode_group; {});

@@ -29,15 +29,15 @@ const (
 )
 
 type Options struct {
-	Name          string
-	Description   string
-	Force         bool
-	FillGaps      bool
-	IsRoot        bool
-	Range         ranges.Range // if zero use whole buffer
-	InArg         any
-	FormatInArgFn func(init any) any
-	ReadBuf       *[]byte
+	Name        string
+	Description string
+	Force       bool
+	FillGaps    bool
+	IsRoot      bool
+	Range       ranges.Range // if zero use whole buffer
+	InArg       any
+	ParseOptsFn func(init any) any
+	ReadBuf     *[]byte
 }
 
 // Decode try decode group and return first success and all other decoder errors
@@ -60,6 +60,15 @@ func decode(ctx context.Context, br bitio.ReaderAtSeeker, group *Group, opts Opt
 		panic("group is nil, failed to register format?")
 	}
 
+	hasGroupOpts := false
+	groupArg := group.DefaultInArg
+	if opts.ParseOptsFn != nil && groupArg != nil {
+		if groupOptArg := opts.ParseOptsFn(groupArg); groupOptArg != nil {
+			hasGroupOpts = true
+			groupArg = groupOptArg
+		}
+	}
+
 	formatsErr := FormatsError{}
 
 	for _, f := range group.Formats {
@@ -68,9 +77,8 @@ func decode(ctx context.Context, br bitio.ReaderAtSeeker, group *Group, opts Opt
 		// figure out if there are format specific arg passed as options
 		hasFormatOpts := false
 		formatArg := f.DefaultInArg
-		if formatArg != nil && opts.FormatInArgFn != nil {
-			formatOptArg := opts.FormatInArgFn(formatArg)
-			if formatOptArg != nil {
+		if opts.ParseOptsFn != nil && formatArg != nil {
+			if formatOptArg := opts.ParseOptsFn(formatArg); formatOptArg != nil {
 				hasFormatOpts = true
 				formatArg = formatOptArg
 			}
@@ -85,6 +93,10 @@ func decode(ctx context.Context, br bitio.ReaderAtSeeker, group *Group, opts Opt
 		}
 		if !hasFormatOpts && f.DefaultInArg != nil {
 			inArgs = append(inArgs, f.DefaultInArg)
+		}
+
+		if hasGroupOpts {
+			inArgs = append(inArgs, groupArg)
 		}
 
 		cBR, err := bitioex.Range(br, decodeRange.Start, decodeRange.Len)
@@ -953,13 +965,13 @@ func (d *D) RangeFn(firstBit int64, nBits int64, fn func(d *D)) int64 {
 
 func (d *D) Format(group *Group, inArg any) any {
 	dv, v, err := decode(d.Ctx, d.bitBuf, group, Options{
-		Force:         d.Options.Force,
-		FillGaps:      false,
-		IsRoot:        false,
-		Range:         ranges.Range{Start: d.Pos(), Len: d.BitsLeft()},
-		InArg:         inArg,
-		FormatInArgFn: d.Options.FormatInArgFn,
-		ReadBuf:       d.readBuf,
+		Force:       d.Options.Force,
+		FillGaps:    false,
+		IsRoot:      false,
+		Range:       ranges.Range{Start: d.Pos(), Len: d.BitsLeft()},
+		InArg:       inArg,
+		ParseOptsFn: d.Options.ParseOptsFn,
+		ReadBuf:     d.readBuf,
 	})
 	if dv == nil || dv.Errors() != nil {
 		d.IOPanic(err, "Format: decode")
@@ -983,14 +995,14 @@ func (d *D) Format(group *Group, inArg any) any {
 
 func (d *D) TryFieldFormat(name string, group *Group, inArg any) (*Value, any, error) {
 	dv, v, err := decode(d.Ctx, d.bitBuf, group, Options{
-		Name:          name,
-		Force:         d.Options.Force,
-		FillGaps:      false,
-		IsRoot:        false,
-		Range:         ranges.Range{Start: d.Pos(), Len: d.BitsLeft()},
-		InArg:         inArg,
-		FormatInArgFn: d.Options.FormatInArgFn,
-		ReadBuf:       d.readBuf,
+		Name:        name,
+		Force:       d.Options.Force,
+		FillGaps:    false,
+		IsRoot:      false,
+		Range:       ranges.Range{Start: d.Pos(), Len: d.BitsLeft()},
+		InArg:       inArg,
+		ParseOptsFn: d.Options.ParseOptsFn,
+		ReadBuf:     d.readBuf,
 	})
 	if dv == nil || dv.Errors() != nil {
 		return nil, nil, err
@@ -1022,14 +1034,14 @@ func (d *D) FieldFormatOrRaw(name string, group *Group, inArg any) (*Value, any)
 
 func (d *D) TryFieldFormatLen(name string, nBits int64, group *Group, inArg any) (*Value, any, error) {
 	dv, v, err := decode(d.Ctx, d.bitBuf, group, Options{
-		Name:          name,
-		Force:         d.Options.Force,
-		FillGaps:      true,
-		IsRoot:        false,
-		Range:         ranges.Range{Start: d.Pos(), Len: nBits},
-		InArg:         inArg,
-		FormatInArgFn: d.Options.FormatInArgFn,
-		ReadBuf:       d.readBuf,
+		Name:        name,
+		Force:       d.Options.Force,
+		FillGaps:    true,
+		IsRoot:      false,
+		Range:       ranges.Range{Start: d.Pos(), Len: nBits},
+		InArg:       inArg,
+		ParseOptsFn: d.Options.ParseOptsFn,
+		ReadBuf:     d.readBuf,
 	})
 	if dv == nil || dv.Errors() != nil {
 		return nil, nil, err
@@ -1062,14 +1074,14 @@ func (d *D) FieldFormatOrRawLen(name string, nBits int64, group *Group, inArg an
 // TODO: return decooder?
 func (d *D) TryFieldFormatRange(name string, firstBit int64, nBits int64, group *Group, inArg any) (*Value, any, error) {
 	dv, v, err := decode(d.Ctx, d.bitBuf, group, Options{
-		Name:          name,
-		Force:         d.Options.Force,
-		FillGaps:      true,
-		IsRoot:        false,
-		Range:         ranges.Range{Start: firstBit, Len: nBits},
-		InArg:         inArg,
-		FormatInArgFn: d.Options.FormatInArgFn,
-		ReadBuf:       d.readBuf,
+		Name:        name,
+		Force:       d.Options.Force,
+		FillGaps:    true,
+		IsRoot:      false,
+		Range:       ranges.Range{Start: firstBit, Len: nBits},
+		InArg:       inArg,
+		ParseOptsFn: d.Options.ParseOptsFn,
+		ReadBuf:     d.readBuf,
 	})
 	if dv == nil || dv.Errors() != nil {
 		return nil, nil, err
@@ -1091,13 +1103,13 @@ func (d *D) FieldFormatRange(name string, firstBit int64, nBits int64, group *Gr
 
 func (d *D) TryFieldFormatBitBuf(name string, br bitio.ReaderAtSeeker, group *Group, inArg any) (*Value, any, error) {
 	dv, v, err := decode(d.Ctx, br, group, Options{
-		Name:          name,
-		Force:         d.Options.Force,
-		FillGaps:      true,
-		IsRoot:        true,
-		InArg:         inArg,
-		FormatInArgFn: d.Options.FormatInArgFn,
-		ReadBuf:       d.readBuf,
+		Name:        name,
+		Force:       d.Options.Force,
+		FillGaps:    true,
+		IsRoot:      true,
+		InArg:       inArg,
+		ParseOptsFn: d.Options.ParseOptsFn,
+		ReadBuf:     d.readBuf,
 	})
 	if dv == nil || dv.Errors() != nil {
 		return nil, nil, err

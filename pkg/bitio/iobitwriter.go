@@ -62,3 +62,7 @@ func (w *IOBitWriter) Flush() error {
 
 	return err
 }
+
+func (w *IOBitWriter) Unwrap() any {
+	return w.w
+}

@@ -36,3 +36,7 @@ func (r *IOReadSeeker) Seek(offset int64, whence int) (int64, error) {
 
 	return n / 8, err
 }
+
+func (r *IOReadSeeker) Unwrap() any {
+	return r.IOReader
+}

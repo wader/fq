@@ -33,3 +33,7 @@ func (l *LimitReader) CloneReader() (Reader, error) {
 	}
 	return &LimitReader{r: rc, n: l.n}, nil
 }
+
+func (r *LimitReader) Unwrap() any {
+	return r.r
+}

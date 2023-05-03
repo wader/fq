@@ -244,7 +244,7 @@ func (i *Interp) _decode(c any, format string, opts decodeOpts) any {
 			Force:       opts.Force,
 			Range:       bv.r,
 			Description: filename,
-			FormatInArgFn: func(init any) any {
+			ParseOptsFn: func(init any) any {
 				v, err := copystructure.Copy(init)
 				if err != nil {
 					return nil

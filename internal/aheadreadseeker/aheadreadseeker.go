@@ -90,3 +90,7 @@ func (r *Reader) Seek(offset int64, whence int) (int64, error) {
 
 	return absOff, nil
 }
+
+func (r *Reader) Unwrap() any {
+	return r.rs
+}
