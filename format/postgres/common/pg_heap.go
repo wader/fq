@@ -4,7 +4,6 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-//nolint:revive
 const (
 	PageSize                 = 8192
 	FirstNormalTransactionID = 3

@@ -97,8 +97,6 @@ var TimeMapper = timeMapper{}
 //		PGPRO_STANDARD				= ('P'<<8|'P'),
 //		PGPRO_ENTERPRISE			= ('P'<<8|'E'),
 //	} PgEdition;
-//
-//nolint:revive
 const (
 	PG_UNKNOWN       = 0xFFFF
 	PG_ORIGINAL      = 0

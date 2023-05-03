@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"embed"
-	"github.com/wader/fq/format/postgres/flavours/pgproee15"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/postgres/common"
@@ -16,6 +15,7 @@ import (
 	"github.com/wader/fq/format/postgres/flavours/pgproee12"
 	"github.com/wader/fq/format/postgres/flavours/pgproee13"
 	"github.com/wader/fq/format/postgres/flavours/pgproee14"
+	"github.com/wader/fq/format/postgres/flavours/pgproee15"
 	"github.com/wader/fq/format/postgres/flavours/postgres10"
 	"github.com/wader/fq/format/postgres/flavours/postgres11"
 	"github.com/wader/fq/format/postgres/flavours/postgres12"
@@ -39,7 +39,6 @@ func init() {
 	interp.RegisterFS(pgControlFS)
 }
 
-//nolint:revive
 const (
 	PG_CONTROL_VERSION_10    = 1002
 	PG_CONTROL_VERSION_11    = 1100
@@ -49,7 +48,6 @@ const (
 	PG_CONTROL_VERSION_14 = 1300
 )
 
-//nolint:revive
 const (
 	PG_FLAVOUR_POSTGRES10 = "postgres10"
 	PG_FLAVOUR_POSTGRES11 = "postgres11"

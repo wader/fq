@@ -7,7 +7,6 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-//nolint:revive
 const (
 	BTREE_MAGIC = 0x053162
 	P_NONE      = 0
@@ -24,7 +23,6 @@ const (
 	BTP_HAS_FULLXID      = 1 << 8 /* contains BTDeletedPageData */
 )
 
-//nolint:revive
 const (
 	INDEX_SIZE_MASK       = 0x1FFF
 	INDEX_AM_RESERVED_BIT = 0x2000 /* reserved for index-AM specific usage */

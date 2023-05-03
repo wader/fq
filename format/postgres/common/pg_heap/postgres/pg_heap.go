@@ -10,7 +10,6 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-//nolint:revive
 const (
 	HEAP_HASNULL          = 0x0001 /* has null attribute(s) */
 	HEAP_HASVARWIDTH      = 0x0002 /* has variable-width attribute(s) */
@@ -41,7 +40,6 @@ const (
 	HEAP_MOVED = HEAP_MOVED_OFF | HEAP_MOVED_IN
 )
 
-//nolint:revive
 const (
 	HEAP_KEYS_UPDATED = 0x2000 /* tuple was updated and key cols modified, or tuple deleted */
 	HEAP_HOT_UPDATED  = 0x4000 /* tuple was HOT-updated */
