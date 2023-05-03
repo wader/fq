@@ -293,11 +293,12 @@ func (Binary) ExtType() string { return "binary" }
 
 func (Binary) ExtKeys() []string {
 	return []string{
+		"bits",
+		"bytes",
+		"name",
 		"size",
 		"start",
 		"stop",
-		"bits",
-		"bytes",
 	}
 }
 
@@ -338,6 +339,24 @@ func (b Binary) JQValueSlice(start int, end int) any {
 }
 func (b Binary) JQValueKey(name string) any {
 	switch name {
+	case "bits":
+		if b.unit == 1 {
+			return b
+		}
+		return Binary{br: b.br, r: b.r, unit: 1}
+	case "bytes":
+		if b.unit == 8 {
+			return b
+		}
+		return Binary{br: b.br, r: b.r, unit: 8}
+
+	case "name":
+		f := ioex.Unwrap(b.br)
+		// this exploits the fact that *os.File has Name()
+		if n, ok := f.(interface{ Name() string }); ok {
+			return n.Name()
+		}
+		return nil
 	case "size":
 		return new(big.Int).SetInt64(b.r.Len / int64(b.unit))
 	case "start":
@@ -349,16 +368,6 @@ func (b Binary) JQValueKey(name string) any {
 			stopUnits++
 		}
 		return new(big.Int).SetInt64(stopUnits)
-	case "bits":
-		if b.unit == 1 {
-			return b
-		}
-		return Binary{br: b.br, r: b.r, unit: 1}
-	case "bytes":
-		if b.unit == 8 {
-			return b
-		}
-		return Binary{br: b.br, r: b.r, unit: 8}
 	}
 	return nil
 }

@@ -100,3 +100,7 @@ func (r *IOBitReadSeeker) CloneReadAtSeeker() (ReadAtSeeker, error) {
 func (r *IOBitReadSeeker) CloneReaderAtSeeker() (ReaderAtSeeker, error) {
 	return NewIOBitReadSeeker(r.rs), nil
 }
+
+func (r *IOBitReadSeeker) Unwrap() any {
+	return r.rs
+}

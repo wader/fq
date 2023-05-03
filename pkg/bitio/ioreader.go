@@ -73,3 +73,7 @@ func (r *IOReader) ReadByte() (byte, error) {
 	_, err := r.Read(rb[:])
 	return rb[0], err
 }
+
+func (r *IOReader) Unwrap() any {
+	return r.r
+}

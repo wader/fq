@@ -87,3 +87,7 @@ func (r *Reader) Close() (err error) {
 	}
 	return err
 }
+
+func (r *Reader) Unwrap() any {
+	return r.rs
+}

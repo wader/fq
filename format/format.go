@@ -1,6 +1,11 @@
 package format
 
-import "github.com/wader/fq/pkg/decode"
+import (
+	"path/filepath"
+	"strings"
+
+	"github.com/wader/fq/pkg/decode"
+)
 
 // TODO: do before-format somehow and topology sort?
 const (
@@ -12,9 +17,36 @@ const (
 
 // TODO: move to group package somehow?
 
+type Probe_In struct {
+	IsProbe  bool
+	Filename string
+}
+
+// Use HasExt("cer", "CeR", ...)
+func (pi Probe_In) HasExt(ss ...string) bool {
+	ext := filepath.Ext(pi.Filename)
+	if ext == "" {
+		return false
+	}
+	ext = ext[1:]
+	for _, s := range ss {
+		if strings.EqualFold(s, ext) {
+			return true
+		}
+	}
+	return false
+}
+
+type Probe_Args_In struct {
+	IsProbeArgs bool
+	Filename    string
+	DecodeGroup string
+}
+
 var (
 	Image          = &decode.Group{Name: "image"}
-	Probe          = &decode.Group{Name: "probe"}
+	Probe          = &decode.Group{Name: "probe", DefaultInArg: Probe_In{}}
+	Probe_Args     = &decode.Group{Name: "probe_args", DefaultInArg: Probe_Args_In{}}
 	Link_Frame     = &decode.Group{Name: "link_frame", DefaultInArg: Link_Frame_In{}}   // ex: ethernet
 	INET_Packet    = &decode.Group{Name: "inet_packet", DefaultInArg: INET_Packet_In{}} // ex: ipv4
 	IP_Packet      = &decode.Group{Name: "ip_packet", DefaultInArg: INET_Packet_In{}}   // ex: tcp

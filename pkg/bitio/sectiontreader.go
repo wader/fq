@@ -80,3 +80,7 @@ func (r *SectionReader) CloneReaderAtSeeker() (ReaderAtSeeker, error) {
 		bitLimit: r.bitLimit,
 	}, nil
 }
+
+func (r *SectionReader) Unwrap() any {
+	return r.r
+}

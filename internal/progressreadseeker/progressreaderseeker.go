@@ -64,3 +64,7 @@ func (prs *Reader) Seek(offset int64, whence int) (int64, error) {
 	prs.pos = pos
 	return pos, err
 }
+
+func (prs *Reader) Unwrap() any {
+	return prs.rs
+}
