@@ -32,7 +32,7 @@ func init() {
 	interp.RegisterFormat(format.PG_CONTROL, &decode.Format{
 		Description: "PostgreSQL control file",
 		DecodeFn:    decodePgControl,
-		DefaultInArg: format.PostgresIn{
+		DefaultInArg: format.PgControlIn{
 			Flavour: "",
 		},
 	})
@@ -72,9 +72,9 @@ const (
 func decodePgControl(d *decode.D) any {
 	d.Endian = decode.LittleEndian
 
-	var pgIn format.PostgresIn
+	var pgIn format.PgControlIn
 	if !d.ArgAs(&pgIn) {
-		d.Fatalf("DecodeInArg must be PostgresIn!\n")
+		d.Fatalf("DecodeInArg must be PgControlIn!\n")
 	}
 
 	switch pgIn.Flavour {

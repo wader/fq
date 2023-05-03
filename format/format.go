@@ -343,7 +343,7 @@ type TLS_In struct {
 	Keylog string `doc:"NSS Key Log content"`
 }
 
-type PostgresIn struct {
+type PgControlIn struct {
 	Flavour string `doc:"PostgreSQL flavour: postgres14, pgproee14.., postgres10"`
 }
 
