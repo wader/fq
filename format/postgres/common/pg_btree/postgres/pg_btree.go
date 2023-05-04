@@ -65,7 +65,7 @@ const (
 // IndexTupleData *IndexTuple;
 /* total size (bytes):    8 */
 
-func DecodePgBTree(d *decode.D, args format.PostgresBTreeIn) any {
+func DecodePgBTree(d *decode.D, args format.Pg_BTree_In) any {
 	btree := &BTree{
 		Args:     args,
 		PageSize: common.PageSize,
@@ -75,7 +75,7 @@ func DecodePgBTree(d *decode.D, args format.PostgresBTreeIn) any {
 }
 
 type BTree struct {
-	Args     format.PostgresBTreeIn
+	Args     format.Pg_BTree_In
 	PageSize uint64
 	page     *postgres.HeapPage
 }

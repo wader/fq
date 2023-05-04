@@ -29,10 +29,10 @@ import (
 var pgControlFS embed.FS
 
 func init() {
-	interp.RegisterFormat(format.PG_CONTROL, &decode.Format{
+	interp.RegisterFormat(format.Pg_Control, &decode.Format{
 		Description: "PostgreSQL control file",
 		DecodeFn:    decodePgControl,
-		DefaultInArg: format.PgControlIn{
+		DefaultInArg: format.Pg_Control_In{
 			Flavour: "",
 		},
 	})
@@ -72,9 +72,9 @@ const (
 func decodePgControl(d *decode.D) any {
 	d.Endian = decode.LittleEndian
 
-	var pgIn format.PgControlIn
+	var pgIn format.Pg_Control_In
 	if !d.ArgAs(&pgIn) {
-		d.Fatalf("DecodeInArg must be PgControlIn!\n")
+		d.Fatalf("DecodeInArg must be Pg_Control_In!\n")
 	}
 
 	switch pgIn.Flavour {

@@ -6,7 +6,7 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-func DecodeHeap(d *decode.D, args format.PostgresHeapIn) any {
+func DecodeHeap(d *decode.D, args format.Pg_Heap_In) any {
 	heap := &postgres.Heap{
 		Args:                 args,
 		DecodePageHeaderData: DecodePageHeaderData,

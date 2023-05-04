@@ -112,9 +112,9 @@ var (
 	Opus_Packet         = &decode.Group{Name: "opus_packet"}
 	PCAP                = &decode.Group{Name: "pcap"}
 	PCAPNG              = &decode.Group{Name: "pcapng"}
-	PG_BTREE            = &decode.Group{Name: "pg_btree"}
-	PG_CONTROL          = &decode.Group{Name: "pg_control"}
-	PG_HEAP             = &decode.Group{Name: "pg_heap"}
+	Pg_BTree            = &decode.Group{Name: "pg_btree"}
+	Pg_Control          = &decode.Group{Name: "pg_control"}
+	Pg_Heap             = &decode.Group{Name: "pg_heap"}
 	PNG                 = &decode.Group{Name: "png"}
 	Prores_Frame        = &decode.Group{Name: "prores_frame"}
 	Protobuf            = &decode.Group{Name: "protobuf"}
@@ -343,16 +343,16 @@ type TLS_In struct {
 	Keylog string `doc:"NSS Key Log content"`
 }
 
-type PgControlIn struct {
+type Pg_Control_In struct {
 	Flavour string `doc:"PostgreSQL flavour: postgres14, pgproee14.., postgres10"`
 }
 
-type PostgresHeapIn struct {
+type Pg_Heap_In struct {
 	Flavour string `doc:"PostgreSQL flavour: postgres14, pgproee14.., postgres10"`
 	Page    int    `doc:"First page number in file, default is 0"`
 	Segment int    `doc:"Segment file number (16790.1 is 1), default is 0"`
 }
 
-type PostgresBTreeIn struct {
+type Pg_BTree_In struct {
 	Page int `doc:"First page number in file, default is 0"`
 }

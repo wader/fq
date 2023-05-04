@@ -110,7 +110,7 @@ const SizeOfHeapTupleHeaderData = 24
 /* total size (bytes):    6 */
 
 type Heap struct {
-	Args format.PostgresHeapIn
+	Args format.Pg_Heap_In
 
 	// current Page
 	Page *HeapPage
