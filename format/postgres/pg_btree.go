@@ -30,7 +30,7 @@ func decodePgBTree(d *decode.D) any {
 	d.Endian = decode.LittleEndian
 	var pgIn format.Pg_BTree_In
 	if !d.ArgAs(&pgIn) {
-		d.Fatalf("DecodeInArg must be Pg_BTree_In!\n")
+		d.Fatalf("no page specified")
 	}
 	return postgres.DecodePgBTree(d, pgIn)
 }

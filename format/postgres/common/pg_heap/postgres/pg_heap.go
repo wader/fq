@@ -145,7 +145,7 @@ func decodeHeapPages(heap *Heap, d *decode.D) {
 	blockNumber := uint32(heap.Args.Page + heap.Args.Segment*common.RelSegSize)
 	count := int64(0)
 	for {
-		if end, _ := d.TryEnd(); end {
+		if d.End() {
 			return
 		}
 
@@ -204,7 +204,7 @@ func calcCheckSum(d *decode.D, blockNumber uint32) uint16 {
 	rdrPage := d.RawLen(int64(common.PageSize * 8))
 	_, err := rdrPage.ReadBits(pageBuffer, int64(common.PageSize*8))
 	if err != nil {
-		d.Fatalf("can't read page, err = %v\n", err)
+		d.Fatalf("can't read page, err = %v", err)
 	}
 	sum2 := common.CheckSumBlock(pageBuffer, blockNumber)
 	d.SeekAbs(pos0)
@@ -224,7 +224,7 @@ func decodeTuples(heap *Heap, d *decode.D) {
 
 		pos := (page.BytesPosBegin * 8) + int64(id.Off)*8
 		if id.Len < SizeOfHeapTupleHeaderData {
-			d.Fatalf("item len = %d, is less than %d HeapTupleHeaderData\n", id.Len, SizeOfHeapTupleHeaderData)
+			d.Fatalf("item len = %d, is less than %d HeapTupleHeaderData", id.Len, SizeOfHeapTupleHeaderData)
 		}
 		tupleDataLen := id.Len - SizeOfHeapTupleHeaderData
 
@@ -303,7 +303,7 @@ func decodeTuples(heap *Heap, d *decode.D) {
 			pos3 := uint64(d.Pos() / 8)
 			pos2Aligned := common.TypeAlign8(pos3)
 			if pos3 != pos2Aligned {
-				d.Fatalf("pos3 isn't aligned, pos2 = %d, pos3 = %d\n", pos2, pos3)
+				d.Fatalf("pos3 isn't aligned, pos2 = %d, pos3 = %d", pos2, pos3)
 			}
 
 		})

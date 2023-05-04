@@ -37,7 +37,7 @@ func decodePgheap(d *decode.D) any {
 
 	var pgIn format.Pg_Heap_In
 	if !d.ArgAs(&pgIn) {
-		d.Fatalf("DecodeInArg must be Pg_Heap_In!\n")
+		d.Fatalf("no flavour specified")
 	}
 
 	switch pgIn.Flavour {

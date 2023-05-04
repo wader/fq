@@ -46,6 +46,7 @@ const (
 	PG_CONTROL_VERSION_12    = 1201
 	//PG_CONTROL_VERSION_13 = 1300
 	PG_CONTROL_VERSION_14 = 1300
+	//PG_CONTROL_VERSION_15 = 1300
 )
 
 const (
@@ -74,7 +75,7 @@ func decodePgControl(d *decode.D) any {
 
 	var pgIn format.Pg_Control_In
 	if !d.ArgAs(&pgIn) {
-		d.Fatalf("DecodeInArg must be Pg_Control_In!\n")
+		d.Fatalf("no flavour specified")
 	}
 
 	switch pgIn.Flavour {
@@ -165,6 +166,6 @@ func probeForDecode(d *decode.D) any {
 		}
 	}
 
-	d.Fatalf("unsupported PG_CONTROL_VERSION = %d\n", pgControlVersion)
+	d.Fatalf("unsupported PG_CONTROL_VERSION = %d", pgControlVersion)
 	return nil
 }

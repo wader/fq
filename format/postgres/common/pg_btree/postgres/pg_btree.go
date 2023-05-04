@@ -93,7 +93,7 @@ func decodeBTreePages(btree *BTree, d *decode.D) {
 		pos0 := page.BytesPosBegin * 8
 		d.SeekAbs(pos0)
 
-		if end, _ := d.TryEnd(); end {
+		if d.End() {
 			return
 		}
 
@@ -130,7 +130,7 @@ func decodeBTreeMetaPage(btree *BTree, d *decode.D) {
 	pos2 := d.Pos()
 	bytesPos2 := pos2 / 8
 	if bytesPos2 != page.BytesPosEnd {
-		d.Fatalf("invalid pos after read page_opaque_data on meta page\n")
+		d.Fatalf("invalid pos after read page_opaque_data on meta page")
 	}
 }
 
@@ -160,7 +160,7 @@ func decodeBTMetaPageData(d *decode.D) {
 	d.FieldU56("padding0")
 
 	if btmMagic != BTREE_MAGIC {
-		d.Fatalf("invalid btmMagic = %X, must be %X\n", btmMagic, BTREE_MAGIC)
+		d.Fatalf("invalid btmMagic = %X, must be %X", btmMagic, BTREE_MAGIC)
 	}
 }
 
@@ -220,7 +220,7 @@ func decodeBTreePage(btree *BTree, d *decode.D) {
 	pos2 := d.Pos()
 	bytesPos2 := pos2 / 8
 	if bytesPos2 != page.BytesPosEnd {
-		d.Fatalf("invalid pos after read page_opaque_data on btree page\n")
+		d.Fatalf("invalid pos after read page_opaque_data on btree page")
 	}
 
 	d.SeekAbs(pos0)
@@ -272,7 +272,7 @@ func decodeIndexTuples(btree *BTree, d *decode.D) {
 				})
 				d.FieldValueUint("size", size)
 				if size < IndexTupleDataSize {
-					d.Fatalf("invalid size of tuple = %d\n", size)
+					d.Fatalf("invalid size of tuple = %d", size)
 				}
 				dataSize := size - IndexTupleDataSize
 				d.FieldRawLen("data", int64(dataSize*8))
