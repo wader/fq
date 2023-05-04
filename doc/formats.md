@@ -92,6 +92,9 @@
 |`opus_packet`                                           |Opus&nbsp;packet                                                                                             |<sub>`vorbis_comment`</sub>|
 |[`pcap`](#pcap)                                         |PCAP&nbsp;packet&nbsp;capture                                                                                |<sub>`link_frame` `tcp_stream` `ipv4_packet`</sub>|
 |`pcapng`                                                |PCAPNG&nbsp;packet&nbsp;capture                                                                              |<sub>`link_frame` `tcp_stream` `ipv4_packet`</sub>|
+|[`pg_btree`](#pg_btree)                                 |PostgreSQL&nbsp;btree&nbsp;index&nbsp;file                                                                   |<sub></sub>|
+|[`pg_control`](#pg_control)                             |PostgreSQL&nbsp;control&nbsp;file                                                                            |<sub></sub>|
+|[`pg_heap`](#pg_heap)                                   |PostgreSQL&nbsp;heap&nbsp;file                                                                               |<sub></sub>|
 |`png`                                                   |Portable&nbsp;Network&nbsp;Graphics&nbsp;file                                                                |<sub>`icc_profile` `exif`</sub>|
 |`prores_frame`                                          |Apple&nbsp;ProRes&nbsp;frame                                                                                 |<sub></sub>|
 |[`protobuf`](#protobuf)                                 |Protobuf                                                                                                     |<sub></sub>|
@@ -434,7 +437,7 @@ bplist> from_ns_keyed_archiver(1)
 
 ## bson
 
-### Limitations:
+### Limitations
 
 - The decimal128 type is not supported for decoding, will just be treated as binary
 
@@ -449,6 +452,10 @@ $ fq -d bson torepr file.bson
 ```
 $ fq -d bson 'torepr | select(.name=="bob")' file.bson
 ```
+
+### Authors
+- Mattias Wadman mattias.wadman@gmail.com, original author
+- Matt Dale [@matthewdale](https://github.com/matthewdale), additional types and bug fixes
 
 ### References
 - https://bsonspec.org/spec.html
@@ -821,6 +828,121 @@ $ fq '.tcp_connections | group_by(.client.ip) | map({key: .[0].client.ip, value:
   "10.99.12.150": 218
 }
 ```
+## pg_btree
+
+### Options
+
+|Name  |Default|Description|
+|-     |-      |-|
+|`page`|0      |First page number in file, default is 0|
+
+### Examples
+
+Decode file using pg_btree options
+```
+$ fq -d pg_btree -o page=0 . file
+```
+
+Decode value as pg_btree
+```
+... | pg_btree({page:0})
+```
+
+### Btree index meta page
+
+```sh
+$ fq -d pg_btree -o flavour=postgres14 ".[0] | d" 16404
+```
+
+### Btree index page
+
+```sh
+$ fq -d pg_btree -o flavour=postgres14 ".[1]" 16404
+```
+
+### References
+- https://www.postgresql.org/docs/current/storage-page-layout.html
+## pg_control
+
+### Options
+
+|Name     |Default|Description|
+|-        |-      |-|
+|`flavour`|       |PostgreSQL flavour: postgres14, pgproee14.., postgres10|
+
+### Examples
+
+Decode file using pg_control options
+```
+$ fq -d pg_control -o flavour="" . file
+```
+
+Decode value as pg_control
+```
+... | pg_control({flavour:""})
+```
+
+### Decode content of pg_control file
+
+```sh
+$ fq -d pg_control -o flavour=postgres14 d pg_control
+```
+
+### Specific fields can be got by request
+
+```sh
+$ fq -d pg_control -o flavour=postgres14 ".state, .check_point_copy.redo, .wal_level" pg_control
+```
+
+### References
+- https://github.com/postgres/postgres/blob/REL_14_2/src/include/catalog/pg_control.h
+## pg_heap
+
+### Options
+
+|Name     |Default   |Description|
+|-        |-         |-|
+|`flavour`|postgres14|PostgreSQL flavour: postgres14, pgproee14.., postgres10|
+|`page`   |0         |First page number in file, default is 0|
+|`segment`|0         |Segment file number (16790.1 is 1), default is 0|
+
+### Examples
+
+Decode file using pg_heap options
+```
+$ fq -d pg_heap -o flavour="postgres14" -o page=0 -o segment=0 . file
+```
+
+Decode value as pg_heap
+```
+... | pg_heap({flavour:"postgres14",page:0,segment:0})
+```
+
+### To see heap page's content
+```sh
+$ fq -d pg_heap -o flavour=postgres14 ".[0]" 16994
+```
+
+### To see page's header
+
+```sh
+$ fq -d pg_heap -o flavour=postgres14 ".[0].page_header" 16994
+```
+
+### First and last item pointers on first page
+
+```sh
+$ fq -d pg_heap -o flavour=postgres14 ".[0].pd_linp[0, -1]" 16994
+```
+
+### First and last tuple on first page
+
+```sh
+$ fq -d pg_heap -o flavour=postgres14 ".[0].tuples[0, -1]" 16994
+```
+
+### References
+- https://www.postgresql.org/docs/current/storage-page-layout.html
 ## protobuf
 
 ### Can decode sub messages
