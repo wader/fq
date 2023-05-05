@@ -1,7 +1,6 @@
 package postgres
 
 import (
-	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/postgres/common"
 	"github.com/wader/fq/format/postgres/common/pg_heap/postgres"
 	"github.com/wader/fq/pkg/decode"
@@ -65,30 +64,17 @@ const (
 // IndexTupleData *IndexTuple;
 /* total size (bytes):    8 */
 
-func DecodePgBTree(d *decode.D, args format.Pg_BTree_In) any {
-	btree := &BTree{
-		Args:     args,
-		PageSize: common.PageSize,
-	}
-	decodeBTreePages(btree, d)
-	return nil
-}
+func DecodePgBTree(d *decode.D, pageNr int) {
+	var prevPage *postgres.HeapPage
 
-type BTree struct {
-	Args     format.Pg_BTree_In
-	PageSize uint64
-	page     *postgres.HeapPage
-}
-
-func decodeBTreePages(btree *BTree, d *decode.D) {
-	for i := btree.Args.Page; ; i++ {
+	for i := pageNr; ; i++ {
 		page := &postgres.HeapPage{}
-		if btree.page != nil {
+		if prevPage != nil {
 			// use prev page
-			page.BytesPosBegin = btree.page.BytesPosEnd
+			page.BytesPosBegin = prevPage.BytesPosEnd
 		}
-		page.BytesPosEnd = int64(common.TypeAlign(btree.PageSize, uint64(page.BytesPosBegin)+1))
-		btree.page = page
+		page.BytesPosEnd = int64(common.TypeAlign(common.PageSize, uint64(page.BytesPosBegin)+1))
+		prevPage = page
 
 		pos0 := page.BytesPosBegin * 8
 		d.SeekAbs(pos0)
@@ -100,19 +86,18 @@ func decodeBTreePages(btree *BTree, d *decode.D) {
 		if i == 0 {
 			// first page contains meta information
 			d.FieldStruct("page", func(d *decode.D) {
-				decodeBTreeMetaPage(btree, d)
+				decodeBTreeMetaPage(page, d)
 			})
 			continue
 		}
 
 		d.FieldStruct("page", func(d *decode.D) {
-			decodeBTreePage(btree, d)
+			decodeBTreePage(page, d)
 		})
 	}
 }
 
-func decodeBTreeMetaPage(btree *BTree, d *decode.D) {
-	page := btree.page
+func decodeBTreeMetaPage(page *postgres.HeapPage, d *decode.D) {
 
 	d.FieldStruct("page_header", func(d *decode.D) {
 		postgres.DecodePageHeader(page, d)
@@ -122,7 +107,7 @@ func decodeBTreeMetaPage(btree *BTree, d *decode.D) {
 	})
 
 	pos0 := d.Pos()
-	pos1 := btree.page.BytesPosSpecial * 8
+	pos1 := page.BytesPosSpecial * 8
 	d.FieldRawLen("unused0", pos1-pos0)
 	d.FieldStruct("page_opaque_data", func(d *decode.D) {
 		decodeBTPageOpaqueData(d)
@@ -204,15 +189,13 @@ func decodeBTPageOpaqueData(d *decode.D) {
 	})
 }
 
-func decodeBTreePage(btree *BTree, d *decode.D) {
-	page := btree.page
-
+func decodeBTreePage(page *postgres.HeapPage, d *decode.D) {
 	d.FieldStruct("page_header", func(d *decode.D) {
 		postgres.DecodePageHeader(page, d)
 	})
 
 	pos0 := d.Pos()
-	pos1 := btree.page.BytesPosSpecial * 8
+	pos1 := page.BytesPosSpecial * 8
 	d.SeekAbs(pos1)
 	d.FieldStruct("page_opaque_data", func(d *decode.D) {
 		decodeBTPageOpaqueData(d)
@@ -227,12 +210,11 @@ func decodeBTreePage(btree *BTree, d *decode.D) {
 	postgres.DecodeItemIds(page, d)
 
 	d.FieldArray("tuples", func(d *decode.D) {
-		decodeIndexTuples(btree, d)
+		decodeIndexTuples(page, d)
 	})
 }
 
-func decodeIndexTuples(btree *BTree, d *decode.D) {
-	page := btree.page
+func decodeIndexTuples(page *postgres.HeapPage, d *decode.D) {
 
 	for i := 0; i < len(page.ItemIds); i++ {
 		id := page.ItemIds[i]

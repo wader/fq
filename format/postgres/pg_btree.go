@@ -32,5 +32,6 @@ func decodePgBTree(d *decode.D) any {
 	if !d.ArgAs(&pgIn) {
 		d.Fatalf("no page specified")
 	}
-	return postgres.DecodePgBTree(d, pgIn)
+	postgres.DecodePgBTree(d, pgIn.Page)
+	return nil
 }
