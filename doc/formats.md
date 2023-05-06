@@ -860,6 +860,11 @@ $ fq -d pg_btree -o flavour=postgres14 ".[0] | d" 16404
 $ fq -d pg_btree -o flavour=postgres14 ".[1]" 16404
 ```
 
+### Authors
+- Pavel Safonov
+p.n.safonov@gmail.com
+[@pnsafonov](https://github.com/pnsafonov)
+
 ### References
 - https://www.postgresql.org/docs/current/storage-page-layout.html
 ## pg_control
@@ -893,6 +898,11 @@ $ fq -d pg_control -o flavour=postgres14 d pg_control
 ```sh
 $ fq -d pg_control -o flavour=postgres14 ".state, .check_point_copy.redo, .wal_level" pg_control
 ```
+
+### Authors
+- Pavel Safonov
+p.n.safonov@gmail.com
+[@pnsafonov](https://github.com/pnsafonov)
 
 ### References
 - https://github.com/postgres/postgres/blob/REL_14_2/src/include/catalog/pg_control.h
@@ -940,6 +950,11 @@ $ fq -d pg_heap -o flavour=postgres14 ".[0].pd_linp[0, -1]" 16994
 ```sh
 $ fq -d pg_heap -o flavour=postgres14 ".[0].tuples[0, -1]" 16994
 ```
+
+### Authors
+- Pavel Safonov
+p.n.safonov@gmail.com
+[@pnsafonov](https://github.com/pnsafonov)
 
 ### References
 - https://www.postgresql.org/docs/current/storage-page-layout.html

@@ -21,5 +21,10 @@ $ fq -d pg_heap -o flavour=postgres14 ".[0].pd_linp[0, -1]" 16994
 $ fq -d pg_heap -o flavour=postgres14 ".[0].tuples[0, -1]" 16994
 ```
 
+### Authors
+- Pavel Safonov
+p.n.safonov@gmail.com
+[@pnsafonov](https://github.com/pnsafonov)
+
 ### References
 - https://www.postgresql.org/docs/current/storage-page-layout.html
