@@ -30,20 +30,19 @@ $ fq -d pg_btree -o flavour=postgres14 ".[] | d" 16404
 0x1ff0|00 00 00 00                                    |....            |    btpo_prev: 0
 0x1ff0|            00 00 00 00                        |    ....        |    btpo_next: 0
 0x1ff0|                        00 00 00 00            |        ....    |    btpo_level: 0
-0x1ff0|                                    08 00      |            ..  |    btpo_flags: 8
-0x1ff0|                                          00 00|              ..|    btpo_cycleid: 0
-      |                                               |                |    flags{}:
-      |                                               |                |      is_leftmost: true
-      |                                               |                |      is_rightmost: true
-      |                                               |                |      is_leaf: false
-      |                                               |                |      is_root: false
-      |                                               |                |      is_deleted: false
-      |                                               |                |      is_meta: true
-      |                                               |                |      is_half_dead: false
+      |                                               |                |    btpo_flags{}:
+0x1ff0|                                    08         |            .   |      is_incomplete_split: false
+0x1ff0|                                    08         |            .   |      has_garbage: false
+0x1ff0|                                    08         |            .   |      split_end: false
+0x1ff0|                                    08         |            .   |      is_half_dead: false
+0x1ff0|                                    08         |            .   |      is_meta: true
+0x1ff0|                                    08         |            .   |      is_deleted: false
+0x1ff0|                                    08         |            .   |      is_root: false
+0x1ff0|                                    08         |            .   |      is_leaf: false
+0x1ff0|                                       00      |             .  |      skip1: 0
+0x1ff0|                                       00      |             .  |      has_full_xid: false
       |                                               |                |      is_ignore: false
-      |                                               |                |      has_garbage: false
-      |                                               |                |      is_incomplete_split: false
-      |                                               |                |      has_full_xid: false
+0x1ff0|                                          00 00|              ..|    btpo_cycleid: 0
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[1]{}: page
       |                                               |                |  page_header{}:
       |                                               |                |    pd_lsn{}:
@@ -867,17 +866,16 @@ $ fq -d pg_btree -o flavour=postgres14 ".[] | d" 16404
 0x3ff0|00 00 00 00                                    |....            |    btpo_prev: 0
 0x3ff0|            02 00 00 00                        |    ....        |    btpo_next: 2
 0x3ff0|                        00 00 00 00            |        ....    |    btpo_level: 0
-0x3ff0|                                    01 00      |            ..  |    btpo_flags: 1
-0x3ff0|                                          00 00|              ..|    btpo_cycleid: 0
-      |                                               |                |    flags{}:
-      |                                               |                |      is_leftmost: true
-      |                                               |                |      is_rightmost: false
-      |                                               |                |      is_leaf: true
-      |                                               |                |      is_root: false
-      |                                               |                |      is_deleted: false
-      |                                               |                |      is_meta: false
-      |                                               |                |      is_half_dead: false
+      |                                               |                |    btpo_flags{}:
+0x3ff0|                                    01         |            .   |      is_incomplete_split: false
+0x3ff0|                                    01         |            .   |      has_garbage: false
+0x3ff0|                                    01         |            .   |      split_end: false
+0x3ff0|                                    01         |            .   |      is_half_dead: false
+0x3ff0|                                    01         |            .   |      is_meta: false
+0x3ff0|                                    01         |            .   |      is_deleted: false
+0x3ff0|                                    01         |            .   |      is_root: false
+0x3ff0|                                    01         |            .   |      is_leaf: true
+0x3ff0|                                       00      |             .  |      skip1: 0
+0x3ff0|                                       00      |             .  |      has_full_xid: false
       |                                               |                |      is_ignore: false
-      |                                               |                |      has_garbage: false
-      |                                               |                |      is_incomplete_split: false
-      |                                               |                |      has_full_xid: false
+0x3ff0|                                          00 00|              ..|    btpo_cycleid: 0

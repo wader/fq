@@ -8,25 +8,12 @@ import (
 
 const (
 	BTREE_MAGIC = 0x053162
-	P_NONE      = 0
-
-	/* Bits defined in btpo_flags */
-	BTP_LEAF             = 1 << 0 /* leaf page, i.e. not internal page */
-	BTP_ROOT             = 1 << 1 /* root page (has no parent) */
-	BTP_DELETED          = 1 << 2 /* page has been deleted from tree */
-	BTP_META             = 1 << 3 /* meta-page */
-	BTP_HALF_DEAD        = 1 << 4 /* empty, but still in tree */
-	BTP_SPLIT_END        = 1 << 5 /* rightmost page of split group */
-	BTP_HAS_GARBAGE      = 1 << 6 /* page has LP_DEAD tuples (deprecated) */
-	BTP_INCOMPLETE_SPLIT = 1 << 7 /* right sibling's downlink is missing */
-	BTP_HAS_FULLXID      = 1 << 8 /* contains BTDeletedPageData */
 )
 
 const (
-	INDEX_SIZE_MASK       = 0x1FFF
-	INDEX_AM_RESERVED_BIT = 0x2000 /* reserved for index-AM specific usage */
-	INDEX_VAR_MASK        = 0x4000
-	INDEX_NULL_MASK       = 0x8000
+	INDEX_SIZE_MASK = 0x1FFF
+	INDEX_VAR_MASK  = 0x4000
+	INDEX_NULL_MASK = 0x8000
 )
 
 const (
@@ -156,37 +143,28 @@ func decodeBTMetaPageData(d *decode.D) {
 /*   12      |     2 */ // uint16 btpo_flags;
 /*   14      |     2 */ // BTCycleId btpo_cycleid;
 func decodeBTPageOpaqueData(d *decode.D) {
-	prev := d.FieldU32("btpo_prev")
-	next := d.FieldU32("btpo_next")
+	d.FieldU32("btpo_prev")
+	d.FieldU32("btpo_next")
 	d.FieldU32("btpo_level")
-	flags := d.FieldU16("btpo_flags")
-	d.FieldU16("btpo_cycleid")
 
-	isLeftMost := prev == P_NONE
-	isRightMost := next == P_NONE
-	isLeaf := (flags & BTP_LEAF) != 0
-	isRoot := (flags & BTP_ROOT) != 0
-	isDeleted := (flags & BTP_DELETED) != 0
-	isMeta := (flags & BTP_META) != 0
-	isHalfDead := (flags & BTP_HALF_DEAD) != 0
-	isIgnore := isDeleted || isHalfDead
-	hasGarbage := (flags & BTP_HAS_GARBAGE) != 0
-	isIncompleteSplit := (flags & BTP_INCOMPLETE_SPLIT) != 0
-	hasFullXid := (flags & BTP_HAS_FULLXID) != 0
+	// bits in uint16 LE: 7 - 0 15 - 8
+	d.FieldStruct("btpo_flags", func(d *decode.D) {
+		d.FieldBool("is_incomplete_split")
+		d.FieldBool("has_garbage")
+		d.FieldBool("split_end")
+		isHalfDead := d.FieldBool("is_half_dead")
+		d.FieldBool("is_meta")
+		isDeleted := d.FieldBool("is_deleted")
+		d.FieldBool("is_root")
+		d.FieldBool("is_leaf")
 
-	d.FieldStruct("flags", func(d *decode.D) {
-		d.FieldValueBool("is_leftmost", isLeftMost)
-		d.FieldValueBool("is_rightmost", isRightMost)
-		d.FieldValueBool("is_leaf", isLeaf)
-		d.FieldValueBool("is_root", isRoot)
-		d.FieldValueBool("is_deleted", isDeleted)
-		d.FieldValueBool("is_meta", isMeta)
-		d.FieldValueBool("is_half_dead", isHalfDead)
-		d.FieldValueBool("is_ignore", isIgnore)
-		d.FieldValueBool("has_garbage", hasGarbage)
-		d.FieldValueBool("is_incomplete_split", isIncompleteSplit)
-		d.FieldValueBool("has_full_xid", hasFullXid)
+		d.FieldU7("skip1")
+		d.FieldBool("has_full_xid")
+
+		d.FieldValueBool("is_ignore", isDeleted || isHalfDead)
 	})
+
+	d.FieldU16("btpo_cycleid")
 }
 
 func decodeBTreePage(page *postgres.HeapPage, d *decode.D) {
