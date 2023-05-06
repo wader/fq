@@ -830,7 +830,6 @@ func (d *D) FieldGet(name string) *Value {
 	}
 	return nil
 }
-
 func (d *D) FieldMustGet(name string) *Value {
 	if v := d.FieldGet(name); v != nil {
 		return v
@@ -899,6 +898,12 @@ func (d *D) FieldRangeFn(name string, firstBit int64, nBits int64, fn func() *Va
 	d.AddChild(v)
 
 	return v
+}
+
+func (d *D) AssertPos(pos int64) {
+	if d.Pos() != pos {
+		panic(DecoderError{Reason: fmt.Sprintf("expected bits position %d", pos), Pos: d.Pos()})
+	}
 }
 
 func (d *D) AssertAtLeastBitsLeft(nBits int64) {

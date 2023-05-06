@@ -1,0 +1,45 @@
+$ fq -d pg_btree -o flavour=postgres14 ".[0] | d" 16404
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0]{}: page
+      |                                               |                |  page_header{}:
+      |                                               |                |    pd_lsn{}:
+0x0000|00 00 00 00                                    |....            |      xlogid: "0" (0)
+0x0000|            f0 42 20 09                        |    .B .        |      xrecoff: "92042F0" (153109232)
+0x0000|                        00 00                  |        ..      |    pd_checksum: 0
+0x0000|                              00 00            |          ..    |    pd_flags: 0
+0x0000|                                    48 00      |            H.  |    pd_lower: 72
+0x0000|                                          f0 1f|              ..|    pd_upper: 8176
+0x0010|f0 1f                                          |..              |    pd_special: 8176
+0x0010|      04 20                                    |  .             |    pd_pagesize_version: 8196
+0x0010|            00 00 00 00                        |    ....        |    pd_prune_xid: 0
+      |                                               |                |  meta_page_data{}:
+0x0010|                        62 31 05 00            |        b1..    |    btm_magic: 340322
+0x0010|                                    04 00 00 00|            ....|    btm_version: 4
+0x0020|22 01 00 00                                    |"...            |    btm_root: 290
+0x0020|            02 00 00 00                        |    ....        |    btm_level: 2
+0x0020|                        22 01 00 00            |        "...    |    btm_fastroot: 290
+0x0020|                                    02 00 00 00|            ....|    btm_fastlevel: 2
+0x0030|00 00 00 00                                    |....            |    btm_last_cleanup_num_delpages: 0
+0x0030|            00 00 00 00                        |    ....        |    hole0: 0
+0x0030|                        00 00 00 00 00 00 f0 bf|        ........|    btm_last_cleanup_num_heap_tuples: -1
+0x0040|01                                             |.               |    btm_allequalimage: 1
+0x0040|   00 00 00 00 00 00 00                        | .......        |    padding0: 0
+0x0040|                        00 00 00 00 00 00 00 00|        ........|  unused0: raw bits
+0x0050|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
+*     |until 0x1fef.7 (8104)                          |                |
+      |                                               |                |  page_opaque_data{}:
+0x1ff0|00 00 00 00                                    |....            |    btpo_prev: 0
+0x1ff0|            00 00 00 00                        |    ....        |    btpo_next: 0
+0x1ff0|                        00 00 00 00            |        ....    |    btpo_level: 0
+      |                                               |                |    btpo_flags{}:
+0x1ff0|                                    08         |            .   |      is_incomplete_split: false
+0x1ff0|                                    08         |            .   |      has_garbage: false
+0x1ff0|                                    08         |            .   |      split_end: false
+0x1ff0|                                    08         |            .   |      is_half_dead: false
+0x1ff0|                                    08         |            .   |      is_meta: true
+0x1ff0|                                    08         |            .   |      is_deleted: false
+0x1ff0|                                    08         |            .   |      is_root: false
+0x1ff0|                                    08         |            .   |      is_leaf: false
+0x1ff0|                                       00      |             .  |      skip1: 0
+0x1ff0|                                       00      |             .  |      has_full_xid: false
+      |                                               |                |      is_ignore: false
+0x1ff0|                                          00 00|              ..|    btpo_cycleid: 0

@@ -126,6 +126,9 @@ ogg_page             OGG page
 opus_packet          Opus packet
 pcap                 PCAP packet capture
 pcapng               PCAPNG packet capture
+pg_btree             PostgreSQL btree index file
+pg_control           PostgreSQL control file
+pg_heap              PostgreSQL heap file
 png                  Portable Network Graphics file
 prores_frame         Apple ProRes frame
 protobuf             Protobuf

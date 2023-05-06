@@ -1,0 +1,881 @@
+$ fq -d pg_btree -o flavour=postgres14 ".[] | d" 16404
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0]{}: page
+      |                                               |                |  page_header{}:
+      |                                               |                |    pd_lsn{}:
+0x0000|00 00 00 00                                    |....            |      xlogid: "0" (0)
+0x0000|            f0 42 20 09                        |    .B .        |      xrecoff: "92042F0" (153109232)
+0x0000|                        00 00                  |        ..      |    pd_checksum: 0
+0x0000|                              00 00            |          ..    |    pd_flags: 0
+0x0000|                                    48 00      |            H.  |    pd_lower: 72
+0x0000|                                          f0 1f|              ..|    pd_upper: 8176
+0x0010|f0 1f                                          |..              |    pd_special: 8176
+0x0010|      04 20                                    |  .             |    pd_pagesize_version: 8196
+0x0010|            00 00 00 00                        |    ....        |    pd_prune_xid: 0
+      |                                               |                |  meta_page_data{}:
+0x0010|                        62 31 05 00            |        b1..    |    btm_magic: 340322
+0x0010|                                    04 00 00 00|            ....|    btm_version: 4
+0x0020|22 01 00 00                                    |"...            |    btm_root: 290
+0x0020|            02 00 00 00                        |    ....        |    btm_level: 2
+0x0020|                        22 01 00 00            |        "...    |    btm_fastroot: 290
+0x0020|                                    02 00 00 00|            ....|    btm_fastlevel: 2
+0x0030|00 00 00 00                                    |....            |    btm_last_cleanup_num_delpages: 0
+0x0030|            00 00 00 00                        |    ....        |    hole0: 0
+0x0030|                        00 00 00 00 00 00 f0 bf|        ........|    btm_last_cleanup_num_heap_tuples: -1
+0x0040|01                                             |.               |    btm_allequalimage: 1
+0x0040|   00 00 00 00 00 00 00                        | .......        |    padding0: 0
+0x0040|                        00 00 00 00 00 00 00 00|        ........|  unused0: raw bits
+0x0050|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
+*     |until 0x1fef.7 (8104)                          |                |
+      |                                               |                |  page_opaque_data{}:
+0x1ff0|00 00 00 00                                    |....            |    btpo_prev: 0
+0x1ff0|            00 00 00 00                        |    ....        |    btpo_next: 0
+0x1ff0|                        00 00 00 00            |        ....    |    btpo_level: 0
+      |                                               |                |    btpo_flags{}:
+0x1ff0|                                    08         |            .   |      is_incomplete_split: false
+0x1ff0|                                    08         |            .   |      has_garbage: false
+0x1ff0|                                    08         |            .   |      split_end: false
+0x1ff0|                                    08         |            .   |      is_half_dead: false
+0x1ff0|                                    08         |            .   |      is_meta: true
+0x1ff0|                                    08         |            .   |      is_deleted: false
+0x1ff0|                                    08         |            .   |      is_root: false
+0x1ff0|                                    08         |            .   |      is_leaf: false
+0x1ff0|                                       00      |             .  |      skip1: 0
+0x1ff0|                                       00      |             .  |      has_full_xid: false
+      |                                               |                |      is_ignore: false
+0x1ff0|                                          00 00|              ..|    btpo_cycleid: 0
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[1]{}: page
+      |                                               |                |  page_header{}:
+      |                                               |                |    pd_lsn{}:
+0x2000|00 00 00 00                                    |....            |      xlogid: "0" (0)
+0x2000|            68 c2 e8 07                        |    h...        |      xrecoff: "7E8C268" (132694632)
+0x2000|                        00 00                  |        ..      |    pd_checksum: 0
+0x2000|                              00 00            |          ..    |    pd_flags: 0
+0x2000|                                    d4 05      |            ..  |    pd_lower: 1492
+0x2000|                                          00 09|              ..|    pd_upper: 2304
+0x2010|f0 1f                                          |..              |    pd_special: 8176
+0x2010|      04 20                                    |  .             |    pd_pagesize_version: 8196
+0x2010|            00 00 00 00                        |    ....        |    pd_prune_xid: 0
+      |                                               |                |  pd_linp[0:367]:
+      |                                               |                |    [0]{}: item_id
+0x2010|                        00 89 20 00            |        .. .    |      item_id_data: 2132224
+      |                                               |                |      lp_off: 2304
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [1]{}: item_id
+0x2010|                                    e0 9f 20 00|            .. .|      item_id_data: 2138080
+      |                                               |                |      lp_off: 8160
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [2]{}: item_id
+0x2020|d0 9f 20 00                                    |.. .            |      item_id_data: 2138064
+      |                                               |                |      lp_off: 8144
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [3]{}: item_id
+0x2020|            c0 9f 20 00                        |    .. .        |      item_id_data: 2138048
+      |                                               |                |      lp_off: 8128
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [4]{}: item_id
+0x2020|                        b0 9f 20 00            |        .. .    |      item_id_data: 2138032
+      |                                               |                |      lp_off: 8112
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [5]{}: item_id
+0x2020|                                    a0 9f 20 00|            .. .|      item_id_data: 2138016
+      |                                               |                |      lp_off: 8096
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [6]{}: item_id
+0x2030|90 9f 20 00                                    |.. .            |      item_id_data: 2138000
+      |                                               |                |      lp_off: 8080
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [7]{}: item_id
+0x2030|            80 9f 20 00                        |    .. .        |      item_id_data: 2137984
+      |                                               |                |      lp_off: 8064
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [8]{}: item_id
+0x2030|                        70 9f 20 00            |        p. .    |      item_id_data: 2137968
+      |                                               |                |      lp_off: 8048
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [9]{}: item_id
+0x2030|                                    60 9f 20 00|            `. .|      item_id_data: 2137952
+      |                                               |                |      lp_off: 8032
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [10]{}: item_id
+0x2040|50 9f 20 00                                    |P. .            |      item_id_data: 2137936
+      |                                               |                |      lp_off: 8016
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [11]{}: item_id
+0x2040|            40 9f 20 00                        |    @. .        |      item_id_data: 2137920
+      |                                               |                |      lp_off: 8000
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [12]{}: item_id
+0x2040|                        30 9f 20 00            |        0. .    |      item_id_data: 2137904
+      |                                               |                |      lp_off: 7984
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [13]{}: item_id
+0x2040|                                    20 9f 20 00|             . .|      item_id_data: 2137888
+      |                                               |                |      lp_off: 7968
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [14]{}: item_id
+0x2050|10 9f 20 00                                    |.. .            |      item_id_data: 2137872
+      |                                               |                |      lp_off: 7952
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [15]{}: item_id
+0x2050|            00 9f 20 00                        |    .. .        |      item_id_data: 2137856
+      |                                               |                |      lp_off: 7936
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [16]{}: item_id
+0x2050|                        f0 9e 20 00            |        .. .    |      item_id_data: 2137840
+      |                                               |                |      lp_off: 7920
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [17]{}: item_id
+0x2050|                                    e0 9e 20 00|            .. .|      item_id_data: 2137824
+      |                                               |                |      lp_off: 7904
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [18]{}: item_id
+0x2060|d0 9e 20 00                                    |.. .            |      item_id_data: 2137808
+      |                                               |                |      lp_off: 7888
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [19]{}: item_id
+0x2060|            c0 9e 20 00                        |    .. .        |      item_id_data: 2137792
+      |                                               |                |      lp_off: 7872
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [20]{}: item_id
+0x2060|                        b0 9e 20 00            |        .. .    |      item_id_data: 2137776
+      |                                               |                |      lp_off: 7856
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [21]{}: item_id
+0x2060|                                    a0 9e 20 00|            .. .|      item_id_data: 2137760
+      |                                               |                |      lp_off: 7840
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [22]{}: item_id
+0x2070|90 9e 20 00                                    |.. .            |      item_id_data: 2137744
+      |                                               |                |      lp_off: 7824
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [23]{}: item_id
+0x2070|            80 9e 20 00                        |    .. .        |      item_id_data: 2137728
+      |                                               |                |      lp_off: 7808
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [24]{}: item_id
+0x2070|                        70 9e 20 00            |        p. .    |      item_id_data: 2137712
+      |                                               |                |      lp_off: 7792
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [25]{}: item_id
+0x2070|                                    60 9e 20 00|            `. .|      item_id_data: 2137696
+      |                                               |                |      lp_off: 7776
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [26]{}: item_id
+0x2080|50 9e 20 00                                    |P. .            |      item_id_data: 2137680
+      |                                               |                |      lp_off: 7760
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [27]{}: item_id
+0x2080|            40 9e 20 00                        |    @. .        |      item_id_data: 2137664
+      |                                               |                |      lp_off: 7744
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [28]{}: item_id
+0x2080|                        30 9e 20 00            |        0. .    |      item_id_data: 2137648
+      |                                               |                |      lp_off: 7728
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [29]{}: item_id
+0x2080|                                    20 9e 20 00|             . .|      item_id_data: 2137632
+      |                                               |                |      lp_off: 7712
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [30]{}: item_id
+0x2090|10 9e 20 00                                    |.. .            |      item_id_data: 2137616
+      |                                               |                |      lp_off: 7696
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [31]{}: item_id
+0x2090|            00 9e 20 00                        |    .. .        |      item_id_data: 2137600
+      |                                               |                |      lp_off: 7680
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [32]{}: item_id
+0x2090|                        f0 9d 20 00            |        .. .    |      item_id_data: 2137584
+      |                                               |                |      lp_off: 7664
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [33]{}: item_id
+0x2090|                                    e0 9d 20 00|            .. .|      item_id_data: 2137568
+      |                                               |                |      lp_off: 7648
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [34]{}: item_id
+0x20a0|d0 9d 20 00                                    |.. .            |      item_id_data: 2137552
+      |                                               |                |      lp_off: 7632
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [35]{}: item_id
+0x20a0|            c0 9d 20 00                        |    .. .        |      item_id_data: 2137536
+      |                                               |                |      lp_off: 7616
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [36]{}: item_id
+0x20a0|                        b0 9d 20 00            |        .. .    |      item_id_data: 2137520
+      |                                               |                |      lp_off: 7600
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [37]{}: item_id
+0x20a0|                                    a0 9d 20 00|            .. .|      item_id_data: 2137504
+      |                                               |                |      lp_off: 7584
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [38]{}: item_id
+0x20b0|90 9d 20 00                                    |.. .            |      item_id_data: 2137488
+      |                                               |                |      lp_off: 7568
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [39]{}: item_id
+0x20b0|            80 9d 20 00                        |    .. .        |      item_id_data: 2137472
+      |                                               |                |      lp_off: 7552
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [40]{}: item_id
+0x20b0|                        70 9d 20 00            |        p. .    |      item_id_data: 2137456
+      |                                               |                |      lp_off: 7536
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [41]{}: item_id
+0x20b0|                                    60 9d 20 00|            `. .|      item_id_data: 2137440
+      |                                               |                |      lp_off: 7520
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [42]{}: item_id
+0x20c0|50 9d 20 00                                    |P. .            |      item_id_data: 2137424
+      |                                               |                |      lp_off: 7504
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [43]{}: item_id
+0x20c0|            40 9d 20 00                        |    @. .        |      item_id_data: 2137408
+      |                                               |                |      lp_off: 7488
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [44]{}: item_id
+0x20c0|                        30 9d 20 00            |        0. .    |      item_id_data: 2137392
+      |                                               |                |      lp_off: 7472
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [45]{}: item_id
+0x20c0|                                    20 9d 20 00|             . .|      item_id_data: 2137376
+      |                                               |                |      lp_off: 7456
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [46]{}: item_id
+0x20d0|10 9d 20 00                                    |.. .            |      item_id_data: 2137360
+      |                                               |                |      lp_off: 7440
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [47]{}: item_id
+0x20d0|            00 9d 20 00                        |    .. .        |      item_id_data: 2137344
+      |                                               |                |      lp_off: 7424
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [48]{}: item_id
+0x20d0|                        f0 9c 20 00            |        .. .    |      item_id_data: 2137328
+      |                                               |                |      lp_off: 7408
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [49]{}: item_id
+0x20d0|                                    e0 9c 20 00|            .. .|      item_id_data: 2137312
+      |                                               |                |      lp_off: 7392
+      |                                               |                |      lp_flags: "LP_NORMAL" (1)
+      |                                               |                |      lp_len: 16
+      |                                               |                |    [50:367]: ...
+0x25d0|            00 00 00 00 00 00 00 00 00 00 00 00|    ............|  free_space: "00000000000000000000000000000000000000000000000..." (raw bits)
+0x25e0|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
+*     |until 0x28ff.7 (812)                           |                |
+      |                                               |                |  tuples[0:367]:
+      |                                               |                |    [0]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x2900|00 00 06 00                                    |....            |          ip_blkid: 393216
+0x2900|            01 00                              |    ..          |          ip_posid: 1
+0x2900|                  10 20                        |      .         |        t_info: 8208
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x2900|                        6f 01 00 00 00 00 00 00|        o.......|        data: raw bits
+      |                                               |                |    [1]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3fe0|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3fe0|            01 00                              |    ..          |          ip_posid: 1
+0x3fe0|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3fe0|                        01 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [2]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3fd0|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3fd0|            02 00                              |    ..          |          ip_posid: 2
+0x3fd0|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3fd0|                        02 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [3]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3fc0|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3fc0|            03 00                              |    ..          |          ip_posid: 3
+0x3fc0|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3fc0|                        03 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [4]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3fb0|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3fb0|            04 00                              |    ..          |          ip_posid: 4
+0x3fb0|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3fb0|                        04 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [5]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3fa0|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3fa0|            05 00                              |    ..          |          ip_posid: 5
+0x3fa0|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3fa0|                        05 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [6]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3f90|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3f90|            06 00                              |    ..          |          ip_posid: 6
+0x3f90|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3f90|                        06 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [7]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3f80|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3f80|            07 00                              |    ..          |          ip_posid: 7
+0x3f80|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3f80|                        07 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [8]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3f70|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3f70|            08 00                              |    ..          |          ip_posid: 8
+0x3f70|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3f70|                        08 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [9]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3f60|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3f60|            09 00                              |    ..          |          ip_posid: 9
+0x3f60|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3f60|                        09 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [10]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3f50|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3f50|            0a 00                              |    ..          |          ip_posid: 10
+0x3f50|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3f50|                        0a 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [11]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3f40|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3f40|            0b 00                              |    ..          |          ip_posid: 11
+0x3f40|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3f40|                        0b 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [12]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3f30|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3f30|            0c 00                              |    ..          |          ip_posid: 12
+0x3f30|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3f30|                        0c 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [13]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3f20|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3f20|            0d 00                              |    ..          |          ip_posid: 13
+0x3f20|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3f20|                        0d 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [14]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3f10|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3f10|            0e 00                              |    ..          |          ip_posid: 14
+0x3f10|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3f10|                        0e 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [15]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3f00|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3f00|            0f 00                              |    ..          |          ip_posid: 15
+0x3f00|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3f00|                        0f 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [16]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3ef0|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3ef0|            10 00                              |    ..          |          ip_posid: 16
+0x3ef0|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3ef0|                        10 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [17]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3ee0|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3ee0|            11 00                              |    ..          |          ip_posid: 17
+0x3ee0|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3ee0|                        11 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [18]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3ed0|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3ed0|            12 00                              |    ..          |          ip_posid: 18
+0x3ed0|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3ed0|                        12 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [19]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3ec0|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3ec0|            13 00                              |    ..          |          ip_posid: 19
+0x3ec0|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3ec0|                        13 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [20]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3eb0|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3eb0|            14 00                              |    ..          |          ip_posid: 20
+0x3eb0|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3eb0|                        14 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [21]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3ea0|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3ea0|            15 00                              |    ..          |          ip_posid: 21
+0x3ea0|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3ea0|                        15 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [22]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3e90|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3e90|            16 00                              |    ..          |          ip_posid: 22
+0x3e90|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3e90|                        16 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [23]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3e80|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3e80|            17 00                              |    ..          |          ip_posid: 23
+0x3e80|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3e80|                        17 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [24]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3e70|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3e70|            18 00                              |    ..          |          ip_posid: 24
+0x3e70|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3e70|                        18 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [25]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3e60|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3e60|            19 00                              |    ..          |          ip_posid: 25
+0x3e60|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3e60|                        19 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [26]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3e50|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3e50|            1a 00                              |    ..          |          ip_posid: 26
+0x3e50|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3e50|                        1a 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [27]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3e40|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3e40|            1b 00                              |    ..          |          ip_posid: 27
+0x3e40|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3e40|                        1b 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [28]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3e30|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3e30|            1c 00                              |    ..          |          ip_posid: 28
+0x3e30|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3e30|                        1c 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [29]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3e20|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3e20|            1d 00                              |    ..          |          ip_posid: 29
+0x3e20|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3e20|                        1d 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [30]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3e10|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3e10|            1e 00                              |    ..          |          ip_posid: 30
+0x3e10|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3e10|                        1e 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [31]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3e00|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3e00|            1f 00                              |    ..          |          ip_posid: 31
+0x3e00|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3e00|                        1f 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [32]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3df0|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3df0|            20 00                              |     .          |          ip_posid: 32
+0x3df0|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3df0|                        20 00 00 00 00 00 00 00|         .......|        data: raw bits
+      |                                               |                |    [33]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3de0|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3de0|            21 00                              |    !.          |          ip_posid: 33
+0x3de0|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3de0|                        21 00 00 00 00 00 00 00|        !.......|        data: raw bits
+      |                                               |                |    [34]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3dd0|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3dd0|            22 00                              |    ".          |          ip_posid: 34
+0x3dd0|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3dd0|                        22 00 00 00 00 00 00 00|        ".......|        data: raw bits
+      |                                               |                |    [35]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3dc0|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3dc0|            23 00                              |    #.          |          ip_posid: 35
+0x3dc0|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3dc0|                        23 00 00 00 00 00 00 00|        #.......|        data: raw bits
+      |                                               |                |    [36]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3db0|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3db0|            24 00                              |    $.          |          ip_posid: 36
+0x3db0|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3db0|                        24 00 00 00 00 00 00 00|        $.......|        data: raw bits
+      |                                               |                |    [37]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3da0|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3da0|            25 00                              |    %.          |          ip_posid: 37
+0x3da0|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3da0|                        25 00 00 00 00 00 00 00|        %.......|        data: raw bits
+      |                                               |                |    [38]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3d90|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3d90|            26 00                              |    &.          |          ip_posid: 38
+0x3d90|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3d90|                        26 00 00 00 00 00 00 00|        &.......|        data: raw bits
+      |                                               |                |    [39]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3d80|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3d80|            27 00                              |    '.          |          ip_posid: 39
+0x3d80|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3d80|                        27 00 00 00 00 00 00 00|        '.......|        data: raw bits
+      |                                               |                |    [40]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3d70|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3d70|            28 00                              |    (.          |          ip_posid: 40
+0x3d70|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3d70|                        28 00 00 00 00 00 00 00|        (.......|        data: raw bits
+      |                                               |                |    [41]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3d60|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3d60|            29 00                              |    ).          |          ip_posid: 41
+0x3d60|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3d60|                        29 00 00 00 00 00 00 00|        ).......|        data: raw bits
+      |                                               |                |    [42]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3d50|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3d50|            2a 00                              |    *.          |          ip_posid: 42
+0x3d50|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3d50|                        2a 00 00 00 00 00 00 00|        *.......|        data: raw bits
+      |                                               |                |    [43]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3d40|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3d40|            2b 00                              |    +.          |          ip_posid: 43
+0x3d40|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3d40|                        2b 00 00 00 00 00 00 00|        +.......|        data: raw bits
+      |                                               |                |    [44]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3d30|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3d30|            2c 00                              |    ,.          |          ip_posid: 44
+0x3d30|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3d30|                        2c 00 00 00 00 00 00 00|        ,.......|        data: raw bits
+      |                                               |                |    [45]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3d20|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3d20|            2d 00                              |    -.          |          ip_posid: 45
+0x3d20|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3d20|                        2d 00 00 00 00 00 00 00|        -.......|        data: raw bits
+      |                                               |                |    [46]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3d10|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3d10|            2e 00                              |    ..          |          ip_posid: 46
+0x3d10|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3d10|                        2e 00 00 00 00 00 00 00|        ........|        data: raw bits
+      |                                               |                |    [47]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3d00|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3d00|            2f 00                              |    /.          |          ip_posid: 47
+0x3d00|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3d00|                        2f 00 00 00 00 00 00 00|        /.......|        data: raw bits
+      |                                               |                |    [48]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3cf0|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3cf0|            30 00                              |    0.          |          ip_posid: 48
+0x3cf0|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3cf0|                        30 00 00 00 00 00 00 00|        0.......|        data: raw bits
+      |                                               |                |    [49]{}: tuple
+      |                                               |                |      index_tuple_data{}:
+      |                                               |                |        t_tid{}:
+0x3ce0|00 00 00 00                                    |....            |          ip_blkid: 0
+0x3ce0|            31 00                              |    1.          |          ip_posid: 49
+0x3ce0|                  10 00                        |      ..        |        t_info: 16
+      |                                               |                |        flags{}:
+      |                                               |                |          has_nulls: false
+      |                                               |                |          has_var_widths: false
+      |                                               |                |        size: 16
+0x3ce0|                        31 00 00 00 00 00 00 00|        1.......|        data: raw bits
+      |                                               |                |    [50:367]: ...
+      |                                               |                |  page_opaque_data{}:
+0x3ff0|00 00 00 00                                    |....            |    btpo_prev: 0
+0x3ff0|            02 00 00 00                        |    ....        |    btpo_next: 2
+0x3ff0|                        00 00 00 00            |        ....    |    btpo_level: 0
+      |                                               |                |    btpo_flags{}:
+0x3ff0|                                    01         |            .   |      is_incomplete_split: false
+0x3ff0|                                    01         |            .   |      has_garbage: false
+0x3ff0|                                    01         |            .   |      split_end: false
+0x3ff0|                                    01         |            .   |      is_half_dead: false
+0x3ff0|                                    01         |            .   |      is_meta: false
+0x3ff0|                                    01         |            .   |      is_deleted: false
+0x3ff0|                                    01         |            .   |      is_root: false
+0x3ff0|                                    01         |            .   |      is_leaf: true
+0x3ff0|                                       00      |             .  |      skip1: 0
+0x3ff0|                                       00      |             .  |      has_full_xid: false
+      |                                               |                |      is_ignore: false
+0x3ff0|                                          00 00|              ..|    btpo_cycleid: 0
