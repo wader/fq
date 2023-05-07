@@ -16,15 +16,35 @@ def _word_break($width):
   | map(join(" "))
   );
 
-def _markdown_to_text($width; $header_depth):
+
+# for a document output {heading: <heading>, children: [<children until next heading>]}
+# heading can be null for a document with children before a heading
+def _markdown_split_headings:
+  foreach
+    ( .children[]
+    , {type:"heading"} # dummy heading to flush
+    ) as $c
+  (
+    {heading: null, children: null, extract: null};
+    if $c.type == "heading" then
+      ( .extract = {heading,children}
+      | .heading = $c
+      | .children = null
+      )
+    else
+      ( .children += [$c]
+      | .extract = null
+      )
+    end;
+    .extract | select(.heading or .children)
+  );
+
+def _markdown_children_to_text($width):
   def lb: if $width > 0 then _word_break($width) | join("\n") end;
   def _f:
     if type == "string" then gsub("\n"; " ")
     elif .type == "document" then .children[] | _f
-    elif .type == "heading" then
-      ( (.children[] | _f) as $title
-      | "\($title)\n\("=" * ($title | length))"
-      )
+    elif .type == "heading" then .children[] | _f
     elif .type == "paragraph" then
       ( [.children[] | _f]
       | join("")
@@ -47,6 +67,28 @@ def _markdown_to_text($width; $header_depth):
     elif .type == "html_span" then .literal | gsub("<br>"; "\n") # TODO: more?
     else empty
     end;
-  [_f] | join("\n\n");
+  [_f] | join("\n");
+
+def _markdown_to_text($width; $header_depth):
+  [ _markdown_split_headings
+  | if .heading then
+      ( (.heading | _markdown_children_to_text($width)) as $h
+      | $h
+      , ("=" * ($h | length))
+      )
+    else empty
+    end
+  , ( .children
+    | if length == 0 then ""
+      else
+        ( .[]
+        | _markdown_children_to_text($width)
+        | select(. != "")
+        | .
+        , ""
+        )
+      end
+    )
+  ][:-1] | join("\n");
 def _markdown_to_text:
   _markdown_to_text(-1; 0);
