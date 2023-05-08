@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/wader/fq/format"
+	"github.com/wader/fq/internal/lazyre"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
@@ -21,6 +22,8 @@ func init() {
 		format.HTML,
 		&decode.Format{
 			Description: "HyperText Markup Language",
+			ProbeOrder:  format.ProbeOrderTextFuzzy,
+			Groups:      []*decode.Group{format.Probe},
 			DecodeFn:    decodeHTML,
 			DefaultInArg: format.HTML_In{
 				Seq:             false,
@@ -193,9 +196,28 @@ func fromHTMLToArray(n *html.Node) any {
 	return f(n)
 }
 
+var htmlMagicRe = &lazyre.RE{S: `` +
+	`^` + // anchor to start
+	`(?i)` + // case insensitive
+	`[[:graph:][:space:]]{0,64}?` + // 0-64 non-control ASCII lazily to allow comment etc
+	`(?:` +
+	`<\s{0,20}html|` + // <html
+	// or
+	`<!DOCTYPE\s{1,20}html` + // <!DOCTYPE html
+	`)`,
+}
+
 func decodeHTML(d *decode.D) any {
 	var hi format.HTML_In
+	var pi format.Probe_In
 	d.ArgAs(&hi)
+	if d.ArgAs(&pi) {
+		// if probing the input has to start with "<html" or "<!DOCTYPE html" this
+		// is because the html parser will always succeed so we have to be careful
+		if d.RE(htmlMagicRe.Must()) == nil {
+			d.Fatalf("no <html> or <!DOCTYPE html> found")
+		}
+	}
 
 	br := d.RawLen(d.Len())
 	var r any

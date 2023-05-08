@@ -1,0 +1,27 @@
+/html.html:
+
+    <html><a>
+
+$ fq . html.html
+{
+  "html": {
+    "body": {
+      "a": ""
+    },
+    "head": ""
+  }
+}
+/doctype.html:
+
+    <!DOCTYPE html>
+    <a>
+
+$ fq . doctype.html
+{
+  "html": {
+    "body": {
+      "a": ""
+    },
+    "head": ""
+  }
+}

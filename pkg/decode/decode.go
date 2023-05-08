@@ -1261,15 +1261,11 @@ func (d *D) FieldValue(name string, fn func() *Value) *Value {
 	return v
 }
 
-func (d *D) RE(reRef **regexp.Regexp, reStr string) []ranges.Range {
-	if *reRef == nil {
-		*reRef = regexp.MustCompile(reStr)
-	}
-
+func (d *D) RE(re *regexp.Regexp) []ranges.Range {
 	startPos := d.Pos()
 
 	rr := ioex.ByteRuneReader{RS: bitio.NewIOReadSeeker(d.bitBuf)}
-	locs := (*reRef).FindReaderSubmatchIndex(rr)
+	locs := re.FindReaderSubmatchIndex(rr)
 	if locs == nil {
 		return nil
 	}
@@ -1292,13 +1288,10 @@ func (d *D) RE(reRef **regexp.Regexp, reStr string) []ranges.Range {
 	return rs
 }
 
-func (d *D) FieldRE(reRef **regexp.Regexp, reStr string, mRef *map[string]string, sms ...scalar.StrMapper) {
-	if *reRef == nil {
-		*reRef = regexp.MustCompile(reStr)
-	}
-	subexpNames := (*reRef).SubexpNames()
+func (d *D) FieldRE(re *regexp.Regexp, mRef *map[string]string, sms ...scalar.StrMapper) {
+	subexpNames := re.SubexpNames()
 
-	rs := d.RE(reRef, reStr)
+	rs := d.RE(re)
 	for i, r := range rs {
 		if i == 0 || r.Start == -1 {
 			continue

@@ -360,7 +360,7 @@ func zipDecode(d *decode.D) any {
 				}
 
 				if compressionMethod == compressionMethodNone {
-					d.FieldFormatOrRawLen("uncompressed", compressedSize, &probeGroup, nil)
+					d.FieldFormatOrRawLen("uncompressed", compressedSize, &probeGroup, format.Probe_In{})
 				} else {
 					var rFn func(r io.Reader) io.Reader
 					if zi.Uncompress {
@@ -374,7 +374,7 @@ func zipDecode(d *decode.D) any {
 
 					if rFn != nil {
 						readCompressedSize, uncompressedBR, dv, _, _ :=
-							d.TryFieldReaderRangeFormat("uncompressed", d.Pos(), compressedLimit, rFn, &probeGroup, nil)
+							d.TryFieldReaderRangeFormat("uncompressed", d.Pos(), compressedLimit, rFn, &probeGroup, format.Probe_In{})
 						if dv == nil && uncompressedBR != nil {
 							d.FieldRootBitBuf("uncompressed", uncompressedBR)
 						}
