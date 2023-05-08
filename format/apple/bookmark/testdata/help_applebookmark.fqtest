@@ -29,12 +29,10 @@ converting them to readable JSON with torepr:
 
 Authors
 =======
-
 - David McDonald @dgmcdona (https://github.com/dgmcdona) @river_rat_504 (https://twitter.com/river_rat_504)
 
 References
 ==========
-
 - https://developer.apple.com/documentation/foundation/url/2143023-bookmarkdata
 - https://mac-alias.readthedocs.io/en/latest/bookmark_fmt.html
 - 

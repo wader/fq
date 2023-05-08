@@ -11,7 +11,6 @@ Decode examples
 
 Build object with number of (reassembled) TCP bytes sent to/from client IP
 ==========================================================================
-
   # for a pcapng file you would use .[0].tcp_connections for first section
   $ fq '.tcp_connections | group_by(.client.ip) | map({key: .[0].client.ip, value: map(.client.stream, .server.stream | tobytes.size) | add}) | from_entries'
   {

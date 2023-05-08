@@ -29,7 +29,6 @@ options indent and attribute_prefix.
 
 Elements as object
 ==================
-
 Element can have different shapes depending on body text, attributes and children:
 
 - <a key="value">text</a> is {"a":{"#text":"text","@key":"value"}}, has text (#text) and attributes (@key)
@@ -76,7 +75,6 @@ order might be lost.
 
 Elements as array
 =================
-
 Elements are arrays of the shape ["#text": "body text", "attr_name", {key: "attr value"}|null, [<child element>, ...]].
 
   # decode as array
@@ -122,5 +120,4 @@ Elements are arrays of the shape ["#text": "body text", "attr_name", {key: "attr
 
 References
 ==========
-
 - xml.com's Converting Between XML and JSON (https://www.xml.com/pub/a/2006/05/31/converting-between-xml-and-json.html)
