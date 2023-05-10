@@ -72,47 +72,50 @@ def _opt_build_default_fixed:
   );
 
 def _opt_options:
-  { addrbase:           "number"
-  , arg:                "array_string_pair"
-  , argdecode:          "array_string_pair"
-  , argjson:            "array_string_pair"
-  , array_truncate:     "number"
-  , bits_format:        "string"
-  , byte_colors:        "csv_ranges_array"
-  , color:              "boolean"
-  , colors:             "csv_kv_obj"
-  , compact:            "boolean"
-  , completion_timeout: "number"
-  , decode_group:       "string"
-  , decode_progress:    "boolean"
-  , depth:              "number"
-  , display_bytes:      "number"
-  , expr_eval_path:     "string"
-  , expr_file:          "string"
-  , expr_given:         "boolean"
-  , expr:               "string"
-  , filenames:          "array_string"
-  , force:              "boolean"
-  , include_path:       "string"
-  , join_string:        "string"
-  , line_bytes:         "number"
-  , null_input:         "boolean"
-  , raw_file:           "array_string_pair"
-  , raw_output:         "boolean"
-  , raw_string:         "boolean"
-  , repl:               "boolean"
-  , show_formats:       "boolean"
-  , show_help:          "boolean"
-  , sizebase:           "number"
-  , skip_gaps:          "boolean"
-  , slurp:              "boolean"
-  , string_input:       "boolean"
-  , string_truncate:    "number"
-  , unicode:            "boolean"
-  , value_output:       "boolean"
-  , verbose:            "boolean"
-  , width:              "number"
+  { addrbase:           {type: "number", help: "Number base for addresses"}
+  , arg:                {type: "array_string_pair", help: null}
+  , argdecode:          {type: "array_string_pair", help: null}
+  , argjson:            {type: "array_string_pair", help: null}
+  , array_truncate:     {type: "number", help: "Number of elements to truncate arrays by default"}
+  , bits_format:        {type: "string", help: "How binaries should be represented as JSON"}
+  , byte_colors:        {type: "csv_ranges_array", help: "How bytes should be colorized in hexdump"}
+  , color:              {type: "boolean", help: "Use colors in output", env: "NO_COLOR"}
+  , colors:             {type: "csv_kv_obj", help: null}
+  , compact:            {type: "boolean", help: null}
+  , completion_timeout: {type: "number", help: null}
+  , decode_group:       {type: "string", help: null}
+  , decode_progress:    {type: "boolean", help:null}
+  , depth:              {type: "number", help: null}
+  , display_bytes:      {type: "number", help: "Max number of bytes to display for a value"}
+  , expr:               {type: "string", help: null}
+  , expr_given:         {type: "boolean", help: null}
+  , expr_eval_path:     {type: "string", help: null}
+  , expr_file:          {type: "string", help: null}
+  , filenames:          {type: "array_string", help: null}
+  , force:              {type: "boolean", help: null}
+  , include_path:       {type: "string", help: null}
+  , join_string:        {type: "string", help: null}
+  , line_bytes:         {type: "number", help: "Number of bytes to display per line"}
+  , null_input:         {type: "boolean", help: null}
+  , raw_file:           {type: "array_string_pair", help: null}
+  , raw_output:         {type: "boolean", help: null}
+  , raw_string:         {type: "boolean", help: null}
+  , repl:               {type: "boolean", help: null}
+  , show_formats:       {type: "boolean", help: null}
+  , show_help:          {type: "boolean", help: null}
+  , sizebase:           {type: "number", help: "Number base for sizes"} # TODO: rename to size_base
+  , skip_gaps:          {type: "boolean", help: "Skip gaps when represented as JSON"}
+  , slurp:              {type: "boolean", help: null}
+  , string_input:       {type: "boolean", help: null}
+  , string_truncate:    {type: "number", help: "Max string length to display"}
+  , unicode:            {type: "boolean", help: "Use unicode in output", env: "CLIUNICODE"}
+  , value_output:       {type: "boolean", help: null}
+  , verbose:            {type: "boolean", help: null}
+  , width:              {type: "number", help: null}
   };
+
+def _opt_options_public:
+  _opt_options | with_entries(select(.value.help));
 
 def _opt_eval($rest):
   ( with_entries(
@@ -364,7 +367,7 @@ def _opt_cli_arg_to_options:
   ( _opt_options as $opts
   | with_entries(
       ( .key as $k
-      | .value |= _opt_to($opts[$k] // "fuzzy")
+      | .value |= _opt_to($opts[$k].type // "fuzzy")
       | select(.value != null)
       )
     )
@@ -374,7 +377,7 @@ def _opt_cli_arg_from_options:
   ( _opt_options as $opts
   | with_entries(
       ( .key as $k
-      | .value |= _opt_from($opts[$k] // "string")
+      | .value |= _opt_from($opts[$k].type // "string")
       | select(.value != null)
       )
     )

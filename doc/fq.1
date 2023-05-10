@@ -1,0 +1,280 @@
+.TH fq 1
+.SH NAME
+fq - jq for binary formats
+.SH SYNOPSIS
+Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
+
+As fq's query langauge and CLI is based on jq it might be a good idea to have look at jq(1).
+
+Example usages:
+  fq . file
+  fq d file
+  fq -V '.path[1].value' file
+  fq tovalue file
+  fq -r to_toml file.yml
+  fq -s -d html 'map(.html.head.title?)' *.html
+  cat file.cbor | fq -d cbor torepr
+  fq 'grep("^main$") | parent' /bin/ls
+  fq -i
+.SH DESCRIPTION
+Tool, language and decoders for working with binary data.
+For more information see https://github.com/wader/fq
+
+fq is inspired by the well known jq tool and language and allows you to work with binary formats the same way you would using jq. In addition it can present data like a hex viewer, transform, slice and concatenate binary data. It also supports nested formats and has an interactive REPL with auto-completion.
+.SH OPTIONS
+.TP
+--arg NAME VALUE
+Set variable $NAME to string VALUE
+.TP
+--argdecode NAME PATH
+Set variable $NAME to decode of PATH
+.TP
+--argjson NAME JSON
+Set variable $NAME to JSON
+.TP
+--color-output,-C
+Force color output
+.TP
+--compact-output,-c
+Compact output
+.TP
+--decode,-d NAME
+Decode format or group (probe)
+.TP
+--from-file,-f PATH
+Read EXPR from file
+.TP
+--include-path,-L PATH
+Include search path
+.TP
+--join-output,-j
+No newline after each output
+.TP
+--monochrome-output,-M
+Force monochrome output
+.TP
+--null-input,-n
+Null input (use input and inputs functions to read)
+.TP
+--raw-output0
+NUL (zero) byte after each output
+.TP
+--option,-o KEY=VALUE/@PATH
+Set option (ex: -o color=true, see --help options)
+.TP
+  -o addrbase=<number>
+    Number base for addresses
+.TP
+  -o array_truncate=<number>
+    Number of elements to truncate arrays by default
+.TP
+  -o bits_format=<string>
+    How binaries should be represented as JSON
+.TP
+  -o byte_colors=<csv_ranges_array>
+    How bytes should be colorized in hexdump
+.TP
+  -o color=<boolean>
+    Use colors in output
+.TP
+  -o display_bytes=<number>
+    Max number of bytes to display for a value
+.TP
+  -o line_bytes=<number>
+    Number of bytes to display per line
+.TP
+  -o sizebase=<number>
+    Number base for sizes
+.TP
+  -o skip_gaps=<boolean>
+    Skip gaps when represented as JSON
+.TP
+  -o string_truncate=<number>
+    Max string length to display
+.TP
+  -o unicode=<boolean>
+    Use unicode in output
+.TP
+--raw-file NAME PATH
+Set variable $NAME to string content of file
+.TP
+--raw-output,-r
+Raw string output (without quotes)
+.TP
+--repl,-i
+Interactive REPL
+.TP
+--help,-h [TOPIC]
+Show help for TOPIC (ex: -h formats, -h mp4)
+.TP
+--version,-v
+Show version
+.TP
+--slurp,-s
+Slurp all inputs into an array or string (-Rs)
+.TP
+--raw-input,-R
+Read raw input strings (don't decode)
+.TP
+--unicode-output,-U
+Force unicode output
+.TP
+--value-output,-V
+Output JSON value (-Vr for raw string)
+.SH ENVIRONMENT
+.TP
+NO_COLOR=<boolean>
+  Use colors in output
+.TP
+CLIUNICODE=<boolean>
+  Use unicode in output
+.SH SUPPORTED FORMATS
+By default fq will try to probe input format. If this does not work
+a format can by specified by using -d <NAME>.
+To see more details about a format use -h <NAME>.
+
+.EX
+$ fq -d msgpack d file  # decode as msgpack
+$ fq -h msgpack         # see msgpack help
+$ fq -h formats         # list formats
+.EE
+
+.EX
+aac_frame            Advanced Audio Coding frame
+adts                 Audio Data Transport Stream
+adts_frame           Audio Data Transport Stream frame
+aiff                 Audio Interchange File Format
+amf0                 Action Message Format 0
+apev2                APEv2 metadata tag
+apple_bookmark       Apple BookmarkData
+ar                   Unix archive
+asn1_ber             ASN1 BER (basic encoding rules, also CER and DER)
+av1_ccr              AV1 Codec Configuration Record
+av1_frame            AV1 frame
+av1_obu              AV1 Open Bitstream Unit
+avc_annexb           H.264/AVC Annex B
+avc_au               H.264/AVC Access Unit
+avc_dcr              H.264/AVC Decoder Configuration Record
+avc_nalu             H.264/AVC Network Access Layer Unit
+avc_pps              H.264/AVC Picture Parameter Set
+avc_sei              H.264/AVC Supplemental Enhancement Information
+avc_sps              H.264/AVC Sequence Parameter Set
+avi                  Audio Video Interleaved
+avro_ocf             Avro object container file
+bencode              BitTorrent bencoding
+bitcoin_blkdat       Bitcoin blk.dat
+bitcoin_block        Bitcoin block
+bitcoin_script       Bitcoin script
+bitcoin_transaction  Bitcoin transaction
+bits                 Raw bits
+bplist               Apple Binary Property List
+bsd_loopback_frame   BSD loopback frame
+bson                 Binary JSON
+bytes                Raw bytes
+bzip2                bzip2 compression
+caff                 Live2D Cubism archive
+cbor                 Concise Binary Object Representation
+csv                  Comma separated values
+dns                  DNS packet
+dns_tcp              DNS packet (TCP)
+elf                  Executable and Linkable Format
+ether8023_frame      Ethernet 802.3 frame
+exif                 Exchangeable Image File Format
+fairplay_spc         FairPlay Server Playback Context
+fit                  Garmin Flexible and Interoperable Data Transfer
+flac                 Free Lossless Audio Codec file
+flac_frame           FLAC frame
+flac_metadatablock   FLAC metadatablock
+flac_metadatablocks  FLAC metadatablocks
+flac_picture         FLAC metadatablock picture
+flac_streaminfo      FLAC streaminfo
+gif                  Graphics Interchange Format
+gzip                 gzip compression
+hevc_annexb          H.265/HEVC Annex B
+hevc_au              H.265/HEVC Access Unit
+hevc_dcr             H.265/HEVC Decoder Configuration Record
+hevc_nalu            H.265/HEVC Network Access Layer Unit
+hevc_pps             H.265/HEVC Picture Parameter Set
+hevc_sps             H.265/HEVC Sequence Parameter Set
+hevc_vps             H.265/HEVC Video Parameter Set
+html                 HyperText Markup Language
+icc_profile          International Color Consortium profile
+icmp                 Internet Control Message Protocol
+icmpv6               Internet Control Message Protocol v6
+id3v1                ID3v1 metadata
+id3v11               ID3v1.1 metadata
+id3v2                ID3v2 metadata
+ipv4_packet          Internet protocol v4 packet
+ipv6_packet          Internet protocol v6 packet
+jp2c                 JPEG 2000 codestream
+jpeg                 Joint Photographic Experts Group file
+json                 JavaScript Object Notation
+jsonl                JavaScript Object Notation Lines
+leveldb_descriptor   LevelDB Descriptor
+leveldb_log          LevelDB Log
+leveldb_table        LevelDB Table
+luajit               LuaJIT 2.0 bytecode
+macho                Mach-O macOS executable
+macho_fat            Fat Mach-O macOS executable (multi-architecture)
+markdown             Markdown
+matroska             Matroska file
+midi                 Standard MIDI file
+moc3                 MOC3 file
+mp3                  MP3 file
+mp3_frame            MPEG audio layer 3 frame
+mp3_frame_vbri       MP3 frame Fraunhofer encoder variable bitrate tag
+mp3_frame_xing       MP3 frame Xing/Info tag
+mp4                  ISOBMFF, QuickTime and similar
+mpeg_asc             MPEG-4 Audio Specific Config
+mpeg_es              MPEG Elementary Stream
+mpeg_pes             MPEG Packetized elementary stream
+mpeg_pes_packet      MPEG Packetized elementary stream packet
+mpeg_spu             Sub Picture Unit (DVD subtitle)
+mpeg_ts              MPEG Transport Stream
+msgpack              MessagePack
+negentropy           Negentropy message
+nes                  iNES/NES 2.0 cartridge ROM format
+ogg                  OGG file
+ogg_page             OGG page
+opentimestamps       OpenTimestamps file
+opus_packet          Opus packet
+pcap                 PCAP packet capture
+pcapng               PCAPNG packet capture
+pg_btree             PostgreSQL btree index file
+pg_control           PostgreSQL control file
+pg_heap              PostgreSQL heap file
+png                  Portable Network Graphics file
+prores_frame         Apple ProRes frame
+protobuf             Protobuf
+protobuf_widevine    Widevine protobuf
+pssh_playready       PlayReady PSSH
+rtmp                 Real-Time Messaging Protocol
+sll2_packet          Linux cooked capture encapsulation v2
+sll_packet           Linux cooked capture encapsulation
+tap                  TAP tape format for ZX Spectrum computers
+tar                  Tar archive
+tcp_segment          Transmission control protocol segment
+tiff                 Tag Image File Format
+tls                  Transport layer security
+toml                 Tom's Obvious, Minimal Language
+tzif                 Time Zone Information Format
+tzx                  TZX tape format for ZX Spectrum computers
+udp_datagram         User datagram protocol
+vorbis_comment       Vorbis comment
+vorbis_packet        Vorbis packet
+vp8_frame            VP8 frame
+vp9_cfm              VP9 Codec Feature Metadata
+vp9_frame            VP9 frame
+vpx_ccr              VPX Codec Configuration Record
+wasm                 WebAssembly Binary Format
+wav                  WAV file
+webp                 WebP image
+xml                  Extensible Markup Language
+yaml                 YAML Ain't Markup Language
+zip                  ZIP archive
+.EE
+.SH SEE ALSO
+jq(1)
+dd(1)
+.SH AUTHOR
+Mattias Wadman (mattias.wadman@gmail.com)

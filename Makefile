@@ -38,6 +38,7 @@ cover: test
 doc: always
 doc: $(wildcard doc/*.svg.sh)
 doc: $(wildcard *.md doc/*.md)
+doc: doc/fq.1
 
 %.md: fq
 	@doc/mdsh.sh ./fq $@
@@ -54,6 +55,9 @@ doc/file.mp3: Makefile
 
 doc/file.mp4: Makefile
 	ffmpeg -y -f lavfi -i sine -f lavfi -i testsrc -c:a aac -c:v h264 -f mp4 -t 20ms "$@"
+
+%.1: fq %.1.jq
+	./fq -rnf $(@:.1=.1.jq) > $@
 
 gogenerate: always
 	go generate -x ./...

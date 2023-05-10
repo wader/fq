@@ -188,11 +188,12 @@ def _main:
       ( # if show_help is a string -h <topic> was used
         if ($opts.show_help | type) == "boolean" then
           ( # "" to print separators
-            ( "banner"
+            ( "fq_banner"
+            , "fq_summary"
             , ""
-            , "usage"
+            , "fq_usage"
             , ""
-            , "example_usage"
+            , "fq_example_usage"
             , ""
             , "args"
             )
@@ -213,7 +214,7 @@ def _main:
         stdin_tty.is_terminal and
         stdout_tty.is_terminal
       ) then
-      ( (_help($arg0; "usage") | printerrln)
+      ( (_help($arg0; "fq_usage") | printerrln)
       , (null | halt_error(_exit_code_args_error))
       )
     else
