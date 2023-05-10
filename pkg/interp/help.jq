@@ -76,11 +76,12 @@ def _help_format_enrich($arg0; $f; $include_basic):
     end
   );
 
+
 def _help($arg0; $topic):
   ( $topic
-  | if  . == "usage" then
+  | if  . == "fq_usage" then
       "Usage: \($arg0) [OPTIONS] [--] [EXPR] [FILE...]"
-    elif . == "example_usage" then
+    elif . == "fq_example_usage" then
       ( "Example usages:"
       , "  fq . file"
       , "  fq d file"
@@ -92,13 +93,14 @@ def _help($arg0; $topic):
       , "  fq 'grep(\"^main$\") | parent' /bin/ls"
       , "  fq -i"
       )
-    elif . == "banner" then
-      ( "fq - jq for binary formats"
-      , "Tool, language and decoders for working with binary data."
+    elif . == "fq_banner" then
+      "fq - jq for binary formats"
+    elif . == "fq_summary" then
+      ( "Tool, language and decoders for working with binary data."
       , "For more information see https://github.com/wader/fq"
       )
     elif . == "args" then
-      args_help_text(_opt_cli_opts)
+      args_help_text(_opt_cli_args)
     elif . == "options" then
       ( [ ( options
           | _opt_cli_arg_from_options

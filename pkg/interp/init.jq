@@ -172,7 +172,7 @@ def _main:
   ( . as {$version, $os, $arch, $args, args: [$arg0]}
   # make sure we don't unintentionally use . to make things clearer
   | null
-  | ( try _args_parse($args[1:]; _opt_cli_opts)
+  | ( try _args_parse($args[1:]; _opt_cli_args)
       catch halt_error(_exit_code_args_error)
     ) as {parsed: $parsed_args, $rest}
   # combine default fixed opt, parsed args and -o key=value opts
@@ -189,11 +189,12 @@ def _main:
       ( # if show_help is a string -h <topic> was used
         if ($opts.show_help | type) == "boolean" then
           ( # "" to print separators
-            ( "banner"
+            ( "fq_banner"
+            , "fq_summary"
             , ""
-            , "usage"
+            , "fq_usage"
             , ""
-            , "example_usage"
+            , "fq_example_usage"
             , ""
             , "args"
             )
