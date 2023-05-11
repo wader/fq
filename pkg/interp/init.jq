@@ -137,19 +137,21 @@ def _cli_slurp_error(_):
   _eval_error("compile"; "slurp can only be used from interactive repl");
 # TODO: rewrite query to reuse _display_default_opts value? also _repl_display
 def _cli_display:
-  display(_display_default_opts);
+  display_implicit(_display_default_opts);
 # _cli_eval halts on compile errors
 def _cli_eval($expr; $opts):
   eval(
     $expr;
-    $opts + {
-      slurps: {
-        help: "_help_slurp",
-        repl: "_cli_repl_error",
-        slurp: "_cli_slurp_error"
-      },
-      catch_query: _query_func("_cli_eval_on_expr_error"),
-    };
+    ( $opts
+    + {
+        slurps: {
+          help: "_help_slurp",
+          repl: "_cli_repl_error",
+          slurp: "_cli_slurp_error"
+        },
+        catch_query: _query_func("_cli_eval_on_expr_error"),
+      }
+    );
     _cli_eval_on_error;
     _cli_eval_on_compile_error
   );
