@@ -1,14 +1,22 @@
 /hello:
 hello
-$ fq -d bits '., .size, .[8:-8]' hello
+$ fq -d bits '., .size, .[8:-8], scan("he|lo")' hello
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|68 65 6c 6c 6f 0a|                             |hello.|         |.: raw bits (bits)
+0x0|68 65 6c 6c 6f 0a|                             |hello.|         |.: raw bits 0x0-0x5.7 (6)
 48
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|   65 6c 6c 6f                                 | ello           |.: raw bits 0x1-0x4.7 (4)
-$ fq -d bytes '., .size, .[1:-1]' hello
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|68 65 6c 6c 6f 0a|                             |hello.|         |.: raw bits (bytes)
+0x0|68 65                                          |he              |.: raw bits 0x0-0x1.7 (2)
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|         6c 6f                                 |   lo           |.: raw bits 0x3-0x4.7 (2)
+$ fq -d bytes '., .size, .[1:-1], scan("he|lo")' hello
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|68 65 6c 6c 6f 0a|                             |hello.|         |.: raw bits 0x0-0x5.7 (6)
 6
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|   65 6c 6c 6f                                 | ello           |.: raw bits 0x1-0x4.7 (4)
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|68 65                                          |he              |.: raw bits 0x0-0x1.7 (2)
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|         6c 6f                                 |   lo           |.: raw bits 0x3-0x4.7 (2)
