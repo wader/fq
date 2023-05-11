@@ -12,12 +12,18 @@ def _todisplay:
   | _format_func($f; "_todisplay")
   );
 
-def display($opts):
+def display($opts; $explicit_call):
   ( . as $c
   | options($opts) as $opts
   | try _todisplay catch $c
   | if $opts.value_output then tovalue end
-  | if _can_display then _display($opts)
+  | if _can_display then
+      _display(
+          ( $opts
+          # don't output raw binary if d/display was call explicitly
+          | if $explicit_call then .raw_output = false end
+          )
+        )
     else
       ( if _is_string and $opts.raw_string then print
         else _print_color_json($opts)
@@ -29,7 +35,10 @@ def display($opts):
     end
   | error("unreachable")
   );
+def display($opts): display($opts; true);
 def display: display({});
+
+def display_implicit($opts): display($opts; false);
 
 def d($opts): display($opts);
 def d: display({});

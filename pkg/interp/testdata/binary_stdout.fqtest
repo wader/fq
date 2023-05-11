@@ -6,3 +6,7 @@ $ _STDOUT_IS_TERMINAL=0 _STDOUT_HEX=1 NO_COLOR=1 fq -n '[1,1,1 | tobits] | tobit
 0380\
 $ _STDOUT_IS_TERMINAL=0 _STDOUT_HEX=1 NO_COLOR=1 fq -n '[5 | tobits(12)], [3 | tobytes(3)] | tobytes'
 0005000003\
+# explicit call to display don't output binary
+$ _STDOUT_IS_TERMINAL=0 NO_COLOR=1 fq -n '[1,2,3] | tobytes | d'
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|01 02 03|                                      |...|            |.: raw bits 0x0-0x2.7 (3)
