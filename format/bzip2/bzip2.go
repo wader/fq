@@ -111,7 +111,7 @@ func bzip2Decode(d *decode.D) any {
 	compressedStart := d.Pos()
 
 	readCompressedSize, uncompressedBR, dv, _, _ :=
-		d.TryFieldReaderRangeFormat("uncompressed", 0, d.Len(), bzip2.NewReader, &probeGroup, nil)
+		d.TryFieldReaderRangeFormat("uncompressed", 0, d.Len(), bzip2.NewReader, &probeGroup, format.Probe_In{})
 	if uncompressedBR != nil {
 		if dv == nil {
 			d.FieldRootBitBuf("uncompressed", uncompressedBR)

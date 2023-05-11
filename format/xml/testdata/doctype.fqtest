@@ -34,29 +34,21 @@ $ fq -o array=true -d html . doctype.xml
 ]
 $ fq . doctype.xml
 {
-  "html": {
-    "head": {
-      "title": "aaa"
-    }
+  "head": {
+    "title": "aaa"
   }
 }
 $ fq -o array=true . doctype.xml
 [
-  "html",
+  "head",
   null,
   [
     [
-      "head",
-      null,
-      [
-        [
-          "title",
-          {
-            "#text": "aaa"
-          },
-          []
-        ]
-      ]
+      "title",
+      {
+        "#text": "aaa"
+      },
+      []
     ]
   ]
 ]

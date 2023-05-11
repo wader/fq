@@ -110,7 +110,7 @@ func gzDecode(d *decode.D) any {
 
 	if rFn != nil {
 		readCompressedSize, uncompressedBR, dv, _, _ :=
-			d.TryFieldReaderRangeFormat("uncompressed", d.Pos(), d.BitsLeft(), rFn, &probeGroup, nil)
+			d.TryFieldReaderRangeFormat("uncompressed", d.Pos(), d.BitsLeft(), rFn, &probeGroup, format.Probe_In{})
 		if uncompressedBR != nil {
 			if dv == nil {
 				d.FieldRootBitBuf("uncompressed", uncompressedBR)
