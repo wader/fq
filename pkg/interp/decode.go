@@ -434,10 +434,7 @@ func makeDecodeValueOut(dv *decode.Value, kind decodeValueKind, out any) any {
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case Binary:
-			return decodeValue{
-				JQValue:         vvv,
-				decodeValueBase: decodeValueBase{dv: dv},
-			}
+			return vvv
 
 		default:
 			panic(fmt.Sprintf("unreachable vv %#+v", vvv))

@@ -136,7 +136,7 @@ def _prompt($opts):
       , "]"
       , if length > 1 then
           ( ("[" | _ansi_if($opts; "array"))
-          , ("0" |  _ansi_if($opts; "number"))
+          , ("0" | _ansi_if($opts; "number"))
           , ":"
           , (length | tostring | _ansi_if($opts; "number"))
           , ("]" | _ansi_if($opts; "array"))
@@ -152,7 +152,11 @@ def _prompt($opts):
           + if $c._error then "!" else "" end
           )
         else
-          ($c | type)
+          ( $c
+          | if _is_decode_value then type
+            else (_exttype // type)
+            end
+          )
         end
       ) | _ansi_if($opts; "prompt_value")
     end;

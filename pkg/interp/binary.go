@@ -299,6 +299,7 @@ func (Binary) ExtKeys() []string {
 		"size",
 		"start",
 		"stop",
+		"unit",
 	}
 }
 
@@ -368,6 +369,8 @@ func (b Binary) JQValueKey(name string) any {
 			stopUnits++
 		}
 		return new(big.Int).SetInt64(stopUnits)
+	case "unit":
+		return b.unit
 	}
 	return nil
 }
