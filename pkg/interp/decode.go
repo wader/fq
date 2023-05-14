@@ -184,7 +184,7 @@ func (i *Interp) _decode(c any, format string, opts decodeOpts) any {
 
 	// TODO: progress hack
 	// would be nice to move all progress code into decode but it might be
-	// tricky to keep track of absolute positions in the underlaying readers
+	// tricky to keep track of absolute positions in the underlying readers
 	// when it uses BitBuf slices, maybe only in Pos()?
 	if bbf, ok := c.(*openFile); ok {
 		filename = bbf.filename

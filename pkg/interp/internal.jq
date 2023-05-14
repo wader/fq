@@ -110,7 +110,7 @@ def _finally(f; fin):
 def _to_int: (. % (. + 1));
 
 # integer division
-# inspried by https://github.com/itchyny/gojq/issues/63#issuecomment-765066351
+# inspired by https://github.com/itchyny/gojq/issues/63#issuecomment-765066351
 def _intdiv($a; $b):
   ( ($a | _to_int) as $a
   | ($b | _to_int) as $b
@@ -247,4 +247,3 @@ def _tree_path(children; name; $v):
   if $v | _is_string then _lookup
   else _path
   end;
-

@@ -172,7 +172,7 @@ Apple's `bookmarkData` format is used to encode information that can be resolved
 into a `URL` object for a file even if the user moves or renames it. Can also
 contain security scoping information for App Sandbox support.
 
-These `bookmarkData` blobs are often found endcoded in data fields of Binary
+These `bookmarkData` blobs are often found encoded in data fields of Binary
 Property Lists. Notable examples include:
 
 - `com.apple.finder.plist` - contains an `FXRecentFolders` value, which is an
@@ -1004,7 +1004,7 @@ Decode value as tls
 
 Supports decoding of most standard records, messages and extensions. Can also decrypt most standard cipher suits in a PCAP with traffic in both directions if a NSS key log is provided.
 
-### Decode and decrypt provding a PCAP and key log
+### Decode and decrypt providing a PCAP and key log
 
 Write traffic to a PCAP file:
 

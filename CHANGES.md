@@ -238,7 +238,7 @@ Also been preparing for a [talk about fq](https://fosdem.org/2023/schedule/event
 - `mp4`
   - `ftyp` set minor description to date for "qt" files
   - `tkhd` decode enabled, preview, etc flags
-  - `udta` Handle case wit box type is key and value rest of box
+  - `udta` Handle case with box type is key and value rest of box
   - `sgpd`,`sbgp` Change grouping type to a string as it seems to be what it is in practice.
 - `tcp_segment` Decode all standard options, MSS, Window scale, timestamp etc. Rename "maxseg" to "mss".
 
@@ -253,13 +253,13 @@ Also been preparing for a [talk about fq](https://fosdem.org/2023/schedule/event
 * f1057b9b Update make-golangci-lint to 1.51.0 from 1.50.1
 * ca27e426 doc: Add _parent for decode values and clenaup doc a bit
 * b04a650b flac_picture,mpeg: Fix trailing ")" typo in map sym and description
-* 57144b2f github-action: Use quotes becase yaml (1.20 -> 1.2)
+* 57144b2f github-action: Use quotes because yaml (1.20 -> 1.2)
 * 0aa6e3e2 gojq: Update rebased fq fork
 * 7855b359 gomod: Update non-bump tracked mods and add bump config
 * 6e17de36 goreleaser: Use name_template instead of deprecated archive replacements
 * 8b49b42f interp: Wrap Binary in decodeValue to fix prompt issue with bits/bytes format
 * 2d82c05f mp3: Add max_unknown option to fail decode if too much unknown bits
-* f386a515 mp4: Decode qt minor verison as YYYY.MM description
+* f386a515 mp4: Decode qt minor version as YYYY.MM description
 * 3555dc67 mp4: Decode tkhd flags
 * c3e3b3e9 mp4: Decode udta metadata boxes without meta box
 * c49012db mp4: sgpd,sbgp: Change grouping_type to a string
@@ -424,7 +424,7 @@ In other fq related news [jq-lsp](https://github.com/wader/jq-lsp) got some fixe
 * f7d7a49f missed a letter on last commit - converting to snake_case
 * 2f37cb55 mod: Update modules not tracked with bump
 * 55f4f1aa moved a flag bit fields into correct positions
-* 9e5a072e mp3_frame_tags: Covert to decode group and split to mp3_frame_{xing,vbri} decoders
+* 9e5a072e mp3_frame_tags: Convert to decode group and split to mp3_frame_{xing,vbri} decoders
 * 48522e3c mp3_tags,mp3: Add VBRI header support and rename tags to tag as there is only one
 * 83ccedc5 mp4,decode: Properly decode ilst items (both mdta and mdir)
 * 1dea40e6 mp4,doc: Add JSON box tree example and reorder a bit
@@ -464,7 +464,7 @@ In other fq related news [jq-lsp](https://github.com/wader/jq-lsp) got some fixe
 
 Adds `avi` decoder and replace `raw` with more convenient `bits` and `bytes` format. Otherwise mostly small updates and bug fixes.
 
-Increase minor version. fq does not use sementic versioning (yet) but it's probably a good idea to start increase minor version when adding features to be able to do patch releases.
+Increase minor version. fq does not use semantic versioning (yet) but it's probably a good idea to start increase minor version when adding features to be able to do patch releases.
 
 In other fq related news:
 - I gave a [talk about fq](https://www.youtube.com/watch?v=-Pwt5KL-xRs&t=1450s) at [No Time To Wait 6](https://mediaarea.net/NoTimeToWait6) a conference about open media, standardization, and audiovisual preservation.
@@ -492,7 +492,7 @@ In other fq related news:
 - `bits` Replaces `raw` but is a binary using bit units. #485
 - `bytes` Replaces `raw` but is a binary using byte units. #485
 - `bplist`
-  - Fix signed interger decoding. #451 @dgmcdona
+  - Fix signed integer decoding. #451 @dgmcdona
   - Use correct size for references and check for infinite loops. #454 @dgmcdona
 - `flac_frame` Correctly decode zero escape sample size. #461
 - `id3v2` Fix decoding of COMM and TXXX with missing null terminator. #468
@@ -501,7 +501,7 @@ In other fq related news:
 - `mp3_frame_tags` Replaces `xing` and also decodes "lame extensions" for both Xing and Info. #481
 - `raw` Removed. #485
 - `wav` More codec symbol names and now shares RIFF code with AVI decoder. #476
-- `yaml` Fix type panic for large intergers. #462
+- `yaml` Fix type panic for large integers. #462
 
 ## Changelog
 
@@ -714,11 +714,11 @@ In other fq related news:
 * 7749e1b5 matroska: Add proper lacing support
 * 20a15372 mp4: Fix data_format typo
 * 2655ba09 mp4: More codec names (from mp4ra.org)
-* 7cd43b49 perfomance: increase performance by map usage
+* 7cd43b49 performance: increase performance by map usage
 * 6a6fec54 range,decode: Use own range sort impl to speed up a bit
 * 0f35fe48 ranges,decode: Correctly skip empty ranges when adding unknown fields
 * ea81efec readline: Update rebased fq fork
-* 369f4016 removed unneccessary type conversions
+* 369f4016 removed unnecessary type conversions
 * 3198602d removed unused return type
 * 7d865343 sortex: Package with type safe sort helpers
 * 808202fa test: Skip go test with -race by default
@@ -842,7 +842,7 @@ In other fq related news:
 - `xml`
   - Change attribute prefix to `@` instead of `-` and make it an option `attribute_prefix`. #401
   - Skip default namespace in element names. #389
-  - Always include attributes and children even when empty in array mode. Makes it a lot easer to work with as you can assume `.[1]` will be attributes and so on. #357
+  - Always include attributes and children even when empty in array mode. Makes it a lot easier to work with as you can assume `.[1]` will be attributes and so on. #357
   - Normalize to strings is done so that non-string scalars can be used:
     ```
     $ fq -nr '{a: {"-boolean": true, "-number": 123, "-null": null}} | toxml'
@@ -882,7 +882,7 @@ In other fq related news:
 * 3613b6d4 elf: Remove redundant program_header struct
 * 8a19978b flac: Make gen script generate correct fqtest files
 * 2bfbe9a9 flac_frame: Cleanup some dev lefterovers and todos
-* 64b23659 fqtest: Run tests in parallell
+* 64b23659 fqtest: Run tests in parallel
 * af35b284 gojq: Preserve keys order for to_entries when used with JQValue
 * 804ad1e2 gojq: Update fq fork
 * add3dcfd gojq: Update fq fork, fix scope argcount issue
@@ -1277,7 +1277,7 @@ In other fq related news:
 * dd0d97ea gojq: Rebase fq fork (speedup and fix range with JQValue)
 * afd724bf gojq: Rebase fq fork. Fixes JQValue path tracking when iterating
 * 74978c9d hevc: Add hevc_vps, hevc_sps and hevc_pps decoders
-* c0202483 hevc_vpc,hevc_sps: Use same nameing for profile as in spec
+* c0202483 hevc_vpc,hevc_sps: Use same naming for profile as in spec
 * 09385c61 id3v2: Add 2.0 PIC support
 * 9cb4b57a interp,cli: Handle ctrl-c properly
 * 607202bb interp: Don't truncate last display column
@@ -1312,7 +1312,7 @@ Added fq talk slides from [Binary Tools Summit 2022](https://binary-tools.net/su
   - Prompt paths now has colors support. #181
   - Shows an arrow on parse error.
   - Faster on multi inputs. #165
-- Speedup interpeter by skipping redundant includes. #172
+- Speedup interpreter by skipping redundant includes. #172
 - gojq fork rebase: #179
   - Fixes `try ... | ... catch` precedence issue.
   - `tonumber` now supports non-base-10 numbers.
@@ -1462,7 +1462,7 @@ Improved binary slicing and bit reading, `avro_ocf` decoder (thanks @xentripetal
   - Able to handle deflate, snappy, and null codecs for blocks.
 - `asn1_ber` Add decoder. #92
   - Also decodes CER and DER (X.690) but with no additional validation at the moment.
-  - Support all types but real type is currently limited to range for 64 bit interger/float.
+  - Support all types but real type is currently limited to range for 64 bit integer/float.
   - Has `torepr` support.
   - No schema support.
 - `aac_frame` Only decode object types we know about. #130
@@ -1490,7 +1490,7 @@ Also thanks to @Doctor-love for keeping things tidy.
 * ee184075 Parse header using avro decoders. Still not certain this is the best idea. Will get opinions before finalizing.
 * ab50088d Polish of problem template and clarifying questions
 * 27789f2d Regenerate docs
-* 5a1d35e7 Remove redudant question and fix typo
+* 5a1d35e7 Remove redundant question and fix typo
 * 31c4c0d3 Support snappy and deflate codecs
 * 0300c955 Take heading off doc to match make doc format
 * 6f57cdbf Timestamps should be UTC
@@ -1515,9 +1515,9 @@ Also thanks to @Doctor-love for keeping things tidy.
 * 4ab6381d decode: Add scalars args to FieldRootBitBuf
 * be71eb01 decode: Rename LenFn() to LimitedFn, add FramedFn and document
 * 7bc25219 doc,interp: Add some example usages to cli help
-* 8e47fb1a doc,matroska: Fix filesname in example
+* 8e47fb1a doc,matroska: Fix filename in example
 * c15f5283 doc: Add format links to format table
-* b86da7ae doc: Add inital decoder API documentation
+* b86da7ae doc: Add initial decoder API documentation
 * 49c90f89 doc: Add macOS security notes and move supported format up a bit
 * 06b67e4b doc: Add more license details
 * a8664ed5 doc: Add per format documentation
@@ -1625,7 +1625,7 @@ Also thanks to @Doctor-love for keeping things tidy.
 * a6bf62c msgpack: Add decoder
 * edad481 num,mathextra: Rename num package to mathextra
 * bfc977b png: Decode PLTE and tRNS chunks and cleanup syms a bit
-* 36d2891 readline: Update to verison with less deps
+* 36d2891 readline: Update to version with less deps
 * 9770b00 repl: Make prompt for array and iter more jqish
 * ba1edef tar: Allow more than 2 zero end blocks at end
 * 5921d76 tar: Don't assume there is a end marker
@@ -1683,7 +1683,7 @@ Also thanks to @Doctor-love @mathieu-aubin for keeping things tidy.
 * c721ac8 Update github-go-version from 1.17.3, 1.17.3 to 1.17.4
 * befe783 Update github-go-version from 1.17.4, 1.17.4 to 1.17.5
 * 75aa475 decode: Generate Try?Scalar* methods for readers too
-* 9b683cd deocde: Cleanup some io panic(err)
+* 9b683cd decode: Cleanup some io panic(err)
 * e1e8a23 doc: Add color/unicode section and move config section
 * ee023d7 doc: Add some more related and similar projects
 * d02c7c4 doc: Add some more usage examples
@@ -1791,7 +1791,7 @@ Also thanks to @Doctor-love @mathieu-aubin for keeping things tidy.
 * 3304f29 cli: Add string_input options test
 * 0dd848d cli: Better filenames in errors
 * 22eb53d cli: Cleanup MaybeLogFile
-* c14c29a cli: Cleanup and more commens
+* c14c29a cli: Cleanup and more comments
 * 10d7ed7 cli: Fix error filename on script error
 * 2b8d11d cli: Fix indent
 * 2d4eb9c cli: Fix non-string variables and var(; f) variant to delete etc
@@ -1865,7 +1865,7 @@ Also thanks to @Doctor-love @mathieu-aubin for keeping things tidy.
 * 8440e8a doc: Cleanup todo and dev a bit
 * 15b6d64 doc: Cleanup up a bit
 * 1047d90 doc: Document io packages a bit
-* 1a0089e doc: Fix typo and some improvments
+* 1a0089e doc: Fix typo and some improvements
 * 97c7403 doc: Fix typo in README
 * 0814206 doc: Fix typos and old examples
 * 0e8c82a doc: Improve readme goals a bit
@@ -1902,7 +1902,7 @@ Also thanks to @Doctor-love @mathieu-aubin for keeping things tidy.
 * bc9951c flac_frame: Fail if trying to decode outside block size
 * 723542a flac_frame: Make utf8Uint reader more correct and robust
 * b643e22 flac_frame: Support non-8 bit align sample size
-* 2daa738 flac_frame: Use d.Invalid for posssible errors
+* 2daa738 flac_frame: Use d.Invalid for possible errors
 * c1d9b4d flac_metadatablocks: typ > 127 can't happen, add app id
 * 984ba1a flac_metadatablocks: type >= 127 is invalid
 * 2b35d28 flac_picture,mp4: avif images and data fallback is image format fails
@@ -1934,7 +1934,7 @@ Also thanks to @Doctor-love @mathieu-aubin for keeping things tidy.
 * 01d8a90 funcs: Add delta/0 delta_by/0
 * 96f7a75 funcs: Fix typo add count/0
 * 962d84d funcs: Make intdiv truncate to int
-* 08ec4f0 funcs: Remove unsued string function
+* 08ec4f0 funcs: Remove unused string function
 * d5c084c funcs: chunk_by comment
 * 80eaa46 funcs: format helper
 * c770a75 funcs: make in_bytes/bits_range more generic
@@ -2059,7 +2059,7 @@ Also thanks to @Doctor-love @mathieu-aubin for keeping things tidy.
 * 40e26e8 make: Rename to testjq
 * ab8080f make: Reorganize test targets
 * 98a8bae make: Silence git if no repo version found
-* 95b9c32 make: doc/formats.svg: Ignore graphviz verison to get less diff
+* 95b9c32 make: doc/formats.svg: Ignore graphviz version to get less diff
 * 30ad643 make: go build args should not be quoted
 * f1507f7 mod: Use proper path and dont use replace
 * c4a3120 mp3,README: some cleanup
@@ -2108,7 +2108,7 @@ Also thanks to @Doctor-love @mathieu-aubin for keeping things tidy.
 * 49d2e61 tar: Unbreak num parsing and add test
 * c8fad57 tiff: Fix reading of mluc tags with multiple records
 * b55f24a todo: Add ignore range check idea
-* bc1b3bf todo: Add note about symbols and iprint improvments
+* bc1b3bf todo: Add note about symbols and iprint improvements
 * 1d83554 todo: Add note about test and capture with buffer
 * f839317 todo: Add some known issues
 * 4d94c9a todo: Clenaup a  bit

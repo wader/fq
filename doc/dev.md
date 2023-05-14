@@ -169,7 +169,7 @@ Decoder authors do not have to create them.
 
 #### `*decode.Value` type
 
-Is what [`*decode.D`](#decoded-type) produces and it used to represent the decoded structure. Can be array, struct, number, string etc. It is the underlaying type used by `interp.DecodeValue` that implements `gojq.JQValue` to expose it as various jq types, which in turn is used to produce JSON.
+Is what [`*decode.D`](#decoded-type) produces and it used to represent the decoded structure. Can be array, struct, number, string etc. It is the underlying type used by `interp.DecodeValue` that implements `gojq.JQValue` to expose it as various jq types, which in turn is used to produce JSON.
 
 It stores:
 - Parent [`*decode.Value`](#decodevalue-type) unless it's a root.
@@ -201,7 +201,7 @@ Decoder authors do not have to create them.
 
 ## Development tips
 
-I ususally use `-d <format>` and `dv` while developing, that way you will get a decode tree
+I usually use `-d <format>` and `dv` while developing, that way you will get a decode tree
 even if it fails. `dv` gives verbose output and also includes stacktrace.
 
 ```sh

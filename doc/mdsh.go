@@ -1,6 +1,6 @@
 // Takes markdown on stdin and outputs same markdown with shell commands expanded
 // lines inside sh sections ending with non-breaking-space " " will be kept and
-// those starting with $ will also be exected as shell commands and output will
+// those starting with $ will also be executed as shell commands and output will
 // be inserted.
 
 // <pre sh>
