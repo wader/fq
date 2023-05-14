@@ -9,7 +9,7 @@
 - Auto complete of non-global variables is broken. `scope` is broken for variables.
 - `echo '{} {} {}' | jq` vs `echo '{} {} {}' | fq` works differently. fq currently decodes one root format and might add unknown gap fields etc. Maybe should work differently for `json` format?
 - `format/0` overlap with jq builtin `format/1`. What to rename it to? `decode_format`?
-- repl expression returning a value that produced lots of output can't be interrupted. This is becaus ctrl-c currently only interrupts the eval interpreter, outputted value is printed (`display`) by parent interpreter.
+- repl expression returning a value that produced lots of output can't be interrupted. This is because ctrl-c currently only interrupts the eval interpreter, outputted value is printed (`display`) by parent interpreter.
 - Rework cli/repl user interrupt (context cancel via ctrl-c), see comment in Interp.Main
 - Optimize `Interp.Options` calls, now called per display. Cache per eval? needs to handle nested evals.
 - `<array decode value>[{start: ...: end: ...}]` syntax a bit broken.

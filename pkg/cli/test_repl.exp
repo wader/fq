@@ -1,5 +1,5 @@
 #!/usr/bin/env expect
-# TODO: move this script somewere else
+# TODO: move this script somewhere else
 # TODO: run without NO_DECODE_PROGRESS
 
 log_user 1

@@ -72,7 +72,7 @@ fq 'grep_by(. >= 100 and . =< 100)' file
 # recursively look for values fulfilling some condition
 fq '.. | select(.type=="trak")?' file
 fq 'grep_by(.type=="trak")' file
-# grep_by(f) is alias for .. | select(f)?, that is: recuse, select and ignore errors
+# grep_by(f) is alias for .. | select(f)?, that is: recurse, select and ignore errors
 
 # recursively look for decode value roots for a format
 fq '.. | select(format=="jpeg")' file
@@ -186,7 +186,7 @@ $ fq -i . doc/file.mp3
 mp3>
 
 $ fq -i . doc/file.mp3
-# basic arithmetics and jq expressions
+# basic arithmetic and jq expressions
 mp3> 1+1
 2
 mp3> 1, 2, 3 | . * 2
@@ -212,7 +212,7 @@ mp3> .frames[0].header.layer * 2
 # symbolic value, same as "jq" value
 mp3> .frames[0].header.layer | tosym
 3
-# actual underlaying decoded value
+# actual underlying decoded value
 mp3> .frames[0].header.layer | toactual
 1
 # description of value
@@ -552,7 +552,7 @@ $ curl -s https://www.discogs.com/ | fq -d html '[.. | ."@src"?, ."@href"? | val
   "www.discogs.com": 14
 }
 
-# shows how serialization functions can be used on any string, how to transform values and output som other format
+# shows how serialization functions can be used on any string, how to transform values and output some other format
 # read and decode zip file and start an interactive REPL
 $ fq  -i . <(curl -sL https://github.com/stefangabos/world_countries/archive/master.zip)
 # select from interesting xml file
@@ -800,10 +800,10 @@ fq has some general options in addition to decode and decoders specific options.
 
 How to represent raw binary as JSON.
 
-- `-o bits_foramt=string` String with raw bytes (zero bit padded if size is not byte aligned). The string is binary safe internally in fq but bytes not representable as UTF-8 will be lost if turn to JSON.
+- `-o bits_format=string` String with raw bytes (zero bit padded if size is not byte aligned). The string is binary safe internally in fq but bytes not representable as UTF-8 will be lost if turn to JSON.
 - `-o bits_format=md5` MD5 hex string (zero bit padded).
 - `-o bits_format=base64` Base64 string.
-- `-p bits_foramt=truncate` Truncated string.
+- `-p bits_format=truncate` Truncated string.
 - `-o bits_format=snippet` Truncated Base64 string prefixed with bit length.
 
 ```sh

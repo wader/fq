@@ -1,5 +1,5 @@
 // Package ctxreadseeker wraps a io.ReadSeeker and optionally io.Closer to make it context aware
-// Warning: this might leak a go routine and a reader if underlaying reader can block forever.
+// Warning: this might leak a go routine and a reader if underlying reader can block forever.
 // Only use if it's not an issue, your going to exit soon anyway or there is some other mechism for
 // cleaning up.
 package ctxreadseeker

@@ -5,7 +5,7 @@
 6
 4
 
-# Conditional, boolean operators and comparsion
+# Conditional, boolean operators and comparison
 > if 1 == 2 and true then "a" else "b" end
 "b"
 

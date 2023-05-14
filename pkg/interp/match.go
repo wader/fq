@@ -39,7 +39,7 @@ func (i *Interp) _binaryMatch(c any, pattern any, flags string) gojq.Iter {
 			reRs = append(reRs, rune(b))
 		}
 		byteRunes = true
-		// escape paratheses runes etc
+		// escape parentheses runes etc
 		re = regexp.QuoteMeta(string(reRs))
 	}
 

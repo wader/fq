@@ -157,7 +157,7 @@ def _opt_eval($rest):
       ),
       expr: (
         # if -f was used, all rest non-args are filenames
-        # otherwise first is expr rest is filesnames
+        # otherwise first is expr rest is filenames
         ( .expr_file
         | . as $expr_file
         | if . then

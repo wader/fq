@@ -277,7 +277,7 @@ for inventing the [jq](https://github.com/stedolan/jq) language.
 #### Tools
 
 - [HexFiend](https://github.com/HexFiend/HexFiend) Hex editor for macOS with format template support.
-- [binspector](https://github.com/binspector/binspector) Binary format analysis tool with query langauge and REPL.
+- [binspector](https://github.com/binspector/binspector) Binary format analysis tool with query language and REPL.
 - [kaitai](https://kaitai.io) Declarative binary format parsing.
 - [Wireshark](https://www.wireshark.org) Decodes network traffic (tip: `tshark -T json`).
 - [MediaInfo](https://mediaarea.net/en/MediaInfo) Analyze media files  (tip `mediainfo --Output=JSON` and `mediainfo --Details=1`).

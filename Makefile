@@ -85,7 +85,7 @@ update-gomod: always
 # Usage: make fuzz GROUP=mp4 # fuzz a group (each format is a group also)
 # TODO: as decode recovers panic and "repanics" unrecoverable errors this is a bit hacky at the moment
 # Retrigger:
-# try to decode crash with all formats in order to see which one paniced:
+# try to decode crash with all formats in order to see which one panicked:
 # cat format/testdata/fuzz/FuzzFormats/... | go run dev/fuzzbytes.go | go run . -d bytes '. as $b | formats | keys[] as $f | $b | decode($f)'
 # convert crash into raw bytes:
 # cat format/testdata/fuzz/FuzzFormats/... | go run dev/fuzzbytes.go | fq -d bytes to_base64

@@ -205,7 +205,7 @@ func (i *Interp) _open(c any) any {
 	}
 
 	// ctxreadseeker is used to make sure any io calls can be canceled
-	// TODO: ctxreadseeker might leak if the underlaying call hangs forever
+	// TODO: ctxreadseeker might leak if the underlying call hangs forever
 
 	// a regular file should be seekable but fallback below to read whole file if not
 	if fFI.Mode().IsRegular() {

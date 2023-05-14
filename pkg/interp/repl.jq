@@ -231,7 +231,7 @@ def _repl_eval($expr; on_error; on_compile_error):
         },
       # input to repl is always array of values to iterate
       input_query: (_query_ident | _query_iter), # .[]
-      # each input should be evaluted separately like cli file args, so catch and just print errors
+      # each input should be evaluated separately like cli file args, so catch and just print errors
       catch_query: _query_func("_repl_on_expr_error"),
       # run display in sub eval so it can be interrupted
       output_query: _query_func("_repl_display")

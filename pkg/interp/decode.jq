@@ -16,7 +16,7 @@ def _decode_value(f): _decode_value(f; _expected_decode_value);
 # null input means done, otherwise {approx_read_bytes: 123, total_size: 123}
 # TODO: decode provide even more detailed progress, post-process sort etc?
 def _decode_progress:
-  # _input_filenames is remaning files to read
+  # _input_filenames is remaining files to read
   ( (_input_filenames | length) as $inputs_len
   | ( options.filenames | length) as $filenames_len
   | _ansi.clear_line
