@@ -125,14 +125,14 @@ func CastFn[T any](v any, structFn func(input any, result any) error) (T, bool) 
 		ft := reflect.TypeOf(&t)
 		if ft.Elem().Kind() == reflect.Struct {
 			// TODO: some way to allow decode value passthru?
-			m, ok := ToGoJQValue(v)
-			if !ok {
+			m, err := ToGoJQValue(v)
+			if err != nil {
 				return t, false
 			}
 			if structFn == nil {
 				panic("structFn nil")
 			}
-			err := structFn(m, &t)
+			err = structFn(m, &t)
 			if err != nil {
 				return t, false
 			}

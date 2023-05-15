@@ -802,6 +802,7 @@ How to represent raw binary as JSON.
 
 - `-o bits_foramt=string` String with raw bytes (zero bit padded if size is not byte aligned). The string is binary safe internally in fq but bytes not representable as UTF-8 will be lost if turn to JSON.
 - `-o bits_format=md5` MD5 hex string (zero bit padded).
+- `-o bits_format=hex` Hex string.
 - `-o bits_format=base64` Base64 string.
 - `-p bits_foramt=truncate` Truncated string.
 - `-o bits_format=snippet` Truncated Base64 string prefixed with bit length.

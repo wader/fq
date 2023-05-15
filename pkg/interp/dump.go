@@ -46,7 +46,7 @@ func isCompound(v *decode.Value) bool {
 }
 
 type dumpCtx struct {
-	opts        Options
+	opts        *Options
 	buf         []byte
 	cw          *columnwriter.Writer
 	hexHeader   string
@@ -336,7 +336,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 	return nil
 }
 
-func dump(v *decode.Value, w io.Writer, opts Options) error {
+func dump(v *decode.Value, w io.Writer, opts *Options) error {
 	maxAddrIndentWidth := 0
 	makeWalkFn := func(fn decode.WalkFn) decode.WalkFn {
 		return func(v *decode.Value, rootV *decode.Value, depth int, rootDepth int) error {
@@ -409,7 +409,7 @@ func dump(v *decode.Value, w io.Writer, opts Options) error {
 	}))
 }
 
-func hexdump(w io.Writer, bv Binary, opts Options) error {
+func hexdump(w io.Writer, bv Binary, opts *Options) error {
 	br, err := bitioex.Range(bv.br, bv.r.Start, bv.r.Len)
 	if err != nil {
 		return err

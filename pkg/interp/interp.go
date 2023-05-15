@@ -205,12 +205,12 @@ type Value interface {
 }
 
 type Display interface {
-	Display(w io.Writer, opts Options) error
+	Display(w io.Writer, opts *Options) error
 }
 
 type JQValueEx interface {
 	gojq.JQValue
-	JQValueToGoJQEx(optsFn func() *Options) any
+	JQValueToGoJQEx(optsFn func() (*Options, error)) any
 }
 
 func valuePath(v *decode.Value) []any {
@@ -640,7 +640,10 @@ func (i *Interp) history(c any) any {
 }
 
 func (i *Interp) _display(c any, v any) gojq.Iter {
-	opts := OptionsFromValue(v)
+	opts, err := OptionsFromValue(v)
+	if err != nil {
+		return gojq.NewIter(err)
+	}
 
 	switch v := c.(type) {
 	case Display:
@@ -659,7 +662,11 @@ func (i *Interp) _canDisplay(c any) any {
 }
 
 func (i *Interp) _hexdump(c any, v any) gojq.Iter {
-	opts := OptionsFromValue(v)
+	opts, err := OptionsFromValue(v)
+	if err != nil {
+		return gojq.NewIter(err)
+	}
+
 	bv, err := toBinary(c)
 	if err != nil {
 		return gojq.NewIter(err)
@@ -672,17 +679,22 @@ func (i *Interp) _hexdump(c any, v any) gojq.Iter {
 }
 
 func (i *Interp) _printColorJSON(c any, v any) gojq.Iter {
-	opts := OptionsFromValue(v)
+	opts, err := OptionsFromValue(v)
+	if err != nil {
+		return gojq.NewIter(err)
+	}
+
 	indent := 2
 	if opts.Compact {
 		indent = 0
 	}
 
 	cj := colorjson.NewEncoder(colorjson.Options{
-		Color:   opts.Color,
-		Tab:     false,
-		Indent:  indent,
-		ValueFn: func(v any) any { return toValue(func() *Options { return &opts }, v) },
+		Color:  opts.Color,
+		Tab:    false,
+		Indent: indent,
+		// uses a function to cache OptionsFromValue
+		ValueFn: func(v any) (any, error) { return toValue(func() (*Options, error) { return opts, nil }, v) },
 		Colors: colorjson.Colors{
 			Reset:     []byte(ansi.Reset.SetString),
 			Null:      []byte(opts.Decorator.Null.SetString),
@@ -1040,7 +1052,7 @@ type Options struct {
 	BitsFormatFn func(br bitio.ReaderAtSeeker) (any, error)
 }
 
-func OptionsFromValue(v any) Options {
+func OptionsFromValue(v any) (*Options, error) {
 	var opts Options
 	_ = mapstruct.ToStruct(v, &opts)
 	opts.ArrayTruncate = mathex.Max(0, opts.ArrayTruncate)
@@ -1050,12 +1062,16 @@ func OptionsFromValue(v any) Options {
 	opts.LineBytes = mathex.Max(0, opts.LineBytes)
 	opts.DisplayBytes = mathex.Max(0, opts.DisplayBytes)
 	opts.Decorator = decoratorFromOptions(opts)
-	opts.BitsFormatFn = bitsFormatFnFromOptions(opts)
+	if fn, err := bitsFormatFnFromOptions(opts); err != nil {
+		return nil, err
+	} else {
+		opts.BitsFormatFn = fn
+	}
 
-	return opts
+	return &opts, nil
 }
 
-func bitsFormatFnFromOptions(opts Options) func(br bitio.ReaderAtSeeker) (any, error) {
+func bitsFormatFnFromOptions(opts Options) (func(br bitio.ReaderAtSeeker) (any, error), error) {
 	switch opts.BitsFormat {
 	case "md5":
 		return func(br bitio.ReaderAtSeeker) (any, error) {
@@ -1064,7 +1080,16 @@ func bitsFormatFnFromOptions(opts Options) func(br bitio.ReaderAtSeeker) (any, e
 				return "", err
 			}
 			return hex.EncodeToString(d.Sum(nil)), nil
-		}
+		}, nil
+	case "hex":
+		return func(br bitio.ReaderAtSeeker) (any, error) {
+			b := &bytes.Buffer{}
+			e := hex.NewEncoder(b)
+			if _, err := bitioex.CopyBits(e, br); err != nil {
+				return "", err
+			}
+			return b.String(), nil
+		}, nil
 	case "base64":
 		return func(br bitio.ReaderAtSeeker) (any, error) {
 			b := &bytes.Buffer{}
@@ -1074,7 +1099,7 @@ func bitsFormatFnFromOptions(opts Options) func(br bitio.ReaderAtSeeker) (any, e
 			}
 			e.Close()
 			return b.String(), nil
-		}
+		}, nil
 	case "truncate":
 		// TODO: configure
 		return func(br bitio.ReaderAtSeeker) (any, error) {
@@ -1083,7 +1108,7 @@ func bitsFormatFnFromOptions(opts Options) func(br bitio.ReaderAtSeeker) (any, e
 				return "", err
 			}
 			return b.String(), nil
-		}
+		}, nil
 	case "string":
 		return func(br bitio.ReaderAtSeeker) (any, error) {
 			b := &bytes.Buffer{}
@@ -1091,10 +1116,8 @@ func bitsFormatFnFromOptions(opts Options) func(br bitio.ReaderAtSeeker) (any, e
 				return "", err
 			}
 			return b.String(), nil
-		}
+		}, nil
 	case "snippet":
-		fallthrough
-	default:
 		return func(br bitio.ReaderAtSeeker) (any, error) {
 			b := &bytes.Buffer{}
 			e := base64.NewEncoder(base64.StdEncoding, b)
@@ -1102,14 +1125,15 @@ func bitsFormatFnFromOptions(opts Options) func(br bitio.ReaderAtSeeker) (any, e
 				return "", err
 			}
 			e.Close()
-
 			brLen, err := bitioex.Len(br)
 			if err != nil {
 				return nil, err
 			}
 
 			return fmt.Sprintf("<%s>%s", mathex.Bits(brLen).StringByteBits(opts.Sizebase), b.String()), nil
-		}
+		}, nil
+	default:
+		return nil, fmt.Errorf("invalid bits format %q", opts.BitsFormat)
 	}
 }
 

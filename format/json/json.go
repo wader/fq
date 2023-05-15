@@ -94,12 +94,12 @@ func makeEncoder(opts ToJSONOpts) *colorjson.Encoder {
 		Color:  false,
 		Tab:    false,
 		Indent: opts.Indent,
-		ValueFn: func(v any) any {
+		ValueFn: func(v any) (any, error) {
 			switch v := v.(type) {
 			case gojq.JQValue:
-				return v.JQValueToGoJQ()
+				return v.JQValueToGoJQ(), nil
 			default:
-				return v
+				return v, nil
 			}
 		},
 		Colors: colorjson.Colors{},

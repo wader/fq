@@ -50,7 +50,7 @@ type Options struct {
 	Color   bool
 	Tab     bool
 	Indent  int
-	ValueFn func(v any) any
+	ValueFn func(v any) (any, error)
 	Colors  Colors
 }
 
@@ -120,7 +120,11 @@ func (e *Encoder) encode(v any) error {
 		if e.opts.ValueFn == nil {
 			panic(fmt.Sprintf("unknown type and to ValueFn set: %[1]T (%[1]v)", v))
 		}
-		return e.encode(e.opts.ValueFn(v))
+		vv, err := e.opts.ValueFn(v)
+		if err != nil {
+			return err
+		}
+		return e.encode(vv)
 	}
 	if e.w.Len() > 8*1024 {
 		return e.flush()

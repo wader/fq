@@ -164,13 +164,16 @@ func (i *Interp) _registry(c any) any {
 }
 
 func (i *Interp) _toValue(c any, om map[string]any) any {
-	return toValue(
-		func() *Options {
-			opts := OptionsFromValue(om)
-			return &opts
-		},
-		c,
-	)
+	opts, err := OptionsFromValue(om)
+	if err != nil {
+		return err
+	}
+
+	v, err := toValue(func() (*Options, error) { return opts, nil }, c)
+	if err != nil {
+		return err
+	}
+	return v
 }
 
 type decodeOpts struct {
@@ -310,21 +313,20 @@ func valueHas(key any, a func(name string) any, b func(key any) any) any {
 
 // TODO: make more efficient somehow? shallow values but might be hard
 // when things like tovalue.key should behave like a jq value and not a decode value etc
-func toValue(optsFn func() *Options, v any) any {
-	nv, _ := gojqex.ToGoJQValueFn(v, func(v any) (any, bool) {
+func toValue(optsFn func() (*Options, error), v any) (any, error) {
+	return gojqex.ToGoJQValueFn(v, func(v any) (any, error) {
 		switch v := v.(type) {
 		case JQValueEx:
 			if optsFn == nil {
-				return v.JQValueToGoJQ(), true
+				return v.JQValueToGoJQ(), nil
 			}
-			return v.JQValueToGoJQEx(optsFn), true
+			return v.JQValueToGoJQEx(optsFn), nil
 		case gojq.JQValue:
-			return v.JQValueToGoJQ(), true
+			return v.JQValueToGoJQ(), nil
 		default:
-			return v, true
+			return v, nil
 		}
 	})
-	return nv
 }
 
 type decodeValueKind int
@@ -453,7 +455,7 @@ func (dvb decodeValueBase) DecodeValue() *decode.Value {
 	return dvb.dv
 }
 
-func (dvb decodeValueBase) Display(w io.Writer, opts Options) error { return dump(dvb.dv, w, opts) }
+func (dvb decodeValueBase) Display(w io.Writer, opts *Options) error { return dump(dvb.dv, w, opts) }
 func (dvb decodeValueBase) ToBinary() (Binary, error) {
 	return Binary{br: dvb.dv.RootReader, r: dvb.dv.InnerRange(), unit: 8}, nil
 }
@@ -606,7 +608,7 @@ func (v decodeValue) JQValueKey(name string) any {
 func (v decodeValue) JQValueHas(key any) any {
 	return valueHas(key, v.decodeValueBase.JQValueKey, v.JQValue.JQValueHas)
 }
-func (v decodeValue) JQValueToGoJQEx(optsFn func() *Options) any {
+func (v decodeValue) JQValueToGoJQEx(optsFn func() (*Options, error)) any {
 	if !v.bitsFormat {
 		return v.JQValueToGoJQ()
 	}
@@ -625,7 +627,12 @@ func (v decodeValue) JQValueToGoJQEx(optsFn func() *Options) any {
 		return err
 	}
 
-	s, err := optsFn().BitsFormatFn(brC)
+	opts, err := optsFn()
+	if err != nil {
+		return err
+	}
+
+	s, err := opts.BitsFormatFn(brC)
 	if err != nil {
 		return err
 	}
@@ -695,8 +702,11 @@ func (v ArrayDecodeValue) JQValueHas(key any) any {
 			return intKey >= 0 && intKey < len(v.Compound.Children)
 		})
 }
-func (v ArrayDecodeValue) JQValueToGoJQEx(optsFn func() *Options) any {
-	opts := optsFn()
+func (v ArrayDecodeValue) JQValueToGoJQEx(optsFn func() (*Options, error)) any {
+	opts, err := optsFn()
+	if err != nil {
+		return err
+	}
 
 	vs := make([]any, 0, len(v.Compound.Children))
 	for _, f := range v.Compound.Children {
@@ -713,7 +723,7 @@ func (v ArrayDecodeValue) JQValueToGoJQEx(optsFn func() *Options) any {
 	return vs
 }
 func (v ArrayDecodeValue) JQValueToGoJQ() any {
-	return v.JQValueToGoJQEx(func() *Options { return &Options{} })
+	return v.JQValueToGoJQEx(func() (*Options, error) { return &Options{}, nil })
 }
 
 // decode value struct
@@ -780,8 +790,11 @@ func (v StructDecodeValue) JQValueHas(key any) any {
 		},
 	)
 }
-func (v StructDecodeValue) JQValueToGoJQEx(optsFn func() *Options) any {
-	opts := optsFn()
+func (v StructDecodeValue) JQValueToGoJQEx(optsFn func() (*Options, error)) any {
+	opts, err := optsFn()
+	if err != nil {
+		return err
+	}
 
 	vm := make(map[string]any, len(v.Compound.Children))
 	for _, f := range v.Compound.Children {
@@ -797,5 +810,5 @@ func (v StructDecodeValue) JQValueToGoJQEx(optsFn func() *Options) any {
 	return vm
 }
 func (v StructDecodeValue) JQValueToGoJQ() any {
-	return v.JQValueToGoJQEx(func() *Options { return &Options{} })
+	return v.JQValueToGoJQEx(func() (*Options, error) { return &Options{}, nil })
 }
