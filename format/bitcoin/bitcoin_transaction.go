@@ -89,8 +89,10 @@ func decodeBitcoinTranscation(d *decode.D) any {
 					witnessSize := d.FieldUintFn("witness_size", decodeVarInt)
 					d.FieldArray("items", func(d *decode.D) {
 						for j := uint64(0); j < witnessSize; j++ {
-							itemSize := d.FieldUintFn("item_size", decodeVarInt)
-							d.FieldRawLen("item", int64(itemSize)*8)
+							d.FieldStruct("item", func(d *decode.D) {
+								itemSize := d.FieldUintFn("item_size", decodeVarInt)
+								d.FieldRawLen("item", int64(itemSize)*8)
+							})
 						}
 					})
 				})
