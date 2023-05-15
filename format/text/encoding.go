@@ -31,7 +31,7 @@ func init() {
 		}
 		return bb
 	})
-	interp.RegisterFunc0("to_hex", func(_ *interp.Interp, c string) any {
+	interp.RegisterFunc0("to_hex", func(_ *interp.Interp, c any) any {
 		br, err := interp.ToBitReader(c)
 		if err != nil {
 			return err
@@ -73,7 +73,7 @@ func init() {
 	type toBase64Opts struct {
 		Encoding string
 	}
-	interp.RegisterFunc1("_to_base64", func(_ *interp.Interp, c string, opts toBase64Opts) any {
+	interp.RegisterFunc1("_to_base64", func(_ *interp.Interp, c any, opts toBase64Opts) any {
 		br, err := interp.ToBitReader(c)
 		if err != nil {
 			return err
