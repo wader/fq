@@ -153,7 +153,7 @@ type openFile struct {
 var _ Value = (*openFile)(nil)
 var _ ToBinary = (*openFile)(nil)
 
-func (of *openFile) Display(w io.Writer, opts Options) error {
+func (of *openFile) Display(w io.Writer, opts *Options) error {
 	_, err := fmt.Fprintf(w, "<openfile %q>\n", of.filename)
 	return err
 }
@@ -405,7 +405,7 @@ func (b Binary) JQValueToGoJQ() any {
 	return buf.String()
 }
 
-func (b Binary) Display(w io.Writer, opts Options) error {
+func (b Binary) Display(w io.Writer, opts *Options) error {
 	if opts.RawOutput {
 		br, err := b.toReader()
 		if err != nil {

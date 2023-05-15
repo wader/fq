@@ -6,6 +6,7 @@
 package gojqex
 
 import (
+	"fmt"
 	"math"
 	"math/big"
 
@@ -23,75 +24,77 @@ func IsNull(x any) bool {
 	}
 }
 
-func ToGoJQValue(v any) (any, bool) {
-	return ToGoJQValueFn(v, func(v any) (any, bool) {
+func ToGoJQValue(v any) (any, error) {
+	return ToGoJQValueFn(v, func(v any) (any, error) {
 		switch v := v.(type) {
 		case gojq.JQValue:
-			return v.JQValueToGoJQ(), true
+			return v.JQValueToGoJQ(), nil
 		default:
-			return nil, false
+			return nil, fmt.Errorf("not a JQValue")
 		}
 	})
 }
 
-func ToGoJQValueFn(v any, valueFn func(v any) (any, bool)) (any, bool) {
+func ToGoJQValueFn(v any, valueFn func(v any) (any, error)) (any, error) {
 	switch vv := v.(type) {
 	case nil:
-		return vv, true
+		return vv, nil
 	case bool:
-		return vv, true
+		return vv, nil
 	case int:
-		return vv, true
+		return vv, nil
 	case int64:
 		if vv >= math.MinInt && vv <= math.MaxInt {
-			return int(vv), true
+			return int(vv), nil
 		}
-		return big.NewInt(vv), true
+		return big.NewInt(vv), nil
 	case uint64:
 		if vv <= math.MaxInt {
-			return int(vv), true
+			return int(vv), nil
 		}
-		return new(big.Int).SetUint64(vv), true
+		return new(big.Int).SetUint64(vv), nil
 	case float32:
-		return float64(vv), true
+		return float64(vv), nil
 	case float64:
-		return vv, true
+		return vv, nil
 	case *big.Int:
 		if vv.IsInt64() {
 			vv := vv.Int64()
 			if vv >= math.MinInt && vv <= math.MaxInt {
-				return int(vv), true
+				return int(vv), nil
 			}
 		}
-		return vv, true
+		return vv, nil
 	case string:
-		return vv, true
+		return vv, nil
 	case []byte:
-		return string(vv), true
+		return string(vv), nil
 	case []any:
 		vvs := make([]any, len(vv))
 		for i, v := range vv {
-			v, ok := ToGoJQValueFn(v, valueFn)
-			if !ok {
-				return nil, false
+			v, err := ToGoJQValueFn(v, valueFn)
+			if err != nil {
+				return nil, err
 			}
 			vvs[i] = v
 		}
-		return vvs, true
+		return vvs, nil
 	case map[string]any:
 		vvs := make(map[string]any, len(vv))
 		for k, v := range vv {
-			v, ok := ToGoJQValueFn(v, valueFn)
-			if !ok {
-				return nil, false
+			v, err := ToGoJQValueFn(v, valueFn)
+			if err != nil {
+				return nil, err
 			}
 			vvs[k] = v
 		}
-		return vvs, true
+		return vvs, nil
 	default:
-		if nv, ok := valueFn(vv); ok {
-			return ToGoJQValueFn(nv, valueFn)
+		nv, err := valueFn(vv)
+		if err != nil {
+			return nil, err
 		}
-		return nil, false
+
+		return ToGoJQValueFn(nv, valueFn)
 	}
 }
