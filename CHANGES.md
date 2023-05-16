@@ -1,3 +1,283 @@
+# 0.6.0
+
+Adds decoders for PostgreSQL btree, control and heap files. Thanks Pavel Safonov @pnsafonov and Michael Zhilin @mizhka
+
+Adds new option skip gaps and output binary as hex string.
+
+Make `bits`/`bytes` formats work a bit more intuitive.
+
+Bug fixes to `to_hex`, `to_base64` and `trim` functions.
+
+Bug fixes and additions to `bson`, `bitcoin_transaction`, `mp4`, `id3v2`, `html`, and `matroska` formats.
+
+## Changes
+
+- `bits`,`bytes` now are real binaries and not raw decode value. This means they behave more like you would expect. #666
+  ```sh
+  # build your own strings(1)-like tool:
+  # scan matches range in a binary using a regexp and output ranges as new binaries
+  # \w\s looks for whitespace and alpha/numeric characters
+  # uses `...` raw string literal to not have to escape
+  # select/test to only include strings containing "thread"
+  # dd to display with no truncation
+  $ fq -d bytes 'scan(`[\w\s]{16,}`) | select(test("thread")) | dd' file.mp4
+       │00 01 02 03 04 05 06 07│01234567│
+  0x250│36 20 6c 6f 6f 6b 61 68│6 lookah│.: raw bits 0x250-0x262.7 (19)
+  0x258│65 61 64 5f 74 68 72 65│ead_thre│
+  0x260│61 64 73               │ads     │
+       │00 01 02 03 04 05 06 07│01234567│
+  0x260│            31 20 73 6c│    1 sl│.: raw bits 0x264-0x273.7 (16)
+  0x268│69 63 65 64 5f 74 68 72│iced_thr│
+  0x270│65 61 64 73            │eads    │
+  ```
+- `to_hex`,`to_base64` now correctly handles raw decode values, before the raw bits would be turned into codepoints and then binary UTF-8 possibly introducing invalid codepoints (0xfffd). Thanks @Rogach #672
+  ```sh
+  $ fq -r '.uncompressed | to_hex' file.gz
+  f6f2074cf77d449d
+
+  # with the change to add hex bits format you can also do this now
+  $ fq -Vr -o bits_format=hex .uncompressed file.gz
+  f6f2074cf77d449d
+  ```
+- `tovalue` Now output a "deep" jq value, before it was shallowly a jq value which could be confusing, ex `tovalue | .header` could be a decode value.
+- New option `skip_gaps` for `-V`/`tovalue` can be used to filter out gap fields when represented as JSON. Gaps are bit ranges that no decoder added any field for. #649
+  - Can for example be used to remove trailing data that will end up as `gap0` etc.
+  - Note that gaps in an array that gets filtered out might affect index numbers.
+- Add `bits_format=hex` to represent raw bits as hex string in JSON. #673
+  ```sh
+  # output decode tree, JSON with binaries as strings and JSON with binaries as hex strings
+  $ fq '.packets[0].packet | ., tovalue, tovalue({bits_format:"hex"})' file.pcap
+      │00 01 02 03 04 05 06 07│01234567│.packets[0].packet{}: (ether8023_frame)
+  0x28│8c 85 90 74 b8 3b      │...t.;  │  destination: "8c:85:90:74:b8:3b" (0x8c859074b83b)
+  0x28│                  e8 de│      ..│  source: "e8:de:27:c8:9a:6e" (0xe8de27c89a6e)
+  0x30│27 c8 9a 6e            │'..n    │
+  0x30│            08 06      │    ..  │  ether_type: "arp" (0x806) (Address Resolution Protocol)
+  0x30│                  00 01│      ..│  payload: raw bits
+  0x38│08 00 06 04 00 01 e8 de│........│
+  0x40│27 c8 9a 6e c0 a8 01 01│'..n....│
+  0x48│00 00 00 00 00 00 c0 a8│........│
+  0x50│01 e6                  │..      │
+  {
+    "destination": "8c:85:90:74:b8:3b",
+    "ether_type": "arp",
+    "payload": "\u0000\u0001\b\u0000\u0006\u0004\u0000\u0001\ufffd\ufffd'Țn\ufffd\ufffd\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\ufffd\ufffd\u0001\ufffd",
+    "source": "e8:de:27:c8:9a:6e"
+  }
+  {
+    "destination": "8c:85:90:74:b8:3b",
+    "ether_type": "arp",
+    "payload": "0001080006040001e8de27c89a6ec0a80101000000000000c0a801e6",
+    "source": "e8:de:27:c8:9a:6e"
+  }
+  ```
+- Explicit use of `d`/`display` on a binary will now always hexdump, this feels more intuitive. Before it could output raw binary as `display` is used as an implicit output function. Implicit (you don't mention `d` at all) can still output raw binary. #665
+  ```sh
+  # outputs raw binary (if stdout is not a tty)
+  $ fq -n '[1,2,3] | tobytes' | xxd
+  00000000: 0102 03
+
+  # outputs hexdump (even if stdout is not a tty) as we explicitly use d
+  $ fq -n '[1,2,3] | tobytes | d' | cat
+     |00 01 02 03 04 05 06 07|01234567|
+  0x0|01 02 03|              |...|    |.: raw bits 0x0-0x2.7 (3)
+  ```
+- `trim` can now handle multi-line strings. #668
+- Help texts originated from markdown are now rendered a bit more nicely and compact. #661
+- Fix weirdly rendered monospace font in demo SVG when using Japanese locale and Chrome on macOS. Thanks @acevif helping with investigation. #655 #662
+- Fix a bunch of typos. Thanks @kianmeng and @castilma. #644 #670
+
+## Decoder changes
+
+- `bits`,`bytes` Is a proper binary not a raw decode value. #666
+- `bitcoin_transaction` Properly decode witness items array. #671 Thanks @Rogach
+- `bson` Add javascript, decimal128, minkey and maxkey support. Fix decoding of datetime and use the correct size type for binary and document size. Thanks Matt Dale @matthewdale. #650
+- `id3v2`
+  - Add WXXX frame support. #656
+  - Add CTOC flags support. #657
+- `html` Is now probeable. #667
+- `matroska` Fallback raw is probe fail or `file_data` #645
+- `mp4`
+  - Better description for terminator atom (is a QuickTime thing) #651
+  - `ctts`,`infe`,`iinf`,`trun` more proper decoding based on version. #643
+  - Use correct QuickTime epoch for timestamps. #674
+- `pg_btree`,`pg_control`,`pg_heap` Add PostgreSQL btree, control and heap support. Thanks Pavel Safonov @pnsafonov and Michael Zhilin @mizhka. #415
+
+## Changelog
+
+* d4f8dfa2 Add flavour arg to postgres parser
+* 3c6ea870 Add heap infomask flags parser to PostgreSQL
+* 0107d122 Add pgproee14 flavour to postgres
+* 9a96da86 Add postgres pg_control parser
+* 3b81d99f DBState enum for postgres
+* 51878dcd PostgreSQL heap page parser implememtation.
+* 6ed02639 PostgreSQL: accept only normal item pointers
+* ffc08cfc PostgreSQL: add heap for pgpro14
+* b4ae1d58 PostgreSQL: add pg_control for pgproee 12
+* a6537107 PostgreSQL: add pg_control to pgpro14
+* d9de2d4f PostgreSQL: fix
+* 96a86e20 PostgreSQL: fixes
+* 96a96a5b PostgreSQL: heap impl for pgproee 12
+* 6618e766 PostgreSQL: heap impl for version 11
+* ce9ae761 PostgreSQL: heap tuples implementation
+* ffd7c9b0 PostgreSQL: implement pgproee 14
+* 850dc608 PostgreSQL: lp_flags format
+* f5278f38 PostgreSQL: pg_control for ver 12
+* 07056c2b PostgreSQL: pg_control impl for pgproee 10
+* 972c5a39 PostgreSQL: pg_control, pgheap impl for pgproee13
+* d1487278 PostgreSQL: pgheap impl for pgproee10
+* 2d3884a3 PostgreSQL: pgproee11 heap impl
+* d8b891c0 PostgreSQL: pgproee11 pg_control impl
+* b722b219 PostgreSQL: ref
+* fdb3b3e4 PostgreSQl: fix offset
+* 621c4c4b PostgreSQl: heap impl for version 13
+* c273a6c9 PostgreSQl: pg_control impl for version 13
+* 01b380e8 PostgrreSQl heap decode refactoring
+* bebdfa94 Try to implement pgwal - fail.
+* c9d3b8fb Update docker-golang to 1.20.4 from 1.20.3
+* 2a5927b5 Update github-go-version to 1.20.4 from 1.20.3
+* c405afd4 Update gomod-golang-x-crypto to 0.9.0 from 0.8.0
+* ed0cd6d2 Update gomod-golang-x-net to 0.10.0 from 0.9.0
+* deaf5ef0 WalLevel for postgres
+* f069ddc2 [WIP] initial attempt to add postgres
+* 2b1bdfb3 add icu version mapper
+* cf1e7b23 add pgpro11 for postgres
+* 9570d4df add pgpro12 postgres
+* 7bf6b11e add pgpro13 heap
+* 2b3035fe add pgpro13 to postgres
+* f56c72d3 add postgres tests for mem, cpu profiling
+* 2ee01f79 allow to change FillGaps in decoder
+* a3361e70 bitcoin: fix witness item structs
+* 222cd88b bits,bytes: Behave as binary instead of raw decode value
+* 9a982d0a bson: add BSON test file generator module and correct BSON format docs
+* 40630d39 bson: fix doc formatting and add author info
+* 2017ff87 bson: support all non-deprecated types and fix int/uint bugs
+* b08ef00d decode,interp: Refactor format groups into a proper struct
+* af68511a dev,doc Clarify some dev docs and rename launch.json to be a template
+* 97c952b3 doc: Add some more examples
+* 88be3a7f doc: Hopefully fix svg fixed font issue
+* dd4fa268 doc: fix typos
+* b0e4da28 fix non-ascii characters handling in to_hex and to_base64 functions
+* a4a332bf formats: Clenaup naming a bit
+* b3b6cd0e gzip.go: fix typo in variablename: delfate
+* 2c505fee help,markdown: Rewrote and made text rendering nicer
+* e2eb6670 html: Add to probe group
+* d010dcec id3v2: Add WXXX (desc/url) frame support
+* f237db27 id3v2: Decode CTOC flags
+* 684a0838 interp,decode: Support decode group argument
+* 8a468f45 interp: Add hex bits format
+* c5127139 interp: Add skip_gaps option for tovalue/-V
+* 033498b2 interp: Don't output raw binary if display is called explicitly
+* ee66fece interp: Make tovalue output behave as jq value
+* d5ae1165 interp: trim: Add multi-line support
+* 8d317ddf lsn mapper
+* fcd7fbcc mappers for postgres
+* 8941b139 matroska: file_data: Fallback to raw if probe fails
+* 7adc1e70 mp4: Better description for QuickTime terminator atom
+* 493848a7 mp4: Use correct epoch for quicktime timestamps
+* 3c6d31b0 mp4: ctts,infe,iinf,trun: More ISOMFF version handling
+* d6f785c6 pcap: Add forgotten help test
+* 8cf83fbc pg_control implementation
+* 441eceea pgpro version mapper
+* 5ff62735 postgres: add additional checks in pg_heap
+* 46765906 postgres: add argument to calc page's check sum correctly
+* 7fd41090 postgres: add btree index tests
+* 1aa08e33 postgres: add btree, pg_control to how_to.md
+* 2423f86b postgres: add how_to.md - how to generate test files for postgres
+* 97bbc22a postgres: add page arg in pg_btree, change args names in pg_heap
+* 6aed2387 postgres: add pg_wal for pgproee11 as copy of postgres14
+* 08eb3034 postgres: add postgres format docs, refactoing postgres flavours
+* 90386a65 postgres: add postgres.md to format
+* 09c42c35 postgres: add state to wal struct
+* c2591ac8 postgres: add test data with specific values
+* de68785a postgres: add test files
+* 4db1284f postgres: add tests
+* 3c7ed5d7 postgres: add tests data
+* e66baa75 postgres: add wal checks
+* fb7778a5 postgres: add wal tests
+* 9f61e637 postgres: allow all flovours to decode btree index
+* ccf2edb5 postgres: better versions probing in pg_control, fix holes, better tests
+* f3f259af postgres: btree add free space
+* efda7b32 postgres: btree handle full file
+* 87b7acf3 postgres: btree impl
+* d370f5d9 postgres: btree impl
+* e8391916 postgres: btree refactored by Mattias Wadman
+* 9f1adb2d postgres: change AssertPosBytes to AssertPos (bits)
+* 3e09f9f1 postgres: change tuple struct in heap
+* e6a9cdbe postgres: doc
+* 6281b50d postgres: exclude wal tests for now
+* 0ea20e68 postgres: fail on error in pg_heap
+* ba8b90ba postgres: fill gap alignment in heap tuple
+* 1d9ef300 postgres: first correct read of WAL file
+* e5f15c5f postgres: fix compilation, fix tests
+* bffa0083 postgres: fix error in tests
+* c23bc421 postgres: fix line endings in error messages, simplify code, add comments
+* 9508a209 postgres: fix lint
+* 85c04228 postgres: fix linter
+* e8bb1692 postgres: fix pg_wal when XLogRecord size is more than page size
+* 666bbfba postgres: fix some unknown, chanche tests tovalue -> dv
+* de3ecf16 postgres: generate docs by embedded md
+* 939c7c17 postgres: how_to.md
+* dafbf4b7 postgres: lint fixes
+* 6fe5f05f postgres: lint, doc
+* 9f5036a3 postgres: made root an array
+* 46e1e337 postgres: make page size const
+* 1e24d70e postgres: move SeekAbs(0) to Probe
+* ae838b92 postgres: move postgres.md to formats.md, add btree tests
+* 03d8fe1c postgres: page sum impl
+* 22a6cfa5 postgres: pg_btree add opaque flags
+* dd84d321 postgres: pg_btree begin impl
+* b06c9bc2 postgres: pg_control change default flavour to empty string - it uses versions prober. Fix root name in pg_heap.
+* edb56502 postgres: pg_control refactoring
+* 9deab2ea postgres: pg_heap fix page_begin, page_end
+* 7dd7dbee postgres: pg_heap reafactoring
+* 00de0a96 postgres: pg_heap refactoring
+* 35124bf2 postgres: pg_heap refactoring
+* e8d8caca postgres: pgpro wal implementation
+* d7a0f930 postgres: pgpro wal refactoring
+* 067f8d56 postgres: pgwal checks
+* 78583731 postgres: postgres 10 support
+* 5664c0a4 postgres: refactor ItemIdData
+* 08c53523 postgres: refactoring
+* 296ce68e postgres: refactoring
+* 7b52149c postgres: refactoring
+* 7c92715f postgres: refactoring
+* 7dedcbab postgres: refactoring
+* a4d904e1 postgres: refactoring
+* bedc480a postgres: refactoring
+* d7bcca0a postgres: refactoring
+* e06fa6e1 postgres: refactoring
+* e57c3b98 postgres: refactoring
+* f224ed00 postgres: refactoring
+* f6f8d5c0 postgres: refactoring
+* ff4b6fdf postgres: refactoring - remove GetHeapD
+* 7f7f729c postgres: refactoring, tests
+* 12b86973 postgres: regenerate docs
+* 8f55e177 postgres: remove SeekAbs(0) where it's not used.
+* 6e2e44d6 postgres: remove arg in pg_btree
+* 5eea605f postgres: remove duplicate tests
+* 5bb86544 postgres: remove lsn parameter in pg_wal
+* 60709e5a postgres: remove pg_wal. Failed to implement.
+* e87d5a6b postgres: remove unused code
+* 448c3690 postgres: try to implement pg_wal
+* 586c803f postgres: try to implement wal
+* 7a89234b postgres: update doc
+* c9350de3 postgres: use bit stream instead of masks to get flags
+* c9b263e9 postgres: version 15 support
+* a4c1c5b8 postgres: wal const
+* e311434b postgres: wal decoding implement
+* c105fcdd postgres: wal impl
+* 7c1dfbd0 postgres: wal implementation
+* 26bff144 postgres: wal refactoing
+* b09ec2fc postgres: wal refactoing
+* 069babbc postgres: wal refactoring
+* bd2bdd64 postgres: wal refactoring
+* 015b7705 postgres: wal support multiple xlog_body for wal record
+* c3ef3411 postgresql: general logic for pg_heap, pg_btree
+* 721c1ab3 psotgres: refactoring
+* 03274113 ref
+* c8ece642 show mock_authentication_nonce as hex
+* af0e2207 unix time mapper for postgres
+
 # 0.5.0
 
 Mostly a bug fix release but adds `-V` for easy JSON output.
