@@ -1,0 +1,2 @@
+$ fq '.uncompressed | tohex' random.bin.gz -r
+f15afa7141fa7ab0

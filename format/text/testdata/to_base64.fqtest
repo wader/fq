@@ -1,0 +1,2 @@
+$ fq '.uncompressed | to_base64' random.bin.gz -r
+8Vr6cUH6erA=
