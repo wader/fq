@@ -31,9 +31,9 @@ $ fq dv png.mp4
 0x090|               6d 76 68 64                     |     mvhd       |          type: "mvhd" (Movie header, overall declarations) 0x95-0x98.7 (4)
 0x090|                           00                  |         .      |          version: 0 0x99-0x99.7 (1)
 0x090|                              00 00 00         |          ...   |          flags: 0 0x9a-0x9c.7 (3)
-0x090|                                       00 00 00|             ...|          creation_time: 0 (1904-01-04T00:00:00Z) 0x9d-0xa0.7 (4)
+0x090|                                       00 00 00|             ...|          creation_time: 0 (1904-01-01T00:00:00Z) 0x9d-0xa0.7 (4)
 0x0a0|00                                             |.               |
-0x0a0|   00 00 00 00                                 | ....           |          modification_time: 0 (1904-01-04T00:00:00Z) 0xa1-0xa4.7 (4)
+0x0a0|   00 00 00 00                                 | ....           |          modification_time: 0 (1904-01-01T00:00:00Z) 0xa1-0xa4.7 (4)
 0x0a0|               00 00 03 e8                     |     ....       |          time_scale: 1000 0xa5-0xa8.7 (4)
 0x0a0|                           00 00 00 28         |         ...(   |          duration: 40 0xa9-0xac.7 (4)
 0x0a0|                                       00 01 00|             ...|          preferred_rate: 1 0xad-0xb0.7 (4)
@@ -77,8 +77,8 @@ $ fq dv png.mp4
 0x110|03                                             |.               |                in_preview: false 0x110.5-0x110.5 (0.1)
 0x110|03                                             |.               |                in_movie: true 0x110.6-0x110.6 (0.1)
 0x110|03                                             |.               |                enabled: true 0x110.7-0x110.7 (0.1)
-0x110|   00 00 00 00                                 | ....           |              creation_time: 0 (1904-01-04T00:00:00Z) 0x111-0x114.7 (4)
-0x110|               00 00 00 00                     |     ....       |              modification_time: 0 (1904-01-04T00:00:00Z) 0x115-0x118.7 (4)
+0x110|   00 00 00 00                                 | ....           |              creation_time: 0 (1904-01-01T00:00:00Z) 0x111-0x114.7 (4)
+0x110|               00 00 00 00                     |     ....       |              modification_time: 0 (1904-01-01T00:00:00Z) 0x115-0x118.7 (4)
 0x110|                           00 00 00 01         |         ....   |              track_id: 1 0x119-0x11c.7 (4)
 0x110|                                       00 00 00|             ...|              reserved1: 0 0x11d-0x120.7 (4)
 0x120|00                                             |.               |
@@ -131,8 +131,8 @@ $ fq dv png.mp4
 0x190|   6d 64 68 64                                 | mdhd           |                  type: "mdhd" (Media header, overall information about the media) 0x191-0x194.7 (4)
 0x190|               00                              |     .          |                  version: 0 0x195-0x195.7 (1)
 0x190|                  00 00 00                     |      ...       |                  flags: 0 0x196-0x198.7 (3)
-0x190|                           00 00 00 00         |         ....   |                  creation_time: 0 (1904-01-04T00:00:00Z) 0x199-0x19c.7 (4)
-0x190|                                       00 00 00|             ...|                  modification_time: 0 (1904-01-04T00:00:00Z) 0x19d-0x1a0.7 (4)
+0x190|                           00 00 00 00         |         ....   |                  creation_time: 0 (1904-01-01T00:00:00Z) 0x199-0x19c.7 (4)
+0x190|                                       00 00 00|             ...|                  modification_time: 0 (1904-01-01T00:00:00Z) 0x19d-0x1a0.7 (4)
 0x1a0|00                                             |.               |
 0x1a0|   00 00 32 00                                 | ..2.           |                  time_scale: 12800 0x1a1-0x1a4.7 (4)
 0x1a0|               00 00 02 00                     |     ....       |                  duration: 512 0x1a5-0x1a8.7 (4)

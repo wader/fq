@@ -31,8 +31,8 @@ $ fq -d mp4 dv avc.mp4
 0x00d90|64                                             |d               |
 0x00d90|   00                                          | .              |          version: 0 0xd91-0xd91.7 (1)
 0x00d90|      00 00 00                                 |  ...           |          flags: 0 0xd92-0xd94.7 (3)
-0x00d90|               00 00 00 00                     |     ....       |          creation_time: 0 (1904-01-04T00:00:00Z) 0xd95-0xd98.7 (4)
-0x00d90|                           00 00 00 00         |         ....   |          modification_time: 0 (1904-01-04T00:00:00Z) 0xd99-0xd9c.7 (4)
+0x00d90|               00 00 00 00                     |     ....       |          creation_time: 0 (1904-01-01T00:00:00Z) 0xd95-0xd98.7 (4)
+0x00d90|                           00 00 00 00         |         ....   |          modification_time: 0 (1904-01-01T00:00:00Z) 0xd99-0xd9c.7 (4)
 0x00d90|                                       00 00 03|             ...|          time_scale: 1000 0xd9d-0xda0.7 (4)
 0x00da0|e8                                             |.               |
 0x00da0|   00 00 00 78                                 | ...x           |          duration: 120 0xda1-0xda4.7 (4)
@@ -76,8 +76,8 @@ $ fq -d mp4 dv avc.mp4
 0x00e00|                        03                     |        .       |                in_preview: false 0xe08.5-0xe08.5 (0.1)
 0x00e00|                        03                     |        .       |                in_movie: true 0xe08.6-0xe08.6 (0.1)
 0x00e00|                        03                     |        .       |                enabled: true 0xe08.7-0xe08.7 (0.1)
-0x00e00|                           00 00 00 00         |         ....   |              creation_time: 0 (1904-01-04T00:00:00Z) 0xe09-0xe0c.7 (4)
-0x00e00|                                       00 00 00|             ...|              modification_time: 0 (1904-01-04T00:00:00Z) 0xe0d-0xe10.7 (4)
+0x00e00|                           00 00 00 00         |         ....   |              creation_time: 0 (1904-01-01T00:00:00Z) 0xe09-0xe0c.7 (4)
+0x00e00|                                       00 00 00|             ...|              modification_time: 0 (1904-01-01T00:00:00Z) 0xe0d-0xe10.7 (4)
 0x00e10|00                                             |.               |
 0x00e10|   00 00 00 01                                 | ....           |              track_id: 1 0xe11-0xe14.7 (4)
 0x00e10|               00 00 00 00                     |     ....       |              reserved1: 0 0xe15-0xe18.7 (4)
@@ -131,8 +131,8 @@ $ fq -d mp4 dv avc.mp4
 0x00e80|                                       00      |             .  |                  version: 0 0xe8d-0xe8d.7 (1)
 0x00e80|                                          00 00|              ..|                  flags: 0 0xe8e-0xe90.7 (3)
 0x00e90|00                                             |.               |
-0x00e90|   00 00 00 00                                 | ....           |                  creation_time: 0 (1904-01-04T00:00:00Z) 0xe91-0xe94.7 (4)
-0x00e90|               00 00 00 00                     |     ....       |                  modification_time: 0 (1904-01-04T00:00:00Z) 0xe95-0xe98.7 (4)
+0x00e90|   00 00 00 00                                 | ....           |                  creation_time: 0 (1904-01-01T00:00:00Z) 0xe91-0xe94.7 (4)
+0x00e90|               00 00 00 00                     |     ....       |                  modification_time: 0 (1904-01-01T00:00:00Z) 0xe95-0xe98.7 (4)
 0x00e90|                           00 00 32 00         |         ..2.   |                  time_scale: 12800 0xe99-0xe9c.7 (4)
 0x00e90|                                       00 00 06|             ...|                  duration: 1536 0xe9d-0xea0.7 (4)
 0x00ea0|00                                             |.               |

@@ -30,8 +30,8 @@ $ fq -d mp4 dv prores_frame.mov
 0x6c40|                                       00      |             .  |          version: 0 0x6c4d-0x6c4d.7 (1)
 0x6c40|                                          00 00|              ..|          flags: 0 0x6c4e-0x6c50.7 (3)
 0x6c50|00                                             |.               |
-0x6c50|   00 00 00 00                                 | ....           |          creation_time: 0 (1904-01-04T00:00:00Z) 0x6c51-0x6c54.7 (4)
-0x6c50|               00 00 00 00                     |     ....       |          modification_time: 0 (1904-01-04T00:00:00Z) 0x6c55-0x6c58.7 (4)
+0x6c50|   00 00 00 00                                 | ....           |          creation_time: 0 (1904-01-01T00:00:00Z) 0x6c51-0x6c54.7 (4)
+0x6c50|               00 00 00 00                     |     ....       |          modification_time: 0 (1904-01-01T00:00:00Z) 0x6c55-0x6c58.7 (4)
 0x6c50|                           00 00 03 e8         |         ....   |          time_scale: 1000 0x6c59-0x6c5c.7 (4)
 0x6c50|                                       00 00 00|             ...|          duration: 40 0x6c5d-0x6c60.7 (4)
 0x6c60|28                                             |(               |
@@ -75,8 +75,8 @@ $ fq -d mp4 dv prores_frame.mov
 0x6cc0|            03                                 |    .           |                in_preview: false 0x6cc4.5-0x6cc4.5 (0.1)
 0x6cc0|            03                                 |    .           |                in_movie: true 0x6cc4.6-0x6cc4.6 (0.1)
 0x6cc0|            03                                 |    .           |                enabled: true 0x6cc4.7-0x6cc4.7 (0.1)
-0x6cc0|               00 00 00 00                     |     ....       |              creation_time: 0 (1904-01-04T00:00:00Z) 0x6cc5-0x6cc8.7 (4)
-0x6cc0|                           00 00 00 00         |         ....   |              modification_time: 0 (1904-01-04T00:00:00Z) 0x6cc9-0x6ccc.7 (4)
+0x6cc0|               00 00 00 00                     |     ....       |              creation_time: 0 (1904-01-01T00:00:00Z) 0x6cc5-0x6cc8.7 (4)
+0x6cc0|                           00 00 00 00         |         ....   |              modification_time: 0 (1904-01-01T00:00:00Z) 0x6cc9-0x6ccc.7 (4)
 0x6cc0|                                       00 00 00|             ...|              track_id: 1 0x6ccd-0x6cd0.7 (4)
 0x6cd0|01                                             |.               |
 0x6cd0|   00 00 00 00                                 | ....           |              reserved1: 0 0x6cd1-0x6cd4.7 (4)
@@ -129,9 +129,9 @@ $ fq -d mp4 dv prores_frame.mov
 0x6d40|               6d 64 68 64                     |     mdhd       |                  type: "mdhd" (Media header, overall information about the media) 0x6d45-0x6d48.7 (4)
 0x6d40|                           00                  |         .      |                  version: 0 0x6d49-0x6d49.7 (1)
 0x6d40|                              00 00 00         |          ...   |                  flags: 0 0x6d4a-0x6d4c.7 (3)
-0x6d40|                                       00 00 00|             ...|                  creation_time: 0 (1904-01-04T00:00:00Z) 0x6d4d-0x6d50.7 (4)
+0x6d40|                                       00 00 00|             ...|                  creation_time: 0 (1904-01-01T00:00:00Z) 0x6d4d-0x6d50.7 (4)
 0x6d50|00                                             |.               |
-0x6d50|   00 00 00 00                                 | ....           |                  modification_time: 0 (1904-01-04T00:00:00Z) 0x6d51-0x6d54.7 (4)
+0x6d50|   00 00 00 00                                 | ....           |                  modification_time: 0 (1904-01-01T00:00:00Z) 0x6d51-0x6d54.7 (4)
 0x6d50|               00 00 32 00                     |     ..2.       |                  time_scale: 12800 0x6d55-0x6d58.7 (4)
 0x6d50|                           00 00 02 00         |         ....   |                  duration: 512 0x6d59-0x6d5c.7 (4)
 0x6d50|                                       7f ff   |             .. |                  language: "\x7f\x7f\x7f" 0x6d5d-0x6d5e.7 (2)

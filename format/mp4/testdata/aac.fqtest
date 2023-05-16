@@ -31,8 +31,8 @@ $ fq -d mp4 dv aac.mp4
 0x2a0|68 64                                          |hd              |
 0x2a0|      00                                       |  .             |          version: 0 0x2a2-0x2a2.7 (1)
 0x2a0|         00 00 00                              |   ...          |          flags: 0 0x2a3-0x2a5.7 (3)
-0x2a0|                  00 00 00 00                  |      ....      |          creation_time: 0 (1904-01-04T00:00:00Z) 0x2a6-0x2a9.7 (4)
-0x2a0|                              00 00 00 00      |          ....  |          modification_time: 0 (1904-01-04T00:00:00Z) 0x2aa-0x2ad.7 (4)
+0x2a0|                  00 00 00 00                  |      ....      |          creation_time: 0 (1904-01-01T00:00:00Z) 0x2a6-0x2a9.7 (4)
+0x2a0|                              00 00 00 00      |          ....  |          modification_time: 0 (1904-01-01T00:00:00Z) 0x2aa-0x2ad.7 (4)
 0x2a0|                                          00 00|              ..|          time_scale: 1000 0x2ae-0x2b1.7 (4)
 0x2b0|03 e8                                          |..              |
 0x2b0|      00 00 00 4a                              |  ...J          |          duration: 74 0x2b2-0x2b5.7 (4)
@@ -76,8 +76,8 @@ $ fq -d mp4 dv aac.mp4
 0x310|                           03                  |         .      |                in_preview: false 0x319.5-0x319.5 (0.1)
 0x310|                           03                  |         .      |                in_movie: true 0x319.6-0x319.6 (0.1)
 0x310|                           03                  |         .      |                enabled: true 0x319.7-0x319.7 (0.1)
-0x310|                              00 00 00 00      |          ....  |              creation_time: 0 (1904-01-04T00:00:00Z) 0x31a-0x31d.7 (4)
-0x310|                                          00 00|              ..|              modification_time: 0 (1904-01-04T00:00:00Z) 0x31e-0x321.7 (4)
+0x310|                              00 00 00 00      |          ....  |              creation_time: 0 (1904-01-01T00:00:00Z) 0x31a-0x31d.7 (4)
+0x310|                                          00 00|              ..|              modification_time: 0 (1904-01-01T00:00:00Z) 0x31e-0x321.7 (4)
 0x320|00 00                                          |..              |
 0x320|      00 00 00 01                              |  ....          |              track_id: 1 0x322-0x325.7 (4)
 0x320|                  00 00 00 00                  |      ....      |              reserved1: 0 0x326-0x329.7 (4)
@@ -131,8 +131,8 @@ $ fq -d mp4 dv aac.mp4
 0x390|                                          00   |              . |                  version: 0 0x39e-0x39e.7 (1)
 0x390|                                             00|               .|                  flags: 0 0x39f-0x3a1.7 (3)
 0x3a0|00 00                                          |..              |
-0x3a0|      00 00 00 00                              |  ....          |                  creation_time: 0 (1904-01-04T00:00:00Z) 0x3a2-0x3a5.7 (4)
-0x3a0|                  00 00 00 00                  |      ....      |                  modification_time: 0 (1904-01-04T00:00:00Z) 0x3a6-0x3a9.7 (4)
+0x3a0|      00 00 00 00                              |  ....          |                  creation_time: 0 (1904-01-01T00:00:00Z) 0x3a2-0x3a5.7 (4)
+0x3a0|                  00 00 00 00                  |      ....      |                  modification_time: 0 (1904-01-01T00:00:00Z) 0x3a6-0x3a9.7 (4)
 0x3a0|                              00 00 ac 44      |          ...D  |                  time_scale: 44100 0x3aa-0x3ad.7 (4)
 0x3a0|                                          00 00|              ..|                  duration: 3229 0x3ae-0x3b1.7 (4)
 0x3b0|0c 9d                                          |..              |

@@ -14,8 +14,8 @@ $ fq -d mp4 ddv mvhd-tkhd-mdhd-mehd-v1
 0x010|                                    6d 76 68 64|            mvhd|      type: "mvhd" (Movie header, overall declarations) 0x1c-0x1f.7 (4)
 0x020|01                                             |.               |      version: 1 0x20-0x20.7 (1)
 0x020|   00 00 00                                    | ...            |      flags: 0 0x21-0x23.7 (3)
-0x020|            00 00 00 00 62 79 64 94            |    ....byd.    |      creation_time: 1652122772 (1956-05-11T18:59:32Z) 0x24-0x2b.7 (8)
-0x020|                                    00 00 00 00|            ....|      modification_time: 1652122772 (1956-05-11T18:59:32Z) 0x2c-0x33.7 (8)
+0x020|            00 00 00 00 62 79 64 94            |    ....byd.    |      creation_time: 1652122772 (1956-05-08T18:59:32Z) 0x24-0x2b.7 (8)
+0x020|                                    00 00 00 00|            ....|      modification_time: 1652122772 (1956-05-08T18:59:32Z) 0x2c-0x33.7 (8)
 0x030|62 79 64 94                                    |byd.            |
 0x030|            00 98 96 80                        |    ....        |      time_scale: 10000000 0x34-0x37.7 (4)
 0x030|                        00 00 00 06 2c e9 8a ab|        ....,...|      duration: 26523306667 0x38-0x3f.7 (8)
@@ -49,9 +49,9 @@ $ fq -d mp4 ddv mvhd-tkhd-mdhd-mehd-v1
 0x090|                                 07            |           .    |        in_preview: true 0x9b.5-0x9b.5 (0.1)
 0x090|                                 07            |           .    |        in_movie: true 0x9b.6-0x9b.6 (0.1)
 0x090|                                 07            |           .    |        enabled: true 0x9b.7-0x9b.7 (0.1)
-0x090|                                    00 00 00 00|            ....|      creation_time: 1652122772 (1956-05-11T18:59:32Z) 0x9c-0xa3.7 (8)
+0x090|                                    00 00 00 00|            ....|      creation_time: 1652122772 (1956-05-08T18:59:32Z) 0x9c-0xa3.7 (8)
 0x0a0|62 79 64 94                                    |byd.            |
-0x0a0|            00 00 00 00 62 79 64 94            |    ....byd.    |      modification_time: 1652122772 (1956-05-11T18:59:32Z) 0xa4-0xab.7 (8)
+0x0a0|            00 00 00 00 62 79 64 94            |    ....byd.    |      modification_time: 1652122772 (1956-05-08T18:59:32Z) 0xa4-0xab.7 (8)
 0x0a0|                                    00 00 00 01|            ....|      track_id: 1 0xac-0xaf.7 (4)
 0x0b0|00 00 00 00                                    |....            |      reserved1: 0 0xb0-0xb3.7 (4)
 0x0b0|            00 00 00 06 2c e9 8a ab            |    ....,...    |      duration: 26523306667 0xb4-0xbb.7 (8)
@@ -78,8 +78,8 @@ $ fq -d mp4 ddv mvhd-tkhd-mdhd-mehd-v1
 0x0f0|                                    6d 64 68 64|            mdhd|      type: "mdhd" (Media header, overall information about the media) 0xfc-0xff.7 (4)
 0x100|01                                             |.               |      version: 1 0x100-0x100.7 (1)
 0x100|   00 00 00                                    | ...            |      flags: 0 0x101-0x103.7 (3)
-0x100|            00 00 00 00 62 79 64 94            |    ....byd.    |      creation_time: 1652122772 (1956-05-11T18:59:32Z) 0x104-0x10b.7 (8)
-0x100|                                    00 00 00 00|            ....|      modification_time: 1652122772 (1956-05-11T18:59:32Z) 0x10c-0x113.7 (8)
+0x100|            00 00 00 00 62 79 64 94            |    ....byd.    |      creation_time: 1652122772 (1956-05-08T18:59:32Z) 0x104-0x10b.7 (8)
+0x100|                                    00 00 00 00|            ....|      modification_time: 1652122772 (1956-05-08T18:59:32Z) 0x10c-0x113.7 (8)
 0x110|62 79 64 94                                    |byd.            |
 0x110|            00 98 96 80                        |    ....        |      time_scale: 10000000 0x114-0x117.7 (4)
 0x110|                        00 00 00 06 2c e9 8a ab|        ....,...|      duration: 26523306667 0x118-0x11f.7 (8)
