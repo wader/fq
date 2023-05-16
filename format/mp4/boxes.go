@@ -205,7 +205,7 @@ func decodeLang(d *decode.D) string {
 }
 
 // Quicktime time seconds in January 1, 1904 UTC
-var quicktimeEpochDate = time.Date(1904, time.January, 4, 0, 0, 0, 0, time.UTC)
+var quicktimeEpochDate = time.Date(1904, time.January, 1, 0, 0, 0, 0, time.UTC)
 
 var uintActualQuicktimeEpoch = scalar.UintActualDate(quicktimeEpochDate, time.RFC3339)
 
