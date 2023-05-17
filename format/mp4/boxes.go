@@ -1723,9 +1723,14 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			// TODO: better probe? ffmpeg uses box name heuristics?
 			// if 16 length field seems to match assume box with length, language and value
 			// otherwise decode as box with value rest of box
-			probeLength := d.PeekUintBits(16)
+
+			// only probe if there is something
+			probeLength := int64(0)
+			if d.BitsLeft() >= 16 {
+				probeLength = int64(d.PeekUintBits(16))
+			}
 			// +2 for length field, +2 for language field
-			if (probeLength+2+2)*8 == uint64(d.BitsLeft()) {
+			if (probeLength+2+2)*8 == d.BitsLeft() {
 				length := d.FieldU16("length")
 				d.FieldStrFn("language", decodeLang)
 				d.FieldUTF8("value", int(length))
