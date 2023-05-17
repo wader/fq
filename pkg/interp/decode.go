@@ -383,7 +383,7 @@ func makeDecodeValueOut(dv *decode.Value, kind decodeValueKind, out any) any {
 					},
 				},
 				decodeValueBase: decodeValueBase{dv: dv},
-				bitsFormat:      true,
+				isRaw:           true,
 			}
 		case bool:
 			return decodeValue{
@@ -599,7 +599,7 @@ var _ DecodeValue = decodeValue{}
 type decodeValue struct {
 	gojq.JQValue
 	decodeValueBase
-	bitsFormat bool
+	isRaw bool
 }
 
 func (v decodeValue) JQValueKey(name string) any {
@@ -609,7 +609,7 @@ func (v decodeValue) JQValueHas(key any) any {
 	return valueHas(key, v.decodeValueBase.JQValueKey, v.JQValue.JQValueHas)
 }
 func (v decodeValue) JQValueToGoJQEx(optsFn func() (*Options, error)) any {
-	if !v.bitsFormat {
+	if !v.isRaw {
 		return v.JQValueToGoJQ()
 	}
 
@@ -617,26 +617,9 @@ func (v decodeValue) JQValueToGoJQEx(optsFn func() (*Options, error)) any {
 	if err != nil {
 		return err
 	}
-	br, err := bv.toReader()
-	if err != nil {
-		return err
-	}
 
-	brC, err := bitio.CloneReaderAtSeeker(br)
-	if err != nil {
-		return err
-	}
+	return bv.JQValueToGoJQEx(optsFn)
 
-	opts, err := optsFn()
-	if err != nil {
-		return err
-	}
-
-	s, err := opts.BitsFormatFn(brC)
-	if err != nil {
-		return err
-	}
-	return s
 }
 
 // decode value array
