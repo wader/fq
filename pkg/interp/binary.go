@@ -397,6 +397,30 @@ func (b Binary) JQValueToNumber() any {
 func (b Binary) JQValueToString() any {
 	return b.JQValueToGoJQ()
 }
+func (b Binary) JQValueToGoJQEx(optsFn func() (*Options, error)) any {
+	br, err := b.toReader()
+	if err != nil {
+		return err
+	}
+
+	brC, err := bitio.CloneReaderAtSeeker(br)
+	if err != nil {
+		return err
+	}
+
+	opts, err := optsFn()
+	if err != nil {
+		return err
+	}
+
+	s, err := opts.BitsFormatFn(brC)
+	if err != nil {
+		return err
+	}
+
+	return s
+}
+
 func (b Binary) JQValueToGoJQ() any {
 	buf, err := b.toBytesBuffer(b.r)
 	if err != nil {
