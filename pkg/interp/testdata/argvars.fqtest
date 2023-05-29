@@ -41,7 +41,7 @@ $ fq -n -d mp4 --argdecode filea test.mp3 '$filea'
 $ fq -n --argjson a '(' '$a'
 exitcode: 2
 stderr:
-error: --argjson a: invalid character '(' looking for beginning of value
+error: --argjson a: fromjson cannot be applied to "(": invalid character '(' looking for beginning of value
 $ fq -n --argjson a
 exitcode: 2
 stderr:
