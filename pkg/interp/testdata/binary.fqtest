@@ -252,7 +252,7 @@ mp3> .frames[1].audio_data | tobytes | match([0x33, 0x85]), first(scan([0x33, 0x
 "3385"
 "07aac38e"
 mp3> scan("")
-error: match cannot be applied to: object ({"footers":[],"frames":[{" ...)
+error: match(""; "g") cannot be applied to: object ({"footers":[],"frames":[{" ...)
 mp3> tobytes| scan("")
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.: raw bits 0x0-NA (0)
 mp3> .frames[1] | tobytes | mp3_frame | ., ((.header.bitrate | tobitsrange) as $v | tobitsrange | [.[:$v.start], (0xf | tobits), .[$v.start+$v.size:]] | mp3_frame) | .header.bitrate
