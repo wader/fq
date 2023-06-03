@@ -199,7 +199,7 @@ scoop install fq
 
 ### Arch Linux
 
-`fq` can be installed from the [community repository](https://archlinux.org/packages/community/x86_64/fq/) using [pacman](https://wiki.archlinux.org/title/Pacman):
+`fq` can be installed from the [extra repository](https://archlinux.org/packages/extra/x86_64/fq/) using [pacman](https://wiki.archlinux.org/title/Pacman):
 
 ```sh
 pacman -S fq
