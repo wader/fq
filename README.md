@@ -276,17 +276,17 @@ for inventing the [jq](https://github.com/stedolan/jq) language.
 
 #### Tools
 
-- [HexFiend](https://github.com/HexFiend/HexFiend) : Hex editor for macOS with format template support.
-- [binspector](https://github.com/binspector/binspector) : Binary format analysis tool with query language and REPL.
-- [kaitai](https://kaitai.io) : Declarative binary format parsing.
-- [Wireshark](https://www.wireshark.org) : Decodes network traffic (tip: `tshark -T json`).
-- [MediaInfo](https://mediaarea.net/en/MediaInfo) : Analyze media files  (tip `mediainfo --Output=JSON` and `mediainfo --Details=1`).
-- [GNU poke](https://www.jemarch.net/poke) : The extensible editor for structured binary data.
-- [ffmpeg/ffprobe](https://ffmpeg.org) : Powerful media libraries and tools.
-- [hexdump](https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git/tree/text-utils/hexdump.c) : Hex viewer tool.
-- [hex](https://git.janouch.name/p/hex) : Interactive hex viewer with format support via lua.
-- [hachoir](https://github.com/vstinner/hachoir) : General python library for working binary data.
-- [scapy](https://scapy.net) : Decode/Encode formats, focus on network protocols.
+- [HexFiend](https://github.com/HexFiend/HexFiend) - Hex editor for macOS with format template support.
+- [binspector](https://github.com/binspector/binspector) - Binary format analysis tool with query language and REPL.
+- [kaitai](https://kaitai.io) - Declarative binary format parsing.
+- [Wireshark](https://www.wireshark.org) - Decodes network traffic (tip: `tshark -T json`).
+- [MediaInfo](https://mediaarea.net/en/MediaInfo) - Analyze media files  (tip `mediainfo --Output=JSON` and `mediainfo --Details=1`).
+- [GNU poke](https://www.jemarch.net/poke) - The extensible editor for structured binary data.
+- [ffmpeg/ffprobe](https://ffmpeg.org) - Powerful media libraries and tools.
+- [hexdump](https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git/tree/text-utils/hexdump.c) - Hex viewer tool.
+- [hex](https://git.janouch.name/p/hex) - Interactive hex viewer with format support via lua.
+- [hachoir](https://github.com/vstinner/hachoir) - General python library for working binary data.
+- [scapy](https://scapy.net) - Decode/Encode formats, focus on network protocols.
 
 #### Projects and Standards
 
