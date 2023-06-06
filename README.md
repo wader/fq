@@ -10,13 +10,13 @@ For details see [usage.md](doc/usage.md).
 
 ### Background
 
-fq is inspired by the well known jq tool and language and allows you to work with binary formats the same way you would using jq. In addition it can present data like a hex viewer, transform, slice and concatenate binary data. It also supports nested formats and has an interactive REPL with auto-completion.
+fq is inspired by the well known jq tool and language that allows you to work with binary formats the same way you would using jq. In addition it can present data like a hex viewer, transform, slice and concatenate binary data. It also supports nested formats and has an interactive REPL with auto-completion.
 
-It was originally designed to query, inspect and debug media codecs and containers like mp4, flac, mp3, jpeg. But has since then been extended to support a variety of formats like executables, packet captures (with TCP reassembly) and serialization formats like JSON, YAML, XML, ASN1 BER, Avro, CBOR, protobuf. In addition it also has functions to work with URL:s, convert to/from hex, number bases, search for things etc.
+It was originally designed to query, inspect and debug media codecs and containers like mp4, flac, mp3, jpeg. But since then it has been extended to support a variety of formats like executables, packet captures (with TCP reassembly) and serialization formats like JSON, YAML, XML, ASN1 BER, Avro, CBOR, protobuf. In addition it also has functions to work with URLs, convert to/from hex, number bases, search for things etc.
 
 In summary it aims to be jq, hexdump, dd and gdb for files combined into one.
 
-**NOTE:** fq is still early in development so things might change, be broken or do not make sense. That also means that there is a great opportunity to help out!
+**NOTE :** fq is still early in development so things might change, be broken or do not make sense. That also means that there is a great opportunity to help out!
 
 ### Goals
 
@@ -155,7 +155,7 @@ yaml,
 
 [#]: sh-end
 
-It can also work with some common text formats like URL:s, hex, base64, PEM etc and for some serialization formats like XML, YAML etc it can transform both from and to jq values.
+It can also work with some common text formats like URLs, hex, base64, PEM etc and for some serialization formats like XML, YAML, etc. it can transform both from and to jq values.
 
 For details see [formats.md](doc/formats.md) and [usage.md](doc/usage.md).
 
@@ -169,7 +169,7 @@ For details see [formats.md](doc/formats.md) and [usage.md](doc/usage.md).
 
 Use one of the methods listed below or download a pre-built [release](https://github.com/wader/fq/releases) for macOS, Linux or Windows. Unarchive it and move the executable to `PATH` etc.
 
-On macOS if you don't install using one of the method below you might have to manually allow the binary to run. This can be done by trying to run the binary, ignore the warning and then go into security preference and allow it. Same can be done with this command:
+On macOS if you don't install using one of the method below then you might have to manually allow the binary to run. This can be done by trying to run the binary, ignore the warning and then go into security preference and allow it. Same can be done with this command:
 
 ```sh
 xattr -d com.apple.quarantine fq && spctl --add fq
@@ -231,9 +231,9 @@ apk add -X http://dl-cdn.alpinelinux.org/alpine/edge/testing fq
 
 ### Build from source
 
-Make sure you have [go](https://go.dev) 1.18 or later installed.
+Make sure you have version of [go](https://go.dev) 1.18 or later installed.
 
-To install directly from git repository (no clone needed) do:
+To install directly from git repository (no clone needed) :
 ```sh
 # build and install latest release
 go install github.com/wader/fq@latest
@@ -276,24 +276,24 @@ for inventing the [jq](https://github.com/stedolan/jq) language.
 
 #### Tools
 
-- [HexFiend](https://github.com/HexFiend/HexFiend) Hex editor for macOS with format template support.
-- [binspector](https://github.com/binspector/binspector) Binary format analysis tool with query language and REPL.
-- [kaitai](https://kaitai.io) Declarative binary format parsing.
-- [Wireshark](https://www.wireshark.org) Decodes network traffic (tip: `tshark -T json`).
-- [MediaInfo](https://mediaarea.net/en/MediaInfo) Analyze media files  (tip `mediainfo --Output=JSON` and `mediainfo --Details=1`).
-- [GNU poke](https://www.jemarch.net/poke) The extensible editor for structured binary data.
-- [ffmpeg/ffprobe](https://ffmpeg.org) Powerful media libraries and tools.
-- [hexdump](https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git/tree/text-utils/hexdump.c) Hex viewer tool.
-- [hex](https://git.janouch.name/p/hex) Interactive hex viewer with format support via lua.
-- [hachoir](https://github.com/vstinner/hachoir) General python library for working binary data.
-- [scapy](https://scapy.net) Decode/Encode formats, focus on network protocols.
+- [HexFiend](https://github.com/HexFiend/HexFiend) - Hex editor for macOS with format template support.
+- [binspector](https://github.com/binspector/binspector) - Binary format analysis tool with query language and REPL.
+- [kaitai](https://kaitai.io) - Declarative binary format parsing.
+- [Wireshark](https://www.wireshark.org) - Decodes network traffic (tip: `tshark -T json`).
+- [MediaInfo](https://mediaarea.net/en/MediaInfo) - Analyze media files  (tip `mediainfo --Output=JSON` and `mediainfo --Details=1`).
+- [GNU poke](https://www.jemarch.net/poke) - The extensible editor for structured binary data.
+- [ffmpeg/ffprobe](https://ffmpeg.org) - Powerful media libraries and tools.
+- [hexdump](https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git/tree/text-utils/hexdump.c) - Hex viewer tool.
+- [hex](https://git.janouch.name/p/hex) - Interactive hex viewer with format support via lua.
+- [hachoir](https://github.com/vstinner/hachoir) - General python library for working binary data.
+- [scapy](https://scapy.net) - Decode/Encode formats, focus on network protocols.
 
 #### Projects and Standards
 
-- [Let's Solve the File Format Problem](http://fileformats.archiveteam.org)
-- [PRONOM](https://www.nationalarchives.gov.uk/PRONOM/) file format registry
-- [Sustainability of Digital Formats](https://www.loc.gov/preservation/digital/formats/) at Library of Congress
-- [Data Format Description Language](https://en.wikipedia.org/wiki/Data_Format_Description_Language)
+- [Let's Solve the File Format Problem](http://fileformats.archiveteam.org).
+- [PRONOM](https://www.nationalarchives.gov.uk/PRONOM/) file format registry.
+- [Sustainability of Digital Formats](https://www.loc.gov/preservation/digital/formats/) at Library of Congress.
+- [Data Format Description Language](https://en.wikipedia.org/wiki/Data_Format_Description_Language).
 
 ## License
 
@@ -303,16 +303,16 @@ See the [LICENSE](LICENSE) file for license details.
 
 Licenses of direct dependencies:
 
-- Forked version of gojq https://github.com/itchyny/gojq/blob/main/LICENSE (MIT)
-- Forked version of readline https://github.com/chzyer/readline/blob/master/LICENSE (MIT)
-- github.com/BurntSushi/toml https://github.com/BurntSushi/toml/blob/master/COPYING (MIT)
-- github.com/creasty/defaults https://github.com/creasty/defaults/blob/master/LICENSE (MIT)
-- github.com/gomarkdown/markdown https://github.com/gomarkdown/markdown/blob/master/LICENSE.txt (BSD)
-- github.com/gopacket/gopacket https://github.com/gopacket/gopacket/blob/master/LICENSE (BSD)
-- github.com/mitchellh/copystructure https://github.com/mitchellh/copystructure/blob/master/LICENSE (MIT)
-- github.com/mitchellh/mapstructure https://github.com/mitchellh/mapstructure/blob/master/LICENSE (MIT)
-- github.com/pmezard/go-difflib https://github.com/pmezard/go-difflib/blob/master/LICENSE (BSD)
-- golang/snappy https://github.com/golang/snappy/blob/master/LICENSE (BSD)
-- golang/x/* https://github.com/golang/text/blob/master/LICENSE (BSD)
-- gopkg.in/yaml.v3 https://github.com/go-yaml/yaml/blob/v3/LICENSE (MIT)
-- Parts of go crypto/tls and github.com/zmap/zcrypto https://github.com/zmap/zcrypto/blob/master/LICENSE (Apache)
+- Forked version of gojq - https://github.com/itchyny/gojq/blob/main/LICENSE (MIT)
+- Forked version of readline - https://github.com/chzyer/readline/blob/master/LICENSE (MIT)
+- github.com/BurntSushi/toml - https://github.com/BurntSushi/toml/blob/master/COPYING (MIT)
+- github.com/creasty/defaults - https://github.com/creasty/defaults/blob/master/LICENSE (MIT)
+- github.com/gomarkdown/markdown - https://github.com/gomarkdown/markdown/blob/master/LICENSE.txt (BSD)
+- github.com/gopacket/gopacket - https://github.com/gopacket/gopacket/blob/master/LICENSE (BSD)
+- github.com/mitchellh/copystructure - https://github.com/mitchellh/copystructure/blob/master/LICENSE (MIT)
+- github.com/mitchellh/mapstructure - https://github.com/mitchellh/mapstructure/blob/master/LICENSE (MIT)
+- github.com/pmezard/go-difflib - https://github.com/pmezard/go-difflib/blob/master/LICENSE (BSD)
+- golang/snappy - https://github.com/golang/snappy/blob/master/LICENSE (BSD)
+- golang/x/* - https://github.com/golang/text/blob/master/LICENSE (BSD)
+- gopkg.in/yaml.v3 - https://github.com/go-yaml/yaml/blob/v3/LICENSE (MIT)
+- Parts of go crypto/tls and github.com/zmap/zcrypto - https://github.com/zmap/zcrypto/blob/master/LICENSE (Apache)
