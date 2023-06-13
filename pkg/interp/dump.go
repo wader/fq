@@ -12,6 +12,7 @@ import (
 	"github.com/wader/fq/internal/binwriter"
 	"github.com/wader/fq/internal/bitioex"
 	"github.com/wader/fq/internal/columnwriter"
+	"github.com/wader/fq/internal/hexpairwriter"
 	"github.com/wader/fq/internal/mathex"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
@@ -32,6 +33,9 @@ const (
 	colASCII = 4
 	colField = 6
 )
+
+// 2: binary, 16: hex, others: TODO
+const outputBase = 2
 
 const rootIndentWidth = 2
 const treeIndentWidth = 2
@@ -72,6 +76,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 	cprint := func(c int, a ...any) {
 		fmt.Fprint(cw.Columns[c], a...)
 	}
+	// cfmt: column i fmt.fprintf
 	cfmt := func(c int, format string, a ...any) {
 		fmt.Fprintf(cw.Columns[c], format, a...)
 	}
@@ -118,7 +123,9 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 
 	// show address bar on root, nested root and format change
 	if depth == 0 || v.IsRoot || v.Format != nil {
+		// write header: 00 01 02 03 04
 		cfmt(colHex, "%s", deco.DumpHeader.F(ctx.hexHeader))
+		// write header: 012345
 		cfmt(colASCII, "%s", deco.DumpHeader.F(ctx.asciiHeader))
 
 		if willDisplayData {
@@ -272,6 +279,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 
 	// has length and is not compound or a collapsed struct/array (max depth)
 	if willDisplayData {
+		// write: 0x00012 (example address)
 		cfmt(colAddr, "%s%s\n",
 			rootIndent, deco.DumpAddr.F(mathex.PadFormatInt(startLineByte, opts.Addrbase, true, addrWidth)))
 
@@ -286,7 +294,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 		}
 
 		addrLines := lastDisplayLine - startLine + 1
-		// hexpairFn := func(b byte) string { return deco.ByteColor(b).Wrap(hexpairwriter.Pair(b)) }
+		hexpairFn := func(b byte) string { return deco.ByteColor(b).Wrap(hexpairwriter.Pair(b)) }
 		binFn := func(b byte) string { return deco.ByteColor(b).Wrap(string("01"[int(b)])) }
 		asciiFn := func(b byte) string { return deco.ByteColor(b).Wrap(asciiwriter.SafeASCII(b)) }
 
@@ -294,20 +302,26 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 		if err != nil {
 			return err
 		}
-		// if _, err := bitioex.CopyBitsBuffer(
-		// 	hexpairwriter.New(cw.Columns[colHex], opts.LineBytes, int(startLineByteOffset), hexpairFn),
-		// 	hexBR,
-		// 	buf); err != nil {
-		// 	return err
-		// }
 
-		if _, err := bitio.CopyBuffer(
-			binwriter.New(cw.Columns[colHex], opts.LineBytes*8, int(startLineBitOffset), binFn),
-			hexBR,
-			buf); err != nil {
-			return err
+		switch outputBase {
+		case 16:
+			// write: 89 50 4e 47 0d 0a 1a 0a
+			if _, err := bitioex.CopyBitsBuffer(
+				hexpairwriter.New(cw.Columns[colHex], opts.LineBytes, int(startLineByteOffset), hexpairFn),
+				hexBR,
+				buf); err != nil {
+				return err
+			}
+		case 2:
+			// write: 100010010101000001
+			if _, err := bitio.CopyBuffer(
+				binwriter.New(cw.Columns[colHex], opts.LineBytes*8, int(startLineBitOffset), binFn),
+				hexBR,
+				buf); err != nil {
+				return err
+			}
 		}
-
+		// write: .PNG....
 		asciiBR, err := bitio.CloneReadSeeker(vBR)
 		if err != nil {
 			return err
@@ -406,11 +420,18 @@ func dump(v *decode.Value, w io.Writer, opts *Options) error {
 
 	var hexHeader string
 	var asciiHeader string
+	var spaceLength int
+	switch outputBase {
+	case 16:
+		spaceLength = 1
+	case 2:
+		spaceLength = 8 - 2 // TODO: adapt for wider screens
+	}
 	for i := 0; i < opts.LineBytes; i++ {
 		s := mathex.PadFormatInt(int64(i), opts.Addrbase, false, 2)
 		hexHeader += s
-		if i < opts.LineBytes-1 {
-			hexHeader += " "
+		if spaceLength > 1 || i < opts.LineBytes-1 {
+			hexHeader += strings.Repeat(" ", spaceLength)
 		}
 		asciiHeader += s[len(s)-1:]
 	}
