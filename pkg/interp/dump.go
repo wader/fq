@@ -397,7 +397,13 @@ func dump(v *decode.Value, w io.Writer, opts *Options) error {
 	}
 
 	addrColumnWidth := maxAddrIndentWidth
-	hexColumnWidth := opts.LineBytes * 8
+	var hexColumnWidth int
+	switch outputBase {
+	case 16:
+		hexColumnWidth = opts.LineBytes*3 - 1
+	case 2:
+		hexColumnWidth = opts.LineBytes * 8
+	}
 	asciiColumnWidth := opts.LineBytes
 	treeColumnWidth := -1
 	// TODO: set with and truncate/wrap properly
