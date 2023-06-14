@@ -45,6 +45,13 @@ func ToBitReader(v any) (bitio.ReaderAtSeeker, error) {
 	return toBitReaderEx(v, false)
 }
 
+type byteRangeError int
+
+func (b byteRangeError) Error() string {
+	return fmt.Sprintf("byte in binary list must be bytes (0-255) got %d", int(b))
+
+}
+
 func toBitReaderEx(v any, inArray bool) (bitio.ReaderAtSeeker, error) {
 	switch vv := v.(type) {
 	case ToBinary:
@@ -63,7 +70,7 @@ func toBitReaderEx(v any, inArray bool) (bitio.ReaderAtSeeker, error) {
 
 		if inArray {
 			if bi.Cmp(big.NewInt(255)) > 0 || bi.Cmp(big.NewInt(0)) < 0 {
-				return nil, fmt.Errorf("byte in binary list must be bytes (0-255) got %v", bi)
+				return nil, byteRangeError(bi.Int64())
 			}
 			n := bi.Uint64()
 			b := [1]byte{byte(n)}
@@ -86,6 +93,41 @@ func toBitReaderEx(v any, inArray bool) (bitio.ReaderAtSeeker, error) {
 		return br, nil
 	case []any:
 		rr := make([]bitio.ReadAtSeeker, 0, len(vv))
+
+		// fast path for slice containing only 0-255 numbers and strings
+		bs := &bytes.Buffer{}
+		for _, e := range vv {
+			if bs == nil {
+				break
+			}
+			switch ev := e.(type) {
+			case int:
+				if ev >= 0 && ev <= 255 {
+					bs.WriteByte(byte(ev))
+					continue
+				}
+			case float64:
+				b := int(ev)
+				if b >= 0 && b <= 255 {
+					bs.WriteByte(byte(ev))
+					continue
+				}
+			case *big.Int:
+				if ev.Cmp(big.NewInt(0)) >= 0 && ev.Cmp(big.NewInt(255)) <= 0 {
+					bs.WriteByte(byte(ev.Uint64()))
+					continue
+				}
+			case string:
+				// TODO: maybe only if less then some length?
+				bs.WriteString(ev)
+				continue
+			}
+			bs = nil
+		}
+		if bs != nil {
+			return bitio.NewBitReader(bs.Bytes(), -1), nil
+		}
+
 		// TODO: optimize byte array case, flatten into one slice
 		for _, e := range vv {
 			eBR, eErr := toBitReaderEx(e, true)
