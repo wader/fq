@@ -1044,6 +1044,7 @@ type Options struct {
 	BitsFormat   string
 	LineBytes    int
 	DisplayBytes int
+	Base         int
 	Addrbase     int
 	Sizebase     int
 	SkipGaps     bool
