@@ -192,6 +192,10 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 
 	cprint(colField, "\n")
 
+	// --------------------------------------------------
+	// Error handling
+	// --------------------------------------------------
+
 	if valueErr != nil {
 		var printErrs func(depth int, err error)
 		printErrs = func(depth int, err error) {
@@ -227,24 +231,33 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 		printErrs(depth, valueErr)
 	}
 
+	// --------------------------------------------------
+	// For a given field, compute various helper variables
+	// --------------------------------------------------
+
 	rootBitLen, err := bitioex.Len(rootV.RootReader)
 	if err != nil {
 		return err
 	}
 
 	bufferLastBit := rootBitLen - 1
-	startBit := innerRange.Start
-	stopBit := innerRange.Stop() - 1
-	sizeBits := innerRange.Len
-	lastDisplayBit := stopBit
+	startBit := innerRange.Start     // field's start bit index (for entire file)
+	stopBit := innerRange.Stop() - 1 // field's end bit index (for entire file); inclusive
+	sizeBits := innerRange.Len       // field's bit length (1, 8, 16, 32, ...)
 
-	if opts.DisplayBytes > 0 && sizeBits > int64(opts.DisplayBytes)*8 {
-		lastDisplayBit = startBit + (int64(opts.DisplayBytes)*8 - 1)
-		if lastDisplayBit%(int64(opts.LineBytes)*8) != 0 {
-			lastDisplayBit += (int64(opts.LineBytes) * 8) - lastDisplayBit%(int64(opts.LineBytes)*8) - 1
+	// determine lastDisplayBit:
+	// sometimes the field's bit length overflows the max width of a line;
+	// cut off the overflow in such cases.
+	lastDisplayBit := stopBit
+	displayBits := int64(opts.DisplayBytes) * 8
+	lineBits := int64(opts.LineBytes) * 8
+	if opts.DisplayBytes > 0 && sizeBits > displayBits {
+		lastDisplayBit = startBit + (displayBits - 1)
+		if lastDisplayBit%lineBits != 0 {
+			lastDisplayBit += lineBits - lastDisplayBit%lineBits - 1
 		}
 
-		if lastDisplayBit > stopBit || stopBit-lastDisplayBit <= int64(opts.LineBytes)*8 {
+		if lastDisplayBit > stopBit || stopBit-lastDisplayBit <= lineBits {
 			lastDisplayBit = stopBit
 		}
 	}
@@ -274,13 +287,17 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 	startLineByte := startLine * int64(opts.LineBytes)
 	lastDisplayLine := lastDisplayByte / int64(opts.LineBytes)
 
+	// --------------------------------------------------
+	// Ouput Data
+	// --------------------------------------------------
+
 	// has length and is not compound or a collapsed struct/array (max depth)
 	if willDisplayData {
 		// write: 0x00012 (example address)
 		cfmt(colAddr, "%s%s\n",
 			rootIndent, deco.DumpAddr.F(mathex.PadFormatInt(startLineByte, opts.Addrbase, true, addrWidth)))
 
-		vBR, err := bitioex.Range(rootV.RootReader, startByte*4, displaySizeBits)
+		vBR1, err := bitioex.Range(rootV.RootReader, startByte*8, displaySizeBits)
 		if err != nil {
 			return err
 		}
@@ -295,14 +312,13 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 		binFn := func(b byte) string { return deco.ByteColor(b).Wrap(string("01"[int(b)])) }
 		asciiFn := func(b byte) string { return deco.ByteColor(b).Wrap(asciiwriter.SafeASCII(b)) }
 
-		hexBR, err := bitio.CloneReadSeeker(vBR2)
-		if err != nil {
-			return err
-		}
-
 		switch opts.Base {
 		case 16:
 			// write: 89 50 4e 47 0d 0a 1a 0a
+			hexBR, err := bitio.CloneReadSeeker(vBR1)
+			if err != nil {
+				return err
+			}
 			if _, err := bitioex.CopyBitsBuffer(
 				hexpairwriter.New(cw.Columns[colHex], opts.LineBytes, int(startLineByteOffset), hexpairFn),
 				hexBR,
@@ -311,6 +327,10 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 			}
 		case 2:
 			// write: 100010010101000
+			hexBR, err := bitio.CloneReadSeeker(vBR2)
+			if err != nil {
+				return err
+			}
 			if _, err := bitio.CopyBuffer(
 				binwriter.New(cw.Columns[colHex], opts.LineBytes*8, int(startLineBitOffset), binFn),
 				hexBR,
@@ -319,7 +339,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 			}
 		}
 		// write: .PNG....
-		asciiBR, err := bitio.CloneReadSeeker(vBR)
+		asciiBR, err := bitio.CloneReadSeeker(vBR1)
 		if err != nil {
 			return err
 		}

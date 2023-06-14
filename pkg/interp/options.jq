@@ -529,9 +529,14 @@ def options($opts):
     + [$opts]
     )
   | add
-  # set input data hex/bits to ~37.5% of width
   | ( if .width != 0 then
-        _intdiv(.width; 8) * 3
+        if .base == 2 then
+          # set input data bits to ~44.4% of width
+          .5 * (8 / (8 + 1)) * .width | floor
+        else
+          # set input data hex to ~37.5% of width
+          .5 * (3 / (3 + 1)) * .width | floor
+        end
       else
         16 * 3
       end
