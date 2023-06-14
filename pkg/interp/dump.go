@@ -275,7 +275,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 	if displaySizeBits > maxDisplaySizeBits {
 		displaySizeBits = maxDisplaySizeBits
 	}
-	if displaySizeBits > stopBit-startBit {
+	if opts.Base == 2 && displaySizeBits > stopBit-startBit {
 		displaySizeBits = stopBit - startBit + 1 // TODO: -1 hmm
 	}
 
