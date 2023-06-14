@@ -56,6 +56,9 @@ mp3> [1, 2, 3, [1, 2, 3]] | tobytes
 mp3> [1, 2, 3, [1, 2, 3], .headers[0].header.magic] | tobytes
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|01 02 03 01 02 03 49 44 33|                    |......ID3|      |.: raw bits 0x0-0x8.7 (9)
+mp3> [0,"abc",1,2.1] | tobytes
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|00 61 62 63 01 02|                             |.abc..|         |.: raw bits 0x0-0x5.7 (6)
 mp3> [-1] | tobytes
 error: byte in binary list must be bytes (0-255) got -1
 mp3> [256] | tobytes
