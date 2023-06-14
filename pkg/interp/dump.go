@@ -34,9 +34,6 @@ const (
 	colField = 6
 )
 
-// 2: binary, 16: hex, others: TODO
-const outputBase = 2
-
 const rootIndentWidth = 2
 const treeIndentWidth = 2
 
@@ -303,7 +300,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 			return err
 		}
 
-		switch outputBase {
+		switch opts.Base {
 		case 16:
 			// write: 89 50 4e 47 0d 0a 1a 0a
 			if _, err := bitioex.CopyBitsBuffer(
@@ -313,7 +310,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 				return err
 			}
 		case 2:
-			// write: 100010010101000001
+			// write: 100010010101000
 			if _, err := bitio.CopyBuffer(
 				binwriter.New(cw.Columns[colHex], opts.LineBytes*8, int(startLineBitOffset), binFn),
 				hexBR,
@@ -398,7 +395,7 @@ func dump(v *decode.Value, w io.Writer, opts *Options) error {
 
 	addrColumnWidth := maxAddrIndentWidth
 	var hexColumnWidth int
-	switch outputBase {
+	switch opts.Base {
 	case 16:
 		hexColumnWidth = opts.LineBytes*3 - 1
 	case 2:
@@ -427,7 +424,7 @@ func dump(v *decode.Value, w io.Writer, opts *Options) error {
 	var hexHeader string
 	var asciiHeader string
 	var spaceLength int
-	switch outputBase {
+	switch opts.Base {
 	case 16:
 		spaceLength = 1
 	case 2:
