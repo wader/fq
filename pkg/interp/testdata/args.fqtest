@@ -72,6 +72,7 @@ arg                 []
 argdecode           []
 argjson             []
 array_truncate      50
+base                16
 bits_format         string
 byte_colors         0-255=brightwhite,0=brightblack,32-126:9-13=white
 color               false

@@ -281,7 +281,6 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 
 	startLine := startByte / int64(opts.LineBytes)
 	startLineByteOffset := startByte % int64(opts.LineBytes)
-
 	startLineBitOffset := startBit % int64(opts.LineBytes*8)
 
 	startLineByte := startLine * int64(opts.LineBytes)
@@ -298,11 +297,6 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 			rootIndent, deco.DumpAddr.F(mathex.PadFormatInt(startLineByte, opts.Addrbase, true, addrWidth)))
 
 		vBR1, err := bitioex.Range(rootV.RootReader, startByte*8, displaySizeBits)
-		if err != nil {
-			return err
-		}
-
-		vBR2, err := bitioex.Range(rootV.RootReader, startBit, displaySizeBits)
 		if err != nil {
 			return err
 		}
@@ -327,6 +321,10 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 			}
 		case 2:
 			// write bits: 100010010101000...
+			vBR2, err := bitioex.Range(rootV.RootReader, startBit, displaySizeBits)
+			if err != nil {
+				return err
+			}
 			hexBR, err := bitio.CloneReadSeeker(vBR2)
 			if err != nil {
 				return err
