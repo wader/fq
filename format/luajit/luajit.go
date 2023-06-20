@@ -132,6 +132,14 @@ func (t *ktabType) MapUint(u scalar.Uint) (scalar.Uint, error) {
 	return u, nil
 }
 
+func LuaJITDecodeNum(d *decode.D) {
+	d.FieldAnyFn("num", func(d *decode.D) any {
+		lo := d.ULEB128()
+		hi := d.ULEB128()
+		return u64tof64((hi << 32) + lo)
+	})
+}
+
 func LuaJITDecodeKTabK(d *decode.D) {
 	ktabtype := d.FieldULEB128("ktabtype", &ktabType{})
 
@@ -144,11 +152,7 @@ func LuaJITDecodeKTabK(d *decode.D) {
 			d.FieldULEB128("int")
 
 		case 4:
-			d.FieldAnyFn("num", func(d *decode.D) any {
-				lo := d.ULEB128()
-				hi := d.ULEB128()
-				return u64tof64((hi << 32) + lo)
-			})
+			LuaJITDecodeNum(d)
 		}
 	}
 }
@@ -183,6 +187,58 @@ func (t *kgcType) MapUint(u scalar.Uint) (scalar.Uint, error) {
 	return u, nil
 }
 
+func LuaJITDecodeTab(d *decode.D) {
+	narray := d.FieldULEB128("narray")
+	nhash := d.FieldULEB128("nhash")
+
+	d.FieldArray("karray", func(d *decode.D) {
+		for i := uint64(0); i < narray; i++ {
+			d.FieldStruct("ktab", LuaJITDecodeKTabK)
+		}
+	})
+
+	d.FieldArray("khash", func(d *decode.D) {
+		for i := uint64(0); i < nhash; i++ {
+			d.FieldStruct("khash", func(d *decode.D) {
+				d.FieldStruct("k", LuaJITDecodeKTabK)
+				d.FieldStruct("v", LuaJITDecodeKTabK)
+			})
+		}
+	})
+}
+
+func LuaJITDecodeI64(d *decode.D) {
+	d.FieldAnyFn("i64", func(d *decode.D) any {
+		lo := d.ULEB128()
+		hi := d.ULEB128()
+		return int64((hi << 32) + lo)
+	})
+}
+
+func LuaJITDecodeU64(d *decode.D) {
+	d.FieldAnyFn("u64", func(d *decode.D) any {
+		lo := d.ULEB128()
+		hi := d.ULEB128()
+		return (hi << 32) + lo
+	})
+}
+
+func LuaJITDecodeComplex(d *decode.D) {
+	d.FieldAnyFn("real", func(d *decode.D) any {
+		rlo := d.ULEB128()
+		rhi := d.ULEB128()
+		r := (rhi << 32) + rlo
+		return u64tof64(r)
+	})
+
+	d.FieldAnyFn("imag", func(d *decode.D) any {
+		ilo := d.ULEB128()
+		ihi := d.ULEB128()
+		i := (ihi << 32) + ilo
+		return u64tof64(i)
+	})
+}
+
 func LuaJITDecodeKGC(d *decode.D) {
 	kgctype := d.FieldULEB128("type", &kgcType{})
 
@@ -195,55 +251,16 @@ func LuaJITDecodeKGC(d *decode.D) {
 			//child
 
 		case 1:
-			// tab
-			narray := d.FieldULEB128("narray")
-			nhash := d.FieldULEB128("nhash")
-
-			d.FieldArray("karray", func(d *decode.D) {
-				for i := uint64(0); i < narray; i++ {
-					d.FieldStruct("ktab", LuaJITDecodeKTabK)
-				}
-			})
-
-			d.FieldArray("khash", func(d *decode.D) {
-				for i := uint64(0); i < nhash; i++ {
-					d.FieldStruct("khash", func(d *decode.D) {
-						d.FieldStruct("k", LuaJITDecodeKTabK)
-						d.FieldStruct("v", LuaJITDecodeKTabK)
-					})
-				}
-			})
+			LuaJITDecodeTab(d)
 
 		case 2:
-			d.FieldAnyFn("i64", func(d *decode.D) any {
-				lo := d.ULEB128()
-				hi := d.ULEB128()
-				return int64((hi << 32) + lo)
-			})
+			LuaJITDecodeI64(d)
 
 		case 3:
-			d.FieldAnyFn("u64", func(d *decode.D) any {
-				lo := d.ULEB128()
-				hi := d.ULEB128()
-				return (hi << 32) + lo
-			})
+			LuaJITDecodeU64(d)
 
 		case 4:
-			// complex
-
-			d.FieldAnyFn("real", func(d *decode.D) any {
-				rlo := d.ULEB128()
-				rhi := d.ULEB128()
-				r := (rhi << 32) + rlo
-				return u64tof64(r)
-			})
-
-			d.FieldAnyFn("imag", func(d *decode.D) any {
-				ilo := d.ULEB128()
-				ihi := d.ULEB128()
-				i := (ihi << 32) + ilo
-				return u64tof64(i)
-			})
+			LuaJITDecodeComplex(d)
 		}
 	}
 }
