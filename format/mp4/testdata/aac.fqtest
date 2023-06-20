@@ -308,7 +308,8 @@ $ fq -d mp4 dv aac.mp4
 0x510|               00 00 00 02                     |     ....       |                          default_length: 2 0x515-0x518.7 (4)
 0x510|                           00 00 00 01         |         ....   |                          entry_count: 1 0x519-0x51c.7 (4)
      |                                               |                |                          entries[0:1]: 0x51d-0x51e.7 (2)
-0x510|                                       ff ff   |             .. |                            [0]: raw bits data 0x51d-0x51e.7 (2)
+     |                                               |                |                            [0]{}: entry 0x51d-0x51e.7 (2)
+0x510|                                       ff ff   |             .. |                              roll_distance: 65535 0x51d-0x51e.7 (2)
      |                                               |                |                        [6]{}: box 0x51f-0x53a.7 (28)
 0x510|                                             00|               .|                          size: 28 0x51f-0x522.7 (4)
 0x520|00 00 1c                                       |...             |

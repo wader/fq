@@ -1367,27 +1367,48 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 	case "sgpd":
 		version := d.FieldU8("version")
 		d.FieldU24("flags")
-		d.FieldUTF8("grouping_type", 4)
+		var groupingType = d.FieldUTF8("grouping_type", 4)
 		var defaultLength uint64
 		if version == 1 {
 			defaultLength = d.FieldU32("default_length")
-		}
-		if version >= 2 {
+		} else if version >= 2 {
 			d.FieldU32("default_sample_description_index")
 		}
 		entryCount := d.FieldU32("entry_count")
-		d.FieldArray("entries", func(d *decode.D) {
-			for i := uint64(0); i < entryCount; i++ {
-				entryLen := defaultLength
-				if version == 1 {
-					if defaultLength == 0 {
-						entryLen = d.FieldU32("description_length")
-					} else if entryLen == 0 {
-						d.Fatalf("sgpd groups entry len <= 0 version 1")
-					}
+
+		d.FieldStructNArray("entries", "entry", int64(entryCount), func(d *decode.D) {
+			entryLen := defaultLength
+			if version == 1 {
+				if defaultLength == 0 {
+					entryLen = d.FieldU32("description_length")
 				} else if entryLen == 0 {
-					d.Fatalf("sgpd groups entry len <= 0")
+					d.Fatalf("sgpd groups entry len == 0")
 				}
+			} else if entryLen == 0 {
+				// TODO: this is likely a mistake: here version is != 1, so defaultLength is default (i.e. 0),
+				// TODO: so entryLen is also 0. So for version != 1 this fatal should always throw
+				d.Fatalf("sgpd groups entry len == 0")
+			}
+			// CENC Sample Encryption Info Entries
+			switch groupingType {
+			case "seig":
+				d.FieldU8("reserved")
+				d.FieldU4("crypto_bytes")
+				d.FieldU4("skip_bytes")
+				isEncrypted := d.FieldU8("is_encrypted")
+				perSampleIVSize := d.FieldU8("per_sample_iv_size")
+				d.FieldRawLen("kid", 8*16)
+				if isEncrypted != 0 {
+					// If perSampleIVSize > 0 then
+					if perSampleIVSize == 0 {
+						// This means whole fragment is encrypted with a constant IV
+						iVSize := d.FieldU8("constant_iv_size")
+						d.FieldRawLen("constant_iv", 8*int64(iVSize))
+					}
+				}
+			case "roll":
+				d.FieldU16("roll_distance")
+			default:
 				d.FieldRawLen("data", int64(entryLen)*8)
 			}
 		})
