@@ -34,12 +34,18 @@ import (
 //go:embed luajit.md
 var LuaJITFS embed.FS
 
+var probeGroup decode.Group
+
 func init() {
 	interp.RegisterFormat(
 		format.LuaJIT,
 		&decode.Format{
 			Description: "LuaJIT 2.0 bytecode",
+			Groups:      []*decode.Group{format.Probe},
 			DecodeFn:    LuaJITDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.Probe}, Out: &probeGroup},
+			},
 		})
 	interp.RegisterFS(LuaJITFS)
 }

@@ -1,5 +1,5 @@
 # luajit -b -g example.lua simple.luac
-$ fq dv -d luajit simple.luac
+$ fq dv simple.luac
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: simple.luac (luajit) 0x0-0x14e.7 (335)
      |                                               |                |  header{}: 0x0-0x17.7 (24)
 0x000|1b 4c 4a                                       |.LJ             |    magic: raw bits (valid) 0x0-0x2.7 (3)
