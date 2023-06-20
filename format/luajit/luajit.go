@@ -48,7 +48,10 @@ func u64tof64(u uint64) float64 {
 	binary.BigEndian.PutUint64(buf[:], u)
 
 	var f float64
-	binary.Read(bytes.NewBuffer(buf[:]), binary.BigEndian, &f)
+	err := binary.Read(bytes.NewBuffer(buf[:]), binary.BigEndian, &f)
+	if err != nil {
+		panic(err)
+	}
 
 	return f
 }
