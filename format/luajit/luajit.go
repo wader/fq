@@ -43,18 +43,18 @@ func init() {
 
 // reinterpret an int as a float
 func u64tof64(u uint64) float64 {
-		var buf [8]byte
+	var buf [8]byte
 
-		binary.BigEndian.PutUint64(buf[:], u)
+	binary.BigEndian.PutUint64(buf[:], u)
 
-		var f float64
-		binary.Read(bytes.NewBuffer(buf[:]), binary.BigEndian, &f)
+	var f float64
+	binary.Read(bytes.NewBuffer(buf[:]), binary.BigEndian, &f)
 
-		return f
+	return f
 }
 
 type DumpInfo struct {
-	Strip bool
+	Strip     bool
 	BigEndian bool
 }
 
@@ -88,6 +88,7 @@ func LuaJITDecodeHeader(di *DumpInfo, d *decode.D) {
 }
 
 type jumpBias struct{}
+
 func (j *jumpBias) MapUint(u scalar.Uint) (scalar.Uint, error) {
 	u.Actual -= 0x8000
 	return u, nil
@@ -111,6 +112,7 @@ func LuaJITDecodeBCIns(d *decode.D) {
 }
 
 type ktabType struct{}
+
 func (t *ktabType) MapUint(u scalar.Uint) (scalar.Uint, error) {
 	switch u.Actual {
 	case 0:
@@ -128,7 +130,6 @@ func (t *ktabType) MapUint(u scalar.Uint) (scalar.Uint, error) {
 	}
 	return u, nil
 }
-
 
 func LuaJITDecodeKTabK(d *decode.D) {
 	ktabtype := d.FieldULEB128("ktabtype", &ktabType{})
@@ -162,6 +163,7 @@ func LuaJITDecodeCplx(d *decode.D) any {
 }
 
 type kgcType struct{}
+
 func (t *kgcType) MapUint(u scalar.Uint) (scalar.Uint, error) {
 	switch u.Actual {
 	case 0:
@@ -212,14 +214,14 @@ func LuaJITDecodeKGC(d *decode.D) {
 			})
 
 		case 2:
-			d.FieldAnyFn("i64", func (d *decode.D) any {
+			d.FieldAnyFn("i64", func(d *decode.D) any {
 				lo := d.ULEB128()
 				hi := d.ULEB128()
 				return int64((hi << 32) + lo)
 			})
 
 		case 3:
-			d.FieldAnyFn("u64", func (d *decode.D) any {
+			d.FieldAnyFn("u64", func(d *decode.D) any {
 				lo := d.ULEB128()
 				hi := d.ULEB128()
 				return (hi << 32) + lo
@@ -228,14 +230,14 @@ func LuaJITDecodeKGC(d *decode.D) {
 		case 4:
 			// complex
 
-			d.FieldAnyFn("real", func (d *decode.D) any {
+			d.FieldAnyFn("real", func(d *decode.D) any {
 				rlo := d.ULEB128()
 				rhi := d.ULEB128()
 				r := (rhi << 32) + rlo
 				return u64tof64(r)
 			})
 
-			d.FieldAnyFn("imag", func (d *decode.D) any {
+			d.FieldAnyFn("imag", func(d *decode.D) any {
 				ilo := d.ULEB128()
 				ihi := d.ULEB128()
 				i := (ihi << 32) + ilo

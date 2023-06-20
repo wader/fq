@@ -172,4 +172,3 @@ func init() {
 		bcOpSyms[uint64(i)] = opcodes[i].Name
 	}
 }
-
