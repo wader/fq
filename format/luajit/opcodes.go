@@ -4,13 +4,6 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-type BcDef struct {
-	Name string
-	MA   int
-	MB   int
-	MC   int
-}
-
 const (
 	BcMnone = iota
 	BcMdst
@@ -29,7 +22,24 @@ const (
 	BcMcdata
 )
 
-var opcodes = []BcDef{
+type BcDef struct {
+	Name string
+	MA   int
+	MB   int
+	MC   int
+}
+
+func (op *BcDef) HasD() bool {
+	return op.MB == BcMnone
+}
+
+func (op *BcDef) IsJump() bool {
+	return op.MC == BcMjump
+}
+
+type BcDefList []BcDef
+
+var opcodes = BcDefList{
 	{"ISLT", BcMvar, BcMnone, BcMvar},
 	{"ISGE", BcMvar, BcMnone, BcMvar},
 	{"ISLE", BcMvar, BcMnone, BcMvar},
@@ -157,18 +167,12 @@ var opcodes = []BcDef{
 	{"FUNCCW", BcMrbase, BcMnone, BcMnone},
 }
 
-func (op *BcDef) HasD() bool {
-	return op.MB == BcMnone
-}
+func (opcodes BcDefList) MapUint(s scalar.Uint) (scalar.Uint, error) {
+	listIdx := int(s.Actual)
 
-func (op *BcDef) IsJump() bool {
-	return op.MC == BcMjump
-}
-
-var bcOpSyms = scalar.UintMapSymStr{}
-
-func init() {
-	for i := 0; i < len(opcodes); i++ {
-		bcOpSyms[uint64(i)] = opcodes[i].Name
+	if listIdx < len(opcodes) {
+		s.Sym = opcodes[listIdx].Name
 	}
+
+	return s, nil
 }

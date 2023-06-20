@@ -91,7 +91,7 @@ func (j *jumpBias) MapUint(u scalar.Uint) (scalar.Uint, error) {
 }
 
 func LuaJITDecodeBCIns(d *decode.D) {
-	op := d.FieldU8("op", bcOpSyms)
+	op := d.FieldU8("op", opcodes)
 
 	d.FieldU8("a")
 
