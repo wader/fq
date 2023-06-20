@@ -22,6 +22,7 @@ package luajit
 
 import (
 	"bytes"
+	"embed"
 	"encoding/binary"
 
 	"github.com/wader/fq/format"
@@ -30,6 +31,9 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
+//go:embed luajit.md
+var LuaJITFS embed.FS
+
 func init() {
 	interp.RegisterFormat(
 		format.LuaJIT,
@@ -37,6 +41,7 @@ func init() {
 			Description: "LuaJIT 2.0 bytecode dump",
 			DecodeFn:    LuaJITDecode,
 		})
+	interp.RegisterFS(LuaJITFS)
 }
 
 // reinterpret an int as a float
