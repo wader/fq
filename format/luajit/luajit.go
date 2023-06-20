@@ -24,8 +24,6 @@ import (
 	"bytes"
 	"encoding/binary"
 
-	"golang.org/x/text/encoding"
-
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
@@ -81,7 +79,7 @@ func LuaJITDecodeHeader(di *DumpInfo, d *decode.D) {
 
 	if !di.Strip {
 		namelen := d.FieldU8("namelen")
-		d.FieldStr("name", int(namelen), encoding.Nop)
+		d.FieldUTF8("name", int(namelen))
 	}
 }
 
@@ -134,7 +132,7 @@ func LuaJITDecodeKTabK(d *decode.D) {
 
 	if ktabtype >= 5 {
 		sz := ktabtype - 5
-		d.FieldStr("str", int(sz), encoding.Nop)
+		d.FieldUTF8("str", int(sz))
 	} else {
 		switch ktabtype {
 		case 3:
@@ -185,7 +183,7 @@ func LuaJITDecodeKGC(d *decode.D) {
 
 	if kgctype >= 5 {
 		sz := kgctype - 5
-		d.FieldStr("str", int(sz), encoding.Nop)
+		d.FieldUTF8("str", int(sz))
 	} else {
 		switch kgctype {
 		case 0:
