@@ -59,12 +59,7 @@ type DumpInfo struct {
 }
 
 func LuaJITDecodeHeader(di *DumpInfo, d *decode.D) {
-	magic := d.FieldStr("magic", 3, encoding.Nop)
-
-	ok := bytes.Equal([]byte(magic), []byte{0x1b, 0x4c, 0x4a})
-	if !ok {
-		d.Errorf("invalid magic number")
-	}
+	d.FieldRawLen("magic", 3*8, d.AssertBitBuf([]byte{0x1b, 0x4c, 0x4a})) // ESC 'L' 'J'
 
 	d.FieldU8("version")
 
