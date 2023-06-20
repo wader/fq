@@ -72,10 +72,10 @@ func LuaJITDecodeHeader(di *DumpInfo, d *decode.D) {
 	d.FieldStruct("flags", func(d *decode.D) {
 		flags = d.FieldULEB128("raw")
 
-		d.FieldValueBool("BE", flags&0x01 > 0)
-		d.FieldValueBool("STRIP", flags&0x02 > 0)
-		d.FieldValueBool("FFI", flags&0x04 > 0)
-		d.FieldValueBool("FR2", flags&0x08 > 0)
+		d.FieldValueBool("be", flags&0x01 > 0)
+		d.FieldValueBool("strip", flags&0x02 > 0)
+		d.FieldValueBool("ffi", flags&0x04 > 0)
+		d.FieldValueBool("fr2", flags&0x08 > 0)
 	})
 
 	di.Strip = flags&0x2 > 0
