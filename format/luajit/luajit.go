@@ -38,7 +38,7 @@ func init() {
 	interp.RegisterFormat(
 		format.LuaJIT,
 		&decode.Format{
-			Description: "LuaJIT 2.0 bytecode dump",
+			Description: "LuaJIT 2.0 bytecode",
 			DecodeFn:    LuaJITDecode,
 		})
 	interp.RegisterFS(LuaJITFS)
