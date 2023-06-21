@@ -43,9 +43,6 @@ func init() {
 			Description: "LuaJIT 2.0 bytecode",
 			Groups:      []*decode.Group{format.Probe},
 			DecodeFn:    LuaJITDecode,
-			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.Probe}, Out: &probeGroup},
-			},
 		})
 	interp.RegisterFS(LuaJITFS)
 }
