@@ -127,7 +127,7 @@ func LuaJITDecodeBCIns(d *decode.D) {
 }
 
 func LuaJITDecodeNum(d *decode.D) {
-	d.FieldAnyFn("num", func(d *decode.D) any {
+	d.FieldAnyFn("value", func(d *decode.D) any {
 		lo := d.ULEB128()
 		hi := d.ULEB128()
 		return u64tof64((hi << 32) + lo)
@@ -135,7 +135,7 @@ func LuaJITDecodeNum(d *decode.D) {
 }
 
 func LuaJITDecodeKTabK(d *decode.D) {
-	ktabtype := d.FieldULEB128("ktabtype", fallbackUintMapSymStr{
+	ktabtype := d.FieldULEB128("type", fallbackUintMapSymStr{
 		fallback: "str",
 		UintMapSymStr: scalar.UintMapSymStr{
 			0: "nil",
@@ -146,17 +146,31 @@ func LuaJITDecodeKTabK(d *decode.D) {
 		},
 	})
 
-	if ktabtype >= 5 {
-		sz := ktabtype - 5
-		d.FieldUTF8("str", int(sz))
-	} else {
-		switch ktabtype {
-		case 3:
-			d.FieldULEB128("int")
+	switch ktabtype {
+	case 0:
+		// nil
+		d.FieldValueAny("value", nil)
 
-		case 4:
-			LuaJITDecodeNum(d)
-		}
+	case 1:
+		// false
+		d.FieldValueBool("value", false)
+
+	case 2:
+		// true
+		d.FieldValueBool("value", true)
+
+	case 3:
+		// int
+		d.FieldULEB128("value")
+
+	case 4:
+		LuaJITDecodeNum(d)
+
+	// ktabtype >= 5
+	default:
+		// str
+		size := ktabtype - 5
+		d.FieldUTF8("value", int(size))
 	}
 }
 
@@ -164,36 +178,32 @@ func LuaJITDecodeTab(d *decode.D) {
 	narray := d.FieldULEB128("narray")
 	nhash := d.FieldULEB128("nhash")
 
-	d.FieldArray("karray", func(d *decode.D) {
+	d.FieldArray("array", func(d *decode.D) {
 		for i := uint64(0); i < narray; i++ {
-			d.FieldStruct("ktab", LuaJITDecodeKTabK)
+			d.FieldStruct("element", LuaJITDecodeKTabK)
 		}
 	})
 
-	d.FieldArray("khash", func(d *decode.D) {
+	d.FieldArray("hash", func(d *decode.D) {
 		for i := uint64(0); i < nhash; i++ {
-			d.FieldStruct("khash", func(d *decode.D) {
-				d.FieldStruct("k", LuaJITDecodeKTabK)
-				d.FieldStruct("v", LuaJITDecodeKTabK)
+			d.FieldStruct("pair", func(d *decode.D) {
+				d.FieldStruct("key", LuaJITDecodeKTabK)
+				d.FieldStruct("value", LuaJITDecodeKTabK)
 			})
 		}
 	})
 }
 
-func LuaJITDecodeI64(d *decode.D) {
-	d.FieldAnyFn("i64", func(d *decode.D) any {
-		lo := d.ULEB128()
-		hi := d.ULEB128()
-		return int64((hi << 32) + lo)
-	})
+func LuaJITDecodeI64(d *decode.D) int64 {
+	lo := d.ULEB128()
+	hi := d.ULEB128()
+	return int64((hi << 32) + lo)
 }
 
-func LuaJITDecodeU64(d *decode.D) {
-	d.FieldAnyFn("u64", func(d *decode.D) any {
-		lo := d.ULEB128()
-		hi := d.ULEB128()
-		return (hi << 32) + lo
-	})
+func LuaJITDecodeU64(d *decode.D) uint64 {
+	lo := d.ULEB128()
+	hi := d.ULEB128()
+	return (hi << 32) + lo
 }
 
 func LuaJITDecodeComplex(d *decode.D) {
@@ -224,26 +234,29 @@ func LuaJITDecodeKGC(d *decode.D) {
 		},
 	})
 
-	if kgctype >= 5 {
-		sz := kgctype - 5
-		d.FieldUTF8("str", int(sz))
-	} else {
-		switch kgctype {
-		case 0:
-			//child
+	switch kgctype {
+	case 0:
+		// child
 
-		case 1:
-			LuaJITDecodeTab(d)
+	case 1:
+		LuaJITDecodeTab(d)
 
-		case 2:
-			LuaJITDecodeI64(d)
+	case 2:
+		LuaJITDecodeI64(d)
 
-		case 3:
-			LuaJITDecodeU64(d)
+	case 3:
+		LuaJITDecodeI64(d)
 
-		case 4:
-			LuaJITDecodeComplex(d)
-		}
+	case 4:
+		// json does not support complex numbers,
+		// so we use a struct{real: float64, imag: float64}
+		d.FieldStruct("value", LuaJITDecodeComplex)
+
+	// kgctype >= 5
+	default:
+		// str
+		size := kgctype - 5
+		d.FieldUTF8("value", int(size))
 	}
 }
 
