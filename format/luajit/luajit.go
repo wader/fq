@@ -245,7 +245,7 @@ func LuaJITDecodeKGC(d *decode.D) {
 		LuaJITDecodeI64(d)
 
 	case 3:
-		LuaJITDecodeI64(d)
+		LuaJITDecodeU64(d)
 
 	case 4:
 		// json does not support complex numbers,
