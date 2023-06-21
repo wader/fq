@@ -31,6 +31,17 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
+// TODO: merge into scalar pkg
+type fallbackUintMapSymStr struct {
+	fallback string
+	scalar.UintMapSymStr
+}
+
+func (m fallbackUintMapSymStr) MapUint(s scalar.Uint) (scalar.Uint, error) {
+	s.Sym = m.fallback
+	return m.UintMapSymStr.MapUint(s)
+}
+
 //go:embed luajit.md
 var LuaJITFS embed.FS
 
@@ -115,26 +126,6 @@ func LuaJITDecodeBCIns(d *decode.D) {
 	}
 }
 
-type ktabType struct{}
-
-func (t *ktabType) MapUint(u scalar.Uint) (scalar.Uint, error) {
-	switch u.Actual {
-	case 0:
-		u.Sym = "nil"
-	case 1:
-		u.Sym = "false"
-	case 2:
-		u.Sym = "true"
-	case 3:
-		u.Sym = "int"
-	case 4:
-		u.Sym = "num"
-	default:
-		u.Sym = "str"
-	}
-	return u, nil
-}
-
 func LuaJITDecodeNum(d *decode.D) {
 	d.FieldAnyFn("num", func(d *decode.D) any {
 		lo := d.ULEB128()
@@ -144,7 +135,16 @@ func LuaJITDecodeNum(d *decode.D) {
 }
 
 func LuaJITDecodeKTabK(d *decode.D) {
-	ktabtype := d.FieldULEB128("ktabtype", &ktabType{})
+	ktabtype := d.FieldULEB128("ktabtype", fallbackUintMapSymStr{
+		fallback: "str",
+		UintMapSymStr: scalar.UintMapSymStr{
+			0: "nil",
+			1: "false",
+			2: "true",
+			3: "int",
+			4: "num",
+		},
+	})
 
 	if ktabtype >= 5 {
 		sz := ktabtype - 5
@@ -158,36 +158,6 @@ func LuaJITDecodeKTabK(d *decode.D) {
 			LuaJITDecodeNum(d)
 		}
 	}
-}
-
-func LuaJITDecodeCplx(d *decode.D) any {
-	lo := d.ULEB128()
-	if lo&1 == 0 {
-		return lo >> 1
-	} else {
-		hi := d.ULEB128()
-		return u64tof64((hi << 32) + (lo >> 1))
-	}
-}
-
-type kgcType struct{}
-
-func (t *kgcType) MapUint(u scalar.Uint) (scalar.Uint, error) {
-	switch u.Actual {
-	case 0:
-		u.Sym = "child"
-	case 1:
-		u.Sym = "tab"
-	case 2:
-		u.Sym = "i64"
-	case 3:
-		u.Sym = "u64"
-	case 4:
-		u.Sym = "complex"
-	default:
-		u.Sym = "str"
-	}
-	return u, nil
 }
 
 func LuaJITDecodeTab(d *decode.D) {
@@ -243,7 +213,16 @@ func LuaJITDecodeComplex(d *decode.D) {
 }
 
 func LuaJITDecodeKGC(d *decode.D) {
-	kgctype := d.FieldULEB128("type", &kgcType{})
+	kgctype := d.FieldULEB128("type", fallbackUintMapSymStr{
+		fallback: "str",
+		UintMapSymStr: scalar.UintMapSymStr{
+			0: "child",
+			1: "tab",
+			2: "i64",
+			3: "u64",
+			4: "complex",
+		},
+	})
 
 	if kgctype >= 5 {
 		sz := kgctype - 5
