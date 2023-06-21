@@ -13,6 +13,7 @@ $ fq -n _registry.groups.probe
   "gif",
   "gzip",
   "jpeg",
+  "luajit",
   "macho",
   "macho_fat",
   "matroska",
@@ -106,6 +107,7 @@ ipv6_packet          Internet protocol v6 packet
 jpeg                 Joint Photographic Experts Group file
 json                 JavaScript Object Notation
 jsonl                JavaScript Object Notation Lines
+luajit               LuaJIT 2.0 bytecode
 macho                Mach-O macOS executable
 macho_fat            Fat Mach-O macOS executable (multi-architecture)
 markdown             Markdown

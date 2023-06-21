@@ -29,6 +29,7 @@ import (
 	_ "github.com/wader/fq/format/inet"
 	_ "github.com/wader/fq/format/jpeg"
 	_ "github.com/wader/fq/format/json"
+	_ "github.com/wader/fq/format/luajit"
 	_ "github.com/wader/fq/format/markdown"
 	_ "github.com/wader/fq/format/math"
 	_ "github.com/wader/fq/format/matroska"
