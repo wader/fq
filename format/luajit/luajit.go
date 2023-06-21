@@ -45,8 +45,6 @@ func (m fallbackUintMapSymStr) MapUint(s scalar.Uint) (scalar.Uint, error) {
 //go:embed luajit.md
 var LuaJITFS embed.FS
 
-var probeGroup decode.Group
-
 func init() {
 	interp.RegisterFormat(
 		format.LuaJIT,
