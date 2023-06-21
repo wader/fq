@@ -299,7 +299,7 @@ func LuaJITDecodeDebug(d *decode.D, debuglen uint64, numbc uint64) {
 		})
 
 		// TODO: find out more about how to decode these strings
-		d.FieldArray("anotations", func(d *decode.D) {
+		d.FieldArray("annotations", func(d *decode.D) {
 			i := numbc
 			for i < debuglen {
 				str := d.FieldUTF8Null("value")
