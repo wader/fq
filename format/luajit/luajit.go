@@ -261,10 +261,32 @@ func LuaJITDecodeKGC(d *decode.D) {
 }
 
 func LuaJITDecodeKNum(d *decode.D) any {
+	// knum = intU0 | (loU1 hiU)
+	// ...
+	// W = 32 bit, U = ULEB128 of W, U0/U1 = ULEB128 of W+1
+
+	// intU0 encodes 33 bits : a (signed) int32, plus the LSB=0
+	// loU1 encodes 33 bits : the lower half of a float64, plus the LSB=1
+	// hiU encodes 32 bits : the higher half of the float64
+
 	lo := d.ULEB128()
 	if lo&1 == 0 {
-		return lo >> 1
+		// we have an int32 (aka LuaJIT 'int')
+
+		// drop the LSB
+		lo_data := lo >> 1
+
+		// downcast to 32bits. should not overflow
+		lo_data_u32 := uint32(lo_data)
+
+		// make it a signed integer
+		lo_data_i32 := int32(lo_data_u32)
+
+		// return a larger type to make fq happy
+		return int64(lo_data_i32)
 	} else {
+		// we have float64 (aka LuaJIT 'number')
+
 		hi := d.ULEB128()
 		return u64tof64((hi << 32) + (lo >> 1))
 	}
