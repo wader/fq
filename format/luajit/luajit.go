@@ -270,6 +270,25 @@ func LuaJITDecodeKNum(d *decode.D) any {
 	}
 }
 
+func LuaJITDecodeDebug(d *decode.D, debuglen uint64, numbc uint64) {
+	d.FieldStruct("debug", func(d *decode.D) {
+		d.FieldArray("lines", func(d *decode.D) {
+			for i := uint64(0); i < numbc; i++ {
+				d.FieldU8("value")
+			}
+		})
+
+		// TODO: find out more about how to decode these strings
+		d.FieldArray("anotations", func(d *decode.D) {
+			i := numbc
+			for i < debuglen {
+				str := d.FieldUTF8Null("value")
+				i += uint64(len(str) + 1)
+			}
+		})
+	})
+}
+
 func LuaJITDecodeProto(di *DumpInfo, d *decode.D) {
 	length := d.FieldULEB128("length")
 
@@ -327,10 +346,8 @@ func LuaJITDecodeProto(di *DumpInfo, d *decode.D) {
 			})
 
 			if !di.Strip {
-				d.FieldArray("debug", func(d *decode.D) {
-					for i := uint64(0); i < debuglen; i++ {
-						d.FieldU8("db")
-					}
+				d.LimitedFn(8*int64(debuglen), func(d *decode.D) {
+					LuaJITDecodeDebug(d, debuglen, numbc)
 				})
 			}
 		})
