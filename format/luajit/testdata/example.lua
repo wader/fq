@@ -1,10 +1,19 @@
 local sometable = {
+	true,
+	false,
+	nil,
+	437784932,
+	4.23748378e-6,
+
 	somenil= nil,
 	sometrue= true,
 	somefalse= false,
 	someint= -3,
 	somenum= 7.89437298e11,
-	somestr= "it's a trap",
+	somestr= "uwu",
+
+	[2.74389]= "key is a num",
+	[-1337]= "key is an int",
 }
 
 mycplx = 3.2i
