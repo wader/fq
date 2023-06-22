@@ -107,4 +107,4 @@ $ fq dv negative.luac
     |                                               |                |          [3]{}: kgc 0x57-0x57.7 (1)
 0x50|                     00                        |       .        |            type: "child" (0) 0x57-0x57.7 (1)
     |                                               |                |        knum[0:0]: 0x58-NA (0)
-0x50|                        00|                    |        .|      |  end: 0 0x58-0x58.7 (1)
+0x50|                        00|                    |        .|      |  end: raw bits (valid) 0x58-0x58.7 (1)

@@ -237,4 +237,4 @@ $ fq dv simple_stripped.luac
 0x130|      02                                       |  .             |                  type: "true" (2) 0x132-0x132.7 (1)
      |                                               |                |                  value: true 0x133-NA (0)
      |                                               |                |        knum[0:0]: 0x133-NA (0)
-0x130|         00|                                   |   .|           |  end: 0 0x133-0x133.7 (1)
+0x130|         00|                                   |   .|           |  end: raw bits (valid) 0x133-0x133.7 (1)
