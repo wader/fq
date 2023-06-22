@@ -71,6 +71,7 @@
 |`jpeg`                                                  |Joint&nbsp;Photographic&nbsp;Experts&nbsp;Group&nbsp;file                                                    |<sub>`exif` `icc_profile`</sub>|
 |`json`                                                  |JavaScript&nbsp;Object&nbsp;Notation                                                                         |<sub></sub>|
 |`jsonl`                                                 |JavaScript&nbsp;Object&nbsp;Notation&nbsp;Lines                                                              |<sub></sub>|
+|[`luajit`](#luajit)                                     |LuaJIT&nbsp;2.0&nbsp;bytecode                                                                                |<sub></sub>|
 |[`macho`](#macho)                                       |Mach-O&nbsp;macOS&nbsp;executable                                                                            |<sub></sub>|
 |`macho_fat`                                             |Fat&nbsp;Mach-O&nbsp;macOS&nbsp;executable&nbsp;(multi-architecture)                                         |<sub>`macho`</sub>|
 |[`markdown`](#markdown)                                 |Markdown                                                                                                     |<sub></sub>|
@@ -127,7 +128,7 @@
 |`ip_packet`                                             |Group                                                                                                        |<sub>`icmp` `icmpv6` `tcp_segment` `udp_datagram`</sub>|
 |`link_frame`                                            |Group                                                                                                        |<sub>`bsd_loopback_frame` `ether8023_frame` `ipv4_packet` `ipv6_packet` `sll2_packet` `sll_packet`</sub>|
 |`mp3_frame_tags`                                        |Group                                                                                                        |<sub>`mp3_frame_vbri` `mp3_frame_xing`</sub>|
-|`probe`                                                 |Group                                                                                                        |<sub>`adts` `aiff` `apple_bookmark` `ar` `avi` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `elf` `flac` `gif` `gzip` `html` `jpeg` `json` `jsonl` `macho` `macho_fat` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `toml` `tzif` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
+|`probe`                                                 |Group                                                                                                        |<sub>`adts` `aiff` `apple_bookmark` `ar` `avi` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `elf` `flac` `gif` `gzip` `html` `jpeg` `json` `jsonl` `luajit` `macho` `macho_fat` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `toml` `tzif` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
 |`tcp_stream`                                            |Group                                                                                                        |<sub>`dns_tcp` `rtmp` `tls`</sub>|
 |`udp_payload`                                           |Group                                                                                                        |<sub>`dns`</sub>|
 
@@ -172,7 +173,7 @@ Apple's `bookmarkData` format is used to encode information that can be resolved
 into a `URL` object for a file even if the user moves or renames it. Can also
 contain security scoping information for App Sandbox support.
 
-These `bookmarkData` blobs are often found encoded in data fields of Binary
+These `bookmarkData` blobs are often found endcoded in data fields of Binary
 Property Lists. Notable examples include:
 
 - `com.apple.finder.plist` - contains an `FXRecentFolders` value, which is an
@@ -655,6 +656,15 @@ $ fq -n -d html '[inputs | {key: input_filename, value: .html.head.title?}] | fr
 $ fq -r -o array=true -d html '.. | select(.[0] == "a" and .[1].href)?.[1].href' file.html
 ```
 
+## luajit
+
+### Authors
+- [@dlatchx](https://github.com/dlatchx)
+
+### References
+- https://github.com/LuaJIT/LuaJIT/blob/v2.1/src/lj_bcdump.h
+- http://scm.zoomquiet.top/data/20131216145900/index.html
+
 ## macho
 
 Supports decoding vanilla and FAT Mach-O binaries.
@@ -1004,7 +1014,7 @@ Decode value as tls
 
 Supports decoding of most standard records, messages and extensions. Can also decrypt most standard cipher suits in a PCAP with traffic in both directions if a NSS key log is provided.
 
-### Decode and decrypt providing a PCAP and key log
+### Decode and decrypt provding a PCAP and key log
 
 Write traffic to a PCAP file:
 
