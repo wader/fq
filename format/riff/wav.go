@@ -139,6 +139,25 @@ func wavDecode(d *decode.D) any {
 				d.FieldRawLen("sampler_data", int64(samplerDataBytes)*8)
 				return false, nil
 
+			case "bext":
+				d.FieldUTF8NullFixedLen("description", 256)
+				d.FieldUTF8NullFixedLen("originator", 32)
+				d.FieldUTF8NullFixedLen("originator_reference", 32)
+				d.FieldUTF8NullFixedLen("originator_date", 10)
+				d.FieldUTF8NullFixedLen("originator_time", 8)
+				d.FieldU32("time_reference_low")
+				d.FieldU32("time_reference_high")
+				d.FieldU16("version")
+				d.FieldRawLen("umid", 64*8)
+				d.FieldU16("loudness_value")
+				d.FieldU16("loudness_range")
+				d.FieldU16("max_true_peak_level")
+				d.FieldU16("max_momentary_loudness")
+				d.FieldU16("max_short_term_loudness")
+				d.FieldRawLen("reserved", 180*8)
+				d.FieldRawLen("coding_history", d.BitsLeft())
+				return false, nil
+
 			default:
 				if riffIsStringChunkID(id) {
 					d.FieldUTF8NullFixedLen("value", int(d.BitsLeft())/8)
