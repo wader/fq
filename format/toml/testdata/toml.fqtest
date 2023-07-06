@@ -12,17 +12,23 @@ $ fq . probe.toml
 $ fq -rRs 'fromjson[] | (walk(if type == "array" then map(select(. != null)) end) | try (to_toml | ., from_toml) catch .), "----"' variants.json
 to_toml cannot be applied to: null
 ----
-toml: top-level values must be Go maps or structs
+true
+error at position 0x4: toml: line 0: unexpected EOF; expected key separator '='
 ----
-toml: top-level values must be Go maps or structs
+false
+error at position 0x5: toml: line 0: unexpected EOF; expected key separator '='
 ----
-toml: top-level values must be Go maps or structs
+123
+error at position 0x3: toml: line 0: unexpected EOF; expected key separator '='
 ----
-toml: top-level values must be Go maps or structs
+123.123
+error at position 0x7: toml: line 0: unexpected EOF; expected key separator '='
 ----
-toml: top-level values must be Go maps or structs
+"string"
+error at position 0x8: toml: line 0: unexpected EOF; expected key separator '='
 ----
-toml: top-level values must be Go maps or structs
+[1, 2, 3]
+error at position 0x9: toml: line 1: expected '.' or ']' to end table name, but got ',' instead
 ----
 array = [true, false, 1.2, "string", [1.2, 3], {a = 1}]
 "escape \\\"" = 456
@@ -60,7 +66,8 @@ true = true
   "white space": 123
 }
 ----
-toml: top-level values must be Go maps or structs
+[]
+error at position 0x2: toml: line 1: unexpected end of table name (table names cannot be empty)
 ----
 
 error at position 0x0: EOF
