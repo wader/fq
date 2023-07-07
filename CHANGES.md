@@ -1,3 +1,80 @@
+# 0.7.0
+
+Added LuaJIT bytecode decoder by @dlatchx, otherwise mostly small things. Been busy with nice weather and
+helping our getting jq development and maintenance back on track.
+
+## Changes
+
+- Better performance of binary arrays when they only include 0-255 numbers or strings. #704
+- Make `tovalue` on binary, in addition decode value binary, respect `bits_format` options. #677
+  ```sh
+  # uses -V to do tovalue to get a hex string
+  # uses -r to output "raw" string
+  $ fq -o bits_format=hex -Vr -n '[1,0xff,3] | tobytes'
+  01ff03
+  ```
+- Updated gojq fork with fixes from upstream: #679
+  - Improved error messages
+  - `@urid` URI format function
+
+## Decoder changes
+
+- `luajit` Add LuaJIT bytecode decoder. Thanks @dlatchx #709
+- `mp4` Improved sample group definition box `sgpd` entries decoder. Thanks @ksa-real #707
+- `mp4` Improved user metadata `udta` structure decoding #676
+- `wav` Decode `bext` chunk. #712
+
+## Changelog
+
+* 47b90603 Improved README.md
+* d02b70f7 Update README.md
+* 64e17f0e Update docker-golang to 1.20.5 from 1.20.4
+* 6faed675 Update github-go-version to 1.20.5 from 1.20.4
+* b9fce9bd Update github-golangci-lint to 1.53.1 from 1.52.2
+* ff4048c4 Update github-golangci-lint to 1.53.2 from 1.53.1
+* 76e0e17c Update github-golangci-lint to 1.53.3 from 1.53.2
+* 8e75dc9b Update gomod-BurntSushi/toml to 1.3.2 from 1.2.1
+* 6dc0746a Update gomod-golang-x-crypto to 0.10.0 from 0.9.0
+* 98351ff1 Update gomod-golang-x-crypto to 0.11.0 from 0.10.0
+* 939d98c2 Update gomod-golang-x-net to 0.11.0 from 0.10.0
+* 660ca032 Update gomod-golang-x-net to 0.12.0 from 0.11.0
+* 36ef2a20 Update gomod-golang/text to 0.10.0 from 0.9.0
+* 0eb6557d Update gomod-golang/text to 0.11.0 from 0.10.0
+* a079b73a Update gomod-gopacket to 1.1.1 from 1.1.0
+* c3e104bc Update make-golangci-lint to 1.53.1 from 1.52.2
+* 7c1da0ef Update make-golangci-lint to 1.53.2 from 1.53.1
+* 47ea6cf7 Update make-golangci-lint to 1.53.3 from 1.53.2
+* fd2cb6f8 doc: Fix broken link in README
+* db2e6214 go fmt
+* 38cb8292 gojq: Update rebased fq fork
+* 41f40b7f interp: Add to binary fast path for arrays with only 0-255 numbers and strings
+* b2c0e5fc interp: Make binary also respect bits_format
+* b24063be luajit: *.fqtest: add comments for generating .luac from source
+* bdf158be luajit: add luajit.md
+* 93c96965 luajit: add to probe group
+* 32300a3f luajit: check binary.Read() error
+* a83576a8 luajit: clarify description
+* 751ee5a3 luajit: explain LuaJITDecodeKNum, fix negative in bug
+* 3561c08a luajit: fallbackUintMapSymStr
+* 5d9a08c6 luajit: fix regression: (u64 vs i64)
+* 64c11bed luajit: improve debuginfo decoding
+* 1afdf8b1 luajit: initial support
+* 29ab66b3 luajit: lowercase flags
+* e44f5c00 luajit: magic number: raw bits, check with assert
+* 23b9eeab luajit: make doc
+* 715f850d luajit: opcodes: implement scalar.UintMapper
+* c3a123ad luajit: remove unecessary dependency
+* 64c92da6 luajit: remove unused variable
+* 52ce8181 luajit: split in smaller decode functions
+* 441d246d luajit: standardize field names (key/value/type ect.)
+* eb819dd4 luajit: tests: improve coverage
+* dd594f47 luajit: tests: rename lua source file
+* c42fb9e7 luajit: typo
+* 08ae661c luajit: use UTF8 strings
+* 1da80691 mp4: udta: Improve length/lang box probe and support empty value
+* e869d8af sgpd box entries parsing
+* 8c75509e wav: Decode bext chunk
+
 # 0.6.0
 
 Adds decoders for PostgreSQL btree, control and heap files. Thanks Pavel Safonov @pnsafonov and Michael Zhilin @mizhka
