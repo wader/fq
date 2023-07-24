@@ -1,0 +1,392 @@
+.TH FQ "1" "July 2023"
+
+.SH NAME
+fq \- jq for binary formats
+
+.SH SYNOPSIS
+\fBfq\fR [\fI\,OPTION\/\fR]... [--] \fI\,EXPR [\fI\,FILE\/\fR]...
+
+.SH DESCRIPTION
+\fBfq\fR is inspired by the well known jq tool and language that allows you to work with binary formats the same way you would using jq. In addition it can present data like a hex viewer, transform, slice and concatenate binary data. It also supports nested formats and has an interactive REPL with auto-completion.
+.P
+It was originally designed to query, inspect and debug media codecs and containers like mp4, flac, mp3, jpeg. But since then it has been extended to support a variety of formats like executables, packet captures (with TCP reassembly) and serialization formats like JSON, YAML, XML, ASN1 BER, Avro, CBOR, protobuf. In addition it also has functions to work with URLs, convert to/from hex, number bases, search for things etc.
+.P
+In summary it aims to be jq, hexdump, dd and gdb for files combined into one.
+
+.SH INVOKING FQ
+.SS Command Line Arguments
+Most of jq's CLI arguments work with fq. But there are some additional ones specific to fq:
+.TP
+\fB-d\fR, \fB--decode\fR \fI\,FORMAT\/\fR
+Use \fI\,FORMAT\/\fR to decode instead of trying to auto-detect format.
+.TP
+\fB-i\fR, \fB--repl\fR [\fI\,INPUT\/\fR]...
+Use interactive REPL.
+
+Can be used with no input, one and multiple inputs, for example just \fBfq -i\fR starts a REPL with null input, \fBfq -i 123\fR with the number 123 as input, \fBfq -i . a b\fR with two files as input. This also works with \fB--slurp\fR. In the REPL it is also possible to start a sub-REPL(s) by ending a query with \fB<query> | repl\fR, use ctrl-D to exit the sub-REPL. The sub-REPL will evaluate separately on each output from the query it was started. Use \fB[<query>] | repl\fR if you want to "slurp" into an array.
+.TP
+\fB-o\fR, \fB--options\fR <\fIKEY\fR=\fIVALUE\fR|@\fIPATH\fR>
+\fIKEY\fR is name of option
+
+\fIVALUE\fR will be interpreted as a JSON value if possible otherwise a string, for example \fB-o name=abc\fR and \fB-o name='"abc"'\fR are equivalent.
+
+@\fBPATH\fR will read string from file at \fBPATH\fR.
+
+Specifying a global option or a format option, for example, \fB-o decode_samples=false\fR would, for some container decoders like mp4 and matroska, disable decoding of samples.
+.TP
+\fB-V\fR, \fB--value-output\fR
+Output JSON value instead of decode tree. Use \fB-Vr\fR if you want raw string (no quotes).
+.TP
+\fB-M\fR
+Disable coloured output.
+.TP
+\fB-o <NAME>=<VALUE>\fR
+Set a decoding/encoding option. A list of supported options are -
+.RS
+.P
+\fBbits_format\fR - string, md5, hex, base64, truncate, snippet
+.RS
+Controls the representation of raw binary in the output JSON
+.RE
+.RE
+.SS Supported Formats
+Use \fBfq --help formats\fR to get a list of supported formats
+
+aac_frame, adts, adts_frame, aiff, amf0, apev2, apple_bookmark, ar, asn1_ber, av1_ccr, av1_frame, av1_obu, avc_annexb, avc_au, avc_dcr, avc_nalu, avc_pps, avc_sei, avc_sps, avi, avro_ocf, bencode, bitcoin_blkdat, bitcoin_block, bitcoin_script, bitcoin_transaction, bits, bplist, bsd_loopback_frame, bson, bytes, bzip2, cbor, csv, dns, dns_tcp, elf, ether8023_frame, exif, fairplay_spc, flac, flac_frame, flac_metadatablock, flac_metadatablocks, flac_picture, flac_streaminfo, gif, gzip, hevc_annexb, hevc_au, hevc_dcr, hevc_nalu, hevc_pps, hevc_sps, hevc_vps, html, icc_profile, icmp, icmpv6, id3v1, id3v11, id3v2, ipv4_packet, ipv6_packet, jpeg, json, jsonl, luajit, macho, macho_fat, markdown, matroska, mp3, mp3_frame, mp3_frame_vbri, mp3_frame_xing, mp4, mpeg_asc, mpeg_es, mpeg_pes, mpeg_pes_packet, mpeg_spu, mpeg_ts, msgpack, ogg, ogg_page, opus_packet, pcap, pcapng, pg_btree, pg_control, pg_heap, png, prores_frame, protobuf, protobuf_widevine, pssh_playready, rtmp, sll2_packet, sll_packet, tar, tcp_segment, tiff, tls, toml, tzif, udp_datagram, vorbis_comment, vorbis_packet, vp8_frame, vp9_cfm, vp9_frame, vpx_ccr, wasm, wav, webp, xml, yaml, zip
+.TP
+It can also work with some common text formats like URLs, hex, base64, PEM etc and for some serialization formats like XML, YAML, etc. it can transform both from and to jq values.
+.TP
+Use \fBfq\fR -h formats to get details about each supported file format
+.SH CONFIGURATION
+Custom functions can be defined in an init.fq which is searched for in the following locations -
+.P
+macOS - $HOME/Library/Application Support/fq/init.jq
+.P
+Linux, BSD, etc - $HOME/.config/fq/init.jq
+.P
+Windows - %AppData%\fq\init.jq
+.SS Unicode output
+Defining the environment variable \fICLIUNICODE\fR will enable the use of unicode characters for improved output
+.SH THE FQ LANGUAGE
+\fBfq\fR is based on the \fBjq\fR language and for basic usage its syntax is similar to how object and array access looks in JavaScript or JSON path, .food[10] etc. but it can do much more and is a very expressive language. To get the most out of fq it's recommended to learn more about jq, this manual assumes some familiarity with the jq language.
+.SS Types Specific to fq
+\fBfq\fR has two additional types compared to jq, \fIdecode value\fR and \fIbinary\fR. In standard jq expressions they will in most cases behave as some standard jq type.
+.TP
+.B Decode Value
+
+This type is returned by decoders and it is used to represent parts of the decoded input. It can act as all standard jq types, object, array, number, string etc.
+
+Each decode value has an associated bit range in the input which can be accessed as a binary using \fBtobits\fR and \fBtobytes\fR.
+
+Each non-compound decode value has these properties:
+.RS
+An actual value - This is the decoded representation of the bits, a number, string, bool etc. Can be accessed using \fBtoactual\fR.
+
+An optional symbolic value - Is usually a mapping of the actual to symbolic value, ex: map number to a string value. Can be accessed using \fBtosym\fR.
+
+An optional description - Can be accessed using \fBtodescription\fR
+
+\fBparent\fR is the parent decode value
+
+\fBparents\fR is the all parent decode values
+
+\fBtopath\fR is the jq path for the decode value
+
+\fBtorepr\fR convert decode value to its representation if possible
+
+The value of a decode value is the symbolic value if available and otherwise the actual value. To explicitly access the value use tovalue. In most expressions this is not needed as it will be done automatically.
+.RE
+.TP
+.B Binary
+
+Binaries are raw bits with a unit size, 1 (bits) or 8 (bytes), that can have a non-byte aligned size. Will act as byte padded strings in standard jq expressions.
+
+Use \fBtobits\fR and \fBtobytes\fR to create them from \fIdecode values\fR, \fIstrings\fR, \fInumbers\fR or \fIbinary arrays\fR. \fBtobytes\fR will, if needed zero pad most significant bits to be byte aligned.
+
+There is also \fBtobitsrange\fR and \fBtobytesrange\fR which does the same thing but will preserve its source range when displayed. \" TODO: tobytesrange, padding
+.TP
+.B Binary Array
+
+Binary arrays are arrays of \fInumbers\fR, \fIstrings\fR, \fIbinaries\fR or other nested \fIbinary arrays\fR. When used as input to \fBtobits\fR/\fBtobytes\fR the following rules are used:
+
+\fBNumber\fR is a byte with value be 0-255
+\fBString\fR it's UTF8 codepoint bytes
+\fBBinary\fR as is
+\fBBinary array\fR used recursively
+
+Binary arrays are similar to and inspired by Erlang iolist.
+.SS Functions
+All decode functions are available in two forms, just \fI<format>\fR (like mp3) that returns a decode value on error and \fIfrom_<format>\fR which throws error on decode error.
+
+Note that jq sometimes uses the notation name/0, name/1 etc in error messages and documentation which means \fI<function-name>\fR/\fI<arity>\fR, Same function names with different arity are treated as separate functions, but are usually related in some way in practice.
+.TP
+.B
+Functions Added in fq
+
+All standard library functions from jq
+
+A few new general functions:
+.RS
+.RS
+\fBdisplay\fR/\fBd\fR displays a value
+
+\fBprint\fR, \fBprintln\fR, \fBprinterr\fR, \fBprinterrln\fR prints to stdout and stderr.
+
+\fBgroup\fR group values, same as \fBgroup_by(.)\fR.
+
+\fBstreaks\fR, \fBstreaks_by(f)\fR like \fBgroup\fR but groups streaks based on condition.
+
+\fBcount\fR, \fBcount_by(f)\fR like \fBgroup\fR but counts groups lengths.
+
+\fBdebug(f)\fR like \fBdebug\fR but uses \fIarg\fR to produce a debug message.
+
+\fBpath_to_expr\fR convert \fI["key", 1]\fR to \fI".key[1]\fR".
+
+\fBexpr_to_path\fR from \fI".key[1]"\fR to \fI["key", 1]\fR.
+
+\fBdiff($a; $b)\fR produce diff object between two values.
+
+\fBdelta\fR, \fBdelta_by(f)\fR, array with difference between all consecutive pairs.
+
+\fBchunk(f)\fR, split array or string into even chunks
+
+.RE
+\fBdisplay\fR is the main function for displaying values and is also the function that will be used if no other output function is explicitly used. If its input is a decode value it will output a dump and tree structure or otherwise it will output as JSON.
+\" There are some examples with images in usage.md. TODO: Find a way to accomodate them in the man page
+Bitwise functions \fBband\fR, \fBbor\fR, \fBbxor\fR, \fBbsl\fR, \fBbsr\fR and \fBbnot\fR. Works the same as jq math functions, unary uses input and if more than one argument all as arguments ignoring the input.
+
+Some decode value specific functions:
+.RS
+\fBroot\fR tree root for value
+
+\fBbuffer_root\fR root value of buffer for value
+
+\fBformat_root\fR root value of format for value
+
+\fBparent\fR parent value
+
+\fBparents\fR output parents of value
+
+\fBtopath\fR path of value. Use \fBpath_to_expr\fR to get a string representation.
+
+\fBtovalue\fR, \fBtovalue($opts)\fR symbolic value if available otherwise actual value
+
+\fBtoactual\fR, \fBtoactual($opts)\fR actual value (usually the decoded value)
+
+\fBtosym\fR, \fBtosym($opts)\fR symbolic value (mapped etc)
+
+\fBtodescription\fR description of value
+
+\fBtorepr\fR converts decode value into what it represents. For example convert msgpack decode value into a value representing its JSON representation.
+
+All regexp functions work with binary as input and pattern argument with these differences compared to when using string input:
+.RS
+All offset and length will be in bytes.
+
+For \fBcapture\fR the \fB.string\fR value is a binary.
+
+If pattern is a binary it will be matched literally and not as a regexp.
+
+If pattern is a binary or flags include "b" each input byte will be read as separate code points
+
+.RE
+String functions are not overloaded to support binary for now as some of them might have behaviors that might be confusing.
+
+\fBexplode\fR is overloaded to work with binary. Will explode into array of the unit of the binary. end of binary. instead of possibly multi-byte UTF-8 codepoints. This allows to match raw bytes. Ex: \fBmatch("\u00ff"; "b")\fR will match the byte 0xff and not the UTF-8 encoded codepoint for 255, \fBmatch("[^\u00ff]"; "b")\fR will match all non-0xff bytes.
+
+\fBgrep\fR functions take 1 or 2 arguments. First is a scalar to match, where a string is treated as a regexp. A binary will match exact bytes. Second argument are regexp flags with addition that "b" will treat each byte in the input binary as a code point, this makes it possible to match exact bytes.
+.RS
+\fBgrep($v)\fR, \fBgrep($v; $flags)\fR recursively match value and binary
+
+\fBvgrep($v)\fR, \fBvgrep($v; $flags)\fR recursively match value
+
+\fBbgrep($v)\fR, \fBbgrep($v; $flags)\fR recursively match binary
+
+\fBfgrep($v)\fR, \fBfgrep($v; $flags)\fR recursively match field name
+
+\fBgrep_by(f)\fR recursively match using a filter. Ex: \fBgrep_by(. > 180 and . < 200)\fR equivalent to \fBfirst(grep_by(format == "id3v2"))\fR.
+
+.RE
+Binary:
+.RS
+\fBtobits\fR - Transform input to binary with bit as unit, does not preserve source range, will start at zero.
+
+\fBtobitsrange\fR - Transform input to binary with bit as unit, preserves source range if possible.
+
+\fBtobytes\fR - Transform input to binary with byte as unit, does not preserve source range, will start at zero.
+
+\fBtobytesrange\fR - Transform input binary with byte as unit, preserves source range if possible.
+
+\fB.[start:end]\fR, \fB.[:end]\fR, \fB.[start:]\fR - Slice binary from start to end preserve source range.
+
+.RE
+\fBopen\fR open file for reading
+
+All decode functions take an optional option argument. The only option currently is \fBforce\fR to ignore decoder asserts. For example to decode as mp3 and ignore assets do \fBmp3({force: true})\fR or \fBdecode("mp3"; {force: true})\fR, from command line you currently have to do \fBfq -d bytes 'mp3({force: true})\fR' file.
+
+\fBdecode\fR, \fBdecode("<format>")\fR, \fBdecode("<format>"; $opts)\fR decode format
+
+\fBprobe\fR, \fBprobe($opts)\fR probe and decode format
+
+\fBmp3\fR, \fBmp3($opts)\fR, ..., \fB<format>\fR, \fB<format>($opts)\fR same as \fBdecode("<format>")\fR, \fBdecode("<format>"; $opts)\fR decode as format and return decode value even on decode error.
+
+\fBfrom_mp3\fR, \fBfrom_mp3($opts)\fR, ..., \fBfrom_<format>\fR, \fBfrom_<format>($opts)\fR same as \fBdecode("<format>")\fR, \fBdecode("<format>"; $opts)\fR decode as format but throw error on decode error.
+
+Display shows hexdump/ASCII/tree for decode values and jq value for other types.
+.RS
+\fBd\fR/\fBd($opts)\fR display value and truncate long arrays and binaries
+
+\fBda\fR/\fBda($opts)\fR display value and don't truncate arrays
+
+\fBdd\fR/\fBdd($opts)\fR display value and don't truncate arrays or binaries
+
+\fBdv\fR/\fBdv($opts)\fR verbosely display value and don't truncate arrays but truncate binaries
+
+\fBddv\fR/\fBddv($opts)\fR verbosely display value and don't truncate arrays or binaries
+
+.RE
+\fBhd\fR/\fBhexdump\fR hexdump value
+
+\fBrepl\fR/\fBrepl($opts)\fR nested REPL, must be last in a pipeline. \fB1 | repl\fR, can "slurp" outputs. Ex: \fB1, 2, 3 | repl, [1,2,3] | repl({compact: true})\fR.
+
+\fBslurp("<name>")\fR slurp outputs and save them to \fBRname\fR, must be last in the pipeline. Will be available as a global array \fB$name\fR. Ex \fB1,2,3 | slurp("a"), $a[]\fR same as \fBspew("a")\fR.
+
+\fBspew\fR/\fBspew("<name>")\fR output previously slurped values. \fBspew\fR outputs all slurps as an object, \fBspew("<name>")\fR outputs one slurp. Ex: \fBspew("a")\fR.
+
+\fBpaste\fR read string from stdin until EOF. Useful for pasting text.
+.RS
+Ex: \fBpaste | from_pem | asn1_ber | repl\fR read from stdin then decode and start a new sub-REPL with result.
+.RE
+.RE
+.RE
+
+.B Naming Inconsistencies
+jq's naming conversion is a bit inconsistent, some standard library functions are named tojson while others from_entries. fq follows this tradition a bit by but tries to use snake_case unless there is a good reason.
+
+Here are all the non-snake_case functions added by \fBfq\fR. Most of them deal with decode and binary values which are new "primitive" types:
+.RS
+\fBtoactual\fR
+
+\fBtobits\fR
+
+\fBtobitsrange\fR
+
+\fBtobytes\fR
+
+\fBtobytesrange\fR
+
+\fBtodescription\fR
+
+\fBtopath\fR
+
+\fBtorepr\fR
+
+\fBtosym\fR
+
+\fBtovalue\fR
+
+.RE
+.SH ENCODINGS, SERIALIZATION, & HASHES
+In addition to binary formats \fBfq\fR also support reading to and from encodings and serialization formats.
+
+At the moment \fBfq\fR does not have any dedicated argument for serialization formats but raw string input -R slurp -s and raw string output -r can make things easier. The combination -Rs will read all inputs into one string (same as jq).
+
+Note that from* functions output \fBjq\fR values and to* takes \fBjq\fR values as input so in some cases not all information will be properly preserved. For example, for the element and attribute order might change and text and comment nodes might move or be merged. \fByq\fR might be a better tool if that is needed.
+.SH USE AS SCRIPT INTERPRETER
+\fBfq\fR can be used as a script interpreter using a shebang
+.SH EXAMPLES
+.TP
+\fBfq\fR '.frames[1].header | tovalue' file.mp3
+Get the second mp3 frame header as JSON
+.TP
+\fBfq\fR '.frames[0:10] | map(tobytesrange.start)' file.mp3
+Get the byte start position for the first 10 mp3 frames in an array
+.TP
+\fBfq\fR -d bytes '.[100:] | mp3_frame | d' file.mp3
+Decode byte range 100 to end as mp3_frame
+.TP
+\fBfq\fR '.somefield | tobytesrange[10:] | mp3_frame | d' file.mp3
+
+decode byte range 10 bytes from .somefield and preserve relative position in file
+.TP
+
+\fBfq\fR 'def f: .. | select(format=="avc_sps"); diff(input|f; input|f)' a.mp4 b.mp4
+
+Show AVC SPS difference between two mp4 files. \fB-n\fR tells \fBfq\fR to not have an implicit input, \fBf\fR is a function to select out some interesting value, call \fBdiff\fR with two arguments, decoded value for a.mp4 and b.mp4 filtered thru \fBf\fR.
+.TP
+
+\fBfq\fR 'first(.. | select(format=="jpeg")) | tobytes' file > file.jpeg
+
+Recursively look for the first value that is a jpeg decode value root. Use tobytes to get bytes for value. Redirect bytes to a file.
+.TP
+
+\fBfq\fR '.. | select(.type=="stsz")? as $stsz | .entries | count | max_by(.[1])[1] as $m | ($stsz | topath | path_to_expr), (.[] | "\(.[0]): \((100*.[1]/$m)*"=") \(.[1])") | println' file.mp4
+
+Recursively look for a all sample size boxes "stsz" and use ? to ignore errors when doing .type on arrays etc. Save reference to box, count unique values, save the max, output the path to the box and output a histogram scaled to 0-100.
+.TP
+
+\fBfq\fR '.tcp_connections | grep("GET /.* HTTP/1.?")' file.pcap
+
+Find TCP streams that looks like HTTP GET requests in a PCAP file. Use \fBgrep\fR to recursively find strings matching a regexp.
+.TP
+
+\fBfq\fR -rn '[inputs | [input_filename, first(.chunks[] | select(.type=="IHDR") | .width)]] | max_by(.[1]) | .[0]' *.png
+
+Find the widest PNG in a directory
+.TP
+
+\fBfq\fR '.. | select(scalars and in_bytes_range(0x123))' file
+
+Which values include the bytes at position 0x123 \" TODO: Check if this is a typo
+
+.SH BUGS (+ TRICKS)
+\fBselect\fR fails with \fBexpected an ... but got: ...\fR
+.RS
+Try adding \fBselect(...)?\fR to catch and ignore type errors in the select expression.
+.RE
+
+Run interactive mode with no input
+.RS
+fq -i
+.RE
+
+Manual Decode - Sometimes fq fails to decode or you know there is valid data buried inside some binary or maybe you know the format of some gap field. Then you can decode manually:
+.RS
+# try decode a `mp3_frame` that failed to decode
+
+$ fq -d mp3 '.gap0 | mp3_frame' file.mp3
+
+# skip first 10 bytes then decode as `mp3_frame`
+
+$ fq -d bytes '.[10:] | mp3_frame' file.mp3
+.RE
+Use . as input and in a positional argument
+
+.RS
+The expression \fB.a | f(.b)\fR might not work as expected. \fB.\fR is \fB.a\fR when evaluating the arguments so the positional argument will end up being \fB.a.b\fR. Instead do \fB. as $c | .a | f($c.b)\fR.
+.RE
+
+Building array is slow
+.RS
+Try to use \fBmap\fR or \fBforeach\fR to avoid rebuilding the whole array for each append.
+.RE
+
+Use print and println to produce more friendly compact output
+
+repl argument using function or variable causes variable not defined
+.RS
+\fBtrue as $verbose | repl({verbose: $verbose})\fR will currently fail as repl is implemented by rewriting the query to \fBmap(true as $verbose | .) | repl({verbose: $verbose})\fR.
+.RE
+
+\fBerror\fR produces no output
+.RS
+\fBnull | error\fR behaves as empty
+.RE
+
+.SH AUTHOR
+\fBfq\fR is written by Mattias Wadman
+
+.SH SEE ALSO
+\fBjq\fR - lightweight and flexible command-line JSON processor
+
+\fByq\fR - lightweight and portable command-line YAML, JSON and XML processor
