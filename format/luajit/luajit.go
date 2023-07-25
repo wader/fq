@@ -398,10 +398,9 @@ func LuaJITDecode(d *decode.D) any {
 				LuaJITDecodeProto(&di, d)
 			})
 		}
-
 	})
 
-	d.FieldU8("end")
+	d.FieldRawLen("end", 8, d.AssertBitBuf([]byte{0}))
 
 	return nil
 }
