@@ -78,6 +78,7 @@ def _opt_options:
     argdecode:          "array_string_pair",
     argjson:            "array_string_pair",
     array_truncate:     "number",
+    base:               "number",
     bits_format:        "string",
     byte_colors:        "csv_ranges_array",
     color:              "boolean",
@@ -528,12 +529,31 @@ def options($opts):
     + [$opts]
     )
   | add
-  | ( if .width != 0 then [_intdiv(_intdiv(.width; 8); 2) * 2, 4] | max
-      else 16
+  | ( if .width != 0 then
+        if .base == 2 then
+          # set input data bits to ~44.4% of width
+          .5 * (8 / (8 + 1)) * .width | floor
+        else
+          # set input data hex to ~37.5% of width
+          .5 * (3 / (3 + 1)) * .width | floor
+        end
+      else
+        16 * 3
+      end
+    ) as $input_data_width
+  | ( if .base == 2 then
+        # 100010010101000
+        # show at least 1 byte
+        [_intdiv($input_data_width; 8), 1] | max
+      else
+        # 89 50 4e 47 0d 0a 1a 0a
+        # show an even amount of bytes; and at least 4
+        [_intdiv(_intdiv($input_data_width; 3); 2) * 2, 4] | max
       end
     ) as $display_bytes
   # default if not set
   | .display_bytes |= (. // $display_bytes)
   | .line_bytes |= (. // $display_bytes)
+  | .base |= (. // 16)
   );
 def options: options({});
