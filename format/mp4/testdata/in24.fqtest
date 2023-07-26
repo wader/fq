@@ -5,7 +5,7 @@ $ fq dv in24.mp4
      |                                               |                |    [0]{}: box 0x0-0x13.7 (20)
 0x000|00 00 00 14                                    |....            |      size: 20 0x0-0x3.7 (4)
 0x000|            66 74 79 70                        |    ftyp        |      type: "ftyp" (File type and compatibility) 0x4-0x7.7 (4)
-0x000|                        71 74 20 20            |        qt      |      major_brand: "qt  " 0x8-0xb.7 (4)
+0x000|                        71 74 20 20            |        qt      |      major_brand: "qt" 0x8-0xb.7 (4)
 0x000|                                    00 00 02 00|            ....|      minor_version: 512 (0000.02) 0xc-0xf.7 (4)
      |                                               |                |      brands[0:1]: 0x10-0x13.7 (4)
 0x010|71 74 20 20                                    |qt              |        [0]: "qt" brand 0x10-0x13.7 (4)
@@ -128,7 +128,7 @@ $ fq dv in24.mp4
 0x260|            00 00 00 00                        |    ....        |                  component_manufacturer: "" 0x264-0x267.7 (4)
 0x260|                        00 00 00 00            |        ....    |                  component_flags: 0 0x268-0x26b.7 (4)
 0x260|                                    00 00 00 00|            ....|                  component_flags_mask: 0 0x26c-0x26f.7 (4)
-0x270|0c 53 6f 75 6e 64 48 61 6e 64 6c 65 72         |.SoundHandler   |                  component_name: "\fSoundHandler" 0x270-0x27c.7 (13)
+0x270|0c 53 6f 75 6e 64 48 61 6e 64 6c 65 72         |.SoundHandler   |                  component_name: "SoundHandler" 0x270-0x27c.7 (13)
      |                                               |                |                [2]{}: box 0x27d-0x3ca.7 (334)
 0x270|                                       00 00 01|             ...|                  size: 334 0x27d-0x280.7 (4)
 0x280|4e                                             |N               |
@@ -154,7 +154,7 @@ $ fq dv in24.mp4
 0x2a0|                                       00 00 00|             ...|                      component_flags: 0 0x2ad-0x2b0.7 (4)
 0x2b0|00                                             |.               |
 0x2b0|   00 00 00 00                                 | ....           |                      component_flags_mask: 0 0x2b1-0x2b4.7 (4)
-0x2b0|               0b 44 61 74 61 48 61 6e 64 6c 65|     .DataHandle|                      component_name: "\vDataHandler" 0x2b5-0x2c0.7 (12)
+0x2b0|               0b 44 61 74 61 48 61 6e 64 6c 65|     .DataHandle|                      component_name: "DataHandler" 0x2b5-0x2c0.7 (12)
 0x2c0|72                                             |r               |
      |                                               |                |                    [2]{}: box 0x2c1-0x2e4.7 (36)
 0x2c0|   00 00 00 24                                 | ...$           |                      size: 36 0x2c1-0x2c4.7 (4)

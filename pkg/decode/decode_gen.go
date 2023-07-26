@@ -19509,11 +19509,11 @@ func (d *D) FieldUTF16BE(name string, nBytes int, sms ...scalar.StrMapper) strin
 // Reader UTF8ShortString
 
 // TryUTF8ShortString tries to read one byte length fixed UTF8 string
-func (d *D) TryUTF8ShortString() (string, error) { return d.tryTextLenPrefixed(8, -1, UTF8BOM) }
+func (d *D) TryUTF8ShortString() (string, error) { return d.tryTextLenPrefixed(1, -1, UTF8BOM) }
 
 // UTF8ShortString reads one byte length fixed UTF8 string
 func (d *D) UTF8ShortString() string {
-	v, err := d.tryTextLenPrefixed(8, -1, UTF8BOM)
+	v, err := d.tryTextLenPrefixed(1, -1, UTF8BOM)
 	if err != nil {
 		panic(IOError{Err: err, Op: "UTF8ShortString", Pos: d.Pos()})
 	}
@@ -19523,7 +19523,7 @@ func (d *D) UTF8ShortString() string {
 // TryFieldScalarUTF8ShortString tries to add a field and read one byte length fixed UTF8 string
 func (d *D) TryFieldScalarUTF8ShortString(name string, sms ...scalar.StrMapper) (*scalar.Str, error) {
 	s, err := d.TryFieldScalarStrFn(name, func(d *D) (scalar.Str, error) {
-		v, err := d.tryTextLenPrefixed(8, -1, UTF8BOM)
+		v, err := d.tryTextLenPrefixed(1, -1, UTF8BOM)
 		return scalar.Str{Actual: v}, err
 	}, sms...)
 	if err != nil {
@@ -19556,12 +19556,12 @@ func (d *D) FieldUTF8ShortString(name string, sms ...scalar.StrMapper) string {
 
 // TryUTF8ShortStringFixedLen tries to read fixedBytes bytes long one byte length prefixed UTF8 string
 func (d *D) TryUTF8ShortStringFixedLen(fixedBytes int) (string, error) {
-	return d.tryTextLenPrefixed(8, fixedBytes, UTF8BOM)
+	return d.tryTextLenPrefixed(1, fixedBytes, UTF8BOM)
 }
 
 // UTF8ShortStringFixedLen reads fixedBytes bytes long one byte length prefixed UTF8 string
 func (d *D) UTF8ShortStringFixedLen(fixedBytes int) string {
-	v, err := d.tryTextLenPrefixed(8, fixedBytes, UTF8BOM)
+	v, err := d.tryTextLenPrefixed(1, fixedBytes, UTF8BOM)
 	if err != nil {
 		panic(IOError{Err: err, Op: "UTF8ShortStringFixedLen", Pos: d.Pos()})
 	}
@@ -19571,7 +19571,7 @@ func (d *D) UTF8ShortStringFixedLen(fixedBytes int) string {
 // TryFieldScalarUTF8ShortStringFixedLen tries to add a field and read fixedBytes bytes long one byte length prefixed UTF8 string
 func (d *D) TryFieldScalarUTF8ShortStringFixedLen(name string, fixedBytes int, sms ...scalar.StrMapper) (*scalar.Str, error) {
 	s, err := d.TryFieldScalarStrFn(name, func(d *D) (scalar.Str, error) {
-		v, err := d.tryTextLenPrefixed(8, fixedBytes, UTF8BOM)
+		v, err := d.tryTextLenPrefixed(1, fixedBytes, UTF8BOM)
 		return scalar.Str{Actual: v}, err
 	}, sms...)
 	if err != nil {

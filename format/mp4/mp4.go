@@ -183,6 +183,11 @@ func (ctx *decodeContext) findParent(typ string) any {
 	return nil
 }
 
+func (ctx *decodeContext) rootBox() *rootBox {
+	t, _ := ctx.findParent("").(*rootBox)
+	return t
+}
+
 func (ctx *decodeContext) currentTrakBox() *trakBox {
 	t, _ := ctx.findParent("trak").(*trakBox)
 	return t
@@ -447,6 +452,8 @@ func mp4Decode(d *decode.D) any {
 	}
 
 	d.SeekRel(-8 * 8)
+
+	ctx.path = []pathEntry{{typ: "", data: &rootBox{}}}
 
 	decodeBoxes(ctx, d)
 	if len(ctx.tracks) > 0 {

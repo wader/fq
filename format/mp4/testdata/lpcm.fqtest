@@ -5,7 +5,7 @@ $ fq dv lpcm.mp4
      |                                               |                |    [0]{}: box 0x0-0x13.7 (20)
 0x000|00 00 00 14                                    |....            |      size: 20 0x0-0x3.7 (4)
 0x000|            66 74 79 70                        |    ftyp        |      type: "ftyp" (File type and compatibility) 0x4-0x7.7 (4)
-0x000|                        71 74 20 20            |        qt      |      major_brand: "qt  " 0x8-0xb.7 (4)
+0x000|                        71 74 20 20            |        qt      |      major_brand: "qt" 0x8-0xb.7 (4)
 0x000|                                    00 00 02 00|            ....|      minor_version: 512 (0000.02) 0xc-0xf.7 (4)
      |                                               |                |      brands[0:1]: 0x10-0x13.7 (4)
 0x010|71 74 20 20                                    |qt              |        [0]: "qt" brand 0x10-0x13.7 (4)
@@ -129,7 +129,7 @@ $ fq dv lpcm.mp4
 0x390|                                    00 00 00 00|            ....|                  component_manufacturer: "" 0x39c-0x39f.7 (4)
 0x3a0|00 00 00 00                                    |....            |                  component_flags: 0 0x3a0-0x3a3.7 (4)
 0x3a0|            00 00 00 00                        |    ....        |                  component_flags_mask: 0 0x3a4-0x3a7.7 (4)
-0x3a0|                        0c 53 6f 75 6e 64 48 61|        .SoundHa|                  component_name: "\fSoundHandler" 0x3a8-0x3b4.7 (13)
+0x3a0|                        0c 53 6f 75 6e 64 48 61|        .SoundHa|                  component_name: "SoundHandler" 0x3a8-0x3b4.7 (13)
 0x3b0|6e 64 6c 65 72                                 |ndler           |
      |                                               |                |                [2]{}: box 0x3b5-0x4f0.7 (316)
 0x3b0|               00 00 01 3c                     |     ...<       |                  size: 316 0x3b5-0x3b8.7 (4)
@@ -155,7 +155,7 @@ $ fq dv lpcm.mp4
 0x3e0|   00 00 00 00                                 | ....           |                      component_manufacturer: "" 0x3e1-0x3e4.7 (4)
 0x3e0|               00 00 00 00                     |     ....       |                      component_flags: 0 0x3e5-0x3e8.7 (4)
 0x3e0|                           00 00 00 00         |         ....   |                      component_flags_mask: 0 0x3e9-0x3ec.7 (4)
-0x3e0|                                       0b 44 61|             .Da|                      component_name: "\vDataHandler" 0x3ed-0x3f8.7 (12)
+0x3e0|                                       0b 44 61|             .Da|                      component_name: "DataHandler" 0x3ed-0x3f8.7 (12)
 0x3f0|74 61 48 61 6e 64 6c 65 72                     |taHandler       |
      |                                               |                |                    [2]{}: box 0x3f9-0x41c.7 (36)
 0x3f0|                           00 00 00 24         |         ...$   |                      size: 36 0x3f9-0x3fc.7 (4)
