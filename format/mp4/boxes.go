@@ -304,6 +304,10 @@ func decodeBoxesWithParentData(ctx *decodeContext, d *decode.D, parentData any, 
 	}
 }
 
+type rootBox struct {
+	ftypMajorBrand string
+}
+
 type irefBox struct {
 	version int
 }
@@ -358,11 +362,15 @@ func decodeBoxIrefEntry(ctx *decodeContext, d *decode.D) {
 	})
 }
 
-func decodeBoxFtyp(d *decode.D) {
-	brand := d.FieldUTF8("major_brand", 4)
+func decodeBoxFtyp(ctx *decodeContext, d *decode.D) {
+	root := ctx.rootBox()
+
+	brand := d.FieldUTF8("major_brand", 4, scalar.ActualTrimSpace)
+	root.ftypMajorBrand = brand
+
 	d.FieldU32("minor_version", scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
 		switch brand {
-		case "qt  ":
+		case "qt":
 			// https://developer.apple.com/library/archive/documentation/QuickTime/QTFF/QTFFChap1/qtff1.html#//apple_ref/doc/uid/TP40000939-CH203-BBCGDDDF
 			// "For QuickTime movie files, this takes the form of four binary-coded decimal values, indicating the century,
 			//  year, and month of the QuickTime File Format Specification, followed by a binary coded decimal zero. For example,
@@ -382,9 +390,9 @@ func decodeBoxFtyp(d *decode.D) {
 func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 	switch typ {
 	case "ftyp":
-		decodeBoxFtyp(d)
+		decodeBoxFtyp(ctx, d)
 	case "styp":
-		decodeBoxFtyp(d)
+		decodeBoxFtyp(ctx, d)
 	case "mvhd":
 		version := d.FieldU8("version")
 		d.FieldU24("flags")
@@ -510,6 +518,8 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			d.FieldU16("value")
 		})
 	case "hdlr":
+		majorBrand := ctx.rootBox().ftypMajorBrand
+
 		d.FieldU8("version")
 		d.FieldU24("flags")
 		d.FieldUTF8NullFixedLen("component_type", 4)
@@ -517,8 +527,14 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		d.FieldUTF8NullFixedLen("component_manufacturer", 4)
 		d.FieldU32("component_flags")
 		d.FieldU32("component_flags_mask")
-		// TODO: sometimes has a length prefix byte, how to know?
-		d.FieldUTF8NullFixedLen("component_name", int(d.BitsLeft()/8))
+
+		switch majorBrand {
+		case "qt":
+			// qt brand seems to use length prefixed strings
+			d.FieldUTF8ShortStringFixedLen("component_name", int(d.BitsLeft()/8))
+		default:
+			d.FieldUTF8NullFixedLen("component_name", int(d.BitsLeft()/8))
+		}
 
 		if t := ctx.currentTrack(); t != nil {
 			t.seenHdlr = true

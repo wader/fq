@@ -146,16 +146,13 @@ func (d *D) tryText(nBytes int, e encoding.Encoding) (string, error) {
 }
 
 // read length prefixed text (ex pascal short string)
-// lBits length prefix
+// lenBytes length prefix
 // fixedBytes if != -1 read nBytes but trim to length
 //
 //nolint:unparam
-func (d *D) tryTextLenPrefixed(lenBits int, fixedBytes int, e encoding.Encoding) (string, error) {
-	if lenBits < 0 {
-		return "", fmt.Errorf("tryTextLenPrefixed lenBits must be >= 0 (%d)", lenBits)
-	}
-	if fixedBytes < 0 {
-		return "", fmt.Errorf("tryTextLenPrefixed fixedBytes must be >= 0 (%d)", fixedBytes)
+func (d *D) tryTextLenPrefixed(prefixLenBytes int, fixedBytes int, e encoding.Encoding) (string, error) {
+	if prefixLenBytes < 0 {
+		return "", fmt.Errorf("tryTextLenPrefixed lenBytes must be >= 0 (%d)", prefixLenBytes)
 	}
 	bytesLeft := d.BitsLeft() / 8
 	if int64(fixedBytes) > bytesLeft {
@@ -163,26 +160,24 @@ func (d *D) tryTextLenPrefixed(lenBits int, fixedBytes int, e encoding.Encoding)
 	}
 
 	p := d.Pos()
-	l, err := d.TryUintBits(lenBits)
+	lenBytes, err := d.TryUintBits(prefixLenBytes * 8)
 	if err != nil {
 		return "", err
 	}
 
-	n := int(l)
+	readBytes := int(lenBytes)
 	if fixedBytes != -1 {
-		n = fixedBytes - 1
 		// TODO: error?
-		if l > uint64(n) {
-			l = uint64(n)
-		}
+		readBytes = fixedBytes - prefixLenBytes
+		lenBytes = mathex.Min(lenBytes, uint64(readBytes))
 	}
 
-	bs, err := d.TryBytesLen(n)
+	bs, err := d.TryBytesLen(readBytes)
 	if err != nil {
 		d.SeekAbs(p)
 		return "", err
 	}
-	return e.NewDecoder().String(string(bs[0:l]))
+	return e.NewDecoder().String(string(bs[0:lenBytes]))
 }
 
 func (d *D) tryTextNull(charBytes int, e encoding.Encoding) (string, error) {

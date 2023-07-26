@@ -5,7 +5,7 @@ $ fq -d mp4 dv prores_frame.mov
       |                                               |                |    [0]{}: box 0x0-0x13.7 (20)
 0x0000|00 00 00 14                                    |....            |      size: 20 0x0-0x3.7 (4)
 0x0000|            66 74 79 70                        |    ftyp        |      type: "ftyp" (File type and compatibility) 0x4-0x7.7 (4)
-0x0000|                        71 74 20 20            |        qt      |      major_brand: "qt  " 0x8-0xb.7 (4)
+0x0000|                        71 74 20 20            |        qt      |      major_brand: "qt" 0x8-0xb.7 (4)
 0x0000|                                    00 00 02 00|            ....|      minor_version: 512 (0000.02) 0xc-0xf.7 (4)
       |                                               |                |      brands[0:1]: 0x10-0x13.7 (4)
 0x0010|71 74 20 20                                    |qt              |        [0]: "qt" brand 0x10-0x13.7 (4)
@@ -149,7 +149,7 @@ $ fq -d mp4 dv prores_frame.mov
 0x6d70|                           00 00 00 00         |         ....   |                  component_flags: 0 0x6d79-0x6d7c.7 (4)
 0x6d70|                                       00 00 00|             ...|                  component_flags_mask: 0 0x6d7d-0x6d80.7 (4)
 0x6d80|00                                             |.               |
-0x6d80|   0c 56 69 64 65 6f 48 61 6e 64 6c 65 72      | .VideoHandler  |                  component_name: "\fVideoHandler" 0x6d81-0x6d8d.7 (13)
+0x6d80|   0c 56 69 64 65 6f 48 61 6e 64 6c 65 72      | .VideoHandler  |                  component_name: "VideoHandler" 0x6d81-0x6d8d.7 (13)
       |                                               |                |                [2]{}: box 0x6d8e-0x6edd.7 (336)
 0x6d80|                                          00 00|              ..|                  size: 336 0x6d8e-0x6d91.7 (4)
 0x6d90|01 50                                          |.P              |
@@ -178,7 +178,7 @@ $ fq -d mp4 dv prores_frame.mov
 0x6dc0|00 00                                          |..              |
 0x6dc0|      00 00 00 00                              |  ....          |                      component_flags: 0 0x6dc2-0x6dc5.7 (4)
 0x6dc0|                  00 00 00 00                  |      ....      |                      component_flags_mask: 0 0x6dc6-0x6dc9.7 (4)
-0x6dc0|                              0b 44 61 74 61 48|          .DataH|                      component_name: "\vDataHandler" 0x6dca-0x6dd5.7 (12)
+0x6dc0|                              0b 44 61 74 61 48|          .DataH|                      component_name: "DataHandler" 0x6dca-0x6dd5.7 (12)
 0x6dd0|61 6e 64 6c 65 72                              |andler          |
       |                                               |                |                    [2]{}: box 0x6dd6-0x6df9.7 (36)
 0x6dd0|                  00 00 00 24                  |      ...$      |                      size: 36 0x6dd6-0x6dd9.7 (4)
