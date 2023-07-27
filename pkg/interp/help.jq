@@ -11,47 +11,47 @@ include "args";
 # TODO: variants, values, keywords?
 # TODO: store some other way?
 def _help_functions:
-  { length: {
-      summary: "Length of string, array, object, etc",
-      doc:
+  { length:
+      { summary: "Length of string, array, object, etc"
+      , doc:
 "- For string number of unicode codepoints
 - For array number of elements in array
 - For object number of key-value pairs
 - For null zero
 - For number the number itself
 - For boolean is an error
-",
-      examples:
-        [ [[1,2,3], "length"]
-        , ["abc", "length"]
-        , [{a: 1, b: 2}, "length"]
-        , [null, "length"]
-        , [123, "length"]
-        , [true, "length"]
-        ]
-    },
-    "..": {
-      summary: "Recursive descent of .",
-      doc:
+"
+      , examples:
+          [ [[1,2,3], "length"]
+          , ["abc", "length"]
+          , [{a: 1, b: 2}, "length"]
+          , [null, "length"]
+          , [123, "length"]
+          , [true, "length"]
+          ]
+      }
+  , "..":
+      { summary: "Recursive descent of ."
+      , doc:
 "Recursively descend . and output each value.
 Same as recurse without argument.
-",
-      examples:
-        [ ["a", ".."]
-        , [[1,2,3], ".."]
-        , [{a: 1, b: {c: 3}}, ".."]
-        ]
-    },
-    empty: {
-      summary: "Output nothing",
-      doc:
+"
+      , examples:
+          [ ["a", ".."]
+          , [[1,2,3], ".."]
+          , [{a: 1, b: {c: 3}}, ".."]
+          ]
+      }
+  , empty:
+      { summary: "Output nothing"
+      , doc:
 "Output no value, not even null, and cause backtrack.
-",
-      examples:
-        [ ["empty"]
-        , ["[1,empty,2]"]
-        ]
-    }
+"
+      , examples:
+          [ ["empty"]
+          , ["[1,empty,2]"]
+          ]
+      }
   };
 
 def help($_): error("help must be alone or last in pipeline. ex: help(length) or ... | help");

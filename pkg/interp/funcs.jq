@@ -108,12 +108,11 @@ def table(colmap; render):
 # TODO: rename keys and add more, ascii/utf8/utf16/codepoint name?, le/be, signed/unsigned?
 # TODO: move?
 def iprint:
-  {
-    bin: "0b\(to_radix(2))",
-    oct: "0o\(to_radix(8))",
-    dec: "\(.)",
-    hex: "0x\(to_radix(16))",
-    str: (try ([.] | implode) catch null),
+  { bin: "0b\(to_radix(2))"
+  , oct: "0o\(to_radix(8))"
+  , dec: "\(.)"
+  , hex: "0x\(to_radix(16))"
+  , str: (try ([.] | implode) catch null)
   };
 
 # produce a/b pairs for diffing values

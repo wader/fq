@@ -3,13 +3,14 @@ include "query";
 
 
 def _eval_error($what; $error):
-  error({
-    what: $what,
-    error: $error,
-    column: 0,
-    line: 1,
-    filename: ""
-  });
+  error(
+    { what: $what
+    , error: $error
+    , column: 0
+    , line: 1
+    , filename: ""
+    }
+  );
 
 def _eval_error_function_not_defined($name; $args):
   _eval_error(

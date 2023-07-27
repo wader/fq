@@ -9,28 +9,27 @@ include "ansi";
 
 # TODO: currently only make sense to allow keywords starting a term or directive
 def _complete_keywords:
-  [
-    "and",
-    #"as",
-    #"break",
-    #"catch",
-    "def",
-    #"elif",
-    #"else",
-    #"end",
-    "false",
-    "foreach",
-    "if",
-    "import",
-    "include",
-    "label",
-    "module",
-    "null",
-    "or",
-    "reduce",
-    #"then",
-    "true",
-    "try"
+  [ "and"
+  #"as"
+  #"break"
+  #"catch"
+  , "def"
+  #"elif"
+  #"else"
+  #"end"
+  , "false"
+  , "foreach"
+  , "if"
+  , "import"
+  , "include"
+  , "label"
+  , "module"
+  , "null"
+  , "or"
+  , "reduce"
+  #"then"
+  , "true"
+  , "try"
   ];
 
 def _complete_scope:
@@ -72,9 +71,8 @@ def _complete($line; $cursor_pos):
         else error("unreachable")
         end
       ) as {$type, $query, $prefix}
-    | {
-        prefix: $prefix,
-        names: (
+    | { prefix: $prefix
+      , names: (
           if $type == "none" then
             ( $c
             | _query_index_or_key($line_query)
@@ -225,16 +223,16 @@ def _repl_eval($expr; on_error; on_compile_error):
   eval(
     $expr;
     { slurps:
-        { repl: "_repl_slurp",
-          help: "_help_slurp",
-          slurp: "_slurp"
-        },
+        { repl: "_repl_slurp"
+        , help: "_help_slurp"
+        , slurp: "_slurp"
+        }
       # input to repl is always array of values to iterate
-      input_query: (_query_ident | _query_iter), # .[]
+    , input_query: (_query_ident | _query_iter) # .[]
       # each input should be evaluated separately like cli file args, so catch and just print errors
-      catch_query: _query_func("_repl_on_expr_error"),
+    , catch_query: _query_func("_repl_on_expr_error")
       # run display in sub eval so it can be interrupted
-      output_query: _query_func("_repl_display")
+    , output_query: _query_func("_repl_display")
     };
     on_error;
     on_compile_error
@@ -246,11 +244,12 @@ def _repl($opts):
   def _read_expr:
     _repeat_break(
       # both _prompt and _complete want input arrays
-      ( _readline({
-          prompt: _prompt(options($opts)),
-          complete: "_complete",
-          timeout: options.completion_timeout
-        })
+      ( _readline(
+          { prompt: _prompt(options($opts))
+          , complete: "_complete"
+          , timeout: options.completion_timeout
+          }
+        )
       | if trim == "" then empty
         else (., error("break"))
         end
