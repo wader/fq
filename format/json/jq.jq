@@ -47,11 +47,11 @@ def _to_jq($opts):
   );
 def to_jq($opts):
   _to_jq(
-    ( { indent: 0,
-        key_sep: ":",
-        object_sep: ",",
-        array_sep: ",",
-        compound_newline: "",
+    ( { indent: 0
+      , key_sep: ":"
+      , object_sep: ","
+      , array_sep: ","
+      , compound_newline: "",
       } + $opts
     | if .indent > 0  then
         ( .key_sep = ": "
@@ -77,8 +77,8 @@ def from_jq:
       elif . == "TermTypeObject" then
         ( $v.term.object.key_vals // []
         | map(
-            { key: (.key // .key_string.str),
-              value: (.val.queries[0] | _f)
+            { key: (.key // .key_string.str)
+            , value: (.val.queries[0] | _f)
             }
           )
         | from_entries

@@ -143,13 +143,12 @@ def _cli_eval($expr; $opts):
   eval(
     $expr;
     ( $opts
-    + {
-        slurps: {
-          help: "_help_slurp",
-          repl: "_cli_repl_error",
-          slurp: "_cli_slurp_error"
-        },
-        catch_query: _query_func("_cli_eval_on_expr_error"),
+    + { slurps:
+          { help: "_help_slurp"
+          , repl: "_cli_repl_error"
+          , slurp: "_cli_slurp_error"
+          }
+      , catch_query: _query_func("_cli_eval_on_expr_error"),
       }
     );
     _cli_eval_on_error;

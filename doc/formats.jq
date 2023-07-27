@@ -13,30 +13,27 @@ def formats_list:
   ] | join(",\n");
 
 def formats_table:
-  ( [ {
-        name: "Name",
-        desc: "Description",
-        uses: "Dependencies"
-      },
-      {
-        name: "-",
-        desc: "-",
-        uses: "-"
-      },
-      ( formats
+  ( [ { name: "Name"
+      , desc: "Description"
+      , uses: "Dependencies"
+      }
+    , { name: "-"
+      , desc: "-"
+      , uses: "-"
+      }
+    , ( formats
       | to_entries[]
       | (_format_func(.key; "_help")? // {}) as $fhelp
-      | {
-          name:
+      | { name:
             ( ( .key as $format
               | if has_section(.value; $fhelp) then "[\($format | code)](#\($format))"
                 else $format | code
                 end
               )
             + " "
-            ),
-          desc: (.value.description | nbsp),
-          uses: "<sub>\((((.value.dependencies | flatten | map(code)) | join(" "))? // ""))</sub>"
+            )
+        , desc: (.value.description | nbsp)
+        , uses: "<sub>\((((.value.dependencies | flatten | map(code)) | join(" "))? // ""))</sub>"
         }
       ),
       ( [ formats
@@ -47,10 +44,9 @@ def formats_table:
         ]
       | reduce .[] as $e ({}; .[$e.key] += [$e.value])
       | to_entries[]
-      | {
-          name: ((.key | code) + " "),
-          desc: "Group",
-          uses: "<sub>\(((.value | map(code)) | join(" ")))</sub>"
+      | { name: ((.key | code) + " ")
+        , desc: "Group"
+        , uses: "<sub>\(((.value | map(code)) | join(" ")))</sub>"
         }
       )
     ]

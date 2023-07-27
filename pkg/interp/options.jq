@@ -4,114 +4,112 @@ include "binary";
 
 def _opt_build_default_fixed:
   ( stdout_tty as $stdout
-  | {
-      addrbase:       16,
-      arg:            [],
-      argdecode:      [],
-      argjson:        [],
-      array_truncate: 50,
-      bits_format:    "string",
-      # 0-0xff=brightwhite,0=brightblack,32-126:9-13=white
-      byte_colors:    [
-        { ranges: [[0,255]],
-          value: "brightwhite"
-        },
-        { ranges: [[0]],
-          value: "brightblack"
-        },
-        { ranges: [[32,126],[9,13]],
-          value: "white"
+  | { addrbase:       16
+    , arg:            []
+    , argdecode:      []
+    , argjson:        []
+    , array_truncate: 50
+    , bits_format:    "string"
+    # 0-0xff=brightwhite,0=brightblack,32-126:9-13=white
+    , byte_colors:
+        [ { ranges: [[0,255]]
+          , value: "brightwhite"
+          }
+        , { ranges: [[0]]
+          , value: "brightblack"
+          }
+        , { ranges: [[32,126],[9,13]]
+          , value: "white"
+          }
+        ]
+    , color: ($stdout.is_terminal and (env.NO_COLOR | . == null or . == ""))
+    , colors:
+        { null:              "brightblack"
+        , false:             "yellow"
+        , true:              "yellow"
+        , number:            "cyan"
+        , string:            "green"
+        , objectkey:         "brightblue"
+        , array:             "white"
+        , object:            "white"
+        , index:             "white"
+        , value:             "white"
+        , error:             "brightred"
+        , dumpheader:        "yellow+underline"
+        , dumpaddr:          "yellow"
+        , prompt_repl_level: "brightblack"
+        , prompt_value:      "white"
         }
-      ],
-      color:          ($stdout.is_terminal and (env.NO_COLOR | . == null or . == "")),
-      colors: {
-        null: "brightblack",
-        false: "yellow",
-        true: "yellow",
-        number: "cyan",
-        string: "green",
-        objectkey: "brightblue",
-        array: "white",
-        object: "white",
-        index: "white",
-        value: "white",
-        error: "brightred",
-        dumpheader: "yellow+underline",
-        dumpaddr: "yellow",
-        prompt_repl_level: "brightblack",
-        prompt_value: "white"
-      },
-      compact:            false,
-      completion_timeout: (env.COMPLETION_TIMEOUT | if . != null then tonumber else 1 end),
-      decode_group:       "probe",
-      decode_progress:    (env.NO_DECODE_PROGRESS == null),
-      depth:              0,
-      expr:               ".",
-      expr_given:         false,
-      expr_eval_path:     "arg",
-      expr_file:          null,
-      filenames:          null,
-      force:              false,
-      include_path:       null,
-      join_string:        "\n",
-      null_input:         false,
-      raw_file:           [],
-      raw_output:         ($stdout.is_terminal | not),
-      raw_string:         false,
-      repl:               false,
-      skip_gaps:          false,
-      sizebase:           10,
-      show_formats:       false,
-      show_help:          false,
-      slurp:              false,
-      string_input:       false,
-      unicode:            ($stdout.is_terminal and env.CLIUNICODE != null),
-      value_output:       false,
-      verbose:            false,
+    , compact:            false
+    , completion_timeout: (env.COMPLETION_TIMEOUT | if . != null then tonumber else 1 end)
+    , decode_group:       "probe"
+    , decode_progress:    (env.NO_DECODE_PROGRESS == null)
+    , depth:              0
+    , expr:               "."
+    , expr_given:         false
+    , expr_eval_path:     "arg"
+    , expr_file:          null
+    , filenames:          null
+    , force:              false
+    , include_path:       null
+    , join_string:        "\n"
+    , null_input:         false
+    , raw_file:           []
+    , raw_output:         ($stdout.is_terminal | not)
+    , raw_string:         false
+    , repl:               false
+    , skip_gaps:          false
+    , sizebase:           10
+    , show_formats:       false
+    , show_help:          false
+    , slurp:              false
+    , string_input:       false
+    , unicode:            ($stdout.is_terminal and env.CLIUNICODE != null)
+    , value_output:       false
+    , verbose:            false
     }
   );
 
 def _opt_options:
-  {
-    addrbase:           "number",
-    arg:                "array_string_pair",
-    argdecode:          "array_string_pair",
-    argjson:            "array_string_pair",
-    array_truncate:     "number",
-    bits_format:        "string",
-    byte_colors:        "csv_ranges_array",
-    color:              "boolean",
-    colors:             "csv_kv_obj",
-    compact:            "boolean",
-    completion_timeout: "number",
-    decode_group:       "string",
-    decode_progress:    "boolean",
-    depth:              "number",
-    display_bytes:      "number",
-    expr:               "string",
-    expr_given:         "boolean",
-    expr_eval_path:     "string",
-    expr_file:          "string",
-    filenames:          "array_string",
-    force:              "boolean",
-    include_path:       "string",
-    join_string:        "string",
-    line_bytes:         "number",
-    null_input:         "boolean",
-    raw_file:           "array_string_pair",
-    raw_output:         "boolean",
-    raw_string:         "boolean",
-    repl:               "boolean",
-    show_formats:       "boolean",
-    show_help:          "boolean",
-    sizebase:           "number",
-    skip_gaps:          "boolean",
-    slurp:              "boolean",
-    string_input:       "boolean",
-    unicode:            "boolean",
-    value_output:       "boolean",
-    verbose:            "boolean",
-    width:              "number",
+  { addrbase:           "number"
+  , arg:                "array_string_pair"
+  , argdecode:          "array_string_pair"
+  , argjson:            "array_string_pair"
+  , array_truncate:     "number"
+  , bits_format:        "string"
+  , byte_colors:        "csv_ranges_array"
+  , color:              "boolean"
+  , colors:             "csv_kv_obj"
+  , compact:            "boolean"
+  , completion_timeout: "number"
+  , decode_group:       "string"
+  , decode_progress:    "boolean"
+  , depth:              "number"
+  , display_bytes:      "number"
+  , expr:               "string"
+  , expr_given:         "boolean"
+  , expr_eval_path:     "string"
+  , expr_file:          "string"
+  , filenames:          "array_string"
+  , force:              "boolean"
+  , include_path:       "string"
+  , join_string:        "string"
+  , line_bytes:         "number"
+  , null_input:         "boolean"
+  , raw_file:           "array_string_pair"
+  , raw_output:         "boolean"
+  , raw_string:         "boolean"
+  , repl:               "boolean"
+  , show_formats:       "boolean"
+  , show_help:          "boolean"
+  , sizebase:           "number"
+  , skip_gaps:          "boolean"
+  , slurp:              "boolean"
+  , string_input:       "boolean"
+  , unicode:            "boolean"
+  , value_output:       "boolean"
+  , verbose:            "boolean"
+  , width:              "number"
   };
 
 def _opt_eval($rest):
@@ -148,14 +146,14 @@ def _opt_eval($rest):
             )
           end
         )
-      ),
-      color: (
+      )
+    , color: (
         if .monochrome_output == true then false
         elif .color_output == true then true
         else null
         end
-      ),
-      expr: (
+      )
+    , expr: (
         # if -f was used, all rest non-args are filenames
         # otherwise first is expr rest is filenames
         ( .expr_file
@@ -166,13 +164,13 @@ def _opt_eval($rest):
           else $rest[0] // null
           end
         )
-      ),
-      expr_given: (
+      )
+    , expr_given: (
         # was a expr arg given
         $rest[0] != null
-      ),
-      expr_eval_path: .expr_file,
-      filenames: (
+      )
+    , expr_eval_path: .expr_file
+    , filenames: (
         ( if .filenames then .filenames
           elif .expr_file then $rest
           else $rest[1:]
@@ -180,14 +178,14 @@ def _opt_eval($rest):
         # null means stdin
         | if . == [] then [null] end
         )
-      ),
-      join_string: (
+      )
+    , join_string: (
         if .join_output then ""
         elif .null_output then "\u0000"
         else null
         end
-      ),
-      null_input: (
+      )
+    , null_input: (
         ( ( if .expr_file then $rest
             else $rest[1:]
             end
@@ -196,8 +194,8 @@ def _opt_eval($rest):
           else null
           end
         )
-      ),
-      raw_file: (
+      )
+    , raw_file: (
         ( .raw_file
         | if . then
             ( map(.[1] |=
@@ -209,21 +207,21 @@ def _opt_eval($rest):
             )
           end
         )
-      ),
-      raw_string: (
+      )
+    , raw_string: (
         if .raw_string
           or .join_output
           or .null_output
         then true
         else null
         end
-      ),
-      unicode: (
+      )
+    , unicode: (
         if .unicode_output == true then true
         else null
         end
-      ),
-      value_output: (
+      )
+    , value_output: (
         if .value_output == true then true
         else null
         end
@@ -290,8 +288,8 @@ def _csv_ranges_to_array:
           ( .[0]
           | split(":")
           | map(split("-") | map(tonumber))
-          ),
-        value: .[1]
+          )
+      , value: .[1]
       }
     ))
   );
@@ -381,144 +379,143 @@ def _opt_cli_arg_from_options:
   );
 
 def _opt_cli_opts:
-  {
-    "arg": {
-      long: "--arg",
-      description: "Set variable $NAME to string VALUE",
-      pairs: "NAME VALUE"
-    },
-    "argdecode": {
-      long: "--argdecode",
+  { arg:
+      { long: "--arg"
+      , description: "Set variable $NAME to string VALUE"
+      , pairs: "NAME VALUE"
+      }
+  , argdecode:
+      { long: "--argdecode"
       # TODO: remove at some point
-      aliases: ["--decode-file"],
-      description: "Set variable $NAME to decode of PATH",
-      pairs: "NAME PATH"
-    },
-    "argjson": {
-      long: "--argjson",
-      description: "Set variable $NAME to JSON",
-      pairs: "NAME JSON"
-    },
-    "compact": {
-      short: "-c",
-      long: "--compact-output",
-      description: "Compact output",
-      bool: true
-    },
-    "color_output": {
-      short: "-C",
-      long: "--color-output",
-      description: "Force color output",
-      bool: true
-    },
-    "decode_group": {
-      short: "-d",
-      long: "--decode",
-      description: "Decode format or group (probe)",
-      string: "NAME"
-    },
-    "expr_file": {
-      short: "-f",
-      long: "--from-file",
-      description: "Read EXPR from file",
-      string: "PATH"
-    },
-    "show_help": {
-      short: "-h",
-      long: "--help",
-      description: "Show help for TOPIC (ex: -h formats, -h mp4)",
-      string: "[TOPIC]",
-      optional: true
-    },
-    "join_output": {
-      short: "-j",
-      long: "--join-output",
-      description: "No newline between outputs",
-      bool: true
-    },
-    "include_path": {
-      short: "-L",
-      long: "--include-path",
-      description: "Include search path",
-      array: "PATH"
-    },
-    "null_output": {
-      short: "-0",
-      long: "--null-output",
+      , aliases: ["--decode-file"]
+      , description: "Set variable $NAME to decode of PATH"
+      , pairs: "NAME PATH"
+      }
+  , argjson:
+      { long: "--argjson"
+      , description: "Set variable $NAME to JSON"
+      , pairs: "NAME JSON"
+      }
+  , compact:
+      { short: "-c"
+      , long: "--compact-output"
+      , description: "Compact output"
+      , bool: true
+      }
+  , color_output:
+      { short: "-C"
+      , long: "--color-output"
+      , description: "Force color output"
+      , bool: true
+      }
+  , decode_group:
+      { short: "-d"
+      , long: "--decode"
+      , description: "Decode format or group (probe)"
+      , string: "NAME"
+      }
+  , expr_file:
+      { short: "-f"
+      , long: "--from-file"
+      , description: "Read EXPR from file"
+      , string: "PATH"
+      }
+  , show_help:
+      { short: "-h"
+      , long: "--help"
+      , description: "Show help for TOPIC (ex: -h formats, -h mp4)"
+      , string: "[TOPIC]"
+      , optional: true
+      }
+  , join_output:
+      { short: "-j"
+      , long: "--join-output"
+      , description: "No newline between outputs"
+      , bool: true
+      }
+  , include_path:
+      { short: "-L"
+      , long: "--include-path"
+      , description: "Include search path"
+      , array: "PATH"
+      }
+  , null_output:
+      { short: "-0"
+      , long: "--null-output"
       # for jq compatibility
-      aliases: ["--nul-output"],
-      description: "Null byte between outputs",
-      bool: true
-    },
-    "null_input": {
-      short: "-n",
-      long: "--null-input",
-      description: "Null input (use input and inputs functions to read)",
-      bool: true
-    },
-    "monochrome_output": {
-      short: "-M",
-      long: "--monochrome-output",
-      description: "Force monochrome output",
-      bool: true
-    },
-    "option": {
-      short: "-o",
-      long: "--option",
-      description: "Set option (ex: -o color=true, see --help options)",
-      object: "KEY=VALUE/@PATH",
-    },
-    "string_input": {
-      short: "-R",
-      long: "--raw-input",
-      description: "Read raw input strings (don't decode)",
-      bool: true
-    },
-    "raw_file": {
-      long: "--raw-file",
+      , aliases: ["--nul-output"]
+      , description: "Null byte between outputs"
+      , bool: true
+      }
+  , null_input:
+      { short: "-n"
+      , long: "--null-input"
+      , description: "Null input (use input and inputs functions to read)"
+      , bool: true
+      }
+  , monochrome_output:
+      { short: "-M"
+      , long: "--monochrome-output"
+      , description: "Force monochrome output"
+      , bool: true
+      }
+  , option:
+      { short: "-o"
+      , long: "--option"
+      , description: "Set option (ex: -o color=true, see --help options)"
+      , object: "KEY=VALUE/@PATH",
+      }
+  , string_input:
+      { short: "-R"
+      , long: "--raw-input"
+      , description: "Read raw input strings (don't decode)"
+      , bool: true
+      }
+  , raw_file:
+      { long: "--raw-file"
       # for jq compatibility
-      aliases: ["--raw-file"],
-      description: "Set variable $NAME to string content of file",
-      pairs: "NAME PATH"
-    },
-    "raw_string": {
-      short: "-r",
+      , aliases: ["--raw-file"]
+      , description: "Set variable $NAME to string content of file"
+      , pairs: "NAME PATH"
+      }
+  , raw_string:
+      { short: "-r"
       # for jq compat, is called raw string internally, is different from "raw output" which
       # is if we can output raw bytes or not
-      long: "--raw-output",
-      description: "Raw string output (without quotes)",
-      bool: true
-    },
-    "repl": {
-      short: "-i",
-      long: "--repl",
-      description: "Interactive REPL",
-      bool: true
-    },
-    "slurp": {
-      short: "-s",
-      long: "--slurp",
-      description: "Slurp all inputs into an array or string (-Rs)",
-      bool: true
-    },
-    "unicode_output": {
-      short: "-U",
-      long: "--unicode-output",
-      description: "Force unicode output",
-      bool: true
-    },
-    "value_output": {
-      short: "-V",
-      long: "--value-output",
-      description: "Output JSON value (-Vr for raw string)",
-      bool: true
-    },
-    "show_version": {
-      short: "-v",
-      long: "--version",
-      description: "Show version",
-      bool: true
-    },
+      , long: "--raw-output"
+      , description: "Raw string output (without quotes)"
+      , bool: true
+      }
+  , repl:
+      { short: "-i"
+      , long: "--repl"
+      , description: "Interactive REPL"
+      , bool: true
+      }
+  , slurp:
+      { short: "-s"
+      ,  long: "--slurp"
+      ,  description: "Slurp all inputs into an array or string (-Rs)"
+      ,  bool: true
+      }
+  , unicode_output:
+      { short: "-U"
+      , long: "--unicode-output"
+      , description: "Force unicode output"
+      , bool: true
+      }
+  , value_output:
+      { short: "-V"
+      , long: "--value-output"
+      , description: "Output JSON value (-Vr for raw string)"
+      , bool: true
+      }
+  , show_version:
+      { short: "-v"
+      , long: "--version"
+      , description: "Show version"
+      , bool: true
+      },
   };
 
 def options($opts):

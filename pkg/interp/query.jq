@@ -4,20 +4,18 @@ def _query_null:
 
 # . -> (.)
 def _query_query:
-  { term: {
-      type: "TermTypeQuery",
-      query: .
-    }
+  { term:
+      { type: "TermTypeQuery"
+      , query: .
+      }
   };
 
 # string
 def _query_string($str):
-  { term: {
-      type: "TermTypeString",
-      str: {
-        str: $str
+  { term:
+      { type: "TermTypeString"
+      , str: {str: $str}
       }
-    }
   };
 
 # .
@@ -31,13 +29,13 @@ def _query_func_rename(name):
   .term.func.name = name;
 # $name($args)
 def _query_func($name; $args):
-  { term: {
-      type: "TermTypeFunc",
-      func: {
-        args: $args,
-        name: $name
+  { term:
+      { type: "TermTypeFunc"
+      , func:
+          { args: $args
+          , name: $name
+          }
       }
-    }
   };
 def _query_func($name):
   _query_func($name; null);
@@ -61,47 +59,44 @@ def _query_empty:
 
 # l | r
 def _query_pipe(l; r):
-  { op: "|",
-    left: l,
-    right: r
+  { op: "|"
+  , left: l
+  , right: r
   };
 
 # . -> [.]
 def _query_array:
   ( . as $q
-  | { term: {
-        type: "TermTypeArray",
-        array: {}
-      }
+  | { term:
+        { type: "TermTypeArray"
+        , array: {}
+        }
     }
   | if $q then .term.array.query = $q end
   );
 
 # {} -> {}
 def _query_object:
-  { term: {
-      object: {
-        key_vals:
-          ( to_entries
-          | map(
-              {
-                key: .key,
-                val: {
-                  queries: [.value]
+  { term:
+      { object:
+          { key_vals:
+            ( to_entries
+            | map(
+                { key: .key
+                , val: {queries: [.value]}
                 }
-              }
+              )
             )
-          )
-      },
-      type: "TermTypeObject"
-    }
+          }
+      , type: "TermTypeObject"
+      }
   };
 
 # l,r
 def _query_comma(l; r):
-  { left: l,
-    op: ",",
-    right: r
+  { left: l
+  , op: ","
+  , right: r
   };
 
 # [1,2,3] -> 1,2,3
@@ -121,13 +116,13 @@ def _query_iter:
 
 # try b catch c
 def _query_try(b; c):
-  { term: {
-      type: "TermTypeTry",
-      try: {
-        body: b,
-        catch: c
+  { term:
+      { type: "TermTypeTry"
+      , try:
+          { body: b
+          , catch: c
+          }
       }
-    }
   };
 def _query_try(b):
   _query_try(b; null);
@@ -199,32 +194,38 @@ def _query_completion_type:
   | _query_last
   | if .index.name then
       { query:
-          ($q | _query_transform_last(
-            del(.term.suffix_list[-1])
-          )),
-        type: "index",
-        prefix: .index.name
+          ( $q
+          | _query_transform_last(
+              del(.term.suffix_list[-1])
+            )
+          )
+      , type: "index"
+      , prefix: .index.name
       }
     elif .term.index.name then
       { query:
-          ($q | _query_transform_last(
-            _query_ident
-          )),
-        type: "index",
-        prefix: .term.index.name
+          ( $q
+          | _query_transform_last(
+              _query_ident
+            )
+          )
+      , type: "index"
+      , prefix: .term.index.name
       }
     elif .term.func then
       { query:
-          ($q | _query_transform_last(
-            _query_ident
-          )),
-        type:
+          ( $q
+          | _query_transform_last(
+              _query_ident
+            )
+          )
+      , type:
           ( .term.func.name
           | if startswith("$") then "var"
             else "func"
             end
-          ),
-        prefix: .term.func.name
+          )
+      , prefix: .term.func.name
       }
     else
       null
