@@ -31,7 +31,7 @@ a_stripped: a_dynamic
 	strip -o $@ $<
 
 a_static: a.o libbbb.a
-	$(CC) -o $@ $+ libbbb.a
+	$(CC) -static -o $@ $+ libbbb.a
 
 segfault: segfault.o
 	$(CC) -o $@ $<
