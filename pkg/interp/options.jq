@@ -430,7 +430,7 @@ def _opt_cli_opts:
   , join_output:
       { short: "-j"
       , long: "--join-output"
-      , description: "No newline between outputs"
+      , description: "No newline after each output"
       , bool: true
       }
   , include_path:
@@ -440,11 +440,10 @@ def _opt_cli_opts:
       , array: "PATH"
       }
   , null_output:
-      { short: "-0"
-      , long: "--null-output"
+      { long: "--raw-output0"
       # for jq compatibility
       , aliases: ["--nul-output"]
-      , description: "Null byte between outputs"
+      , description: "NUL (zero) byte after each output"
       , bool: true
       }
   , null_input:
