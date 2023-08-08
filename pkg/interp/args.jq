@@ -32,7 +32,8 @@ def _args_parse($args; $opts):
       else
         if $arg == "--" then
           $r | .rest += $args[1:]
-        elif $arg | test("^--?[^-]") then
+        # \d to not see -0, -123 etc as an argument
+        elif $arg | test("^--?[^-\\d]") then
           ( $flagmap[$arg] as $optname
           | ($opts[$optname]? // null) as $opt
           | if $opt == null then

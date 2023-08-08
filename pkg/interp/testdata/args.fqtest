@@ -33,14 +33,14 @@ Example usages:
 --from-file,-f PATH          Read EXPR from file
 --help,-h [TOPIC]            Show help for TOPIC (ex: -h formats, -h mp4)
 --include-path,-L PATH       Include search path
---join-output,-j             No newline between outputs
+--join-output,-j             No newline after each output
 --monochrome-output,-M       Force monochrome output
 --null-input,-n              Null input (use input and inputs functions to read)
---null-output,-0             Null byte between outputs
 --option,-o KEY=VALUE/@PATH  Set option (ex: -o color=true, see --help options)
 --raw-file NAME PATH         Set variable $NAME to string content of file
 --raw-input,-R               Read raw input strings (don't decode)
 --raw-output,-r              Raw string output (without quotes)
+--raw-output0                NUL (zero) byte after each output
 --repl,-i                    Interactive REPL
 --slurp,-s                   Slurp all inputs into an array or string (-Rs)
 --unicode-output,-U          Force unicode output
@@ -118,3 +118,11 @@ $ fq -.
 exitcode: 2
 stderr:
 error: -.: no such argument
+$ fq -0
+0
+stdin:
+"abc"
+$ fq -123
+-123
+stdin:
+"abc"
