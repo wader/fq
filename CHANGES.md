@@ -1,3 +1,14 @@
+# 0.8.0 - WIP
+
+- Updated gojq fork with fixes from upstream:
+  - Improved error messages for indices, setpath, delpaths
+  - Add `abs` function
+  - Change behavior of walk with multiple outputs
+  - Change zero division to produce an error when dividend is zero
+  - Fix empty string repeating with the maximum integer
+  - Fix string multiplication by zero to emit empty string
+  - Remove deprecated `leaf_paths` function
+
 # 0.7.0
 
 Added LuaJIT bytecode decoder by @dlatchx, otherwise mostly small things. Been busy with nice weather and

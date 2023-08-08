@@ -111,13 +111,13 @@ error: expected an object but got: array
 json> (.)[0] |= empty
 []
 json> (.) | setpath(["a"]; 1)
-error: expected an object but got: array ([])
+error: setpath(["a"]; 1) cannot be applied to []: expected an object but got: array ([])
 json> (.) | setpath([0]; 1)
 [
   1
 ]
 json> (.) | delpaths([["a"]])
-error: expected an object but got: array ([])
+error: delpaths([["a"]]) cannot be applied to []: expected an object but got: array ([])
 json> (.) | delpaths([[0]])
 []
 json> ^D
