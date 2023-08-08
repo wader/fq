@@ -108,19 +108,19 @@ mp3> .headers[0].header.magic._gap | ., type, length?
 false
 "boolean"
 mp3> .headers[0].header.magic.a = 1
-error: expected an object but got: string ("ID3")
+error: setpath(["headers",0,"header","ma ...]; 1) cannot be applied to {"footers":[],"frames":[{" ...: expected an object but got: string ("ID3")
 mp3> .headers[0].header.magic[0] = 1
-error: expected an array but got: string ("ID3")
+error: setpath(["headers",0,"header","ma ...]; 1) cannot be applied to {"footers":[],"frames":[{" ...: expected an array but got: string ("ID3")
 mp3> .headers[0].header.magic.a |= empty
 error: expected an object but got: string
 mp3> .headers[0].header.magic[0] |= empty
-error: expected an array but got: string ("ID3")
+error: delpaths([["headers",0,"header","m ...]) cannot be applied to {"footers":[],"frames":[{" ...: expected an array but got: string ("ID3")
 mp3> .headers[0].header.magic | setpath(["a"]; 1)
-error: expected an object but got: string ("ID3")
+error: setpath(["a"]; 1) cannot be applied to "ID3": expected an object but got: string ("ID3")
 mp3> .headers[0].header.magic | setpath([0]; 1)
-error: expected an array but got: string ("ID3")
+error: setpath([0]; 1) cannot be applied to "ID3": expected an array but got: string ("ID3")
 mp3> .headers[0].header.magic | delpaths([["a"]])
-error: expected an object but got: string ("ID3")
+error: delpaths([["a"]]) cannot be applied to "ID3": expected an object but got: string ("ID3")
 mp3> .headers[0].header.magic | delpaths([[0]])
-error: expected an array but got: string ("ID3")
+error: delpaths([[0]]) cannot be applied to "ID3": expected an array but got: string ("ID3")
 mp3> ^D

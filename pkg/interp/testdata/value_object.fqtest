@@ -477,7 +477,7 @@ mp3> .headers[0].header.flags.a = 1
   ]
 }
 mp3> .headers[0].header.flags[0] = 1
-error: expected an array but got: object ({"experimental_indicator" ...})
+error: setpath(["headers",0,"header","fl ...]; 1) cannot be applied to {"footers":[],"frames":[{" ...: expected an array but got: object ({"experimental_indicator" ...})
 mp3> .headers[0].header.flags.a |= empty
 {
   "footers": [],
@@ -855,7 +855,7 @@ mp3> .headers[0].header.flags | setpath(["a"]; 1)
   "unused": 0
 }
 mp3> .headers[0].header.flags | setpath([0]; 1)
-error: expected an array but got: object ({"experimental_indicator" ...})
+error: setpath([0]; 1) cannot be applied to {"experimental_indicator": ...: expected an array but got: object ({"experimental_indicator" ...})
 mp3> .headers[0].header.flags | delpaths([["a"]])
 {
   "experimental_indicator": false,
@@ -864,5 +864,5 @@ mp3> .headers[0].header.flags | delpaths([["a"]])
   "unused": 0
 }
 mp3> .headers[0].header.flags | delpaths([[0]])
-error: expected an array but got: object ({"experimental_indicator" ...})
+error: delpaths([[0]]) cannot be applied to {"experimental_indicator": ...: expected an array but got: object ({"experimental_indicator" ...})
 mp3> ^D

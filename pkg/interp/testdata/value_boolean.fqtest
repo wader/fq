@@ -95,19 +95,19 @@ mp3> .headers[0].header.flags.unsynchronisation._gap | ., type, length?
 false
 "boolean"
 mp3> .headers[0].header.flags.unsynchronisation.a = 1
-error: expected an object but got: boolean (false)
+error: setpath(["headers",0,"header","fl ...]; 1) cannot be applied to {"footers":[],"frames":[{" ...: expected an object but got: boolean (false)
 mp3> .headers[0].header.flags.unsynchronisation[0] = 1
-error: expected an array but got: boolean (false)
+error: setpath(["headers",0,"header","fl ...]; 1) cannot be applied to {"footers":[],"frames":[{" ...: expected an array but got: boolean (false)
 mp3> .headers[0].header.flags.unsynchronisation.a |= empty
 error: expected an object but got: boolean
 mp3> .headers[0].header.flags.unsynchronisation[0] |= empty
 error: expected an array but got: boolean
 mp3> .headers[0].header.flags.unsynchronisation | setpath(["a"]; 1)
-error: expected an object but got: boolean (false)
+error: setpath(["a"]; 1) cannot be applied to false: expected an object but got: boolean (false)
 mp3> .headers[0].header.flags.unsynchronisation | setpath([0]; 1)
-error: expected an array but got: boolean (false)
+error: setpath([0]; 1) cannot be applied to false: expected an array but got: boolean (false)
 mp3> .headers[0].header.flags.unsynchronisation | delpaths([["a"]])
-error: expected an object but got: boolean (false)
+error: delpaths([["a"]]) cannot be applied to false: expected an object but got: boolean (false)
 mp3> .headers[0].header.flags.unsynchronisation | delpaths([[0]])
-error: expected an array but got: boolean (false)
+error: delpaths([[0]]) cannot be applied to false: expected an array but got: boolean (false)
 mp3> ^D

@@ -96,19 +96,19 @@ mp3> .headers[0].header.version._gap | ., type, length?
 false
 "boolean"
 mp3> .headers[0].header.version.a = 1
-error: expected an object but got: number (4)
+error: setpath(["headers",0,"header","ve ...]; 1) cannot be applied to {"footers":[],"frames":[{" ...: expected an object but got: number (4)
 mp3> .headers[0].header.version[0] = 1
-error: expected an array but got: number (4)
+error: setpath(["headers",0,"header","ve ...]; 1) cannot be applied to {"footers":[],"frames":[{" ...: expected an array but got: number (4)
 mp3> .headers[0].header.version.a |= empty
 error: expected an object but got: number
 mp3> .headers[0].header.version[0] |= empty
 error: expected an array but got: number
 mp3> .headers[0].header.version | setpath(["a"]; 1)
-error: expected an object but got: number (4)
+error: setpath(["a"]; 1) cannot be applied to 4: expected an object but got: number (4)
 mp3> .headers[0].header.version | setpath([0]; 1)
-error: expected an array but got: number (4)
+error: setpath([0]; 1) cannot be applied to 4: expected an array but got: number (4)
 mp3> .headers[0].header.version | delpaths([["a"]])
-error: expected an object but got: number (4)
+error: delpaths([["a"]]) cannot be applied to 4: expected an object but got: number (4)
 mp3> .headers[0].header.version | delpaths([[0]])
-error: expected an array but got: number (4)
+error: delpaths([[0]]) cannot be applied to 4: expected an array but got: number (4)
 mp3> ^D

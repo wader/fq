@@ -105,9 +105,9 @@ json> (.) | setpath(["a"]; 1)
   "a": 1
 }
 json> (.) | setpath([0]; 1)
-error: expected an array but got: object ({})
+error: setpath([0]; 1) cannot be applied to {}: expected an array but got: object ({})
 json> (.) | delpaths([["a"]])
 {}
 json> (.) | delpaths([[0]])
-error: expected an array but got: object ({})
+error: delpaths([[0]]) cannot be applied to {}: expected an array but got: object ({})
 json> ^D
