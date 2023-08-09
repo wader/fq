@@ -706,7 +706,7 @@ This value is similar in scope to the biCompression value of AVI's `BITMAPINFO` 
   </element>
   <element name="MatrixCoefficients" path="\Segment\Tracks\TrackEntry\Video\Colour\MatrixCoefficients" id="0x55B1" type="uinteger" minver="4" default="2" minOccurs="1" maxOccurs="1">
     <documentation lang="en" purpose="definition">The Matrix Coefficients of the video used to derive luma and chroma values from red, green, and blue color primaries.
-For clarity, the value and meanings for MatrixCoefficients are adopted from Table 4 of ISO/IEC 23001-8:2016 or ITU-T H.273.</documentation>
+For clarity, the value and meanings for MatrixCoefficients are adopted from Table 4 of [@!ITU-H.273].</documentation>
     <restriction>
       <enum value="0" label="Identity"/>
       <enum value="1" label="ITU-R BT.709"/>
@@ -799,7 +799,7 @@ This is additive with ChromaSubsamplingVert.</documentation>
   </element>
   <element name="TransferCharacteristics" path="\Segment\Tracks\TrackEntry\Video\Colour\TransferCharacteristics" id="0x55BA" type="uinteger" minver="4" default="2" minOccurs="1" maxOccurs="1">
     <documentation lang="en" purpose="definition">The transfer characteristics of the video. For clarity,
-the value and meanings for TransferCharacteristics are adopted from Table 3 of ISO/IEC 23091-4 or ITU-T H.273.</documentation>
+the value and meanings for TransferCharacteristics are adopted from Table 3 of [@!ITU-H.273].</documentation>
     <restriction>
       <enum value="0" label="reserved"/>
       <enum value="1" label="ITU-R BT.709"/>
@@ -827,7 +827,7 @@ the value and meanings for TransferCharacteristics are adopted from Table 3 of I
   </element>
   <element name="Primaries" path="\Segment\Tracks\TrackEntry\Video\Colour\Primaries" id="0x55BB" type="uinteger" minver="4" default="2" minOccurs="1" maxOccurs="1">
     <documentation lang="en" purpose="definition">The colour primaries of the video. For clarity,
-the value and meanings for Primaries are adopted from Table 2 of ISO/IEC 23091-4 or ITU-T H.273.</documentation>
+the value and meanings for Primaries are adopted from Table 2 of [@!ITU-H.273].</documentation>
     <restriction>
       <enum value="0" label="reserved"/>
       <enum value="1" label="ITU-R BT.709"/>
@@ -1118,7 +1118,7 @@ For more details look at (#track-operation).</documentation>
     <extension type="divx.com" divx="1"/>
   </element>
   <element name="TrickTrackFlag" path="\Segment\Tracks\TrackEntry\TrickTrackFlag" id="0xC6" type="uinteger" minver="0" maxver="0" default="0" maxOccurs="1">
-    <documentation lang="en" purpose="definition">Set to 1 if this video track is a Smooth FF/RW track. If set to 1, MasterTrackUID and MasterTrackSegUID should must be present and BlockGroups for this track must contain ReferenceFrame structures.
+    <documentation lang="en" purpose="definition">Set to 1 if this video track is a Smooth FF/RW track. If set to 1, MasterTrackUID and MasterTrackSegUID should be present and BlockGroups for this track must contain ReferenceFrame structures.
 Otherwise, TrickTrackUID and TrickTrackSegUID must be present if this track has a corresponding Smooth FF/RW track. See [@?DivXTrickTrack].</documentation>
     <extension type="divx.com" divx="1"/>
   </element>
@@ -1155,7 +1155,7 @@ Values (big-endian) can be OR'ed.</documentation>
         <documentation lang="en" purpose="definition">All frame contents, excluding lacing data.</documentation>
       </enum>
       <enum value="2" label="Private">
-        <documentation lang="en" purpose="definition">The track's private data.</documentation>
+        <documentation lang="en" purpose="definition">The track's `CodecPrivate` data.</documentation>
       </enum>
       <enum value="4" label="Next">
         <documentation lang="en" purpose="definition">The next ContentEncoding (next `ContentEncodingOrder`. Either the data inside `ContentCompression` and/or `ContentEncryption`).</documentation>
@@ -1221,26 +1221,29 @@ A Matroska Player **MAY** support encryption.</documentation>
         <documentation lang="en" purpose="definition">The data are not encrypted.</documentation>
       </enum>
       <enum value="1" label="DES">
-        <documentation lang="en" purpose="definition">Data Encryption Standard (DES) [@!FIPS.46-3].</documentation>
+        <documentation lang="en" purpose="definition">Data Encryption Standard (DES) [@?FIPS.46-3].</documentation>
+        <documentation lang="en" purpose="usage notes">This value **SHOULD** be avoided.</documentation>
       </enum>
       <enum value="2" label="3DES">
-        <documentation lang="en" purpose="definition">Triple Data Encryption Algorithm [@!SP.800-67].</documentation>
+        <documentation lang="en" purpose="definition">Triple Data Encryption Algorithm [@?SP.800-67].</documentation>
+        <documentation lang="en" purpose="usage notes">This value **SHOULD** be avoided.</documentation>
       </enum>
       <enum value="3" label="Twofish">
-        <documentation lang="en" purpose="definition">Twofish Encryption Algorithm [@!Twofish].</documentation>
+        <documentation lang="en" purpose="definition">Twofish Encryption Algorithm [@?Twofish].</documentation>
       </enum>
       <enum value="4" label="Blowfish">
-        <documentation lang="en" purpose="definition">Blowfish Encryption Algorithm [@!Blowfish].</documentation>
+        <documentation lang="en" purpose="definition">Blowfish Encryption Algorithm [@?Blowfish].</documentation>
+        <documentation lang="en" purpose="usage notes">This value **SHOULD** be avoided.</documentation>
       </enum>
       <enum value="5" label="AES">
-        <documentation lang="en" purpose="definition">Advanced Encryption Standard (AES) [@!FIPS.197].</documentation>
+        <documentation lang="en" purpose="definition">Advanced Encryption Standard (AES) [@?FIPS.197].</documentation>
       </enum>
     </restriction>
     <extension type="webmproject.org" webm="1"/>
     <extension type="stream copy" keep="1"/>
   </element>
   <element name="ContentEncKeyID" path="\Segment\Tracks\TrackEntry\ContentEncodings\ContentEncoding\ContentEncryption\ContentEncKeyID" id="0x47E2" type="binary" maxOccurs="1">
-    <documentation lang="en" purpose="definition">For public key algorithms this is the ID of the public key the the data was encrypted with.</documentation>
+    <documentation lang="en" purpose="definition">For public key algorithms this is the ID of the public key the data was encrypted with.</documentation>
     <extension type="webmproject.org" webm="1"/>
     <extension type="stream copy" keep="1"/>
   </element>
@@ -1288,7 +1291,7 @@ A Matroska Player **MAY** support encryption.</documentation>
   <element name="Cues" path="\Segment\Cues" id="0x1C53BB6B" type="master" maxOccurs="1">
     <documentation lang="en" purpose="definition">A Top-Level Element to speed seeking access.
 All entries are local to the Segment.</documentation>
-    <implementation_note note_attribute="minOccurs">This Element **SHOULD** be set when the Segment is not transmitted as a live stream (see #livestreaming).</implementation_note>
+    <implementation_note note_attribute="minOccurs">This Element **SHOULD** be set when the Segment is not transmitted as a live stream; see (#livestreaming).</implementation_note>
     <extension type="webmproject.org" webm="1"/>
   </element>
   <element name="CuePoint" path="\Segment\Cues\CuePoint" id="0xBB" type="master" minOccurs="1">
@@ -1543,7 +1546,7 @@ This Element **MUST** be ignored if a ChapLanguageBCP47 Element is used within t
   </element>
   <element name="ChapProcessCodecID" path="\Segment\Chapters\EditionEntry\+ChapterAtom\ChapProcess\ChapProcessCodecID" id="0x6955" type="uinteger" default="0" minOccurs="1" maxOccurs="1">
     <documentation lang="en" purpose="definition">Contains the type of the codec used for the processing.
-A value of 0 means native Matroska processing (to be defined), a value of 1 means the DVD command set is used; see (#menu-features) on DVD menus.
+A value of 0 means built-in Matroska processing (to be defined), a value of 1 means the DVD command set is used; see (#menu-features) on DVD menus.
 More codec IDs can be added later.</documentation>
     <extension type="libmatroska" cppname="ChapterProcessCodecID"/>
   </element>
@@ -1615,8 +1618,7 @@ If empty or omitted, then the Tag describes everything in the Segment.</document
     <extension type="libmatroska" cppname="TagTargetTypeValue"/>
   </element>
   <element name="TargetType" path="\Segment\Tags\Tag\Targets\TargetType" id="0x63CA" type="string" maxOccurs="1">
-    <documentation lang="en" purpose="definition">An informational string that can be used to display the logical level of the target like "ALBUM", "TRACK", "MOVIE", "CHAPTER", etc.
-; see Section 6.4 of [@?MatroskaTags].</documentation>
+    <documentation lang="en" purpose="definition">An informational string that can be used to display the logical level of the target like "ALBUM", "TRACK", "MOVIE", "CHAPTER", etc.</documentation>
     <restriction>
       <enum value="COLLECTION" label="TargetTypeValue 70"/>
       <enum value="EDITION" label="TargetTypeValue 60"/>
