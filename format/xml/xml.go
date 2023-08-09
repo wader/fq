@@ -356,14 +356,14 @@ func xmlNameFromStr(s string) xml.Name {
 	return xml.Name{Local: s}
 }
 
-func xmlNameSort(a, b xml.Name) bool {
+func xmlNameSort(a, b xml.Name) int {
 	if a.Space != b.Space {
 		if a.Space == "" {
-			return true
+			return 1
 		}
-		return a.Space < b.Space
+		return strings.Compare(a.Space, b.Space)
 	}
-	return a.Local < b.Local
+	return strings.Compare(a.Local, b.Local)
 }
 
 type ToXMLOpts struct {
@@ -442,7 +442,7 @@ func toXMLFromObject(c any, opts ToXMLOpts) any {
 			sortex.ProxySort(orderNames, n.Nodes, func(a, b string) bool { return a < b })
 		}
 
-		slices.SortFunc(n.Attrs, func(a, b xml.Attr) bool { return xmlNameSort(a.Name, b.Name) })
+		slices.SortFunc(n.Attrs, func(a, b xml.Attr) int { return xmlNameSort(a.Name, b.Name) })
 
 		return n, seq, hasSeq
 	}
@@ -515,7 +515,7 @@ func toXMLFromArray(c any, opts ToXMLOpts) any {
 			}
 		}
 
-		slices.SortFunc(n.Attrs, func(a, b xml.Attr) bool { return xmlNameSort(a.Name, b.Name) })
+		slices.SortFunc(n.Attrs, func(a, b xml.Attr) int { return xmlNameSort(a.Name, b.Name) })
 
 		for _, c := range children {
 			c, ok := c.([]any)
