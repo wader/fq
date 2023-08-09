@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/wader/fq/internal/cmpex"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/ranges"
 	"github.com/wader/fq/pkg/scalar"
@@ -200,7 +201,9 @@ func (v *Value) postProcess() {
 
 			// sort struct fields and make sure to keep order if range is the same
 			if !vv.IsArray {
-				slices.SortStableFunc(vv.Children, func(a, b *Value) bool { return a.Range.Start < b.Range.Start })
+				slices.SortStableFunc(vv.Children, func(a, b *Value) int {
+					return cmpex.Compare(a.Range.Start, b.Range.Start)
+				})
 			}
 
 			v.Index = -1

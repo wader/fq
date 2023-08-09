@@ -13,6 +13,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/wader/fq/internal/cmpex"
 	"github.com/wader/fq/internal/shquote"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/interp"
@@ -274,7 +275,7 @@ type Case struct {
 func (c *Case) ToActual() string {
 	var partsLineSorted []part
 	partsLineSorted = append(partsLineSorted, c.Parts...)
-	slices.SortFunc(partsLineSorted, func(a, b part) bool { return a.Line() < b.Line() })
+	slices.SortFunc(partsLineSorted, func(a, b part) int { return cmpex.Compare(a.Line(), b.Line()) })
 
 	sb := &strings.Builder{}
 	for _, p := range partsLineSorted {

@@ -4,8 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
+	"strings"
 	"sync"
 
+	"github.com/wader/fq/internal/cmpex"
 	"github.com/wader/fq/internal/gojqex"
 	"github.com/wader/fq/pkg/decode"
 	"golang.org/x/exp/slices"
@@ -64,11 +66,11 @@ func (r *Registry) Func(funcFn EnvFuncFn) {
 }
 
 func sortFormats(g *decode.Group) {
-	slices.SortFunc(g.Formats, func(a, b *decode.Format) bool {
+	slices.SortFunc(g.Formats, func(a, b *decode.Format) int {
 		if a.ProbeOrder == b.ProbeOrder {
-			return a.Name < b.Name
+			return strings.Compare(a.Name, b.Name)
 		}
-		return a.ProbeOrder < b.ProbeOrder
+		return cmpex.Compare(a.ProbeOrder, b.ProbeOrder)
 	})
 }
 

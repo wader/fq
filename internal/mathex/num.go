@@ -7,9 +7,8 @@ import (
 	"strconv"
 	"strings"
 
-	"golang.org/x/exp/constraints"
-
 	"github.com/wader/fq/pkg/ranges"
+	"golang.org/x/exp/constraints"
 )
 
 var BasePrefixMap = map[int]string{
