@@ -1,5 +1,5 @@
 # bump: docker-golang /FROM golang:([\d.]+)/ docker:golang|^1
-FROM golang:1.20.7-bookworm AS base
+FROM golang:1.21.0-bookworm AS base
 
 # expect is used to test cli
 RUN \
