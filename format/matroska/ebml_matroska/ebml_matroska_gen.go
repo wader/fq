@@ -2077,7 +2077,7 @@ var ContentEncodingScopeElement = &ebml.Uinteger{
 	},
 	Enums: map[uint64]ebml.Enum{
 		1: {Name: "block", Description: "All frame contents"},
-		2: {Name: "private", Description: "The track's private data"},
+		2: {Name: "private", Description: "The track's CodecPrivate data"},
 		4: {Name: "next", Description: "The next ContentEncoding"},
 	},
 }
@@ -2167,7 +2167,7 @@ var ContentEncKeyIDElement = &ebml.Binary{
 		ID:         ContentEncKeyIDID,
 		ParentID:   ContentEncryptionID,
 		Name:       "content_enc_key_id",
-		Definition: "For public key algorithms this is the ID of the public key the the data was encrypted with",
+		Definition: "For public key algorithms this is the ID of the public key the data was encrypted with",
 	},
 }
 var ContentSignatureElement = &ebml.Binary{
