@@ -82,10 +82,6 @@ func decodeVersion(d *decode.D) {
 	d.FieldU8("patch")
 }
 
-func decodeCompressed(d *decode.D) {
-	d.FieldU8("zip")
-}
-
 func decodeCAFF(d *decode.D) any {
 	var ci format.CAFF_In
 	d.ArgAs(&ci)
