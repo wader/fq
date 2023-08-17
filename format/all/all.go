@@ -15,6 +15,7 @@ import (
 	_ "github.com/wader/fq/format/bits"
 	_ "github.com/wader/fq/format/bson"
 	_ "github.com/wader/fq/format/bzip2"
+	_ "github.com/wader/fq/format/caff"
 	_ "github.com/wader/fq/format/cbor"
 	_ "github.com/wader/fq/format/crypto"
 	_ "github.com/wader/fq/format/csv"
