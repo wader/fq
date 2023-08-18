@@ -33,14 +33,14 @@ func init() {
 const (
 	imageFormatUnknown   = 0x00
 	imageFormatPNG       = 0x01
-	imageFormatNoPreview = 0x7F
+	imageFormatNoPreview = 0x7f
 )
 
 const (
 	colorTypeUnknown   = 0x00
 	colorTypeARGB      = 0x01
 	colorTypeRGB       = 0x02
-	colorTypeNoPreview = 0x7F
+	colorTypeNoPreview = 0x7f
 )
 
 const (
@@ -88,8 +88,8 @@ func decodeCAFF(d *decode.D) any {
 
 	var obfsKey uint64
 
-	obfsU8 := func(d *decode.D) uint64 { return d.U8() ^ (obfsKey & 0xFF) }
-	obfsU32 := func(d *decode.D) uint64 { return d.U32() ^ (obfsKey & 0xFFFFFFFF) }
+	obfsU8 := func(d *decode.D) uint64 { return d.U8() ^ (obfsKey & 0xff) }
+	obfsU32 := func(d *decode.D) uint64 { return d.U32() ^ (obfsKey & 0xffff_ffff) }
 	obfsU64 := func(d *decode.D) uint64 { return d.U64() ^ (obfsKey<<32 | obfsKey) }
 	obfsBool := func(d *decode.D) bool { return obfsU8(d) != 0 }
 
@@ -98,7 +98,7 @@ func decodeCAFF(d *decode.D) any {
 		for {
 			x := obfsU8(d)
 			v <<= 7
-			v |= (x & 0x7F)
+			v |= (x & 0x7f)
 			if (x >> 7) == 0 {
 				return
 			}
@@ -188,10 +188,12 @@ func decodeCAFF(d *decode.D) any {
 					d.FieldRootBitBuf("compressed", br)
 
 					// Offset 0x26: skip ZIP entry header; there's nothing useful in it and it's always the same
-					infBytes, err := io.ReadAll(flate.NewReader(bytes.NewReader(rawBytes[0x26:])))
-					if err == nil {
-						infBr := bitio.NewBitReader(infBytes, -1)
-						_, _, _ = d.TryFieldFormatBitBuf("uncompressed", infBr, &probeGroup, format.Probe_In{})
+					if len(rawBytes) > 0x26 {
+						infBytes, err := io.ReadAll(flate.NewReader(bytes.NewReader(rawBytes[0x26:])))
+						if err == nil {
+							infBr := bitio.NewBitReader(infBytes, -1)
+							d.TryFieldFormatBitBuf("uncompressed", infBr, &probeGroup, format.Probe_In{})
+						}
 					}
 				}
 			})
