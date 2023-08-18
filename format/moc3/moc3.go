@@ -9,8 +9,6 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var probeGroup decode.Group
-
 func init() {
 	interp.RegisterFormat(
 		format.MOC3,
