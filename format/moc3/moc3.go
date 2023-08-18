@@ -523,20 +523,17 @@ func decodeMOC3(d *decode.D) any {
 				sectionOffsets.glueInfo.positionIndices = int64(d.FieldU32("position_indices"))
 			})
 
+			d.FieldStruct("glue_keyforms", func(d *decode.D) {
+				sectionOffsets.glueKeyforms.intensities = int64(d.FieldU32("intensities"))
+			})
+
 			if version >= moc3Version3_03_00 {
-
-				d.FieldStruct("glue_keyforms", func(d *decode.D) {
-					sectionOffsets.glueKeyforms.intensities = int64(d.FieldU32("intensities"))
-				})
-
-			}
-
-			if version >= moc3Version4_02_00 {
-
 				d.FieldStruct("warp_deformers_v3_3", func(d *decode.D) {
 					sectionOffsets.warpDeformersV3_3.isQuadSource = int64(d.FieldU32("is_quad_source"))
 				})
+			}
 
+			if version >= moc3Version4_02_00 {
 				d.FieldStruct("parameter_extensions", func(d *decode.D) {
 					sectionOffsets.parameterExtensions.runtimeSpace0 = int64(d.FieldU32("runtime_space0"))
 					sectionOffsets.parameterExtensions.keysSourcesBeginIndices = int64(d.FieldU32("keys_sources_begin_indices"))
@@ -613,7 +610,6 @@ func decodeMOC3(d *decode.D) any {
 					sectionOffsets.blendShapeConstraintValues.keys = int64(d.FieldU32("keys"))
 					sectionOffsets.blendShapeConstraintValues.weights = int64(d.FieldU32("weights"))
 				})
-
 			}
 
 			d.FieldRawLen("reserved", d.BitsLeft())
@@ -707,14 +703,14 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.parts.isVisible * 8)
 			d.FieldArray("is_visible", func(d *decode.D) {
 				for i := int64(0); i < countInfo.parts; i++ {
-					d.FieldBoolFn("element", func(d *decode.D) bool { return d.U32() != 0 })
+					d.FieldBoolFn("visible", func(d *decode.D) bool { return d.U32() != 0 })
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.parts.isEnabled * 8)
 			d.FieldArray("is_enabled", func(d *decode.D) {
 				for i := int64(0); i < countInfo.parts; i++ {
-					d.FieldBoolFn("element", func(d *decode.D) bool { return d.U32() != 0 })
+					d.FieldBoolFn("enabled", func(d *decode.D) bool { return d.U32() != 0 })
 				}
 			})
 
@@ -744,14 +740,14 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.deformers.isVisible * 8)
 			d.FieldArray("is_visible", func(d *decode.D) {
 				for i := int64(0); i < countInfo.deformers; i++ {
-					d.FieldBoolFn("element", func(d *decode.D) bool { return d.U32() != 0 })
+					d.FieldBoolFn("visible", func(d *decode.D) bool { return d.U32() != 0 })
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.deformers.isEnabled * 8)
 			d.FieldArray("is_enabled", func(d *decode.D) {
 				for i := int64(0); i < countInfo.deformers; i++ {
-					d.FieldBoolFn("element", func(d *decode.D) bool { return d.U32() != 0 })
+					d.FieldBoolFn("enabled", func(d *decode.D) bool { return d.U32() != 0 })
 				}
 			})
 
@@ -816,16 +812,34 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.warpDeformers.rows * 8)
 			d.FieldArray("rows", func(d *decode.D) {
 				for i := int64(0); i < countInfo.warpDeformers; i++ {
-					d.FieldU32("element")
+					d.FieldU32("row")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.warpDeformers.columns * 8)
 			d.FieldArray("columns", func(d *decode.D) {
 				for i := int64(0); i < countInfo.warpDeformers; i++ {
-					d.FieldU32("element")
+					d.FieldU32("column")
 				}
 			})
+
+			if version >= moc3Version3_03_00 {
+				d.SeekAbs(sectionOffsets.warpDeformersV3_3.isQuadSource * 8)
+				d.FieldArray("is_quad_source", func(d *decode.D) {
+					for i := int64(0); i < countInfo.warpDeformers; i++ {
+						d.FieldBoolFn("quad_source", func(d *decode.D) bool { return d.U32() != 0 })
+					}
+				})
+			}
+
+			if version >= moc3Version4_02_00 {
+				d.SeekAbs(sectionOffsets.warpDeformersV4_2.keyformColorSourcesBeginIndices * 8)
+				d.FieldArray("keyform_color_sources_begin_indices", func(d *decode.D) {
+					for i := int64(0); i < countInfo.warpDeformers; i++ {
+						d.FieldS32("index")
+					}
+				})
+			}
 		})
 
 		d.FieldStruct("rotation_deformers", func(d *decode.D) {
@@ -856,6 +870,15 @@ func decodeMOC3(d *decode.D) any {
 					d.FieldF32("angle")
 				}
 			})
+
+			if version >= moc3Version4_02_00 {
+				d.SeekAbs(sectionOffsets.rotationDeformersV4_2.keyformColorSourcesBeginIndices * 8)
+				d.FieldArray("keyform_color_sources_begin_indices", func(d *decode.D) {
+					for i := int64(0); i < countInfo.rotationDeformers; i++ {
+						d.FieldS32("index")
+					}
+				})
+			}
 		})
 
 		d.FieldStruct("art_meshes", func(d *decode.D) {
@@ -890,14 +913,14 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.artMeshes.isVisible * 8)
 			d.FieldArray("is_visible", func(d *decode.D) {
 				for i := int64(0); i < countInfo.artMeshes; i++ {
-					d.FieldBoolFn("element", func(d *decode.D) bool { return d.U32() != 0 })
+					d.FieldBoolFn("visible", func(d *decode.D) bool { return d.U32() != 0 })
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.artMeshes.isEnabled * 8)
 			d.FieldArray("is_enabled", func(d *decode.D) {
 				for i := int64(0); i < countInfo.artMeshes; i++ {
-					d.FieldBoolFn("element", func(d *decode.D) bool { return d.U32() != 0 })
+					d.FieldBoolFn("enabled", func(d *decode.D) bool { return d.U32() != 0 })
 				}
 			})
 
@@ -975,6 +998,15 @@ func decodeMOC3(d *decode.D) any {
 					d.FieldS32("count")
 				}
 			})
+
+			if version >= moc3Version4_02_00 {
+				d.SeekAbs(sectionOffsets.artMeshesV4_2.keyformColorSourcesBeginIndices * 8)
+				d.FieldArray("keyform_color_sources_begin_indices", func(d *decode.D) {
+					for i := int64(0); i < countInfo.artMeshes; i++ {
+						d.FieldS32("index")
+					}
+				})
+			}
 		})
 
 		d.FieldStruct("parameters", func(d *decode.D) {
@@ -988,35 +1020,35 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.parameters.maxValues * 8)
 			d.FieldArray("max_values", func(d *decode.D) {
 				for i := int64(0); i < countInfo.parameters; i++ {
-					d.FieldF32("element")
+					d.FieldF32("value")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.parameters.minValues * 8)
 			d.FieldArray("min_values", func(d *decode.D) {
 				for i := int64(0); i < countInfo.parameters; i++ {
-					d.FieldF32("element")
+					d.FieldF32("value")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.parameters.defaultValues * 8)
 			d.FieldArray("default_values", func(d *decode.D) {
 				for i := int64(0); i < countInfo.parameters; i++ {
-					d.FieldF32("element")
+					d.FieldF32("value")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.parameters.isRepeat * 8)
 			d.FieldArray("is_repeat", func(d *decode.D) {
 				for i := int64(0); i < countInfo.parameters; i++ {
-					d.FieldBoolFn("element", func(d *decode.D) bool { return d.U32() != 0 })
+					d.FieldBoolFn("repeat", func(d *decode.D) bool { return d.U32() != 0 })
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.parameters.decimalPlaces * 8)
 			d.FieldArray("decimal_places", func(d *decode.D) {
 				for i := int64(0); i < countInfo.parameters; i++ {
-					d.FieldU32("element")
+					d.FieldU32("value")
 				}
 			})
 
@@ -1033,13 +1065,36 @@ func decodeMOC3(d *decode.D) any {
 					d.FieldS32("count")
 				}
 			})
+
+			if version >= moc3Version4_02_00 {
+				d.SeekAbs(sectionOffsets.parameterOffsetsV4_2.parameterTypes * 8)
+				d.FieldArray("parameter_types", func(d *decode.D) {
+					for i := int64(0); i < countInfo.parameters; i++ {
+						d.FieldU32("type", parameterTypeNames)
+					}
+				})
+
+				d.SeekAbs(sectionOffsets.parameterOffsetsV4_2.blendShapeParameterBindingSourcesBeginIndices * 8)
+				d.FieldArray("blend_shape_parameter_binding_sources_begin_indices", func(d *decode.D) {
+					for i := int64(0); i < countInfo.parameters; i++ {
+						d.FieldS32("index")
+					}
+				})
+
+				d.SeekAbs(sectionOffsets.parameterOffsetsV4_2.blendShapeParameterBindingSourcesCounts * 8)
+				d.FieldArray("blend_shape_parameter_binding_sources_counts", func(d *decode.D) {
+					for i := int64(0); i < countInfo.parameters; i++ {
+						d.FieldS32("count")
+					}
+				})
+			}
 		})
 
 		d.FieldStruct("part_keyforms", func(d *decode.D) {
 			d.SeekAbs(sectionOffsets.partKeyforms.drawOrders * 8)
 			d.FieldArray("draw_orders", func(d *decode.D) {
 				for i := int64(0); i < countInfo.partKeyforms; i++ {
-					d.FieldF32("element")
+					d.FieldF32("draw_order")
 				}
 			})
 		})
@@ -1048,7 +1103,7 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.warpDeformerKeyforms.opacities * 8)
 			d.FieldArray("opacities", func(d *decode.D) {
 				for i := int64(0); i < countInfo.warpDeformerKeyforms; i++ {
-					d.FieldF32("element")
+					d.FieldF32("opacity")
 				}
 			})
 
@@ -1078,35 +1133,35 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.rotationDeformerKeyforms.originX * 8)
 			d.FieldArray("origin_x", func(d *decode.D) {
 				for i := int64(0); i < countInfo.rotationDeformerKeyforms; i++ {
-					d.FieldF32("element")
+					d.FieldF32("x")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.rotationDeformerKeyforms.originY * 8)
 			d.FieldArray("origin_y", func(d *decode.D) {
 				for i := int64(0); i < countInfo.rotationDeformerKeyforms; i++ {
-					d.FieldF32("element")
+					d.FieldF32("y")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.rotationDeformerKeyforms.scales * 8)
 			d.FieldArray("scales", func(d *decode.D) {
 				for i := int64(0); i < countInfo.rotationDeformerKeyforms; i++ {
-					d.FieldF32("element")
+					d.FieldF32("scale")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.rotationDeformerKeyforms.isReflectX * 8)
 			d.FieldArray("is_reflect_x", func(d *decode.D) {
 				for i := int64(0); i < countInfo.rotationDeformerKeyforms; i++ {
-					d.FieldBoolFn("element", func(d *decode.D) bool { return d.U32() != 0 })
+					d.FieldBoolFn("reflect_x", func(d *decode.D) bool { return d.U32() != 0 })
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.rotationDeformerKeyforms.isReflectY * 8)
 			d.FieldArray("is_reflect_y", func(d *decode.D) {
 				for i := int64(0); i < countInfo.rotationDeformerKeyforms; i++ {
-					d.FieldBoolFn("element", func(d *decode.D) bool { return d.U32() != 0 })
+					d.FieldBoolFn("reflect_y", func(d *decode.D) bool { return d.U32() != 0 })
 				}
 			})
 		})
@@ -1115,14 +1170,14 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.artMeshKeyforms.opacities * 8)
 			d.FieldArray("opacities", func(d *decode.D) {
 				for i := int64(0); i < countInfo.artMeshKeyforms; i++ {
-					d.FieldF32("element")
+					d.FieldF32("value")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.artMeshKeyforms.drawOrders * 8)
 			d.FieldArray("draw_orders", func(d *decode.D) {
 				for i := int64(0); i < countInfo.artMeshKeyforms; i++ {
-					d.FieldF32("element")
+					d.FieldF32("draw_order")
 				}
 			})
 
@@ -1137,8 +1192,9 @@ func decodeMOC3(d *decode.D) any {
 		d.FieldStruct("keyform_positions", func(d *decode.D) {
 			d.SeekAbs(sectionOffsets.keyformPositions.xys * 8)
 			d.FieldArray("xys", func(d *decode.D) {
-				for i := int64(0); i < countInfo.keyformPositions; i++ {
-					d.FieldF32("element")
+				for i := int64(0); i < countInfo.keyformPositions; i += 2 {
+					d.FieldF32("x")
+					d.FieldF32("y")
 				}
 			})
 		})
@@ -1188,7 +1244,7 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.keys.values * 8)
 			d.FieldArray("values", func(d *decode.D) {
 				for i := int64(0); i < countInfo.keys; i++ {
-					d.FieldF32("element")
+					d.FieldF32("value")
 				}
 			})
 		})
@@ -1196,8 +1252,9 @@ func decodeMOC3(d *decode.D) any {
 		d.FieldStruct("uvs", func(d *decode.D) {
 			d.SeekAbs(sectionOffsets.UVs.uvs * 8)
 			d.FieldArray("uvs", func(d *decode.D) {
-				for i := int64(0); i < countInfo.uvs; i++ {
-					d.FieldF32("element")
+				for i := int64(0); i < countInfo.uvs; i += 2 {
+					d.FieldF32("u")
+					d.FieldF32("v")
 				}
 			})
 		})
@@ -1206,7 +1263,7 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.positionIndices.indices * 8)
 			d.FieldArray("indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.positionIndices; i++ {
-					d.FieldS16("element")
+					d.FieldS16("index")
 				}
 			})
 		})
@@ -1245,14 +1302,14 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.drawOrderGroups.maximumDrawOrders * 8)
 			d.FieldArray("maximum_draw_orders", func(d *decode.D) {
 				for i := int64(0); i < countInfo.drawOrderGroups; i++ {
-					d.FieldU32("element")
+					d.FieldU32("zindex")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.drawOrderGroups.minimumDrawOrders * 8)
 			d.FieldArray("minimum_draw_orders", func(d *decode.D) {
 				for i := int64(0); i < countInfo.drawOrderGroups; i++ {
-					d.FieldU32("element")
+					d.FieldU32("zindex")
 				}
 			})
 		})
@@ -1342,309 +1399,244 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.glueInfo.weights * 8)
 			d.FieldArray("weights", func(d *decode.D) {
 				for i := int64(0); i < countInfo.glueInfo; i++ {
-					d.FieldF32("element")
+					d.FieldF32("value")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.glueInfo.positionIndices * 8)
 			d.FieldArray("position_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.glueInfo; i++ {
-					d.FieldS16("element")
+					d.FieldS16("index")
 				}
 			})
 		})
-
-		if version < moc3Version3_03_00 {
-			return
-		}
 
 		d.FieldStruct("glue_keyforms", func(d *decode.D) {
 			d.SeekAbs(sectionOffsets.glueKeyforms.intensities * 8)
 			d.FieldArray("intensities", func(d *decode.D) {
 				for i := int64(0); i < countInfo.glueKeyforms; i++ {
-					d.FieldF32("element")
+					d.FieldF32("value")
 				}
 			})
 		})
 
-		if version < moc3Version4_02_00 {
-			return
+		if version >= moc3Version4_02_00 {
+			d.FieldStruct("parameter_extensions", func(d *decode.D) {
+				d.SeekAbs(sectionOffsets.parameterExtensions.keysSourcesBeginIndices * 8)
+				d.FieldArray("keys_sources_begin_indices", func(d *decode.D) {
+					for i := int64(0); i < countInfo.parameters; i++ {
+						d.FieldS32("index")
+					}
+				})
+
+				d.SeekAbs(sectionOffsets.parameterExtensions.keysSourcesCounts * 8)
+				d.FieldArray("keys_sources_counts", func(d *decode.D) {
+					for i := int64(0); i < countInfo.parameters; i++ {
+						d.FieldS32("count")
+					}
+				})
+			})
+
+			d.FieldStruct("keyform_multiply_colors", func(d *decode.D) {
+				d.SeekAbs(sectionOffsets.keyformMultiplyColors.r * 8)
+				d.FieldArray("r", func(d *decode.D) {
+					for i := int64(0); i < countInfo.keyformMultiplyColors; i++ {
+						d.FieldF32("value")
+					}
+				})
+
+				d.SeekAbs(sectionOffsets.keyformMultiplyColors.g * 8)
+				d.FieldArray("g", func(d *decode.D) {
+					for i := int64(0); i < countInfo.keyformMultiplyColors; i++ {
+						d.FieldF32("value")
+					}
+				})
+
+				d.SeekAbs(sectionOffsets.keyformMultiplyColors.b * 8)
+				d.FieldArray("b", func(d *decode.D) {
+					for i := int64(0); i < countInfo.keyformMultiplyColors; i++ {
+						d.FieldF32("value")
+					}
+				})
+			})
+
+			d.FieldStruct("keyform_screen_colors", func(d *decode.D) {
+				d.SeekAbs(sectionOffsets.keyformScreenColors.r * 8)
+				d.FieldArray("r", func(d *decode.D) {
+					for i := int64(0); i < countInfo.keyformScreenColors; i++ {
+						d.FieldF32("value")
+					}
+				})
+
+				d.SeekAbs(sectionOffsets.keyformScreenColors.g * 8)
+				d.FieldArray("g", func(d *decode.D) {
+					for i := int64(0); i < countInfo.keyformScreenColors; i++ {
+						d.FieldF32("value")
+					}
+				})
+
+				d.SeekAbs(sectionOffsets.keyformScreenColors.b * 8)
+				d.FieldArray("b", func(d *decode.D) {
+					for i := int64(0); i < countInfo.keyformScreenColors; i++ {
+						d.FieldF32("value")
+					}
+				})
+			})
+
+			d.FieldStruct("blend_shape_parameter_bindings", func(d *decode.D) {
+				d.SeekAbs(sectionOffsets.blendShapeParameterBindings.keysSourcesBeginIndices * 8)
+				d.FieldArray("keys_sources_begin_indices", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapeParameterBindings; i++ {
+						d.FieldS32("index")
+					}
+				})
+
+				d.SeekAbs(sectionOffsets.blendShapeParameterBindings.keysSourcesCounts * 8)
+				d.FieldArray("keys_sources_counts", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapeParameterBindings; i++ {
+						d.FieldS32("count")
+					}
+				})
+
+				d.SeekAbs(sectionOffsets.blendShapeParameterBindings.baseKeyIndices * 8)
+				d.FieldArray("base_key_indices", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapeParameterBindings; i++ {
+						d.FieldS32("index")
+					}
+				})
+			})
+
+			d.FieldStruct("blend_shape_keyform_bindings", func(d *decode.D) {
+				d.SeekAbs(sectionOffsets.blendShapeKeyformBindings.parameterBindingSourcesIndices * 8)
+				d.FieldArray("parameter_binding_sources_indices", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapeKeyformBindings; i++ {
+						d.FieldS32("index")
+					}
+				})
+
+				d.SeekAbs(sectionOffsets.blendShapeKeyformBindings.blendShapeConstraintIndexSourcesBeginIndices * 8)
+				d.FieldArray("blend_shape_constraint_index_sources_begin_indices", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapeKeyformBindings; i++ {
+						d.FieldS32("index")
+					}
+				})
+
+				d.SeekAbs(sectionOffsets.blendShapeKeyformBindings.blendShapeConstraintIndexSourcesCounts * 8)
+				d.FieldArray("blend_shape_constraint_index_sources_counts", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapeKeyformBindings; i++ {
+						d.FieldS32("count")
+					}
+				})
+
+				d.SeekAbs(sectionOffsets.blendShapeKeyformBindings.keyformSourcesBlendShapeIndices * 8)
+				d.FieldArray("keyform_sources_blend_shape_indices", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapeKeyformBindings; i++ {
+						d.FieldS32("index")
+					}
+				})
+
+				d.SeekAbs(sectionOffsets.blendShapeKeyformBindings.keyformSourcesBlendShapeCounts * 8)
+				d.FieldArray("keyform_sources_blend_shape_counts", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapeKeyformBindings; i++ {
+						d.FieldS32("count")
+					}
+				})
+			})
+
+			d.FieldStruct("blend_shapes_warp_deformers", func(d *decode.D) {
+				d.SeekAbs(sectionOffsets.blendShapesWarpDeformers.targetIndices * 8)
+				d.FieldArray("target_indices", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapesWarpDeformers; i++ {
+						d.FieldS32("index")
+					}
+				})
+
+				d.SeekAbs(sectionOffsets.blendShapesWarpDeformers.blendShapeKeyformBindingSourcesBeginIndices * 8)
+				d.FieldArray("blend_shape_keyform_binding_sources_begin_indices", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapesWarpDeformers; i++ {
+						d.FieldS32("index")
+					}
+				})
+
+				d.SeekAbs(sectionOffsets.blendShapesWarpDeformers.blendShapeKeyformBindingSourcesCounts * 8)
+				d.FieldArray("blend_shape_keyform_binding_sources_counts", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapesWarpDeformers; i++ {
+						d.FieldS32("count")
+					}
+				})
+			})
+
+			d.FieldStruct("blend_shapes_art_meshes", func(d *decode.D) {
+				d.SeekAbs(sectionOffsets.blendShapesArtMeshes.targetIndices * 8)
+				d.FieldArray("target_indices", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapesArtMeshes; i++ {
+						d.FieldS32("index")
+					}
+				})
+
+				d.SeekAbs(sectionOffsets.blendShapesArtMeshes.blendShapeKeyformBindingSourcesBeginIndices * 8)
+				d.FieldArray("blend_shape_keyform_binding_sources_begin_indices", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapesArtMeshes; i++ {
+						d.FieldS32("index")
+					}
+				})
+
+				d.SeekAbs(sectionOffsets.blendShapesArtMeshes.blendShapeKeyformBindingSourcesCounts * 8)
+				d.FieldArray("blend_shape_keyform_binding_sources_counts", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapesArtMeshes; i++ {
+						d.FieldS32("count")
+					}
+				})
+			})
+
+			d.FieldStruct("blend_shape_constraint_indices", func(d *decode.D) {
+				d.SeekAbs(sectionOffsets.blendShapeConstraintIndices.blendShapeConstraintSourcesIndices * 8)
+				d.FieldArray("blend_shape_constraint_sources_indices", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapeConstraintIndices; i++ {
+						d.FieldS32("index")
+					}
+				})
+			})
+
+			d.FieldStruct("blend_shape_constraints", func(d *decode.D) {
+				d.SeekAbs(sectionOffsets.blendShapeConstraints.parameterIndices * 8)
+				d.FieldArray("parameter_indices", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapeConstraints; i++ {
+						d.FieldS32("index")
+					}
+				})
+
+				d.SeekAbs(sectionOffsets.blendShapeConstraints.blendShapeConstraintValueSourcesBeginIndices * 8)
+				d.FieldArray("blend_shape_constraint_value_sources_begin_indices", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapeConstraints; i++ {
+						d.FieldS32("index")
+					}
+				})
+
+				d.SeekAbs(sectionOffsets.blendShapeConstraints.blendShapeConstraintValueSourcesCounts * 8)
+				d.FieldArray("blend_shape_constraint_value_sources_counts", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapeConstraints; i++ {
+						d.FieldS32("count")
+					}
+				})
+			})
+
+			d.FieldStruct("blend_shape_constraint_values", func(d *decode.D) {
+				d.SeekAbs(sectionOffsets.blendShapeConstraintValues.keys * 8)
+				d.FieldArray("keys", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapeConstraintValues; i++ {
+						d.FieldF32("value")
+					}
+				})
+
+				d.SeekAbs(sectionOffsets.blendShapeConstraintValues.weights * 8)
+				d.FieldArray("weights", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapeConstraintValues; i++ {
+						d.FieldF32("value")
+					}
+				})
+			})
 		}
-
-		d.FieldStruct("warp_deformers_v3_3", func(d *decode.D) {
-			d.SeekAbs(sectionOffsets.warpDeformersV3_3.isQuadSource * 8)
-			d.FieldArray("is_quad_source", func(d *decode.D) {
-				for i := int64(0); i < countInfo.warpDeformers; i++ {
-					d.FieldBoolFn("element", func(d *decode.D) bool { return d.U32() != 0 })
-				}
-			})
-		})
-
-		d.FieldStruct("parameter_extensions", func(d *decode.D) {
-			d.SeekAbs(sectionOffsets.parameterExtensions.keysSourcesBeginIndices * 8)
-			d.FieldArray("keys_sources_begin_indices", func(d *decode.D) {
-				for i := int64(0); i < countInfo.parameters; i++ {
-					d.FieldS32("index")
-				}
-			})
-
-			d.SeekAbs(sectionOffsets.parameterExtensions.keysSourcesCounts * 8)
-			d.FieldArray("keys_sources_counts", func(d *decode.D) {
-				for i := int64(0); i < countInfo.parameters; i++ {
-					d.FieldS32("count")
-				}
-			})
-		})
-
-		d.FieldStruct("warp_deformers_v4_2", func(d *decode.D) {
-			d.SeekAbs(sectionOffsets.warpDeformersV4_2.keyformColorSourcesBeginIndices * 8)
-			d.FieldArray("keyform_color_sources_begin_indices", func(d *decode.D) {
-				for i := int64(0); i < countInfo.warpDeformers; i++ {
-					d.FieldS32("index")
-				}
-			})
-		})
-
-		d.FieldStruct("rotation_deformers_v4_2", func(d *decode.D) {
-			d.SeekAbs(sectionOffsets.rotationDeformersV4_2.keyformColorSourcesBeginIndices * 8)
-			d.FieldArray("keyform_color_sources_begin_indices", func(d *decode.D) {
-				for i := int64(0); i < countInfo.rotationDeformers; i++ {
-					d.FieldS32("index")
-				}
-			})
-		})
-
-		d.FieldStruct("art_meshes_v4_2", func(d *decode.D) {
-			d.SeekAbs(sectionOffsets.artMeshesV4_2.keyformColorSourcesBeginIndices * 8)
-			d.FieldArray("keyform_color_sources_begin_indices", func(d *decode.D) {
-				for i := int64(0); i < countInfo.artMeshes; i++ {
-					d.FieldS32("index")
-				}
-			})
-		})
-
-		d.FieldStruct("keyform_multiply_colors", func(d *decode.D) {
-			d.SeekAbs(sectionOffsets.keyformMultiplyColors.r * 8)
-			d.FieldArray("r", func(d *decode.D) {
-				for i := int64(0); i < countInfo.keyformMultiplyColors; i++ {
-					d.FieldF32("element")
-				}
-			})
-
-			d.SeekAbs(sectionOffsets.keyformMultiplyColors.g * 8)
-			d.FieldArray("g", func(d *decode.D) {
-				for i := int64(0); i < countInfo.keyformMultiplyColors; i++ {
-					d.FieldF32("element")
-				}
-			})
-
-			d.SeekAbs(sectionOffsets.keyformMultiplyColors.b * 8)
-			d.FieldArray("b", func(d *decode.D) {
-				for i := int64(0); i < countInfo.keyformMultiplyColors; i++ {
-					d.FieldF32("element")
-				}
-			})
-		})
-
-		d.FieldStruct("keyform_screen_colors", func(d *decode.D) {
-			d.SeekAbs(sectionOffsets.keyformScreenColors.r * 8)
-			d.FieldArray("r", func(d *decode.D) {
-				for i := int64(0); i < countInfo.keyformScreenColors; i++ {
-					d.FieldF32("value")
-				}
-			})
-
-			d.SeekAbs(sectionOffsets.keyformScreenColors.g * 8)
-			d.FieldArray("g", func(d *decode.D) {
-				for i := int64(0); i < countInfo.keyformScreenColors; i++ {
-					d.FieldF32("value")
-				}
-			})
-
-			d.SeekAbs(sectionOffsets.keyformScreenColors.b * 8)
-			d.FieldArray("b", func(d *decode.D) {
-				for i := int64(0); i < countInfo.keyformScreenColors; i++ {
-					d.FieldF32("value")
-				}
-			})
-		})
-
-		d.FieldStruct("parameter_offsets_v4_2", func(d *decode.D) {
-			d.SeekAbs(sectionOffsets.parameterOffsetsV4_2.parameterTypes * 8)
-			d.FieldArray("parameter_types", func(d *decode.D) {
-				for i := int64(0); i < countInfo.parameters; i++ {
-					d.FieldU32("type", parameterTypeNames)
-				}
-			})
-
-			d.SeekAbs(sectionOffsets.parameterOffsetsV4_2.blendShapeParameterBindingSourcesBeginIndices * 8)
-			d.FieldArray("blend_shape_parameter_binding_sources_begin_indices", func(d *decode.D) {
-				for i := int64(0); i < countInfo.parameters; i++ {
-					d.FieldS32("index")
-				}
-			})
-
-			d.SeekAbs(sectionOffsets.parameterOffsetsV4_2.blendShapeParameterBindingSourcesCounts * 8)
-			d.FieldArray("blend_shape_parameter_binding_sources_counts", func(d *decode.D) {
-				for i := int64(0); i < countInfo.parameters; i++ {
-					d.FieldS32("count")
-				}
-			})
-		})
-
-		d.FieldStruct("blend_shape_parameter_bindings", func(d *decode.D) {
-			d.SeekAbs(sectionOffsets.blendShapeParameterBindings.keysSourcesBeginIndices * 8)
-			d.FieldArray("keys_sources_begin_indices", func(d *decode.D) {
-				for i := int64(0); i < countInfo.blendShapeParameterBindings; i++ {
-					d.FieldS32("index")
-				}
-			})
-
-			d.SeekAbs(sectionOffsets.blendShapeParameterBindings.keysSourcesCounts * 8)
-			d.FieldArray("keys_sources_counts", func(d *decode.D) {
-				for i := int64(0); i < countInfo.blendShapeParameterBindings; i++ {
-					d.FieldS32("count")
-				}
-			})
-
-			d.SeekAbs(sectionOffsets.blendShapeParameterBindings.baseKeyIndices * 8)
-			d.FieldArray("base_key_indices", func(d *decode.D) {
-				for i := int64(0); i < countInfo.blendShapeParameterBindings; i++ {
-					d.FieldS32("index")
-				}
-			})
-		})
-
-		d.FieldStruct("blend_shape_keyform_bindings", func(d *decode.D) {
-			d.SeekAbs(sectionOffsets.blendShapeKeyformBindings.parameterBindingSourcesIndices * 8)
-			d.FieldArray("parameter_binding_sources_indices", func(d *decode.D) {
-				for i := int64(0); i < countInfo.blendShapeKeyformBindings; i++ {
-					d.FieldS32("index")
-				}
-			})
-
-			d.SeekAbs(sectionOffsets.blendShapeKeyformBindings.blendShapeConstraintIndexSourcesBeginIndices * 8)
-			d.FieldArray("blend_shape_constraint_index_sources_begin_indices", func(d *decode.D) {
-				for i := int64(0); i < countInfo.blendShapeKeyformBindings; i++ {
-					d.FieldS32("index")
-				}
-			})
-
-			d.SeekAbs(sectionOffsets.blendShapeKeyformBindings.blendShapeConstraintIndexSourcesCounts * 8)
-			d.FieldArray("blend_shape_constraint_index_sources_counts", func(d *decode.D) {
-				for i := int64(0); i < countInfo.blendShapeKeyformBindings; i++ {
-					d.FieldS32("count")
-				}
-			})
-
-			d.SeekAbs(sectionOffsets.blendShapeKeyformBindings.keyformSourcesBlendShapeIndices * 8)
-			d.FieldArray("keyform_sources_blend_shape_indices", func(d *decode.D) {
-				for i := int64(0); i < countInfo.blendShapeKeyformBindings; i++ {
-					d.FieldS32("index")
-				}
-			})
-
-			d.SeekAbs(sectionOffsets.blendShapeKeyformBindings.keyformSourcesBlendShapeCounts * 8)
-			d.FieldArray("keyform_sources_blend_shape_counts", func(d *decode.D) {
-				for i := int64(0); i < countInfo.blendShapeKeyformBindings; i++ {
-					d.FieldS32("count")
-				}
-			})
-		})
-
-		d.FieldStruct("blend_shapes_warp_deformers", func(d *decode.D) {
-			d.SeekAbs(sectionOffsets.blendShapesWarpDeformers.targetIndices * 8)
-			d.FieldArray("target_indices", func(d *decode.D) {
-				for i := int64(0); i < countInfo.blendShapesWarpDeformers; i++ {
-					d.FieldS32("index")
-				}
-			})
-
-			d.SeekAbs(sectionOffsets.blendShapesWarpDeformers.blendShapeKeyformBindingSourcesBeginIndices * 8)
-			d.FieldArray("blend_shape_keyform_binding_sources_begin_indices", func(d *decode.D) {
-				for i := int64(0); i < countInfo.blendShapesWarpDeformers; i++ {
-					d.FieldS32("index")
-				}
-			})
-
-			d.SeekAbs(sectionOffsets.blendShapesWarpDeformers.blendShapeKeyformBindingSourcesCounts * 8)
-			d.FieldArray("blend_shape_keyform_binding_sources_counts", func(d *decode.D) {
-				for i := int64(0); i < countInfo.blendShapesWarpDeformers; i++ {
-					d.FieldS32("count")
-				}
-			})
-		})
-
-		d.FieldStruct("blend_shapes_art_meshes", func(d *decode.D) {
-			d.SeekAbs(sectionOffsets.blendShapesArtMeshes.targetIndices * 8)
-			d.FieldArray("target_indices", func(d *decode.D) {
-				for i := int64(0); i < countInfo.blendShapesArtMeshes; i++ {
-					d.FieldS32("index")
-				}
-			})
-
-			d.SeekAbs(sectionOffsets.blendShapesArtMeshes.blendShapeKeyformBindingSourcesBeginIndices * 8)
-			d.FieldArray("blend_shape_keyform_binding_sources_begin_indices", func(d *decode.D) {
-				for i := int64(0); i < countInfo.blendShapesArtMeshes; i++ {
-					d.FieldS32("index")
-				}
-			})
-
-			d.SeekAbs(sectionOffsets.blendShapesArtMeshes.blendShapeKeyformBindingSourcesCounts * 8)
-			d.FieldArray("blend_shape_keyform_binding_sources_counts", func(d *decode.D) {
-				for i := int64(0); i < countInfo.blendShapesArtMeshes; i++ {
-					d.FieldS32("count")
-				}
-			})
-		})
-
-		d.FieldStruct("blend_shape_constraint_indices", func(d *decode.D) {
-			d.SeekAbs(sectionOffsets.blendShapeConstraintIndices.blendShapeConstraintSourcesIndices * 8)
-			d.FieldArray("blend_shape_constraint_sources_indices", func(d *decode.D) {
-				for i := int64(0); i < countInfo.blendShapeConstraintIndices; i++ {
-					d.FieldS32("index")
-				}
-			})
-		})
-
-		d.FieldStruct("blend_shape_constraints", func(d *decode.D) {
-			d.SeekAbs(sectionOffsets.blendShapeConstraints.parameterIndices * 8)
-			d.FieldArray("parameter_indices", func(d *decode.D) {
-				for i := int64(0); i < countInfo.blendShapeConstraints; i++ {
-					d.FieldS32("index")
-				}
-			})
-
-			d.SeekAbs(sectionOffsets.blendShapeConstraints.blendShapeConstraintValueSourcesBeginIndices * 8)
-			d.FieldArray("blend_shape_constraint_value_sources_begin_indices", func(d *decode.D) {
-				for i := int64(0); i < countInfo.blendShapeConstraints; i++ {
-					d.FieldS32("index")
-				}
-			})
-
-			d.SeekAbs(sectionOffsets.blendShapeConstraints.blendShapeConstraintValueSourcesCounts * 8)
-			d.FieldArray("blend_shape_constraint_value_sources_counts", func(d *decode.D) {
-				for i := int64(0); i < countInfo.blendShapeConstraints; i++ {
-					d.FieldS32("count")
-				}
-			})
-		})
-
-		d.FieldStruct("blend_shape_constraint_values", func(d *decode.D) {
-			d.SeekAbs(sectionOffsets.blendShapeConstraintValues.keys * 8)
-			d.FieldArray("keys", func(d *decode.D) {
-				for i := int64(0); i < countInfo.blendShapeConstraintValues; i++ {
-					d.FieldF32("value")
-				}
-			})
-
-			d.SeekAbs(sectionOffsets.blendShapeConstraintValues.weights * 8)
-			d.FieldArray("weights", func(d *decode.D) {
-				for i := int64(0); i < countInfo.blendShapeConstraintValues; i++ {
-					d.FieldF32("value")
-				}
-			})
-		})
 	})
 
 	return nil
