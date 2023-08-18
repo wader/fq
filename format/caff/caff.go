@@ -192,7 +192,10 @@ func decodeCAFF(d *decode.D) any {
 						infBytes, err := io.ReadAll(flate.NewReader(bytes.NewReader(rawBytes[0x26:])))
 						if err == nil {
 							infBr := bitio.NewBitReader(infBytes, -1)
-							d.TryFieldFormatBitBuf("uncompressed", infBr, &probeGroup, format.Probe_In{})
+							value, _, err := d.TryFieldFormatBitBuf("uncompressed", infBr, &probeGroup, format.Probe_In{})
+							if value == nil && err != nil {
+								d.FieldRootBitBuf("uncompressed", infBr)
+							}
 						}
 					}
 				}
