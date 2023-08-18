@@ -1147,7 +1147,7 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.rotationDeformerKeyforms.scales * 8)
 			d.FieldArray("scales", func(d *decode.D) {
 				for i := int64(0); i < countInfo.rotationDeformerKeyforms; i++ {
-					d.FieldF32("scale")
+					d.FieldF32("value")
 				}
 			})
 
