@@ -36,10 +36,11 @@ func widevineDecode(d *decode.D) any {
 		7: {Type: format.ProtoBufTypeUInt32, Name: "crypto_period_index"},
 		8: {Type: format.ProtoBufTypeBytes, Name: "grouped_license"},
 		9: {Type: format.ProtoBufTypeUInt32, Name: "protection_scheme", Enums: scalar.UintMapSymStr{
-			1667591779: "cenc",
-			1667392305: "cbc1",
-			1667591795: "cens",
-			1667392371: "cbcs",
+			// FourCC
+			0x63_65_6e_63: "cenc",
+			0x63_62_63_31: "cbc1",
+			0x63_65_6e_73: "cens",
+			0x63_62_63_73: "cbcs",
 		}},
 	}
 
