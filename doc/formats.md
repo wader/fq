@@ -36,6 +36,7 @@
 |[`bson`](#bson)                                         |Binary&nbsp;JSON                                                                                             |<sub></sub>|
 |[`bytes`](#bytes)                                       |Raw&nbsp;bytes                                                                                               |<sub></sub>|
 |`bzip2`                                                 |bzip2&nbsp;compression                                                                                       |<sub>`probe`</sub>|
+|[`caff`](#caff)                                         |Live2D&nbsp;Cubism&nbsp;archive                                                                              |<sub>`probe`</sub>|
 |[`cbor`](#cbor)                                         |Concise&nbsp;Binary&nbsp;Object&nbsp;Representation                                                          |<sub></sub>|
 |[`csv`](#csv)                                           |Comma&nbsp;separated&nbsp;values                                                                             |<sub></sub>|
 |`dns`                                                   |DNS&nbsp;packet                                                                                              |<sub></sub>|
@@ -76,6 +77,7 @@
 |`macho_fat`                                             |Fat&nbsp;Mach-O&nbsp;macOS&nbsp;executable&nbsp;(multi-architecture)                                         |<sub>`macho`</sub>|
 |[`markdown`](#markdown)                                 |Markdown                                                                                                     |<sub></sub>|
 |[`matroska`](#matroska)                                 |Matroska&nbsp;file                                                                                           |<sub>`aac_frame` `av1_ccr` `av1_frame` `avc_au` `avc_dcr` `flac_frame` `flac_metadatablocks` `hevc_au` `hevc_dcr` `image` `mp3_frame` `mpeg_asc` `mpeg_pes_packet` `mpeg_spu` `opus_packet` `vorbis_packet` `vp8_frame` `vp9_cfm` `vp9_frame`</sub>|
+|`moc3`                                                  |MOC3&nbsp;file                                                                                               |<sub></sub>|
 |[`mp3`](#mp3)                                           |MP3&nbsp;file                                                                                                |<sub>`id3v2` `id3v1` `id3v11` `apev2` `mp3_frame`</sub>|
 |`mp3_frame`                                             |MPEG&nbsp;audio&nbsp;layer&nbsp;3&nbsp;frame                                                                 |<sub>`mp3_frame_tags`</sub>|
 |`mp3_frame_vbri`                                        |MP3&nbsp;frame&nbsp;Fraunhofer&nbsp;encoder&nbsp;variable&nbsp;bitrate&nbsp;tag                              |<sub></sub>|
@@ -128,7 +130,7 @@
 |`ip_packet`                                             |Group                                                                                                        |<sub>`icmp` `icmpv6` `tcp_segment` `udp_datagram`</sub>|
 |`link_frame`                                            |Group                                                                                                        |<sub>`bsd_loopback_frame` `ether8023_frame` `ipv4_packet` `ipv6_packet` `sll2_packet` `sll_packet`</sub>|
 |`mp3_frame_tags`                                        |Group                                                                                                        |<sub>`mp3_frame_vbri` `mp3_frame_xing`</sub>|
-|`probe`                                                 |Group                                                                                                        |<sub>`adts` `aiff` `apple_bookmark` `ar` `avi` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `elf` `flac` `gif` `gzip` `html` `jpeg` `json` `jsonl` `luajit` `macho` `macho_fat` `matroska` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `toml` `tzif` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
+|`probe`                                                 |Group                                                                                                        |<sub>`adts` `aiff` `apple_bookmark` `ar` `avi` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `caff` `elf` `flac` `gif` `gzip` `html` `jpeg` `json` `jsonl` `luajit` `macho` `macho_fat` `matroska` `moc3` `mp3` `mp4` `mpeg_ts` `ogg` `pcap` `pcapng` `png` `tar` `tiff` `toml` `tzif` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
 |`tcp_stream`                                            |Group                                                                                                        |<sub>`dns_tcp` `rtmp` `tls`</sub>|
 |`udp_payload`                                           |Group                                                                                                        |<sub>`dns`</sub>|
 
@@ -486,6 +488,26 @@ $ echo 'some {"a":1} json' | fq -d bytes '.[5:-6] | fromjson'
 ```sh
 $ echo 'hello' | fq -d bytes '.[1]'
 101
+```
+
+## caff
+
+### Options
+
+|Name        |Default|Description|
+|-           |-      |-|
+|`uncompress`|true   |Uncompress and probe files|
+
+### Examples
+
+Decode file using caff options
+```
+$ fq -d caff -o uncompress=true . file
+```
+
+Decode value as caff
+```
+... | caff({uncompress:true})
 ```
 
 ## cbor
