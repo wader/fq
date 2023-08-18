@@ -27,10 +27,10 @@ const (
 )
 
 var moc3VersionNames = scalar.UintMap{
-	moc3Version3_00_00: {Sym: "3_00_00", Description: "3.0.00 - 3.2.07"},
-	moc3Version3_03_00: {Sym: "3_03_00", Description: "3.3.00 - 3.3.03"},
-	moc3Version4_00_00: {Sym: "4_00_00", Description: "4.0.00 - 4.1.05"},
-	moc3Version4_02_00: {Sym: "4_02_00", Description: "4.2.00 - 4.2.02"},
+	moc3Version3_00_00: {Sym: "V3_00_00", Description: "3.0.00 - 3.2.07"},
+	moc3Version3_03_00: {Sym: "V3_03_00", Description: "3.3.00 - 3.3.03"},
+	moc3Version4_00_00: {Sym: "V4_00_00", Description: "4.0.00 - 4.1.05"},
+	moc3Version4_02_00: {Sym: "V4_02_00", Description: "4.2.00 - 4.2.02"},
 }
 
 var deformerTypeNames = scalar.UintMapSymStr{
@@ -351,270 +351,276 @@ func decodeMOC3(d *decode.D) any {
 	if !isBigEndian {
 		d.Endian = decode.LittleEndian
 	}
-	d.SeekRel(58 * 8)
+	d.FieldRawLen("unused", 58*8)
 
 	var sectionOffsets sectionOffsetTable
-	d.FieldStruct("section_offsets", func(d *decode.D) {
-		sectionOffsets.countInfo = int64(d.FieldU32("count_info"))
-		sectionOffsets.canvasInfo = int64(d.FieldU32("canvas_info"))
+	d.FramedFn(0x280*8, func(d *decode.D) {
+		d.FieldStruct("section_offsets", func(d *decode.D) {
+			sectionOffsets.countInfo = int64(d.FieldU32("count_info"))
+			sectionOffsets.canvasInfo = int64(d.FieldU32("canvas_info"))
 
-		d.FieldStruct("parts", func(d *decode.D) {
-			sectionOffsets.parts.runtimeSpace0 = int64(d.FieldU32("runtime_space0"))
-			sectionOffsets.parts.ids = int64(d.FieldU32("ids"))
-			sectionOffsets.parts.keyformBindingSourcesIndices = int64(d.FieldU32("keyform_binding_sources_indices"))
-			sectionOffsets.parts.keyformSourcesBeginIndices = int64(d.FieldU32("keyform_sources_begin_indices"))
-			sectionOffsets.parts.keyformSourcesCounts = int64(d.FieldU32("keyform_sources_counts"))
-			sectionOffsets.parts.isVisible = int64(d.FieldU32("is_visible"))
-			sectionOffsets.parts.isEnabled = int64(d.FieldU32("is_enabled"))
-			sectionOffsets.parts.parentPartIndices = int64(d.FieldU32("parent_part_indices"))
-		})
+			d.FieldStruct("parts", func(d *decode.D) {
+				sectionOffsets.parts.runtimeSpace0 = int64(d.FieldU32("runtime_space0"))
+				sectionOffsets.parts.ids = int64(d.FieldU32("ids"))
+				sectionOffsets.parts.keyformBindingSourcesIndices = int64(d.FieldU32("keyform_binding_sources_indices"))
+				sectionOffsets.parts.keyformSourcesBeginIndices = int64(d.FieldU32("keyform_sources_begin_indices"))
+				sectionOffsets.parts.keyformSourcesCounts = int64(d.FieldU32("keyform_sources_counts"))
+				sectionOffsets.parts.isVisible = int64(d.FieldU32("is_visible"))
+				sectionOffsets.parts.isEnabled = int64(d.FieldU32("is_enabled"))
+				sectionOffsets.parts.parentPartIndices = int64(d.FieldU32("parent_part_indices"))
+			})
 
-		d.FieldStruct("deformers", func(d *decode.D) {
-			sectionOffsets.deformers.runtimeSpace0 = int64(d.FieldU32("runtime_space0"))
-			sectionOffsets.deformers.ids = int64(d.FieldU32("ids"))
-			sectionOffsets.deformers.keyformBindingSourcesIndices = int64(d.FieldU32("keyform_binding_sources_indices"))
-			sectionOffsets.deformers.isVisible = int64(d.FieldU32("is_visible"))
-			sectionOffsets.deformers.isEnabled = int64(d.FieldU32("is_enabled"))
-			sectionOffsets.deformers.parentPartIndices = int64(d.FieldU32("parent_part_indices"))
-			sectionOffsets.deformers.parentDeformerIndices = int64(d.FieldU32("parent_deformer_indices"))
-			sectionOffsets.deformers.types = int64(d.FieldU32("types"))
-			sectionOffsets.deformers.specificSourcesIndices = int64(d.FieldU32("specific_sources_indices"))
-		})
+			d.FieldStruct("deformers", func(d *decode.D) {
+				sectionOffsets.deformers.runtimeSpace0 = int64(d.FieldU32("runtime_space0"))
+				sectionOffsets.deformers.ids = int64(d.FieldU32("ids"))
+				sectionOffsets.deformers.keyformBindingSourcesIndices = int64(d.FieldU32("keyform_binding_sources_indices"))
+				sectionOffsets.deformers.isVisible = int64(d.FieldU32("is_visible"))
+				sectionOffsets.deformers.isEnabled = int64(d.FieldU32("is_enabled"))
+				sectionOffsets.deformers.parentPartIndices = int64(d.FieldU32("parent_part_indices"))
+				sectionOffsets.deformers.parentDeformerIndices = int64(d.FieldU32("parent_deformer_indices"))
+				sectionOffsets.deformers.types = int64(d.FieldU32("types"))
+				sectionOffsets.deformers.specificSourcesIndices = int64(d.FieldU32("specific_sources_indices"))
+			})
 
-		d.FieldStruct("warp_deformers", func(d *decode.D) {
-			sectionOffsets.warpDeformers.keyformBindingSourcesIndices = int64(d.FieldU32("keyform_binding_sources_indices"))
-			sectionOffsets.warpDeformers.keyformSourcesBeginIndices = int64(d.FieldU32("keyform_sources_begin_indices"))
-			sectionOffsets.warpDeformers.keyformSourcesCounts = int64(d.FieldU32("keyform_sources_counts"))
-			sectionOffsets.warpDeformers.vertexCounts = int64(d.FieldU32("vertex_counts"))
-			sectionOffsets.warpDeformers.rows = int64(d.FieldU32("rows"))
-			sectionOffsets.warpDeformers.columns = int64(d.FieldU32("columns"))
-		})
+			d.FieldStruct("warp_deformers", func(d *decode.D) {
+				sectionOffsets.warpDeformers.keyformBindingSourcesIndices = int64(d.FieldU32("keyform_binding_sources_indices"))
+				sectionOffsets.warpDeformers.keyformSourcesBeginIndices = int64(d.FieldU32("keyform_sources_begin_indices"))
+				sectionOffsets.warpDeformers.keyformSourcesCounts = int64(d.FieldU32("keyform_sources_counts"))
+				sectionOffsets.warpDeformers.vertexCounts = int64(d.FieldU32("vertex_counts"))
+				sectionOffsets.warpDeformers.rows = int64(d.FieldU32("rows"))
+				sectionOffsets.warpDeformers.columns = int64(d.FieldU32("columns"))
+			})
 
-		d.FieldStruct("rotation_deformers", func(d *decode.D) {
-			sectionOffsets.rotationDeformers.keyformBindingSourcesIndices = int64(d.FieldU32("keyform_binding_sources_indices"))
-			sectionOffsets.rotationDeformers.keyformSourcesBeginIndices = int64(d.FieldU32("keyform_sources_begin_indices"))
-			sectionOffsets.rotationDeformers.keyformSourcesCounts = int64(d.FieldU32("keyform_sources_counts"))
-			sectionOffsets.rotationDeformers.baseAngles = int64(d.FieldU32("base_angles"))
-		})
+			d.FieldStruct("rotation_deformers", func(d *decode.D) {
+				sectionOffsets.rotationDeformers.keyformBindingSourcesIndices = int64(d.FieldU32("keyform_binding_sources_indices"))
+				sectionOffsets.rotationDeformers.keyformSourcesBeginIndices = int64(d.FieldU32("keyform_sources_begin_indices"))
+				sectionOffsets.rotationDeformers.keyformSourcesCounts = int64(d.FieldU32("keyform_sources_counts"))
+				sectionOffsets.rotationDeformers.baseAngles = int64(d.FieldU32("base_angles"))
+			})
 
-		d.FieldStruct("art_meshes", func(d *decode.D) {
-			sectionOffsets.artMeshes.runtimeSpace0 = int64(d.FieldU32("runtime_space0"))
-			sectionOffsets.artMeshes.runtimeSpace1 = int64(d.FieldU32("runtime_space1"))
-			sectionOffsets.artMeshes.runtimeSpace2 = int64(d.FieldU32("runtime_space2"))
-			sectionOffsets.artMeshes.runtimeSpace3 = int64(d.FieldU32("runtime_space3"))
-			sectionOffsets.artMeshes.ids = int64(d.FieldU32("ids"))
-			sectionOffsets.artMeshes.keyformBindingSourcesIndices = int64(d.FieldU32("keyform_binding_sources_indices"))
-			sectionOffsets.artMeshes.keyformSourcesBeginIndices = int64(d.FieldU32("keyform_sources_begin_indices"))
-			sectionOffsets.artMeshes.keyformSourcesCounts = int64(d.FieldU32("keyform_sources_counts"))
-			sectionOffsets.artMeshes.isVisible = int64(d.FieldU32("is_visible"))
-			sectionOffsets.artMeshes.isEnabled = int64(d.FieldU32("is_enabled"))
-			sectionOffsets.artMeshes.parentPartIndices = int64(d.FieldU32("parent_part_indices"))
-			sectionOffsets.artMeshes.parentDeformerIndices = int64(d.FieldU32("parent_deformer_indices"))
-			sectionOffsets.artMeshes.textureNos = int64(d.FieldU32("texture_nos"))
-			sectionOffsets.artMeshes.drawableFlags = int64(d.FieldU32("drawable_flags"))
-			sectionOffsets.artMeshes.vertexCounts = int64(d.FieldU32("vertex_counts"))
-			sectionOffsets.artMeshes.uvSourcesBeginIndices = int64(d.FieldU32("uv_sources_begin_indices"))
-			sectionOffsets.artMeshes.positionIndexSourcesBeginIndices = int64(d.FieldU32("position_index_sources_begin_indices"))
-			sectionOffsets.artMeshes.positionIndexSourcesCounts = int64(d.FieldU32("position_index_sources_counts"))
-			sectionOffsets.artMeshes.drawableMaskSourcesBeginIndices = int64(d.FieldU32("drawable_mask_sources_begin_indices"))
-			sectionOffsets.artMeshes.drawableMaskSourcesCounts = int64(d.FieldU32("drawable_mask_sources_counts"))
-		})
+			d.FieldStruct("art_meshes", func(d *decode.D) {
+				sectionOffsets.artMeshes.runtimeSpace0 = int64(d.FieldU32("runtime_space0"))
+				sectionOffsets.artMeshes.runtimeSpace1 = int64(d.FieldU32("runtime_space1"))
+				sectionOffsets.artMeshes.runtimeSpace2 = int64(d.FieldU32("runtime_space2"))
+				sectionOffsets.artMeshes.runtimeSpace3 = int64(d.FieldU32("runtime_space3"))
+				sectionOffsets.artMeshes.ids = int64(d.FieldU32("ids"))
+				sectionOffsets.artMeshes.keyformBindingSourcesIndices = int64(d.FieldU32("keyform_binding_sources_indices"))
+				sectionOffsets.artMeshes.keyformSourcesBeginIndices = int64(d.FieldU32("keyform_sources_begin_indices"))
+				sectionOffsets.artMeshes.keyformSourcesCounts = int64(d.FieldU32("keyform_sources_counts"))
+				sectionOffsets.artMeshes.isVisible = int64(d.FieldU32("is_visible"))
+				sectionOffsets.artMeshes.isEnabled = int64(d.FieldU32("is_enabled"))
+				sectionOffsets.artMeshes.parentPartIndices = int64(d.FieldU32("parent_part_indices"))
+				sectionOffsets.artMeshes.parentDeformerIndices = int64(d.FieldU32("parent_deformer_indices"))
+				sectionOffsets.artMeshes.textureNos = int64(d.FieldU32("texture_nos"))
+				sectionOffsets.artMeshes.drawableFlags = int64(d.FieldU32("drawable_flags"))
+				sectionOffsets.artMeshes.vertexCounts = int64(d.FieldU32("vertex_counts"))
+				sectionOffsets.artMeshes.uvSourcesBeginIndices = int64(d.FieldU32("uv_sources_begin_indices"))
+				sectionOffsets.artMeshes.positionIndexSourcesBeginIndices = int64(d.FieldU32("position_index_sources_begin_indices"))
+				sectionOffsets.artMeshes.positionIndexSourcesCounts = int64(d.FieldU32("position_index_sources_counts"))
+				sectionOffsets.artMeshes.drawableMaskSourcesBeginIndices = int64(d.FieldU32("drawable_mask_sources_begin_indices"))
+				sectionOffsets.artMeshes.drawableMaskSourcesCounts = int64(d.FieldU32("drawable_mask_sources_counts"))
+			})
 
-		d.FieldStruct("parameters", func(d *decode.D) {
-			sectionOffsets.parameters.runtimeSpace0 = int64(d.FieldU32("runtime_space0"))
-			sectionOffsets.parameters.ids = int64(d.FieldU32("ids"))
-			sectionOffsets.parameters.maxValues = int64(d.FieldU32("max_values"))
-			sectionOffsets.parameters.minValues = int64(d.FieldU32("min_values"))
-			sectionOffsets.parameters.defaultValues = int64(d.FieldU32("default_values"))
-			sectionOffsets.parameters.isRepeat = int64(d.FieldU32("is_repeat"))
-			sectionOffsets.parameters.decimalPlaces = int64(d.FieldU32("decimal_places"))
-			sectionOffsets.parameters.parameterBindingSourcesBeginIndices = int64(d.FieldU32("parameter_binding_sources_begin_indices"))
-			sectionOffsets.parameters.parameterBindingSourcesCounts = int64(d.FieldU32("parameter_binding_sources_counts"))
-		})
+			d.FieldStruct("parameters", func(d *decode.D) {
+				sectionOffsets.parameters.runtimeSpace0 = int64(d.FieldU32("runtime_space0"))
+				sectionOffsets.parameters.ids = int64(d.FieldU32("ids"))
+				sectionOffsets.parameters.maxValues = int64(d.FieldU32("max_values"))
+				sectionOffsets.parameters.minValues = int64(d.FieldU32("min_values"))
+				sectionOffsets.parameters.defaultValues = int64(d.FieldU32("default_values"))
+				sectionOffsets.parameters.isRepeat = int64(d.FieldU32("is_repeat"))
+				sectionOffsets.parameters.decimalPlaces = int64(d.FieldU32("decimal_places"))
+				sectionOffsets.parameters.parameterBindingSourcesBeginIndices = int64(d.FieldU32("parameter_binding_sources_begin_indices"))
+				sectionOffsets.parameters.parameterBindingSourcesCounts = int64(d.FieldU32("parameter_binding_sources_counts"))
+			})
 
-		d.FieldStruct("part_keyforms", func(d *decode.D) {
-			sectionOffsets.partKeyforms.drawOrders = int64(d.FieldU32("draw_orders"))
-		})
+			d.FieldStruct("part_keyforms", func(d *decode.D) {
+				sectionOffsets.partKeyforms.drawOrders = int64(d.FieldU32("draw_orders"))
+			})
 
-		d.FieldStruct("warp_deformer_keyforms", func(d *decode.D) {
-			sectionOffsets.warpDeformerKeyforms.opacities = int64(d.FieldU32("opacities"))
-			sectionOffsets.warpDeformerKeyforms.keyformPositionSourcesBeginIndices = int64(d.FieldU32("keyform_position_sources_begin_indices"))
-		})
+			d.FieldStruct("warp_deformer_keyforms", func(d *decode.D) {
+				sectionOffsets.warpDeformerKeyforms.opacities = int64(d.FieldU32("opacities"))
+				sectionOffsets.warpDeformerKeyforms.keyformPositionSourcesBeginIndices = int64(d.FieldU32("keyform_position_sources_begin_indices"))
+			})
 
-		d.FieldStruct("rotation_deformer_keyforms", func(d *decode.D) {
-			sectionOffsets.rotationDeformerKeyforms.opacities = int64(d.FieldU32("opacities"))
-			sectionOffsets.rotationDeformerKeyforms.angles = int64(d.FieldU32("angles"))
-			sectionOffsets.rotationDeformerKeyforms.originX = int64(d.FieldU32("origin_x"))
-			sectionOffsets.rotationDeformerKeyforms.originY = int64(d.FieldU32("origin_y"))
-			sectionOffsets.rotationDeformerKeyforms.scales = int64(d.FieldU32("scales"))
-			sectionOffsets.rotationDeformerKeyforms.isReflectX = int64(d.FieldU32("is_reflect_x"))
-			sectionOffsets.rotationDeformerKeyforms.isReflectY = int64(d.FieldU32("is_reflect_y"))
-		})
+			d.FieldStruct("rotation_deformer_keyforms", func(d *decode.D) {
+				sectionOffsets.rotationDeformerKeyforms.opacities = int64(d.FieldU32("opacities"))
+				sectionOffsets.rotationDeformerKeyforms.angles = int64(d.FieldU32("angles"))
+				sectionOffsets.rotationDeformerKeyforms.originX = int64(d.FieldU32("origin_x"))
+				sectionOffsets.rotationDeformerKeyforms.originY = int64(d.FieldU32("origin_y"))
+				sectionOffsets.rotationDeformerKeyforms.scales = int64(d.FieldU32("scales"))
+				sectionOffsets.rotationDeformerKeyforms.isReflectX = int64(d.FieldU32("is_reflect_x"))
+				sectionOffsets.rotationDeformerKeyforms.isReflectY = int64(d.FieldU32("is_reflect_y"))
+			})
 
-		d.FieldStruct("art_mesh_keyforms", func(d *decode.D) {
-			sectionOffsets.artMeshKeyforms.opacities = int64(d.FieldU32("opacities"))
-			sectionOffsets.artMeshKeyforms.drawOrders = int64(d.FieldU32("draw_orders"))
-			sectionOffsets.artMeshKeyforms.keyformPositionSourcesBeginIndices = int64(d.FieldU32("keyform_position_sources_begin_indices"))
-		})
+			d.FieldStruct("art_mesh_keyforms", func(d *decode.D) {
+				sectionOffsets.artMeshKeyforms.opacities = int64(d.FieldU32("opacities"))
+				sectionOffsets.artMeshKeyforms.drawOrders = int64(d.FieldU32("draw_orders"))
+				sectionOffsets.artMeshKeyforms.keyformPositionSourcesBeginIndices = int64(d.FieldU32("keyform_position_sources_begin_indices"))
+			})
 
-		d.FieldStruct("keyform_positions", func(d *decode.D) {
-			sectionOffsets.keyformPositions.xys = int64(d.FieldU32("xys"))
-		})
+			d.FieldStruct("keyform_positions", func(d *decode.D) {
+				sectionOffsets.keyformPositions.xys = int64(d.FieldU32("xys"))
+			})
 
-		d.FieldStruct("parameter_binding_indices", func(d *decode.D) {
-			sectionOffsets.parameterBindingIndices.bindingSourcesIndices = int64(d.FieldU32("binding_sources_indices"))
-		})
+			d.FieldStruct("parameter_binding_indices", func(d *decode.D) {
+				sectionOffsets.parameterBindingIndices.bindingSourcesIndices = int64(d.FieldU32("binding_sources_indices"))
+			})
 
-		d.FieldStruct("keyform_bindings", func(d *decode.D) {
-			sectionOffsets.keyformBindings.parameterBindingIndexSourcesBeginIndices = int64(d.FieldU32("parameter_binding_index_sources_begin_indices"))
-			sectionOffsets.keyformBindings.parameterBindingIndexSourcesCounts = int64(d.FieldU32("parameter_binding_index_sources_counts"))
-		})
+			d.FieldStruct("keyform_bindings", func(d *decode.D) {
+				sectionOffsets.keyformBindings.parameterBindingIndexSourcesBeginIndices = int64(d.FieldU32("parameter_binding_index_sources_begin_indices"))
+				sectionOffsets.keyformBindings.parameterBindingIndexSourcesCounts = int64(d.FieldU32("parameter_binding_index_sources_counts"))
+			})
 
-		d.FieldStruct("parameter_bindings", func(d *decode.D) {
-			sectionOffsets.parameterBindings.keysSourcesBeginIndices = int64(d.FieldU32("keys_sources_begin_indices"))
-			sectionOffsets.parameterBindings.keysSourcesCounts = int64(d.FieldU32("keys_sources_counts"))
-		})
+			d.FieldStruct("parameter_bindings", func(d *decode.D) {
+				sectionOffsets.parameterBindings.keysSourcesBeginIndices = int64(d.FieldU32("keys_sources_begin_indices"))
+				sectionOffsets.parameterBindings.keysSourcesCounts = int64(d.FieldU32("keys_sources_counts"))
+			})
 
-		d.FieldStruct("keys", func(d *decode.D) {
-			sectionOffsets.keys.values = int64(d.FieldU32("values"))
-		})
+			d.FieldStruct("keys", func(d *decode.D) {
+				sectionOffsets.keys.values = int64(d.FieldU32("values"))
+			})
 
-		d.FieldStruct("uvs", func(d *decode.D) {
-			sectionOffsets.UVs.uvs = int64(d.FieldU32("uvs"))
-		})
+			d.FieldStruct("uvs", func(d *decode.D) {
+				sectionOffsets.UVs.uvs = int64(d.FieldU32("uvs"))
+			})
 
-		d.FieldStruct("position_indices", func(d *decode.D) {
-			sectionOffsets.positionIndices.indices = int64(d.FieldU32("indices"))
-		})
+			d.FieldStruct("position_indices", func(d *decode.D) {
+				sectionOffsets.positionIndices.indices = int64(d.FieldU32("indices"))
+			})
 
-		d.FieldStruct("drawable_masks", func(d *decode.D) {
-			sectionOffsets.drawableMasks.artMeshSourcesIndices = int64(d.FieldU32("art_mesh_sources_indices"))
-		})
+			d.FieldStruct("drawable_masks", func(d *decode.D) {
+				sectionOffsets.drawableMasks.artMeshSourcesIndices = int64(d.FieldU32("art_mesh_sources_indices"))
+			})
 
-		d.FieldStruct("draw_order_groups", func(d *decode.D) {
-			sectionOffsets.drawOrderGroups.objectSourcesBeginIndices = int64(d.FieldU32("object_sources_begin_indices"))
-			sectionOffsets.drawOrderGroups.objectSourcesCounts = int64(d.FieldU32("object_sources_counts"))
-			sectionOffsets.drawOrderGroups.objectSourcesTotalCounts = int64(d.FieldU32("object_sources_total_counts"))
-			sectionOffsets.drawOrderGroups.maximumDrawOrders = int64(d.FieldU32("maximum_draw_orders"))
-			sectionOffsets.drawOrderGroups.minimumDrawOrders = int64(d.FieldU32("minimum_draw_orders"))
-		})
+			d.FieldStruct("draw_order_groups", func(d *decode.D) {
+				sectionOffsets.drawOrderGroups.objectSourcesBeginIndices = int64(d.FieldU32("object_sources_begin_indices"))
+				sectionOffsets.drawOrderGroups.objectSourcesCounts = int64(d.FieldU32("object_sources_counts"))
+				sectionOffsets.drawOrderGroups.objectSourcesTotalCounts = int64(d.FieldU32("object_sources_total_counts"))
+				sectionOffsets.drawOrderGroups.maximumDrawOrders = int64(d.FieldU32("maximum_draw_orders"))
+				sectionOffsets.drawOrderGroups.minimumDrawOrders = int64(d.FieldU32("minimum_draw_orders"))
+			})
 
-		d.FieldStruct("draw_order_group_objects", func(d *decode.D) {
-			sectionOffsets.drawOrderGroupObjects.types = int64(d.FieldU32("types"))
-			sectionOffsets.drawOrderGroupObjects.indices = int64(d.FieldU32("indices"))
-			sectionOffsets.drawOrderGroupObjects.selfIndices = int64(d.FieldU32("self_indices"))
-		})
+			d.FieldStruct("draw_order_group_objects", func(d *decode.D) {
+				sectionOffsets.drawOrderGroupObjects.types = int64(d.FieldU32("types"))
+				sectionOffsets.drawOrderGroupObjects.indices = int64(d.FieldU32("indices"))
+				sectionOffsets.drawOrderGroupObjects.selfIndices = int64(d.FieldU32("self_indices"))
+			})
 
-		d.FieldStruct("glue", func(d *decode.D) {
-			sectionOffsets.glue.runtimeSpace0 = int64(d.FieldU32("runtime_space0"))
-			sectionOffsets.glue.ids = int64(d.FieldU32("ids"))
-			sectionOffsets.glue.keyformBindingSourcesIndices = int64(d.FieldU32("keyform_binding_sources_indices"))
-			sectionOffsets.glue.keyformSourcesBeginIndices = int64(d.FieldU32("keyform_sources_begin_indices"))
-			sectionOffsets.glue.keyformSourcesCounts = int64(d.FieldU32("keyform_sources_counts"))
-			sectionOffsets.glue.artMeshIndicesA = int64(d.FieldU32("art_mesh_indices_a"))
-			sectionOffsets.glue.artMeshIndicesB = int64(d.FieldU32("art_mesh_indices_b"))
-			sectionOffsets.glue.glueInfoSourcesBeginIndices = int64(d.FieldU32("glue_info_sources_begin_indices"))
-			sectionOffsets.glue.glueInfoSourcesCounts = int64(d.FieldU32("glue_info_sources_counts"))
-		})
+			d.FieldStruct("glue", func(d *decode.D) {
+				sectionOffsets.glue.runtimeSpace0 = int64(d.FieldU32("runtime_space0"))
+				sectionOffsets.glue.ids = int64(d.FieldU32("ids"))
+				sectionOffsets.glue.keyformBindingSourcesIndices = int64(d.FieldU32("keyform_binding_sources_indices"))
+				sectionOffsets.glue.keyformSourcesBeginIndices = int64(d.FieldU32("keyform_sources_begin_indices"))
+				sectionOffsets.glue.keyformSourcesCounts = int64(d.FieldU32("keyform_sources_counts"))
+				sectionOffsets.glue.artMeshIndicesA = int64(d.FieldU32("art_mesh_indices_a"))
+				sectionOffsets.glue.artMeshIndicesB = int64(d.FieldU32("art_mesh_indices_b"))
+				sectionOffsets.glue.glueInfoSourcesBeginIndices = int64(d.FieldU32("glue_info_sources_begin_indices"))
+				sectionOffsets.glue.glueInfoSourcesCounts = int64(d.FieldU32("glue_info_sources_counts"))
+			})
 
-		d.FieldStruct("glue_info", func(d *decode.D) {
-			sectionOffsets.glueInfo.weights = int64(d.FieldU32("weights"))
-			sectionOffsets.glueInfo.positionIndices = int64(d.FieldU32("position_indices"))
-		})
+			d.FieldStruct("glue_info", func(d *decode.D) {
+				sectionOffsets.glueInfo.weights = int64(d.FieldU32("weights"))
+				sectionOffsets.glueInfo.positionIndices = int64(d.FieldU32("position_indices"))
+			})
 
-		if version < moc3Version3_03_00 {
-			return
-		}
+			if version >= moc3Version3_03_00 {
 
-		d.FieldStruct("glue_keyforms", func(d *decode.D) {
-			sectionOffsets.glueKeyforms.intensities = int64(d.FieldU32("intensities"))
-		})
+				d.FieldStruct("glue_keyforms", func(d *decode.D) {
+					sectionOffsets.glueKeyforms.intensities = int64(d.FieldU32("intensities"))
+				})
 
-		if version < moc3Version4_02_00 {
-			return
-		}
+			}
 
-		d.FieldStruct("warp_deformers_v3_3", func(d *decode.D) {
-			sectionOffsets.warpDeformersV3_3.isQuadSource = int64(d.FieldU32("is_quad_source"))
-		})
+			if version >= moc3Version4_02_00 {
 
-		d.FieldStruct("parameter_extensions", func(d *decode.D) {
-			sectionOffsets.parameterExtensions.runtimeSpace0 = int64(d.FieldU32("runtime_space0"))
-			sectionOffsets.parameterExtensions.keysSourcesBeginIndices = int64(d.FieldU32("keys_sources_begin_indices"))
-			sectionOffsets.parameterExtensions.keysSourcesCounts = int64(d.FieldU32("keys_sources_counts"))
-		})
+				d.FieldStruct("warp_deformers_v3_3", func(d *decode.D) {
+					sectionOffsets.warpDeformersV3_3.isQuadSource = int64(d.FieldU32("is_quad_source"))
+				})
 
-		d.FieldStruct("warp_deformers_v4_2", func(d *decode.D) {
-			sectionOffsets.warpDeformersV4_2.keyformColorSourcesBeginIndices = int64(d.FieldU32("keyform_color_sources_begin_indices"))
-		})
+				d.FieldStruct("parameter_extensions", func(d *decode.D) {
+					sectionOffsets.parameterExtensions.runtimeSpace0 = int64(d.FieldU32("runtime_space0"))
+					sectionOffsets.parameterExtensions.keysSourcesBeginIndices = int64(d.FieldU32("keys_sources_begin_indices"))
+					sectionOffsets.parameterExtensions.keysSourcesCounts = int64(d.FieldU32("keys_sources_counts"))
+				})
 
-		d.FieldStruct("rotation_deformers_v4_2", func(d *decode.D) {
-			sectionOffsets.rotationDeformersV4_2.keyformColorSourcesBeginIndices = int64(d.FieldU32("keyform_color_sources_begin_indices"))
-		})
+				d.FieldStruct("warp_deformers_v4_2", func(d *decode.D) {
+					sectionOffsets.warpDeformersV4_2.keyformColorSourcesBeginIndices = int64(d.FieldU32("keyform_color_sources_begin_indices"))
+				})
 
-		d.FieldStruct("art_meshes_v4_2", func(d *decode.D) {
-			sectionOffsets.artMeshesV4_2.keyformColorSourcesBeginIndices = int64(d.FieldU32("keyform_color_sources_begin_indices"))
-		})
+				d.FieldStruct("rotation_deformers_v4_2", func(d *decode.D) {
+					sectionOffsets.rotationDeformersV4_2.keyformColorSourcesBeginIndices = int64(d.FieldU32("keyform_color_sources_begin_indices"))
+				})
 
-		d.FieldStruct("keyform_multiply_colors", func(d *decode.D) {
-			sectionOffsets.keyformMultiplyColors.r = int64(d.FieldU32("r"))
-			sectionOffsets.keyformMultiplyColors.g = int64(d.FieldU32("g"))
-			sectionOffsets.keyformMultiplyColors.b = int64(d.FieldU32("b"))
-		})
+				d.FieldStruct("art_meshes_v4_2", func(d *decode.D) {
+					sectionOffsets.artMeshesV4_2.keyformColorSourcesBeginIndices = int64(d.FieldU32("keyform_color_sources_begin_indices"))
+				})
 
-		d.FieldStruct("keyform_screen_colors", func(d *decode.D) {
-			sectionOffsets.keyformScreenColors.r = int64(d.FieldU32("r"))
-			sectionOffsets.keyformScreenColors.g = int64(d.FieldU32("g"))
-			sectionOffsets.keyformScreenColors.b = int64(d.FieldU32("b"))
-		})
+				d.FieldStruct("keyform_multiply_colors", func(d *decode.D) {
+					sectionOffsets.keyformMultiplyColors.r = int64(d.FieldU32("r"))
+					sectionOffsets.keyformMultiplyColors.g = int64(d.FieldU32("g"))
+					sectionOffsets.keyformMultiplyColors.b = int64(d.FieldU32("b"))
+				})
 
-		d.FieldStruct("parameter_offsets_v4_2", func(d *decode.D) {
-			sectionOffsets.parameterOffsetsV4_2.parameterTypes = int64(d.FieldU32("parameter_types"))
-			sectionOffsets.parameterOffsetsV4_2.blendShapeParameterBindingSourcesBeginIndices = int64(d.FieldU32("blend_shape_parameter_binding_sources_begin_indices"))
-			sectionOffsets.parameterOffsetsV4_2.blendShapeParameterBindingSourcesCounts = int64(d.FieldU32("blend_shape_parameter_binding_sources_counts"))
-		})
+				d.FieldStruct("keyform_screen_colors", func(d *decode.D) {
+					sectionOffsets.keyformScreenColors.r = int64(d.FieldU32("r"))
+					sectionOffsets.keyformScreenColors.g = int64(d.FieldU32("g"))
+					sectionOffsets.keyformScreenColors.b = int64(d.FieldU32("b"))
+				})
 
-		d.FieldStruct("blend_shape_parameter_bindings", func(d *decode.D) {
-			sectionOffsets.blendShapeParameterBindings.keysSourcesBeginIndices = int64(d.FieldU32("keys_sources_begin_indices"))
-			sectionOffsets.blendShapeParameterBindings.keysSourcesCounts = int64(d.FieldU32("keys_sources_counts"))
-			sectionOffsets.blendShapeParameterBindings.baseKeyIndices = int64(d.FieldU32("base_key_indices"))
-		})
+				d.FieldStruct("parameter_offsets_v4_2", func(d *decode.D) {
+					sectionOffsets.parameterOffsetsV4_2.parameterTypes = int64(d.FieldU32("parameter_types"))
+					sectionOffsets.parameterOffsetsV4_2.blendShapeParameterBindingSourcesBeginIndices = int64(d.FieldU32("blend_shape_parameter_binding_sources_begin_indices"))
+					sectionOffsets.parameterOffsetsV4_2.blendShapeParameterBindingSourcesCounts = int64(d.FieldU32("blend_shape_parameter_binding_sources_counts"))
+				})
 
-		d.FieldStruct("blend_shape_keyform_bindings", func(d *decode.D) {
-			sectionOffsets.blendShapeKeyformBindings.parameterBindingSourcesIndices = int64(d.FieldU32("parameter_binding_sources_indices"))
-			sectionOffsets.blendShapeKeyformBindings.blendShapeConstraintIndexSourcesBeginIndices = int64(d.FieldU32("blend_shape_constraint_index_sources_begin_indices"))
-			sectionOffsets.blendShapeKeyformBindings.blendShapeConstraintIndexSourcesCounts = int64(d.FieldU32("blend_shape_constraint_index_sources_counts"))
-			sectionOffsets.blendShapeKeyformBindings.keyformSourcesBlendShapeIndices = int64(d.FieldU32("keyform_sources_blend_shape_indices"))
-			sectionOffsets.blendShapeKeyformBindings.keyformSourcesBlendShapeCounts = int64(d.FieldU32("keyform_sources_blend_shape_counts"))
-		})
+				d.FieldStruct("blend_shape_parameter_bindings", func(d *decode.D) {
+					sectionOffsets.blendShapeParameterBindings.keysSourcesBeginIndices = int64(d.FieldU32("keys_sources_begin_indices"))
+					sectionOffsets.blendShapeParameterBindings.keysSourcesCounts = int64(d.FieldU32("keys_sources_counts"))
+					sectionOffsets.blendShapeParameterBindings.baseKeyIndices = int64(d.FieldU32("base_key_indices"))
+				})
 
-		d.FieldStruct("blend_shapes_warp_deformers", func(d *decode.D) {
-			sectionOffsets.blendShapesWarpDeformers.targetIndices = int64(d.FieldU32("target_indices"))
-			sectionOffsets.blendShapesWarpDeformers.blendShapeKeyformBindingSourcesBeginIndices = int64(d.FieldU32("blend_shape_keyform_binding_sources_begin_indices"))
-			sectionOffsets.blendShapesWarpDeformers.blendShapeKeyformBindingSourcesCounts = int64(d.FieldU32("blend_shape_keyform_binding_sources_counts"))
-		})
+				d.FieldStruct("blend_shape_keyform_bindings", func(d *decode.D) {
+					sectionOffsets.blendShapeKeyformBindings.parameterBindingSourcesIndices = int64(d.FieldU32("parameter_binding_sources_indices"))
+					sectionOffsets.blendShapeKeyformBindings.blendShapeConstraintIndexSourcesBeginIndices = int64(d.FieldU32("blend_shape_constraint_index_sources_begin_indices"))
+					sectionOffsets.blendShapeKeyformBindings.blendShapeConstraintIndexSourcesCounts = int64(d.FieldU32("blend_shape_constraint_index_sources_counts"))
+					sectionOffsets.blendShapeKeyformBindings.keyformSourcesBlendShapeIndices = int64(d.FieldU32("keyform_sources_blend_shape_indices"))
+					sectionOffsets.blendShapeKeyformBindings.keyformSourcesBlendShapeCounts = int64(d.FieldU32("keyform_sources_blend_shape_counts"))
+				})
 
-		d.FieldStruct("blend_shapes_art_meshes", func(d *decode.D) {
-			sectionOffsets.blendShapesArtMeshes.targetIndices = int64(d.FieldU32("target_indices"))
-			sectionOffsets.blendShapesArtMeshes.blendShapeKeyformBindingSourcesBeginIndices = int64(d.FieldU32("blend_shape_keyform_binding_sources_begin_indices"))
-			sectionOffsets.blendShapesArtMeshes.blendShapeKeyformBindingSourcesCounts = int64(d.FieldU32("blend_shape_keyform_binding_sources_counts"))
-		})
+				d.FieldStruct("blend_shapes_warp_deformers", func(d *decode.D) {
+					sectionOffsets.blendShapesWarpDeformers.targetIndices = int64(d.FieldU32("target_indices"))
+					sectionOffsets.blendShapesWarpDeformers.blendShapeKeyformBindingSourcesBeginIndices = int64(d.FieldU32("blend_shape_keyform_binding_sources_begin_indices"))
+					sectionOffsets.blendShapesWarpDeformers.blendShapeKeyformBindingSourcesCounts = int64(d.FieldU32("blend_shape_keyform_binding_sources_counts"))
+				})
 
-		d.FieldStruct("blend_shape_constraint_indices", func(d *decode.D) {
-			sectionOffsets.blendShapeConstraintIndices.blendShapeConstraintSourcesIndices = int64(d.FieldU32("blend_shape_constraint_sources_indices"))
-		})
+				d.FieldStruct("blend_shapes_art_meshes", func(d *decode.D) {
+					sectionOffsets.blendShapesArtMeshes.targetIndices = int64(d.FieldU32("target_indices"))
+					sectionOffsets.blendShapesArtMeshes.blendShapeKeyformBindingSourcesBeginIndices = int64(d.FieldU32("blend_shape_keyform_binding_sources_begin_indices"))
+					sectionOffsets.blendShapesArtMeshes.blendShapeKeyformBindingSourcesCounts = int64(d.FieldU32("blend_shape_keyform_binding_sources_counts"))
+				})
 
-		d.FieldStruct("blend_shape_constraints", func(d *decode.D) {
-			sectionOffsets.blendShapeConstraints.parameterIndices = int64(d.FieldU32("parameter_indices"))
-			sectionOffsets.blendShapeConstraints.blendShapeConstraintValueSourcesBeginIndices = int64(d.FieldU32("blend_shape_constraint_value_sources_begin_indices"))
-			sectionOffsets.blendShapeConstraints.blendShapeConstraintValueSourcesCounts = int64(d.FieldU32("blend_shape_constraint_value_sources_counts"))
-		})
+				d.FieldStruct("blend_shape_constraint_indices", func(d *decode.D) {
+					sectionOffsets.blendShapeConstraintIndices.blendShapeConstraintSourcesIndices = int64(d.FieldU32("blend_shape_constraint_sources_indices"))
+				})
 
-		d.FieldStruct("blend_shape_constraint_values", func(d *decode.D) {
-			sectionOffsets.blendShapeConstraintValues.keys = int64(d.FieldU32("keys"))
-			sectionOffsets.blendShapeConstraintValues.weights = int64(d.FieldU32("weights"))
+				d.FieldStruct("blend_shape_constraints", func(d *decode.D) {
+					sectionOffsets.blendShapeConstraints.parameterIndices = int64(d.FieldU32("parameter_indices"))
+					sectionOffsets.blendShapeConstraints.blendShapeConstraintValueSourcesBeginIndices = int64(d.FieldU32("blend_shape_constraint_value_sources_begin_indices"))
+					sectionOffsets.blendShapeConstraints.blendShapeConstraintValueSourcesCounts = int64(d.FieldU32("blend_shape_constraint_value_sources_counts"))
+				})
+
+				d.FieldStruct("blend_shape_constraint_values", func(d *decode.D) {
+					sectionOffsets.blendShapeConstraintValues.keys = int64(d.FieldU32("keys"))
+					sectionOffsets.blendShapeConstraintValues.weights = int64(d.FieldU32("weights"))
+				})
+
+			}
+
+			d.FieldRawLen("reserved", d.BitsLeft())
 		})
 	})
+
+	d.FieldRawLen("runtime_address_map", 0x480*8)
 
 	var countInfo countInfoTable
 	d.FieldStruct("sections", func(d *decode.D) {
@@ -680,21 +686,21 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.parts.keyformBindingSourcesIndices * 8)
 			d.FieldArray("keyform_binding_sources_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.parts; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.parts.keyformSourcesBeginIndices * 8)
 			d.FieldArray("keyform_sources_begin_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.parts; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.parts.keyformSourcesCounts * 8)
 			d.FieldArray("keyform_sources_counts", func(d *decode.D) {
 				for i := int64(0); i < countInfo.parts; i++ {
-					d.FieldS32("element")
+					d.FieldS32("count")
 				}
 			})
 
@@ -715,7 +721,7 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.parts.parentPartIndices * 8)
 			d.FieldArray("parent_part_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.parts; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 		})
@@ -731,7 +737,7 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.deformers.keyformBindingSourcesIndices * 8)
 			d.FieldArray("keyform_binding_sources_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.deformers; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
@@ -752,14 +758,14 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.deformers.parentPartIndices * 8)
 			d.FieldArray("parent_part_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.deformers; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.deformers.parentDeformerIndices * 8)
 			d.FieldArray("parent_deformer_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.deformers; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
@@ -773,7 +779,7 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.deformers.specificSourcesIndices * 8)
 			d.FieldArray("specific_sources_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.deformers; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 		})
@@ -782,28 +788,28 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.warpDeformers.keyformBindingSourcesIndices * 8)
 			d.FieldArray("keyform_binding_sources_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.warpDeformers; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.warpDeformers.keyformSourcesBeginIndices * 8)
 			d.FieldArray("keyform_sources_begin_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.warpDeformers; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.warpDeformers.keyformSourcesCounts * 8)
 			d.FieldArray("keyform_sources_counts", func(d *decode.D) {
 				for i := int64(0); i < countInfo.warpDeformers; i++ {
-					d.FieldS32("element")
+					d.FieldS32("count")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.warpDeformers.vertexCounts * 8)
 			d.FieldArray("vertex_counts", func(d *decode.D) {
 				for i := int64(0); i < countInfo.warpDeformers; i++ {
-					d.FieldS32("element")
+					d.FieldS32("count")
 				}
 			})
 
@@ -826,28 +832,28 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.rotationDeformers.keyformBindingSourcesIndices * 8)
 			d.FieldArray("keyform_binding_sources_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.rotationDeformers; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.rotationDeformers.keyformSourcesBeginIndices * 8)
 			d.FieldArray("keyform_sources_begin_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.rotationDeformers; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.rotationDeformers.keyformSourcesCounts * 8)
 			d.FieldArray("keyform_sources_counts", func(d *decode.D) {
 				for i := int64(0); i < countInfo.rotationDeformers; i++ {
-					d.FieldS32("element")
+					d.FieldS32("count")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.rotationDeformers.baseAngles * 8)
 			d.FieldArray("base_angles", func(d *decode.D) {
 				for i := int64(0); i < countInfo.rotationDeformers; i++ {
-					d.FieldF32("element")
+					d.FieldF32("angle")
 				}
 			})
 		})
@@ -863,21 +869,21 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.artMeshes.keyformBindingSourcesIndices * 8)
 			d.FieldArray("keyform_binding_sources_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.artMeshes; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.artMeshes.keyformSourcesBeginIndices * 8)
 			d.FieldArray("keyform_sources_begin_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.artMeshes; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.artMeshes.keyformSourcesCounts * 8)
 			d.FieldArray("keyform_sources_counts", func(d *decode.D) {
 				for i := int64(0); i < countInfo.artMeshes; i++ {
-					d.FieldS32("element")
+					d.FieldS32("count")
 				}
 			})
 
@@ -898,21 +904,21 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.artMeshes.parentPartIndices * 8)
 			d.FieldArray("parent_part_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.artMeshes; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.artMeshes.parentDeformerIndices * 8)
 			d.FieldArray("parent_deformer_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.artMeshes; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.artMeshes.textureNos * 8)
 			d.FieldArray("texture_nos", func(d *decode.D) {
 				for i := int64(0); i < countInfo.artMeshes; i++ {
-					d.FieldU32("element")
+					d.FieldU32("texture_no")
 				}
 			})
 
@@ -931,42 +937,42 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.artMeshes.vertexCounts * 8)
 			d.FieldArray("vertex_counts", func(d *decode.D) {
 				for i := int64(0); i < countInfo.artMeshes; i++ {
-					d.FieldS32("element")
+					d.FieldS32("count")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.artMeshes.uvSourcesBeginIndices * 8)
 			d.FieldArray("uv_sources_begin_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.artMeshes; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.artMeshes.positionIndexSourcesBeginIndices * 8)
 			d.FieldArray("position_index_sources_begin_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.artMeshes; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.artMeshes.positionIndexSourcesCounts * 8)
 			d.FieldArray("position_index_sources_counts", func(d *decode.D) {
 				for i := int64(0); i < countInfo.artMeshes; i++ {
-					d.FieldS32("element")
+					d.FieldS32("count")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.artMeshes.drawableMaskSourcesBeginIndices * 8)
 			d.FieldArray("drawable_mask_sources_begin_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.artMeshes; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.artMeshes.drawableMaskSourcesCounts * 8)
 			d.FieldArray("drawable_mask_sources_counts", func(d *decode.D) {
 				for i := int64(0); i < countInfo.artMeshes; i++ {
-					d.FieldS32("element")
+					d.FieldS32("count")
 				}
 			})
 		})
@@ -1017,14 +1023,14 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.parameters.parameterBindingSourcesBeginIndices * 8)
 			d.FieldArray("parameter_binding_sources_begin_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.parameters; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.parameters.parameterBindingSourcesCounts * 8)
 			d.FieldArray("parameter_binding_sources_counts", func(d *decode.D) {
 				for i := int64(0); i < countInfo.parameters; i++ {
-					d.FieldS32("element")
+					d.FieldS32("count")
 				}
 			})
 		})
@@ -1049,7 +1055,7 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.warpDeformerKeyforms.keyformPositionSourcesBeginIndices * 8)
 			d.FieldArray("keyform_position_sources_begin_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.warpDeformerKeyforms; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 		})
@@ -1058,14 +1064,14 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.rotationDeformerKeyforms.opacities * 8)
 			d.FieldArray("opacities", func(d *decode.D) {
 				for i := int64(0); i < countInfo.rotationDeformerKeyforms; i++ {
-					d.FieldF32("element")
+					d.FieldF32("value")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.rotationDeformerKeyforms.angles * 8)
 			d.FieldArray("angles", func(d *decode.D) {
 				for i := int64(0); i < countInfo.rotationDeformerKeyforms; i++ {
-					d.FieldF32("element")
+					d.FieldF32("angle")
 				}
 			})
 
@@ -1123,7 +1129,7 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.artMeshKeyforms.keyformPositionSourcesBeginIndices * 8)
 			d.FieldArray("keyform_position_sources_begin_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.artMeshKeyforms; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 		})
@@ -1141,7 +1147,7 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.parameterBindingIndices.bindingSourcesIndices * 8)
 			d.FieldArray("binding_sources_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.parameterBindingIndices; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 		})
@@ -1150,14 +1156,14 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.keyformBindings.parameterBindingIndexSourcesBeginIndices * 8)
 			d.FieldArray("parameter_binding_index_sources_begin_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.keyformBindings; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.keyformBindings.parameterBindingIndexSourcesCounts * 8)
 			d.FieldArray("parameter_binding_index_sources_counts", func(d *decode.D) {
 				for i := int64(0); i < countInfo.keyformBindings; i++ {
-					d.FieldS32("element")
+					d.FieldS32("count")
 				}
 			})
 		})
@@ -1166,14 +1172,14 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.parameterBindings.keysSourcesBeginIndices * 8)
 			d.FieldArray("keys_sources_begin_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.parameterBindings; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.parameterBindings.keysSourcesCounts * 8)
 			d.FieldArray("keys_sources_counts", func(d *decode.D) {
 				for i := int64(0); i < countInfo.parameterBindings; i++ {
-					d.FieldS32("element")
+					d.FieldS32("count")
 				}
 			})
 		})
@@ -1209,7 +1215,7 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.drawableMasks.artMeshSourcesIndices * 8)
 			d.FieldArray("art_mesh_sources_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.drawableMasks; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 		})
@@ -1218,21 +1224,21 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.drawOrderGroups.objectSourcesBeginIndices * 8)
 			d.FieldArray("object_sources_begin_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.drawOrderGroups; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.drawOrderGroups.objectSourcesCounts * 8)
 			d.FieldArray("object_sources_counts", func(d *decode.D) {
 				for i := int64(0); i < countInfo.drawOrderGroups; i++ {
-					d.FieldS32("element")
+					d.FieldS32("count")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.drawOrderGroups.objectSourcesTotalCounts * 8)
 			d.FieldArray("object_sources_total_counts", func(d *decode.D) {
 				for i := int64(0); i < countInfo.drawOrderGroups; i++ {
-					d.FieldS32("element")
+					d.FieldS32("count")
 				}
 			})
 
@@ -1262,14 +1268,14 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.drawOrderGroupObjects.indices * 8)
 			d.FieldArray("indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.drawOrderGroupObjects; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.drawOrderGroupObjects.selfIndices * 8)
 			d.FieldArray("self_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.drawOrderGroupObjects; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 		})
@@ -1285,49 +1291,49 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.glue.keyformBindingSourcesIndices * 8)
 			d.FieldArray("keyform_binding_sources_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.glue; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.glue.keyformSourcesBeginIndices * 8)
 			d.FieldArray("keyform_sources_begin_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.glue; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.glue.keyformSourcesCounts * 8)
 			d.FieldArray("keyform_sources_counts", func(d *decode.D) {
 				for i := int64(0); i < countInfo.glue; i++ {
-					d.FieldS32("element")
+					d.FieldS32("count")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.glue.artMeshIndicesA * 8)
 			d.FieldArray("art_mesh_indices_a", func(d *decode.D) {
 				for i := int64(0); i < countInfo.glue; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.glue.artMeshIndicesB * 8)
 			d.FieldArray("art_mesh_indices_b", func(d *decode.D) {
 				for i := int64(0); i < countInfo.glue; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.glue.glueInfoSourcesBeginIndices * 8)
 			d.FieldArray("glue_info_sources_begin_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.glue; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.glue.glueInfoSourcesCounts * 8)
 			d.FieldArray("glue_info_sources_counts", func(d *decode.D) {
 				for i := int64(0); i < countInfo.glue; i++ {
-					d.FieldS32("element")
+					d.FieldS32("count")
 				}
 			})
 		})
@@ -1366,7 +1372,6 @@ func decodeMOC3(d *decode.D) any {
 		}
 
 		d.FieldStruct("warp_deformers_v3_3", func(d *decode.D) {
-
 			d.SeekAbs(sectionOffsets.warpDeformersV3_3.isQuadSource * 8)
 			d.FieldArray("is_quad_source", func(d *decode.D) {
 				for i := int64(0); i < countInfo.warpDeformers; i++ {
@@ -1379,14 +1384,14 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.parameterExtensions.keysSourcesBeginIndices * 8)
 			d.FieldArray("keys_sources_begin_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.parameters; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.parameterExtensions.keysSourcesCounts * 8)
 			d.FieldArray("keys_sources_counts", func(d *decode.D) {
 				for i := int64(0); i < countInfo.parameters; i++ {
-					d.FieldS32("element")
+					d.FieldS32("count")
 				}
 			})
 		})
@@ -1395,7 +1400,7 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.warpDeformersV4_2.keyformColorSourcesBeginIndices * 8)
 			d.FieldArray("keyform_color_sources_begin_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.warpDeformers; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 		})
@@ -1404,7 +1409,7 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.rotationDeformersV4_2.keyformColorSourcesBeginIndices * 8)
 			d.FieldArray("keyform_color_sources_begin_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.rotationDeformers; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 		})
@@ -1413,7 +1418,7 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.artMeshesV4_2.keyformColorSourcesBeginIndices * 8)
 			d.FieldArray("keyform_color_sources_begin_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.artMeshes; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 		})
@@ -1445,21 +1450,21 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.keyformScreenColors.r * 8)
 			d.FieldArray("r", func(d *decode.D) {
 				for i := int64(0); i < countInfo.keyformScreenColors; i++ {
-					d.FieldF32("element")
+					d.FieldF32("value")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.keyformScreenColors.g * 8)
 			d.FieldArray("g", func(d *decode.D) {
 				for i := int64(0); i < countInfo.keyformScreenColors; i++ {
-					d.FieldF32("element")
+					d.FieldF32("value")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.keyformScreenColors.b * 8)
 			d.FieldArray("b", func(d *decode.D) {
 				for i := int64(0); i < countInfo.keyformScreenColors; i++ {
-					d.FieldF32("element")
+					d.FieldF32("value")
 				}
 			})
 		})
@@ -1475,14 +1480,14 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.parameterOffsetsV4_2.blendShapeParameterBindingSourcesBeginIndices * 8)
 			d.FieldArray("blend_shape_parameter_binding_sources_begin_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.parameters; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.parameterOffsetsV4_2.blendShapeParameterBindingSourcesCounts * 8)
 			d.FieldArray("blend_shape_parameter_binding_sources_counts", func(d *decode.D) {
 				for i := int64(0); i < countInfo.parameters; i++ {
-					d.FieldS32("element")
+					d.FieldS32("count")
 				}
 			})
 		})
@@ -1491,21 +1496,21 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.blendShapeParameterBindings.keysSourcesBeginIndices * 8)
 			d.FieldArray("keys_sources_begin_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.blendShapeParameterBindings; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.blendShapeParameterBindings.keysSourcesCounts * 8)
 			d.FieldArray("keys_sources_counts", func(d *decode.D) {
 				for i := int64(0); i < countInfo.blendShapeParameterBindings; i++ {
-					d.FieldS32("element")
+					d.FieldS32("count")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.blendShapeParameterBindings.baseKeyIndices * 8)
 			d.FieldArray("base_key_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.blendShapeParameterBindings; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 		})
@@ -1514,35 +1519,35 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.blendShapeKeyformBindings.parameterBindingSourcesIndices * 8)
 			d.FieldArray("parameter_binding_sources_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.blendShapeKeyformBindings; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.blendShapeKeyformBindings.blendShapeConstraintIndexSourcesBeginIndices * 8)
 			d.FieldArray("blend_shape_constraint_index_sources_begin_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.blendShapeKeyformBindings; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.blendShapeKeyformBindings.blendShapeConstraintIndexSourcesCounts * 8)
 			d.FieldArray("blend_shape_constraint_index_sources_counts", func(d *decode.D) {
 				for i := int64(0); i < countInfo.blendShapeKeyformBindings; i++ {
-					d.FieldS32("element")
+					d.FieldS32("count")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.blendShapeKeyformBindings.keyformSourcesBlendShapeIndices * 8)
 			d.FieldArray("keyform_sources_blend_shape_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.blendShapeKeyformBindings; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.blendShapeKeyformBindings.keyformSourcesBlendShapeCounts * 8)
 			d.FieldArray("keyform_sources_blend_shape_counts", func(d *decode.D) {
 				for i := int64(0); i < countInfo.blendShapeKeyformBindings; i++ {
-					d.FieldS32("element")
+					d.FieldS32("count")
 				}
 			})
 		})
@@ -1551,21 +1556,21 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.blendShapesWarpDeformers.targetIndices * 8)
 			d.FieldArray("target_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.blendShapesWarpDeformers; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.blendShapesWarpDeformers.blendShapeKeyformBindingSourcesBeginIndices * 8)
 			d.FieldArray("blend_shape_keyform_binding_sources_begin_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.blendShapesWarpDeformers; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.blendShapesWarpDeformers.blendShapeKeyformBindingSourcesCounts * 8)
 			d.FieldArray("blend_shape_keyform_binding_sources_counts", func(d *decode.D) {
 				for i := int64(0); i < countInfo.blendShapesWarpDeformers; i++ {
-					d.FieldS32("element")
+					d.FieldS32("count")
 				}
 			})
 		})
@@ -1574,21 +1579,21 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.blendShapesArtMeshes.targetIndices * 8)
 			d.FieldArray("target_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.blendShapesArtMeshes; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.blendShapesArtMeshes.blendShapeKeyformBindingSourcesBeginIndices * 8)
 			d.FieldArray("blend_shape_keyform_binding_sources_begin_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.blendShapesArtMeshes; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.blendShapesArtMeshes.blendShapeKeyformBindingSourcesCounts * 8)
 			d.FieldArray("blend_shape_keyform_binding_sources_counts", func(d *decode.D) {
 				for i := int64(0); i < countInfo.blendShapesArtMeshes; i++ {
-					d.FieldS32("element")
+					d.FieldS32("count")
 				}
 			})
 		})
@@ -1597,7 +1602,7 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.blendShapeConstraintIndices.blendShapeConstraintSourcesIndices * 8)
 			d.FieldArray("blend_shape_constraint_sources_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.blendShapeConstraintIndices; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 		})
@@ -1606,21 +1611,21 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.blendShapeConstraints.parameterIndices * 8)
 			d.FieldArray("parameter_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.blendShapeConstraints; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.blendShapeConstraints.blendShapeConstraintValueSourcesBeginIndices * 8)
 			d.FieldArray("blend_shape_constraint_value_sources_begin_indices", func(d *decode.D) {
 				for i := int64(0); i < countInfo.blendShapeConstraints; i++ {
-					d.FieldS32("element")
+					d.FieldS32("index")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.blendShapeConstraints.blendShapeConstraintValueSourcesCounts * 8)
 			d.FieldArray("blend_shape_constraint_value_sources_counts", func(d *decode.D) {
 				for i := int64(0); i < countInfo.blendShapeConstraints; i++ {
-					d.FieldS32("element")
+					d.FieldS32("count")
 				}
 			})
 		})
@@ -1629,14 +1634,14 @@ func decodeMOC3(d *decode.D) any {
 			d.SeekAbs(sectionOffsets.blendShapeConstraintValues.keys * 8)
 			d.FieldArray("keys", func(d *decode.D) {
 				for i := int64(0); i < countInfo.blendShapeConstraintValues; i++ {
-					d.FieldF32("element")
+					d.FieldF32("value")
 				}
 			})
 
 			d.SeekAbs(sectionOffsets.blendShapeConstraintValues.weights * 8)
 			d.FieldArray("weights", func(d *decode.D) {
 				for i := int64(0); i < countInfo.blendShapeConstraintValues; i++ {
-					d.FieldF32("element")
+					d.FieldF32("value")
 				}
 			})
 		})
