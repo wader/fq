@@ -49,6 +49,11 @@ const (
 	compressOptionSmall = 0x25
 )
 
+var bool8ToSym = scalar.UintMapSymBool{
+	0: false,
+	1: true,
+}
+
 var imageFormatNames = scalar.UintMapSymStr{
 	imageFormatUnknown:   "unknown",
 	imageFormatPNG:       "png",
@@ -91,7 +96,6 @@ func decodeCAFF(d *decode.D) any {
 	obfsU8 := func(d *decode.D) uint64 { return d.U8() ^ uint64(obfsKey&0xff) }
 	obfsU32 := func(d *decode.D) uint64 { return d.U32() ^ uint64(obfsKey&0xffff_ffff) }
 	obfsU64 := func(d *decode.D) uint64 { return d.U64() ^ uint64(obfsKey<<32|obfsKey) }
-	obfsBool := func(d *decode.D) bool { return obfsU8(d) != 0 }
 
 	// "Big Endian Base 128" - LEB128's strange sibling
 	obfsBEB128 := func(d *decode.D) (v uint64) {
@@ -123,18 +127,18 @@ func decodeCAFF(d *decode.D) any {
 	d.FieldUTF8("format_id", 4)
 	d.FieldStruct("format_version", decodeVersion)
 	obfsKey = d.FieldS32("obfuscate_key")
-	d.SeekRel(8 * 8)
+	d.FieldU64("unused0")
 
 	d.FieldStruct("preview_image", func(d *decode.D) {
 		d.FieldU8("image_format", imageFormatNames)
 		d.FieldU8("color_type", colorTypeNames)
-		d.SeekRel(2 * 8)
+		d.FieldU16("unused0")
 		d.FieldU16("width")
 		d.FieldU16("height")
-		d.FieldU64("start_pos")
+		d.FieldU64("start_pos", scalar.UintHex)
 		d.FieldU32("file_size")
 	})
-	d.SeekRel(8 * 8)
+	d.FieldU64("unused1")
 
 	fileInfoListSize := d.FieldUintFn("file_info_map_size", obfsU32)
 	fileInfoList := make([]fileInfoListEntry, int(fileInfoListSize))
@@ -146,11 +150,11 @@ func decodeCAFF(d *decode.D) any {
 
 				entry.filePath = d.FieldStrFn("file_path", obfsVarStr)
 				d.FieldStrFn("tag", obfsVarStr)
-				entry.startPos = int64(d.FieldUintFn("start_pos", obfsU64))
+				entry.startPos = int64(d.FieldUintFn("start_pos", obfsU64, scalar.UintHex))
 				entry.fileSize = int(d.FieldUintFn("file_size", obfsU32))
-				entry.isObfuscated = d.FieldBoolFn("is_obfuscated", obfsBool)
+				entry.isObfuscated = d.FieldUintFn("is_obfuscated", obfsU8, bool8ToSym) != 0
 				entry.compressOption = uint8(d.FieldUintFn("compress_option", obfsU8, compressOptionNames))
-				d.SeekRel(8 * 8)
+				d.FieldU64("unused0")
 
 				fileInfoList[int(i)] = entry
 			})
@@ -166,7 +170,12 @@ func decodeCAFF(d *decode.D) any {
 				d.FieldValueBool("is_obfuscated", entry.isObfuscated)
 				d.FieldValueUint("compress_option", uint64(entry.compressOption), compressOptionNames)
 
-				rawBytes := d.BytesLen(entry.fileSize)
+				rawBr := d.FieldRawLen("raw", int64(entry.fileSize) * 8)
+				rawBytes := make([]byte, entry.fileSize)
+				if n, err := rawBr.ReadBits(rawBytes, int64(entry.fileSize) * 8); err != nil || n != int64(entry.fileSize) * 8 {
+					return
+				}
+
 				if entry.isObfuscated {
 					for i, v := range rawBytes {
 						rawBytes[i] = v ^ uint8(obfsKey)
