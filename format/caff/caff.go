@@ -86,11 +86,11 @@ func decodeCAFF(d *decode.D) any {
 	var ci format.CAFF_In
 	d.ArgAs(&ci)
 
-	var obfsKey uint64
+	var obfsKey int64
 
-	obfsU8 := func(d *decode.D) uint64 { return d.U8() ^ (obfsKey & 0xff) }
-	obfsU32 := func(d *decode.D) uint64 { return d.U32() ^ (obfsKey & 0xffff_ffff) }
-	obfsU64 := func(d *decode.D) uint64 { return d.U64() ^ (obfsKey<<32 | obfsKey) }
+	obfsU8 := func(d *decode.D) uint64 { return d.U8() ^ uint64(obfsKey & 0xff) }
+	obfsU32 := func(d *decode.D) uint64 { return d.U32() ^ uint64(obfsKey & 0xffff_ffff) }
+	obfsU64 := func(d *decode.D) uint64 { return d.U64() ^ uint64(obfsKey<<32 | obfsKey) }
 	obfsBool := func(d *decode.D) bool { return obfsU8(d) != 0 }
 
 	// "Big Endian Base 128" - LEB128's strange sibling
@@ -122,7 +122,7 @@ func decodeCAFF(d *decode.D) any {
 	d.FieldStruct("archive_version", decodeVersion)
 	d.FieldUTF8("format_id", 4)
 	d.FieldStruct("format_version", decodeVersion)
-	obfsKey = d.FieldU32("obfuscate_key")
+	obfsKey = d.FieldS32("obfuscate_key")
 	d.SeekRel(8 * 8)
 
 	d.FieldStruct("preview_image", func(d *decode.D) {
