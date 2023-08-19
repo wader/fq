@@ -24,6 +24,7 @@ const (
 	moc3Version3_03_00 = 2
 	moc3Version4_00_00 = 3
 	moc3Version4_02_00 = 4
+	moc3Version5_00_00 = 5
 )
 
 var moc3VersionNames = scalar.UintMap{
@@ -31,6 +32,7 @@ var moc3VersionNames = scalar.UintMap{
 	moc3Version3_03_00: {Sym: "V3_03_00", Description: "3.3.00 - 3.3.03"},
 	moc3Version4_00_00: {Sym: "V4_00_00", Description: "4.0.00 - 4.1.05"},
 	moc3Version4_02_00: {Sym: "V4_02_00", Description: "4.2.00 - 4.2.02"},
+	moc3Version5_00_00: {Sym: "V5_00_00", Description: "5.0.00"},
 }
 
 var deformerTypeNames = scalar.UintMapSymStr{
@@ -55,38 +57,41 @@ var parameterTypeNames = scalar.UintMapSymStr{
 }
 
 type countInfoTable struct {
-	parts                       int64
-	deformers                   int64
-	warpDeformers               int64
-	rotationDeformers           int64
-	artMeshes                   int64
-	parameters                  int64
-	partKeyforms                int64
-	warpDeformerKeyforms        int64
-	rotationDeformerKeyforms    int64
-	artMeshKeyforms             int64
-	keyformPositions            int64
-	parameterBindingIndices     int64
-	keyformBindings             int64
-	parameterBindings           int64
-	keys                        int64
-	uvs                         int64
-	positionIndices             int64
-	drawableMasks               int64
-	drawOrderGroups             int64
-	drawOrderGroupObjects       int64
-	glue                        int64
-	glueInfo                    int64
-	glueKeyforms                int64
-	keyformMultiplyColors       int64
-	keyformScreenColors         int64
-	blendShapeParameterBindings int64
-	blendShapeKeyformBindings   int64
-	blendShapesWarpDeformers    int64
-	blendShapesArtMeshes        int64
-	blendShapeConstraintIndices int64
-	blendShapeConstraints       int64
-	blendShapeConstraintValues  int64
+	parts                        int64
+	deformers                    int64
+	warpDeformers                int64
+	rotationDeformers            int64
+	artMeshes                    int64
+	parameters                   int64
+	partKeyforms                 int64
+	warpDeformerKeyforms         int64
+	rotationDeformerKeyforms     int64
+	artMeshKeyforms              int64
+	keyformPositions             int64
+	parameterBindingIndices      int64
+	keyformBindings              int64
+	parameterBindings            int64
+	keys                         int64
+	uvs                          int64
+	positionIndices              int64
+	drawableMasks                int64
+	drawOrderGroups              int64
+	drawOrderGroupObjects        int64
+	glue                         int64
+	glueInfo                     int64
+	glueKeyforms                 int64
+	keyformMultiplyColors        int64
+	keyformScreenColors          int64
+	blendShapeParameterBindings  int64
+	blendShapeKeyformBindings    int64
+	blendShapesWarpDeformers     int64
+	blendShapesArtMeshes         int64
+	blendShapeConstraintIndices  int64
+	blendShapeConstraints        int64
+	blendShapeConstraintValues   int64
+	blendShapesParts             int64
+	blendShapesRotationDeformers int64
+	blendShapesGlue              int64
 }
 
 type sectionOffsetTable struct {
@@ -295,7 +300,7 @@ type sectionOffsetTable struct {
 		b int64
 	}
 
-	parameterOffsetsV4_2 struct {
+	parametersV4_2 struct {
 		parameterTypes                                int64
 		blendShapeParameterBindingSourcesBeginIndices int64
 		blendShapeParameterBindingSourcesCounts       int64
@@ -340,6 +345,24 @@ type sectionOffsetTable struct {
 	blendShapeConstraintValues struct {
 		keys    int64
 		weights int64
+	}
+
+	blendShapesParts struct {
+		targetIndices                               int64
+		blendShapeKeyformBindingSourcesBeginIndices int64
+		blendShapeKeyformBindingSourcesCounts       int64
+	}
+
+	blendShapesRotationDeformers struct {
+		targetIndices                               int64
+		blendShapeKeyformBindingSourcesBeginIndices int64
+		blendShapeKeyformBindingSourcesCounts       int64
+	}
+
+	blendShapesGlue struct {
+		targetIndices                               int64
+		blendShapeKeyformBindingSourcesBeginIndices int64
+		blendShapeKeyformBindingSourcesCounts       int64
 	}
 }
 
@@ -564,10 +587,10 @@ func decodeMOC3(d *decode.D) any {
 					sectionOffsets.keyformScreenColors.b = int64(d.FieldU32("b"))
 				})
 
-				d.FieldStruct("parameter_offsets_v4_2", func(d *decode.D) {
-					sectionOffsets.parameterOffsetsV4_2.parameterTypes = int64(d.FieldU32("parameter_types"))
-					sectionOffsets.parameterOffsetsV4_2.blendShapeParameterBindingSourcesBeginIndices = int64(d.FieldU32("blend_shape_parameter_binding_sources_begin_indices"))
-					sectionOffsets.parameterOffsetsV4_2.blendShapeParameterBindingSourcesCounts = int64(d.FieldU32("blend_shape_parameter_binding_sources_counts"))
+				d.FieldStruct("parameters_v4_2", func(d *decode.D) {
+					sectionOffsets.parametersV4_2.parameterTypes = int64(d.FieldU32("parameter_types"))
+					sectionOffsets.parametersV4_2.blendShapeParameterBindingSourcesBeginIndices = int64(d.FieldU32("blend_shape_parameter_binding_sources_begin_indices"))
+					sectionOffsets.parametersV4_2.blendShapeParameterBindingSourcesCounts = int64(d.FieldU32("blend_shape_parameter_binding_sources_counts"))
 				})
 
 				d.FieldStruct("blend_shape_parameter_bindings", func(d *decode.D) {
@@ -610,6 +633,27 @@ func decodeMOC3(d *decode.D) any {
 					sectionOffsets.blendShapeConstraintValues.keys = int64(d.FieldU32("keys"))
 					sectionOffsets.blendShapeConstraintValues.weights = int64(d.FieldU32("weights"))
 				})
+			}
+
+			if version >= moc3Version5_00_00 {
+				d.FieldStruct("blend_shapes_parts", func(d *decode.D) {
+					sectionOffsets.blendShapesParts.targetIndices = int64(d.FieldU32("target_indices"))
+					sectionOffsets.blendShapesParts.blendShapeKeyformBindingSourcesBeginIndices = int64(d.FieldU32("blend_shape_keyform_binding_sources_begin_indices"))
+					sectionOffsets.blendShapesParts.blendShapeKeyformBindingSourcesCounts = int64(d.FieldU32("blend_shape_keyform_binding_sources_counts"))
+				})
+
+				d.FieldStruct("blend_shapes_rotation_deformers", func(d *decode.D) {
+					sectionOffsets.blendShapesRotationDeformers.targetIndices = int64(d.FieldU32("target_indices"))
+					sectionOffsets.blendShapesRotationDeformers.blendShapeKeyformBindingSourcesBeginIndices = int64(d.FieldU32("blend_shape_keyform_binding_sources_begin_indices"))
+					sectionOffsets.blendShapesRotationDeformers.blendShapeKeyformBindingSourcesCounts = int64(d.FieldU32("blend_shape_keyform_binding_sources_counts"))
+				})
+
+				d.FieldStruct("blend_shapes_glue", func(d *decode.D) {
+					sectionOffsets.blendShapesGlue.targetIndices = int64(d.FieldU32("target_indices"))
+					sectionOffsets.blendShapesGlue.blendShapeKeyformBindingSourcesBeginIndices = int64(d.FieldU32("blend_shape_keyform_binding_sources_begin_indices"))
+					sectionOffsets.blendShapesGlue.blendShapeKeyformBindingSourcesCounts = int64(d.FieldU32("blend_shape_keyform_binding_sources_counts"))
+				})
+
 			}
 
 			d.FieldRawLen("reserved", d.BitsLeft())
@@ -659,6 +703,14 @@ func decodeMOC3(d *decode.D) any {
 			countInfo.blendShapeConstraintIndices = int64(d.FieldU32("blend_shape_constraint_indices"))
 			countInfo.blendShapeConstraints = int64(d.FieldU32("blend_shape_constraints"))
 			countInfo.blendShapeConstraintValues = int64(d.FieldU32("blend_shape_constraint_values"))
+
+			if version < moc3Version5_00_00 {
+				return
+			}
+
+			countInfo.blendShapesParts = int64(d.FieldU32("blend_shapes_parts"))
+			countInfo.blendShapesRotationDeformers = int64(d.FieldU32("blend_shapes_rotation_deformers"))
+			countInfo.blendShapesGlue = int64(d.FieldU32("blend_shapes_glue"))
 		})
 
 		d.SeekAbs(sectionOffsets.canvasInfo * 8)
@@ -1067,21 +1119,21 @@ func decodeMOC3(d *decode.D) any {
 			})
 
 			if version >= moc3Version4_02_00 {
-				d.SeekAbs(sectionOffsets.parameterOffsetsV4_2.parameterTypes * 8)
+				d.SeekAbs(sectionOffsets.parametersV4_2.parameterTypes * 8)
 				d.FieldArray("parameter_types", func(d *decode.D) {
 					for i := int64(0); i < countInfo.parameters; i++ {
 						d.FieldU32("type", parameterTypeNames)
 					}
 				})
 
-				d.SeekAbs(sectionOffsets.parameterOffsetsV4_2.blendShapeParameterBindingSourcesBeginIndices * 8)
+				d.SeekAbs(sectionOffsets.parametersV4_2.blendShapeParameterBindingSourcesBeginIndices * 8)
 				d.FieldArray("blend_shape_parameter_binding_sources_begin_indices", func(d *decode.D) {
 					for i := int64(0); i < countInfo.parameters; i++ {
 						d.FieldS32("index")
 					}
 				})
 
-				d.SeekAbs(sectionOffsets.parameterOffsetsV4_2.blendShapeParameterBindingSourcesCounts * 8)
+				d.SeekAbs(sectionOffsets.parametersV4_2.blendShapeParameterBindingSourcesCounts * 8)
 				d.FieldArray("blend_shape_parameter_binding_sources_counts", func(d *decode.D) {
 					for i := int64(0); i < countInfo.parameters; i++ {
 						d.FieldS32("count")
@@ -1633,6 +1685,77 @@ func decodeMOC3(d *decode.D) any {
 				d.FieldArray("weights", func(d *decode.D) {
 					for i := int64(0); i < countInfo.blendShapeConstraintValues; i++ {
 						d.FieldF32("value")
+					}
+				})
+			})
+		}
+
+		if version >= moc3Version5_00_00 {
+			d.FieldStruct("blend_shapes_parts", func(d *decode.D) {
+				d.SeekAbs(sectionOffsets.blendShapesParts.targetIndices * 8)
+				d.FieldArray("target_indices", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapesParts; i++ {
+						d.FieldS32("index")
+					}
+				})
+
+				d.SeekAbs(sectionOffsets.blendShapesParts.blendShapeKeyformBindingSourcesBeginIndices * 8)
+				d.FieldArray("blend_shape_keyform_binding_sources_begin_indices", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapesParts; i++ {
+						d.FieldS32("index")
+					}
+				})
+
+				d.SeekAbs(sectionOffsets.blendShapesParts.blendShapeKeyformBindingSourcesCounts * 8)
+				d.FieldArray("blend_shape_keyform_binding_sources_counts", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapesParts; i++ {
+						d.FieldS32("count")
+					}
+				})
+			})
+
+			d.FieldStruct("blend_shapes_rotation_deformers", func(d *decode.D) {
+				d.SeekAbs(sectionOffsets.blendShapesRotationDeformers.targetIndices * 8)
+				d.FieldArray("target_indices", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapesRotationDeformers; i++ {
+						d.FieldS32("index")
+					}
+				})
+
+				d.SeekAbs(sectionOffsets.blendShapesRotationDeformers.blendShapeKeyformBindingSourcesBeginIndices * 8)
+				d.FieldArray("blend_shape_keyform_binding_sources_begin_indices", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapesRotationDeformers; i++ {
+						d.FieldS32("index")
+					}
+				})
+
+				d.SeekAbs(sectionOffsets.blendShapesRotationDeformers.blendShapeKeyformBindingSourcesCounts * 8)
+				d.FieldArray("blend_shape_keyform_binding_sources_counts", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapesRotationDeformers; i++ {
+						d.FieldS32("count")
+					}
+				})
+			})
+
+			d.FieldStruct("blend_shapes_glue", func(d *decode.D) {
+				d.SeekAbs(sectionOffsets.blendShapesGlue.targetIndices * 8)
+				d.FieldArray("target_indices", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapesGlue; i++ {
+						d.FieldS32("index")
+					}
+				})
+
+				d.SeekAbs(sectionOffsets.blendShapesGlue.blendShapeKeyformBindingSourcesBeginIndices * 8)
+				d.FieldArray("blend_shape_keyform_binding_sources_begin_indices", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapesGlue; i++ {
+						d.FieldS32("index")
+					}
+				})
+
+				d.SeekAbs(sectionOffsets.blendShapesGlue.blendShapeKeyformBindingSourcesCounts * 8)
+				d.FieldArray("blend_shape_keyform_binding_sources_counts", func(d *decode.D) {
+					for i := int64(0); i < countInfo.blendShapesGlue; i++ {
+						d.FieldS32("count")
 					}
 				})
 			})
