@@ -88,9 +88,9 @@ func decodeCAFF(d *decode.D) any {
 
 	var obfsKey int64
 
-	obfsU8 := func(d *decode.D) uint64 { return d.U8() ^ uint64(obfsKey & 0xff) }
-	obfsU32 := func(d *decode.D) uint64 { return d.U32() ^ uint64(obfsKey & 0xffff_ffff) }
-	obfsU64 := func(d *decode.D) uint64 { return d.U64() ^ uint64(obfsKey<<32 | obfsKey) }
+	obfsU8 := func(d *decode.D) uint64 { return d.U8() ^ uint64(obfsKey&0xff) }
+	obfsU32 := func(d *decode.D) uint64 { return d.U32() ^ uint64(obfsKey&0xffff_ffff) }
+	obfsU64 := func(d *decode.D) uint64 { return d.U64() ^ uint64(obfsKey<<32|obfsKey) }
 	obfsBool := func(d *decode.D) bool { return obfsU8(d) != 0 }
 
 	// "Big Endian Base 128" - LEB128's strange sibling
