@@ -170,9 +170,9 @@ func decodeCAFF(d *decode.D) any {
 				d.FieldValueBool("is_obfuscated", entry.isObfuscated)
 				d.FieldValueUint("compress_option", uint64(entry.compressOption), compressOptionNames)
 
-				rawBr := d.FieldRawLen("raw", int64(entry.fileSize) * 8)
+				rawBr := d.FieldRawLen("raw", int64(entry.fileSize)*8)
 				rawBytes := make([]byte, entry.fileSize)
-				if n, err := rawBr.ReadBits(rawBytes, int64(entry.fileSize) * 8); err != nil || n != int64(entry.fileSize) * 8 {
+				if n, err := rawBr.ReadBits(rawBytes, int64(entry.fileSize)*8); err != nil || n != int64(entry.fileSize)*8 {
 					return
 				}
 
