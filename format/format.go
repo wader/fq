@@ -87,6 +87,7 @@ var (
 	BSD_Loopback_Frame  = &decode.Group{Name: "bsd_loopback_frame"}
 	BSON                = &decode.Group{Name: "bson"}
 	Bzip2               = &decode.Group{Name: "bzip2"}
+	CAFF                = &decode.Group{Name: "caff"}
 	CBOR                = &decode.Group{Name: "cbor"}
 	CSV                 = &decode.Group{Name: "csv"}
 	DNS                 = &decode.Group{Name: "dns"}
@@ -128,6 +129,7 @@ var (
 	MachO_Fat           = &decode.Group{Name: "macho_fat"}
 	Markdown            = &decode.Group{Name: "markdown"}
 	Matroska            = &decode.Group{Name: "matroska"}
+	MOC3                = &decode.Group{Name: "moc3"}
 	MP3                 = &decode.Group{Name: "mp3"}
 	MP3_Frame           = &decode.Group{Name: "mp3_frame"}
 	MP3_Frame_VBRI      = &decode.Group{Name: "mp3_frame_vbri"}
@@ -189,6 +191,11 @@ type AVC_AU_In struct {
 type AVC_DCR_Out struct {
 	LengthSize uint64
 }
+
+type CAFF_In struct {
+	Uncompress bool `doc:"Uncompress and probe files"`
+}
+
 type FLAC_Frame_In struct {
 	SamplesBuf    []byte
 	BitsPerSample int `doc:"Bits per sample"`
