@@ -773,13 +773,13 @@ func decodeMOC3(d *decode.D) any {
 				countInfo.blendShapesGlue = int64(d.FieldU32("blend_shapes_glue"))
 			}
 
-			var padding int64
+			var reserved int64
 			if version >= moc3Version5_00_00 {
-				padding = int64(d.AlignBits(256 * 8))
+				reserved = int64(d.AlignBits(256 * 8))
 			} else {
-				padding = int64(d.AlignBits(128 * 8))
+				reserved = int64(d.AlignBits(128 * 8))
 			}
-			d.FieldRawLen("padding", padding)
+			d.FieldRawLen("reserved", reserved)
 		})
 
 		d.SeekAbs(sectionOffsets.canvasInfo * 8)
