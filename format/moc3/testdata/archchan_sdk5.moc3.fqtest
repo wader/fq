@@ -245,7 +245,7 @@ $ fq 'dv({array_truncate: 3, display_bytes: 4})' archchan_sdk5.moc3
 0x00840|00 00 00 00                                    |....            |      blend_shapes_parts: 0 0x840-0x843.7 (4)
 0x00840|            00 00 00 00                        |    ....        |      blend_shapes_rotation_deformers: 0 0x844-0x847.7 (4)
 0x00840|                        00 00 00 00            |        ....    |      blend_shapes_glue: 0 0x848-0x84b.7 (4)
-0x00840|                                    00 00 00 00|            ....|      padding: raw bits 0x84c-0x8ff.7 (180)
+0x00840|                                    00 00 00 00|            ....|      reserved: raw bits 0x84c-0x8ff.7 (180)
 *      |until 0x8ff.7 (180)                            |                |
        |                                               |                |    canvas_info{}: 0x8c0-0x8ff.7 (64)
 0x008c0|00 40 5b 45                                    |.@[E            |      pixels_per_unit: 3508 0x8c0-0x8c3.7 (4)
