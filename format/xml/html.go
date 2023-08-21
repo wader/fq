@@ -196,7 +196,7 @@ func fromHTMLToArray(n *html.Node) any {
 	return f(n)
 }
 
-var htmlMagicRe = &lazyre.RE{S: `` +
+var htmlMagicRE = &lazyre.RE{S: `` +
 	`^` + // anchor to start
 	`(?i)` + // case insensitive
 	`[[:graph:][:space:]]{0,64}?` + // 0-64 non-control ASCII lazily to allow comment etc
@@ -214,7 +214,7 @@ func decodeHTML(d *decode.D) any {
 	if d.ArgAs(&pi) {
 		// if probing the input has to start with "<html" or "<!DOCTYPE html" this
 		// is because the html parser will always succeed so we have to be careful
-		if d.RE(htmlMagicRe.Must()) == nil {
+		if d.RE(htmlMagicRE.Must()) == nil {
 			d.Fatalf("no <html> or <!DOCTYPE html> found")
 		}
 	}
