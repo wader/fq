@@ -59,7 +59,7 @@ func fieldFlows(d *decode.D, fd *flowsdecoder.Decoder, tcpStreamFormat decode.Gr
 				var clientV any
 				var serverV any
 				d.FieldStruct("client", func(d *decode.D) {
-					clientV = f(d, &s.Client, format.TCP_Stream_In{
+					clientV = f(d, s.Client, format.TCP_Stream_In{
 						IsClient:        true,
 						HasStart:        s.Client.HasStart,
 						HasEnd:          s.Client.HasEnd,
@@ -69,7 +69,7 @@ func fieldFlows(d *decode.D, fd *flowsdecoder.Decoder, tcpStreamFormat decode.Gr
 					})
 				})
 				d.FieldStruct("server", func(d *decode.D) {
-					serverV = f(d, &s.Server, format.TCP_Stream_In{
+					serverV = f(d, s.Server, format.TCP_Stream_In{
 						IsClient:        false,
 						HasStart:        s.Server.HasStart,
 						HasEnd:          s.Server.HasEnd,

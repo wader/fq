@@ -120,7 +120,7 @@ type idx1Sample struct {
 
 type aviStream struct {
 	hasFormat   bool
-	format      decode.Group
+	format      *decode.Group
 	formatInArg any
 	indexes     []ranges.Range
 	ixSamples   []ranges.Range
@@ -390,11 +390,11 @@ func aviDecode(d *decode.D) any {
 						format.BMPTagH264_UMSV,
 						format.BMPTagH264_tshd,
 						format.BMPTagH264_INMC:
-						s.format = aviMpegAVCAUGroup
+						s.format = &aviMpegAVCAUGroup
 						s.hasFormat = true
 					case format.BMPTagHEVC,
 						format.BMPTagHEVC_H265:
-						s.format = aviMpegHEVCAUGroup
+						s.format = &aviMpegHEVCAUGroup
 						s.hasFormat = true
 					}
 
@@ -417,11 +417,11 @@ func aviDecode(d *decode.D) any {
 
 					switch formatTag {
 					case format.WAVTagMP3:
-						s.format = aviMp3FrameGroup
+						s.format = &aviMp3FrameGroup
 						s.hasFormat = true
 					case format.WAVTagFLAC:
 						// TODO: can flac in avi have streaminfo somehow?
-						s.format = aviFLACFrameGroup
+						s.format = &aviFLACFrameGroup
 						s.hasFormat = true
 					}
 				case "iavs":
@@ -521,7 +521,7 @@ func aviDecode(d *decode.D) any {
 					index < len(streams) &&
 					streams[index].hasFormat:
 					s := streams[index]
-					d.FieldFormatLen("data", d.BitsLeft(), &s.format, s.formatInArg)
+					d.FieldFormatLen("data", d.BitsLeft(), s.format, s.formatInArg)
 				default:
 					d.FieldRawLen("data", d.BitsLeft())
 				}
@@ -559,7 +559,7 @@ func aviDecode(d *decode.D) any {
 				decodeSample := func(d *decode.D, sr ranges.Range) {
 					d.RangeFn(sr.Start, sr.Len, func(d *decode.D) {
 						if sr.Len > 0 && ai.DecodeSamples && s.hasFormat {
-							d.FieldFormat("sample", &s.format, s.formatInArg)
+							d.FieldFormat("sample", s.format, s.formatInArg)
 						} else {
 							d.FieldRawLen("sample", d.BitsLeft())
 						}
