@@ -3,6 +3,7 @@ package caff
 import (
 	"bytes"
 	"compress/flate"
+	"embed"
 	"io"
 
 	"github.com/wader/fq/format"
@@ -11,6 +12,9 @@ import (
 	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
+
+//go:embed caff.md
+var caffFS embed.FS
 
 var probeGroup decode.Group
 
@@ -28,6 +32,7 @@ func init() {
 				{Groups: []*decode.Group{format.Probe}, Out: &probeGroup},
 			},
 		})
+	interp.RegisterFS(caffFS)
 }
 
 const (

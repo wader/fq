@@ -77,7 +77,7 @@
 |`macho_fat`                                             |Fat&nbsp;Mach-O&nbsp;macOS&nbsp;executable&nbsp;(multi-architecture)                                         |<sub>`macho`</sub>|
 |[`markdown`](#markdown)                                 |Markdown                                                                                                     |<sub></sub>|
 |[`matroska`](#matroska)                                 |Matroska&nbsp;file                                                                                           |<sub>`aac_frame` `av1_ccr` `av1_frame` `avc_au` `avc_dcr` `flac_frame` `flac_metadatablocks` `hevc_au` `hevc_dcr` `image` `mp3_frame` `mpeg_asc` `mpeg_pes_packet` `mpeg_spu` `opus_packet` `vorbis_packet` `vp8_frame` `vp9_cfm` `vp9_frame`</sub>|
-|`moc3`                                                  |MOC3&nbsp;file                                                                                               |<sub></sub>|
+|[`moc3`](#moc3)                                         |MOC3&nbsp;file                                                                                               |<sub></sub>|
 |[`mp3`](#mp3)                                           |MP3&nbsp;file                                                                                                |<sub>`id3v2` `id3v1` `id3v11` `apev2` `mp3_frame`</sub>|
 |`mp3_frame`                                             |MPEG&nbsp;audio&nbsp;layer&nbsp;3&nbsp;frame                                                                 |<sub>`mp3_frame_tags`</sub>|
 |`mp3_frame_vbri`                                        |MP3&nbsp;frame&nbsp;Fraunhofer&nbsp;encoder&nbsp;variable&nbsp;bitrate&nbsp;tag                              |<sub></sub>|
@@ -510,6 +510,9 @@ Decode value as caff
 ... | caff({uncompress:true})
 ```
 
+### Authors
+- [@ronsor](https://github.com/ronsor)
+
 ## cbor
 
 ### Convert represented value to JSON
@@ -749,6 +752,11 @@ $ fq 'grep_by(.id == "Tracks") | matroska_path' file.mkv
 - https://www.matroska.org/technical/basics.html
 - https://www.matroska.org/technical/codec_specs.html
 - https://wiki.xiph.org/MatroskaOpus
+
+## moc3
+
+### Authors
+- [@ronsor](https://github.com/ronsor)
 
 ## mp3
 
