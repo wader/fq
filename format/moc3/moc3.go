@@ -3,11 +3,16 @@ package moc3
 // https://github.com/OpenL2D/moc3ingbird/blob/master/src/moc3.hexpat
 
 import (
+	"embed"
+
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
+
+//go:embed moc3.md
+var moc3FS embed.FS
 
 func init() {
 	interp.RegisterFormat(
@@ -17,6 +22,7 @@ func init() {
 			Groups:      []*decode.Group{format.Probe},
 			DecodeFn:    decodeMOC3,
 		})
+	interp.RegisterFS(moc3FS)
 }
 
 const (
