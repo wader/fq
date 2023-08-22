@@ -337,7 +337,18 @@ single argument `1, 2` (a lambda expression that outputs `1` and then outputs `2
 achieved.
 - Expressions have one implicit input and output value. This how pipelines like `1 | . * 2` work.
 
-## Types specific to fq
+## Differences to jq
+
+- All [gojq's differences to jq](https://github.com/itchyny/gojq#difference-to-jq).
+Notably it adds support for arbitrary-precision integers.
+- Supports raw strings using back-ticks. <code>\`\\(1234)\u1234\`</code> results in the string `"\\(1234)\\u1234"`.
+- Supports hexadecimal `0xab`, octal `0o77` and binary `0b101` integer literals. Also support grouping using underscore `0xaa_bb_cc_dd`.
+- Try include using a ending question mark `include "file?";` that doesn't fail if file is missing or has errors.
+- Some values can act as an object with keys even when it's an array, number etc.
+- There can be keys hidden from `keys` and `[]`.
+- Some values are readonly and can't be updated or will convert to JSON on update.
+
+### Types specific to fq
 
 fq has two additional types compared to jq, decode value and binary. In standard jq expressions they will in most cases behave as some standard jq type.
 
@@ -849,16 +860,6 @@ fq can be used as a script interpreter:
 #!/usr/bin/env fq -d mp3 -rf
 [.frames[].header | .sample_count / .sample_rate] | add
 ```
-
-## Differences to jq
-
-- [gojq's differences to jq](https://github.com/itchyny/gojq#difference-to-jq),
-notable is support for arbitrary-precision integers.
-- Supports hexadecimal `0xab`, octal `0o77` and binary `0b101` integer literals.
-- Try include `include "file?";` that doesn't fail if file is missing or has errors.
-- Some values can act as an object with keys even when it's an array, number etc.
-- There can be keys hidden from `keys` and `[]`.
-- Some values are readonly and can't be updated.
 
 ## Decoded values
 
