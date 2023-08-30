@@ -730,6 +730,9 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		d.FieldU8("version")
 		d.FieldU24("flags")
 		d.FieldFormat("descriptor", &vpxCCRGroup, nil)
+	case "iods":
+		d.FieldU32("version")
+		d.FieldFormat("descriptor", &mpegESGroup, nil)
 	case "esds":
 		d.FieldU32("version")
 		_, v := d.FieldFormat("descriptor", &mpegESGroup, nil)
