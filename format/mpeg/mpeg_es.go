@@ -261,6 +261,17 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, _ int, fn func(d *decode.D))
 				}
 			}
 		},
+		// TODO: where is the spec?
+		// https://xhelmboyx.tripod.com/formats/mp4-layout.txt
+		// https://github.com/FFmpeg/FFmpeg/blob/master/libavformat/movenc.c mov_write_iods_tag
+		MP4_IOD_Tag: func(d *decode.D) {
+			d.FieldU16("od_id")
+			d.FieldU8("od_profile_level")
+			d.FieldU8("scene_profile_level")
+			d.FieldU8("audio_profile_level")
+			d.FieldU8("video_profile_level")
+			d.FieldU8("graphics_profile_level")
+		},
 	}
 
 	// TODO: expectedTagID
