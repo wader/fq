@@ -1,0 +1,13 @@
+$ fq -o force=true -d mp4 dv cslg.mp4
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: cslg.mp4 (mp4) 0x0-0x1f.7 (32)
+    |                                               |                |  boxes[0:1]: 0x0-0x1f.7 (32)
+    |                                               |                |    [0]{}: box 0x0-0x1f.7 (32)
+0x00|00 00 00 20                                    |...             |      size: 32 0x0-0x3.7 (4)
+0x00|            63 73 6c 67                        |    cslg        |      type: "cslg" (Composition to decode timeline mapping) 0x4-0x7.7 (4)
+0x00|                        00                     |        .       |      version: 0 0x8-0x8.7 (1)
+0x00|                           00 00 00            |         ...    |      flags: 0 0x9-0xb.7 (3)
+0x00|                                    00 00 00 c8|            ....|      composition_to_dts_shift: 200 0xc-0xf.7 (4)
+0x10|ff ff ff 38                                    |...8            |      least_decode_to_display_delta: -200 0x10-0x13.7 (4)
+0x10|            00 00 01 2c                        |    ...,        |      greatest_decode_to_display_delta: 300 0x14-0x17.7 (4)
+0x10|                        00 00 00 00            |        ....    |      composition_start_time: 0 0x18-0x1b.7 (4)
+0x10|                                    00 00 7b 70|            ..{p|      composition_end_time: 31600 0x1c-0x1f.7 (4)

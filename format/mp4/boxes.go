@@ -1722,6 +1722,25 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 				})
 			}
 		})
+	case "cslg":
+		version := d.FieldU8("version")
+		d.FieldU24("flags")
+		switch version {
+		case 0:
+			d.FieldS32("composition_to_dts_shift")
+			d.FieldS32("least_decode_to_display_delta")
+			d.FieldS32("greatest_decode_to_display_delta")
+			d.FieldS32("composition_start_time")
+			d.FieldS32("composition_end_time")
+		case 1:
+			d.FieldS64("composition_to_dts_shift")
+			d.FieldS64("least_decode_to_display_delta")
+			d.FieldS64("greatest_decode_to_display_delta")
+			d.FieldS64("composition_start_time")
+			d.FieldS64("composition_end_time")
+		default:
+			d.FieldRawLen("data", d.BitsLeft())
+		}
 	default:
 		// there are at least 4 ways to encode udta metadata in mov/mp4 files.
 		//
