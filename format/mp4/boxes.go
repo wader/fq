@@ -1741,6 +1741,35 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		default:
 			d.FieldRawLen("data", d.BitsLeft())
 		}
+	case "emsg":
+		// https://aomediacodec.github.io/id3-emsg/
+		version := d.FieldU8("version")
+		d.FieldU24("flags")
+		var schemeIdUri string
+		switch version {
+		case 0:
+			schemeIdUri = d.FieldUTF8Null("scheme_id_uri")
+			d.FieldUTF8Null("value")
+			d.FieldU32("timescale")
+			d.FieldU32("presentation_time_delta")
+			d.FieldU32("event_duration")
+			d.FieldU32("id")
+		case 1:
+			d.FieldU32("timescale")
+			d.FieldU64("presentation_time")
+			d.FieldU32("event_duration")
+			d.FieldU32("id")
+			schemeIdUri = d.FieldUTF8Null("scheme_id_uri")
+			d.FieldUTF8Null("value")
+		default:
+			d.FieldRawLen("data", d.BitsLeft())
+		}
+		switch schemeIdUri {
+		case "https://aomedia.org/emsg/ID3":
+			d.FieldFormat("message_data", &id3v2Group, nil)
+		default:
+			d.FieldRawLen("message_data", d.BitsLeft())
+		}
 	default:
 		// there are at least 4 ways to encode udta metadata in mov/mp4 files.
 		//
