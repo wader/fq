@@ -32,7 +32,9 @@ mp3> .headers[0].padding[-1000:2000] | ., type, length?
 "string"
 10
 mp3> .headers[0].padding["test"] | ., type, length?
-error: expected an object with key "test" but got: string
+null
+"null"
+0
 mp3> [.headers[0].padding[]] | type, length?
 error: cannot iterate over: string
 mp3> .headers[0].padding | keys
@@ -111,7 +113,7 @@ error: setpath(["headers",0,"padding","a"]; 1) cannot be applied to {"footers":[
 mp3> .headers[0].padding[0] = 1
 error: setpath(["headers",0,"padding",0]; 1) cannot be applied to {"footers":[],"frames":[{" ...: expected an array but got: string ("\u0000\u0000\u0000\u0000 ...")
 mp3> .headers[0].padding.a |= empty
-error: expected an object with key "a" but got: string
+error: delpaths([["headers",0,"padding","a"]]) cannot be applied to {"footers":[],"frames":[{" ...: expected an object but got: string ("\u0000\u0000\u0000\u0000 ...")
 mp3> .headers[0].padding[0] |= empty
 error: delpaths([["headers",0,"padding",0]]) cannot be applied to {"footers":[],"frames":[{" ...: expected an array but got: string ("\u0000\u0000\u0000\u0000 ...")
 mp3> .headers[0].padding | setpath(["a"]; 1)

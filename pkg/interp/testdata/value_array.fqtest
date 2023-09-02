@@ -113,7 +113,9 @@ mp3> .headers[-1000:2000] | ., type, length?
 "array"
 1
 mp3> .headers["test"] | ., type, length?
-error: expected an object with key "test" but got: array
+null
+"null"
+0
 mp3> [.headers[]] | type, length?
 "array"
 1
@@ -522,7 +524,7 @@ mp3> .headers[0] = 1
   ]
 }
 mp3> .headers.a |= empty
-error: expected an object with key "a" but got: array
+error: delpaths([["headers","a"]]) cannot be applied to {"footers":[],"frames":[{" ...: expected an object but got: array ([{"frames":[{"flags":{"co ...])
 mp3> .headers[0] |= empty
 {
   "footers": [],

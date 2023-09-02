@@ -7,7 +7,6 @@ import (
 	"io"
 	"math/big"
 	"reflect"
-	"strings"
 	"time"
 
 	"github.com/mitchellh/copystructure"
@@ -25,14 +24,6 @@ func init() {
 	RegisterFunc0("_registry", (*Interp)._registry)
 	RegisterFunc1("_tovalue", (*Interp)._toValue)
 	RegisterFunc2("_decode", (*Interp)._decode)
-}
-
-type expectedExtkeyError struct {
-	Key string
-}
-
-func (err expectedExtkeyError) Error() string {
-	return "expected a extkey but got: " + err.Key
 }
 
 // TODO: redo/rename
@@ -294,21 +285,19 @@ func (i *Interp) _decode(c any, format string, opts decodeOpts) any {
 	return makeDecodeValueOut(dv, decodeValueValue, formatOutMap)
 }
 
-func valueKey(name string, a, b func(name string) any) any {
-	if strings.HasPrefix(name, "_") {
-		return a(name)
+func valueOrFallbackKey(name string, baseKey func(name string) any, valueHas func(key any) any, valueKey func(name string) any) any {
+	v := valueHas(name)
+	if b, ok := v.(bool); ok && b {
+		return valueKey(name)
 	}
-	return b(name)
+	return baseKey(name)
 }
-func valueHas(key any, a func(name string) any, b func(key any) any) any {
-	stringKey, ok := key.(string)
-	if ok && strings.HasPrefix(stringKey, "_") {
-		if err, ok := a(stringKey).(error); ok {
-			return err
-		}
-		return true
+func valueOrFallbackHas(key any, baseHas func(key any) any, valueHas func(key any) any) any {
+	v := valueHas(key)
+	if b, ok := v.(bool); ok && !b {
+		return baseHas(key)
 	}
-	return b(key)
+	return v
 }
 
 // TODO: make more efficient somehow? shallow values but might be hard
@@ -461,16 +450,20 @@ func (dvb decodeValueBase) ToBinary() (Binary, error) {
 }
 func (decodeValueBase) ExtType() string { return "decode_value" }
 func (dvb decodeValueBase) ExtKeys() []string {
-	kv := []string{
+	return []string{
 		"_actual",
 		"_bits",
 		"_buffer_root",
 		"_bytes",
 		"_description",
+		"_error",
 		"_format_root",
+		"_format",
 		"_gap",
+		"_index",
 		"_len",
 		"_name",
+		"_out",
 		"_parent",
 		"_path",
 		"_root",
@@ -478,20 +471,38 @@ func (dvb decodeValueBase) ExtKeys() []string {
 		"_stop",
 		"_sym",
 	}
+}
 
-	if _, ok := dvb.dv.V.(*decode.Compound); ok {
-		kv = append(kv,
-			"_error",
-			"_format",
-			"_out",
-		)
-
-		if dvb.dv.Index != -1 {
-			kv = append(kv, "_index")
-		}
+func (dvb decodeValueBase) JQValueHas(key any) any {
+	name, ok := key.(string)
+	if !ok {
+		return false
 	}
 
-	return kv
+	switch name {
+	case "_actual",
+		"_bits",
+		"_buffer_root",
+		"_bytes",
+		"_description",
+		"_error",
+		"_format_root",
+		"_format",
+		"_gap",
+		"_index",
+		"_len",
+		"_name",
+		"_out",
+		"_parent",
+		"_path",
+		"_root",
+		"_start",
+		"_stop",
+		"_sym":
+		return true
+	}
+
+	return false
 }
 
 func (dvb decodeValueBase) JQValueKey(name string) any {
@@ -591,7 +602,7 @@ func (dvb decodeValueBase) JQValueKey(name string) any {
 		}
 	}
 
-	return expectedExtkeyError{Key: name}
+	return nil
 }
 
 var _ DecodeValue = decodeValue{}
@@ -603,10 +614,10 @@ type decodeValue struct {
 }
 
 func (v decodeValue) JQValueKey(name string) any {
-	return valueKey(name, v.decodeValueBase.JQValueKey, v.JQValue.JQValueKey)
+	return valueOrFallbackKey(name, v.decodeValueBase.JQValueKey, v.JQValue.JQValueHas, v.JQValue.JQValueKey)
 }
 func (v decodeValue) JQValueHas(key any) any {
-	return valueHas(key, v.decodeValueBase.JQValueKey, v.JQValue.JQValueHas)
+	return valueOrFallbackHas(key, v.decodeValueBase.JQValueHas, v.JQValue.JQValueHas)
 }
 func (v decodeValue) JQValueToGoJQEx(optsFn func() (*Options, error)) any {
 	if !v.isRaw {
@@ -641,7 +652,7 @@ func NewArrayDecodeValue(dv *decode.Value, out any, c *decode.Compound) ArrayDec
 }
 
 func (v ArrayDecodeValue) JQValueKey(name string) any {
-	return valueKey(name, v.decodeValueBase.JQValueKey, v.Base.JQValueKey)
+	return valueOrFallbackKey(name, v.decodeValueBase.JQValueKey, v.Base.JQValueHas, v.Base.JQValueKey)
 }
 func (v ArrayDecodeValue) JQValueSliceLen() any { return len(v.Compound.Children) }
 func (v ArrayDecodeValue) JQValueLength() any   { return len(v.Compound.Children) }
@@ -674,9 +685,9 @@ func (v ArrayDecodeValue) JQValueKeys() any {
 	return vs
 }
 func (v ArrayDecodeValue) JQValueHas(key any) any {
-	return valueHas(
+	return valueOrFallbackHas(
 		key,
-		v.decodeValueBase.JQValueKey,
+		v.decodeValueBase.JQValueHas,
 		func(key any) any {
 			intKey, ok := key.(int)
 			if !ok {
@@ -730,16 +741,31 @@ func NewStructDecodeValue(dv *decode.Value, out any, c *decode.Compound) StructD
 func (v StructDecodeValue) JQValueLength() any   { return len(v.Compound.Children) }
 func (v StructDecodeValue) JQValueSliceLen() any { return len(v.Compound.Children) }
 func (v StructDecodeValue) JQValueKey(name string) any {
-	if strings.HasPrefix(name, "_") {
-		return v.decodeValueBase.JQValueKey(name)
-	}
-	if v.Compound.ByName != nil {
-		if f, ok := v.Compound.ByName[name]; ok {
-			return makeDecodeValue(f, decodeValueValue)
-		}
-	}
+	return valueOrFallbackKey(
+		name,
+		v.decodeValueBase.JQValueKey,
+		func(key any) any {
+			stringKey, ok := key.(string)
+			if !ok {
+				return false
+			}
+			if v.Compound.ByName != nil {
+				if _, ok := v.Compound.ByName[stringKey]; ok {
+					return true
+				}
+			}
+			return false
+		},
+		func(name string) any {
+			if v.Compound.ByName != nil {
+				if f, ok := v.Compound.ByName[name]; ok {
+					return makeDecodeValue(f, decodeValueValue)
+				}
+			}
 
-	return nil
+			return nil
+		},
+	)
 }
 func (v StructDecodeValue) JQValueEach() any {
 	props := make([]gojq.PathValue, len(v.Compound.Children))
@@ -756,19 +782,21 @@ func (v StructDecodeValue) JQValueKeys() any {
 	return vs
 }
 func (v StructDecodeValue) JQValueHas(key any) any {
-	return valueHas(
+	return valueOrFallbackHas(
 		key,
-		v.decodeValueBase.JQValueKey,
+		v.decodeValueBase.JQValueHas,
 		func(key any) any {
 			stringKey, ok := key.(string)
 			if !ok {
 				return gojqex.HasKeyTypeError{L: gojq.JQTypeObject, R: fmt.Sprintf("%v", key)}
 			}
-			for _, f := range v.Compound.Children {
-				if f.Name == stringKey {
+
+			if v.Compound.ByName != nil {
+				if _, ok := v.Compound.ByName[stringKey]; ok {
 					return true
 				}
 			}
+
 			return false
 		},
 	)

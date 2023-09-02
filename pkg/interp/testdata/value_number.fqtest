@@ -20,7 +20,9 @@ error: expected an array but got: number
 mp3> .headers[0].header.version[-1000:2000] | ., type, length?
 error: expected an array but got: number
 mp3> .headers[0].header.version["test"] | ., type, length?
-error: expected an object but got: number
+null
+"null"
+0
 mp3> [.headers[0].header.version[]] | type, length?
 error: cannot iterate over: number
 mp3> .headers[0].header.version | keys
@@ -100,7 +102,7 @@ error: setpath(["headers",0,"header","ve ...]; 1) cannot be applied to {"footers
 mp3> .headers[0].header.version[0] = 1
 error: setpath(["headers",0,"header","ve ...]; 1) cannot be applied to {"footers":[],"frames":[{" ...: expected an array but got: number (4)
 mp3> .headers[0].header.version.a |= empty
-error: expected an object but got: number
+error: delpaths([["headers",0,"header","v ...]) cannot be applied to {"footers":[],"frames":[{" ...: expected an object but got: number (4)
 mp3> .headers[0].header.version[0] |= empty
 error: expected an array but got: number
 mp3> .headers[0].header.version | setpath(["a"]; 1)
