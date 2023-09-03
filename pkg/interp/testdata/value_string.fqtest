@@ -32,7 +32,9 @@ mp3> .headers[0].header.magic[-1000:2000] | ., type, length?
 "string"
 3
 mp3> .headers[0].header.magic["test"] | ., type, length?
-error: expected an object but got: string
+null
+"null"
+0
 mp3> [.headers[0].header.magic[]] | type, length?
 error: cannot iterate over: string
 mp3> .headers[0].header.magic | keys
@@ -112,7 +114,7 @@ error: setpath(["headers",0,"header","ma ...]; 1) cannot be applied to {"footers
 mp3> .headers[0].header.magic[0] = 1
 error: setpath(["headers",0,"header","ma ...]; 1) cannot be applied to {"footers":[],"frames":[{" ...: expected an array but got: string ("ID3")
 mp3> .headers[0].header.magic.a |= empty
-error: expected an object but got: string
+error: delpaths([["headers",0,"header","m ...]) cannot be applied to {"footers":[],"frames":[{" ...: expected an object but got: string ("ID3")
 mp3> .headers[0].header.magic[0] |= empty
 error: delpaths([["headers",0,"header","m ...]) cannot be applied to {"footers":[],"frames":[{" ...: expected an array but got: string ("ID3")
 mp3> .headers[0].header.magic | setpath(["a"]; 1)

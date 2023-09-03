@@ -127,77 +127,77 @@ true
 "_format"
 true
 "_abc"
-"expected a extkey but got: _abc"
+false
 mp3> .headers as $c | ("_start", "_stop", "_len", "_name", "_root", "_buffer_root", "_format_root", "_parent", "_sym", "_description", "_path", "_bits", "_bytes", "_error", "_gap", "_format", "_abc") as $n | $n, try ($c | has($n)) catch .
 "_start"
-true
+"cannot check whether array has a key: _start"
 "_stop"
-true
+"cannot check whether array has a key: _stop"
 "_len"
-true
+"cannot check whether array has a key: _len"
 "_name"
-true
+"cannot check whether array has a key: _name"
 "_root"
-true
+"cannot check whether array has a key: _root"
 "_buffer_root"
-true
+"cannot check whether array has a key: _buffer_root"
 "_format_root"
-true
+"cannot check whether array has a key: _format_root"
 "_parent"
-true
+"cannot check whether array has a key: _parent"
 "_sym"
-true
+"cannot check whether array has a key: _sym"
 "_description"
-true
+"cannot check whether array has a key: _description"
 "_path"
-true
+"cannot check whether array has a key: _path"
 "_bits"
-true
+"cannot check whether array has a key: _bits"
 "_bytes"
-true
+"cannot check whether array has a key: _bytes"
 "_error"
-true
+"cannot check whether array has a key: _error"
 "_gap"
-true
+"cannot check whether array has a key: _gap"
 "_format"
-true
+"cannot check whether array has a key: _format"
 "_abc"
-"expected a extkey but got: _abc"
+"cannot check whether array has a key: _abc"
 mp3> .headers[0].header.magic as $c | ("_start", "_stop", "_len", "_name", "_root", "_buffer_root", "_format_root", "_parent", "_sym", "_description", "_path", "_bits", "_bytes", "_error", "_gap", "_format", "_abc") as $n | $n, try ($c | has($n)) catch .
 "_start"
-true
+"has cannot be applied to: string"
 "_stop"
-true
+"has cannot be applied to: string"
 "_len"
-true
+"has cannot be applied to: string"
 "_name"
-true
+"has cannot be applied to: string"
 "_root"
-true
+"has cannot be applied to: string"
 "_buffer_root"
-true
+"has cannot be applied to: string"
 "_format_root"
-true
+"has cannot be applied to: string"
 "_parent"
-true
+"has cannot be applied to: string"
 "_sym"
-true
+"has cannot be applied to: string"
 "_description"
-true
+"has cannot be applied to: string"
 "_path"
-true
+"has cannot be applied to: string"
 "_bits"
-true
+"has cannot be applied to: string"
 "_bytes"
-true
+"has cannot be applied to: string"
 "_error"
-true
+"has cannot be applied to: string"
 "_gap"
-true
+"has cannot be applied to: string"
 "_format"
-true
+"has cannot be applied to: string"
 "_abc"
-"expected a extkey but got: _abc"
+"has cannot be applied to: string"
 mp3> ^D
 $ fq -d mp3 -i . test.mp3
 mp3> ._start
@@ -255,13 +255,13 @@ false
 mp3> ._format
 "mp3"
 mp3> ._abc
-error: expected a extkey but got: _abc
+null
 mp3> fgrep("toc") | arrays[10]._index
 10
 mp3> .headers._index
-error: expected a extkey but got: _index
+null
 mp3> ._index
-error: expected a extkey but got: _index
+null
 mp3> .headers[0].header.version as $r | {a:12} | tojson({indent: $r}) | println
 {
     "a": 12

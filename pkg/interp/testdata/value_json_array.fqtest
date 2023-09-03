@@ -31,7 +31,9 @@ json> (.)[-1000:2000] | ., type, length?
 "array"
 0
 json> (.)["test"] | ., type, length?
-error: expected an object but got: array
+null
+"null"
+0
 json> [(.)[]] | type, length?
 "array"
 0
@@ -101,13 +103,13 @@ json> (.)._gap | ., type, length?
 false
 "boolean"
 json> (.).a = 1
-error: expected an object but got: array
+error: setpath(["a"]; 1) cannot be applied to []: expected an object but got: array ([])
 json> (.)[0] = 1
 [
   1
 ]
 json> (.).a |= empty
-error: expected an object but got: array
+error: delpaths([["a"]]) cannot be applied to []: expected an object but got: array ([])
 json> (.)[0] |= empty
 []
 json> (.) | setpath(["a"]; 1)

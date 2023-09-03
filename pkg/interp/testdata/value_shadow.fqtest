@@ -1,0 +1,15 @@
+$ fq -i
+null> (`{"_format": "format", "_a": "a"}`, `{"_a":"a"}`) | fromjson | ._format, ._a, ._b, has("_format", "_a", "_b")
+"format"
+"a"
+null
+true
+true
+false
+"json"
+"a"
+null
+true
+true
+false
+null> ^D
