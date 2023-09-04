@@ -1,8 +1,8 @@
 # ffmpeg -f lavfi -i sine -t 1ms -write_xing 0 -write_id3v2 0 -write_id3v1 0 -f mp3 test.mp3
-# eyeD3 --user-text-frame=txxx-desc:txxx-text --user-url-frame=wxxx-desc:wxxx-url test.mp3
+# eyeD3 --user-text-frame=txxx-desc:txxx-text --url-frame='WCOM:wcom-url' --user-url-frame=wxxx-desc:wxxx-url test.mp3
 # fq '.headers[0]._bits' test.mp3 > txxx-wxxx
 $ fq -d id3v2 dv txxx-wxxx
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: txxx-wxxx (id3v2) 0x0-0x15b.7 (348)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: txxx-wxxx (id3v2) 0x0-0x30e.7 (783)
      |                                               |                |  header{}: 0x0-0x9.7 (10)
 0x000|49 44 33                                       |ID3             |    magic: "ID3" (valid) 0x0-0x2.7 (3)
 0x000|         04                                    |   .            |    version: 4 (valid) 0x3-0x3.7 (1)
@@ -12,8 +12,8 @@ $ fq -d id3v2 dv txxx-wxxx
 0x000|               00                              |     .          |      extended_header: false 0x5.1-0x5.1 (0.1)
 0x000|               00                              |     .          |      experimental_indicator: false 0x5.2-0x5.2 (0.1)
 0x000|               00                              |     .          |      unused: 0 0x5.3-0x5.7 (0.5)
-0x000|                  00 00 02 52                  |      ...R      |    size: 338 0x6-0x9.7 (4)
-     |                                               |                |  frames[0:3]: 0xa-0x5b.7 (82)
+0x000|                  00 00 02 64                  |      ...d      |    size: 356 0x6-0x9.7 (4)
+     |                                               |                |  frames[0:4]: 0xa-0x6d.7 (100)
      |                                               |                |    [0]{}: frame 0xa-0x20.7 (23)
 0x000|                              54 53 53 45      |          TSSE  |      id: "TSSE" (Software/Hardware and settings used for encoding) 0xa-0xd.7 (4)
 0x000|                                          00 00|              ..|      size: 13 0xe-0x11.7 (4)
@@ -52,10 +52,10 @@ $ fq -d id3v2 dv txxx-wxxx
 0x020|                                    74 78 78 78|            txxx|      description: "txxx-desc" 0x2c-0x35.7 (10)
 0x030|2d 64 65 73 63 00                              |-desc.          |
 0x030|                  74 78 78 78 2d 74 65 78 74   |      txxx-text |      value: "txxx-text" 0x36-0x3e.7 (9)
-     |                                               |                |    [2]{}: frame 0x3f-0x5b.7 (29)
-0x030|                                             57|               W|      id: "WXXX" (User defined URL link frame) 0x3f-0x42.7 (4)
-0x040|58 58 58                                       |XXX             |
-0x040|         00 00 00 13                           |   ....         |      size: 19 0x43-0x46.7 (4)
+     |                                               |                |    [2]{}: frame 0x3f-0x50.7 (18)
+0x030|                                             57|               W|      id: "WCOM" (Commercial information) 0x3f-0x42.7 (4)
+0x040|43 4f 4d                                       |COM             |
+0x040|         00 00 00 08                           |   ....         |      size: 8 0x43-0x46.7 (4)
      |                                               |                |      flags{}: 0x47-0x48.7 (2)
 0x040|                     00                        |       .        |        unused0: 0 0x47-0x47 (0.1)
 0x040|                     00                        |       .        |        tag_alter_preservation: false 0x47.1-0x47.1 (0.1)
@@ -68,10 +68,30 @@ $ fq -d id3v2 dv txxx-wxxx
 0x040|                        00                     |        .       |        encryption: false 0x48.5-0x48.5 (0.1)
 0x040|                        00                     |        .       |        unsync: false 0x48.6-0x48.6 (0.1)
 0x040|                        00                     |        .       |        data_length_indicator: false 0x48.7-0x48.7 (0.1)
-0x040|                           00                  |         .      |      text_encoding: "iso_8859-1" (0) 0x49-0x49.7 (1)
-0x040|                              77 78 78 78 2d 64|          wxxx-d|      description: "wxxx-desc" 0x4a-0x53.7 (10)
-0x050|65 73 63 00                                    |esc.            |
-0x050|            77 78 78 78 2d 75 72 6c            |    wxxx-url    |      url: "wxxx-url" 0x54-0x5b.7 (8)
-0x050|                                    00 00 00 00|            ....|  padding: raw bits (all zero) 0x5c-0x15b.7 (256)
-0x060|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
-*    |until 0x15b.7 (end) (256)                      |                |
+0x040|                           77 63 6f 6d 2d 75 72|         wcom-ur|      url: "wcom-url" 0x49-0x50.7 (8)
+0x050|6c                                             |l               |
+     |                                               |                |    [3]{}: frame 0x51-0x6d.7 (29)
+0x050|   57 58 58 58                                 | WXXX           |      id: "WXXX" (User defined URL link frame) 0x51-0x54.7 (4)
+0x050|               00 00 00 13                     |     ....       |      size: 19 0x55-0x58.7 (4)
+     |                                               |                |      flags{}: 0x59-0x5a.7 (2)
+0x050|                           00                  |         .      |        unused0: 0 0x59-0x59 (0.1)
+0x050|                           00                  |         .      |        tag_alter_preservation: false 0x59.1-0x59.1 (0.1)
+0x050|                           00                  |         .      |        file_alter_preservation: false 0x59.2-0x59.2 (0.1)
+0x050|                           00                  |         .      |        read_only: false 0x59.3-0x59.3 (0.1)
+0x050|                           00 00               |         ..     |        unused1: 0 0x59.4-0x5a (0.5)
+0x050|                              00               |          .     |        grouping_identity: false 0x5a.1-0x5a.1 (0.1)
+0x050|                              00               |          .     |        unused2: 0 0x5a.2-0x5a.3 (0.2)
+0x050|                              00               |          .     |        compression: false 0x5a.4-0x5a.4 (0.1)
+0x050|                              00               |          .     |        encryption: false 0x5a.5-0x5a.5 (0.1)
+0x050|                              00               |          .     |        unsync: false 0x5a.6-0x5a.6 (0.1)
+0x050|                              00               |          .     |        data_length_indicator: false 0x5a.7-0x5a.7 (0.1)
+0x050|                                 00            |           .    |      text_encoding: "iso_8859-1" (0) 0x5b-0x5b.7 (1)
+0x050|                                    77 78 78 78|            wxxx|      description: "wxxx-desc" 0x5c-0x65.7 (10)
+0x060|2d 64 65 73 63 00                              |-desc.          |
+0x060|                  77 78 78 78 2d 75 72 6c      |      wxxx-url  |      url: "wxxx-url" 0x66-0x6d.7 (8)
+0x060|                                          00 00|              ..|  padding: raw bits (all zero) 0x6e-0x16d.7 (256)
+0x070|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
+*    |until 0x16d.7 (256)                            |                |
+0x160|                                          ff fb|              ..|  gap0: raw bits 0x16e-0x30e.7 (417)
+0x170|50 c4 00 00 09 bc 33 46 47 bc c1 01 4a 86 ab 34|P.....3FG...J..4|
+*    |until 0x30e.7 (end) (417)                      |                |

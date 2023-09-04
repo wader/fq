@@ -559,6 +559,18 @@ func decodeFrame(d *decode.D, version int) uint64 {
 			d.FieldStrFn("value", textFn(int(encoding), int(d.BitsLeft()/8)))
 		},
 
+		// URL link frame   "W00" - "WZZ" , excluding "WXX"
+		// (described in 4.3.2.)
+		// Frame size       $xx xx xx
+		// URL              <textstring>
+		//
+		// <Header for 'URL link frame', ID: "W000" - "WZZZ", excluding "WXXX"
+		// described in 4.3.2.>
+		// URL              <text string>
+		"W000": func(d *decode.D) {
+			d.FieldUTF8("url", int(d.BitsLeft())/8)
+		},
+
 		// User defined...   "WXX"
 		// Frame size        $xx xx xx
 		// Text encoding     $xx
@@ -589,12 +601,14 @@ func decodeFrame(d *decode.D, version int) uint64 {
 	switch {
 	case id == "COMM", id == "COM", id == "USLT", id == "ULT":
 		idNormalized = "COMM"
-	case id == "TXX", id == "TXXX":
+	case id == "TXXX" || id == "TXX":
 		idNormalized = "TXXX"
-	case id == "WXX", id == "WXXX":
+	case id == "WXXX" || id == "WXX":
 		idNormalized = "WXXX"
-	case len(id) > 0 && id[0] == 'T':
+	case id[0] == 'T':
 		idNormalized = "T000"
+	case id[0] == 'W':
+		idNormalized = "W000"
 	}
 
 	if unsyncFlag {
