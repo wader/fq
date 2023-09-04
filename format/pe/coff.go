@@ -323,6 +323,8 @@ func peCoffStubDecode(d *decode.D) any {
 	var pci format.COFF_In
 	d.ArgAs(&pci)
 
+	addrSize := 64
+
 	d.Endian = decode.LittleEndian
 
 	d.FieldRawLen("signature", 4*8, d.AssertBitBuf([]byte("PE\x00\x00")))
@@ -385,7 +387,6 @@ func peCoffStubDecode(d *decode.D) any {
 				d.FieldU32("size_of_uninitialized_data")
 				d.FieldU32("address_of_entry_point", scalar.UintHex)
 				d.FieldU32("base_of_code", scalar.UintHex)
-				addrSize := 64
 				if peFormat == peFormat32 {
 					d.FieldU32("base_of_data", scalar.UintHex)
 					addrSize = 32
@@ -484,7 +485,7 @@ func peCoffStubDecode(d *decode.D) any {
 	d.FieldArray("sections", func(d *decode.D) {
 		for i := uint64(0); i < numberOfSections; i++ {
 			d.FieldStruct("section", func(d *decode.D) {
-				d.FieldUTF8("name", 8, stringTableMapper)                             // An 8-byte, null-padded UTF-8 encoded string. If the string is exactly 8 characters long, there is no terminating null. For longer names, this field contains a slash (/) that is followed by an ASCII representation of a decimal number that is an offset into the string table. Executable images do not use a string table and do not support section names longer than 8 characters. Long names in object files are truncated if they are emitted to an executable file.
+				name := d.FieldUTF8("name", 8, stringTableMapper)                     // An 8-byte, null-padded UTF-8 encoded string. If the string is exactly 8 characters long, there is no terminating null. For longer names, this field contains a slash (/) that is followed by an ASCII representation of a decimal number that is an offset into the string table. Executable images do not use a string table and do not support section names longer than 8 characters. Long names in object files are truncated if they are emitted to an executable file.
 				d.FieldU32("virtual_size")                                            // The total size of the section when loaded into memory. If this value is greater than SizeOfRawData, the section is zero-padded. This field is valid only for executable images and should be set to zero for object files.
 				d.FieldU32("virtual_address", scalar.UintHex)                         // For executable images, the address of the first byte of the section relative to the image base when the section is loaded into memory. For object files, this field is the address of the first byte before relocation is applied; for simplicity, compilers should set this to zero. Otherwise, it is an arbitrary value that is subtracted from offsets during relocation.
 				sizeOfRawData := d.FieldU32("size_of_raw_data")                       // The size of the section (for object files) or the size of the initialized data on disk (for image files). For executable images, this must be a multiple of FileAlignment from the optional header. If this is less than VirtualSize, the remainder of the section is zero-filled. Because the SizeOfRawData field is rounded but the VirtualSize field is not, it is possible for SizeOfRawData to be greater than VirtualSize as well. When a section contains only uninitialized data, this field should be zero.
@@ -586,7 +587,55 @@ func peCoffStubDecode(d *decode.D) any {
 				if pointerToRawData != 0 {
 					pointerToRawData -= uint64(pci.FilePointerOffset)
 					d.SeekAbs(int64(pointerToRawData)*8, func(d *decode.D) {
-						d.FieldRawLen("data", int64(sizeOfRawData)*8)
+						switch name {
+						case ".idata":
+							d.FieldStruct("data", func(d *decode.D) {
+
+								count := 0
+								d.FieldArray("directory_table", func(d *decode.D) {
+									for {
+										var n uint64
+										d.FieldStruct("directory_entry", func(d *decode.D) {
+											n = d.FieldU32("lookup_table_rva", scalar.UintHex)
+											d.FieldU32("timestamp")
+											d.FieldU32("forward_chain")
+											d.FieldU32("name_rva", scalar.UintHex)
+											d.FieldU32("address_table_rva", scalar.UintHex)
+										})
+
+										if n == 0 {
+											break
+										}
+
+										count++
+									}
+								})
+
+								d.FieldArray("dlls", func(d *decode.D) {
+
+									for i := 0; i < count; i++ {
+
+										d.FieldStruct("dll", func(d *decode.D) {
+
+											d.FieldArray("lookup_table1", func(d *decode.D) {
+												for {
+													if d.PeekUintBits(addrSize) == 0 {
+														break
+													}
+													d.FieldU("bla", addrSize)
+												}
+											})
+											d.FieldU("lookup_table1_end", addrSize)
+										})
+									}
+
+								})
+
+							})
+
+						default:
+							d.FieldRawLen("data", int64(sizeOfRawData)*8)
+						}
 					})
 				}
 			})
