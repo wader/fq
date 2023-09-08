@@ -275,6 +275,7 @@ mp3> .headers[0] = 1
         "present_flags": {
           "bytes": true,
           "frames": true,
+          "lame": false,
           "quality": true,
           "toc": true,
           "unused": 0
@@ -608,6 +609,7 @@ mp3> .headers[0] |= empty
         "present_flags": {
           "bytes": true,
           "frames": true,
+          "lame": false,
           "quality": true,
           "toc": true,
           "unused": 0
