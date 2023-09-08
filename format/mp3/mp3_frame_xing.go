@@ -22,12 +22,14 @@ func init() {
 
 func mp3FrameTagXingDecode(d *decode.D) any {
 	d.FieldUTF8("header", 4, d.StrAssert("Xing", "Info"))
+	lamePresent := false
 	qualityPresent := false
 	tocPresent := false
 	bytesPresent := false
 	framesPresent := false
 	d.FieldStruct("present_flags", func(d *decode.D) {
-		d.FieldU("unused", 28)
+		d.FieldU("unused", 27)
+		lamePresent = d.FieldBool("lame")
 		qualityPresent = d.FieldBool("quality")
 		tocPresent = d.FieldBool("toc")
 		bytesPresent = d.FieldBool("bytes")
@@ -51,24 +53,35 @@ func mp3FrameTagXingDecode(d *decode.D) any {
 		d.FieldU32BE("quality")
 	}
 
-	d.FieldUTF8("encoder", 9)
-	d.FieldU4("tag_revision")
-	d.FieldU4("vbr_method")
-	d.FieldU8("lowpass_filter") // TODO: /100
-	d.FieldU32("replay_gain_peak")
-	d.FieldU16("radio_replay_gain")
-	d.FieldU16("audiophile_replay_gain")
-	d.FieldU4("lame_flags")
-	d.FieldU4("lame_ath_type")
-	d.FieldU8("abr_vbr")          // TODO:
-	d.FieldU12("encoder_delay")   // TODO:
-	d.FieldU12("encoder_padding") // TODO:
-	d.FieldU8("misc")             // TODO:
-	d.FieldU8("mp3_gain")         // TODO:
-	d.FieldU16("preset")          // TODO:
-	d.FieldU32("length")
-	d.FieldU16("music_crc") // TODO:
-	d.FieldU16("tag_crc")   // TODO:
+	// this is mix of what ffmpeg and mediainfo does to detect lame extensions
+	peekLame, _ := d.TryPeekBytes(4)
+	peekLaneStr := string(peekLame)
+	hasLameHeader := (peekLaneStr == "LAME" ||
+		peekLaneStr == "Lavf" ||
+		peekLaneStr == "Lavc" ||
+		peekLaneStr == "GOGO" ||
+		peekLaneStr == "L3.9")
+
+	if lamePresent || hasLameHeader {
+		d.FieldUTF8("encoder", 9)
+		d.FieldU4("tag_revision")
+		d.FieldU4("vbr_method")
+		d.FieldU8("lowpass_filter") // TODO: /100
+		d.FieldU32("replay_gain_peak")
+		d.FieldU16("radio_replay_gain")
+		d.FieldU16("audiophile_replay_gain")
+		d.FieldU4("lame_flags")
+		d.FieldU4("lame_ath_type")
+		d.FieldU8("abr_vbr")          // TODO:
+		d.FieldU12("encoder_delay")   // TODO:
+		d.FieldU12("encoder_padding") // TODO:
+		d.FieldU8("misc")             // TODO:
+		d.FieldU8("mp3_gain")         // TODO:
+		d.FieldU16("preset")          // TODO:
+		d.FieldU32("length")
+		d.FieldU16("music_crc") // TODO:
+		d.FieldU16("tag_crc")   // TODO:
+	}
 
 	return nil
 }

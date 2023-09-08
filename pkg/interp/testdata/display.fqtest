@@ -86,6 +86,7 @@ mp3> .frames[0].tag | "d", d, "da", da, "dd", dd, "dv", dv, "ddv", ddv
 0x40|      49 6e 66 6f                              |  Info          |  header: "Info" (valid)
     |                                               |                |  present_flags{}:
 0x40|                  00 00 00 0f                  |      ....      |    unused: 0
+0x40|                           0f                  |         .      |    lame: false
 0x40|                           0f                  |         .      |    quality: true
 0x40|                           0f                  |         .      |    toc: true
 0x40|                           0f                  |         .      |    bytes: true
@@ -171,6 +172,7 @@ mp3> .frames[0].tag | "d", d, "da", da, "dd", dd, "dv", dv, "ddv", ddv
 0x40|      49 6e 66 6f                              |  Info          |  header: "Info" (valid)
     |                                               |                |  present_flags{}:
 0x40|                  00 00 00 0f                  |      ....      |    unused: 0
+0x40|                           0f                  |         .      |    lame: false
 0x40|                           0f                  |         .      |    quality: true
 0x40|                           0f                  |         .      |    toc: true
 0x40|                           0f                  |         .      |    bytes: true
@@ -305,6 +307,7 @@ mp3> .frames[0].tag | "d", d, "da", da, "dd", dd, "dv", dv, "ddv", ddv
 0x40|      49 6e 66 6f                              |  Info          |  header: "Info" (valid)
     |                                               |                |  present_flags{}:
 0x40|                  00 00 00 0f                  |      ....      |    unused: 0
+0x40|                           0f                  |         .      |    lame: false
 0x40|                           0f                  |         .      |    quality: true
 0x40|                           0f                  |         .      |    toc: true
 0x40|                           0f                  |         .      |    bytes: true
@@ -438,7 +441,8 @@ mp3> .frames[0].tag | "d", d, "da", da, "dd", dd, "dv", dv, "ddv", ddv
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].tag{}: (mp3_frame_xing) 0x42-0xdd.7 (156)
 0x40|      49 6e 66 6f                              |  Info          |  header: "Info" (valid) 0x42-0x45.7 (4)
     |                                               |                |  present_flags{}: 0x46-0x49.7 (4)
-0x40|                  00 00 00 0f                  |      ....      |    unused: 0 0x46-0x49.3 (3.4)
+0x40|                  00 00 00 0f                  |      ....      |    unused: 0 0x46-0x49.2 (3.3)
+0x40|                           0f                  |         .      |    lame: false 0x49.3-0x49.3 (0.1)
 0x40|                           0f                  |         .      |    quality: true 0x49.4-0x49.4 (0.1)
 0x40|                           0f                  |         .      |    toc: true 0x49.5-0x49.5 (0.1)
 0x40|                           0f                  |         .      |    bytes: true 0x49.6-0x49.6 (0.1)
@@ -572,7 +576,8 @@ mp3> .frames[0].tag | "d", d, "da", da, "dd", dd, "dv", dv, "ddv", ddv
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.frames[0].tag{}: (mp3_frame_xing) 0x42-0xdd.7 (156)
 0x40|      49 6e 66 6f                              |  Info          |  header: "Info" (valid) 0x42-0x45.7 (4)
     |                                               |                |  present_flags{}: 0x46-0x49.7 (4)
-0x40|                  00 00 00 0f                  |      ....      |    unused: 0 0x46-0x49.3 (3.4)
+0x40|                  00 00 00 0f                  |      ....      |    unused: 0 0x46-0x49.2 (3.3)
+0x40|                           0f                  |         .      |    lame: false 0x49.3-0x49.3 (0.1)
 0x40|                           0f                  |         .      |    quality: true 0x49.4-0x49.4 (0.1)
 0x40|                           0f                  |         .      |    toc: true 0x49.5-0x49.5 (0.1)
 0x40|                           0f                  |         .      |    bytes: true 0x49.6-0x49.6 (0.1)
