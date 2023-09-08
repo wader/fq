@@ -6,6 +6,24 @@ fq \- jq for binary formats
 .SH SYNOPSIS
 \fBfq\fR [\fI\,OPTION\/\fR]... [--] \fI\,EXPR [\fI\,FILE\/\fR]...
 
+\fBfq\fR . <FILE>
+
+\fBfq\fR d <FILE>
+
+\fBfq\fR -V '.path[1].value' <FILE>
+
+\fBfq\fR tovalue <FILE>
+
+\fBfq\fR -r to_toml file.yml
+
+\fBfq\fR -s -d html 'map(.html.head.title?)' *.html
+
+\fBfq\fR file.cbor | fq -d cbor torepr
+
+\fBfq\fR 'grep("^main$") | parent' /bin/ls
+
+\fBfq\fR -i
+
 .SH DESCRIPTION
 \fBfq\fR is inspired by the well known jq tool and language that allows you to work with binary formats the same way you would using jq. In addition it can present data like a hex viewer, transform, slice and concatenate binary data. It also supports nested formats and has an interactive REPL with auto-completion.
 .P
