@@ -330,10 +330,10 @@ type sectionOffsetTable struct {
 
 	blendShapeKeyformBindings struct {
 		parameterBindingSourcesIndices               int64
-		blendShapeConstraintIndexSourcesBeginIndices int64
-		blendShapeConstraintIndexSourcesCounts       int64
 		keyformSourcesBlendShapeIndices              int64
 		keyformSourcesBlendShapeCounts               int64
+		blendShapeConstraintIndexSourcesBeginIndices int64
+		blendShapeConstraintIndexSourcesCounts       int64
 	}
 
 	blendShapesWarpDeformers struct {
@@ -657,10 +657,10 @@ func decodeMOC3(d *decode.D) any {
 
 				d.FieldStruct("blend_shape_keyform_bindings", func(d *decode.D) {
 					sectionOffsets.blendShapeKeyformBindings.parameterBindingSourcesIndices = int64(d.FieldU32("parameter_binding_sources_indices", scalar.UintHex))
-					sectionOffsets.blendShapeKeyformBindings.blendShapeConstraintIndexSourcesBeginIndices = int64(d.FieldU32("blend_shape_constraint_index_sources_begin_indices", scalar.UintHex))
-					sectionOffsets.blendShapeKeyformBindings.blendShapeConstraintIndexSourcesCounts = int64(d.FieldU32("blend_shape_constraint_index_sources_counts", scalar.UintHex))
 					sectionOffsets.blendShapeKeyformBindings.keyformSourcesBlendShapeIndices = int64(d.FieldU32("keyform_sources_blend_shape_indices", scalar.UintHex))
 					sectionOffsets.blendShapeKeyformBindings.keyformSourcesBlendShapeCounts = int64(d.FieldU32("keyform_sources_blend_shape_counts", scalar.UintHex))
+					sectionOffsets.blendShapeKeyformBindings.blendShapeConstraintIndexSourcesBeginIndices = int64(d.FieldU32("blend_shape_constraint_index_sources_begin_indices", scalar.UintHex))
+					sectionOffsets.blendShapeKeyformBindings.blendShapeConstraintIndexSourcesCounts = int64(d.FieldU32("blend_shape_constraint_index_sources_counts", scalar.UintHex))
 				})
 
 				d.FieldStruct("blend_shapes_warp_deformers", func(d *decode.D) {
@@ -759,9 +759,9 @@ func decodeMOC3(d *decode.D) any {
 			countInfo.drawOrderGroupObjects = int64(d.FieldU32("draw_order_group_objects"))
 			countInfo.glue = int64(d.FieldU32("glue"))
 			countInfo.glueInfo = int64(d.FieldU32("glue_info"))
+			countInfo.glueKeyforms = int64(d.FieldU32("glue_keyforms"))
 
 			if version >= moc3Version4_02_00 {
-				countInfo.glueKeyforms = int64(d.FieldU32("glue_keyforms"))
 				countInfo.keyformMultiplyColors = int64(d.FieldU32("keyform_multiply_colors"))
 				countInfo.keyformScreenColors = int64(d.FieldU32("keyform_screen_colors"))
 				countInfo.blendShapeParameterBindings = int64(d.FieldU32("blend_shape_parameter_bindings"))
@@ -1297,17 +1297,17 @@ func decodeMOC3(d *decode.D) any {
 				d.SeekAbs(sectionOffsets.blendShapeKeyformBindings.parameterBindingSourcesIndices * 8)
 				fieldAlignedNArray(d, "parameter_binding_sources_indices", count, func(d *decode.D) { d.FieldS32("index") })
 
-				d.SeekAbs(sectionOffsets.blendShapeKeyformBindings.blendShapeConstraintIndexSourcesBeginIndices * 8)
-				fieldAlignedNArray(d, "blend_shape_constraint_index_sources_begin_indices", count, func(d *decode.D) { d.FieldS32("index") })
-
-				d.SeekAbs(sectionOffsets.blendShapeKeyformBindings.blendShapeConstraintIndexSourcesCounts * 8)
-				fieldAlignedNArray(d, "blend_shape_constraint_index_sources_counts", count, func(d *decode.D) { d.FieldS32("count") })
-
 				d.SeekAbs(sectionOffsets.blendShapeKeyformBindings.keyformSourcesBlendShapeIndices * 8)
 				fieldAlignedNArray(d, "keyform_sources_blend_shape_indices", count, func(d *decode.D) { d.FieldS32("index") })
 
 				d.SeekAbs(sectionOffsets.blendShapeKeyformBindings.keyformSourcesBlendShapeCounts * 8)
 				fieldAlignedNArray(d, "keyform_sources_blend_shape_counts", count, func(d *decode.D) { d.FieldS32("count") })
+
+				d.SeekAbs(sectionOffsets.blendShapeKeyformBindings.blendShapeConstraintIndexSourcesBeginIndices * 8)
+				fieldAlignedNArray(d, "blend_shape_constraint_index_sources_begin_indices", count, func(d *decode.D) { d.FieldS32("index") })
+
+				d.SeekAbs(sectionOffsets.blendShapeKeyformBindings.blendShapeConstraintIndexSourcesCounts * 8)
+				fieldAlignedNArray(d, "blend_shape_constraint_index_sources_counts", count, func(d *decode.D) { d.FieldS32("count") })
 			})
 
 			d.FieldStruct("blend_shapes_warp_deformers", func(d *decode.D) {
