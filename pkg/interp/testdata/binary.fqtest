@@ -414,13 +414,13 @@ null> "ååå" as $p | "cbbcåååccåååcbc", "åååcbbc", "cbbcååå" | ., 
 "binary_rune"
 [
   "cbbc",
-  "ccååå",
+  "cc",
   "cbc"
 ]
 "binary_byte"
 [
   "cbbc",
-  "ccååå",
+  "cc",
   "cbc"
 ]
 "åååcbbc"
@@ -464,17 +464,15 @@ null> "å(?<n>å)(å)" as $p | "cbbcåååccåååcbc", "åååcbbc", "cbbcåå�
 "binary_rune"
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|63 62 62 63                                    |cbbc            |.: raw bits 0x0-0x3.7 (4)
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x00|                              63 63 c3 a5 c3 a5|          cc....|.: raw bits 0xa-0x11.7 (8)
-0x10|c3 a5                                          |..              |
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|                              63 63            |          cc    |.: raw bits 0xa-0xb.7 (2)
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x10|      63 62 63|                                |  cbc|          |.: raw bits 0x12-0x14.7 (3)
 "binary_byte"
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|63 62 62 63                                    |cbbc            |.: raw bits 0x0-0x3.7 (4)
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x00|                              63 63 c3 a5 c3 a5|          cc....|.: raw bits 0xa-0x11.7 (8)
-0x10|c3 a5                                          |..              |
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|                              63 63            |          cc    |.: raw bits 0xa-0xb.7 (2)
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x10|      63 62 63|                                |  cbc|          |.: raw bits 0x12-0x14.7 (3)
 "åååcbbc"

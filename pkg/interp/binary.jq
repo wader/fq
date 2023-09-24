@@ -36,13 +36,13 @@ def _splits_binary($regex; $flags):
   ( . as $b
   # last null output is to do a last iteration that output from end of last match to end of binary
   | foreach (_match_binary($regex; $flags), null) as $m (
-      {prev: null, curr: null};
-      ( .prev = .curr
-      | .curr = $m
+      {prev: null, current: null};
+      ( .prev = .current
+      | .current = $m
       );
-      if .prev == null then $b[0:.curr.offset]
-      elif .curr == null then $b[.prev.offset+.prev.length:]
-      else $b[.prev.offset+.prev.length:.curr.offset+.curr.length]
+      if .prev == null then $b[0:.current.offset]
+      elif .current == null then $b[.prev.offset+.prev.length:]
+      else $b[.prev.offset+.prev.length:.current.offset]
       end
     )
   );
