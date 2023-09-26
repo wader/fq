@@ -1,0 +1,161 @@
+$ fq dv simple.ots
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: simple.ots (opentimestamps) 0x0-0x25f.7 (608)
+0x000|00 4f 70 65 6e 54 69 6d 65 73 74 61 6d 70 73 00|.OpenTimestamps.|  magic_bytes: raw bits (valid) 0x0-0x1e.7 (31)
+0x010|00 50 72 6f 6f 66 00 bf 89 e2 e8 84 e8 92 94   |.Proof......... |
+0x010|                                             01|               .|  version: 1 0x1f-0x1f.7 (1)
+0x020|08                                             |.               |  digest_hash_algorithm: "sha256" (8) 0x20-0x20.7 (1)
+0x020|   03 90 58 c6 f2 c0 cb 49 2c 53 3b 0a 4d 14 ef| ..X....I,S;.M..|  digest: "039058c6f2c0cb492c533b0a4d14ef77cc0f78abccced52..." (raw bits) 0x21-0x40.7 (32)
+0x030|77 cc 0f 78 ab cc ce d5 28 7d 84 a1 a2 01 1c fb|w..x....(}......|
+0x040|82                                             |.               |
+     |                                               |                |  operations[0:35]: 0x41-0x25f.7 (543)
+     |                                               |                |    [0]{}: operation 0x41-0x52.7 (18)
+0x040|   f0                                          | .              |      tag: "append" (240) 0x41-0x41.7 (1)
+0x040|      10                                       |  .             |      argument_size: 16 0x42-0x42.7 (1)
+0x040|         1b 32 c4 b9 78 d0 ff 15 7c a6 d4 41 60|   .2..x...|..A`|      argument: "1b32c4b978d0ff157ca6d44160f378e0" (raw bits) 0x43-0x52.7 (16)
+0x050|f3 78 e0                                       |.x.             |
+     |                                               |                |    [1]{}: operation 0x53-0x53.7 (1)
+0x050|         08                                    |   .            |      tag: "sha256" (8) 0x53-0x53.7 (1)
+     |                                               |                |    [2]{}: operation 0x54-0x54.7 (1)
+0x050|            ff                                 |    .           |      tag: "continuation_byte" (255) 0x54-0x54.7 (1)
+     |                                               |                |    [3]{}: operation 0x55-0x66.7 (18)
+0x050|               f0                              |     .          |      tag: "append" (240) 0x55-0x55.7 (1)
+0x050|                  10                           |      .         |      argument_size: 16 0x56-0x56.7 (1)
+0x050|                     98 a1 44 f3 5c f1 6d a1 99|       ..D.\.m..|      argument: "98a144f35cf16da199d88df927645320" (raw bits) 0x57-0x66.7 (16)
+0x060|d8 8d f9 27 64 53 20                           |...'dS          |
+     |                                               |                |    [4]{}: operation 0x67-0x67.7 (1)
+0x060|                     08                        |       .        |      tag: "sha256" (8) 0x67-0x67.7 (1)
+     |                                               |                |    [5]{}: operation 0x68-0x89.7 (34)
+0x060|                        f0                     |        .       |      tag: "append" (240) 0x68-0x68.7 (1)
+0x060|                           20                  |                |      argument_size: 32 0x69-0x69.7 (1)
+0x060|                              d5 96 cf af 56 5a|          ....VZ|      argument: "d596cfaf565acf713456b4922543d31859003097f16d059..." (raw bits) 0x6a-0x89.7 (32)
+0x070|cf 71 34 56 b4 92 25 43 d3 18 59 00 30 97 f1 6d|.q4V..%C..Y.0..m|
+0x080|05 9d 76 9e 4d 09 f9 a0 4b 2b                  |..v.M...K+      |
+     |                                               |                |    [6]{}: operation 0x8a-0x8a.7 (1)
+0x080|                              08               |          .     |      tag: "sha256" (8) 0x8a-0x8a.7 (1)
+     |                                               |                |    [7]{}: operation 0x8b-0xac.7 (34)
+0x080|                                 f0            |           .    |      tag: "append" (240) 0x8b-0x8b.7 (1)
+0x080|                                    20         |                |      argument_size: 32 0x8c-0x8c.7 (1)
+0x080|                                       09 69 a2|             .i.|      argument: "0969a267d9e9ccc40fe258f9b828a0b5a7eaa8f75ff171b..." (raw bits) 0x8d-0xac.7 (32)
+0x090|67 d9 e9 cc c4 0f e2 58 f9 b8 28 a0 b5 a7 ea a8|g......X..(.....|
+0x0a0|f7 5f f1 71 b2 4e 8a 20 1b 95 11 df 7a         |._.q.N. ....z   |
+     |                                               |                |    [8]{}: operation 0xad-0xad.7 (1)
+0x0a0|                                       08      |             .  |      tag: "sha256" (8) 0xad-0xad.7 (1)
+     |                                               |                |    [9]{}: operation 0xae-0xb3.7 (6)
+0x0a0|                                          f1   |              . |      tag: "prepend" (241) 0xae-0xae.7 (1)
+0x0a0|                                             04|               .|      argument_size: 4 0xaf-0xaf.7 (1)
+0x0b0|65 11 4c a4                                    |e.L.            |      argument: "65114ca4" (raw bits) 0xb0-0xb3.7 (4)
+     |                                               |                |    [10]{}: operation 0xb4-0xbd.7 (10)
+0x0b0|            f0                                 |    .           |      tag: "append" (240) 0xb4-0xb4.7 (1)
+0x0b0|               08                              |     .          |      argument_size: 8 0xb5-0xb5.7 (1)
+0x0b0|                  23 78 c7 35 bf 4b d6 6b      |      #x.5.K.k  |      argument: "2378c735bf4bd66b" (raw bits) 0xb6-0xbd.7 (8)
+     |                                               |                |    [11]{}: operation 0xbe-0xf5.7 (56)
+0x0b0|                                          00   |              . |      tag: "attestation" (0) 0xbe-0xbe.7 (1)
+0x0b0|                                             83|               .|      attestation_type: "calendar" (9502563384537189518) 0xbf-0xc6.7 (8)
+0x0c0|df e3 0d 2e f9 0c 8e                           |.......         |
+0x0c0|                     2e                        |       .        |      attestation_varbytes_size: 46 0xc7-0xc7.7 (1)
+0x0c0|                        2d                     |        -       |      url_size: 45 0xc8-0xc8.7 (1)
+0x0c0|                           68 74 74 70 73 3a 2f|         https:/|      url: "https://alice.btc.calendar.opentimestamps.org" 0xc9-0xf5.7 (45)
+0x0d0|2f 61 6c 69 63 65 2e 62 74 63 2e 63 61 6c 65 6e|/alice.btc.calen|
+*    |until 0xf5.7 (45)                              |                |
+     |                                               |                |    [12]{}: operation 0xf6-0xf6.7 (1)
+0x0f0|                  ff                           |      .         |      tag: "continuation_byte" (255) 0xf6-0xf6.7 (1)
+     |                                               |                |    [13]{}: operation 0xf7-0x108.7 (18)
+0x0f0|                     f0                        |       .        |      tag: "append" (240) 0xf7-0xf7.7 (1)
+0x0f0|                        10                     |        .       |      argument_size: 16 0xf8-0xf8.7 (1)
+0x0f0|                           63 42 97 a6 39 86 9a|         cB..9..|      argument: "634297a639869a85b7c6a28b029a5c05" (raw bits) 0xf9-0x108.7 (16)
+0x100|85 b7 c6 a2 8b 02 9a 5c 05                     |.......\.       |
+     |                                               |                |    [14]{}: operation 0x109-0x109.7 (1)
+0x100|                           08                  |         .      |      tag: "sha256" (8) 0x109-0x109.7 (1)
+     |                                               |                |    [15]{}: operation 0x10a-0x12b.7 (34)
+0x100|                              f1               |          .     |      tag: "prepend" (241) 0x10a-0x10a.7 (1)
+0x100|                                 20            |                |      argument_size: 32 0x10b-0x10b.7 (1)
+0x100|                                    2e 18 3c c1|            ..<.|      argument: "2e183cc1d0ab5ceafe3057df30e02970f5cabcc51928a6a..." (raw bits) 0x10c-0x12b.7 (32)
+0x110|d0 ab 5c ea fe 30 57 df 30 e0 29 70 f5 ca bc c5|..\..0W.0.)p....|
+0x120|19 28 a6 a8 2c 85 b2 e2 f9 da 0d 0a            |.(..,.......    |
+     |                                               |                |    [16]{}: operation 0x12c-0x12c.7 (1)
+0x120|                                    08         |            .   |      tag: "sha256" (8) 0x12c-0x12c.7 (1)
+     |                                               |                |    [17]{}: operation 0x12d-0x132.7 (6)
+0x120|                                       f1      |             .  |      tag: "prepend" (241) 0x12d-0x12d.7 (1)
+0x120|                                          04   |              . |      argument_size: 4 0x12e-0x12e.7 (1)
+0x120|                                             65|               e|      argument: "65114ca4" (raw bits) 0x12f-0x132.7 (4)
+0x130|11 4c a4                                       |.L.             |
+     |                                               |                |    [18]{}: operation 0x133-0x13c.7 (10)
+0x130|         f0                                    |   .            |      tag: "append" (240) 0x133-0x133.7 (1)
+0x130|            08                                 |    .           |      argument_size: 8 0x134-0x134.7 (1)
+0x130|               9b 8b 3e 67 ae 86 46 5d         |     ..>g..F]   |      argument: "9b8b3e67ae86465d" (raw bits) 0x135-0x13c.7 (8)
+     |                                               |                |    [19]{}: operation 0x13d-0x172.7 (54)
+0x130|                                       00      |             .  |      tag: "attestation" (0) 0x13d-0x13d.7 (1)
+0x130|                                          83 df|              ..|      attestation_type: "calendar" (9502563384537189518) 0x13e-0x145.7 (8)
+0x140|e3 0d 2e f9 0c 8e                              |......          |
+0x140|                  2c                           |      ,         |      attestation_varbytes_size: 44 0x146-0x146.7 (1)
+0x140|                     2b                        |       +        |      url_size: 43 0x147-0x147.7 (1)
+0x140|                        68 74 74 70 73 3a 2f 2f|        https://|      url: "https://bob.btc.calendar.opentimestamps.org" 0x148-0x172.7 (43)
+0x150|62 6f 62 2e 62 74 63 2e 63 61 6c 65 6e 64 61 72|bob.btc.calendar|
+*    |until 0x172.7 (43)                             |                |
+     |                                               |                |    [20]{}: operation 0x173-0x173.7 (1)
+0x170|         ff                                    |   .            |      tag: "continuation_byte" (255) 0x173-0x173.7 (1)
+     |                                               |                |    [21]{}: operation 0x174-0x185.7 (18)
+0x170|            f0                                 |    .           |      tag: "append" (240) 0x174-0x174.7 (1)
+0x170|               10                              |     .          |      argument_size: 16 0x175-0x175.7 (1)
+0x170|                  b4 12 97 1f 5d 1c d6 85 77 d3|      ....]...w.|      argument: "b412971f5d1cd68577d303fb869ef3d5" (raw bits) 0x176-0x185.7 (16)
+0x180|03 fb 86 9e f3 d5                              |......          |
+     |                                               |                |    [22]{}: operation 0x186-0x186.7 (1)
+0x180|                  08                           |      .         |      tag: "sha256" (8) 0x186-0x186.7 (1)
+     |                                               |                |    [23]{}: operation 0x187-0x1a8.7 (34)
+0x180|                     f0                        |       .        |      tag: "append" (240) 0x187-0x187.7 (1)
+0x180|                        20                     |                |      argument_size: 32 0x188-0x188.7 (1)
+0x180|                           81 f3 a7 59 bc 85 22|         ...Y.."|      argument: "81f3a759bc85228b3caf39b001920b16837bd578f126861..." (raw bits) 0x189-0x1a8.7 (32)
+0x190|8b 3c af 39 b0 01 92 0b 16 83 7b d5 78 f1 26 86|.<.9......{.x.&.|
+0x1a0|1b 27 53 87 70 67 fd 03 5c                     |.'S.pg..\       |
+     |                                               |                |    [24]{}: operation 0x1a9-0x1a9.7 (1)
+0x1a0|                           08                  |         .      |      tag: "sha256" (8) 0x1a9-0x1a9.7 (1)
+     |                                               |                |    [25]{}: operation 0x1aa-0x1cb.7 (34)
+0x1a0|                              f0               |          .     |      tag: "append" (240) 0x1aa-0x1aa.7 (1)
+0x1a0|                                 20            |                |      argument_size: 32 0x1ab-0x1ab.7 (1)
+0x1a0|                                    35 31 58 61|            51Xa|      argument: "353158618e1f17e5a22bf495cf1a609b24f5033f538e00d..." (raw bits) 0x1ac-0x1cb.7 (32)
+0x1b0|8e 1f 17 e5 a2 2b f4 95 cf 1a 60 9b 24 f5 03 3f|.....+....`.$..?|
+0x1c0|53 8e 00 d4 01 8d 42 2d fb db 27 0d            |S.....B-..'.    |
+     |                                               |                |    [26]{}: operation 0x1cc-0x1cc.7 (1)
+0x1c0|                                    08         |            .   |      tag: "sha256" (8) 0x1cc-0x1cc.7 (1)
+     |                                               |                |    [27]{}: operation 0x1cd-0x1d2.7 (6)
+0x1c0|                                       f1      |             .  |      tag: "prepend" (241) 0x1cd-0x1cd.7 (1)
+0x1c0|                                          04   |              . |      argument_size: 4 0x1ce-0x1ce.7 (1)
+0x1c0|                                             65|               e|      argument: "65114ca7" (raw bits) 0x1cf-0x1d2.7 (4)
+0x1d0|11 4c a7                                       |.L.             |
+     |                                               |                |    [28]{}: operation 0x1d3-0x1dc.7 (10)
+0x1d0|         f0                                    |   .            |      tag: "append" (240) 0x1d3-0x1d3.7 (1)
+0x1d0|            08                                 |    .           |      argument_size: 8 0x1d4-0x1d4.7 (1)
+0x1d0|               85 18 c7 e9 4c 83 a6 0a         |     ....L...   |      argument: "8518c7e94c83a60a" (raw bits) 0x1d5-0x1dc.7 (8)
+     |                                               |                |    [29]{}: operation 0x1dd-0x20f.7 (51)
+0x1d0|                                       00      |             .  |      tag: "attestation" (0) 0x1dd-0x1dd.7 (1)
+0x1d0|                                          83 df|              ..|      attestation_type: "calendar" (9502563384537189518) 0x1de-0x1e5.7 (8)
+0x1e0|e3 0d 2e f9 0c 8e                              |......          |
+0x1e0|                  29                           |      )         |      attestation_varbytes_size: 41 0x1e6-0x1e6.7 (1)
+0x1e0|                     28                        |       (        |      url_size: 40 0x1e7-0x1e7.7 (1)
+0x1e0|                        68 74 74 70 73 3a 2f 2f|        https://|      url: "https://finney.calendar.eternitywall.com" 0x1e8-0x20f.7 (40)
+0x1f0|66 69 6e 6e 65 79 2e 63 61 6c 65 6e 64 61 72 2e|finney.calendar.|
+0x200|65 74 65 72 6e 69 74 79 77 61 6c 6c 2e 63 6f 6d|eternitywall.com|
+     |                                               |                |    [30]{}: operation 0x210-0x221.7 (18)
+0x210|f0                                             |.               |      tag: "append" (240) 0x210-0x210.7 (1)
+0x210|   10                                          | .              |      argument_size: 16 0x211-0x211.7 (1)
+0x210|      2d 45 c5 7b 0a 50 2f e4 0e 47 ee 65 c1 65|  -E.{.P/..G.e.e|      argument: "2d45c57b0a502fe40e47ee65c1653620" (raw bits) 0x212-0x221.7 (16)
+0x220|36 20                                          |6               |
+     |                                               |                |    [31]{}: operation 0x222-0x222.7 (1)
+0x220|      08                                       |  .             |      tag: "sha256" (8) 0x222-0x222.7 (1)
+     |                                               |                |    [32]{}: operation 0x223-0x228.7 (6)
+0x220|         f1                                    |   .            |      tag: "prepend" (241) 0x223-0x223.7 (1)
+0x220|            04                                 |    .           |      argument_size: 4 0x224-0x224.7 (1)
+0x220|               65 11 4c a4                     |     e.L.       |      argument: "65114ca4" (raw bits) 0x225-0x228.7 (4)
+     |                                               |                |    [33]{}: operation 0x229-0x232.7 (10)
+0x220|                           f0                  |         .      |      tag: "append" (240) 0x229-0x229.7 (1)
+0x220|                              08               |          .     |      argument_size: 8 0x22a-0x22a.7 (1)
+0x220|                                 19 8d f2 a5 32|           ....2|      argument: "198df2a532893dd2" (raw bits) 0x22b-0x232.7 (8)
+0x230|89 3d d2                                       |.=.             |
+     |                                               |                |    [34]{}: operation 0x233-0x25f.7 (45)
+0x230|         00                                    |   .            |      tag: "attestation" (0) 0x233-0x233.7 (1)
+0x230|            83 df e3 0d 2e f9 0c 8e            |    ........    |      attestation_type: "calendar" (9502563384537189518) 0x234-0x23b.7 (8)
+0x230|                                    23         |            #   |      attestation_varbytes_size: 35 0x23c-0x23c.7 (1)
+0x230|                                       22      |             "  |      url_size: 34 0x23d-0x23d.7 (1)
+0x230|                                          68 74|              ht|      url: "https://btc.calendar.catallaxy.com" 0x23e-0x25f.7 (34)
+0x240|74 70 73 3a 2f 2f 62 74 63 2e 63 61 6c 65 6e 64|tps://btc.calend|
+0x250|61 72 2e 63 61 74 61 6c 6c 61 78 79 2e 63 6f 6d|ar.catallaxy.com|
