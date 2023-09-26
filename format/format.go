@@ -83,7 +83,7 @@ var (
 	Bitcoin_Block       = &decode.Group{Name: "bitcoin_block"}
 	Bitcoin_Script      = &decode.Group{Name: "bitcoin_script"}
 	Bitcoin_Transaction = &decode.Group{Name: "bitcoin_transaction"}
-	OpenTimestamps      = &decode.Group{Name: "ots"}
+	Opentimestamps      = &decode.Group{Name: "opentimestamps"}
 	Bplist              = &decode.Group{Name: "bplist"}
 	BSD_Loopback_Frame  = &decode.Group{Name: "bsd_loopback_frame"}
 	BSON                = &decode.Group{Name: "bson"}

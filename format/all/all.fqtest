@@ -21,6 +21,7 @@ $ fq -n _registry.groups.probe
   "moc3",
   "mp4",
   "ogg",
+  "opentimestamps",
   "pcap",
   "pcapng",
   "png",
@@ -130,6 +131,7 @@ mpeg_ts              MPEG Transport Stream
 msgpack              MessagePack
 ogg                  OGG file
 ogg_page             OGG page
+opentimestamps       OpenTimestamps file
 opus_packet          Opus packet
 pcap                 PCAP packet capture
 pcapng               PCAPNG packet capture
