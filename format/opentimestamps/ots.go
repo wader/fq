@@ -2,6 +2,7 @@ package opentimestamps
 
 import (
 	"encoding/binary"
+	"errors"
 	"io"
 
 	"github.com/wader/fq/format"
@@ -9,8 +10,6 @@ import (
 	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
-
-var otsFileGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
@@ -28,7 +27,7 @@ func decodeVarInt(d *decode.D) uint64 {
 
 	for {
 		b := d.U8()
-		value |= (uint64(b) & 0b01111111) << shift
+		value |= (b & 0b01111111) << shift
 		shift += 7
 		if b&0b10000000 == 0 {
 			break
@@ -70,7 +69,7 @@ func decodeOTSFile(d *decode.D) any {
 	tag := d.FieldU8("digest_hash_algorithm", opMapper,
 		scalar.UintDescription("algorithm used to hash the source file"))
 	if tag != 8 {
-		name, _ := opMapper[tag]
+		name := opMapper[tag]
 		d.Errorf("only sha256 supported, got %x: %s", tag, name)
 		return nil
 	}
@@ -79,7 +78,7 @@ func decodeOTSFile(d *decode.D) any {
 
 	d.FieldArray("instructions", func(d *decode.D) {
 		for {
-			if b, err := d.TryPeekBytes(1); err == io.EOF {
+			if b, err := d.TryPeekBytes(1); errors.Is(err, io.EOF) {
 				break
 			} else if b[0] == 0x00 {
 				d.FieldStruct("attestation", func(d *decode.D) {
