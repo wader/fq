@@ -40,6 +40,7 @@ import (
 	_ "github.com/wader/fq/format/mpeg"
 	_ "github.com/wader/fq/format/msgpack"
 	_ "github.com/wader/fq/format/ogg"
+	_ "github.com/wader/fq/format/opentimestamps"
 	_ "github.com/wader/fq/format/opus"
 	_ "github.com/wader/fq/format/pcap"
 	_ "github.com/wader/fq/format/png"
