@@ -59,18 +59,27 @@ var tagMapper = scalar.UintMapSymStr{
 	keccak256Tag:     "keccak256",
 }
 
+var digestSizes = map[byte]int64{
+	sha1Tag:      20,
+	ripemd160Tag: 20,
+	sha256Tag:    32,
+	keccak256Tag: 32,
+}
+
 func decodeOTSFile(d *decode.D) any {
 	d.Endian = decode.BigEndian
 
 	d.FieldRawLen("magic_bytes", int64(8*len(headerMagic)), d.AssertBitBuf(headerMagic))
 	d.FieldUintFn("version", decodeVarInt)
+
 	tag := d.FieldU8("digest_hash_algorithm", tagMapper)
-	if tag != 8 {
+	digestSize, ok := digestSizes[byte(tag)]
+	if !ok {
 		name := tagMapper[tag]
-		d.Fatalf("only sha256 supported, got %x: %s", tag, name)
+		d.Fatalf("hash algorithm not supported, got %x: '%s'", tag, name)
 		return nil
 	}
-	d.FieldRawLen("digest", 8*32, scalar.RawHex)
+	d.FieldRawLen("digest", 8*digestSize, scalar.RawHex)
 
 	d.FieldArray("operations", func(d *decode.D) {
 		for d.NotEnd() {
