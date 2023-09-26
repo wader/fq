@@ -92,7 +92,7 @@
 |[`msgpack`](#msgpack)                                   |MessagePack                                                                                                  |<sub></sub>|
 |`ogg`                                                   |OGG&nbsp;file                                                                                                |<sub>`ogg_page` `vorbis_packet` `opus_packet` `flac_metadatablock` `flac_frame`</sub>|
 |`ogg_page`                                              |OGG&nbsp;page                                                                                                |<sub></sub>|
-|`opentimestamps`                                        |OpenTimestamps&nbsp;file                                                                                     |<sub></sub>|
+|[`opentimestamps`](#opentimestamps)                     |OpenTimestamps&nbsp;file                                                                                     |<sub></sub>|
 |`opus_packet`                                           |Opus&nbsp;packet                                                                                             |<sub>`vorbis_comment`</sub>|
 |[`pcap`](#pcap)                                         |PCAP&nbsp;packet&nbsp;capture                                                                                |<sub>`link_frame` `tcp_stream` `ipv4_packet`</sub>|
 |`pcapng`                                                |PCAPNG&nbsp;packet&nbsp;capture                                                                              |<sub>`link_frame` `tcp_stream` `ipv4_packet`</sub>|
@@ -856,6 +856,33 @@ $ fq -d msgpack torepr file.msgpack
 
 ### References
 - https://github.com/msgpack/msgpack/blob/master/spec.md
+
+## opentimestamps
+
+### View a full OpenTimestamps file
+
+```
+$ fq dd file.ots
+```
+
+### List the names of the Calendar servers used
+
+```
+$ fq '.operations | map(select(.attestation_type == "calendar") | .url)' file.ots
+```
+
+### Check if there are Bitcoin attestations present
+
+```
+$ fq '.operations | map(select(.attestation_type == "bitcoin")) | length > 0' file.ots
+```
+
+### Authors
+- fiatjaf, https://fiatjaf.com
+
+### References
+- https://opentimestamps.org/
+- https://github.com/opentimestamps/python-opentimestamps
 
 ## pcap
 
