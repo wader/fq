@@ -3,12 +3,17 @@ package opentimestamps
 // https://opentimestamps.org/
 
 import (
+	"embed"
+
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 	"golang.org/x/exp/slices"
 )
+
+//go:embed opentimestamps.md
+var otsFS embed.FS
 
 func init() {
 	interp.RegisterFormat(
@@ -18,6 +23,7 @@ func init() {
 			DecodeFn:    decodeOTSFile,
 			Groups:      []*decode.Group{format.Probe},
 		})
+	interp.RegisterFS(otsFS)
 }
 
 const (
