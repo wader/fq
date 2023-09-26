@@ -87,7 +87,7 @@ func decodeOTSFile(d *decode.D) any {
 				tag := d.FieldU8("tag", tagMapper)
 				if tag == attestationTag {
 					val := d.FieldU64BE("attestation_type", attestationMapper)
-					d.FieldUintFn("attestation_varbytes_size", decodeVarInt)
+					n := d.FieldUintFn("attestation_varbytes_size", decodeVarInt)
 					switch val {
 					case bitcoinMagic:
 						d.FieldUintFn("block", decodeVarInt)
@@ -95,7 +95,7 @@ func decodeOTSFile(d *decode.D) any {
 						nurl := d.FieldUintFn("url_size", decodeVarInt)
 						d.FieldUTF8("url", int(nurl))
 					default:
-						d.Fatalf("unknown attestation tag %x", val)
+						d.FieldRawLen("unknown_data", int64(n*8))
 					}
 				} else {
 					if _, ok := tagMapper[tag]; ok {
