@@ -1,5 +1,24 @@
-# 0.8.0 - WIP
+# 0.8.0
 
+Fix handling of shadowing order for `_<name>` keys, 3 new decoders `caff`, `moc3` and `opentimestamps`, some smaller fixes and improvements.
+
+In other jq news [jq 1.7](https://github.com/jqlang/jq/releases/tag/jq-1.7) was finally released 5 years since the last release! also happy to now be part of the jq maintainance team.
+
+## Changes
+
+- New decoders `caff` and `moc3`. See below for details.
+- Fix shadowing of underscore prefixed keys (`_<name>`) for text formats like `json`, `yaml` etc. #757
+  This happenned because fq has a bunch of internal underscore prefixed "extra" keys that is used for various things and these had priority even when there already existed a "value" key with same name.
+  ```sh
+  $ fq -n '`{"_format": 123}` | fromjson | ._format'
+  ```
+  Now `123`, before `"json"`.
+  ```sh
+  $ fq -n '`{}` | fromjson | ._missing'
+  ```
+  Now `null`, before error
+- Rename `--null`/`nul-output` to `--raw-output0` and also clarify that NUL and new lines are outputted after and not between each output.
+  This is to be in sync with jq (https://github.com/jqlang/jq/pull/2684). #736
 - Updated gojq fork with fixes from upstream:
   - Improved error messages for indices, setpath, delpaths
   - Add `abs` function
@@ -8,6 +27,99 @@
   - Fix empty string repeating with the maximum integer
   - Fix string multiplication by zero to emit empty string
   - Remove deprecated `leaf_paths` function
+- Fix `split` in combination with binary to not include separator. #767
+
+## Decoder changes
+- `caff` Add archive format decoder. Thanks @Ronsor #747
+  - CAFF is an archive format usually found with the extensions `.cmo3` and `.can3` used by Live2D Cubism.
+- `id3v2` Handle `W000`-`WZZZ` and `W00`-`WZZ` URL frames. #758
+- `matroska` Update spec and regenerate. #737
+- `moc3` Add Live2D Cubism MOC3 decoder. Thanks @Ronsor #747
+  - MOC3 is a format for 2D rigged puppets, somewhat like Flash.
+- `mp3_frame_xing` Detect lame ext more similar to ffmpeg and mediainfo. #763
+- `mp4`
+  - Decode `sgpd` (Sample group definition box) entries. Thanks Sergei Kuzmin @ksa-real #707
+  - Decode `cslg` (Composition to decode timeline mapping) box. #754
+  - Decode `emsg` (Event message) and `id3v2` message data. #755
+  - Nicer trimmed major brand for `ftyp`. #723
+- `opentimestamps` Add [OpenTimestamps](https://opentimestamps.org/) decoder. Thanks @fiatjaf #769
+
+## Changelog
+
+* 40310826 Update docker-golang to 1.20.6 from 1.20.5
+* 6daa0aa7 Update docker-golang to 1.20.7 from 1.20.6
+* 8bd7b6d6 Update docker-golang to 1.21.0 from 1.20.7
+* bff668c3 Update docker-golang to 1.21.1 from 1.21.0
+* 8e705aa7 Update github-go-version to 1.20.6 from 1.20.5
+* 3828b423 Update github-go-version to 1.20.7 from 1.20.6
+* c09d50a2 Update github-go-version to 1.21.0 from 1.20.7
+* 30b27a5b Update github-go-version to 1.21.1 from 1.21.0
+* 104c3bdb Update github-golangci-lint to 1.54.0 from 1.53.3
+* 7906a463 Update github-golangci-lint to 1.54.1 from 1.54.0
+* 31de3f97 Update github-golangci-lint to 1.54.2 from 1.54.1
+* 83947293 Update gomod-golang-x-crypto to 0.12.0 from 0.11.0
+* ebb71e24 Update gomod-golang-x-crypto to 0.13.0 from 0.12.0
+* c8aae666 Update gomod-golang-x-net to 0.13.0 from 0.12.0
+* a46ee659 Update gomod-golang-x-net to 0.14.0 from 0.13.0
+* 07069a51 Update gomod-golang-x-net to 0.15.0 from 0.14.0
+* 79432e71 Update gomod-golang/text to 0.12.0 from 0.11.0
+* 2f8ebf11 Update gomod-golang/text to 0.13.0 from 0.12.0
+* 1fa14a03 Update make-golangci-lint to 1.54.0 from 1.53.3
+* fc4101dc Update make-golangci-lint to 1.54.1 from 1.54.0
+* 4e20e04f Update make-golangci-lint to 1.54.2 from 1.54.1
+* 013cc2f6 caff: eliminate gaps and specify unused fields
+* 6a3fecd2 caff: include uncompressed bits for proper decompressed entries that can't be decoded as a format
+* da41a8d3 caff: initial implementation
+* 23e660f4 caff: minor formatting changes
+* fa115722 caff: obfuscation key is a signed integer, add test data
+* 29084e35 caff: remove dead code
+* 4dd0f6d8 caff: run go fmt
+* b3759de7 caff: run go fmt
+* cc58c4b8 caff: update doc/formats.md
+* d5345f0b cli: Rename --null/nul-output to --raw-output0
+* c0352f2f decode,interp: Don't shadow _key and error on missing _key
+* 44f00602 dev,jq: Reformat jq code to look more the same
+* 9cd1d0f3 dev: Move examples and snippets to wiki
+* f15f9bc1 doc,moc3,caff: Add author and regenerate docs
+* 406f3926 doc: Move up and update differences jq section a bit
+* 8edef78a docker: Change to bookworm
+* 56fec2aa elf: Fix broken static and segfault tests
+* fa3dba10 gojq: Update fq fork
+* 0cefc46b golangci: Fix gosec aliasing warnings
+* 0d014764 gomod: Update x/exp and gomarkdown
+* c503bc13 html: Add forgotten re test
+* 0efe5a2c id3v2: Handle W000-WZZZ,W00-WZZ URL frames
+* a614c9df interp: split: Correctly split binary
+* 3af0462c luajit: file null terminator: raw bits, validate
+* c07673a0 matroska: Update spec and regenerate
+* 441fcd09 moc3, caff: update tests and README
+* f7eb0279 moc3: Fix field order in blend_shape_keyform_bindings structure, version detection in count_info
+* 03ba71b6 moc3: add support for version 5
+* d3073c64 moc3: add test data for new version 5
+* ce40fd19 moc3: consistency - scales array contains value elements, not scale elements
+* fac1e683 moc3: count_info: extra space is reserved, not normal alignment/padding
+* e424e293 moc3: eliminate gaps and properly handle padding, fix version 5 format decoding
+* 092662ec moc3: initial implementation
+* 3caf34e3 moc3: nicer tree structure, use more meaningful names for array elements
+* 20f02e79 moc3: remove dead code
+* 6d10a25b moc3: update certain array element names, explicitly mark unused or reserved space
+* 833b0636 moc3: update test data
+* 14f233d2 moc3: update tests
+* c4e86448 mod: Update golang.org/x/exp and github.com/gomarkdown/markdown
+* 0699c80b mp3_frame_xing: Detect lame ext more similar to ffmpeg and mediainfo
+* e50028ac mp4,mpeg_es: Decode iods box and MP4_IOD_Tag OD
+* 312d8078 mp4: Decode cslg box
+* bedd719b mp4: Decode emsg box
+* 97194ad8 mp4: Nicer major brand and handle some qt brand short strings better
+* cc8e6f1a opentimestamps: abstract away file digest sizes and support sha1, ripemd160 and keccac256.
+* 64a4ff2e opentimestamps: account for unknown attestation types.
+* 912f4116 opentimestamps: add help text.
+* cef5faa8 opentimestamps: add parser.
+* 1aa557d5 opentimestamps: add tests.
+* 5e7c01a0 opentimestamps: address comments and improve things.
+* 976a7564 opentimestamps: one last make doc.
+* 0a22a325 opentimestamps: satisfy linter.
+* 456a6a4f protobuf_widevine: Make protection_scheme constants less magic
 
 # 0.7.0
 
