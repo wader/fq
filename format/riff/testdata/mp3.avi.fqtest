@@ -67,7 +67,7 @@ $ fq dv mp3.avi
 0x0090|                                          00 00|              ..|                top: 0 0x9e-0x9f.7 (2)
 0x00a0|00 00                                          |..              |                right: 0 0xa0-0xa1.7 (2)
 0x00a0|      00 00                                    |  ..            |                bottom: 0 0xa2-0xa3.7 (2)
-      |                                               |                |            [1]{}: chunk 0xa4-0xbd.7 (26)
+      |                                               |                |            [1]{}: chunk 0xa4-0xc9.7 (38)
 0x00a0|            73 74 72 66                        |    strf        |              id: "strf" (Stream format) 0xa4-0xa7.7 (4)
 0x00a0|                        1e 00 00 00            |        ....    |              size: 30 0xa8-0xab.7 (4)
 0x00a0|                                    55 00      |            U.  |              format_tag: "mp3" (85) 0xac-0xad.7 (2)
@@ -77,6 +77,8 @@ $ fq dv mp3.avi
 0x00b0|                        80 04                  |        ..      |              block_align: 1152 0xb8-0xb9.7 (2)
 0x00b0|                              00 00            |          ..    |              bits_per_sample: 0 0xba-0xbb.7 (2)
 0x00b0|                                    0c 00      |            ..  |              cb_size: 12 0xbc-0xbd.7 (2)
+0x00b0|                                          01 00|              ..|              extra: raw bits 0xbe-0xc9.7 (12)
+0x00c0|02 00 00 00 80 04 01 00 71 05                  |........q.      |
       |                                               |                |            [2]{}: chunk 0xca-0x10e9.7 (4128)
 0x00c0|                              4a 55 4e 4b      |          JUNK  |              id: "JUNK" (Alignment) 0xca-0xcd.7 (4)
 0x00c0|                                          18 10|              ..|              size: 4120 0xce-0xd1.7 (4)
@@ -349,8 +351,6 @@ $ fq dv mp3.avi
 0x18d0|                                       00 00 00|             ...|            unused2: raw bits 0x18dd-0x18df.7 (3)
 0x18e0|b6 01 00 00                                    |....            |          offset: 438 0x18e0-0x18e3.7 (4)
 0x18e0|            d1 00 00 00|                       |    ....|       |          length: 209 0x18e4-0x18e7.7 (4)
-0x00b0|                                          01 00|              ..|  gap0: raw bits 0xbe-0xc9.7 (12)
-0x00c0|02 00 00 00 80 04 01 00 71 05                  |........q.      |
       |                                               |                |  streams[0:1]: 0x162c-0x18ae.7 (643)
       |                                               |                |    [0]{}: stream 0x162c-0x18ae.7 (643)
       |                                               |                |      samples[0:3]: 0x162c-0x18ae.7 (643)

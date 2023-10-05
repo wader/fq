@@ -356,8 +356,8 @@ func aviDecode(d *decode.D) any {
 				switch typ {
 				case "vids":
 					// BITMAPINFOHEADER
-					size := d.BitsLeft()
-					biSize := d.FieldU32("bi_size")
+					d.BitsLeft()
+					d.FieldU32("bi_size")
 					d.FieldU32("width")
 					d.FieldU32("height")
 					d.FieldU16("planes")
@@ -368,9 +368,8 @@ func aviDecode(d *decode.D) any {
 					d.FieldU32("y_pels_per_meter")
 					d.FieldU32("clr_used")
 					d.FieldU32("clr_important")
-					extraSize := size - int64(biSize)*8 - 2*32
-					if extraSize > 0 {
-						d.FieldRawLen("extra", extraSize)
+					if d.BitsLeft() > 0 {
+						d.FieldRawLen("extra", d.BitsLeft())
 					}
 
 					// TODO: if dvsd handler and extraSize >= 32 then DVINFO?
@@ -409,10 +408,7 @@ func aviDecode(d *decode.D) any {
 					// TODO: seems to be optional
 					if d.BitsLeft() >= 16 {
 						cbSize := d.FieldU16("cb_size")
-						// TODO: correct? seems to be what is seen in the wild
-						if cbSize > 18 {
-							d.FieldRawLen("extra", int64(cbSize-18)*8)
-						}
+						d.FieldRawLen("extra", int64(cbSize)*8)
 					}
 
 					switch formatTag {

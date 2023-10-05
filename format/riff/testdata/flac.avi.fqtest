@@ -67,7 +67,7 @@ $ fq dv flac.avi
 0x0090|                                          00 00|              ..|                top: 0 0x9e-0x9f.7 (2)
 0x00a0|00 00                                          |..              |                right: 0 0xa0-0xa1.7 (2)
 0x00a0|      00 00                                    |  ..            |                bottom: 0 0xa2-0xa3.7 (2)
-      |                                               |                |            [1]{}: chunk 0xa4-0xcd.7 (42)
+      |                                               |                |            [1]{}: chunk 0xa4-0xdf.7 (60)
 0x00a0|            73 74 72 66                        |    strf        |              id: "strf" (Stream format) 0xa4-0xa7.7 (4)
 0x00a0|                        34 00 00 00            |        4...    |              size: 52 0xa8-0xab.7 (4)
 0x00a0|                                    ac f1      |            ..  |              format_tag: "flac" (61868) 0xac-0xad.7 (2)
@@ -77,8 +77,9 @@ $ fq dv flac.avi
 0x00b0|                        02 00                  |        ..      |              block_align: 2 0xb8-0xb9.7 (2)
 0x00b0|                              10 00            |          ..    |              bits_per_sample: 16 0xba-0xbb.7 (2)
 0x00b0|                                    22 00      |            ".  |              cb_size: 34 0xbc-0xbd.7 (2)
-0x00b0|                                          12 00|              ..|              extra: raw bits 0xbe-0xcd.7 (16)
-0x00c0|12 00 00 00 00 00 24 15 0a c4 40 f0 00 00      |......$...@...  |
+0x00b0|                                          12 00|              ..|              extra: raw bits 0xbe-0xdf.7 (34)
+0x00c0|12 00 00 00 00 00 24 15 0a c4 40 f0 00 00 00 00|......$...@.....|
+0x00d0|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
       |                                               |                |            [2]{}: chunk 0xe0-0x10ff.7 (4128)
 0x00e0|4a 55 4e 4b                                    |JUNK            |              id: "JUNK" (Alignment) 0xe0-0xe3.7 (4)
 0x00e0|            18 10 00 00                        |    ....        |              size: 4120 0xe4-0xe7.7 (4)
@@ -204,8 +205,6 @@ $ fq dv flac.avi
 0x18c0|   00 00 00                                    | ...            |            unused2: raw bits 0x18c1-0x18c3.7 (3)
 0x18c0|            66 02 00 00                        |    f...        |          offset: 614 0x18c4-0x18c7.7 (4)
 0x18c0|                        00 00 00 00|           |        ....|   |          length: 0 0x18c8-0x18cb.7 (4)
-0x00c0|                                          00 00|              ..|  gap0: raw bits 0xce-0xdf.7 (18)
-0x00d0|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
       |                                               |                |  streams[0:1]: 0x1642-0x18a3.7 (610)
       |                                               |                |    [0]{}: stream 0x1642-0x18a3.7 (610)
       |                                               |                |      samples[0:2]: 0x1642-0x18a3.7 (610)
