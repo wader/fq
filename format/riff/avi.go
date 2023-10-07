@@ -105,12 +105,6 @@ var aviStreamChunkTypeDescriptions = scalar.StrMapDescription{
 
 const aviRiffType = "AVI "
 
-type aviStrl struct {
-	typ     string
-	handler string
-	stream  *aviStream
-}
-
 type idx1Sample struct {
 	offset     int64
 	size       int64
@@ -119,6 +113,10 @@ type idx1Sample struct {
 }
 
 type aviStream struct {
+	typ         string
+	handler     string
+	formatTag   uint64
+	compression string
 	hasFormat   bool
 	format      *decode.Group
 	formatInArg any
@@ -244,7 +242,7 @@ func aviDecode(d *decode.D) any {
 				typ := d.FieldUTF8("type", 4, aviListTypeDescriptions)
 				switch typ {
 				case "strl":
-					return true, &aviStrl{}
+					return true, &aviStream{}
 				case "movi":
 					moviListPos = d.Pos()
 				}
@@ -337,21 +335,19 @@ func aviDecode(d *decode.D) any {
 					d.FieldU16("bottom")
 				})
 
-				if aviStrl, aviStrlOk := path.topData().(*aviStrl); aviStrlOk {
-					aviStrl.typ = typ
-					aviStrl.handler = handler
+				if stream, ok := path.topData().(*aviStream); ok {
+					stream.typ = typ
+					stream.handler = handler
 				}
 
 				return false, nil
 
 			case "strf":
-				s := &aviStream{}
-
-				typ := ""
-				if aviStrl, aviStrlOk := path.topData().(*aviStrl); aviStrlOk {
-					typ = aviStrl.typ
-					aviStrl.stream = s
+				stream, streamOk := path.topData().(*aviStream)
+				if !streamOk {
+					stream = &aviStream{}
 				}
+				typ := stream.typ
 
 				switch typ {
 				case "vids":
@@ -372,6 +368,8 @@ func aviDecode(d *decode.D) any {
 						d.FieldRawLen("extra", d.BitsLeft())
 					}
 
+					stream.compression = compression
+
 					// TODO: if dvsd handler and extraSize >= 32 then DVINFO?
 
 					switch compression {
@@ -389,12 +387,12 @@ func aviDecode(d *decode.D) any {
 						format.BMPTagH264_UMSV,
 						format.BMPTagH264_tshd,
 						format.BMPTagH264_INMC:
-						s.format = &aviMpegAVCAUGroup
-						s.hasFormat = true
+						stream.format = &aviMpegAVCAUGroup
+						stream.hasFormat = true
 					case format.BMPTagHEVC,
 						format.BMPTagHEVC_H265:
-						s.format = &aviMpegHEVCAUGroup
-						s.hasFormat = true
+						stream.format = &aviMpegHEVCAUGroup
+						stream.hasFormat = true
 					}
 
 				case "auds":
@@ -411,14 +409,16 @@ func aviDecode(d *decode.D) any {
 						d.FieldRawLen("extra", int64(cbSize)*8)
 					}
 
+					stream.formatTag = formatTag
+
 					switch formatTag {
 					case format.WAVTagMP3:
-						s.format = &aviMp3FrameGroup
-						s.hasFormat = true
+						stream.format = &aviMp3FrameGroup
+						stream.hasFormat = true
 					case format.WAVTagFLAC:
 						// TODO: can flac in avi have streaminfo somehow?
-						s.format = &aviFLACFrameGroup
-						s.hasFormat = true
+						stream.format = &aviFLACFrameGroup
+						stream.hasFormat = true
 					}
 				case "iavs":
 					// DVINFO
@@ -431,15 +431,12 @@ func aviDecode(d *decode.D) any {
 					d.FieldRawLen("dvv_reserved", 32*2)
 				}
 
-				streams = append(streams, s)
+				streams = append(streams, stream)
 
 				return false, nil
 
 			case "indx":
-				var stream *aviStream
-				if aviStrl, aviStrlOk := path.topData().(*aviStrl); aviStrlOk {
-					stream = aviStrl.stream
-				}
+				stream, _ := path.topData().(*aviStream)
 
 				d.FieldU16("longs_per_entry") // TODO: use?
 				d.FieldU8("index_subtype")
@@ -532,12 +529,22 @@ func aviDecode(d *decode.D) any {
 	}
 
 	d.FieldArray("streams", func(d *decode.D) {
-		for si, s := range streams {
+		for streamIndex, stream := range streams {
+
 			d.FieldStruct("stream", func(d *decode.D) {
+				d.FieldValueStr("type", stream.typ)
+				d.FieldValueStr("handler", stream.handler)
+				switch stream.typ {
+				case "auds":
+					d.FieldValueUint("format_tag", stream.formatTag, format.WAVTagNames)
+				case "vids":
+					d.FieldValueStr("compression", stream.compression)
+				}
+
 				var streamIndexSampleRanges []ranges.Range
-				if len(s.indexes) > 0 {
+				if len(stream.indexes) > 0 {
 					d.FieldArray("indexes", func(d *decode.D) {
-						for _, i := range s.indexes {
+						for _, i := range stream.indexes {
 							d.FieldStruct("index", func(d *decode.D) {
 								d.RangeFn(i.Start, i.Len, func(d *decode.D) {
 									d.FieldUTF8("type", 4)
@@ -554,8 +561,8 @@ func aviDecode(d *decode.D) any {
 				// TODO: palette change
 				decodeSample := func(d *decode.D, sr ranges.Range) {
 					d.RangeFn(sr.Start, sr.Len, func(d *decode.D) {
-						if sr.Len > 0 && ai.DecodeSamples && s.hasFormat {
-							d.FieldFormat("sample", s.format, s.formatInArg)
+						if sr.Len > 0 && ai.DecodeSamples && stream.hasFormat {
+							d.FieldFormat("sample", stream.format, stream.formatInArg)
 						} else {
 							d.FieldRawLen("sample", d.BitsLeft())
 						}
@@ -572,16 +579,16 @@ func aviDecode(d *decode.D) any {
 							decodeSample(d, sr)
 						}
 					})
-				} else if len(s.ixSamples) > 0 {
+				} else if len(stream.ixSamples) > 0 {
 					d.FieldArray("samples", func(d *decode.D) {
-						for _, sr := range s.ixSamples {
+						for _, sr := range stream.ixSamples {
 							decodeSample(d, sr)
 						}
 					})
 				} else if len(idx1Samples) > 0 {
 					d.FieldArray("samples", func(d *decode.D) {
 						for _, is := range idx1Samples {
-							if is.streamNr != si {
+							if is.streamNr != streamIndex {
 								continue
 							}
 							decodeSample(d, ranges.Range{

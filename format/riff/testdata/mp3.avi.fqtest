@@ -351,8 +351,8 @@ $ fq dv mp3.avi
 0x18d0|                                       00 00 00|             ...|            unused2: raw bits 0x18dd-0x18df.7 (3)
 0x18e0|b6 01 00 00                                    |....            |          offset: 438 0x18e0-0x18e3.7 (4)
 0x18e0|            d1 00 00 00|                       |    ....|       |          length: 209 0x18e4-0x18e7.7 (4)
-      |                                               |                |  streams[0:1]: 0x162c-0x18ae.7 (643)
-      |                                               |                |    [0]{}: stream 0x162c-0x18ae.7 (643)
+      |                                               |                |  streams[0:1]: 0x162c-0x18e7.7 (700)
+      |                                               |                |    [0]{}: stream 0x162c-0x18e7.7 (700)
       |                                               |                |      samples[0:3]: 0x162c-0x18ae.7 (643)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [0]{}: sample (mp3_frame) 0x162c-0x16fb.7 (208)
       |                                               |                |          header{}: 0x162c-0x162f.7 (4)
@@ -534,3 +534,6 @@ $ fq dv mp3.avi
 0x1800|cb a0 77 10 07 47 8b 8c 7b 2e 82 33 01 c4 c0 04|..w..G..{..3....|
 *     |until 0x18ae.7 (188)                           |                |
       |                                               |                |          crc_calculated: "c36b" (raw bits) 0x18af-NA (0)
+      |                                               |                |      type: "auds" 0x18e8-NA (0)
+      |                                               |                |      handler: "\x01\x00\x00\x00" 0x18e8-NA (0)
+      |                                               |                |      format_tag: "mp3" (85) 0x18e8-NA (0)
