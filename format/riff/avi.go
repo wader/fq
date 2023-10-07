@@ -1,7 +1,7 @@
 package riff
 
 // TODO:
-// mp3 mappig, samples can span?
+// mp3 mappig, samples can span over sample ranges?
 // hevc mapping?
 // DV handler https://learn.microsoft.com/en-us/windows/win32/directshow/dv-data-in-the-avi-file-format
 // palette change
@@ -62,11 +62,18 @@ var aviListTypeDescriptions = scalar.StrMapDescription{
 	"rec ": "Chunk group",
 }
 
+const (
+	aviStrhTypeAudio = "auds"
+	aviStrhTypeMidi  = "mids"
+	aviStrhTypeVideo = "vids"
+	aviStrhTypeText  = "txts"
+)
+
 var aviStrhTypeDescriptions = scalar.StrMapDescription{
-	"auds": "Audio stream",
-	"mids": "MIDI stream",
-	"txts": "Text stream",
-	"vids": "Video stream",
+	aviStrhTypeAudio: "Audio stream",
+	aviStrhTypeMidi:  "MIDI stream",
+	aviStrhTypeText:  "Text stream",
+	aviStrhTypeVideo: "Video stream",
 }
 
 const (
@@ -352,7 +359,7 @@ func aviDecode(d *decode.D) any {
 				typ := stream.typ
 
 				switch typ {
-				case "vids":
+				case aviStrhTypeVideo:
 					// BITMAPINFOHEADER
 					d.BitsLeft()
 					d.FieldU32("bi_size")
@@ -397,7 +404,7 @@ func aviDecode(d *decode.D) any {
 						stream.hasFormat = true
 					}
 
-				case "auds":
+				case aviStrhTypeAudio:
 					// WAVEFORMATEX
 					formatTag := d.FieldU16("format_tag", format.WAVTagNames)
 					d.FieldU16("channels")
@@ -537,9 +544,9 @@ func aviDecode(d *decode.D) any {
 				d.FieldValueStr("type", stream.typ)
 				d.FieldValueStr("handler", stream.handler)
 				switch stream.typ {
-				case "auds":
+				case aviStrhTypeAudio:
 					d.FieldValueUint("format_tag", stream.formatTag, format.WAVTagNames)
-				case "vids":
+				case aviStrhTypeVideo:
 					d.FieldValueStr("compression", stream.compression)
 				}
 
