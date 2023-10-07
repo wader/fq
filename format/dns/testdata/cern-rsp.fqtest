@@ -29,7 +29,7 @@ $ fq -d dns dv cern-rsp
 0x10|                  63 68                        |      ch        |            value: "ch" 0x16-0x17.7 (2)
     |                                               |                |          [3]{}: label 0x18-0x18.7 (1)
 0x10|                        00                     |        .       |            length: 0 0x18-0x18.7 (1)
-    |                                               |                |        value: "www.cern.ch" 0x19-NA (0)
+    |                                               |                |        value: "www.cern.ch"
 0x10|                           00 1c               |         ..     |      type: "aaaa" (28) 0x19-0x1a.7 (2)
 0x10|                                 00 01         |           ..   |      class: "in" (1) (Internet) 0x1b-0x1c.7 (2)
     |                                               |                |  answers[0:2]: 0xc-0x4f.7 (68)
@@ -49,7 +49,7 @@ $ fq -d dns dv cern-rsp
 0x10|                  63 68                        |      ch        |            value: "ch" 0x16-0x17.7 (2)
     |                                               |                |          [3]{}: label 0x18-0x18.7 (1)
 0x10|                        00                     |        .       |            length: 0 0x18-0x18.7 (1)
-    |                                               |                |        value: "www.cern.ch" 0x19-NA (0)
+    |                                               |                |        value: "www.cern.ch"
     |                                               |                |      cname{}: 0x10-0x33.7 (36)
     |                                               |                |        labels[0:4]: 0x10-0x33.7 (36)
     |                                               |                |          [0]{}: label 0x29-0x31.7 (9)
@@ -66,7 +66,7 @@ $ fq -d dns dv cern-rsp
 0x10|                  63 68                        |      ch        |            value: "ch" 0x16-0x17.7 (2)
     |                                               |                |          [3]{}: label 0x18-0x18.7 (1)
 0x10|                        00                     |        .       |            length: 0 0x18-0x18.7 (1)
-    |                                               |                |        value: "webrlb02.cern.ch" 0x19-NA (0)
+    |                                               |                |        value: "webrlb02.cern.ch"
 0x10|                                             00|               .|      type: "cname" (5) 0x1f-0x20.7 (2)
 0x20|05                                             |.               |
 0x20|   00 01                                       | ..             |      class: "in" (1) (Internet) 0x21-0x22.7 (2)
@@ -91,7 +91,7 @@ $ fq -d dns dv cern-rsp
 0x10|                  63 68                        |      ch        |            value: "ch" 0x16-0x17.7 (2)
     |                                               |                |          [3]{}: label 0x18-0x18.7 (1)
 0x10|                        00                     |        .       |            length: 0 0x18-0x18.7 (1)
-    |                                               |                |        value: "webrlb02.cern.ch" 0x19-NA (0)
+    |                                               |                |        value: "webrlb02.cern.ch"
 0x30|                  00 1c                        |      ..        |      type: "aaaa" (28) 0x36-0x37.7 (2)
 0x30|                        00 01                  |        ..      |      class: "in" (1) (Internet) 0x38-0x39.7 (2)
 0x30|                              00 00 11 96      |          ....  |      ttl: 4502 0x3a-0x3d.7 (4)

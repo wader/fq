@@ -455,8 +455,8 @@ $ fq -d mp4 dv avc.mp4
 0x010c0|                                             00|               .|                          reserved: 0 0x10cf-0x10d2.7 (4)
 0x010d0|00 00 00                                       |...             |
 0x010d0|         4c 61 76 66 35 38 2e 37 36 2e 31 30 30|   Lavf58.76.100|                          data: "Lavf58.76.100" 0x10d3-0x10df.7 (13)
-       |                                               |                |  tracks[0:1]: 0x30-0x10df.7 (4272)
-       |                                               |                |    [0]{}: track 0x30-0x10df.7 (4272)
+       |                                               |                |  tracks[0:1]: 0x30-0xd80.7 (3409)
+       |                                               |                |    [0]{}: track 0x30-0xd80.7 (3409)
        |                                               |                |      samples[0:3]: 0x30-0xd80.7 (3409)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [0][0:2]: sample (avc_au) 0x30-0xbfb.7 (3020)
        |                                               |                |          [0]{}: nalu 0x30-0x2e0.7 (689)
@@ -518,5 +518,5 @@ $ fq -d mp4 dv avc.mp4
 0x00d40|                                          9e 41|              .A|              data: raw bits 0xd4e.7-0xd80.7 (50.1)
 0x00d50|79 0a ff 01 f9 2d 04 d3 29 fe 4d 76 42 26 f6 cd|y....-..).MvB&..|
 *      |until 0xd80.7 (51)                             |                |
-       |                                               |                |      id: 1 0x10e0-NA (0)
-       |                                               |                |      data_format: "avc1" (Advanced Video Coding) 0x10e0-NA (0)
+       |                                               |                |      id: 1
+       |                                               |                |      data_format: "avc1" (Advanced Video Coding)

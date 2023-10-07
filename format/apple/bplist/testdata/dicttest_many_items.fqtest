@@ -9,7 +9,7 @@ $ fq dv dicttest_many_items.plist
 0x0000|                           10                  |         .      |    large_size_marker: 1 (valid) 0x9-0x9.3 (0.4)
 0x0000|                           10                  |         .      |    exponent: 0 0x9.4-0x9.7 (0.4)
 0x0000|                              80               |          .     |    size_bigint: 128 0xa-0xa.7 (1)
-      |                                               |                |    size: 128 0xb-NA (0)
+      |                                               |                |    size: 128
       |                                               |                |    entries[0:128]: 0xb-0x107a.7 (4208)
       |                                               |                |      [0]{}: entry 0xb-0xdff.7 (3573)
 0x0000|                                 00 01         |           ..   |        key_index: 1 0xb-0xc.7 (2)
@@ -20,7 +20,7 @@ $ fq dv dicttest_many_items.plist
 0x0200|                                    10         |            .   |          large_size_marker: 1 (valid) 0x20c-0x20c.3 (0.4)
 0x0200|                                    10         |            .   |          exponent: 0 0x20c.4-0x20c.7 (0.4)
 0x0200|                                       13      |             .  |          size_bigint: 19 0x20d-0x20d.7 (1)
-      |                                               |                |          size: 19 0x20e-NA (0)
+      |                                               |                |          size: 19
 0x0200|                                          48 53|              HS|          value: "HSTS 973832 Version" 0x20e-0x220.7 (19)
 0x0210|54 53 20 39 37 33 38 33 32 20 56 65 72 73 69 6f|TS 973832 Versio|
 0x0220|6e                                             |n               |
@@ -37,7 +37,7 @@ $ fq dv dicttest_many_items.plist
 0x0220|      10                                       |  .             |          large_size_marker: 1 (valid) 0x222-0x222.3 (0.4)
 0x0220|      10                                       |  .             |          exponent: 0 0x222.4-0x222.7 (0.4)
 0x0220|         15                                    |   .            |          size_bigint: 21 0x223-0x223.7 (1)
-      |                                               |                |          size: 21 0x224-NA (0)
+      |                                               |                |          size: 21
 0x0220|            48 53 54 53 20 31 34 31 36 31 30 37|    HSTS 1416107|          value: "HSTS 14161079 Version" 0x224-0x238.7 (21)
 0x0230|39 20 56 65 72 73 69 6f 6e                     |9 Version       |
       |                                               |                |        value{}: 0xe00-0xe04.7 (5)
@@ -55,7 +55,7 @@ $ fq dv dicttest_many_items.plist
 0x0230|                              10               |          .     |          large_size_marker: 1 (valid) 0x23a-0x23a.3 (0.4)
 0x0230|                              10               |          .     |          exponent: 0 0x23a.4-0x23a.7 (0.4)
 0x0230|                                 15            |           .    |          size_bigint: 21 0x23b-0x23b.7 (1)
-      |                                               |                |          size: 21 0x23c-NA (0)
+      |                                               |                |          size: 21
 0x0230|                                    48 53 54 53|            HSTS|          value: "HSTS 10020087 Version" 0x23c-0x250.7 (21)
 0x0240|20 31 30 30 32 30 30 38 37 20 56 65 72 73 69 6f| 10020087 Versio|
 0x0250|6e                                             |n               |
@@ -72,7 +72,7 @@ $ fq dv dicttest_many_items.plist
 0x0250|      10                                       |  .             |          large_size_marker: 1 (valid) 0x252-0x252.3 (0.4)
 0x0250|      10                                       |  .             |          exponent: 0 0x252.4-0x252.7 (0.4)
 0x0250|         15                                    |   .            |          size_bigint: 21 0x253-0x253.7 (1)
-      |                                               |                |          size: 21 0x254-NA (0)
+      |                                               |                |          size: 21
 0x0250|            48 53 54 53 20 32 31 31 31 32 30 38|    HSTS 2111208|          value: "HSTS 21112080 Version" 0x254-0x268.7 (21)
 0x0260|30 20 56 65 72 73 69 6f 6e                     |0 Version       |
       |                                               |                |        value{}: 0xe0a-0xe0e.7 (5)
@@ -88,7 +88,7 @@ $ fq dv dicttest_many_items.plist
 0x0260|                              10               |          .     |          large_size_marker: 1 (valid) 0x26a-0x26a.3 (0.4)
 0x0260|                              10               |          .     |          exponent: 0 0x26a.4-0x26a.7 (0.4)
 0x0260|                                 15            |           .    |          size_bigint: 21 0x26b-0x26b.7 (1)
-      |                                               |                |          size: 21 0x26c-NA (0)
+      |                                               |                |          size: 21
 0x0260|                                    48 53 54 53|            HSTS|          value: "HSTS 10300623 Version" 0x26c-0x280.7 (21)
 0x0270|20 31 30 33 30 30 36 32 33 20 56 65 72 73 69 6f| 10300623 Versio|
 0x0280|6e                                             |n               |
@@ -105,7 +105,7 @@ $ fq dv dicttest_many_items.plist
 0x0280|      10                                       |  .             |          large_size_marker: 1 (valid) 0x282-0x282.3 (0.4)
 0x0280|      10                                       |  .             |          exponent: 0 0x282.4-0x282.7 (0.4)
 0x0280|         15                                    |   .            |          size_bigint: 21 0x283-0x283.7 (1)
-      |                                               |                |          size: 21 0x284-NA (0)
+      |                                               |                |          size: 21
 0x0280|            48 53 54 53 20 36 30 36 39 38 35 30|    HSTS 6069850|          value: "HSTS 60698501 Version" 0x284-0x298.7 (21)
 0x0290|31 20 56 65 72 73 69 6f 6e                     |1 Version       |
       |                                               |                |        value{}: 0xe14-0xe18.7 (5)
@@ -121,7 +121,7 @@ $ fq dv dicttest_many_items.plist
 0x0290|                              10               |          .     |          large_size_marker: 1 (valid) 0x29a-0x29a.3 (0.4)
 0x0290|                              10               |          .     |          exponent: 0 0x29a.4-0x29a.7 (0.4)
 0x0290|                                 15            |           .    |          size_bigint: 21 0x29b-0x29b.7 (1)
-      |                                               |                |          size: 21 0x29c-NA (0)
+      |                                               |                |          size: 21
 0x0290|                                    48 53 54 53|            HSTS|          value: "HSTS 79072695 Version" 0x29c-0x2b0.7 (21)
 0x02a0|20 37 39 30 37 32 36 39 35 20 56 65 72 73 69 6f| 79072695 Versio|
 0x02b0|6e                                             |n               |
@@ -138,7 +138,7 @@ $ fq dv dicttest_many_items.plist
 0x02b0|      10                                       |  .             |          large_size_marker: 1 (valid) 0x2b2-0x2b2.3 (0.4)
 0x02b0|      10                                       |  .             |          exponent: 0 0x2b2.4-0x2b2.7 (0.4)
 0x02b0|         15                                    |   .            |          size_bigint: 21 0x2b3-0x2b3.7 (1)
-      |                                               |                |          size: 21 0x2b4-NA (0)
+      |                                               |                |          size: 21
 0x02b0|            48 53 54 53 20 34 30 31 32 32 35 30|    HSTS 4012250|          value: "HSTS 40122508 Version" 0x2b4-0x2c8.7 (21)
 0x02c0|38 20 56 65 72 73 69 6f 6e                     |8 Version       |
       |                                               |                |        value{}: 0xe1e-0xe22.7 (5)
@@ -155,7 +155,7 @@ $ fq dv dicttest_many_items.plist
 0x02c0|                              10               |          .     |          large_size_marker: 1 (valid) 0x2ca-0x2ca.3 (0.4)
 0x02c0|                              10               |          .     |          exponent: 0 0x2ca.4-0x2ca.7 (0.4)
 0x02c0|                                 15            |           .    |          size_bigint: 21 0x2cb-0x2cb.7 (1)
-      |                                               |                |          size: 21 0x2cc-NA (0)
+      |                                               |                |          size: 21
 0x02c0|                                    48 53 54 53|            HSTS|          value: "HSTS 42086275 Version" 0x2cc-0x2e0.7 (21)
 0x02d0|20 34 32 30 38 36 32 37 35 20 56 65 72 73 69 6f| 42086275 Versio|
 0x02e0|6e                                             |n               |
@@ -172,7 +172,7 @@ $ fq dv dicttest_many_items.plist
 0x02e0|      10                                       |  .             |          large_size_marker: 1 (valid) 0x2e2-0x2e2.3 (0.4)
 0x02e0|      10                                       |  .             |          exponent: 0 0x2e2.4-0x2e2.7 (0.4)
 0x02e0|         15                                    |   .            |          size_bigint: 21 0x2e3-0x2e3.7 (1)
-      |                                               |                |          size: 21 0x2e4-NA (0)
+      |                                               |                |          size: 21
 0x02e0|            48 53 54 53 20 35 30 36 39 31 39 34|    HSTS 5069194|          value: "HSTS 50691949 Version" 0x2e4-0x2f8.7 (21)
 0x02f0|39 20 56 65 72 73 69 6f 6e                     |9 Version       |
       |                                               |                |        value{}: 0xe28-0xe2c.7 (5)
@@ -190,7 +190,7 @@ $ fq dv dicttest_many_items.plist
 0x02f0|                              10               |          .     |          large_size_marker: 1 (valid) 0x2fa-0x2fa.3 (0.4)
 0x02f0|                              10               |          .     |          exponent: 0 0x2fa.4-0x2fa.7 (0.4)
 0x02f0|                                 15            |           .    |          size_bigint: 21 0x2fb-0x2fb.7 (1)
-      |                                               |                |          size: 21 0x2fc-NA (0)
+      |                                               |                |          size: 21
 0x02f0|                                    48 53 54 53|            HSTS|          value: "HSTS 95450582 Version" 0x2fc-0x310.7 (21)
 0x0300|20 39 35 34 35 30 35 38 32 20 56 65 72 73 69 6f| 95450582 Versio|
 0x0310|6e                                             |n               |
@@ -208,7 +208,7 @@ $ fq dv dicttest_many_items.plist
 0x0310|      10                                       |  .             |          large_size_marker: 1 (valid) 0x312-0x312.3 (0.4)
 0x0310|      10                                       |  .             |          exponent: 0 0x312.4-0x312.7 (0.4)
 0x0310|         15                                    |   .            |          size_bigint: 21 0x313-0x313.7 (1)
-      |                                               |                |          size: 21 0x314-NA (0)
+      |                                               |                |          size: 21
 0x0310|            48 53 54 53 20 34 37 37 32 38 38 37|    HSTS 4772887|          value: "HSTS 47728871 Version" 0x314-0x328.7 (21)
 0x0320|31 20 56 65 72 73 69 6f 6e                     |1 Version       |
       |                                               |                |        value{}: 0xe32-0xe36.7 (5)
@@ -224,7 +224,7 @@ $ fq dv dicttest_many_items.plist
 0x0320|                              10               |          .     |          large_size_marker: 1 (valid) 0x32a-0x32a.3 (0.4)
 0x0320|                              10               |          .     |          exponent: 0 0x32a.4-0x32a.7 (0.4)
 0x0320|                                 15            |           .    |          size_bigint: 21 0x32b-0x32b.7 (1)
-      |                                               |                |          size: 21 0x32c-NA (0)
+      |                                               |                |          size: 21
 0x0320|                                    48 53 54 53|            HSTS|          value: "HSTS 52322429 Version" 0x32c-0x340.7 (21)
 0x0330|20 35 32 33 32 32 34 32 39 20 56 65 72 73 69 6f| 52322429 Versio|
 0x0340|6e                                             |n               |
@@ -241,7 +241,7 @@ $ fq dv dicttest_many_items.plist
 0x0340|      10                                       |  .             |          large_size_marker: 1 (valid) 0x342-0x342.3 (0.4)
 0x0340|      10                                       |  .             |          exponent: 0 0x342.4-0x342.7 (0.4)
 0x0340|         15                                    |   .            |          size_bigint: 21 0x343-0x343.7 (1)
-      |                                               |                |          size: 21 0x344-NA (0)
+      |                                               |                |          size: 21
 0x0340|            48 53 54 53 20 36 30 39 31 38 39 38|    HSTS 6091898|          value: "HSTS 60918987 Version" 0x344-0x358.7 (21)
 0x0350|37 20 56 65 72 73 69 6f 6e                     |7 Version       |
       |                                               |                |        value{}: 0xe3c-0xe40.7 (5)
@@ -258,7 +258,7 @@ $ fq dv dicttest_many_items.plist
 0x0350|                              10               |          .     |          large_size_marker: 1 (valid) 0x35a-0x35a.3 (0.4)
 0x0350|                              10               |          .     |          exponent: 0 0x35a.4-0x35a.7 (0.4)
 0x0350|                                 14            |           .    |          size_bigint: 20 0x35b-0x35b.7 (1)
-      |                                               |                |          size: 20 0x35c-NA (0)
+      |                                               |                |          size: 20
 0x0350|                                    48 53 54 53|            HSTS|          value: "HSTS 7873426 Version" 0x35c-0x36f.7 (20)
 0x0360|20 37 38 37 33 34 32 36 20 56 65 72 73 69 6f 6e| 7873426 Version|
       |                                               |                |        value{}: 0xe41-0xe45.7 (5)
@@ -274,7 +274,7 @@ $ fq dv dicttest_many_items.plist
 0x0370|   10                                          | .              |          large_size_marker: 1 (valid) 0x371-0x371.3 (0.4)
 0x0370|   10                                          | .              |          exponent: 0 0x371.4-0x371.7 (0.4)
 0x0370|      14                                       |  .             |          size_bigint: 20 0x372-0x372.7 (1)
-      |                                               |                |          size: 20 0x373-NA (0)
+      |                                               |                |          size: 20
 0x0370|         48 53 54 53 20 35 35 36 32 31 36 35 20|   HSTS 5562165 |          value: "HSTS 5562165 Version" 0x373-0x386.7 (20)
 0x0380|56 65 72 73 69 6f 6e                           |Version         |
       |                                               |                |        value{}: 0xe46-0xe4a.7 (5)
@@ -290,7 +290,7 @@ $ fq dv dicttest_many_items.plist
 0x0380|                        10                     |        .       |          large_size_marker: 1 (valid) 0x388-0x388.3 (0.4)
 0x0380|                        10                     |        .       |          exponent: 0 0x388.4-0x388.7 (0.4)
 0x0380|                           15                  |         .      |          size_bigint: 21 0x389-0x389.7 (1)
-      |                                               |                |          size: 21 0x38a-NA (0)
+      |                                               |                |          size: 21
 0x0380|                              48 53 54 53 20 36|          HSTS 6|          value: "HSTS 63341561 Version" 0x38a-0x39e.7 (21)
 0x0390|33 33 34 31 35 36 31 20 56 65 72 73 69 6f 6e   |3341561 Version |
       |                                               |                |        value{}: 0xe4b-0xe4f.7 (5)
@@ -306,7 +306,7 @@ $ fq dv dicttest_many_items.plist
 0x03a0|10                                             |.               |          large_size_marker: 1 (valid) 0x3a0-0x3a0.3 (0.4)
 0x03a0|10                                             |.               |          exponent: 0 0x3a0.4-0x3a0.7 (0.4)
 0x03a0|   15                                          | .              |          size_bigint: 21 0x3a1-0x3a1.7 (1)
-      |                                               |                |          size: 21 0x3a2-NA (0)
+      |                                               |                |          size: 21
 0x03a0|      48 53 54 53 20 32 36 30 30 34 30 36 39 20|  HSTS 26004069 |          value: "HSTS 26004069 Version" 0x3a2-0x3b6.7 (21)
 0x03b0|56 65 72 73 69 6f 6e                           |Version         |
       |                                               |                |        value{}: 0xe50-0xe54.7 (5)
@@ -324,7 +324,7 @@ $ fq dv dicttest_many_items.plist
 0x03b0|                        10                     |        .       |          large_size_marker: 1 (valid) 0x3b8-0x3b8.3 (0.4)
 0x03b0|                        10                     |        .       |          exponent: 0 0x3b8.4-0x3b8.7 (0.4)
 0x03b0|                           15                  |         .      |          size_bigint: 21 0x3b9-0x3b9.7 (1)
-      |                                               |                |          size: 21 0x3ba-NA (0)
+      |                                               |                |          size: 21
 0x03b0|                              48 53 54 53 20 34|          HSTS 4|          value: "HSTS 41359354 Version" 0x3ba-0x3ce.7 (21)
 0x03c0|31 33 35 39 33 35 34 20 56 65 72 73 69 6f 6e   |1359354 Version |
       |                                               |                |        value{}: 0xe55-0xe59.7 (5)
@@ -340,7 +340,7 @@ $ fq dv dicttest_many_items.plist
 0x03d0|10                                             |.               |          large_size_marker: 1 (valid) 0x3d0-0x3d0.3 (0.4)
 0x03d0|10                                             |.               |          exponent: 0 0x3d0.4-0x3d0.7 (0.4)
 0x03d0|   13                                          | .              |          size_bigint: 19 0x3d1-0x3d1.7 (1)
-      |                                               |                |          size: 19 0x3d2-NA (0)
+      |                                               |                |          size: 19
 0x03d0|      48 53 54 53 20 38 39 36 30 38 30 20 56 65|  HSTS 896080 Ve|          value: "HSTS 896080 Version" 0x3d2-0x3e4.7 (19)
 0x03e0|72 73 69 6f 6e                                 |rsion           |
       |                                               |                |        value{}: 0xe5a-0xe5e.7 (5)
@@ -356,7 +356,7 @@ $ fq dv dicttest_many_items.plist
 0x03e0|                  10                           |      .         |          large_size_marker: 1 (valid) 0x3e6-0x3e6.3 (0.4)
 0x03e0|                  10                           |      .         |          exponent: 0 0x3e6.4-0x3e6.7 (0.4)
 0x03e0|                     13                        |       .        |          size_bigint: 19 0x3e7-0x3e7.7 (1)
-      |                                               |                |          size: 19 0x3e8-NA (0)
+      |                                               |                |          size: 19
 0x03e0|                        48 53 54 53 20 34 38 32|        HSTS 482|          value: "HSTS 482466 Version" 0x3e8-0x3fa.7 (19)
 0x03f0|34 36 36 20 56 65 72 73 69 6f 6e               |466 Version     |
       |                                               |                |        value{}: 0xe5f-0xe63.7 (5)
@@ -372,7 +372,7 @@ $ fq dv dicttest_many_items.plist
 0x03f0|                                    10         |            .   |          large_size_marker: 1 (valid) 0x3fc-0x3fc.3 (0.4)
 0x03f0|                                    10         |            .   |          exponent: 0 0x3fc.4-0x3fc.7 (0.4)
 0x03f0|                                       15      |             .  |          size_bigint: 21 0x3fd-0x3fd.7 (1)
-      |                                               |                |          size: 21 0x3fe-NA (0)
+      |                                               |                |          size: 21
 0x03f0|                                          48 53|              HS|          value: "HSTS 41241648 Version" 0x3fe-0x412.7 (21)
 0x0400|54 53 20 34 31 32 34 31 36 34 38 20 56 65 72 73|TS 41241648 Vers|
 0x0410|69 6f 6e                                       |ion             |
@@ -389,7 +389,7 @@ $ fq dv dicttest_many_items.plist
 0x0410|            10                                 |    .           |          large_size_marker: 1 (valid) 0x414-0x414.3 (0.4)
 0x0410|            10                                 |    .           |          exponent: 0 0x414.4-0x414.7 (0.4)
 0x0410|               15                              |     .          |          size_bigint: 21 0x415-0x415.7 (1)
-      |                                               |                |          size: 21 0x416-NA (0)
+      |                                               |                |          size: 21
 0x0410|                  48 53 54 53 20 39 32 39 37 38|      HSTS 92978|          value: "HSTS 92978648 Version" 0x416-0x42a.7 (21)
 0x0420|36 34 38 20 56 65 72 73 69 6f 6e               |648 Version     |
       |                                               |                |        value{}: 0xe69-0xe6d.7 (5)
@@ -405,7 +405,7 @@ $ fq dv dicttest_many_items.plist
 0x0420|                                    10         |            .   |          large_size_marker: 1 (valid) 0x42c-0x42c.3 (0.4)
 0x0420|                                    10         |            .   |          exponent: 0 0x42c.4-0x42c.7 (0.4)
 0x0420|                                       15      |             .  |          size_bigint: 21 0x42d-0x42d.7 (1)
-      |                                               |                |          size: 21 0x42e-NA (0)
+      |                                               |                |          size: 21
 0x0420|                                          48 53|              HS|          value: "HSTS 82485082 Version" 0x42e-0x442.7 (21)
 0x0430|54 53 20 38 32 34 38 35 30 38 32 20 56 65 72 73|TS 82485082 Vers|
 0x0440|69 6f 6e                                       |ion             |
@@ -423,7 +423,7 @@ $ fq dv dicttest_many_items.plist
 0x0440|            10                                 |    .           |          large_size_marker: 1 (valid) 0x444-0x444.3 (0.4)
 0x0440|            10                                 |    .           |          exponent: 0 0x444.4-0x444.7 (0.4)
 0x0440|               15                              |     .          |          size_bigint: 21 0x445-0x445.7 (1)
-      |                                               |                |          size: 21 0x446-NA (0)
+      |                                               |                |          size: 21
 0x0440|                  48 53 54 53 20 39 39 31 35 36|      HSTS 99156|          value: "HSTS 99156702 Version" 0x446-0x45a.7 (21)
 0x0450|37 30 32 20 56 65 72 73 69 6f 6e               |702 Version     |
       |                                               |                |        value{}: 0xe73-0xe77.7 (5)
@@ -439,7 +439,7 @@ $ fq dv dicttest_many_items.plist
 0x0450|                                    10         |            .   |          large_size_marker: 1 (valid) 0x45c-0x45c.3 (0.4)
 0x0450|                                    10         |            .   |          exponent: 0 0x45c.4-0x45c.7 (0.4)
 0x0450|                                       15      |             .  |          size_bigint: 21 0x45d-0x45d.7 (1)
-      |                                               |                |          size: 21 0x45e-NA (0)
+      |                                               |                |          size: 21
 0x0450|                                          48 53|              HS|          value: "HSTS 45650036 Version" 0x45e-0x472.7 (21)
 0x0460|54 53 20 34 35 36 35 30 30 33 36 20 56 65 72 73|TS 45650036 Vers|
 0x0470|69 6f 6e                                       |ion             |
@@ -458,7 +458,7 @@ $ fq dv dicttest_many_items.plist
 0x0470|            10                                 |    .           |          large_size_marker: 1 (valid) 0x474-0x474.3 (0.4)
 0x0470|            10                                 |    .           |          exponent: 0 0x474.4-0x474.7 (0.4)
 0x0470|               15                              |     .          |          size_bigint: 21 0x475-0x475.7 (1)
-      |                                               |                |          size: 21 0x476-NA (0)
+      |                                               |                |          size: 21
 0x0470|                  48 53 54 53 20 35 32 36 35 31|      HSTS 52651|          value: "HSTS 52651443 Version" 0x476-0x48a.7 (21)
 0x0480|34 34 33 20 56 65 72 73 69 6f 6e               |443 Version     |
       |                                               |                |        value{}: 0xe7d-0xe81.7 (5)
@@ -475,7 +475,7 @@ $ fq dv dicttest_many_items.plist
 0x0480|                                    10         |            .   |          large_size_marker: 1 (valid) 0x48c-0x48c.3 (0.4)
 0x0480|                                    10         |            .   |          exponent: 0 0x48c.4-0x48c.7 (0.4)
 0x0480|                                       15      |             .  |          size_bigint: 21 0x48d-0x48d.7 (1)
-      |                                               |                |          size: 21 0x48e-NA (0)
+      |                                               |                |          size: 21
 0x0480|                                          48 53|              HS|          value: "HSTS 22026076 Version" 0x48e-0x4a2.7 (21)
 0x0490|54 53 20 32 32 30 32 36 30 37 36 20 56 65 72 73|TS 22026076 Vers|
 0x04a0|69 6f 6e                                       |ion             |
@@ -492,7 +492,7 @@ $ fq dv dicttest_many_items.plist
 0x04a0|            10                                 |    .           |          large_size_marker: 1 (valid) 0x4a4-0x4a4.3 (0.4)
 0x04a0|            10                                 |    .           |          exponent: 0 0x4a4.4-0x4a4.7 (0.4)
 0x04a0|               15                              |     .          |          size_bigint: 21 0x4a5-0x4a5.7 (1)
-      |                                               |                |          size: 21 0x4a6-NA (0)
+      |                                               |                |          size: 21
 0x04a0|                  48 53 54 53 20 33 35 32 39 35|      HSTS 35295|          value: "HSTS 35295787 Version" 0x4a6-0x4ba.7 (21)
 0x04b0|37 38 37 20 56 65 72 73 69 6f 6e               |787 Version     |
       |                                               |                |        value{}: 0xe87-0xe8b.7 (5)
@@ -508,7 +508,7 @@ $ fq dv dicttest_many_items.plist
 0x04b0|                                    10         |            .   |          large_size_marker: 1 (valid) 0x4bc-0x4bc.3 (0.4)
 0x04b0|                                    10         |            .   |          exponent: 0 0x4bc.4-0x4bc.7 (0.4)
 0x04b0|                                       15      |             .  |          size_bigint: 21 0x4bd-0x4bd.7 (1)
-      |                                               |                |          size: 21 0x4be-NA (0)
+      |                                               |                |          size: 21
 0x04b0|                                          48 53|              HS|          value: "HSTS 72441178 Version" 0x4be-0x4d2.7 (21)
 0x04c0|54 53 20 37 32 34 34 31 31 37 38 20 56 65 72 73|TS 72441178 Vers|
 0x04d0|69 6f 6e                                       |ion             |
@@ -526,7 +526,7 @@ $ fq dv dicttest_many_items.plist
 0x04d0|            10                                 |    .           |          large_size_marker: 1 (valid) 0x4d4-0x4d4.3 (0.4)
 0x04d0|            10                                 |    .           |          exponent: 0 0x4d4.4-0x4d4.7 (0.4)
 0x04d0|               15                              |     .          |          size_bigint: 21 0x4d5-0x4d5.7 (1)
-      |                                               |                |          size: 21 0x4d6-NA (0)
+      |                                               |                |          size: 21
 0x04d0|                  48 53 54 53 20 34 30 35 37 37|      HSTS 40577|          value: "HSTS 40577218 Version" 0x4d6-0x4ea.7 (21)
 0x04e0|32 31 38 20 56 65 72 73 69 6f 6e               |218 Version     |
       |                                               |                |        value{}: 0xe91-0xe95.7 (5)
@@ -542,7 +542,7 @@ $ fq dv dicttest_many_items.plist
 0x04e0|                                    10         |            .   |          large_size_marker: 1 (valid) 0x4ec-0x4ec.3 (0.4)
 0x04e0|                                    10         |            .   |          exponent: 0 0x4ec.4-0x4ec.7 (0.4)
 0x04e0|                                       15      |             .  |          size_bigint: 21 0x4ed-0x4ed.7 (1)
-      |                                               |                |          size: 21 0x4ee-NA (0)
+      |                                               |                |          size: 21
 0x04e0|                                          48 53|              HS|          value: "HSTS 90566589 Version" 0x4ee-0x502.7 (21)
 0x04f0|54 53 20 39 30 35 36 36 35 38 39 20 56 65 72 73|TS 90566589 Vers|
 0x0500|69 6f 6e                                       |ion             |
@@ -559,7 +559,7 @@ $ fq dv dicttest_many_items.plist
 0x0500|            10                                 |    .           |          large_size_marker: 1 (valid) 0x504-0x504.3 (0.4)
 0x0500|            10                                 |    .           |          exponent: 0 0x504.4-0x504.7 (0.4)
 0x0500|               15                              |     .          |          size_bigint: 21 0x505-0x505.7 (1)
-      |                                               |                |          size: 21 0x506-NA (0)
+      |                                               |                |          size: 21
 0x0500|                  48 53 54 53 20 32 31 32 36 38|      HSTS 21268|          value: "HSTS 21268233 Version" 0x506-0x51a.7 (21)
 0x0510|32 33 33 20 56 65 72 73 69 6f 6e               |233 Version     |
       |                                               |                |        value{}: 0xe9b-0xe9f.7 (5)
@@ -575,7 +575,7 @@ $ fq dv dicttest_many_items.plist
 0x0510|                                    10         |            .   |          large_size_marker: 1 (valid) 0x51c-0x51c.3 (0.4)
 0x0510|                                    10         |            .   |          exponent: 0 0x51c.4-0x51c.7 (0.4)
 0x0510|                                       15      |             .  |          size_bigint: 21 0x51d-0x51d.7 (1)
-      |                                               |                |          size: 21 0x51e-NA (0)
+      |                                               |                |          size: 21
 0x0510|                                          48 53|              HS|          value: "HSTS 21342473 Version" 0x51e-0x532.7 (21)
 0x0520|54 53 20 32 31 33 34 32 34 37 33 20 56 65 72 73|TS 21342473 Vers|
 0x0530|69 6f 6e                                       |ion             |
@@ -594,7 +594,7 @@ $ fq dv dicttest_many_items.plist
 0x0530|            10                                 |    .           |          large_size_marker: 1 (valid) 0x534-0x534.3 (0.4)
 0x0530|            10                                 |    .           |          exponent: 0 0x534.4-0x534.7 (0.4)
 0x0530|               15                              |     .          |          size_bigint: 21 0x535-0x535.7 (1)
-      |                                               |                |          size: 21 0x536-NA (0)
+      |                                               |                |          size: 21
 0x0530|                  48 53 54 53 20 36 39 34 33 33|      HSTS 69433|          value: "HSTS 69433020 Version" 0x536-0x54a.7 (21)
 0x0540|30 32 30 20 56 65 72 73 69 6f 6e               |020 Version     |
       |                                               |                |        value{}: 0xea5-0xea9.7 (5)
@@ -610,7 +610,7 @@ $ fq dv dicttest_many_items.plist
 0x0540|                                    10         |            .   |          large_size_marker: 1 (valid) 0x54c-0x54c.3 (0.4)
 0x0540|                                    10         |            .   |          exponent: 0 0x54c.4-0x54c.7 (0.4)
 0x0540|                                       15      |             .  |          size_bigint: 21 0x54d-0x54d.7 (1)
-      |                                               |                |          size: 21 0x54e-NA (0)
+      |                                               |                |          size: 21
 0x0540|                                          48 53|              HS|          value: "HSTS 79923975 Version" 0x54e-0x562.7 (21)
 0x0550|54 53 20 37 39 39 32 33 39 37 35 20 56 65 72 73|TS 79923975 Vers|
 0x0560|69 6f 6e                                       |ion             |
@@ -627,7 +627,7 @@ $ fq dv dicttest_many_items.plist
 0x0560|            10                                 |    .           |          large_size_marker: 1 (valid) 0x564-0x564.3 (0.4)
 0x0560|            10                                 |    .           |          exponent: 0 0x564.4-0x564.7 (0.4)
 0x0560|               15                              |     .          |          size_bigint: 21 0x565-0x565.7 (1)
-      |                                               |                |          size: 21 0x566-NA (0)
+      |                                               |                |          size: 21
 0x0560|                  48 53 54 53 20 35 36 30 33 34|      HSTS 56034|          value: "HSTS 56034037 Version" 0x566-0x57a.7 (21)
 0x0570|30 33 37 20 56 65 72 73 69 6f 6e               |037 Version     |
       |                                               |                |        value{}: 0xeaf-0xeb3.7 (5)
@@ -643,7 +643,7 @@ $ fq dv dicttest_many_items.plist
 0x0570|                                    10         |            .   |          large_size_marker: 1 (valid) 0x57c-0x57c.3 (0.4)
 0x0570|                                    10         |            .   |          exponent: 0 0x57c.4-0x57c.7 (0.4)
 0x0570|                                       15      |             .  |          size_bigint: 21 0x57d-0x57d.7 (1)
-      |                                               |                |          size: 21 0x57e-NA (0)
+      |                                               |                |          size: 21
 0x0570|                                          48 53|              HS|          value: "HSTS 36180446 Version" 0x57e-0x592.7 (21)
 0x0580|54 53 20 33 36 31 38 30 34 34 36 20 56 65 72 73|TS 36180446 Vers|
 0x0590|69 6f 6e                                       |ion             |
@@ -660,7 +660,7 @@ $ fq dv dicttest_many_items.plist
 0x0590|            10                                 |    .           |          large_size_marker: 1 (valid) 0x594-0x594.3 (0.4)
 0x0590|            10                                 |    .           |          exponent: 0 0x594.4-0x594.7 (0.4)
 0x0590|               15                              |     .          |          size_bigint: 21 0x595-0x595.7 (1)
-      |                                               |                |          size: 21 0x596-NA (0)
+      |                                               |                |          size: 21
 0x0590|                  48 53 54 53 20 36 31 35 33 39|      HSTS 61539|          value: "HSTS 61539663 Version" 0x596-0x5aa.7 (21)
 0x05a0|36 36 33 20 56 65 72 73 69 6f 6e               |663 Version     |
       |                                               |                |        value{}: 0xeb9-0xebd.7 (5)
@@ -676,7 +676,7 @@ $ fq dv dicttest_many_items.plist
 0x05a0|                                    10         |            .   |          large_size_marker: 1 (valid) 0x5ac-0x5ac.3 (0.4)
 0x05a0|                                    10         |            .   |          exponent: 0 0x5ac.4-0x5ac.7 (0.4)
 0x05a0|                                       15      |             .  |          size_bigint: 21 0x5ad-0x5ad.7 (1)
-      |                                               |                |          size: 21 0x5ae-NA (0)
+      |                                               |                |          size: 21
 0x05a0|                                          48 53|              HS|          value: "HSTS 58956726 Version" 0x5ae-0x5c2.7 (21)
 0x05b0|54 53 20 35 38 39 35 36 37 32 36 20 56 65 72 73|TS 58956726 Vers|
 0x05c0|69 6f 6e                                       |ion             |
@@ -694,7 +694,7 @@ $ fq dv dicttest_many_items.plist
 0x05c0|            10                                 |    .           |          large_size_marker: 1 (valid) 0x5c4-0x5c4.3 (0.4)
 0x05c0|            10                                 |    .           |          exponent: 0 0x5c4.4-0x5c4.7 (0.4)
 0x05c0|               15                              |     .          |          size_bigint: 21 0x5c5-0x5c5.7 (1)
-      |                                               |                |          size: 21 0x5c6-NA (0)
+      |                                               |                |          size: 21
 0x05c0|                  48 53 54 53 20 36 37 37 37 36|      HSTS 67776|          value: "HSTS 67776986 Version" 0x5c6-0x5da.7 (21)
 0x05d0|39 38 36 20 56 65 72 73 69 6f 6e               |986 Version     |
       |                                               |                |        value{}: 0xec3-0xec7.7 (5)
@@ -710,7 +710,7 @@ $ fq dv dicttest_many_items.plist
 0x05d0|                                    10         |            .   |          large_size_marker: 1 (valid) 0x5dc-0x5dc.3 (0.4)
 0x05d0|                                    10         |            .   |          exponent: 0 0x5dc.4-0x5dc.7 (0.4)
 0x05d0|                                       15      |             .  |          size_bigint: 21 0x5dd-0x5dd.7 (1)
-      |                                               |                |          size: 21 0x5de-NA (0)
+      |                                               |                |          size: 21
 0x05d0|                                          48 53|              HS|          value: "HSTS 86433714 Version" 0x5de-0x5f2.7 (21)
 0x05e0|54 53 20 38 36 34 33 33 37 31 34 20 56 65 72 73|TS 86433714 Vers|
 0x05f0|69 6f 6e                                       |ion             |
@@ -729,7 +729,7 @@ $ fq dv dicttest_many_items.plist
 0x05f0|            10                                 |    .           |          large_size_marker: 1 (valid) 0x5f4-0x5f4.3 (0.4)
 0x05f0|            10                                 |    .           |          exponent: 0 0x5f4.4-0x5f4.7 (0.4)
 0x05f0|               15                              |     .          |          size_bigint: 21 0x5f5-0x5f5.7 (1)
-      |                                               |                |          size: 21 0x5f6-NA (0)
+      |                                               |                |          size: 21
 0x05f0|                  48 53 54 53 20 35 30 33 39 30|      HSTS 50390|          value: "HSTS 50390632 Version" 0x5f6-0x60a.7 (21)
 0x0600|36 33 32 20 56 65 72 73 69 6f 6e               |632 Version     |
       |                                               |                |        value{}: 0xecd-0xed1.7 (5)
@@ -746,7 +746,7 @@ $ fq dv dicttest_many_items.plist
 0x0600|                                    10         |            .   |          large_size_marker: 1 (valid) 0x60c-0x60c.3 (0.4)
 0x0600|                                    10         |            .   |          exponent: 0 0x60c.4-0x60c.7 (0.4)
 0x0600|                                       15      |             .  |          size_bigint: 21 0x60d-0x60d.7 (1)
-      |                                               |                |          size: 21 0x60e-NA (0)
+      |                                               |                |          size: 21
 0x0600|                                          48 53|              HS|          value: "HSTS 81829874 Version" 0x60e-0x622.7 (21)
 0x0610|54 53 20 38 31 38 32 39 38 37 34 20 56 65 72 73|TS 81829874 Vers|
 0x0620|69 6f 6e                                       |ion             |
@@ -763,7 +763,7 @@ $ fq dv dicttest_many_items.plist
 0x0620|            10                                 |    .           |          large_size_marker: 1 (valid) 0x624-0x624.3 (0.4)
 0x0620|            10                                 |    .           |          exponent: 0 0x624.4-0x624.7 (0.4)
 0x0620|               15                              |     .          |          size_bigint: 21 0x625-0x625.7 (1)
-      |                                               |                |          size: 21 0x626-NA (0)
+      |                                               |                |          size: 21
 0x0620|                  48 53 54 53 20 37 35 37 35 30|      HSTS 75750|          value: "HSTS 75750610 Version" 0x626-0x63a.7 (21)
 0x0630|36 31 30 20 56 65 72 73 69 6f 6e               |610 Version     |
       |                                               |                |        value{}: 0xed7-0xedb.7 (5)
@@ -779,7 +779,7 @@ $ fq dv dicttest_many_items.plist
 0x0630|                                    10         |            .   |          large_size_marker: 1 (valid) 0x63c-0x63c.3 (0.4)
 0x0630|                                    10         |            .   |          exponent: 0 0x63c.4-0x63c.7 (0.4)
 0x0630|                                       15      |             .  |          size_bigint: 21 0x63d-0x63d.7 (1)
-      |                                               |                |          size: 21 0x63e-NA (0)
+      |                                               |                |          size: 21
 0x0630|                                          48 53|              HS|          value: "HSTS 52948776 Version" 0x63e-0x652.7 (21)
 0x0640|54 53 20 35 32 39 34 38 37 37 36 20 56 65 72 73|TS 52948776 Vers|
 0x0650|69 6f 6e                                       |ion             |
@@ -797,7 +797,7 @@ $ fq dv dicttest_many_items.plist
 0x0650|            10                                 |    .           |          large_size_marker: 1 (valid) 0x654-0x654.3 (0.4)
 0x0650|            10                                 |    .           |          exponent: 0 0x654.4-0x654.7 (0.4)
 0x0650|               15                              |     .          |          size_bigint: 21 0x655-0x655.7 (1)
-      |                                               |                |          size: 21 0x656-NA (0)
+      |                                               |                |          size: 21
 0x0650|                  48 53 54 53 20 36 35 36 38 39|      HSTS 65689|          value: "HSTS 65689205 Version" 0x656-0x66a.7 (21)
 0x0660|32 30 35 20 56 65 72 73 69 6f 6e               |205 Version     |
       |                                               |                |        value{}: 0xee1-0xee5.7 (5)
@@ -813,7 +813,7 @@ $ fq dv dicttest_many_items.plist
 0x0660|                                    10         |            .   |          large_size_marker: 1 (valid) 0x66c-0x66c.3 (0.4)
 0x0660|                                    10         |            .   |          exponent: 0 0x66c.4-0x66c.7 (0.4)
 0x0660|                                       15      |             .  |          size_bigint: 21 0x66d-0x66d.7 (1)
-      |                                               |                |          size: 21 0x66e-NA (0)
+      |                                               |                |          size: 21
 0x0660|                                          48 53|              HS|          value: "HSTS 76899202 Version" 0x66e-0x682.7 (21)
 0x0670|54 53 20 37 36 38 39 39 32 30 32 20 56 65 72 73|TS 76899202 Vers|
 0x0680|69 6f 6e                                       |ion             |
@@ -830,7 +830,7 @@ $ fq dv dicttest_many_items.plist
 0x0680|            10                                 |    .           |          large_size_marker: 1 (valid) 0x684-0x684.3 (0.4)
 0x0680|            10                                 |    .           |          exponent: 0 0x684.4-0x684.7 (0.4)
 0x0680|               15                              |     .          |          size_bigint: 21 0x685-0x685.7 (1)
-      |                                               |                |          size: 21 0x686-NA (0)
+      |                                               |                |          size: 21
 0x0680|                  48 53 54 53 20 33 36 35 38 38|      HSTS 36588|          value: "HSTS 36588300 Version" 0x686-0x69a.7 (21)
 0x0690|33 30 30 20 56 65 72 73 69 6f 6e               |300 Version     |
       |                                               |                |        value{}: 0xeeb-0xeef.7 (5)
@@ -846,7 +846,7 @@ $ fq dv dicttest_many_items.plist
 0x0690|                                    10         |            .   |          large_size_marker: 1 (valid) 0x69c-0x69c.3 (0.4)
 0x0690|                                    10         |            .   |          exponent: 0 0x69c.4-0x69c.7 (0.4)
 0x0690|                                       15      |             .  |          size_bigint: 21 0x69d-0x69d.7 (1)
-      |                                               |                |          size: 21 0x69e-NA (0)
+      |                                               |                |          size: 21
 0x0690|                                          48 53|              HS|          value: "HSTS 60765224 Version" 0x69e-0x6b2.7 (21)
 0x06a0|54 53 20 36 30 37 36 35 32 32 34 20 56 65 72 73|TS 60765224 Vers|
 0x06b0|69 6f 6e                                       |ion             |
@@ -865,7 +865,7 @@ $ fq dv dicttest_many_items.plist
 0x06b0|            10                                 |    .           |          large_size_marker: 1 (valid) 0x6b4-0x6b4.3 (0.4)
 0x06b0|            10                                 |    .           |          exponent: 0 0x6b4.4-0x6b4.7 (0.4)
 0x06b0|               15                              |     .          |          size_bigint: 21 0x6b5-0x6b5.7 (1)
-      |                                               |                |          size: 21 0x6b6-NA (0)
+      |                                               |                |          size: 21
 0x06b0|                  48 53 54 53 20 35 35 32 32 36|      HSTS 55226|          value: "HSTS 55226204 Version" 0x6b6-0x6ca.7 (21)
 0x06c0|32 30 34 20 56 65 72 73 69 6f 6e               |204 Version     |
       |                                               |                |        value{}: 0xef5-0xef9.7 (5)
@@ -881,7 +881,7 @@ $ fq dv dicttest_many_items.plist
 0x06c0|                                    10         |            .   |          large_size_marker: 1 (valid) 0x6cc-0x6cc.3 (0.4)
 0x06c0|                                    10         |            .   |          exponent: 0 0x6cc.4-0x6cc.7 (0.4)
 0x06c0|                                       15      |             .  |          size_bigint: 21 0x6cd-0x6cd.7 (1)
-      |                                               |                |          size: 21 0x6ce-NA (0)
+      |                                               |                |          size: 21
 0x06c0|                                          48 53|              HS|          value: "HSTS 73970690 Version" 0x6ce-0x6e2.7 (21)
 0x06d0|54 53 20 37 33 39 37 30 36 39 30 20 56 65 72 73|TS 73970690 Vers|
 0x06e0|69 6f 6e                                       |ion             |
@@ -898,7 +898,7 @@ $ fq dv dicttest_many_items.plist
 0x06e0|            10                                 |    .           |          large_size_marker: 1 (valid) 0x6e4-0x6e4.3 (0.4)
 0x06e0|            10                                 |    .           |          exponent: 0 0x6e4.4-0x6e4.7 (0.4)
 0x06e0|               15                              |     .          |          size_bigint: 21 0x6e5-0x6e5.7 (1)
-      |                                               |                |          size: 21 0x6e6-NA (0)
+      |                                               |                |          size: 21
 0x06e0|                  48 53 54 53 20 31 32 32 31 38|      HSTS 12218|          value: "HSTS 12218210 Version" 0x6e6-0x6fa.7 (21)
 0x06f0|32 31 30 20 56 65 72 73 69 6f 6e               |210 Version     |
       |                                               |                |        value{}: 0xeff-0xf03.7 (5)
@@ -914,7 +914,7 @@ $ fq dv dicttest_many_items.plist
 0x06f0|                                    10         |            .   |          large_size_marker: 1 (valid) 0x6fc-0x6fc.3 (0.4)
 0x06f0|                                    10         |            .   |          exponent: 0 0x6fc.4-0x6fc.7 (0.4)
 0x06f0|                                       15      |             .  |          size_bigint: 21 0x6fd-0x6fd.7 (1)
-      |                                               |                |          size: 21 0x6fe-NA (0)
+      |                                               |                |          size: 21
 0x06f0|                                          48 53|              HS|          value: "HSTS 67124270 Version" 0x6fe-0x712.7 (21)
 0x0700|54 53 20 36 37 31 32 34 32 37 30 20 56 65 72 73|TS 67124270 Vers|
 0x0710|69 6f 6e                                       |ion             |
@@ -931,7 +931,7 @@ $ fq dv dicttest_many_items.plist
 0x0710|            10                                 |    .           |          large_size_marker: 1 (valid) 0x714-0x714.3 (0.4)
 0x0710|            10                                 |    .           |          exponent: 0 0x714.4-0x714.7 (0.4)
 0x0710|               15                              |     .          |          size_bigint: 21 0x715-0x715.7 (1)
-      |                                               |                |          size: 21 0x716-NA (0)
+      |                                               |                |          size: 21
 0x0710|                  48 53 54 53 20 32 38 38 32 36|      HSTS 28826|          value: "HSTS 28826625 Version" 0x716-0x72a.7 (21)
 0x0720|36 32 35 20 56 65 72 73 69 6f 6e               |625 Version     |
       |                                               |                |        value{}: 0xf09-0xf0d.7 (5)
@@ -947,7 +947,7 @@ $ fq dv dicttest_many_items.plist
 0x0720|                                    10         |            .   |          large_size_marker: 1 (valid) 0x72c-0x72c.3 (0.4)
 0x0720|                                    10         |            .   |          exponent: 0 0x72c.4-0x72c.7 (0.4)
 0x0720|                                       15      |             .  |          size_bigint: 21 0x72d-0x72d.7 (1)
-      |                                               |                |          size: 21 0x72e-NA (0)
+      |                                               |                |          size: 21
 0x0720|                                          48 53|              HS|          value: "HSTS 15942628 Version" 0x72e-0x742.7 (21)
 0x0730|54 53 20 31 35 39 34 32 36 32 38 20 56 65 72 73|TS 15942628 Vers|
 0x0740|69 6f 6e                                       |ion             |
@@ -965,7 +965,7 @@ $ fq dv dicttest_many_items.plist
 0x0740|            10                                 |    .           |          large_size_marker: 1 (valid) 0x744-0x744.3 (0.4)
 0x0740|            10                                 |    .           |          exponent: 0 0x744.4-0x744.7 (0.4)
 0x0740|               15                              |     .          |          size_bigint: 21 0x745-0x745.7 (1)
-      |                                               |                |          size: 21 0x746-NA (0)
+      |                                               |                |          size: 21
 0x0740|                  48 53 54 53 20 38 32 36 39 38|      HSTS 82698|          value: "HSTS 82698591 Version" 0x746-0x75a.7 (21)
 0x0750|35 39 31 20 56 65 72 73 69 6f 6e               |591 Version     |
       |                                               |                |        value{}: 0xf13-0xf17.7 (5)
@@ -981,7 +981,7 @@ $ fq dv dicttest_many_items.plist
 0x0750|                                    10         |            .   |          large_size_marker: 1 (valid) 0x75c-0x75c.3 (0.4)
 0x0750|                                    10         |            .   |          exponent: 0 0x75c.4-0x75c.7 (0.4)
 0x0750|                                       15      |             .  |          size_bigint: 21 0x75d-0x75d.7 (1)
-      |                                               |                |          size: 21 0x75e-NA (0)
+      |                                               |                |          size: 21
 0x0750|                                          48 53|              HS|          value: "HSTS 26253183 Version" 0x75e-0x772.7 (21)
 0x0760|54 53 20 32 36 32 35 33 31 38 33 20 56 65 72 73|TS 26253183 Vers|
 0x0770|69 6f 6e                                       |ion             |
@@ -1000,7 +1000,7 @@ $ fq dv dicttest_many_items.plist
 0x0770|            10                                 |    .           |          large_size_marker: 1 (valid) 0x774-0x774.3 (0.4)
 0x0770|            10                                 |    .           |          exponent: 0 0x774.4-0x774.7 (0.4)
 0x0770|               14                              |     .          |          size_bigint: 20 0x775-0x775.7 (1)
-      |                                               |                |          size: 20 0x776-NA (0)
+      |                                               |                |          size: 20
 0x0770|                  48 53 54 53 20 39 36 30 39 34|      HSTS 96094|          value: "HSTS 9609427 Version" 0x776-0x789.7 (20)
 0x0780|32 37 20 56 65 72 73 69 6f 6e                  |27 Version      |
       |                                               |                |        value{}: 0xf1d-0xf21.7 (5)
@@ -1017,7 +1017,7 @@ $ fq dv dicttest_many_items.plist
 0x0780|                                 10            |           .    |          large_size_marker: 1 (valid) 0x78b-0x78b.3 (0.4)
 0x0780|                                 10            |           .    |          exponent: 0 0x78b.4-0x78b.7 (0.4)
 0x0780|                                    15         |            .   |          size_bigint: 21 0x78c-0x78c.7 (1)
-      |                                               |                |          size: 21 0x78d-NA (0)
+      |                                               |                |          size: 21
 0x0780|                                       48 53 54|             HST|          value: "HSTS 91427292 Version" 0x78d-0x7a1.7 (21)
 0x0790|53 20 39 31 34 32 37 32 39 32 20 56 65 72 73 69|S 91427292 Versi|
 0x07a0|6f 6e                                          |on              |
@@ -1034,7 +1034,7 @@ $ fq dv dicttest_many_items.plist
 0x07a0|         10                                    |   .            |          large_size_marker: 1 (valid) 0x7a3-0x7a3.3 (0.4)
 0x07a0|         10                                    |   .            |          exponent: 0 0x7a3.4-0x7a3.7 (0.4)
 0x07a0|            15                                 |    .           |          size_bigint: 21 0x7a4-0x7a4.7 (1)
-      |                                               |                |          size: 21 0x7a5-NA (0)
+      |                                               |                |          size: 21
 0x07a0|               48 53 54 53 20 35 33 39 35 31 33|     HSTS 539513|          value: "HSTS 53951356 Version" 0x7a5-0x7b9.7 (21)
 0x07b0|35 36 20 56 65 72 73 69 6f 6e                  |56 Version      |
       |                                               |                |        value{}: 0xf27-0xf2b.7 (5)
@@ -1050,7 +1050,7 @@ $ fq dv dicttest_many_items.plist
 0x07b0|                                 10            |           .    |          large_size_marker: 1 (valid) 0x7bb-0x7bb.3 (0.4)
 0x07b0|                                 10            |           .    |          exponent: 0 0x7bb.4-0x7bb.7 (0.4)
 0x07b0|                                    15         |            .   |          size_bigint: 21 0x7bc-0x7bc.7 (1)
-      |                                               |                |          size: 21 0x7bd-NA (0)
+      |                                               |                |          size: 21
 0x07b0|                                       48 53 54|             HST|          value: "HSTS 75540994 Version" 0x7bd-0x7d1.7 (21)
 0x07c0|53 20 37 35 35 34 30 39 39 34 20 56 65 72 73 69|S 75540994 Versi|
 0x07d0|6f 6e                                          |on              |
@@ -1068,7 +1068,7 @@ $ fq dv dicttest_many_items.plist
 0x07d0|         10                                    |   .            |          large_size_marker: 1 (valid) 0x7d3-0x7d3.3 (0.4)
 0x07d0|         10                                    |   .            |          exponent: 0 0x7d3.4-0x7d3.7 (0.4)
 0x07d0|            15                                 |    .           |          size_bigint: 21 0x7d4-0x7d4.7 (1)
-      |                                               |                |          size: 21 0x7d5-NA (0)
+      |                                               |                |          size: 21
 0x07d0|               48 53 54 53 20 34 30 34 38 30 39|     HSTS 404809|          value: "HSTS 40480961 Version" 0x7d5-0x7e9.7 (21)
 0x07e0|36 31 20 56 65 72 73 69 6f 6e                  |61 Version      |
       |                                               |                |        value{}: 0xf31-0xf35.7 (5)
@@ -1084,7 +1084,7 @@ $ fq dv dicttest_many_items.plist
 0x07e0|                                 10            |           .    |          large_size_marker: 1 (valid) 0x7eb-0x7eb.3 (0.4)
 0x07e0|                                 10            |           .    |          exponent: 0 0x7eb.4-0x7eb.7 (0.4)
 0x07e0|                                    15         |            .   |          size_bigint: 21 0x7ec-0x7ec.7 (1)
-      |                                               |                |          size: 21 0x7ed-NA (0)
+      |                                               |                |          size: 21
 0x07e0|                                       48 53 54|             HST|          value: "HSTS 45557369 Version" 0x7ed-0x801.7 (21)
 0x07f0|53 20 34 35 35 35 37 33 36 39 20 56 65 72 73 69|S 45557369 Versi|
 0x0800|6f 6e                                          |on              |
@@ -1101,7 +1101,7 @@ $ fq dv dicttest_many_items.plist
 0x0800|         10                                    |   .            |          large_size_marker: 1 (valid) 0x803-0x803.3 (0.4)
 0x0800|         10                                    |   .            |          exponent: 0 0x803.4-0x803.7 (0.4)
 0x0800|            15                                 |    .           |          size_bigint: 21 0x804-0x804.7 (1)
-      |                                               |                |          size: 21 0x805-NA (0)
+      |                                               |                |          size: 21
 0x0800|               48 53 54 53 20 32 39 37 31 35 37|     HSTS 297157|          value: "HSTS 29715776 Version" 0x805-0x819.7 (21)
 0x0810|37 36 20 56 65 72 73 69 6f 6e                  |76 Version      |
       |                                               |                |        value{}: 0xf3b-0xf3f.7 (5)
@@ -1117,7 +1117,7 @@ $ fq dv dicttest_many_items.plist
 0x0810|                                 10            |           .    |          large_size_marker: 1 (valid) 0x81b-0x81b.3 (0.4)
 0x0810|                                 10            |           .    |          exponent: 0 0x81b.4-0x81b.7 (0.4)
 0x0810|                                    15         |            .   |          size_bigint: 21 0x81c-0x81c.7 (1)
-      |                                               |                |          size: 21 0x81d-NA (0)
+      |                                               |                |          size: 21
 0x0810|                                       48 53 54|             HST|          value: "HSTS 67789571 Version" 0x81d-0x831.7 (21)
 0x0820|53 20 36 37 37 38 39 35 37 31 20 56 65 72 73 69|S 67789571 Versi|
 0x0830|6f 6e                                          |on              |
@@ -1136,7 +1136,7 @@ $ fq dv dicttest_many_items.plist
 0x0830|         10                                    |   .            |          large_size_marker: 1 (valid) 0x833-0x833.3 (0.4)
 0x0830|         10                                    |   .            |          exponent: 0 0x833.4-0x833.7 (0.4)
 0x0830|            15                                 |    .           |          size_bigint: 21 0x834-0x834.7 (1)
-      |                                               |                |          size: 21 0x835-NA (0)
+      |                                               |                |          size: 21
 0x0830|               48 53 54 53 20 32 36 33 30 34 30|     HSTS 263040|          value: "HSTS 26304070 Version" 0x835-0x849.7 (21)
 0x0840|37 30 20 56 65 72 73 69 6f 6e                  |70 Version      |
       |                                               |                |        value{}: 0xf45-0xf49.7 (5)
@@ -1152,7 +1152,7 @@ $ fq dv dicttest_many_items.plist
 0x0840|                                 10            |           .    |          large_size_marker: 1 (valid) 0x84b-0x84b.3 (0.4)
 0x0840|                                 10            |           .    |          exponent: 0 0x84b.4-0x84b.7 (0.4)
 0x0840|                                    15         |            .   |          size_bigint: 21 0x84c-0x84c.7 (1)
-      |                                               |                |          size: 21 0x84d-NA (0)
+      |                                               |                |          size: 21
 0x0840|                                       48 53 54|             HST|          value: "HSTS 36896701 Version" 0x84d-0x861.7 (21)
 0x0850|53 20 33 36 38 39 36 37 30 31 20 56 65 72 73 69|S 36896701 Versi|
 0x0860|6f 6e                                          |on              |
@@ -1169,7 +1169,7 @@ $ fq dv dicttest_many_items.plist
 0x0860|         10                                    |   .            |          large_size_marker: 1 (valid) 0x863-0x863.3 (0.4)
 0x0860|         10                                    |   .            |          exponent: 0 0x863.4-0x863.7 (0.4)
 0x0860|            15                                 |    .           |          size_bigint: 21 0x864-0x864.7 (1)
-      |                                               |                |          size: 21 0x865-NA (0)
+      |                                               |                |          size: 21
 0x0860|               48 53 54 53 20 32 34 37 36 33 38|     HSTS 247638|          value: "HSTS 24763818 Version" 0x865-0x879.7 (21)
 0x0870|31 38 20 56 65 72 73 69 6f 6e                  |18 Version      |
       |                                               |                |        value{}: 0xf4f-0xf53.7 (5)
@@ -1185,7 +1185,7 @@ $ fq dv dicttest_many_items.plist
 0x0870|                                 10            |           .    |          large_size_marker: 1 (valid) 0x87b-0x87b.3 (0.4)
 0x0870|                                 10            |           .    |          exponent: 0 0x87b.4-0x87b.7 (0.4)
 0x0870|                                    15         |            .   |          size_bigint: 21 0x87c-0x87c.7 (1)
-      |                                               |                |          size: 21 0x87d-NA (0)
+      |                                               |                |          size: 21
 0x0870|                                       48 53 54|             HST|          value: "HSTS 10080734 Version" 0x87d-0x891.7 (21)
 0x0880|53 20 31 30 30 38 30 37 33 34 20 56 65 72 73 69|S 10080734 Versi|
 0x0890|6f 6e                                          |on              |
@@ -1202,7 +1202,7 @@ $ fq dv dicttest_many_items.plist
 0x0890|         10                                    |   .            |          large_size_marker: 1 (valid) 0x893-0x893.3 (0.4)
 0x0890|         10                                    |   .            |          exponent: 0 0x893.4-0x893.7 (0.4)
 0x0890|            15                                 |    .           |          size_bigint: 21 0x894-0x894.7 (1)
-      |                                               |                |          size: 21 0x895-NA (0)
+      |                                               |                |          size: 21
 0x0890|               48 53 54 53 20 38 39 34 39 35 39|     HSTS 894959|          value: "HSTS 89495937 Version" 0x895-0x8a9.7 (21)
 0x08a0|33 37 20 56 65 72 73 69 6f 6e                  |37 Version      |
       |                                               |                |        value{}: 0xf59-0xf5d.7 (5)
@@ -1218,7 +1218,7 @@ $ fq dv dicttest_many_items.plist
 0x08a0|                                 10            |           .    |          large_size_marker: 1 (valid) 0x8ab-0x8ab.3 (0.4)
 0x08a0|                                 10            |           .    |          exponent: 0 0x8ab.4-0x8ab.7 (0.4)
 0x08a0|                                    15         |            .   |          size_bigint: 21 0x8ac-0x8ac.7 (1)
-      |                                               |                |          size: 21 0x8ad-NA (0)
+      |                                               |                |          size: 21
 0x08a0|                                       48 53 54|             HST|          value: "HSTS 12038598 Version" 0x8ad-0x8c1.7 (21)
 0x08b0|53 20 31 32 30 33 38 35 39 38 20 56 65 72 73 69|S 12038598 Versi|
 0x08c0|6f 6e                                          |on              |
@@ -1236,7 +1236,7 @@ $ fq dv dicttest_many_items.plist
 0x08c0|         10                                    |   .            |          large_size_marker: 1 (valid) 0x8c3-0x8c3.3 (0.4)
 0x08c0|         10                                    |   .            |          exponent: 0 0x8c3.4-0x8c3.7 (0.4)
 0x08c0|            14                                 |    .           |          size_bigint: 20 0x8c4-0x8c4.7 (1)
-      |                                               |                |          size: 20 0x8c5-NA (0)
+      |                                               |                |          size: 20
 0x08c0|               48 53 54 53 20 39 32 35 39 35 32|     HSTS 925952|          value: "HSTS 9259520 Version" 0x8c5-0x8d8.7 (20)
 0x08d0|30 20 56 65 72 73 69 6f 6e                     |0 Version       |
       |                                               |                |        value{}: 0xf63-0xf67.7 (5)
@@ -1252,7 +1252,7 @@ $ fq dv dicttest_many_items.plist
 0x08d0|                              10               |          .     |          large_size_marker: 1 (valid) 0x8da-0x8da.3 (0.4)
 0x08d0|                              10               |          .     |          exponent: 0 0x8da.4-0x8da.7 (0.4)
 0x08d0|                                 15            |           .    |          size_bigint: 21 0x8db-0x8db.7 (1)
-      |                                               |                |          size: 21 0x8dc-NA (0)
+      |                                               |                |          size: 21
 0x08d0|                                    48 53 54 53|            HSTS|          value: "HSTS 33437200 Version" 0x8dc-0x8f0.7 (21)
 0x08e0|20 33 33 34 33 37 32 30 30 20 56 65 72 73 69 6f| 33437200 Versio|
 0x08f0|6e                                             |n               |
@@ -1271,7 +1271,7 @@ $ fq dv dicttest_many_items.plist
 0x08f0|      10                                       |  .             |          large_size_marker: 1 (valid) 0x8f2-0x8f2.3 (0.4)
 0x08f0|      10                                       |  .             |          exponent: 0 0x8f2.4-0x8f2.7 (0.4)
 0x08f0|         15                                    |   .            |          size_bigint: 21 0x8f3-0x8f3.7 (1)
-      |                                               |                |          size: 21 0x8f4-NA (0)
+      |                                               |                |          size: 21
 0x08f0|            48 53 54 53 20 38 30 30 36 35 39 32|    HSTS 8006592|          value: "HSTS 80065929 Version" 0x8f4-0x908.7 (21)
 0x0900|39 20 56 65 72 73 69 6f 6e                     |9 Version       |
       |                                               |                |        value{}: 0xf6d-0xf71.7 (5)
@@ -1288,7 +1288,7 @@ $ fq dv dicttest_many_items.plist
 0x0900|                              10               |          .     |          large_size_marker: 1 (valid) 0x90a-0x90a.3 (0.4)
 0x0900|                              10               |          .     |          exponent: 0 0x90a.4-0x90a.7 (0.4)
 0x0900|                                 15            |           .    |          size_bigint: 21 0x90b-0x90b.7 (1)
-      |                                               |                |          size: 21 0x90c-NA (0)
+      |                                               |                |          size: 21
 0x0900|                                    48 53 54 53|            HSTS|          value: "HSTS 54295113 Version" 0x90c-0x920.7 (21)
 0x0910|20 35 34 32 39 35 31 31 33 20 56 65 72 73 69 6f| 54295113 Versio|
 0x0920|6e                                             |n               |
@@ -1305,7 +1305,7 @@ $ fq dv dicttest_many_items.plist
 0x0920|      10                                       |  .             |          large_size_marker: 1 (valid) 0x922-0x922.3 (0.4)
 0x0920|      10                                       |  .             |          exponent: 0 0x922.4-0x922.7 (0.4)
 0x0920|         15                                    |   .            |          size_bigint: 21 0x923-0x923.7 (1)
-      |                                               |                |          size: 21 0x924-NA (0)
+      |                                               |                |          size: 21
 0x0920|            48 53 54 53 20 36 38 39 33 35 33 30|    HSTS 6893530|          value: "HSTS 68935308 Version" 0x924-0x938.7 (21)
 0x0930|38 20 56 65 72 73 69 6f 6e                     |8 Version       |
       |                                               |                |        value{}: 0xf77-0xf7b.7 (5)
@@ -1321,7 +1321,7 @@ $ fq dv dicttest_many_items.plist
 0x0930|                              10               |          .     |          large_size_marker: 1 (valid) 0x93a-0x93a.3 (0.4)
 0x0930|                              10               |          .     |          exponent: 0 0x93a.4-0x93a.7 (0.4)
 0x0930|                                 15            |           .    |          size_bigint: 21 0x93b-0x93b.7 (1)
-      |                                               |                |          size: 21 0x93c-NA (0)
+      |                                               |                |          size: 21
 0x0930|                                    48 53 54 53|            HSTS|          value: "HSTS 16494683 Version" 0x93c-0x950.7 (21)
 0x0940|20 31 36 34 39 34 36 38 33 20 56 65 72 73 69 6f| 16494683 Versio|
 0x0950|6e                                             |n               |
@@ -1339,7 +1339,7 @@ $ fq dv dicttest_many_items.plist
 0x0950|      10                                       |  .             |          large_size_marker: 1 (valid) 0x952-0x952.3 (0.4)
 0x0950|      10                                       |  .             |          exponent: 0 0x952.4-0x952.7 (0.4)
 0x0950|         15                                    |   .            |          size_bigint: 21 0x953-0x953.7 (1)
-      |                                               |                |          size: 21 0x954-NA (0)
+      |                                               |                |          size: 21
 0x0950|            48 53 54 53 20 34 38 31 31 37 32 37|    HSTS 4811727|          value: "HSTS 48117274 Version" 0x954-0x968.7 (21)
 0x0960|34 20 56 65 72 73 69 6f 6e                     |4 Version       |
       |                                               |                |        value{}: 0xf81-0xf85.7 (5)
@@ -1355,7 +1355,7 @@ $ fq dv dicttest_many_items.plist
 0x0960|                              10               |          .     |          large_size_marker: 1 (valid) 0x96a-0x96a.3 (0.4)
 0x0960|                              10               |          .     |          exponent: 0 0x96a.4-0x96a.7 (0.4)
 0x0960|                                 15            |           .    |          size_bigint: 21 0x96b-0x96b.7 (1)
-      |                                               |                |          size: 21 0x96c-NA (0)
+      |                                               |                |          size: 21
 0x0960|                                    48 53 54 53|            HSTS|          value: "HSTS 23144187 Version" 0x96c-0x980.7 (21)
 0x0970|20 32 33 31 34 34 31 38 37 20 56 65 72 73 69 6f| 23144187 Versio|
 0x0980|6e                                             |n               |
@@ -1372,7 +1372,7 @@ $ fq dv dicttest_many_items.plist
 0x0980|      10                                       |  .             |          large_size_marker: 1 (valid) 0x982-0x982.3 (0.4)
 0x0980|      10                                       |  .             |          exponent: 0 0x982.4-0x982.7 (0.4)
 0x0980|         15                                    |   .            |          size_bigint: 21 0x983-0x983.7 (1)
-      |                                               |                |          size: 21 0x984-NA (0)
+      |                                               |                |          size: 21
 0x0980|            48 53 54 53 20 35 34 39 36 37 37 34|    HSTS 5496774|          value: "HSTS 54967742 Version" 0x984-0x998.7 (21)
 0x0990|32 20 56 65 72 73 69 6f 6e                     |2 Version       |
       |                                               |                |        value{}: 0xf8b-0xf8f.7 (5)
@@ -1388,7 +1388,7 @@ $ fq dv dicttest_many_items.plist
 0x0990|                              10               |          .     |          large_size_marker: 1 (valid) 0x99a-0x99a.3 (0.4)
 0x0990|                              10               |          .     |          exponent: 0 0x99a.4-0x99a.7 (0.4)
 0x0990|                                 15            |           .    |          size_bigint: 21 0x99b-0x99b.7 (1)
-      |                                               |                |          size: 21 0x99c-NA (0)
+      |                                               |                |          size: 21
 0x0990|                                    48 53 54 53|            HSTS|          value: "HSTS 83989129 Version" 0x99c-0x9b0.7 (21)
 0x09a0|20 38 33 39 38 39 31 32 39 20 56 65 72 73 69 6f| 83989129 Versio|
 0x09b0|6e                                             |n               |
@@ -1407,7 +1407,7 @@ $ fq dv dicttest_many_items.plist
 0x09b0|      10                                       |  .             |          large_size_marker: 1 (valid) 0x9b2-0x9b2.3 (0.4)
 0x09b0|      10                                       |  .             |          exponent: 0 0x9b2.4-0x9b2.7 (0.4)
 0x09b0|         15                                    |   .            |          size_bigint: 21 0x9b3-0x9b3.7 (1)
-      |                                               |                |          size: 21 0x9b4-NA (0)
+      |                                               |                |          size: 21
 0x09b0|            48 53 54 53 20 37 35 33 36 38 37 37|    HSTS 7536877|          value: "HSTS 75368770 Version" 0x9b4-0x9c8.7 (21)
 0x09c0|30 20 56 65 72 73 69 6f 6e                     |0 Version       |
       |                                               |                |        value{}: 0xf95-0xf99.7 (5)
@@ -1423,7 +1423,7 @@ $ fq dv dicttest_many_items.plist
 0x09c0|                              10               |          .     |          large_size_marker: 1 (valid) 0x9ca-0x9ca.3 (0.4)
 0x09c0|                              10               |          .     |          exponent: 0 0x9ca.4-0x9ca.7 (0.4)
 0x09c0|                                 15            |           .    |          size_bigint: 21 0x9cb-0x9cb.7 (1)
-      |                                               |                |          size: 21 0x9cc-NA (0)
+      |                                               |                |          size: 21
 0x09c0|                                    48 53 54 53|            HSTS|          value: "HSTS 12635433 Version" 0x9cc-0x9e0.7 (21)
 0x09d0|20 31 32 36 33 35 34 33 33 20 56 65 72 73 69 6f| 12635433 Versio|
 0x09e0|6e                                             |n               |
@@ -1440,7 +1440,7 @@ $ fq dv dicttest_many_items.plist
 0x09e0|      10                                       |  .             |          large_size_marker: 1 (valid) 0x9e2-0x9e2.3 (0.4)
 0x09e0|      10                                       |  .             |          exponent: 0 0x9e2.4-0x9e2.7 (0.4)
 0x09e0|         14                                    |   .            |          size_bigint: 20 0x9e3-0x9e3.7 (1)
-      |                                               |                |          size: 20 0x9e4-NA (0)
+      |                                               |                |          size: 20
 0x09e0|            48 53 54 53 20 37 32 33 36 31 31 36|    HSTS 7236116|          value: "HSTS 7236116 Version" 0x9e4-0x9f7.7 (20)
 0x09f0|20 56 65 72 73 69 6f 6e                        | Version        |
       |                                               |                |        value{}: 0xf9f-0xfa3.7 (5)
@@ -1456,7 +1456,7 @@ $ fq dv dicttest_many_items.plist
 0x09f0|                           10                  |         .      |          large_size_marker: 1 (valid) 0x9f9-0x9f9.3 (0.4)
 0x09f0|                           10                  |         .      |          exponent: 0 0x9f9.4-0x9f9.7 (0.4)
 0x09f0|                              15               |          .     |          size_bigint: 21 0x9fa-0x9fa.7 (1)
-      |                                               |                |          size: 21 0x9fb-NA (0)
+      |                                               |                |          size: 21
 0x09f0|                                 48 53 54 53 20|           HSTS |          value: "HSTS 39398895 Version" 0x9fb-0xa0f.7 (21)
 0x0a00|33 39 33 39 38 38 39 35 20 56 65 72 73 69 6f 6e|39398895 Version|
       |                                               |                |        value{}: 0xfa4-0xfa8.7 (5)
@@ -1472,7 +1472,7 @@ $ fq dv dicttest_many_items.plist
 0x0a10|   10                                          | .              |          large_size_marker: 1 (valid) 0xa11-0xa11.3 (0.4)
 0x0a10|   10                                          | .              |          exponent: 0 0xa11.4-0xa11.7 (0.4)
 0x0a10|      15                                       |  .             |          size_bigint: 21 0xa12-0xa12.7 (1)
-      |                                               |                |          size: 21 0xa13-NA (0)
+      |                                               |                |          size: 21
 0x0a10|         48 53 54 53 20 33 34 31 31 36 35 39 30|   HSTS 34116590|          value: "HSTS 34116590 Version" 0xa13-0xa27.7 (21)
 0x0a20|20 56 65 72 73 69 6f 6e                        | Version        |
       |                                               |                |        value{}: 0xfa9-0xfad.7 (5)
@@ -1488,7 +1488,7 @@ $ fq dv dicttest_many_items.plist
 0x0a20|                           10                  |         .      |          large_size_marker: 1 (valid) 0xa29-0xa29.3 (0.4)
 0x0a20|                           10                  |         .      |          exponent: 0 0xa29.4-0xa29.7 (0.4)
 0x0a20|                              15               |          .     |          size_bigint: 21 0xa2a-0xa2a.7 (1)
-      |                                               |                |          size: 21 0xa2b-NA (0)
+      |                                               |                |          size: 21
 0x0a20|                                 48 53 54 53 20|           HSTS |          value: "HSTS 66438425 Version" 0xa2b-0xa3f.7 (21)
 0x0a30|36 36 34 33 38 34 32 35 20 56 65 72 73 69 6f 6e|66438425 Version|
       |                                               |                |        value{}: 0xfae-0xfb2.7 (5)
@@ -1505,7 +1505,7 @@ $ fq dv dicttest_many_items.plist
 0x0a40|   10                                          | .              |          large_size_marker: 1 (valid) 0xa41-0xa41.3 (0.4)
 0x0a40|   10                                          | .              |          exponent: 0 0xa41.4-0xa41.7 (0.4)
 0x0a40|      15                                       |  .             |          size_bigint: 21 0xa42-0xa42.7 (1)
-      |                                               |                |          size: 21 0xa43-NA (0)
+      |                                               |                |          size: 21
 0x0a40|         48 53 54 53 20 36 33 32 30 30 35 36 38|   HSTS 63200568|          value: "HSTS 63200568 Version" 0xa43-0xa57.7 (21)
 0x0a50|20 56 65 72 73 69 6f 6e                        | Version        |
       |                                               |                |        value{}: 0xfb3-0xfb7.7 (5)
@@ -1521,7 +1521,7 @@ $ fq dv dicttest_many_items.plist
 0x0a50|                           10                  |         .      |          large_size_marker: 1 (valid) 0xa59-0xa59.3 (0.4)
 0x0a50|                           10                  |         .      |          exponent: 0 0xa59.4-0xa59.7 (0.4)
 0x0a50|                              15               |          .     |          size_bigint: 21 0xa5a-0xa5a.7 (1)
-      |                                               |                |          size: 21 0xa5b-NA (0)
+      |                                               |                |          size: 21
 0x0a50|                                 48 53 54 53 20|           HSTS |          value: "HSTS 50309259 Version" 0xa5b-0xa6f.7 (21)
 0x0a60|35 30 33 30 39 32 35 39 20 56 65 72 73 69 6f 6e|50309259 Version|
       |                                               |                |        value{}: 0xfb8-0xfbc.7 (5)
@@ -1539,7 +1539,7 @@ $ fq dv dicttest_many_items.plist
 0x0a70|   10                                          | .              |          large_size_marker: 1 (valid) 0xa71-0xa71.3 (0.4)
 0x0a70|   10                                          | .              |          exponent: 0 0xa71.4-0xa71.7 (0.4)
 0x0a70|      15                                       |  .             |          size_bigint: 21 0xa72-0xa72.7 (1)
-      |                                               |                |          size: 21 0xa73-NA (0)
+      |                                               |                |          size: 21
 0x0a70|         48 53 54 53 20 35 38 35 32 31 31 32 37|   HSTS 58521127|          value: "HSTS 58521127 Version" 0xa73-0xa87.7 (21)
 0x0a80|20 56 65 72 73 69 6f 6e                        | Version        |
       |                                               |                |        value{}: 0xfbd-0xfc1.7 (5)
@@ -1556,7 +1556,7 @@ $ fq dv dicttest_many_items.plist
 0x0a80|                           10                  |         .      |          large_size_marker: 1 (valid) 0xa89-0xa89.3 (0.4)
 0x0a80|                           10                  |         .      |          exponent: 0 0xa89.4-0xa89.7 (0.4)
 0x0a80|                              15               |          .     |          size_bigint: 21 0xa8a-0xa8a.7 (1)
-      |                                               |                |          size: 21 0xa8b-NA (0)
+      |                                               |                |          size: 21
 0x0a80|                                 48 53 54 53 20|           HSTS |          value: "HSTS 21590016 Version" 0xa8b-0xa9f.7 (21)
 0x0a90|32 31 35 39 30 30 31 36 20 56 65 72 73 69 6f 6e|21590016 Version|
       |                                               |                |        value{}: 0xfc2-0xfc6.7 (5)
@@ -1572,7 +1572,7 @@ $ fq dv dicttest_many_items.plist
 0x0aa0|   10                                          | .              |          large_size_marker: 1 (valid) 0xaa1-0xaa1.3 (0.4)
 0x0aa0|   10                                          | .              |          exponent: 0 0xaa1.4-0xaa1.7 (0.4)
 0x0aa0|      15                                       |  .             |          size_bigint: 21 0xaa2-0xaa2.7 (1)
-      |                                               |                |          size: 21 0xaa3-NA (0)
+      |                                               |                |          size: 21
 0x0aa0|         48 53 54 53 20 32 35 37 37 34 32 33 32|   HSTS 25774232|          value: "HSTS 25774232 Version" 0xaa3-0xab7.7 (21)
 0x0ab0|20 56 65 72 73 69 6f 6e                        | Version        |
       |                                               |                |        value{}: 0xfc7-0xfcb.7 (5)
@@ -1588,7 +1588,7 @@ $ fq dv dicttest_many_items.plist
 0x0ab0|                           10                  |         .      |          large_size_marker: 1 (valid) 0xab9-0xab9.3 (0.4)
 0x0ab0|                           10                  |         .      |          exponent: 0 0xab9.4-0xab9.7 (0.4)
 0x0ab0|                              15               |          .     |          size_bigint: 21 0xaba-0xaba.7 (1)
-      |                                               |                |          size: 21 0xabb-NA (0)
+      |                                               |                |          size: 21
 0x0ab0|                                 48 53 54 53 20|           HSTS |          value: "HSTS 23002418 Version" 0xabb-0xacf.7 (21)
 0x0ac0|32 33 30 30 32 34 31 38 20 56 65 72 73 69 6f 6e|23002418 Version|
       |                                               |                |        value{}: 0xfcc-0xfd0.7 (5)
@@ -1605,7 +1605,7 @@ $ fq dv dicttest_many_items.plist
 0x0ad0|   10                                          | .              |          large_size_marker: 1 (valid) 0xad1-0xad1.3 (0.4)
 0x0ad0|   10                                          | .              |          exponent: 0 0xad1.4-0xad1.7 (0.4)
 0x0ad0|      15                                       |  .             |          size_bigint: 21 0xad2-0xad2.7 (1)
-      |                                               |                |          size: 21 0xad3-NA (0)
+      |                                               |                |          size: 21
 0x0ad0|         48 53 54 53 20 31 38 39 37 35 30 36 37|   HSTS 18975067|          value: "HSTS 18975067 Version" 0xad3-0xae7.7 (21)
 0x0ae0|20 56 65 72 73 69 6f 6e                        | Version        |
       |                                               |                |        value{}: 0xfd1-0xfd5.7 (5)
@@ -1621,7 +1621,7 @@ $ fq dv dicttest_many_items.plist
 0x0ae0|                           10                  |         .      |          large_size_marker: 1 (valid) 0xae9-0xae9.3 (0.4)
 0x0ae0|                           10                  |         .      |          exponent: 0 0xae9.4-0xae9.7 (0.4)
 0x0ae0|                              14               |          .     |          size_bigint: 20 0xaea-0xaea.7 (1)
-      |                                               |                |          size: 20 0xaeb-NA (0)
+      |                                               |                |          size: 20
 0x0ae0|                                 48 53 54 53 20|           HSTS |          value: "HSTS 6262357 Version" 0xaeb-0xafe.7 (20)
 0x0af0|36 32 36 32 33 35 37 20 56 65 72 73 69 6f 6e   |6262357 Version |
       |                                               |                |        value{}: 0xfd6-0xfda.7 (5)
@@ -1637,7 +1637,7 @@ $ fq dv dicttest_many_items.plist
 0x0b00|10                                             |.               |          large_size_marker: 1 (valid) 0xb00-0xb00.3 (0.4)
 0x0b00|10                                             |.               |          exponent: 0 0xb00.4-0xb00.7 (0.4)
 0x0b00|   15                                          | .              |          size_bigint: 21 0xb01-0xb01.7 (1)
-      |                                               |                |          size: 21 0xb02-NA (0)
+      |                                               |                |          size: 21
 0x0b00|      48 53 54 53 20 32 35 39 32 31 32 38 36 20|  HSTS 25921286 |          value: "HSTS 25921286 Version" 0xb02-0xb16.7 (21)
 0x0b10|56 65 72 73 69 6f 6e                           |Version         |
       |                                               |                |        value{}: 0xfdb-0xfdf.7 (5)
@@ -1653,7 +1653,7 @@ $ fq dv dicttest_many_items.plist
 0x0b10|                        10                     |        .       |          large_size_marker: 1 (valid) 0xb18-0xb18.3 (0.4)
 0x0b10|                        10                     |        .       |          exponent: 0 0xb18.4-0xb18.7 (0.4)
 0x0b10|                           15                  |         .      |          size_bigint: 21 0xb19-0xb19.7 (1)
-      |                                               |                |          size: 21 0xb1a-NA (0)
+      |                                               |                |          size: 21
 0x0b10|                              48 53 54 53 20 32|          HSTS 2|          value: "HSTS 28027600 Version" 0xb1a-0xb2e.7 (21)
 0x0b20|38 30 32 37 36 30 30 20 56 65 72 73 69 6f 6e   |8027600 Version |
       |                                               |                |        value{}: 0xfe0-0xfe4.7 (5)
@@ -1671,7 +1671,7 @@ $ fq dv dicttest_many_items.plist
 0x0b30|10                                             |.               |          large_size_marker: 1 (valid) 0xb30-0xb30.3 (0.4)
 0x0b30|10                                             |.               |          exponent: 0 0xb30.4-0xb30.7 (0.4)
 0x0b30|   15                                          | .              |          size_bigint: 21 0xb31-0xb31.7 (1)
-      |                                               |                |          size: 21 0xb32-NA (0)
+      |                                               |                |          size: 21
 0x0b30|      48 53 54 53 20 35 31 31 34 31 35 35 30 20|  HSTS 51141550 |          value: "HSTS 51141550 Version" 0xb32-0xb46.7 (21)
 0x0b40|56 65 72 73 69 6f 6e                           |Version         |
       |                                               |                |        value{}: 0xfe5-0xfe9.7 (5)
@@ -1687,7 +1687,7 @@ $ fq dv dicttest_many_items.plist
 0x0b40|                        10                     |        .       |          large_size_marker: 1 (valid) 0xb48-0xb48.3 (0.4)
 0x0b40|                        10                     |        .       |          exponent: 0 0xb48.4-0xb48.7 (0.4)
 0x0b40|                           15                  |         .      |          size_bigint: 21 0xb49-0xb49.7 (1)
-      |                                               |                |          size: 21 0xb4a-NA (0)
+      |                                               |                |          size: 21
 0x0b40|                              48 53 54 53 20 39|          HSTS 9|          value: "HSTS 98868433 Version" 0xb4a-0xb5e.7 (21)
 0x0b50|38 38 36 38 34 33 33 20 56 65 72 73 69 6f 6e   |8868433 Version |
       |                                               |                |        value{}: 0xfea-0xfee.7 (5)
@@ -1703,7 +1703,7 @@ $ fq dv dicttest_many_items.plist
 0x0b60|10                                             |.               |          large_size_marker: 1 (valid) 0xb60-0xb60.3 (0.4)
 0x0b60|10                                             |.               |          exponent: 0 0xb60.4-0xb60.7 (0.4)
 0x0b60|   15                                          | .              |          size_bigint: 21 0xb61-0xb61.7 (1)
-      |                                               |                |          size: 21 0xb62-NA (0)
+      |                                               |                |          size: 21
 0x0b60|      48 53 54 53 20 31 36 34 37 30 38 38 31 20|  HSTS 16470881 |          value: "HSTS 16470881 Version" 0xb62-0xb76.7 (21)
 0x0b70|56 65 72 73 69 6f 6e                           |Version         |
       |                                               |                |        value{}: 0xfef-0xff3.7 (5)
@@ -1719,7 +1719,7 @@ $ fq dv dicttest_many_items.plist
 0x0b70|                        10                     |        .       |          large_size_marker: 1 (valid) 0xb78-0xb78.3 (0.4)
 0x0b70|                        10                     |        .       |          exponent: 0 0xb78.4-0xb78.7 (0.4)
 0x0b70|                           15                  |         .      |          size_bigint: 21 0xb79-0xb79.7 (1)
-      |                                               |                |          size: 21 0xb7a-NA (0)
+      |                                               |                |          size: 21
 0x0b70|                              48 53 54 53 20 31|          HSTS 1|          value: "HSTS 15032109 Version" 0xb7a-0xb8e.7 (21)
 0x0b80|35 30 33 32 31 30 39 20 56 65 72 73 69 6f 6e   |5032109 Version |
       |                                               |                |        value{}: 0xff4-0xff8.7 (5)
@@ -1735,7 +1735,7 @@ $ fq dv dicttest_many_items.plist
 0x0b90|10                                             |.               |          large_size_marker: 1 (valid) 0xb90-0xb90.3 (0.4)
 0x0b90|10                                             |.               |          exponent: 0 0xb90.4-0xb90.7 (0.4)
 0x0b90|   15                                          | .              |          size_bigint: 21 0xb91-0xb91.7 (1)
-      |                                               |                |          size: 21 0xb92-NA (0)
+      |                                               |                |          size: 21
 0x0b90|      48 53 54 53 20 31 39 39 36 36 34 36 39 20|  HSTS 19966469 |          value: "HSTS 19966469 Version" 0xb92-0xba6.7 (21)
 0x0ba0|56 65 72 73 69 6f 6e                           |Version         |
       |                                               |                |        value{}: 0xff9-0xffd.7 (5)
@@ -1751,7 +1751,7 @@ $ fq dv dicttest_many_items.plist
 0x0ba0|                        10                     |        .       |          large_size_marker: 1 (valid) 0xba8-0xba8.3 (0.4)
 0x0ba0|                        10                     |        .       |          exponent: 0 0xba8.4-0xba8.7 (0.4)
 0x0ba0|                           15                  |         .      |          size_bigint: 21 0xba9-0xba9.7 (1)
-      |                                               |                |          size: 21 0xbaa-NA (0)
+      |                                               |                |          size: 21
 0x0ba0|                              48 53 54 53 20 31|          HSTS 1|          value: "HSTS 15708506 Version" 0xbaa-0xbbe.7 (21)
 0x0bb0|35 37 30 38 35 30 36 20 56 65 72 73 69 6f 6e   |5708506 Version |
       |                                               |                |        value{}: 0xffe-0x1002.7 (5)
@@ -1768,7 +1768,7 @@ $ fq dv dicttest_many_items.plist
 0x0bc0|10                                             |.               |          large_size_marker: 1 (valid) 0xbc0-0xbc0.3 (0.4)
 0x0bc0|10                                             |.               |          exponent: 0 0xbc0.4-0xbc0.7 (0.4)
 0x0bc0|   15                                          | .              |          size_bigint: 21 0xbc1-0xbc1.7 (1)
-      |                                               |                |          size: 21 0xbc2-NA (0)
+      |                                               |                |          size: 21
 0x0bc0|      48 53 54 53 20 33 35 33 37 30 38 30 37 20|  HSTS 35370807 |          value: "HSTS 35370807 Version" 0xbc2-0xbd6.7 (21)
 0x0bd0|56 65 72 73 69 6f 6e                           |Version         |
       |                                               |                |        value{}: 0x1003-0x1007.7 (5)
@@ -1784,7 +1784,7 @@ $ fq dv dicttest_many_items.plist
 0x0bd0|                        10                     |        .       |          large_size_marker: 1 (valid) 0xbd8-0xbd8.3 (0.4)
 0x0bd0|                        10                     |        .       |          exponent: 0 0xbd8.4-0xbd8.7 (0.4)
 0x0bd0|                           15                  |         .      |          size_bigint: 21 0xbd9-0xbd9.7 (1)
-      |                                               |                |          size: 21 0xbda-NA (0)
+      |                                               |                |          size: 21
 0x0bd0|                              48 53 54 53 20 31|          HSTS 1|          value: "HSTS 12927993 Version" 0xbda-0xbee.7 (21)
 0x0be0|32 39 32 37 39 39 33 20 56 65 72 73 69 6f 6e   |2927993 Version |
       |                                               |                |        value{}: 0x1008-0x100c.7 (5)
@@ -1802,7 +1802,7 @@ $ fq dv dicttest_many_items.plist
 0x0bf0|10                                             |.               |          large_size_marker: 1 (valid) 0xbf0-0xbf0.3 (0.4)
 0x0bf0|10                                             |.               |          exponent: 0 0xbf0.4-0xbf0.7 (0.4)
 0x0bf0|   15                                          | .              |          size_bigint: 21 0xbf1-0xbf1.7 (1)
-      |                                               |                |          size: 21 0xbf2-NA (0)
+      |                                               |                |          size: 21
 0x0bf0|      48 53 54 53 20 37 31 38 31 31 35 32 37 20|  HSTS 71811527 |          value: "HSTS 71811527 Version" 0xbf2-0xc06.7 (21)
 0x0c00|56 65 72 73 69 6f 6e                           |Version         |
       |                                               |                |        value{}: 0x100d-0x1011.7 (5)
@@ -1819,7 +1819,7 @@ $ fq dv dicttest_many_items.plist
 0x0c00|                        10                     |        .       |          large_size_marker: 1 (valid) 0xc08-0xc08.3 (0.4)
 0x0c00|                        10                     |        .       |          exponent: 0 0xc08.4-0xc08.7 (0.4)
 0x0c00|                           15                  |         .      |          size_bigint: 21 0xc09-0xc09.7 (1)
-      |                                               |                |          size: 21 0xc0a-NA (0)
+      |                                               |                |          size: 21
 0x0c00|                              48 53 54 53 20 35|          HSTS 5|          value: "HSTS 52866208 Version" 0xc0a-0xc1e.7 (21)
 0x0c10|32 38 36 36 32 30 38 20 56 65 72 73 69 6f 6e   |2866208 Version |
       |                                               |                |        value{}: 0x1012-0x1016.7 (5)
@@ -1835,7 +1835,7 @@ $ fq dv dicttest_many_items.plist
 0x0c20|10                                             |.               |          large_size_marker: 1 (valid) 0xc20-0xc20.3 (0.4)
 0x0c20|10                                             |.               |          exponent: 0 0xc20.4-0xc20.7 (0.4)
 0x0c20|   15                                          | .              |          size_bigint: 21 0xc21-0xc21.7 (1)
-      |                                               |                |          size: 21 0xc22-NA (0)
+      |                                               |                |          size: 21
 0x0c20|      48 53 54 53 20 33 30 34 34 31 33 34 30 20|  HSTS 30441340 |          value: "HSTS 30441340 Version" 0xc22-0xc36.7 (21)
 0x0c30|56 65 72 73 69 6f 6e                           |Version         |
       |                                               |                |        value{}: 0x1017-0x101b.7 (5)
@@ -1851,7 +1851,7 @@ $ fq dv dicttest_many_items.plist
 0x0c30|                        10                     |        .       |          large_size_marker: 1 (valid) 0xc38-0xc38.3 (0.4)
 0x0c30|                        10                     |        .       |          exponent: 0 0xc38.4-0xc38.7 (0.4)
 0x0c30|                           15                  |         .      |          size_bigint: 21 0xc39-0xc39.7 (1)
-      |                                               |                |          size: 21 0xc3a-NA (0)
+      |                                               |                |          size: 21
 0x0c30|                              48 53 54 53 20 33|          HSTS 3|          value: "HSTS 39491929 Version" 0xc3a-0xc4e.7 (21)
 0x0c40|39 34 39 31 39 32 39 20 56 65 72 73 69 6f 6e   |9491929 Version |
       |                                               |                |        value{}: 0x101c-0x1020.7 (5)
@@ -1868,7 +1868,7 @@ $ fq dv dicttest_many_items.plist
 0x0c50|10                                             |.               |          large_size_marker: 1 (valid) 0xc50-0xc50.3 (0.4)
 0x0c50|10                                             |.               |          exponent: 0 0xc50.4-0xc50.7 (0.4)
 0x0c50|   14                                          | .              |          size_bigint: 20 0xc51-0xc51.7 (1)
-      |                                               |                |          size: 20 0xc52-NA (0)
+      |                                               |                |          size: 20
 0x0c50|      48 53 54 53 20 39 35 39 31 32 34 36 20 56|  HSTS 9591246 V|          value: "HSTS 9591246 Version" 0xc52-0xc65.7 (20)
 0x0c60|65 72 73 69 6f 6e                              |ersion          |
       |                                               |                |        value{}: 0x1021-0x1025.7 (5)
@@ -1884,7 +1884,7 @@ $ fq dv dicttest_many_items.plist
 0x0c60|                     10                        |       .        |          large_size_marker: 1 (valid) 0xc67-0xc67.3 (0.4)
 0x0c60|                     10                        |       .        |          exponent: 0 0xc67.4-0xc67.7 (0.4)
 0x0c60|                        14                     |        .       |          size_bigint: 20 0xc68-0xc68.7 (1)
-      |                                               |                |          size: 20 0xc69-NA (0)
+      |                                               |                |          size: 20
 0x0c60|                           48 53 54 53 20 34 37|         HSTS 47|          value: "HSTS 4721158 Version" 0xc69-0xc7c.7 (20)
 0x0c70|32 31 31 35 38 20 56 65 72 73 69 6f 6e         |21158 Version   |
       |                                               |                |        value{}: 0x1026-0x102a.7 (5)
@@ -1900,7 +1900,7 @@ $ fq dv dicttest_many_items.plist
 0x0c70|                                          10   |              . |          large_size_marker: 1 (valid) 0xc7e-0xc7e.3 (0.4)
 0x0c70|                                          10   |              . |          exponent: 0 0xc7e.4-0xc7e.7 (0.4)
 0x0c70|                                             15|               .|          size_bigint: 21 0xc7f-0xc7f.7 (1)
-      |                                               |                |          size: 21 0xc80-NA (0)
+      |                                               |                |          size: 21
 0x0c80|48 53 54 53 20 36 30 31 35 39 38 34 34 20 56 65|HSTS 60159844 Ve|          value: "HSTS 60159844 Version" 0xc80-0xc94.7 (21)
 0x0c90|72 73 69 6f 6e                                 |rsion           |
       |                                               |                |        value{}: 0x102b-0x102f.7 (5)
@@ -1916,7 +1916,7 @@ $ fq dv dicttest_many_items.plist
 0x0c90|                  10                           |      .         |          large_size_marker: 1 (valid) 0xc96-0xc96.3 (0.4)
 0x0c90|                  10                           |      .         |          exponent: 0 0xc96.4-0xc96.7 (0.4)
 0x0c90|                     15                        |       .        |          size_bigint: 21 0xc97-0xc97.7 (1)
-      |                                               |                |          size: 21 0xc98-NA (0)
+      |                                               |                |          size: 21
 0x0c90|                        48 53 54 53 20 36 35 33|        HSTS 653|          value: "HSTS 65306743 Version" 0xc98-0xcac.7 (21)
 0x0ca0|30 36 37 34 33 20 56 65 72 73 69 6f 6e         |06743 Version   |
       |                                               |                |        value{}: 0x1030-0x1034.7 (5)
@@ -1934,7 +1934,7 @@ $ fq dv dicttest_many_items.plist
 0x0ca0|                                          10   |              . |          large_size_marker: 1 (valid) 0xcae-0xcae.3 (0.4)
 0x0ca0|                                          10   |              . |          exponent: 0 0xcae.4-0xcae.7 (0.4)
 0x0ca0|                                             15|               .|          size_bigint: 21 0xcaf-0xcaf.7 (1)
-      |                                               |                |          size: 21 0xcb0-NA (0)
+      |                                               |                |          size: 21
 0x0cb0|48 53 54 53 20 36 33 34 37 37 37 38 33 20 56 65|HSTS 63477783 Ve|          value: "HSTS 63477783 Version" 0xcb0-0xcc4.7 (21)
 0x0cc0|72 73 69 6f 6e                                 |rsion           |
       |                                               |                |        value{}: 0x1035-0x1039.7 (5)
@@ -1950,7 +1950,7 @@ $ fq dv dicttest_many_items.plist
 0x0cc0|                  10                           |      .         |          large_size_marker: 1 (valid) 0xcc6-0xcc6.3 (0.4)
 0x0cc0|                  10                           |      .         |          exponent: 0 0xcc6.4-0xcc6.7 (0.4)
 0x0cc0|                     15                        |       .        |          size_bigint: 21 0xcc7-0xcc7.7 (1)
-      |                                               |                |          size: 21 0xcc8-NA (0)
+      |                                               |                |          size: 21
 0x0cc0|                        48 53 54 53 20 35 30 34|        HSTS 504|          value: "HSTS 50471628 Version" 0xcc8-0xcdc.7 (21)
 0x0cd0|37 31 36 32 38 20 56 65 72 73 69 6f 6e         |71628 Version   |
       |                                               |                |        value{}: 0x103a-0x103e.7 (5)
@@ -1966,7 +1966,7 @@ $ fq dv dicttest_many_items.plist
 0x0cd0|                                          10   |              . |          large_size_marker: 1 (valid) 0xcde-0xcde.3 (0.4)
 0x0cd0|                                          10   |              . |          exponent: 0 0xcde.4-0xcde.7 (0.4)
 0x0cd0|                                             15|               .|          size_bigint: 21 0xcdf-0xcdf.7 (1)
-      |                                               |                |          size: 21 0xce0-NA (0)
+      |                                               |                |          size: 21
 0x0ce0|48 53 54 53 20 34 34 35 30 30 35 30 33 20 56 65|HSTS 44500503 Ve|          value: "HSTS 44500503 Version" 0xce0-0xcf4.7 (21)
 0x0cf0|72 73 69 6f 6e                                 |rsion           |
       |                                               |                |        value{}: 0x103f-0x1043.7 (5)
@@ -1982,7 +1982,7 @@ $ fq dv dicttest_many_items.plist
 0x0cf0|                  10                           |      .         |          large_size_marker: 1 (valid) 0xcf6-0xcf6.3 (0.4)
 0x0cf0|                  10                           |      .         |          exponent: 0 0xcf6.4-0xcf6.7 (0.4)
 0x0cf0|                     15                        |       .        |          size_bigint: 21 0xcf7-0xcf7.7 (1)
-      |                                               |                |          size: 21 0xcf8-NA (0)
+      |                                               |                |          size: 21
 0x0cf0|                        48 53 54 53 20 37 39 34|        HSTS 794|          value: "HSTS 79471110 Version" 0xcf8-0xd0c.7 (21)
 0x0d00|37 31 31 31 30 20 56 65 72 73 69 6f 6e         |71110 Version   |
       |                                               |                |        value{}: 0x1044-0x1048.7 (5)
@@ -1998,7 +1998,7 @@ $ fq dv dicttest_many_items.plist
 0x0d00|                                          10   |              . |          large_size_marker: 1 (valid) 0xd0e-0xd0e.3 (0.4)
 0x0d00|                                          10   |              . |          exponent: 0 0xd0e.4-0xd0e.7 (0.4)
 0x0d00|                                             14|               .|          size_bigint: 20 0xd0f-0xd0f.7 (1)
-      |                                               |                |          size: 20 0xd10-NA (0)
+      |                                               |                |          size: 20
 0x0d10|48 53 54 53 20 33 34 39 37 31 32 36 20 56 65 72|HSTS 3497126 Ver|          value: "HSTS 3497126 Version" 0xd10-0xd23.7 (20)
 0x0d20|73 69 6f 6e                                    |sion            |
       |                                               |                |        value{}: 0x1049-0x104d.7 (5)
@@ -2014,7 +2014,7 @@ $ fq dv dicttest_many_items.plist
 0x0d20|               10                              |     .          |          large_size_marker: 1 (valid) 0xd25-0xd25.3 (0.4)
 0x0d20|               10                              |     .          |          exponent: 0 0xd25.4-0xd25.7 (0.4)
 0x0d20|                  15                           |      .         |          size_bigint: 21 0xd26-0xd26.7 (1)
-      |                                               |                |          size: 21 0xd27-NA (0)
+      |                                               |                |          size: 21
 0x0d20|                     48 53 54 53 20 37 35 36 33|       HSTS 7563|          value: "HSTS 75630666 Version" 0xd27-0xd3b.7 (21)
 0x0d30|30 36 36 36 20 56 65 72 73 69 6f 6e            |0666 Version    |
       |                                               |                |        value{}: 0x104e-0x1052.7 (5)
@@ -2031,7 +2031,7 @@ $ fq dv dicttest_many_items.plist
 0x0d30|                                       10      |             .  |          large_size_marker: 1 (valid) 0xd3d-0xd3d.3 (0.4)
 0x0d30|                                       10      |             .  |          exponent: 0 0xd3d.4-0xd3d.7 (0.4)
 0x0d30|                                          15   |              . |          size_bigint: 21 0xd3e-0xd3e.7 (1)
-      |                                               |                |          size: 21 0xd3f-NA (0)
+      |                                               |                |          size: 21
 0x0d30|                                             48|               H|          value: "HSTS 99097841 Version" 0xd3f-0xd53.7 (21)
 0x0d40|53 54 53 20 39 39 30 39 37 38 34 31 20 56 65 72|STS 99097841 Ver|
 0x0d50|73 69 6f 6e                                    |sion            |
@@ -2048,7 +2048,7 @@ $ fq dv dicttest_many_items.plist
 0x0d50|               10                              |     .          |          large_size_marker: 1 (valid) 0xd55-0xd55.3 (0.4)
 0x0d50|               10                              |     .          |          exponent: 0 0xd55.4-0xd55.7 (0.4)
 0x0d50|                  14                           |      .         |          size_bigint: 20 0xd56-0xd56.7 (1)
-      |                                               |                |          size: 20 0xd57-NA (0)
+      |                                               |                |          size: 20
 0x0d50|                     48 53 54 53 20 32 37 31 33|       HSTS 2713|          value: "HSTS 2713042 Version" 0xd57-0xd6a.7 (20)
 0x0d60|30 34 32 20 56 65 72 73 69 6f 6e               |042 Version     |
       |                                               |                |        value{}: 0x1058-0x105c.7 (5)
@@ -2066,7 +2066,7 @@ $ fq dv dicttest_many_items.plist
 0x0d60|                                    10         |            .   |          large_size_marker: 1 (valid) 0xd6c-0xd6c.3 (0.4)
 0x0d60|                                    10         |            .   |          exponent: 0 0xd6c.4-0xd6c.7 (0.4)
 0x0d60|                                       15      |             .  |          size_bigint: 21 0xd6d-0xd6d.7 (1)
-      |                                               |                |          size: 21 0xd6e-NA (0)
+      |                                               |                |          size: 21
 0x0d60|                                          48 53|              HS|          value: "HSTS 22361508 Version" 0xd6e-0xd82.7 (21)
 0x0d70|54 53 20 32 32 33 36 31 35 30 38 20 56 65 72 73|TS 22361508 Vers|
 0x0d80|69 6f 6e                                       |ion             |
@@ -2084,7 +2084,7 @@ $ fq dv dicttest_many_items.plist
 0x0d80|            10                                 |    .           |          large_size_marker: 1 (valid) 0xd84-0xd84.3 (0.4)
 0x0d80|            10                                 |    .           |          exponent: 0 0xd84.4-0xd84.7 (0.4)
 0x0d80|               15                              |     .          |          size_bigint: 21 0xd85-0xd85.7 (1)
-      |                                               |                |          size: 21 0xd86-NA (0)
+      |                                               |                |          size: 21
 0x0d80|                  48 53 54 53 20 31 37 38 30 34|      HSTS 17804|          value: "HSTS 17804463 Version" 0xd86-0xd9a.7 (21)
 0x0d90|34 36 33 20 56 65 72 73 69 6f 6e               |463 Version     |
       |                                               |                |        value{}: 0x1062-0x1066.7 (5)
@@ -2100,7 +2100,7 @@ $ fq dv dicttest_many_items.plist
 0x0d90|                                    10         |            .   |          large_size_marker: 1 (valid) 0xd9c-0xd9c.3 (0.4)
 0x0d90|                                    10         |            .   |          exponent: 0 0xd9c.4-0xd9c.7 (0.4)
 0x0d90|                                       15      |             .  |          size_bigint: 21 0xd9d-0xd9d.7 (1)
-      |                                               |                |          size: 21 0xd9e-NA (0)
+      |                                               |                |          size: 21
 0x0d90|                                          48 53|              HS|          value: "HSTS 58736869 Version" 0xd9e-0xdb2.7 (21)
 0x0da0|54 53 20 35 38 37 33 36 38 36 39 20 56 65 72 73|TS 58736869 Vers|
 0x0db0|69 6f 6e                                       |ion             |
@@ -2117,7 +2117,7 @@ $ fq dv dicttest_many_items.plist
 0x0db0|            10                                 |    .           |          large_size_marker: 1 (valid) 0xdb4-0xdb4.3 (0.4)
 0x0db0|            10                                 |    .           |          exponent: 0 0xdb4.4-0xdb4.7 (0.4)
 0x0db0|               15                              |     .          |          size_bigint: 21 0xdb5-0xdb5.7 (1)
-      |                                               |                |          size: 21 0xdb6-NA (0)
+      |                                               |                |          size: 21
 0x0db0|                  48 53 54 53 20 33 35 33 31 38|      HSTS 35318|          value: "HSTS 35318016 Version" 0xdb6-0xdca.7 (21)
 0x0dc0|30 31 36 20 56 65 72 73 69 6f 6e               |016 Version     |
       |                                               |                |        value{}: 0x106c-0x1070.7 (5)
@@ -2134,7 +2134,7 @@ $ fq dv dicttest_many_items.plist
 0x0dc0|                                    10         |            .   |          large_size_marker: 1 (valid) 0xdcc-0xdcc.3 (0.4)
 0x0dc0|                                    10         |            .   |          exponent: 0 0xdcc.4-0xdcc.7 (0.4)
 0x0dc0|                                       15      |             .  |          size_bigint: 21 0xdcd-0xdcd.7 (1)
-      |                                               |                |          size: 21 0xdce-NA (0)
+      |                                               |                |          size: 21
 0x0dc0|                                          48 53|              HS|          value: "HSTS 66647567 Version" 0xdce-0xde2.7 (21)
 0x0dd0|54 53 20 36 36 36 34 37 35 36 37 20 56 65 72 73|TS 66647567 Vers|
 0x0de0|69 6f 6e                                       |ion             |
@@ -2151,7 +2151,7 @@ $ fq dv dicttest_many_items.plist
 0x0de0|            10                                 |    .           |          large_size_marker: 1 (valid) 0xde4-0xde4.3 (0.4)
 0x0de0|            10                                 |    .           |          exponent: 0 0xde4.4-0xde4.7 (0.4)
 0x0de0|               15                              |     .          |          size_bigint: 21 0xde5-0xde5.7 (1)
-      |                                               |                |          size: 21 0xde6-NA (0)
+      |                                               |                |          size: 21
 0x0de0|                  48 53 54 53 20 37 34 31 36 36|      HSTS 74166|          value: "HSTS 74166247 Version" 0xde6-0xdfa.7 (21)
 0x0df0|32 34 37 20 56 65 72 73 69 6f 6e               |247 Version     |
       |                                               |                |        value{}: 0x1076-0x107a.7 (5)

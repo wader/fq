@@ -6,7 +6,7 @@ $ fq dv uiautomation.plist
     |                                               |                |  objects{}: 0x8-0x21.7 (26)
 0x00|                        d1                     |        .       |    type: "dict" (13) (Dictionary) 0x8-0x8.3 (0.4)
 0x00|                        d1                     |        .       |    size_bits: 1 0x8.4-0x8.7 (0.4)
-    |                                               |                |    size: 1 0x9-NA (0)
+    |                                               |                |    size: 1
     |                                               |                |    entries[0:1]: 0x9-0x21.7 (25)
     |                                               |                |      [0]{}: entry 0x9-0x21.7 (25)
 0x00|                           01                  |         .      |        key_index: 1 0x9-0x9.7 (1)
@@ -17,7 +17,7 @@ $ fq dv uiautomation.plist
 0x00|                                    10         |            .   |          large_size_marker: 1 (valid) 0xc-0xc.3 (0.4)
 0x00|                                    10         |            .   |          exponent: 0 0xc.4-0xc.7 (0.4)
 0x00|                                       13      |             .  |          size_bigint: 19 0xd-0xd.7 (1)
-    |                                               |                |          size: 19 0xe-NA (0)
+    |                                               |                |          size: 19
 0x00|                                          55 49|              UI|          value: "UIAutomationEnabled" 0xe-0x20.7 (19)
 0x10|41 75 74 6f 6d 61 74 69 6f 6e 45 6e 61 62 6c 65|AutomationEnable|
 0x20|64                                             |d               |

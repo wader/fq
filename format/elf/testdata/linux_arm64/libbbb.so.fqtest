@@ -672,11 +672,11 @@ $ fq -d elf dv libbbb.so
       |                                               |                |        [1]{}: dynamic_tags 0xdf8-0xe07.7 (16)
 0x0df0|                        0c 00 00 00 00 00 00 00|        ........|          tag: "init" (12) (Address of the initialization function) 0xdf8-0xdff.7 (8)
 0x0e00|a8 04 00 00 00 00 00 00                        |........        |          ptr: 0x4a8 0xe00-0xe07.7 (8)
-      |                                               |                |          section_index: 6 0xe08-NA (0)
+      |                                               |                |          section_index: 6
       |                                               |                |        [2]{}: dynamic_tags 0xe08-0xe17.7 (16)
 0x0e00|                        0d 00 00 00 00 00 00 00|        ........|          tag: "fini" (13) (Address of the termination function) 0xe08-0xe0f.7 (8)
 0x0e10|44 06 00 00 00 00 00 00                        |D.......        |          ptr: 0x644 0xe10-0xe17.7 (8)
-      |                                               |                |          section_index: 9 0xe18-NA (0)
+      |                                               |                |          section_index: 9
       |                                               |                |        [3]{}: dynamic_tags 0xe18-0xe27.7 (16)
 0x0e10|                        19 00 00 00 00 00 00 00|        ........|          tag: "init_array" (25) (Address of the array of pointers to initialization functions) 0xe18-0xe1f.7 (8)
 0x0e20|d8 0d 01 00 00 00 00 00                        |........        |          ptr: 0x10dd8 0xe20-0xe27.7 (8)
@@ -695,11 +695,11 @@ $ fq -d elf dv libbbb.so
       |                                               |                |        [8]{}: dynamic_tags 0xe68-0xe77.7 (16)
 0x0e60|                        05 00 00 00 00 00 00 00|        ........|          tag: "strtab" (5) (Address of string table) 0xe68-0xe6f.7 (8)
 0x0e70|e0 02 00 00 00 00 00 00                        |........        |          ptr: 0x2e0 0xe70-0xe77.7 (8)
-      |                                               |                |          section_index: 3 0xe78-NA (0)
+      |                                               |                |          section_index: 3
       |                                               |                |        [9]{}: dynamic_tags 0xe78-0xe87.7 (16)
 0x0e70|                        06 00 00 00 00 00 00 00|        ........|          tag: "symtab" (6) (Address of symbol table) 0xe78-0xe7f.7 (8)
 0x0e80|c0 01 00 00 00 00 00 00                        |........        |          ptr: 0x1c0 0xe80-0xe87.7 (8)
-      |                                               |                |          section_index: 2 0xe88-NA (0)
+      |                                               |                |          section_index: 2
       |                                               |                |        [10]{}: dynamic_tags 0xe88-0xe97.7 (16)
 0x0e80|                        0a 00 00 00 00 00 00 00|        ........|          tag: "strsz" (10) (Size in bytes of string table) 0xe88-0xe8f.7 (8)
 0x0e90|a7 00 00 00 00 00 00 00                        |........        |          val: 167 0xe90-0xe97.7 (8)
@@ -709,7 +709,7 @@ $ fq -d elf dv libbbb.so
       |                                               |                |        [12]{}: dynamic_tags 0xea8-0xeb7.7 (16)
 0x0ea0|                        03 00 00 00 00 00 00 00|        ........|          tag: "pltgot" (3) (Address of PLT and/or GOT) 0xea8-0xeaf.7 (8)
 0x0eb0|98 0f 01 00 00 00 00 00                        |........        |          ptr: 0x10f98 0xeb0-0xeb7.7 (8)
-      |                                               |                |          section_index: 16 0xeb8-NA (0)
+      |                                               |                |          section_index: 16
       |                                               |                |        [13]{}: dynamic_tags 0xeb8-0xec7.7 (16)
 0x0eb0|                        02 00 00 00 00 00 00 00|        ........|          tag: "pltrelsz" (2) (Size in bytes of PLT relocation entries) 0xeb8-0xebf.7 (8)
 0x0ec0|60 00 00 00 00 00 00 00                        |`.......        |          val: 96 0xec0-0xec7.7 (8)
@@ -719,7 +719,7 @@ $ fq -d elf dv libbbb.so
       |                                               |                |        [15]{}: dynamic_tags 0xed8-0xee7.7 (16)
 0x0ed0|                        17 00 00 00 00 00 00 00|        ........|          tag: "jmprel" (23) (Address of relocation entries associated solely with the PLT) 0xed8-0xedf.7 (8)
 0x0ee0|48 04 00 00 00 00 00 00                        |H.......        |          ptr: 0x448 0xee0-0xee7.7 (8)
-      |                                               |                |          section_index: 5 0xee8-NA (0)
+      |                                               |                |          section_index: 5
       |                                               |                |        [16]{}: dynamic_tags 0xee8-0xef7.7 (16)
 0x0ee0|                        07 00 00 00 00 00 00 00|        ........|          tag: "rela" (7) (Address of Rela relocation table) 0xee8-0xeef.7 (8)
 0x0ef0|88 03 00 00 00 00 00 00                        |........        |          ptr: 0x388 0xef0-0xef7.7 (8)

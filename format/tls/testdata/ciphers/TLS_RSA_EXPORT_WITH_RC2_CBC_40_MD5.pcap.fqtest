@@ -1,11 +1,11 @@
 $ fq -o keylog=@all.keylog ".tcp_connections[0] | dv" TLS_RSA_EXPORT_WITH_RC2_CBC_40_MD5.pcap
         |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.tcp_connections[0]{}: tcp_connection 0x19c7-NA (0)
         |                                               |                |  client{}: 0x19c7-NA (0)
-        |                                               |                |    ip: "127.0.0.1" 0x19c7-NA (0)
-        |                                               |                |    port: 39035 0x19c7-NA (0)
-        |                                               |                |    has_start: true 0x19c7-NA (0)
-        |                                               |                |    has_end: false 0x19c7-NA (0)
-        |                                               |                |    skipped_bytes: 0 0x19c7-NA (0)
+        |                                               |                |    ip: "127.0.0.1"
+        |                                               |                |    port: 39035
+        |                                               |                |    has_start: true
+        |                                               |                |    has_end: false
+        |                                               |                |    skipped_bytes: 0
         |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    stream{}: (tls) 0x0-0x113.7 (276)
         |                                               |                |      ssl_v2{}: 0x0-0x33.7 (52)
   0x0000|80 32                                          |.2              |        length: 50 0x0-0x1.7 (2)
@@ -62,11 +62,11 @@ $ fq -o keylog=@all.keylog ".tcp_connections[0] | dv" TLS_RSA_EXPORT_WITH_RC2_CB
   0x0010|ad aa 10 5e ea a3 77 83 18 56 97 05 25 4b fa cb|...^..w..V..%K..|
   0x0011|fc 69 17 6d|                                   |.i.m|           |
         |                                               |                |  server{}: 0x19c7-NA (0)
-        |                                               |                |    ip: "127.0.0.1" 0x19c7-NA (0)
-        |                                               |                |    port: 4430 0x19c7-NA (0)
-        |                                               |                |    has_start: true 0x19c7-NA (0)
-        |                                               |                |    has_end: true 0x19c7-NA (0)
-        |                                               |                |    skipped_bytes: 0 0x19c7-NA (0)
+        |                                               |                |    ip: "127.0.0.1"
+        |                                               |                |    port: 4430
+        |                                               |                |    has_start: true
+        |                                               |                |    has_end: true
+        |                                               |                |    skipped_bytes: 0
         |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    stream{}: (tls) 0x0-0x149a.7 (5275)
         |                                               |                |      records[0:7]: 0x0-0x149a.7 (5275)
         |                                               |                |        [0]{}: record 0x0-0x55.7 (86)
@@ -151,7 +151,7 @@ $ fq -o keylog=@all.keylog ".tcp_connections[0] | dv" TLS_RSA_EXPORT_WITH_RC2_CB
   0x0008|               05                              |     .          |                              form: "primitive" (0) 0x85.2-0x85.2 (0.1)
   0x0008|               05                              |     .          |                              tag: "null" (0x5) 0x85.3-0x85.7 (0.5)
   0x0008|                  00                           |      .         |                              length: "indefinite" (0) 0x86-0x86.7 (1)
-        |                                               |                |                              value: null 0x87-NA (0)
+        |                                               |                |                              value: null
         |                                               |                |                        [2]{}: object 0x87-0xa7.7 (33)
   0x0008|                     30                        |       0        |                          class: "universal" (0) 0x87-0x87.1 (0.2)
   0x0008|                     30                        |       0        |                          form: "constructed" (1) 0x87.2-0x87.2 (0.1)
@@ -272,7 +272,7 @@ $ fq -o keylog=@all.keylog ".tcp_connections[0] | dv" TLS_RSA_EXPORT_WITH_RC2_CB
   0x000f|                           05                  |         .      |                                  form: "primitive" (0) 0xf9.2-0xf9.2 (0.1)
   0x000f|                           05                  |         .      |                                  tag: "null" (0x5) 0xf9.3-0xf9.7 (0.5)
   0x000f|                              00               |          .     |                                  length: "indefinite" (0) 0xfa-0xfa.7 (1)
-        |                                               |                |                                  value: null 0xfb-NA (0)
+        |                                               |                |                                  value: null
         |                                               |                |                            [1]{}: object 0xfb-0x18a.7 (144)
   0x000f|                                 03            |           .    |                              class: "universal" (0) 0xfb-0xfb.1 (0.2)
   0x000f|                                 03            |           .    |                              form: "primitive" (0) 0xfb.2-0xfb.2 (0.1)
@@ -306,7 +306,7 @@ $ fq -o keylog=@all.keylog ".tcp_connections[0] | dv" TLS_RSA_EXPORT_WITH_RC2_CB
   0x0019|                        05                     |        .       |                          form: "primitive" (0) 0x198.2-0x198.2 (0.1)
   0x0019|                        05                     |        .       |                          tag: "null" (0x5) 0x198.3-0x198.7 (0.5)
   0x0019|                           00                  |         .      |                          length: "indefinite" (0) 0x199-0x199.7 (1)
-        |                                               |                |                          value: null 0x19a-NA (0)
+        |                                               |                |                          value: null
         |                                               |                |                    [2]{}: object 0x19a-0x21d.7 (132)
   0x0019|                              03               |          .     |                      class: "universal" (0) 0x19a-0x19a.1 (0.2)
   0x0019|                              03               |          .     |                      form: "primitive" (0) 0x19a.2-0x19a.2 (0.1)

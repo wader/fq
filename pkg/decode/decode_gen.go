@@ -53,7 +53,7 @@ func (d *D) FieldScalarAnyFn(name string, fn func(d *D) scalar.Any, sms ...scala
 }
 
 func (d *D) FieldValueAny(name string, a any, sms ...scalar.AnyMapper) {
-	d.FieldScalarAnyFn(name, func(_ *D) scalar.Any { return scalar.Any{Actual: a} }, sms...)
+	d.FieldScalarAnyFn(name, func(_ *D) scalar.Any { return scalar.Any{Actual: a, Flags: scalar.FlagSynthetic} }, sms...)
 }
 
 // TryFieldScalarAnyFn tries to add a field, calls any decode function and returns scalar
@@ -124,7 +124,7 @@ func (d *D) FieldScalarBigIntFn(name string, fn func(d *D) scalar.BigInt, sms ..
 }
 
 func (d *D) FieldValueBigInt(name string, a *big.Int, sms ...scalar.BigIntMapper) {
-	d.FieldScalarBigIntFn(name, func(_ *D) scalar.BigInt { return scalar.BigInt{Actual: a} }, sms...)
+	d.FieldScalarBigIntFn(name, func(_ *D) scalar.BigInt { return scalar.BigInt{Actual: a, Flags: scalar.FlagSynthetic} }, sms...)
 }
 
 // TryFieldScalarBigIntFn tries to add a field, calls *big.Int decode function and returns scalar
@@ -195,7 +195,7 @@ func (d *D) FieldScalarBitBufFn(name string, fn func(d *D) scalar.BitBuf, sms ..
 }
 
 func (d *D) FieldValueBitBuf(name string, a bitio.ReaderAtSeeker, sms ...scalar.BitBufMapper) {
-	d.FieldScalarBitBufFn(name, func(_ *D) scalar.BitBuf { return scalar.BitBuf{Actual: a} }, sms...)
+	d.FieldScalarBitBufFn(name, func(_ *D) scalar.BitBuf { return scalar.BitBuf{Actual: a, Flags: scalar.FlagSynthetic} }, sms...)
 }
 
 // TryFieldScalarBitBufFn tries to add a field, calls bitio.ReaderAtSeeker decode function and returns scalar
@@ -266,7 +266,7 @@ func (d *D) FieldScalarBoolFn(name string, fn func(d *D) scalar.Bool, sms ...sca
 }
 
 func (d *D) FieldValueBool(name string, a bool, sms ...scalar.BoolMapper) {
-	d.FieldScalarBoolFn(name, func(_ *D) scalar.Bool { return scalar.Bool{Actual: a} }, sms...)
+	d.FieldScalarBoolFn(name, func(_ *D) scalar.Bool { return scalar.Bool{Actual: a, Flags: scalar.FlagSynthetic} }, sms...)
 }
 
 // TryFieldScalarBoolFn tries to add a field, calls bool decode function and returns scalar
@@ -337,7 +337,7 @@ func (d *D) FieldScalarFltFn(name string, fn func(d *D) scalar.Flt, sms ...scala
 }
 
 func (d *D) FieldValueFlt(name string, a float64, sms ...scalar.FltMapper) {
-	d.FieldScalarFltFn(name, func(_ *D) scalar.Flt { return scalar.Flt{Actual: a} }, sms...)
+	d.FieldScalarFltFn(name, func(_ *D) scalar.Flt { return scalar.Flt{Actual: a, Flags: scalar.FlagSynthetic} }, sms...)
 }
 
 // TryFieldScalarFltFn tries to add a field, calls float64 decode function and returns scalar
@@ -408,7 +408,7 @@ func (d *D) FieldScalarSintFn(name string, fn func(d *D) scalar.Sint, sms ...sca
 }
 
 func (d *D) FieldValueSint(name string, a int64, sms ...scalar.SintMapper) {
-	d.FieldScalarSintFn(name, func(_ *D) scalar.Sint { return scalar.Sint{Actual: a} }, sms...)
+	d.FieldScalarSintFn(name, func(_ *D) scalar.Sint { return scalar.Sint{Actual: a, Flags: scalar.FlagSynthetic} }, sms...)
 }
 
 // TryFieldScalarSintFn tries to add a field, calls int64 decode function and returns scalar
@@ -479,7 +479,7 @@ func (d *D) FieldScalarStrFn(name string, fn func(d *D) scalar.Str, sms ...scala
 }
 
 func (d *D) FieldValueStr(name string, a string, sms ...scalar.StrMapper) {
-	d.FieldScalarStrFn(name, func(_ *D) scalar.Str { return scalar.Str{Actual: a} }, sms...)
+	d.FieldScalarStrFn(name, func(_ *D) scalar.Str { return scalar.Str{Actual: a, Flags: scalar.FlagSynthetic} }, sms...)
 }
 
 // TryFieldScalarStrFn tries to add a field, calls string decode function and returns scalar
@@ -550,7 +550,7 @@ func (d *D) FieldScalarUintFn(name string, fn func(d *D) scalar.Uint, sms ...sca
 }
 
 func (d *D) FieldValueUint(name string, a uint64, sms ...scalar.UintMapper) {
-	d.FieldScalarUintFn(name, func(_ *D) scalar.Uint { return scalar.Uint{Actual: a} }, sms...)
+	d.FieldScalarUintFn(name, func(_ *D) scalar.Uint { return scalar.Uint{Actual: a, Flags: scalar.FlagSynthetic} }, sms...)
 }
 
 // TryFieldScalarUintFn tries to add a field, calls uint64 decode function and returns scalar

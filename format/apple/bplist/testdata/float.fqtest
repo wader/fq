@@ -6,7 +6,7 @@ $ fq dv float.plist
     |                                               |                |  objects{}: 0x8-0x10.7 (9)
 0x00|                        23                     |        #       |    type: "real" (2) (Floating Point Number) 0x8-0x8.3 (0.4)
 0x00|                        23                     |        #       |    size_bits: 3 0x8.4-0x8.7 (0.4)
-    |                                               |                |    size: 8 0x9-NA (0)
+    |                                               |                |    size: 8
 0x00|                           40 09 21 f9 f0 1b 86|         @.!....|    value: 3.14159 0x9-0x10.7 (8)
 0x10|6e                                             |n               |
     |                                               |                |  offset_table[0:1]: 0x11-0x11.7 (1)

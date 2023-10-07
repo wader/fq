@@ -1,11 +1,11 @@
 $ fq -o keylog=@testtls.com.http1.1-tls1.2.pcap.keylog '.tcp_connections[0] | dv' testtls.com.http1.1-tls1.2.pcap
           |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.tcp_connections[0]{}: tcp_connection 0x6e4d-NA (0)
           |                                               |                |  client{}: 0x6e4d-NA (0)
-          |                                               |                |    ip: "192.168.1.230" 0x6e4d-NA (0)
-          |                                               |                |    port: 61925 0x6e4d-NA (0)
-          |                                               |                |    has_start: true 0x6e4d-NA (0)
-          |                                               |                |    has_end: true 0x6e4d-NA (0)
-          |                                               |                |    skipped_bytes: 0 0x6e4d-NA (0)
+          |                                               |                |    ip: "192.168.1.230"
+          |                                               |                |    port: 61925
+          |                                               |                |    has_start: true
+          |                                               |                |    has_end: true
+          |                                               |                |    skipped_bytes: 0
           |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    stream{}: (tls) 0x0-0x1c4.7 (453)
           |                                               |                |      records[0:6]: 0x0-0x1c4.7 (453)
           |                                               |                |        [0]{}: record 0x0-0xe0.7 (225)
@@ -229,11 +229,11 @@ $ fq -o keylog=@testtls.com.http1.1-tls1.2.pcap.keylog '.tcp_connections[0] | dv
     0x0000|47 45 54 20 2f 20 48 54 54 50 2f 31 2e 31 0d 0a|GET / HTTP/1.1..|      stream: raw bits 0x0-0x4a.7 (75)
     *     |until 0x4a.7 (end) (75)                        |                |
           |                                               |                |  server{}: 0x6e4d-NA (0)
-          |                                               |                |    ip: "116.203.76.237" 0x6e4d-NA (0)
+          |                                               |                |    ip: "116.203.76.237"
           |                                               |                |    port: "https" (443) (http protocol over TLS/SSL) 0x6e4d-NA (0)
-          |                                               |                |    has_start: true 0x6e4d-NA (0)
-          |                                               |                |    has_end: true 0x6e4d-NA (0)
-          |                                               |                |    skipped_bytes: 0 0x6e4d-NA (0)
+          |                                               |                |    has_start: true
+          |                                               |                |    has_end: true
+          |                                               |                |    skipped_bytes: 0
           |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    stream{}: (tls) 0x0-0x5d33.7 (23860)
           |                                               |                |      records[0:8]: 0x0-0x5d33.7 (23860)
           |                                               |                |        [0]{}: record 0x0-0x74.7 (117)
@@ -352,7 +352,7 @@ $ fq -o keylog=@testtls.com.http1.1-tls1.2.pcap.keylog '.tcp_connections[0] | dv
   0x00000b|      05                                       |  .             |                              form: "primitive" (0) 0xb2.2-0xb2.2 (0.1)
   0x00000b|      05                                       |  .             |                              tag: "null" (0x5) 0xb2.3-0xb2.7 (0.5)
   0x00000b|         00                                    |   .            |                              length: "indefinite" (0) 0xb3-0xb3.7 (1)
-          |                                               |                |                              value: null 0xb4-NA (0)
+          |                                               |                |                              value: null
           |                                               |                |                        [3]{}: object 0xb4-0xe7.7 (52)
   0x00000b|            30                                 |    0           |                          class: "universal" (0) 0xb4-0xb4.1 (0.2)
   0x00000b|            30                                 |    0           |                          form: "constructed" (1) 0xb4.2-0xb4.2 (0.1)
@@ -528,7 +528,7 @@ $ fq -o keylog=@testtls.com.http1.1-tls1.2.pcap.keylog '.tcp_connections[0] | dv
   0x000013|   05                                          | .              |                                  form: "primitive" (0) 0x131.2-0x131.2 (0.1)
   0x000013|   05                                          | .              |                                  tag: "null" (0x5) 0x131.3-0x131.7 (0.5)
   0x000013|      00                                       |  .             |                                  length: "indefinite" (0) 0x132-0x132.7 (1)
-          |                                               |                |                                  value: null 0x133-NA (0)
+          |                                               |                |                                  value: null
           |                                               |                |                            [1]{}: object 0x133-0x245.7 (275)
   0x000013|         03                                    |   .            |                              class: "universal" (0) 0x133-0x133.1 (0.2)
   0x000013|         03                                    |   .            |                              form: "primitive" (0) 0x133.2-0x133.2 (0.1)
@@ -809,7 +809,7 @@ $ fq -o keylog=@testtls.com.http1.1-tls1.2.pcap.keylog '.tcp_connections[0] | dv
   0x00004c|05                                             |.               |                          form: "primitive" (0) 0x4c0.2-0x4c0.2 (0.1)
   0x00004c|05                                             |.               |                          tag: "null" (0x5) 0x4c0.3-0x4c0.7 (0.5)
   0x00004c|   00                                          | .              |                          length: "indefinite" (0) 0x4c1-0x4c1.7 (1)
-          |                                               |                |                          value: null 0x4c2-NA (0)
+          |                                               |                |                          value: null
           |                                               |                |                    [2]{}: object 0x4c2-0x5c6.7 (261)
   0x00004c|      03                                       |  .             |                      class: "universal" (0) 0x4c2-0x4c2.1 (0.2)
   0x00004c|      03                                       |  .             |                      form: "primitive" (0) 0x4c2.2-0x4c2.2 (0.1)
@@ -878,7 +878,7 @@ $ fq -o keylog=@testtls.com.http1.1-tls1.2.pcap.keylog '.tcp_connections[0] | dv
   0x00005f|                     05                        |       .        |                              form: "primitive" (0) 0x5f7.2-0x5f7.2 (0.1)
   0x00005f|                     05                        |       .        |                              tag: "null" (0x5) 0x5f7.3-0x5f7.7 (0.5)
   0x00005f|                        00                     |        .       |                              length: "indefinite" (0) 0x5f8-0x5f8.7 (1)
-          |                                               |                |                              value: null 0x5f9-NA (0)
+          |                                               |                |                              value: null
           |                                               |                |                        [3]{}: object 0x5f9-0x649.7 (81)
   0x00005f|                           30                  |         0      |                          class: "universal" (0) 0x5f9-0x5f9.1 (0.2)
   0x00005f|                           30                  |         0      |                          form: "constructed" (1) 0x5f9.2-0x5f9.2 (0.1)
@@ -1114,7 +1114,7 @@ $ fq -o keylog=@testtls.com.http1.1-tls1.2.pcap.keylog '.tcp_connections[0] | dv
   0x00006a|                                             05|               .|                                  form: "primitive" (0) 0x6af.2-0x6af.2 (0.1)
   0x00006a|                                             05|               .|                                  tag: "null" (0x5) 0x6af.3-0x6af.7 (0.5)
   0x00006b|00                                             |.               |                                  length: "indefinite" (0) 0x6b0-0x6b0.7 (1)
-          |                                               |                |                                  value: null 0x6b1-NA (0)
+          |                                               |                |                                  value: null
           |                                               |                |                            [1]{}: object 0x6b1-0x7c3.7 (275)
   0x00006b|   03                                          | .              |                              class: "universal" (0) 0x6b1-0x6b1.1 (0.2)
   0x00006b|   03                                          | .              |                              form: "primitive" (0) 0x6b1.2-0x6b1.2 (0.1)
@@ -1364,7 +1364,7 @@ $ fq -o keylog=@testtls.com.http1.1-tls1.2.pcap.keylog '.tcp_connections[0] | dv
   0x00008d|                                       05      |             .  |                          form: "primitive" (0) 0x8dd.2-0x8dd.2 (0.1)
   0x00008d|                                       05      |             .  |                          tag: "null" (0x5) 0x8dd.3-0x8dd.7 (0.5)
   0x00008d|                                          00   |              . |                          length: "indefinite" (0) 0x8de-0x8de.7 (1)
-          |                                               |                |                          value: null 0x8df-NA (0)
+          |                                               |                |                          value: null
           |                                               |                |                    [2]{}: object 0x8df-0xae3.7 (517)
   0x00008d|                                             03|               .|                      class: "universal" (0) 0x8df-0x8df.1 (0.2)
   0x00008d|                                             03|               .|                      form: "primitive" (0) 0x8df.2-0x8df.2 (0.1)
@@ -1431,7 +1431,7 @@ $ fq -o keylog=@testtls.com.http1.1-tls1.2.pcap.keylog '.tcp_connections[0] | dv
   0x0000b1|         05                                    |   .            |                              form: "primitive" (0) 0xb13.2-0xb13.2 (0.1)
   0x0000b1|         05                                    |   .            |                              tag: "null" (0x5) 0xb13.3-0xb13.7 (0.5)
   0x0000b1|            00                                 |    .           |                              length: "indefinite" (0) 0xb14-0xb14.7 (1)
-          |                                               |                |                              value: null 0xb15-NA (0)
+          |                                               |                |                              value: null
           |                                               |                |                        [3]{}: object 0xb15-0xb55.7 (65)
   0x0000b1|               30                              |     0          |                          class: "universal" (0) 0xb15-0xb15.1 (0.2)
   0x0000b1|               30                              |     0          |                          form: "constructed" (1) 0xb15.2-0xb15.2 (0.1)
@@ -1638,7 +1638,7 @@ $ fq -o keylog=@testtls.com.http1.1-tls1.2.pcap.keylog '.tcp_connections[0] | dv
   0x0000bd|                        05                     |        .       |                                  form: "primitive" (0) 0xbd8.2-0xbd8.2 (0.1)
   0x0000bd|                        05                     |        .       |                                  tag: "null" (0x5) 0xbd8.3-0xbd8.7 (0.5)
   0x0000bd|                           00                  |         .      |                                  length: "indefinite" (0) 0xbd9-0xbd9.7 (1)
-          |                                               |                |                                  value: null 0xbda-NA (0)
+          |                                               |                |                                  value: null
           |                                               |                |                            [1]{}: object 0xbda-0xdec.7 (531)
   0x0000bd|                              03               |          .     |                              class: "universal" (0) 0xbda-0xbda.1 (0.2)
   0x0000bd|                              03               |          .     |                              form: "primitive" (0) 0xbda.2-0xbda.2 (0.1)
@@ -1869,7 +1869,7 @@ $ fq -o keylog=@testtls.com.http1.1-tls1.2.pcap.keylog '.tcp_connections[0] | dv
   0x0000f4|            05                                 |    .           |                          form: "primitive" (0) 0xf44.2-0xf44.2 (0.1)
   0x0000f4|            05                                 |    .           |                          tag: "null" (0x5) 0xf44.3-0xf44.7 (0.5)
   0x0000f4|               00                              |     .          |                          length: "indefinite" (0) 0xf45-0xf45.7 (1)
-          |                                               |                |                          value: null 0xf46-NA (0)
+          |                                               |                |                          value: null
           |                                               |                |                    [2]{}: object 0xf46-0x104a.7 (261)
   0x0000f4|                  03                           |      .         |                      class: "universal" (0) 0xf46-0xf46.1 (0.2)
   0x0000f4|                  03                           |      .         |                      form: "primitive" (0) 0xf46.2-0xf46.2 (0.1)

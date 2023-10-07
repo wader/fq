@@ -6,7 +6,7 @@ $ fq dv recentapps.sfl2
       |                                               |                |  objects{}: 0x8-0x209f.7 (8344)
 0x0000|                        d4                     |        .       |    type: "dict" (13) (Dictionary) 0x8-0x8.3 (0.4)
 0x0000|                        d4                     |        .       |    size_bits: 4 0x8.4-0x8.7 (0.4)
-      |                                               |                |    size: 4 0x9-NA (0)
+      |                                               |                |    size: 4
       |                                               |                |    entries[0:4]: 0x9-0x209f.7 (8343)
       |                                               |                |      [0]{}: entry 0x9-0x3e.7 (54)
 0x0000|                           00 01               |         ..     |        key_index: 1 0x9-0xa.7 (2)
@@ -14,7 +14,7 @@ $ fq dv recentapps.sfl2
       |                                               |                |        key{}: 0x19-0x21.7 (9)
 0x0010|                           58                  |         X      |          type: "ascii_string" (5) (ASCII encoded string) 0x19-0x19.3 (0.4)
 0x0010|                           58                  |         X      |          size_bits: 8 0x19.4-0x19.7 (0.4)
-      |                                               |                |          size: 8 0x1a-NA (0)
+      |                                               |                |          size: 8
 0x0010|                              24 76 65 72 73 69|          $versi|          value: "$version" 0x1a-0x21.7 (8)
 0x0020|6f 6e                                          |on              |
       |                                               |                |        value{}: 0x3a-0x3e.7 (5)
@@ -27,7 +27,7 @@ $ fq dv recentapps.sfl2
       |                                               |                |        key{}: 0x22-0x2b.7 (10)
 0x0020|      59                                       |  Y             |          type: "ascii_string" (5) (ASCII encoded string) 0x22-0x22.3 (0.4)
 0x0020|      59                                       |  Y             |          size_bits: 9 0x22.4-0x22.7 (0.4)
-      |                                               |                |          size: 9 0x23-NA (0)
+      |                                               |                |          size: 9
 0x0020|         24 61 72 63 68 69 76 65 72            |   $archiver    |          value: "$archiver" 0x23-0x2b.7 (9)
       |                                               |                |        value{}: 0x3f-0x50.7 (18)
 0x0030|                                             5f|               _|          type: "ascii_string" (5) (ASCII encoded string) 0x3f-0x3f.3 (0.4)
@@ -35,7 +35,7 @@ $ fq dv recentapps.sfl2
 0x0040|10                                             |.               |          large_size_marker: 1 (valid) 0x40-0x40.3 (0.4)
 0x0040|10                                             |.               |          exponent: 0 0x40.4-0x40.7 (0.4)
 0x0040|   0f                                          | .              |          size_bigint: 15 0x41-0x41.7 (1)
-      |                                               |                |          size: 15 0x42-NA (0)
+      |                                               |                |          size: 15
 0x0040|      4e 53 4b 65 79 65 64 41 72 63 68 69 76 65|  NSKeyedArchive|          value: "NSKeyedArchiver" 0x42-0x50.7 (15)
 0x0050|72                                             |r               |
       |                                               |                |      [2]{}: entry 0xd-0x5c.7 (80)
@@ -44,13 +44,13 @@ $ fq dv recentapps.sfl2
       |                                               |                |        key{}: 0x2c-0x30.7 (5)
 0x0020|                                    54         |            T   |          type: "ascii_string" (5) (ASCII encoded string) 0x2c-0x2c.3 (0.4)
 0x0020|                                    54         |            T   |          size_bits: 4 0x2c.4-0x2c.7 (0.4)
-      |                                               |                |          size: 4 0x2d-NA (0)
+      |                                               |                |          size: 4
 0x0020|                                       24 74 6f|             $to|          value: "$top" 0x2d-0x30.7 (4)
 0x0030|70                                             |p               |
       |                                               |                |        value{}: 0x51-0x5c.7 (12)
 0x0050|   d1                                          | .              |          type: "dict" (13) (Dictionary) 0x51-0x51.3 (0.4)
 0x0050|   d1                                          | .              |          size_bits: 1 0x51.4-0x51.7 (0.4)
-      |                                               |                |          size: 1 0x52-NA (0)
+      |                                               |                |          size: 1
       |                                               |                |          entries[0:1]: 0x52-0x5c.7 (11)
       |                                               |                |            [0]{}: entry 0x52-0x5c.7 (11)
 0x0050|      00 08                                    |  ..            |              key_index: 8 0x52-0x53.7 (2)
@@ -58,7 +58,7 @@ $ fq dv recentapps.sfl2
       |                                               |                |              key{}: 0x56-0x5a.7 (5)
 0x0050|                  54                           |      T         |                type: "ascii_string" (5) (ASCII encoded string) 0x56-0x56.3 (0.4)
 0x0050|                  54                           |      T         |                size_bits: 4 0x56.4-0x56.7 (0.4)
-      |                                               |                |                size: 4 0x57-NA (0)
+      |                                               |                |                size: 4
 0x0050|                     72 6f 6f 74               |       root     |                value: "root" 0x57-0x5a.7 (4)
       |                                               |                |              value{}: 0x5b-0x5c.7 (2)
 0x0050|                                 80            |           .    |                type: "uid" (8) (UID) 0x5b-0x5b.3 (0.4)
@@ -71,7 +71,7 @@ $ fq dv recentapps.sfl2
       |                                               |                |        key{}: 0x31-0x39.7 (9)
 0x0030|   58                                          | X              |          type: "ascii_string" (5) (ASCII encoded string) 0x31-0x31.3 (0.4)
 0x0030|   58                                          | X              |          size_bits: 8 0x31.4-0x31.7 (0.4)
-      |                                               |                |          size: 8 0x32-NA (0)
+      |                                               |                |          size: 8
 0x0030|      24 6f 62 6a 65 63 74 73                  |  $objects      |          value: "$objects" 0x32-0x39.7 (8)
       |                                               |                |        value{}: 0x5d-0x209f.7 (8259)
 0x0050|                                       af      |             .  |          type: "array" (10) (Array) 0x5d-0x5d.3 (0.4)
@@ -79,19 +79,19 @@ $ fq dv recentapps.sfl2
 0x0050|                                          10   |              . |          large_size_marker: 1 (valid) 0x5e-0x5e.3 (0.4)
 0x0050|                                          10   |              . |          exponent: 0 0x5e.4-0x5e.7 (0.4)
 0x0050|                                             42|               B|          size_bigint: 66 0x5f-0x5f.7 (1)
-      |                                               |                |          size: 66 0x60-NA (0)
+      |                                               |                |          size: 66
       |                                               |                |          entries[0:66]: 0x60-0x209f.7 (8256)
       |                                               |                |            [0]{}: entry 0x60-0xe9.7 (138)
 0x0060|00 0b                                          |..              |              object_index: 11 0x60-0x61.7 (2)
 0x00e0|            55                                 |    U           |              type: "ascii_string" (5) (ASCII encoded string) 0xe4-0xe4.3 (0.4)
 0x00e0|            55                                 |    U           |              size_bits: 5 0xe4.4-0xe4.7 (0.4)
-      |                                               |                |              size: 5 0xe5-NA (0)
+      |                                               |                |              size: 5
 0x00e0|               24 6e 75 6c 6c                  |     $null      |              value: "$null" 0xe5-0xe9.7 (5)
       |                                               |                |            [1]{}: entry 0x62-0x124.7 (195)
 0x0060|      00 0c                                    |  ..            |              object_index: 12 0x62-0x63.7 (2)
 0x00e0|                              d3               |          .     |              type: "dict" (13) (Dictionary) 0xea-0xea.3 (0.4)
 0x00e0|                              d3               |          .     |              size_bits: 3 0xea.4-0xea.7 (0.4)
-      |                                               |                |              size: 3 0xeb-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |              entries[0:3]: 0xeb-0x124.7 (58)
       |                                               |                |                [0]{}: entry 0xeb-0x119.7 (47)
 0x00e0|                                 00 0d         |           ..   |                  key_index: 13 0xeb-0xec.7 (2)
@@ -99,12 +99,12 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xf7-0xfe.7 (8)
 0x00f0|                     57                        |       W        |                    type: "ascii_string" (5) (ASCII encoded string) 0xf7-0xf7.3 (0.4)
 0x00f0|                     57                        |       W        |                    size_bits: 7 0xf7.4-0xf7.7 (0.4)
-      |                                               |                |                    size: 7 0xf8-NA (0)
+      |                                               |                |                    size: 7
 0x00f0|                        4e 53 2e 6b 65 79 73   |        NS.keys |                    value: "NS.keys" 0xf8-0xfe.7 (7)
       |                                               |                |                  value{}: 0x111-0x119.7 (9)
 0x0110|   a2                                          | .              |                    type: "array" (10) (Array) 0x111-0x111.3 (0.4)
 0x0110|   a2                                          | .              |                    size_bits: 2 0x111.4-0x111.7 (0.4)
-      |                                               |                |                    size: 2 0x112-NA (0)
+      |                                               |                |                    size: 2
       |                                               |                |                    entries[0:2]: 0x112-0x119.7 (8)
       |                                               |                |                      [0]{}: entry 0x112-0x117.7 (6)
 0x0110|      00 11                                    |  ..            |                        object_index: 17 0x112-0x113.7 (2)
@@ -122,12 +122,12 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xff-0x109.7 (11)
 0x00f0|                                             5a|               Z|                    type: "ascii_string" (5) (ASCII encoded string) 0xff-0xff.3 (0.4)
 0x00f0|                                             5a|               Z|                    size_bits: 10 0xff.4-0xff.7 (0.4)
-      |                                               |                |                    size: 10 0x100-NA (0)
+      |                                               |                |                    size: 10
 0x0100|4e 53 2e 6f 62 6a 65 63 74 73                  |NS.objects      |                    value: "NS.objects" 0x100-0x109.7 (10)
       |                                               |                |                  value{}: 0x11a-0x122.7 (9)
 0x0110|                              a2               |          .     |                    type: "array" (10) (Array) 0x11a-0x11a.3 (0.4)
 0x0110|                              a2               |          .     |                    size_bits: 2 0x11a.4-0x11a.7 (0.4)
-      |                                               |                |                    size: 2 0x11b-NA (0)
+      |                                               |                |                    size: 2
       |                                               |                |                    entries[0:2]: 0x11b-0x122.7 (8)
       |                                               |                |                      [0]{}: entry 0x11b-0x120.7 (6)
 0x0110|                                 00 14         |           ..   |                        object_index: 20 0x11b-0x11c.7 (2)
@@ -146,7 +146,7 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0x10a-0x110.7 (7)
 0x0100|                              56               |          V     |                    type: "ascii_string" (5) (ASCII encoded string) 0x10a-0x10a.3 (0.4)
 0x0100|                              56               |          V     |                    size_bits: 6 0x10a.4-0x10a.7 (0.4)
-      |                                               |                |                    size: 6 0x10b-NA (0)
+      |                                               |                |                    size: 6
 0x0100|                                 24 63 6c 61 73|           $clas|                    value: "$class" 0x10b-0x110.7 (6)
 0x0110|73                                             |s               |
       |                                               |                |                  value{}: 0x123-0x124.7 (2)
@@ -157,13 +157,13 @@ $ fq dv recentapps.sfl2
 0x0060|            00 17                              |    ..          |              object_index: 23 0x64-0x65.7 (2)
 0x0120|               55                              |     U          |              type: "ascii_string" (5) (ASCII encoded string) 0x125-0x125.3 (0.4)
 0x0120|               55                              |     U          |              size_bits: 5 0x125.4-0x125.7 (0.4)
-      |                                               |                |              size: 5 0x126-NA (0)
+      |                                               |                |              size: 5
 0x0120|                  69 74 65 6d 73               |      items     |              value: "items" 0x126-0x12a.7 (5)
       |                                               |                |            [3]{}: entry 0x66-0x135.7 (208)
 0x0060|                  00 18                        |      ..        |              object_index: 24 0x66-0x67.7 (2)
 0x0120|                                 5a            |           Z    |              type: "ascii_string" (5) (ASCII encoded string) 0x12b-0x12b.3 (0.4)
 0x0120|                                 5a            |           Z    |              size_bits: 10 0x12b.4-0x12b.7 (0.4)
-      |                                               |                |              size: 10 0x12c-NA (0)
+      |                                               |                |              size: 10
 0x0120|                                    70 72 6f 70|            prop|              value: "properties" 0x12c-0x135.7 (10)
 0x0130|65 72 74 69 65 73                              |erties          |
       |                                               |                |            [4]{}: entry 0x68-0x169.7 (258)
@@ -173,14 +173,14 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xff-0x109.7 (11)
 0x00f0|                                             5a|               Z|                    type: "ascii_string" (5) (ASCII encoded string) 0xff-0xff.3 (0.4)
 0x00f0|                                             5a|               Z|                    size_bits: 10 0xff.4-0xff.7 (0.4)
-      |                                               |                |                    size: 10 0x100-NA (0)
+      |                                               |                |                    size: 10
 0x0100|4e 53 2e 6f 62 6a 65 63 74 73                  |NS.objects      |                    value: "NS.objects" 0x100-0x109.7 (10)
 0x0130|                     00 0e                     |       ..       |                  key_index: 14 0x137-0x138.7 (2)
 0x0130|                                 00 1a         |           ..   |                  value_index: 26 0x13b-0x13c.7 (2)
       |                                               |                |                  value{}: 0x13f-0x167.7 (41)
 0x0130|                                             aa|               .|                    type: "array" (10) (Array) 0x13f-0x13f.3 (0.4)
 0x0130|                                             aa|               .|                    size_bits: 10 0x13f.4-0x13f.7 (0.4)
-      |                                               |                |                    size: 10 0x140-NA (0)
+      |                                               |                |                    size: 10
       |                                               |                |                    entries[0:10]: 0x140-0x167.7 (40)
       |                                               |                |                      [0]{}: entry 0x140-0x155.7 (22)
 0x0140|00 1b                                          |..              |                        object_index: 27 0x140-0x141.7 (2)
@@ -236,7 +236,7 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0x10a-0x110.7 (7)
 0x0100|                              56               |          V     |                    type: "ascii_string" (5) (ASCII encoded string) 0x10a-0x10a.3 (0.4)
 0x0100|                              56               |          V     |                    size_bits: 6 0x10a.4-0x10a.7 (0.4)
-      |                                               |                |                    size: 6 0x10b-NA (0)
+      |                                               |                |                    size: 6
 0x0100|                                 24 63 6c 61 73|           $clas|                    value: "$class" 0x10b-0x110.7 (6)
 0x0110|73                                             |s               |
 0x0130|                           00 0f               |         ..     |                  key_index: 15 0x139-0x13a.7 (2)
@@ -247,7 +247,7 @@ $ fq dv recentapps.sfl2
 0x0160|                           3e                  |         >      |                    value: 62 0x169-0x169.7 (1)
 0x0130|                  d2                           |      .         |              type: "dict" (13) (Dictionary) 0x136-0x136.3 (0.4)
 0x0130|                  d2                           |      .         |              size_bits: 2 0x136.4-0x136.7 (0.4)
-      |                                               |                |              size: 2 0x137-NA (0)
+      |                                               |                |              size: 2
       |                                               |                |            [5]{}: entry 0x6a-0x1a0.7 (311)
 0x0060|                              00 26            |          .&    |              object_index: 38 0x6a-0x6b.7 (2)
       |                                               |                |              entries[0:3]: 0xf7-0x1a0.7 (170)
@@ -255,14 +255,14 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xf7-0xfe.7 (8)
 0x00f0|                     57                        |       W        |                    type: "ascii_string" (5) (ASCII encoded string) 0xf7-0xf7.3 (0.4)
 0x00f0|                     57                        |       W        |                    size_bits: 7 0xf7.4-0xf7.7 (0.4)
-      |                                               |                |                    size: 7 0xf8-NA (0)
+      |                                               |                |                    size: 7
 0x00f0|                        4e 53 2e 6b 65 79 73   |        NS.keys |                    value: "NS.keys" 0xf8-0xfe.7 (7)
 0x0160|                                 00 0d         |           ..   |                  key_index: 13 0x16b-0x16c.7 (2)
 0x0170|   00 27                                       | .'             |                  value_index: 39 0x171-0x172.7 (2)
       |                                               |                |                  value{}: 0x177-0x18b.7 (21)
 0x0170|                     a5                        |       .        |                    type: "array" (10) (Array) 0x177-0x177.3 (0.4)
 0x0170|                     a5                        |       .        |                    size_bits: 5 0x177.4-0x177.7 (0.4)
-      |                                               |                |                    size: 5 0x178-NA (0)
+      |                                               |                |                    size: 5
       |                                               |                |                    entries[0:5]: 0x178-0x18b.7 (20)
       |                                               |                |                      [0]{}: entry 0x178-0x183.7 (12)
 0x0170|                        00 28                  |        .(      |                        object_index: 40 0x178-0x179.7 (2)
@@ -293,14 +293,14 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xff-0x109.7 (11)
 0x00f0|                                             5a|               Z|                    type: "ascii_string" (5) (ASCII encoded string) 0xff-0xff.3 (0.4)
 0x00f0|                                             5a|               Z|                    size_bits: 10 0xff.4-0xff.7 (0.4)
-      |                                               |                |                    size: 10 0x100-NA (0)
+      |                                               |                |                    size: 10
 0x0100|4e 53 2e 6f 62 6a 65 63 74 73                  |NS.objects      |                    value: "NS.objects" 0x100-0x109.7 (10)
 0x0160|                                       00 0e   |             .. |                  key_index: 14 0x16d-0x16e.7 (2)
 0x0170|         00 2d                                 |   .-           |                  value_index: 45 0x173-0x174.7 (2)
       |                                               |                |                  value{}: 0x18c-0x1a0.7 (21)
 0x0180|                                    a5         |            .   |                    type: "array" (10) (Array) 0x18c-0x18c.3 (0.4)
 0x0180|                                    a5         |            .   |                    size_bits: 5 0x18c.4-0x18c.7 (0.4)
-      |                                               |                |                    size: 5 0x18d-NA (0)
+      |                                               |                |                    size: 5
       |                                               |                |                    entries[0:5]: 0x18d-0x1a0.7 (20)
       |                                               |                |                      [0]{}: entry 0x18d-0x198.7 (12)
 0x0180|                                       00 2e   |             .. |                        object_index: 46 0x18d-0x18e.7 (2)
@@ -332,7 +332,7 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0x10a-0x110.7 (7)
 0x0100|                              56               |          V     |                    type: "ascii_string" (5) (ASCII encoded string) 0x10a-0x10a.3 (0.4)
 0x0100|                              56               |          V     |                    size_bits: 6 0x10a.4-0x10a.7 (0.4)
-      |                                               |                |                    size: 6 0x10b-NA (0)
+      |                                               |                |                    size: 6
 0x0100|                                 24 63 6c 61 73|           $clas|                    value: "$class" 0x10b-0x110.7 (6)
 0x0110|73                                             |s               |
       |                                               |                |                  value{}: 0x123-0x124.7 (2)
@@ -344,12 +344,12 @@ $ fq dv recentapps.sfl2
 0x0170|               00 16                           |     ..         |                  value_index: 22 0x175-0x176.7 (2)
 0x0160|                              d3               |          .     |              type: "dict" (13) (Dictionary) 0x16a-0x16a.3 (0.4)
 0x0160|                              d3               |          .     |              size_bits: 3 0x16a.4-0x16a.7 (0.4)
-      |                                               |                |              size: 3 0x16b-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [6]{}: entry 0x6c-0x1ad.7 (322)
 0x0060|                                    00 34      |            .4  |              object_index: 52 0x6c-0x6d.7 (2)
 0x01a0|         5a                                    |   Z            |              type: "ascii_string" (5) (ASCII encoded string) 0x1a3-0x1a3.3 (0.4)
 0x01a0|         5a                                    |   Z            |              size_bits: 10 0x1a3.4-0x1a3.7 (0.4)
-      |                                               |                |              size: 10 0x1a4-NA (0)
+      |                                               |                |              size: 10
 0x01a0|            76 69 73 69 62 69 6c 69 74 79      |    visibility  |              value: "visibility" 0x1a4-0x1ad.7 (10)
       |                                               |                |            [7]{}: entry 0x6e-0x1c4.7 (343)
 0x0060|                                          00 35|              .5|              object_index: 53 0x6e-0x6f.7 (2)
@@ -358,27 +358,27 @@ $ fq dv recentapps.sfl2
 0x01a0|                                             10|               .|              large_size_marker: 1 (valid) 0x1af-0x1af.3 (0.4)
 0x01a0|                                             10|               .|              exponent: 0 0x1af.4-0x1af.7 (0.4)
 0x01b0|14                                             |.               |              size_bigint: 20 0x1b0-0x1b0.7 (1)
-      |                                               |                |              size: 20 0x1b1-NA (0)
+      |                                               |                |              size: 20
 0x01b0|   43 75 73 74 6f 6d 49 74 65 6d 50 72 6f 70 65| CustomItemPrope|              value: "CustomItemProperties" 0x1b1-0x1c4.7 (20)
 0x01c0|72 74 69 65 73                                 |rties           |
       |                                               |                |            [8]{}: entry 0x70-0x1c9.7 (346)
 0x0070|00 36                                          |.6              |              object_index: 54 0x70-0x71.7 (2)
 0x01c0|               54                              |     T          |              type: "ascii_string" (5) (ASCII encoded string) 0x1c5-0x1c5.3 (0.4)
 0x01c0|               54                              |     T          |              size_bits: 4 0x1c5.4-0x1c5.7 (0.4)
-      |                                               |                |              size: 4 0x1c6-NA (0)
+      |                                               |                |              size: 4
 0x01c0|                  4e 61 6d 65                  |      Name      |              value: "Name" 0x1c6-0x1c9.7 (4)
       |                                               |                |            [9]{}: entry 0x72-0x1d2.7 (353)
 0x0070|      00 37                                    |  .7            |              object_index: 55 0x72-0x73.7 (2)
 0x01c0|                              58               |          X     |              type: "ascii_string" (5) (ASCII encoded string) 0x1ca-0x1ca.3 (0.4)
 0x01c0|                              58               |          X     |              size_bits: 8 0x1ca.4-0x1ca.7 (0.4)
-      |                                               |                |              size: 8 0x1cb-NA (0)
+      |                                               |                |              size: 8
 0x01c0|                                 42 6f 6f 6b 6d|           Bookm|              value: "Bookmark" 0x1cb-0x1d2.7 (8)
 0x01d0|61 72 6b                                       |ark             |
       |                                               |                |            [10]{}: entry 0x74-0x1d7.7 (356)
 0x0070|            00 38                              |    .8          |              object_index: 56 0x74-0x75.7 (2)
 0x01d0|         54                                    |   T            |              type: "ascii_string" (5) (ASCII encoded string) 0x1d3-0x1d3.3 (0.4)
 0x01d0|         54                                    |   T            |              size_bits: 4 0x1d3.4-0x1d3.7 (0.4)
-      |                                               |                |              size: 4 0x1d4-NA (0)
+      |                                               |                |              size: 4
 0x01d0|            75 75 69 64                        |    uuid        |              value: "uuid" 0x1d4-0x1d7.7 (4)
       |                                               |                |            [11]{}: entry 0x76-0x1d9.7 (356)
 0x0070|                  00 39                        |      .9        |              object_index: 57 0x76-0x77.7 (2)
@@ -392,33 +392,33 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xf7-0xfe.7 (8)
 0x00f0|                     57                        |       W        |                    type: "ascii_string" (5) (ASCII encoded string) 0xf7-0xf7.3 (0.4)
 0x00f0|                     57                        |       W        |                    size_bits: 7 0xf7.4-0xf7.7 (0.4)
-      |                                               |                |                    size: 7 0xf8-NA (0)
+      |                                               |                |                    size: 7
 0x00f0|                        4e 53 2e 6b 65 79 73   |        NS.keys |                    value: "NS.keys" 0xf8-0xfe.7 (7)
 0x01d0|                                 00 0d         |           ..   |                  key_index: 13 0x1db-0x1dc.7 (2)
 0x01e0|   00 3b                                       | .;             |                  value_index: 59 0x1e1-0x1e2.7 (2)
       |                                               |                |                  value{}: 0x1e7-0x1e7.7 (1)
 0x01e0|                     a0                        |       .        |                    type: "array" (10) (Array) 0x1e7-0x1e7.3 (0.4)
 0x01e0|                     a0                        |       .        |                    size_bits: 0 0x1e7.4-0x1e7.7 (0.4)
-      |                                               |                |                    size: 0 0x1e8-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x1e8-NA (0)
       |                                               |                |                [1]{}: entry 0xff-0x1e8.7 (234)
       |                                               |                |                  key{}: 0xff-0x109.7 (11)
 0x00f0|                                             5a|               Z|                    type: "ascii_string" (5) (ASCII encoded string) 0xff-0xff.3 (0.4)
 0x00f0|                                             5a|               Z|                    size_bits: 10 0xff.4-0xff.7 (0.4)
-      |                                               |                |                    size: 10 0x100-NA (0)
+      |                                               |                |                    size: 10
 0x0100|4e 53 2e 6f 62 6a 65 63 74 73                  |NS.objects      |                    value: "NS.objects" 0x100-0x109.7 (10)
 0x01d0|                                       00 0e   |             .. |                  key_index: 14 0x1dd-0x1de.7 (2)
 0x01e0|         00 3c                                 |   .<           |                  value_index: 60 0x1e3-0x1e4.7 (2)
       |                                               |                |                  value{}: 0x1e8-0x1e8.7 (1)
 0x01e0|                        a0                     |        .       |                    type: "array" (10) (Array) 0x1e8-0x1e8.3 (0.4)
 0x01e0|                        a0                     |        .       |                    size_bits: 0 0x1e8.4-0x1e8.7 (0.4)
-      |                                               |                |                    size: 0 0x1e9-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x1e9-NA (0)
       |                                               |                |                [2]{}: entry 0x10a-0x1e6.7 (221)
       |                                               |                |                  key{}: 0x10a-0x110.7 (7)
 0x0100|                              56               |          V     |                    type: "ascii_string" (5) (ASCII encoded string) 0x10a-0x10a.3 (0.4)
 0x0100|                              56               |          V     |                    size_bits: 6 0x10a.4-0x10a.7 (0.4)
-      |                                               |                |                    size: 6 0x10b-NA (0)
+      |                                               |                |                    size: 6
 0x0100|                                 24 63 6c 61 73|           $clas|                    value: "$class" 0x10b-0x110.7 (6)
 0x0110|73                                             |s               |
       |                                               |                |                  value{}: 0x123-0x124.7 (2)
@@ -430,12 +430,12 @@ $ fq dv recentapps.sfl2
 0x01e0|               00 16                           |     ..         |                  value_index: 22 0x1e5-0x1e6.7 (2)
 0x01d0|                              d3               |          .     |              type: "dict" (13) (Dictionary) 0x1da-0x1da.3 (0.4)
 0x01d0|                              d3               |          .     |              size_bits: 3 0x1da.4-0x1da.7 (0.4)
-      |                                               |                |              size: 3 0x1db-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [13]{}: entry 0x7a-0x222.7 (425)
 0x0070|                              00 3e            |          .>    |              object_index: 62 0x7a-0x7b.7 (2)
 0x01e0|                                 d2            |           .    |              type: "dict" (13) (Dictionary) 0x1eb-0x1eb.3 (0.4)
 0x01e0|                                 d2            |           .    |              size_bits: 2 0x1eb.4-0x1eb.7 (0.4)
-      |                                               |                |              size: 2 0x1ec-NA (0)
+      |                                               |                |              size: 2
       |                                               |                |              entries[0:2]: 0x1ec-0x222.7 (55)
       |                                               |                |                [0]{}: entry 0x1ec-0x214.7 (41)
 0x01e0|                                    00 3f      |            .?  |                  key_index: 63 0x1ec-0x1ed.7 (2)
@@ -443,12 +443,12 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0x1f4-0x1fe.7 (11)
 0x01f0|            5a                                 |    Z           |                    type: "ascii_string" (5) (ASCII encoded string) 0x1f4-0x1f4.3 (0.4)
 0x01f0|            5a                                 |    Z           |                    size_bits: 10 0x1f4.4-0x1f4.7 (0.4)
-      |                                               |                |                    size: 10 0x1f5-NA (0)
+      |                                               |                |                    size: 10
 0x01f0|               24 63 6c 61 73 73 6e 61 6d 65   |     $classname |                    value: "$classname" 0x1f5-0x1fe.7 (10)
       |                                               |                |                  value{}: 0x208-0x214.7 (13)
 0x0200|                        5c                     |        \       |                    type: "ascii_string" (5) (ASCII encoded string) 0x208-0x208.3 (0.4)
 0x0200|                        5c                     |        \       |                    size_bits: 12 0x208.4-0x208.7 (0.4)
-      |                                               |                |                    size: 12 0x209-NA (0)
+      |                                               |                |                    size: 12
 0x0200|                           4e 53 44 69 63 74 69|         NSDicti|                    value: "NSDictionary" 0x209-0x214.7 (12)
 0x0210|6f 6e 61 72 79                                 |onary           |
       |                                               |                |                [1]{}: entry 0x1ee-0x222.7 (53)
@@ -457,14 +457,14 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0x1ff-0x207.7 (9)
 0x01f0|                                             58|               X|                    type: "ascii_string" (5) (ASCII encoded string) 0x1ff-0x1ff.3 (0.4)
 0x01f0|                                             58|               X|                    size_bits: 8 0x1ff.4-0x1ff.7 (0.4)
-      |                                               |                |                    size: 8 0x200-NA (0)
+      |                                               |                |                    size: 8
 0x0200|24 63 6c 61 73 73 65 73                        |$classes        |                    value: "$classes" 0x200-0x207.7 (8)
       |                                               |                |                  value{}: 0x208-0x222.7 (27)
       |                                               |                |                    entries[0:2]: 0x208-0x222.7 (27)
       |                                               |                |                      [0]{}: entry 0x208-0x217.7 (16)
 0x0200|                        5c                     |        \       |                        type: "ascii_string" (5) (ASCII encoded string) 0x208-0x208.3 (0.4)
 0x0200|                        5c                     |        \       |                        size_bits: 12 0x208.4-0x208.7 (0.4)
-      |                                               |                |                        size: 12 0x209-NA (0)
+      |                                               |                |                        size: 12
 0x0200|                           4e 53 44 69 63 74 69|         NSDicti|                        value: "NSDictionary" 0x209-0x214.7 (12)
 0x0210|6f 6e 61 72 79                                 |onary           |
 0x0210|                  00 41                        |      .A        |                        object_index: 65 0x216-0x217.7 (2)
@@ -472,17 +472,17 @@ $ fq dv recentapps.sfl2
 0x0210|                        00 43                  |        .C      |                        object_index: 67 0x218-0x219.7 (2)
 0x0210|                              58               |          X     |                        type: "ascii_string" (5) (ASCII encoded string) 0x21a-0x21a.3 (0.4)
 0x0210|                              58               |          X     |                        size_bits: 8 0x21a.4-0x21a.7 (0.4)
-      |                                               |                |                        size: 8 0x21b-NA (0)
+      |                                               |                |                        size: 8
 0x0210|                                 4e 53 4f 62 6a|           NSObj|                        value: "NSObject" 0x21b-0x222.7 (8)
 0x0220|65 63 74                                       |ect             |
 0x0210|               a2                              |     .          |                    type: "array" (10) (Array) 0x215-0x215.3 (0.4)
 0x0210|               a2                              |     .          |                    size_bits: 2 0x215.4-0x215.7 (0.4)
-      |                                               |                |                    size: 2 0x216-NA (0)
+      |                                               |                |                    size: 2
       |                                               |                |            [14]{}: entry 0x7c-0x22b.7 (432)
 0x0070|                                    00 44      |            .D  |              object_index: 68 0x7c-0x7d.7 (2)
 0x0220|         58                                    |   X            |              type: "ascii_string" (5) (ASCII encoded string) 0x223-0x223.3 (0.4)
 0x0220|         58                                    |   X            |              size_bits: 8 0x223.4-0x223.7 (0.4)
-      |                                               |                |              size: 8 0x224-NA (0)
+      |                                               |                |              size: 8
 0x0220|            54 65 72 6d 69 6e 61 6c            |    Terminal    |              value: "Terminal" 0x224-0x22b.7 (8)
       |                                               |                |            [15]{}: entry 0x7e-0x4d7.7 (1114)
 0x0070|                                          00 45|              .E|              object_index: 69 0x7e-0x7f.7 (2)
@@ -491,7 +491,7 @@ $ fq dv recentapps.sfl2
 0x0220|                                       11      |             .  |              large_size_marker: 1 (valid) 0x22d-0x22d.3 (0.4)
 0x0220|                                       11      |             .  |              exponent: 1 0x22d.4-0x22d.7 (0.4)
 0x0220|                                          02 a8|              ..|              size_bigint: 680 0x22e-0x22f.7 (2)
-      |                                               |                |              size: 680 0x230-NA (0)
+      |                                               |                |              size: 680
 0x0230|62 6f 6f 6b a8 02 00 00 00 00 04 10 30 00 00 00|book........0...|              value: raw bits 0x230-0x4d7.7 (680)
 *     |until 0x4d7.7 (680)                            |                |
       |                                               |                |            [16]{}: entry 0x80-0x4fe.7 (1151)
@@ -501,7 +501,7 @@ $ fq dv recentapps.sfl2
 0x04d0|                           10                  |         .      |              large_size_marker: 1 (valid) 0x4d9-0x4d9.3 (0.4)
 0x04d0|                           10                  |         .      |              exponent: 0 0x4d9.4-0x4d9.7 (0.4)
 0x04d0|                              24               |          $     |              size_bigint: 36 0x4da-0x4da.7 (1)
-      |                                               |                |              size: 36 0x4db-NA (0)
+      |                                               |                |              size: 36
 0x04d0|                                 46 31 39 33 31|           F1931|              value: "F1931D2B-CEEF-4EC5-A7EB-68D5F66B4619" 0x4db-0x4fe.7 (36)
 0x04e0|44 32 42 2d 43 45 45 46 2d 34 45 43 35 2d 41 37|D2B-CEEF-4EC5-A7|
 0x04f0|45 42 2d 36 38 44 35 46 36 36 42 34 36 31 39   |EB-68D5F66B4619 |
@@ -512,7 +512,7 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xf7-0xfe.7 (8)
 0x00f0|                     57                        |       W        |                    type: "ascii_string" (5) (ASCII encoded string) 0xf7-0xf7.3 (0.4)
 0x00f0|                     57                        |       W        |                    size_bits: 7 0xf7.4-0xf7.7 (0.4)
-      |                                               |                |                    size: 7 0xf8-NA (0)
+      |                                               |                |                    size: 7
 0x00f0|                        4e 53 2e 6b 65 79 73   |        NS.keys |                    value: "NS.keys" 0xf8-0xfe.7 (7)
       |                                               |                |                  value{}: 0x182-0x516.7 (917)
       |                                               |                |                    entries[0:5]: 0x182-0x516.7 (917)
@@ -544,14 +544,14 @@ $ fq dv recentapps.sfl2
 0x0510|               00 2c                           |     .,         |                        object_index: 44 0x515-0x516.7 (2)
 0x0500|                                    a5         |            .   |                    type: "array" (10) (Array) 0x50c-0x50c.3 (0.4)
 0x0500|                                    a5         |            .   |                    size_bits: 5 0x50c.4-0x50c.7 (0.4)
-      |                                               |                |                    size: 5 0x50d-NA (0)
+      |                                               |                |                    size: 5
 0x0500|00 0d                                          |..              |                  key_index: 13 0x500-0x501.7 (2)
 0x0500|                  00 48                        |      .H        |                  value_index: 72 0x506-0x507.7 (2)
       |                                               |                |                [1]{}: entry 0xff-0x535.7 (1079)
       |                                               |                |                  key{}: 0xff-0x109.7 (11)
 0x00f0|                                             5a|               Z|                    type: "ascii_string" (5) (ASCII encoded string) 0xff-0xff.3 (0.4)
 0x00f0|                                             5a|               Z|                    size_bits: 10 0xff.4-0xff.7 (0.4)
-      |                                               |                |                    size: 10 0x100-NA (0)
+      |                                               |                |                    size: 10
 0x0100|4e 53 2e 6f 62 6a 65 63 74 73                  |NS.objects      |                    value: "NS.objects" 0x100-0x109.7 (10)
       |                                               |                |                  value{}: 0x197-0x535.7 (927)
       |                                               |                |                    entries[0:5]: 0x197-0x535.7 (927)
@@ -582,14 +582,14 @@ $ fq dv recentapps.sfl2
 0x0530|               15                              |     .          |                        value: 21 0x535-0x535.7 (1)
 0x0520|   a5                                          | .              |                    type: "array" (10) (Array) 0x521-0x521.3 (0.4)
 0x0520|   a5                                          | .              |                    size_bits: 5 0x521.4-0x521.7 (0.4)
-      |                                               |                |                    size: 5 0x522-NA (0)
+      |                                               |                |                    size: 5
 0x0500|      00 0e                                    |  ..            |                  key_index: 14 0x502-0x503.7 (2)
 0x0500|                        00 4e                  |        .N      |                  value_index: 78 0x508-0x509.7 (2)
       |                                               |                |                [2]{}: entry 0x10a-0x50b.7 (1026)
       |                                               |                |                  key{}: 0x10a-0x110.7 (7)
 0x0100|                              56               |          V     |                    type: "ascii_string" (5) (ASCII encoded string) 0x10a-0x10a.3 (0.4)
 0x0100|                              56               |          V     |                    size_bits: 6 0x10a.4-0x10a.7 (0.4)
-      |                                               |                |                    size: 6 0x10b-NA (0)
+      |                                               |                |                    size: 6
 0x0100|                                 24 63 6c 61 73|           $clas|                    value: "$class" 0x10b-0x110.7 (6)
 0x0110|73                                             |s               |
       |                                               |                |                  value{}: 0x123-0x124.7 (2)
@@ -600,7 +600,7 @@ $ fq dv recentapps.sfl2
 0x0500|                              00 16            |          ..    |                  value_index: 22 0x50a-0x50b.7 (2)
 0x04f0|                                             d3|               .|              type: "dict" (13) (Dictionary) 0x4ff-0x4ff.3 (0.4)
 0x04f0|                                             d3|               .|              size_bits: 3 0x4ff.4-0x4ff.7 (0.4)
-      |                                               |                |              size: 3 0x500-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [18]{}: entry 0x84-0x546.7 (1219)
 0x0080|            00 55                              |    .U          |              object_index: 85 0x84-0x85.7 (2)
       |                                               |                |              entries[0:3]: 0xf7-0x546.7 (1104)
@@ -608,7 +608,7 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xf7-0xfe.7 (8)
 0x00f0|                     57                        |       W        |                    type: "ascii_string" (5) (ASCII encoded string) 0xf7-0xf7.3 (0.4)
 0x00f0|                     57                        |       W        |                    size_bits: 7 0xf7.4-0xf7.7 (0.4)
-      |                                               |                |                    size: 7 0xf8-NA (0)
+      |                                               |                |                    size: 7
 0x00f0|                        4e 53 2e 6b 65 79 73   |        NS.keys |                    value: "NS.keys" 0xf8-0xfe.7 (7)
 0x0530|                           00 0d               |         ..     |                  key_index: 13 0x539-0x53a.7 (2)
 0x0530|                                             00|               .|                  value_index: 86 0x53f-0x540.7 (2)
@@ -616,26 +616,26 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  value{}: 0x545-0x545.7 (1)
 0x0540|               a0                              |     .          |                    type: "array" (10) (Array) 0x545-0x545.3 (0.4)
 0x0540|               a0                              |     .          |                    size_bits: 0 0x545.4-0x545.7 (0.4)
-      |                                               |                |                    size: 0 0x546-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x546-NA (0)
       |                                               |                |                [1]{}: entry 0xff-0x546.7 (1096)
       |                                               |                |                  key{}: 0xff-0x109.7 (11)
 0x00f0|                                             5a|               Z|                    type: "ascii_string" (5) (ASCII encoded string) 0xff-0xff.3 (0.4)
 0x00f0|                                             5a|               Z|                    size_bits: 10 0xff.4-0xff.7 (0.4)
-      |                                               |                |                    size: 10 0x100-NA (0)
+      |                                               |                |                    size: 10
 0x0100|4e 53 2e 6f 62 6a 65 63 74 73                  |NS.objects      |                    value: "NS.objects" 0x100-0x109.7 (10)
 0x0530|                                 00 0e         |           ..   |                  key_index: 14 0x53b-0x53c.7 (2)
 0x0540|   00 57                                       | .W             |                  value_index: 87 0x541-0x542.7 (2)
       |                                               |                |                  value{}: 0x546-0x546.7 (1)
 0x0540|                  a0                           |      .         |                    type: "array" (10) (Array) 0x546-0x546.3 (0.4)
 0x0540|                  a0                           |      .         |                    size_bits: 0 0x546.4-0x546.7 (0.4)
-      |                                               |                |                    size: 0 0x547-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x547-NA (0)
       |                                               |                |                [2]{}: entry 0x10a-0x544.7 (1083)
       |                                               |                |                  key{}: 0x10a-0x110.7 (7)
 0x0100|                              56               |          V     |                    type: "ascii_string" (5) (ASCII encoded string) 0x10a-0x10a.3 (0.4)
 0x0100|                              56               |          V     |                    size_bits: 6 0x10a.4-0x10a.7 (0.4)
-      |                                               |                |                    size: 6 0x10b-NA (0)
+      |                                               |                |                    size: 6
 0x0100|                                 24 63 6c 61 73|           $clas|                    value: "$class" 0x10b-0x110.7 (6)
 0x0110|73                                             |s               |
       |                                               |                |                  value{}: 0x123-0x124.7 (2)
@@ -646,12 +646,12 @@ $ fq dv recentapps.sfl2
 0x0540|         00 16                                 |   ..           |                  value_index: 22 0x543-0x544.7 (2)
 0x0530|                        d3                     |        .       |              type: "dict" (13) (Dictionary) 0x538-0x538.3 (0.4)
 0x0530|                        d3                     |        .       |              size_bits: 3 0x538.4-0x538.7 (0.4)
-      |                                               |                |              size: 3 0x539-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [19]{}: entry 0x86-0x550.7 (1227)
 0x0080|                  00 59                        |      .Y        |              object_index: 89 0x86-0x87.7 (2)
 0x0540|                           57                  |         W      |              type: "ascii_string" (5) (ASCII encoded string) 0x549-0x549.3 (0.4)
 0x0540|                           57                  |         W      |              size_bits: 7 0x549.4-0x549.7 (0.4)
-      |                                               |                |              size: 7 0x54a-NA (0)
+      |                                               |                |              size: 7
 0x0540|                              53 70 6f 74 69 66|          Spotif|              value: "Spotify" 0x54a-0x550.7 (7)
 0x0550|79                                             |y               |
       |                                               |                |            [20]{}: entry 0x88-0x7a8.7 (1825)
@@ -661,7 +661,7 @@ $ fq dv recentapps.sfl2
 0x0550|      11                                       |  .             |              large_size_marker: 1 (valid) 0x552-0x552.3 (0.4)
 0x0550|      11                                       |  .             |              exponent: 1 0x552.4-0x552.7 (0.4)
 0x0550|         02 54                                 |   .T           |              size_bigint: 596 0x553-0x554.7 (2)
-      |                                               |                |              size: 596 0x555-NA (0)
+      |                                               |                |              size: 596
 0x0550|               62 6f 6f 6b 54 02 00 00 00 00 04|     bookT......|              value: raw bits 0x555-0x7a8.7 (596)
 0x0560|10 30 00 00 00 00 00 00 00 00 00 00 00 00 00 00|.0..............|
 *     |until 0x7a8.7 (596)                            |                |
@@ -672,7 +672,7 @@ $ fq dv recentapps.sfl2
 0x07a0|                              10               |          .     |              large_size_marker: 1 (valid) 0x7aa-0x7aa.3 (0.4)
 0x07a0|                              10               |          .     |              exponent: 0 0x7aa.4-0x7aa.7 (0.4)
 0x07a0|                                 24            |           $    |              size_bigint: 36 0x7ab-0x7ab.7 (1)
-      |                                               |                |              size: 36 0x7ac-NA (0)
+      |                                               |                |              size: 36
 0x07a0|                                    36 39 45 43|            69EC|              value: "69ECD287-A17F-4392-85F6-F99068CF2431" 0x7ac-0x7cf.7 (36)
 0x07b0|44 32 38 37 2d 41 31 37 46 2d 34 33 39 32 2d 38|D287-A17F-4392-8|
 0x07c0|35 46 36 2d 46 39 39 30 36 38 43 46 32 34 33 31|5F6-F99068CF2431|
@@ -683,7 +683,7 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xf7-0xfe.7 (8)
 0x00f0|                     57                        |       W        |                    type: "ascii_string" (5) (ASCII encoded string) 0xf7-0xf7.3 (0.4)
 0x00f0|                     57                        |       W        |                    size_bits: 7 0xf7.4-0xf7.7 (0.4)
-      |                                               |                |                    size: 7 0xf8-NA (0)
+      |                                               |                |                    size: 7
 0x00f0|                        4e 53 2e 6b 65 79 73   |        NS.keys |                    value: "NS.keys" 0xf8-0xfe.7 (7)
       |                                               |                |                  value{}: 0x182-0x7e7.7 (1638)
       |                                               |                |                    entries[0:5]: 0x182-0x7e7.7 (1638)
@@ -714,14 +714,14 @@ $ fq dv recentapps.sfl2
 0x07e0|                  00 2c                        |      .,        |                        object_index: 44 0x7e6-0x7e7.7 (2)
 0x07d0|                                       a5      |             .  |                    type: "array" (10) (Array) 0x7dd-0x7dd.3 (0.4)
 0x07d0|                                       a5      |             .  |                    size_bits: 5 0x7dd.4-0x7dd.7 (0.4)
-      |                                               |                |                    size: 5 0x7de-NA (0)
+      |                                               |                |                    size: 5
 0x07d0|   00 0d                                       | ..             |                  key_index: 13 0x7d1-0x7d2.7 (2)
 0x07d0|                     00 5d                     |       .]       |                  value_index: 93 0x7d7-0x7d8.7 (2)
       |                                               |                |                [1]{}: entry 0xff-0x806.7 (1800)
       |                                               |                |                  key{}: 0xff-0x109.7 (11)
 0x00f0|                                             5a|               Z|                    type: "ascii_string" (5) (ASCII encoded string) 0xff-0xff.3 (0.4)
 0x00f0|                                             5a|               Z|                    size_bits: 10 0xff.4-0xff.7 (0.4)
-      |                                               |                |                    size: 10 0x100-NA (0)
+      |                                               |                |                    size: 10
 0x0100|4e 53 2e 6f 62 6a 65 63 74 73                  |NS.objects      |                    value: "NS.objects" 0x100-0x109.7 (10)
       |                                               |                |                  value{}: 0x197-0x806.7 (1648)
       |                                               |                |                    entries[0:5]: 0x197-0x806.7 (1648)
@@ -752,14 +752,14 @@ $ fq dv recentapps.sfl2
 0x0800|                  1a                           |      .         |                        value: 26 0x806-0x806.7 (1)
 0x07f0|      a5                                       |  .             |                    type: "array" (10) (Array) 0x7f2-0x7f2.3 (0.4)
 0x07f0|      a5                                       |  .             |                    size_bits: 5 0x7f2.4-0x7f2.7 (0.4)
-      |                                               |                |                    size: 5 0x7f3-NA (0)
+      |                                               |                |                    size: 5
 0x07d0|         00 0e                                 |   ..           |                  key_index: 14 0x7d3-0x7d4.7 (2)
 0x07d0|                           00 63               |         .c     |                  value_index: 99 0x7d9-0x7da.7 (2)
       |                                               |                |                [2]{}: entry 0x10a-0x7dc.7 (1747)
       |                                               |                |                  key{}: 0x10a-0x110.7 (7)
 0x0100|                              56               |          V     |                    type: "ascii_string" (5) (ASCII encoded string) 0x10a-0x10a.3 (0.4)
 0x0100|                              56               |          V     |                    size_bits: 6 0x10a.4-0x10a.7 (0.4)
-      |                                               |                |                    size: 6 0x10b-NA (0)
+      |                                               |                |                    size: 6
 0x0100|                                 24 63 6c 61 73|           $clas|                    value: "$class" 0x10b-0x110.7 (6)
 0x0110|73                                             |s               |
       |                                               |                |                  value{}: 0x123-0x124.7 (2)
@@ -770,7 +770,7 @@ $ fq dv recentapps.sfl2
 0x07d0|                                 00 16         |           ..   |                  value_index: 22 0x7db-0x7dc.7 (2)
 0x07d0|d3                                             |.               |              type: "dict" (13) (Dictionary) 0x7d0-0x7d0.3 (0.4)
 0x07d0|d3                                             |.               |              size_bits: 3 0x7d0.4-0x7d0.7 (0.4)
-      |                                               |                |              size: 3 0x7d1-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [23]{}: entry 0x8e-0x817.7 (1930)
 0x0080|                                          00 6a|              .j|              object_index: 106 0x8e-0x8f.7 (2)
       |                                               |                |              entries[0:3]: 0xf7-0x817.7 (1825)
@@ -778,33 +778,33 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xf7-0xfe.7 (8)
 0x00f0|                     57                        |       W        |                    type: "ascii_string" (5) (ASCII encoded string) 0xf7-0xf7.3 (0.4)
 0x00f0|                     57                        |       W        |                    size_bits: 7 0xf7.4-0xf7.7 (0.4)
-      |                                               |                |                    size: 7 0xf8-NA (0)
+      |                                               |                |                    size: 7
 0x00f0|                        4e 53 2e 6b 65 79 73   |        NS.keys |                    value: "NS.keys" 0xf8-0xfe.7 (7)
 0x0800|                              00 0d            |          ..    |                  key_index: 13 0x80a-0x80b.7 (2)
 0x0810|00 6b                                          |.k              |                  value_index: 107 0x810-0x811.7 (2)
       |                                               |                |                  value{}: 0x816-0x816.7 (1)
 0x0810|                  a0                           |      .         |                    type: "array" (10) (Array) 0x816-0x816.3 (0.4)
 0x0810|                  a0                           |      .         |                    size_bits: 0 0x816.4-0x816.7 (0.4)
-      |                                               |                |                    size: 0 0x817-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x817-NA (0)
       |                                               |                |                [1]{}: entry 0xff-0x817.7 (1817)
       |                                               |                |                  key{}: 0xff-0x109.7 (11)
 0x00f0|                                             5a|               Z|                    type: "ascii_string" (5) (ASCII encoded string) 0xff-0xff.3 (0.4)
 0x00f0|                                             5a|               Z|                    size_bits: 10 0xff.4-0xff.7 (0.4)
-      |                                               |                |                    size: 10 0x100-NA (0)
+      |                                               |                |                    size: 10
 0x0100|4e 53 2e 6f 62 6a 65 63 74 73                  |NS.objects      |                    value: "NS.objects" 0x100-0x109.7 (10)
 0x0800|                                    00 0e      |            ..  |                  key_index: 14 0x80c-0x80d.7 (2)
 0x0810|      00 6c                                    |  .l            |                  value_index: 108 0x812-0x813.7 (2)
       |                                               |                |                  value{}: 0x817-0x817.7 (1)
 0x0810|                     a0                        |       .        |                    type: "array" (10) (Array) 0x817-0x817.3 (0.4)
 0x0810|                     a0                        |       .        |                    size_bits: 0 0x817.4-0x817.7 (0.4)
-      |                                               |                |                    size: 0 0x818-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x818-NA (0)
       |                                               |                |                [2]{}: entry 0x10a-0x815.7 (1804)
       |                                               |                |                  key{}: 0x10a-0x110.7 (7)
 0x0100|                              56               |          V     |                    type: "ascii_string" (5) (ASCII encoded string) 0x10a-0x10a.3 (0.4)
 0x0100|                              56               |          V     |                    size_bits: 6 0x10a.4-0x10a.7 (0.4)
-      |                                               |                |                    size: 6 0x10b-NA (0)
+      |                                               |                |                    size: 6
 0x0100|                                 24 63 6c 61 73|           $clas|                    value: "$class" 0x10b-0x110.7 (6)
 0x0110|73                                             |s               |
       |                                               |                |                  value{}: 0x123-0x124.7 (2)
@@ -815,12 +815,12 @@ $ fq dv recentapps.sfl2
 0x0810|            00 16                              |    ..          |                  value_index: 22 0x814-0x815.7 (2)
 0x0800|                           d3                  |         .      |              type: "dict" (13) (Dictionary) 0x809-0x809.3 (0.4)
 0x0800|                           d3                  |         .      |              size_bits: 3 0x809.4-0x809.7 (0.4)
-      |                                               |                |              size: 3 0x80a-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [24]{}: entry 0x90-0x824.7 (1941)
 0x0090|00 6e                                          |.n              |              object_index: 110 0x90-0x91.7 (2)
 0x0810|                              5a               |          Z     |              type: "ascii_string" (5) (ASCII encoded string) 0x81a-0x81a.3 (0.4)
 0x0810|                              5a               |          Z     |              size_bits: 10 0x81a.4-0x81a.7 (0.4)
-      |                                               |                |              size: 10 0x81b-NA (0)
+      |                                               |                |              size: 10
 0x0810|                                 43 61 6c 63 75|           Calcu|              value: "Calculator" 0x81b-0x824.7 (10)
 0x0820|6c 61 74 6f 72                                 |lator           |
       |                                               |                |            [25]{}: entry 0x92-0xaac.7 (2587)
@@ -830,7 +830,7 @@ $ fq dv recentapps.sfl2
 0x0820|                  11                           |      .         |              large_size_marker: 1 (valid) 0x826-0x826.3 (0.4)
 0x0820|                  11                           |      .         |              exponent: 1 0x826.4-0x826.7 (0.4)
 0x0820|                     02 84                     |       ..       |              size_bigint: 644 0x827-0x828.7 (2)
-      |                                               |                |              size: 644 0x829-NA (0)
+      |                                               |                |              size: 644
 0x0820|                           62 6f 6f 6b 84 02 00|         book...|              value: raw bits 0x829-0xaac.7 (644)
 0x0830|00 00 00 04 10 30 00 00 00 00 00 00 00 00 00 00|.....0..........|
 *     |until 0xaac.7 (644)                            |                |
@@ -841,7 +841,7 @@ $ fq dv recentapps.sfl2
 0x0aa0|                                          10   |              . |              large_size_marker: 1 (valid) 0xaae-0xaae.3 (0.4)
 0x0aa0|                                          10   |              . |              exponent: 0 0xaae.4-0xaae.7 (0.4)
 0x0aa0|                                             24|               $|              size_bigint: 36 0xaaf-0xaaf.7 (1)
-      |                                               |                |              size: 36 0xab0-NA (0)
+      |                                               |                |              size: 36
 0x0ab0|39 44 38 41 36 30 38 44 2d 36 39 38 30 2d 34 36|9D8A608D-6980-46|              value: "9D8A608D-6980-46C2-BDD0-F36E0ADEFFDD" 0xab0-0xad3.7 (36)
 *     |until 0xad3.7 (36)                             |                |
       |                                               |                |            [27]{}: entry 0x96-0xb0a.7 (2677)
@@ -851,7 +851,7 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xf7-0xfe.7 (8)
 0x00f0|                     57                        |       W        |                    type: "ascii_string" (5) (ASCII encoded string) 0xf7-0xf7.3 (0.4)
 0x00f0|                     57                        |       W        |                    size_bits: 7 0xf7.4-0xf7.7 (0.4)
-      |                                               |                |                    size: 7 0xf8-NA (0)
+      |                                               |                |                    size: 7
 0x00f0|                        4e 53 2e 6b 65 79 73   |        NS.keys |                    value: "NS.keys" 0xf8-0xfe.7 (7)
       |                                               |                |                  value{}: 0x182-0xaeb.7 (2410)
       |                                               |                |                    entries[0:5]: 0x182-0xaeb.7 (2410)
@@ -882,14 +882,14 @@ $ fq dv recentapps.sfl2
 0x0ae0|                              00 2c            |          .,    |                        object_index: 44 0xaea-0xaeb.7 (2)
 0x0ae0|   a5                                          | .              |                    type: "array" (10) (Array) 0xae1-0xae1.3 (0.4)
 0x0ae0|   a5                                          | .              |                    size_bits: 5 0xae1.4-0xae1.7 (0.4)
-      |                                               |                |                    size: 5 0xae2-NA (0)
+      |                                               |                |                    size: 5
 0x0ad0|               00 0d                           |     ..         |                  key_index: 13 0xad5-0xad6.7 (2)
 0x0ad0|                                 00 72         |           .r   |                  value_index: 114 0xadb-0xadc.7 (2)
       |                                               |                |                [1]{}: entry 0xff-0xb0a.7 (2572)
       |                                               |                |                  key{}: 0xff-0x109.7 (11)
 0x00f0|                                             5a|               Z|                    type: "ascii_string" (5) (ASCII encoded string) 0xff-0xff.3 (0.4)
 0x00f0|                                             5a|               Z|                    size_bits: 10 0xff.4-0xff.7 (0.4)
-      |                                               |                |                    size: 10 0x100-NA (0)
+      |                                               |                |                    size: 10
 0x0100|4e 53 2e 6f 62 6a 65 63 74 73                  |NS.objects      |                    value: "NS.objects" 0x100-0x109.7 (10)
       |                                               |                |                  value{}: 0x197-0xb0a.7 (2420)
       |                                               |                |                    entries[0:5]: 0x197-0xb0a.7 (2420)
@@ -921,14 +921,14 @@ $ fq dv recentapps.sfl2
 0x0b00|                              1f               |          .     |                        value: 31 0xb0a-0xb0a.7 (1)
 0x0af0|                  a5                           |      .         |                    type: "array" (10) (Array) 0xaf6-0xaf6.3 (0.4)
 0x0af0|                  a5                           |      .         |                    size_bits: 5 0xaf6.4-0xaf6.7 (0.4)
-      |                                               |                |                    size: 5 0xaf7-NA (0)
+      |                                               |                |                    size: 5
 0x0ad0|                     00 0e                     |       ..       |                  key_index: 14 0xad7-0xad8.7 (2)
 0x0ad0|                                       00 78   |             .x |                  value_index: 120 0xadd-0xade.7 (2)
       |                                               |                |                [2]{}: entry 0x10a-0xae0.7 (2519)
       |                                               |                |                  key{}: 0x10a-0x110.7 (7)
 0x0100|                              56               |          V     |                    type: "ascii_string" (5) (ASCII encoded string) 0x10a-0x10a.3 (0.4)
 0x0100|                              56               |          V     |                    size_bits: 6 0x10a.4-0x10a.7 (0.4)
-      |                                               |                |                    size: 6 0x10b-NA (0)
+      |                                               |                |                    size: 6
 0x0100|                                 24 63 6c 61 73|           $clas|                    value: "$class" 0x10b-0x110.7 (6)
 0x0110|73                                             |s               |
       |                                               |                |                  value{}: 0x123-0x124.7 (2)
@@ -940,7 +940,7 @@ $ fq dv recentapps.sfl2
 0x0ae0|16                                             |.               |
 0x0ad0|            d3                                 |    .           |              type: "dict" (13) (Dictionary) 0xad4-0xad4.3 (0.4)
 0x0ad0|            d3                                 |    .           |              size_bits: 3 0xad4.4-0xad4.7 (0.4)
-      |                                               |                |              size: 3 0xad5-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [28]{}: entry 0x98-0xb1b.7 (2692)
 0x0090|                        00 7f                  |        ..      |              object_index: 127 0x98-0x99.7 (2)
       |                                               |                |              entries[0:3]: 0xf7-0xb1b.7 (2597)
@@ -948,33 +948,33 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xf7-0xfe.7 (8)
 0x00f0|                     57                        |       W        |                    type: "ascii_string" (5) (ASCII encoded string) 0xf7-0xf7.3 (0.4)
 0x00f0|                     57                        |       W        |                    size_bits: 7 0xf7.4-0xf7.7 (0.4)
-      |                                               |                |                    size: 7 0xf8-NA (0)
+      |                                               |                |                    size: 7
 0x00f0|                        4e 53 2e 6b 65 79 73   |        NS.keys |                    value: "NS.keys" 0xf8-0xfe.7 (7)
 0x0b00|                                          00 0d|              ..|                  key_index: 13 0xb0e-0xb0f.7 (2)
 0x0b10|            00 80                              |    ..          |                  value_index: 128 0xb14-0xb15.7 (2)
       |                                               |                |                  value{}: 0xb1a-0xb1a.7 (1)
 0x0b10|                              a0               |          .     |                    type: "array" (10) (Array) 0xb1a-0xb1a.3 (0.4)
 0x0b10|                              a0               |          .     |                    size_bits: 0 0xb1a.4-0xb1a.7 (0.4)
-      |                                               |                |                    size: 0 0xb1b-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0xb1b-NA (0)
       |                                               |                |                [1]{}: entry 0xff-0xb1b.7 (2589)
       |                                               |                |                  key{}: 0xff-0x109.7 (11)
 0x00f0|                                             5a|               Z|                    type: "ascii_string" (5) (ASCII encoded string) 0xff-0xff.3 (0.4)
 0x00f0|                                             5a|               Z|                    size_bits: 10 0xff.4-0xff.7 (0.4)
-      |                                               |                |                    size: 10 0x100-NA (0)
+      |                                               |                |                    size: 10
 0x0100|4e 53 2e 6f 62 6a 65 63 74 73                  |NS.objects      |                    value: "NS.objects" 0x100-0x109.7 (10)
 0x0b10|00 0e                                          |..              |                  key_index: 14 0xb10-0xb11.7 (2)
 0x0b10|                  00 81                        |      ..        |                  value_index: 129 0xb16-0xb17.7 (2)
       |                                               |                |                  value{}: 0xb1b-0xb1b.7 (1)
 0x0b10|                                 a0            |           .    |                    type: "array" (10) (Array) 0xb1b-0xb1b.3 (0.4)
 0x0b10|                                 a0            |           .    |                    size_bits: 0 0xb1b.4-0xb1b.7 (0.4)
-      |                                               |                |                    size: 0 0xb1c-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0xb1c-NA (0)
       |                                               |                |                [2]{}: entry 0x10a-0xb19.7 (2576)
       |                                               |                |                  key{}: 0x10a-0x110.7 (7)
 0x0100|                              56               |          V     |                    type: "ascii_string" (5) (ASCII encoded string) 0x10a-0x10a.3 (0.4)
 0x0100|                              56               |          V     |                    size_bits: 6 0x10a.4-0x10a.7 (0.4)
-      |                                               |                |                    size: 6 0x10b-NA (0)
+      |                                               |                |                    size: 6
 0x0100|                                 24 63 6c 61 73|           $clas|                    value: "$class" 0x10b-0x110.7 (6)
 0x0110|73                                             |s               |
       |                                               |                |                  value{}: 0x123-0x124.7 (2)
@@ -985,12 +985,12 @@ $ fq dv recentapps.sfl2
 0x0b10|                        00 16                  |        ..      |                  value_index: 22 0xb18-0xb19.7 (2)
 0x0b00|                                       d3      |             .  |              type: "dict" (13) (Dictionary) 0xb0d-0xb0d.3 (0.4)
 0x0b00|                                       d3      |             .  |              size_bits: 3 0xb0d.4-0xb0d.7 (0.4)
-      |                                               |                |              size: 3 0xb0e-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [29]{}: entry 0x9a-0xb25.7 (2700)
 0x0090|                              00 83            |          ..    |              object_index: 131 0x9a-0x9b.7 (2)
 0x0b10|                                          57   |              W |              type: "ascii_string" (5) (ASCII encoded string) 0xb1e-0xb1e.3 (0.4)
 0x0b10|                                          57   |              W |              size_bits: 7 0xb1e.4-0xb1e.7 (0.4)
-      |                                               |                |              size: 7 0xb1f-NA (0)
+      |                                               |                |              size: 7
 0x0b10|                                             50|               P|              value: "Preview" 0xb1f-0xb25.7 (7)
 0x0b20|72 65 76 69 65 77                              |review          |
       |                                               |                |            [30]{}: entry 0x9c-0xda5.7 (3338)
@@ -1000,7 +1000,7 @@ $ fq dv recentapps.sfl2
 0x0b20|                     11                        |       .        |              large_size_marker: 1 (valid) 0xb27-0xb27.3 (0.4)
 0x0b20|                     11                        |       .        |              exponent: 1 0xb27.4-0xb27.7 (0.4)
 0x0b20|                        02 7c                  |        .|      |              size_bigint: 636 0xb28-0xb29.7 (2)
-      |                                               |                |              size: 636 0xb2a-NA (0)
+      |                                               |                |              size: 636
 0x0b20|                              62 6f 6f 6b 7c 02|          book|.|              value: raw bits 0xb2a-0xda5.7 (636)
 0x0b30|00 00 00 00 04 10 30 00 00 00 00 00 00 00 00 00|......0.........|
 *     |until 0xda5.7 (636)                            |                |
@@ -1011,7 +1011,7 @@ $ fq dv recentapps.sfl2
 0x0da0|                     10                        |       .        |              large_size_marker: 1 (valid) 0xda7-0xda7.3 (0.4)
 0x0da0|                     10                        |       .        |              exponent: 0 0xda7.4-0xda7.7 (0.4)
 0x0da0|                        24                     |        $       |              size_bigint: 36 0xda8-0xda8.7 (1)
-      |                                               |                |              size: 36 0xda9-NA (0)
+      |                                               |                |              size: 36
 0x0da0|                           43 43 34 42 31 41 33|         CC4B1A3|              value: "CC4B1A36-0F69-4023-B2F7-6FDCF8D28BE1" 0xda9-0xdcc.7 (36)
 0x0db0|36 2d 30 46 36 39 2d 34 30 32 33 2d 42 32 46 37|6-0F69-4023-B2F7|
 0x0dc0|2d 36 46 44 43 46 38 44 32 38 42 45 31         |-6FDCF8D28BE1   |
@@ -1022,7 +1022,7 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xf7-0xfe.7 (8)
 0x00f0|                     57                        |       W        |                    type: "ascii_string" (5) (ASCII encoded string) 0xf7-0xf7.3 (0.4)
 0x00f0|                     57                        |       W        |                    size_bits: 7 0xf7.4-0xf7.7 (0.4)
-      |                                               |                |                    size: 7 0xf8-NA (0)
+      |                                               |                |                    size: 7
 0x00f0|                        4e 53 2e 6b 65 79 73   |        NS.keys |                    value: "NS.keys" 0xf8-0xfe.7 (7)
       |                                               |                |                  value{}: 0x182-0xde4.7 (3171)
       |                                               |                |                    entries[0:5]: 0x182-0xde4.7 (3171)
@@ -1054,14 +1054,14 @@ $ fq dv recentapps.sfl2
 0x0de0|         00 2c                                 |   .,           |                        object_index: 44 0xde3-0xde4.7 (2)
 0x0dd0|                              a5               |          .     |                    type: "array" (10) (Array) 0xdda-0xdda.3 (0.4)
 0x0dd0|                              a5               |          .     |                    size_bits: 5 0xdda.4-0xdda.7 (0.4)
-      |                                               |                |                    size: 5 0xddb-NA (0)
+      |                                               |                |                    size: 5
 0x0dc0|                                          00 0d|              ..|                  key_index: 13 0xdce-0xdcf.7 (2)
 0x0dd0|            00 87                              |    ..          |                  value_index: 135 0xdd4-0xdd5.7 (2)
       |                                               |                |                [1]{}: entry 0xff-0xe03.7 (3333)
       |                                               |                |                  key{}: 0xff-0x109.7 (11)
 0x00f0|                                             5a|               Z|                    type: "ascii_string" (5) (ASCII encoded string) 0xff-0xff.3 (0.4)
 0x00f0|                                             5a|               Z|                    size_bits: 10 0xff.4-0xff.7 (0.4)
-      |                                               |                |                    size: 10 0x100-NA (0)
+      |                                               |                |                    size: 10
 0x0100|4e 53 2e 6f 62 6a 65 63 74 73                  |NS.objects      |                    value: "NS.objects" 0x100-0x109.7 (10)
       |                                               |                |                  value{}: 0x197-0xe03.7 (3181)
       |                                               |                |                    entries[0:5]: 0x197-0xe03.7 (3181)
@@ -1092,14 +1092,14 @@ $ fq dv recentapps.sfl2
 0x0e00|         24                                    |   $            |                        value: 36 0xe03-0xe03.7 (1)
 0x0de0|                                             a5|               .|                    type: "array" (10) (Array) 0xdef-0xdef.3 (0.4)
 0x0de0|                                             a5|               .|                    size_bits: 5 0xdef.4-0xdef.7 (0.4)
-      |                                               |                |                    size: 5 0xdf0-NA (0)
+      |                                               |                |                    size: 5
 0x0dd0|00 0e                                          |..              |                  key_index: 14 0xdd0-0xdd1.7 (2)
 0x0dd0|                  00 8d                        |      ..        |                  value_index: 141 0xdd6-0xdd7.7 (2)
       |                                               |                |                [2]{}: entry 0x10a-0xdd9.7 (3280)
       |                                               |                |                  key{}: 0x10a-0x110.7 (7)
 0x0100|                              56               |          V     |                    type: "ascii_string" (5) (ASCII encoded string) 0x10a-0x10a.3 (0.4)
 0x0100|                              56               |          V     |                    size_bits: 6 0x10a.4-0x10a.7 (0.4)
-      |                                               |                |                    size: 6 0x10b-NA (0)
+      |                                               |                |                    size: 6
 0x0100|                                 24 63 6c 61 73|           $clas|                    value: "$class" 0x10b-0x110.7 (6)
 0x0110|73                                             |s               |
       |                                               |                |                  value{}: 0x123-0x124.7 (2)
@@ -1110,7 +1110,7 @@ $ fq dv recentapps.sfl2
 0x0dd0|                        00 16                  |        ..      |                  value_index: 22 0xdd8-0xdd9.7 (2)
 0x0dc0|                                       d3      |             .  |              type: "dict" (13) (Dictionary) 0xdcd-0xdcd.3 (0.4)
 0x0dc0|                                       d3      |             .  |              size_bits: 3 0xdcd.4-0xdcd.7 (0.4)
-      |                                               |                |              size: 3 0xdce-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [33]{}: entry 0xa2-0xe14.7 (3443)
 0x00a0|      00 94                                    |  ..            |              object_index: 148 0xa2-0xa3.7 (2)
       |                                               |                |              entries[0:3]: 0xf7-0xe14.7 (3358)
@@ -1118,20 +1118,20 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xf7-0xfe.7 (8)
 0x00f0|                     57                        |       W        |                    type: "ascii_string" (5) (ASCII encoded string) 0xf7-0xf7.3 (0.4)
 0x00f0|                     57                        |       W        |                    size_bits: 7 0xf7.4-0xf7.7 (0.4)
-      |                                               |                |                    size: 7 0xf8-NA (0)
+      |                                               |                |                    size: 7
 0x00f0|                        4e 53 2e 6b 65 79 73   |        NS.keys |                    value: "NS.keys" 0xf8-0xfe.7 (7)
 0x0e00|                     00 0d                     |       ..       |                  key_index: 13 0xe07-0xe08.7 (2)
 0x0e00|                                       00 95   |             .. |                  value_index: 149 0xe0d-0xe0e.7 (2)
       |                                               |                |                  value{}: 0xe13-0xe13.7 (1)
 0x0e10|         a0                                    |   .            |                    type: "array" (10) (Array) 0xe13-0xe13.3 (0.4)
 0x0e10|         a0                                    |   .            |                    size_bits: 0 0xe13.4-0xe13.7 (0.4)
-      |                                               |                |                    size: 0 0xe14-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0xe14-NA (0)
       |                                               |                |                [1]{}: entry 0xff-0xe14.7 (3350)
       |                                               |                |                  key{}: 0xff-0x109.7 (11)
 0x00f0|                                             5a|               Z|                    type: "ascii_string" (5) (ASCII encoded string) 0xff-0xff.3 (0.4)
 0x00f0|                                             5a|               Z|                    size_bits: 10 0xff.4-0xff.7 (0.4)
-      |                                               |                |                    size: 10 0x100-NA (0)
+      |                                               |                |                    size: 10
 0x0100|4e 53 2e 6f 62 6a 65 63 74 73                  |NS.objects      |                    value: "NS.objects" 0x100-0x109.7 (10)
 0x0e00|                           00 0e               |         ..     |                  key_index: 14 0xe09-0xe0a.7 (2)
 0x0e00|                                             00|               .|                  value_index: 150 0xe0f-0xe10.7 (2)
@@ -1139,13 +1139,13 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  value{}: 0xe14-0xe14.7 (1)
 0x0e10|            a0                                 |    .           |                    type: "array" (10) (Array) 0xe14-0xe14.3 (0.4)
 0x0e10|            a0                                 |    .           |                    size_bits: 0 0xe14.4-0xe14.7 (0.4)
-      |                                               |                |                    size: 0 0xe15-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0xe15-NA (0)
       |                                               |                |                [2]{}: entry 0x10a-0xe12.7 (3337)
       |                                               |                |                  key{}: 0x10a-0x110.7 (7)
 0x0100|                              56               |          V     |                    type: "ascii_string" (5) (ASCII encoded string) 0x10a-0x10a.3 (0.4)
 0x0100|                              56               |          V     |                    size_bits: 6 0x10a.4-0x10a.7 (0.4)
-      |                                               |                |                    size: 6 0x10b-NA (0)
+      |                                               |                |                    size: 6
 0x0100|                                 24 63 6c 61 73|           $clas|                    value: "$class" 0x10b-0x110.7 (6)
 0x0110|73                                             |s               |
       |                                               |                |                  value{}: 0x123-0x124.7 (2)
@@ -1156,12 +1156,12 @@ $ fq dv recentapps.sfl2
 0x0e10|   00 16                                       | ..             |                  value_index: 22 0xe11-0xe12.7 (2)
 0x0e00|                  d3                           |      .         |              type: "dict" (13) (Dictionary) 0xe06-0xe06.3 (0.4)
 0x0e00|                  d3                           |      .         |              size_bits: 3 0xe06.4-0xe06.7 (0.4)
-      |                                               |                |              size: 3 0xe07-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [34]{}: entry 0xa4-0xe20.7 (3453)
 0x00a0|            00 98                              |    ..          |              object_index: 152 0xa4-0xa5.7 (2)
 0x0e10|                     59                        |       Y        |              type: "ascii_string" (5) (ASCII encoded string) 0xe17-0xe17.3 (0.4)
 0x0e10|                     59                        |       Y        |              size_bits: 9 0xe17.4-0xe17.7 (0.4)
-      |                                               |                |              size: 9 0xe18-NA (0)
+      |                                               |                |              size: 9
 0x0e10|                        41 6c 61 63 72 69 74 74|        Alacritt|              value: "Alacritty" 0xe18-0xe20.7 (9)
 0x0e20|79                                             |y               |
       |                                               |                |            [35]{}: entry 0xa6-0x1080.7 (4059)
@@ -1171,7 +1171,7 @@ $ fq dv recentapps.sfl2
 0x0e20|      11                                       |  .             |              large_size_marker: 1 (valid) 0xe22-0xe22.3 (0.4)
 0x0e20|      11                                       |  .             |              exponent: 1 0xe22.4-0xe22.7 (0.4)
 0x0e20|         02 5c                                 |   .\           |              size_bigint: 604 0xe23-0xe24.7 (2)
-      |                                               |                |              size: 604 0xe25-NA (0)
+      |                                               |                |              size: 604
 0x0e20|               62 6f 6f 6b 5c 02 00 00 00 00 04|     book\......|              value: raw bits 0xe25-0x1080.7 (604)
 0x0e30|10 30 00 00 00 00 00 00 00 00 00 00 00 00 00 00|.0..............|
 *     |until 0x1080.7 (604)                           |                |
@@ -1182,7 +1182,7 @@ $ fq dv recentapps.sfl2
 0x1080|      10                                       |  .             |              large_size_marker: 1 (valid) 0x1082-0x1082.3 (0.4)
 0x1080|      10                                       |  .             |              exponent: 0 0x1082.4-0x1082.7 (0.4)
 0x1080|         24                                    |   $            |              size_bigint: 36 0x1083-0x1083.7 (1)
-      |                                               |                |              size: 36 0x1084-NA (0)
+      |                                               |                |              size: 36
 0x1080|            41 41 43 44 33 34 46 38 2d 34 34 33|    AACD34F8-443|              value: "AACD34F8-443C-42E8-896E-B33394D81A2F" 0x1084-0x10a7.7 (36)
 0x1090|43 2d 34 32 45 38 2d 38 39 36 45 2d 42 33 33 33|C-42E8-896E-B333|
 0x10a0|39 34 44 38 31 41 32 46                        |94D81A2F        |
@@ -1193,7 +1193,7 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xf7-0xfe.7 (8)
 0x00f0|                     57                        |       W        |                    type: "ascii_string" (5) (ASCII encoded string) 0xf7-0xf7.3 (0.4)
 0x00f0|                     57                        |       W        |                    size_bits: 7 0xf7.4-0xf7.7 (0.4)
-      |                                               |                |                    size: 7 0xf8-NA (0)
+      |                                               |                |                    size: 7
 0x00f0|                        4e 53 2e 6b 65 79 73   |        NS.keys |                    value: "NS.keys" 0xf8-0xfe.7 (7)
       |                                               |                |                  value{}: 0x182-0x10bf.7 (3902)
       |                                               |                |                    entries[0:5]: 0x182-0x10bf.7 (3902)
@@ -1224,7 +1224,7 @@ $ fq dv recentapps.sfl2
 0x10b0|                                          00 2c|              .,|                        object_index: 44 0x10be-0x10bf.7 (2)
 0x10b0|               a5                              |     .          |                    type: "array" (10) (Array) 0x10b5-0x10b5.3 (0.4)
 0x10b0|               a5                              |     .          |                    size_bits: 5 0x10b5.4-0x10b5.7 (0.4)
-      |                                               |                |                    size: 5 0x10b6-NA (0)
+      |                                               |                |                    size: 5
 0x10a0|                           00 0d               |         ..     |                  key_index: 13 0x10a9-0x10aa.7 (2)
 0x10a0|                                             00|               .|                  value_index: 156 0x10af-0x10b0.7 (2)
 0x10b0|9c                                             |.               |
@@ -1232,7 +1232,7 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xff-0x109.7 (11)
 0x00f0|                                             5a|               Z|                    type: "ascii_string" (5) (ASCII encoded string) 0xff-0xff.3 (0.4)
 0x00f0|                                             5a|               Z|                    size_bits: 10 0xff.4-0xff.7 (0.4)
-      |                                               |                |                    size: 10 0x100-NA (0)
+      |                                               |                |                    size: 10
 0x0100|4e 53 2e 6f 62 6a 65 63 74 73                  |NS.objects      |                    value: "NS.objects" 0x100-0x109.7 (10)
       |                                               |                |                  value{}: 0x197-0x10de.7 (3912)
       |                                               |                |                    entries[0:5]: 0x197-0x10de.7 (3912)
@@ -1264,14 +1264,14 @@ $ fq dv recentapps.sfl2
 0x10d0|                                          29   |              ) |                        value: 41 0x10de-0x10de.7 (1)
 0x10c0|                              a5               |          .     |                    type: "array" (10) (Array) 0x10ca-0x10ca.3 (0.4)
 0x10c0|                              a5               |          .     |                    size_bits: 5 0x10ca.4-0x10ca.7 (0.4)
-      |                                               |                |                    size: 5 0x10cb-NA (0)
+      |                                               |                |                    size: 5
 0x10a0|                                 00 0e         |           ..   |                  key_index: 14 0x10ab-0x10ac.7 (2)
 0x10b0|   00 a2                                       | ..             |                  value_index: 162 0x10b1-0x10b2.7 (2)
       |                                               |                |                [2]{}: entry 0x10a-0x10b4.7 (4011)
       |                                               |                |                  key{}: 0x10a-0x110.7 (7)
 0x0100|                              56               |          V     |                    type: "ascii_string" (5) (ASCII encoded string) 0x10a-0x10a.3 (0.4)
 0x0100|                              56               |          V     |                    size_bits: 6 0x10a.4-0x10a.7 (0.4)
-      |                                               |                |                    size: 6 0x10b-NA (0)
+      |                                               |                |                    size: 6
 0x0100|                                 24 63 6c 61 73|           $clas|                    value: "$class" 0x10b-0x110.7 (6)
 0x0110|73                                             |s               |
       |                                               |                |                  value{}: 0x123-0x124.7 (2)
@@ -1282,7 +1282,7 @@ $ fq dv recentapps.sfl2
 0x10b0|         00 16                                 |   ..           |                  value_index: 22 0x10b3-0x10b4.7 (2)
 0x10a0|                        d3                     |        .       |              type: "dict" (13) (Dictionary) 0x10a8-0x10a8.3 (0.4)
 0x10a0|                        d3                     |        .       |              size_bits: 3 0x10a8.4-0x10a8.7 (0.4)
-      |                                               |                |              size: 3 0x10a9-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [38]{}: entry 0xac-0x10ef.7 (4164)
 0x00a0|                                    00 a9      |            ..  |              object_index: 169 0xac-0xad.7 (2)
       |                                               |                |              entries[0:3]: 0xf7-0x10ef.7 (4089)
@@ -1290,33 +1290,33 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xf7-0xfe.7 (8)
 0x00f0|                     57                        |       W        |                    type: "ascii_string" (5) (ASCII encoded string) 0xf7-0xf7.3 (0.4)
 0x00f0|                     57                        |       W        |                    size_bits: 7 0xf7.4-0xf7.7 (0.4)
-      |                                               |                |                    size: 7 0xf8-NA (0)
+      |                                               |                |                    size: 7
 0x00f0|                        4e 53 2e 6b 65 79 73   |        NS.keys |                    value: "NS.keys" 0xf8-0xfe.7 (7)
 0x10e0|      00 0d                                    |  ..            |                  key_index: 13 0x10e2-0x10e3.7 (2)
 0x10e0|                        00 aa                  |        ..      |                  value_index: 170 0x10e8-0x10e9.7 (2)
       |                                               |                |                  value{}: 0x10ee-0x10ee.7 (1)
 0x10e0|                                          a0   |              . |                    type: "array" (10) (Array) 0x10ee-0x10ee.3 (0.4)
 0x10e0|                                          a0   |              . |                    size_bits: 0 0x10ee.4-0x10ee.7 (0.4)
-      |                                               |                |                    size: 0 0x10ef-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x10ef-NA (0)
       |                                               |                |                [1]{}: entry 0xff-0x10ef.7 (4081)
       |                                               |                |                  key{}: 0xff-0x109.7 (11)
 0x00f0|                                             5a|               Z|                    type: "ascii_string" (5) (ASCII encoded string) 0xff-0xff.3 (0.4)
 0x00f0|                                             5a|               Z|                    size_bits: 10 0xff.4-0xff.7 (0.4)
-      |                                               |                |                    size: 10 0x100-NA (0)
+      |                                               |                |                    size: 10
 0x0100|4e 53 2e 6f 62 6a 65 63 74 73                  |NS.objects      |                    value: "NS.objects" 0x100-0x109.7 (10)
 0x10e0|            00 0e                              |    ..          |                  key_index: 14 0x10e4-0x10e5.7 (2)
 0x10e0|                              00 ab            |          ..    |                  value_index: 171 0x10ea-0x10eb.7 (2)
       |                                               |                |                  value{}: 0x10ef-0x10ef.7 (1)
 0x10e0|                                             a0|               .|                    type: "array" (10) (Array) 0x10ef-0x10ef.3 (0.4)
 0x10e0|                                             a0|               .|                    size_bits: 0 0x10ef.4-0x10ef.7 (0.4)
-      |                                               |                |                    size: 0 0x10f0-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x10f0-NA (0)
       |                                               |                |                [2]{}: entry 0x10a-0x10ed.7 (4068)
       |                                               |                |                  key{}: 0x10a-0x110.7 (7)
 0x0100|                              56               |          V     |                    type: "ascii_string" (5) (ASCII encoded string) 0x10a-0x10a.3 (0.4)
 0x0100|                              56               |          V     |                    size_bits: 6 0x10a.4-0x10a.7 (0.4)
-      |                                               |                |                    size: 6 0x10b-NA (0)
+      |                                               |                |                    size: 6
 0x0100|                                 24 63 6c 61 73|           $clas|                    value: "$class" 0x10b-0x110.7 (6)
 0x0110|73                                             |s               |
       |                                               |                |                  value{}: 0x123-0x124.7 (2)
@@ -1327,7 +1327,7 @@ $ fq dv recentapps.sfl2
 0x10e0|                                    00 16      |            ..  |                  value_index: 22 0x10ec-0x10ed.7 (2)
 0x10e0|   d3                                          | .              |              type: "dict" (13) (Dictionary) 0x10e1-0x10e1.3 (0.4)
 0x10e0|   d3                                          | .              |              size_bits: 3 0x10e1.4-0x10e1.7 (0.4)
-      |                                               |                |              size: 3 0x10e2-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [39]{}: entry 0xae-0x1109.7 (4188)
 0x00a0|                                          00 ad|              ..|              object_index: 173 0xae-0xaf.7 (2)
 0x10f0|      5f                                       |  _             |              type: "ascii_string" (5) (ASCII encoded string) 0x10f2-0x10f2.3 (0.4)
@@ -1335,7 +1335,7 @@ $ fq dv recentapps.sfl2
 0x10f0|         10                                    |   .            |              large_size_marker: 1 (valid) 0x10f3-0x10f3.3 (0.4)
 0x10f0|         10                                    |   .            |              exponent: 0 0x10f3.4-0x10f3.7 (0.4)
 0x10f0|            15                                 |    .           |              size_bigint: 21 0x10f4-0x10f4.7 (1)
-      |                                               |                |              size: 21 0x10f5-NA (0)
+      |                                               |                |              size: 21
 0x10f0|               44 42 20 42 72 6f 77 73 65 72 20|     DB Browser |              value: "DB Browser for SQLite" 0x10f5-0x1109.7 (21)
 0x1100|66 6f 72 20 53 51 4c 69 74 65                  |for SQLite      |
       |                                               |                |            [40]{}: entry 0xb0-0x1381.7 (4818)
@@ -1345,7 +1345,7 @@ $ fq dv recentapps.sfl2
 0x1100|                                 11            |           .    |              large_size_marker: 1 (valid) 0x110b-0x110b.3 (0.4)
 0x1100|                                 11            |           .    |              exponent: 1 0x110b.4-0x110b.7 (0.4)
 0x1100|                                    02 74      |            .t  |              size_bigint: 628 0x110c-0x110d.7 (2)
-      |                                               |                |              size: 628 0x110e-NA (0)
+      |                                               |                |              size: 628
 0x1100|                                          62 6f|              bo|              value: raw bits 0x110e-0x1381.7 (628)
 0x1110|6f 6b 74 02 00 00 00 00 04 10 30 00 00 00 00 00|okt.......0.....|
 *     |until 0x1381.7 (628)                           |                |
@@ -1356,7 +1356,7 @@ $ fq dv recentapps.sfl2
 0x1380|         10                                    |   .            |              large_size_marker: 1 (valid) 0x1383-0x1383.3 (0.4)
 0x1380|         10                                    |   .            |              exponent: 0 0x1383.4-0x1383.7 (0.4)
 0x1380|            24                                 |    $           |              size_bigint: 36 0x1384-0x1384.7 (1)
-      |                                               |                |              size: 36 0x1385-NA (0)
+      |                                               |                |              size: 36
 0x1380|               42 38 32 42 44 41 38 43 2d 41 32|     B82BDA8C-A2|              value: "B82BDA8C-A2EC-42DD-BE74-D0E0D4066BD6" 0x1385-0x13a8.7 (36)
 0x1390|45 43 2d 34 32 44 44 2d 42 45 37 34 2d 44 30 45|EC-42DD-BE74-D0E|
 0x13a0|30 44 34 30 36 36 42 44 36                     |0D4066BD6       |
@@ -1367,7 +1367,7 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xf7-0xfe.7 (8)
 0x00f0|                     57                        |       W        |                    type: "ascii_string" (5) (ASCII encoded string) 0xf7-0xf7.3 (0.4)
 0x00f0|                     57                        |       W        |                    size_bits: 7 0xf7.4-0xf7.7 (0.4)
-      |                                               |                |                    size: 7 0xf8-NA (0)
+      |                                               |                |                    size: 7
 0x00f0|                        4e 53 2e 6b 65 79 73   |        NS.keys |                    value: "NS.keys" 0xf8-0xfe.7 (7)
       |                                               |                |                  value{}: 0x182-0x13c0.7 (4671)
       |                                               |                |                    entries[0:5]: 0x182-0x13c0.7 (4671)
@@ -1399,14 +1399,14 @@ $ fq dv recentapps.sfl2
 0x13c0|2c                                             |,               |
 0x13b0|                  a5                           |      .         |                    type: "array" (10) (Array) 0x13b6-0x13b6.3 (0.4)
 0x13b0|                  a5                           |      .         |                    size_bits: 5 0x13b6.4-0x13b6.7 (0.4)
-      |                                               |                |                    size: 5 0x13b7-NA (0)
+      |                                               |                |                    size: 5
 0x13a0|                              00 0d            |          ..    |                  key_index: 13 0x13aa-0x13ab.7 (2)
 0x13b0|00 b1                                          |..              |                  value_index: 177 0x13b0-0x13b1.7 (2)
       |                                               |                |                [1]{}: entry 0xff-0x13df.7 (4833)
       |                                               |                |                  key{}: 0xff-0x109.7 (11)
 0x00f0|                                             5a|               Z|                    type: "ascii_string" (5) (ASCII encoded string) 0xff-0xff.3 (0.4)
 0x00f0|                                             5a|               Z|                    size_bits: 10 0xff.4-0xff.7 (0.4)
-      |                                               |                |                    size: 10 0x100-NA (0)
+      |                                               |                |                    size: 10
 0x0100|4e 53 2e 6f 62 6a 65 63 74 73                  |NS.objects      |                    value: "NS.objects" 0x100-0x109.7 (10)
       |                                               |                |                  value{}: 0x197-0x13df.7 (4681)
       |                                               |                |                    entries[0:5]: 0x197-0x13df.7 (4681)
@@ -1437,14 +1437,14 @@ $ fq dv recentapps.sfl2
 0x13d0|                                             2e|               .|                        value: 46 0x13df-0x13df.7 (1)
 0x13c0|                                 a5            |           .    |                    type: "array" (10) (Array) 0x13cb-0x13cb.3 (0.4)
 0x13c0|                                 a5            |           .    |                    size_bits: 5 0x13cb.4-0x13cb.7 (0.4)
-      |                                               |                |                    size: 5 0x13cc-NA (0)
+      |                                               |                |                    size: 5
 0x13a0|                                    00 0e      |            ..  |                  key_index: 14 0x13ac-0x13ad.7 (2)
 0x13b0|      00 b7                                    |  ..            |                  value_index: 183 0x13b2-0x13b3.7 (2)
       |                                               |                |                [2]{}: entry 0x10a-0x13b5.7 (4780)
       |                                               |                |                  key{}: 0x10a-0x110.7 (7)
 0x0100|                              56               |          V     |                    type: "ascii_string" (5) (ASCII encoded string) 0x10a-0x10a.3 (0.4)
 0x0100|                              56               |          V     |                    size_bits: 6 0x10a.4-0x10a.7 (0.4)
-      |                                               |                |                    size: 6 0x10b-NA (0)
+      |                                               |                |                    size: 6
 0x0100|                                 24 63 6c 61 73|           $clas|                    value: "$class" 0x10b-0x110.7 (6)
 0x0110|73                                             |s               |
       |                                               |                |                  value{}: 0x123-0x124.7 (2)
@@ -1455,7 +1455,7 @@ $ fq dv recentapps.sfl2
 0x13b0|            00 16                              |    ..          |                  value_index: 22 0x13b4-0x13b5.7 (2)
 0x13a0|                           d3                  |         .      |              type: "dict" (13) (Dictionary) 0x13a9-0x13a9.3 (0.4)
 0x13a0|                           d3                  |         .      |              size_bits: 3 0x13a9.4-0x13a9.7 (0.4)
-      |                                               |                |              size: 3 0x13aa-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [43]{}: entry 0xb6-0x13f0.7 (4923)
 0x00b0|                  00 be                        |      ..        |              object_index: 190 0xb6-0xb7.7 (2)
       |                                               |                |              entries[0:3]: 0xf7-0x13f0.7 (4858)
@@ -1463,33 +1463,33 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xf7-0xfe.7 (8)
 0x00f0|                     57                        |       W        |                    type: "ascii_string" (5) (ASCII encoded string) 0xf7-0xf7.3 (0.4)
 0x00f0|                     57                        |       W        |                    size_bits: 7 0xf7.4-0xf7.7 (0.4)
-      |                                               |                |                    size: 7 0xf8-NA (0)
+      |                                               |                |                    size: 7
 0x00f0|                        4e 53 2e 6b 65 79 73   |        NS.keys |                    value: "NS.keys" 0xf8-0xfe.7 (7)
 0x13e0|         00 0d                                 |   ..           |                  key_index: 13 0x13e3-0x13e4.7 (2)
 0x13e0|                           00 bf               |         ..     |                  value_index: 191 0x13e9-0x13ea.7 (2)
       |                                               |                |                  value{}: 0x13ef-0x13ef.7 (1)
 0x13e0|                                             a0|               .|                    type: "array" (10) (Array) 0x13ef-0x13ef.3 (0.4)
 0x13e0|                                             a0|               .|                    size_bits: 0 0x13ef.4-0x13ef.7 (0.4)
-      |                                               |                |                    size: 0 0x13f0-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x13f0-NA (0)
       |                                               |                |                [1]{}: entry 0xff-0x13f0.7 (4850)
       |                                               |                |                  key{}: 0xff-0x109.7 (11)
 0x00f0|                                             5a|               Z|                    type: "ascii_string" (5) (ASCII encoded string) 0xff-0xff.3 (0.4)
 0x00f0|                                             5a|               Z|                    size_bits: 10 0xff.4-0xff.7 (0.4)
-      |                                               |                |                    size: 10 0x100-NA (0)
+      |                                               |                |                    size: 10
 0x0100|4e 53 2e 6f 62 6a 65 63 74 73                  |NS.objects      |                    value: "NS.objects" 0x100-0x109.7 (10)
 0x13e0|               00 0e                           |     ..         |                  key_index: 14 0x13e5-0x13e6.7 (2)
 0x13e0|                                 00 c0         |           ..   |                  value_index: 192 0x13eb-0x13ec.7 (2)
       |                                               |                |                  value{}: 0x13f0-0x13f0.7 (1)
 0x13f0|a0                                             |.               |                    type: "array" (10) (Array) 0x13f0-0x13f0.3 (0.4)
 0x13f0|a0                                             |.               |                    size_bits: 0 0x13f0.4-0x13f0.7 (0.4)
-      |                                               |                |                    size: 0 0x13f1-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x13f1-NA (0)
       |                                               |                |                [2]{}: entry 0x10a-0x13ee.7 (4837)
       |                                               |                |                  key{}: 0x10a-0x110.7 (7)
 0x0100|                              56               |          V     |                    type: "ascii_string" (5) (ASCII encoded string) 0x10a-0x10a.3 (0.4)
 0x0100|                              56               |          V     |                    size_bits: 6 0x10a.4-0x10a.7 (0.4)
-      |                                               |                |                    size: 6 0x10b-NA (0)
+      |                                               |                |                    size: 6
 0x0100|                                 24 63 6c 61 73|           $clas|                    value: "$class" 0x10b-0x110.7 (6)
 0x0110|73                                             |s               |
       |                                               |                |                  value{}: 0x123-0x124.7 (2)
@@ -1500,7 +1500,7 @@ $ fq dv recentapps.sfl2
 0x13e0|                                       00 16   |             .. |                  value_index: 22 0x13ed-0x13ee.7 (2)
 0x13e0|      d3                                       |  .             |              type: "dict" (13) (Dictionary) 0x13e2-0x13e2.3 (0.4)
 0x13e0|      d3                                       |  .             |              size_bits: 3 0x13e2.4-0x13e2.7 (0.4)
-      |                                               |                |              size: 3 0x13e3-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [44]{}: entry 0xb8-0x1407.7 (4944)
 0x00b0|                        00 c2                  |        ..      |              object_index: 194 0xb8-0xb9.7 (2)
 0x13f0|         5f                                    |   _            |              type: "ascii_string" (5) (ASCII encoded string) 0x13f3-0x13f3.3 (0.4)
@@ -1508,7 +1508,7 @@ $ fq dv recentapps.sfl2
 0x13f0|            10                                 |    .           |              large_size_marker: 1 (valid) 0x13f4-0x13f4.3 (0.4)
 0x13f0|            10                                 |    .           |              exponent: 0 0x13f4.4-0x13f4.7 (0.4)
 0x13f0|               12                              |     .          |              size_bigint: 18 0x13f5-0x13f5.7 (1)
-      |                                               |                |              size: 18 0x13f6-NA (0)
+      |                                               |                |              size: 18
 0x13f0|                  53 79 73 74 65 6d 20 50 72 65|      System Pre|              value: "System Preferences" 0x13f6-0x1407.7 (18)
 0x1400|66 65 72 65 6e 63 65 73                        |ferences        |
       |                                               |                |            [45]{}: entry 0xba-0x169f.7 (5606)
@@ -1518,7 +1518,7 @@ $ fq dv recentapps.sfl2
 0x1400|                           11                  |         .      |              large_size_marker: 1 (valid) 0x1409-0x1409.3 (0.4)
 0x1400|                           11                  |         .      |              exponent: 1 0x1409.4-0x1409.7 (0.4)
 0x1400|                              02 94            |          ..    |              size_bigint: 660 0x140a-0x140b.7 (2)
-      |                                               |                |              size: 660 0x140c-NA (0)
+      |                                               |                |              size: 660
 0x1400|                                    62 6f 6f 6b|            book|              value: raw bits 0x140c-0x169f.7 (660)
 0x1410|94 02 00 00 00 00 04 10 30 00 00 00 00 00 00 00|........0.......|
 *     |until 0x169f.7 (660)                           |                |
@@ -1529,7 +1529,7 @@ $ fq dv recentapps.sfl2
 0x16a0|   10                                          | .              |              large_size_marker: 1 (valid) 0x16a1-0x16a1.3 (0.4)
 0x16a0|   10                                          | .              |              exponent: 0 0x16a1.4-0x16a1.7 (0.4)
 0x16a0|      24                                       |  $             |              size_bigint: 36 0x16a2-0x16a2.7 (1)
-      |                                               |                |              size: 36 0x16a3-NA (0)
+      |                                               |                |              size: 36
 0x16a0|         43 41 37 38 43 42 45 39 2d 30 38 36 44|   CA78CBE9-086D|              value: "CA78CBE9-086D-4ED9-931E-8F58C26134ED" 0x16a3-0x16c6.7 (36)
 0x16b0|2d 34 45 44 39 2d 39 33 31 45 2d 38 46 35 38 43|-4ED9-931E-8F58C|
 0x16c0|32 36 31 33 34 45 44                           |26134ED         |
@@ -1540,7 +1540,7 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xf7-0xfe.7 (8)
 0x00f0|                     57                        |       W        |                    type: "ascii_string" (5) (ASCII encoded string) 0xf7-0xf7.3 (0.4)
 0x00f0|                     57                        |       W        |                    size_bits: 7 0xf7.4-0xf7.7 (0.4)
-      |                                               |                |                    size: 7 0xf8-NA (0)
+      |                                               |                |                    size: 7
 0x00f0|                        4e 53 2e 6b 65 79 73   |        NS.keys |                    value: "NS.keys" 0xf8-0xfe.7 (7)
       |                                               |                |                  value{}: 0x182-0x16de.7 (5469)
       |                                               |                |                    entries[0:5]: 0x182-0x16de.7 (5469)
@@ -1571,14 +1571,14 @@ $ fq dv recentapps.sfl2
 0x16d0|                                       00 2c   |             ., |                        object_index: 44 0x16dd-0x16de.7 (2)
 0x16d0|            a5                                 |    .           |                    type: "array" (10) (Array) 0x16d4-0x16d4.3 (0.4)
 0x16d0|            a5                                 |    .           |                    size_bits: 5 0x16d4.4-0x16d4.7 (0.4)
-      |                                               |                |                    size: 5 0x16d5-NA (0)
+      |                                               |                |                    size: 5
 0x16c0|                        00 0d                  |        ..      |                  key_index: 13 0x16c8-0x16c9.7 (2)
 0x16c0|                                          00 c6|              ..|                  value_index: 198 0x16ce-0x16cf.7 (2)
       |                                               |                |                [1]{}: entry 0xff-0x16fd.7 (5631)
       |                                               |                |                  key{}: 0xff-0x109.7 (11)
 0x00f0|                                             5a|               Z|                    type: "ascii_string" (5) (ASCII encoded string) 0xff-0xff.3 (0.4)
 0x00f0|                                             5a|               Z|                    size_bits: 10 0xff.4-0xff.7 (0.4)
-      |                                               |                |                    size: 10 0x100-NA (0)
+      |                                               |                |                    size: 10
 0x0100|4e 53 2e 6f 62 6a 65 63 74 73                  |NS.objects      |                    value: "NS.objects" 0x100-0x109.7 (10)
       |                                               |                |                  value{}: 0x197-0x16fd.7 (5479)
       |                                               |                |                    entries[0:5]: 0x197-0x16fd.7 (5479)
@@ -1609,14 +1609,14 @@ $ fq dv recentapps.sfl2
 0x16f0|                                       33      |             3  |                        value: 51 0x16fd-0x16fd.7 (1)
 0x16e0|                           a5                  |         .      |                    type: "array" (10) (Array) 0x16e9-0x16e9.3 (0.4)
 0x16e0|                           a5                  |         .      |                    size_bits: 5 0x16e9.4-0x16e9.7 (0.4)
-      |                                               |                |                    size: 5 0x16ea-NA (0)
+      |                                               |                |                    size: 5
 0x16c0|                              00 0e            |          ..    |                  key_index: 14 0x16ca-0x16cb.7 (2)
 0x16d0|00 cc                                          |..              |                  value_index: 204 0x16d0-0x16d1.7 (2)
       |                                               |                |                [2]{}: entry 0x10a-0x16d3.7 (5578)
       |                                               |                |                  key{}: 0x10a-0x110.7 (7)
 0x0100|                              56               |          V     |                    type: "ascii_string" (5) (ASCII encoded string) 0x10a-0x10a.3 (0.4)
 0x0100|                              56               |          V     |                    size_bits: 6 0x10a.4-0x10a.7 (0.4)
-      |                                               |                |                    size: 6 0x10b-NA (0)
+      |                                               |                |                    size: 6
 0x0100|                                 24 63 6c 61 73|           $clas|                    value: "$class" 0x10b-0x110.7 (6)
 0x0110|73                                             |s               |
       |                                               |                |                  value{}: 0x123-0x124.7 (2)
@@ -1627,7 +1627,7 @@ $ fq dv recentapps.sfl2
 0x16d0|      00 16                                    |  ..            |                  value_index: 22 0x16d2-0x16d3.7 (2)
 0x16c0|                     d3                        |       .        |              type: "dict" (13) (Dictionary) 0x16c7-0x16c7.3 (0.4)
 0x16c0|                     d3                        |       .        |              size_bits: 3 0x16c7.4-0x16c7.7 (0.4)
-      |                                               |                |              size: 3 0x16c8-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [48]{}: entry 0xc0-0x170e.7 (5711)
 0x00c0|00 d3                                          |..              |              object_index: 211 0xc0-0xc1.7 (2)
       |                                               |                |              entries[0:3]: 0xf7-0x170e.7 (5656)
@@ -1635,33 +1635,33 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xf7-0xfe.7 (8)
 0x00f0|                     57                        |       W        |                    type: "ascii_string" (5) (ASCII encoded string) 0xf7-0xf7.3 (0.4)
 0x00f0|                     57                        |       W        |                    size_bits: 7 0xf7.4-0xf7.7 (0.4)
-      |                                               |                |                    size: 7 0xf8-NA (0)
+      |                                               |                |                    size: 7
 0x00f0|                        4e 53 2e 6b 65 79 73   |        NS.keys |                    value: "NS.keys" 0xf8-0xfe.7 (7)
 0x1700|   00 0d                                       | ..             |                  key_index: 13 0x1701-0x1702.7 (2)
 0x1700|                     00 d4                     |       ..       |                  value_index: 212 0x1707-0x1708.7 (2)
       |                                               |                |                  value{}: 0x170d-0x170d.7 (1)
 0x1700|                                       a0      |             .  |                    type: "array" (10) (Array) 0x170d-0x170d.3 (0.4)
 0x1700|                                       a0      |             .  |                    size_bits: 0 0x170d.4-0x170d.7 (0.4)
-      |                                               |                |                    size: 0 0x170e-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x170e-NA (0)
       |                                               |                |                [1]{}: entry 0xff-0x170e.7 (5648)
       |                                               |                |                  key{}: 0xff-0x109.7 (11)
 0x00f0|                                             5a|               Z|                    type: "ascii_string" (5) (ASCII encoded string) 0xff-0xff.3 (0.4)
 0x00f0|                                             5a|               Z|                    size_bits: 10 0xff.4-0xff.7 (0.4)
-      |                                               |                |                    size: 10 0x100-NA (0)
+      |                                               |                |                    size: 10
 0x0100|4e 53 2e 6f 62 6a 65 63 74 73                  |NS.objects      |                    value: "NS.objects" 0x100-0x109.7 (10)
 0x1700|         00 0e                                 |   ..           |                  key_index: 14 0x1703-0x1704.7 (2)
 0x1700|                           00 d5               |         ..     |                  value_index: 213 0x1709-0x170a.7 (2)
       |                                               |                |                  value{}: 0x170e-0x170e.7 (1)
 0x1700|                                          a0   |              . |                    type: "array" (10) (Array) 0x170e-0x170e.3 (0.4)
 0x1700|                                          a0   |              . |                    size_bits: 0 0x170e.4-0x170e.7 (0.4)
-      |                                               |                |                    size: 0 0x170f-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x170f-NA (0)
       |                                               |                |                [2]{}: entry 0x10a-0x170c.7 (5635)
       |                                               |                |                  key{}: 0x10a-0x110.7 (7)
 0x0100|                              56               |          V     |                    type: "ascii_string" (5) (ASCII encoded string) 0x10a-0x10a.3 (0.4)
 0x0100|                              56               |          V     |                    size_bits: 6 0x10a.4-0x10a.7 (0.4)
-      |                                               |                |                    size: 6 0x10b-NA (0)
+      |                                               |                |                    size: 6
 0x0100|                                 24 63 6c 61 73|           $clas|                    value: "$class" 0x10b-0x110.7 (6)
 0x0110|73                                             |s               |
       |                                               |                |                  value{}: 0x123-0x124.7 (2)
@@ -1672,7 +1672,7 @@ $ fq dv recentapps.sfl2
 0x1700|                                 00 16         |           ..   |                  value_index: 22 0x170b-0x170c.7 (2)
 0x1700|d3                                             |.               |              type: "dict" (13) (Dictionary) 0x1700-0x1700.3 (0.4)
 0x1700|d3                                             |.               |              size_bits: 3 0x1700.4-0x1700.7 (0.4)
-      |                                               |                |              size: 3 0x1701-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [49]{}: entry 0xc2-0x1724.7 (5731)
 0x00c0|      00 d7                                    |  ..            |              object_index: 215 0xc2-0xc3.7 (2)
 0x1710|   5f                                          | _              |              type: "ascii_string" (5) (ASCII encoded string) 0x1711-0x1711.3 (0.4)
@@ -1680,7 +1680,7 @@ $ fq dv recentapps.sfl2
 0x1710|      10                                       |  .             |              large_size_marker: 1 (valid) 0x1712-0x1712.3 (0.4)
 0x1710|      10                                       |  .             |              exponent: 0 0x1712.4-0x1712.7 (0.4)
 0x1710|         11                                    |   .            |              size_bigint: 17 0x1713-0x1713.7 (1)
-      |                                               |                |              size: 17 0x1714-NA (0)
+      |                                               |                |              size: 17
 0x1710|            44 69 72 65 63 74 6f 72 79 20 55 74|    Directory Ut|              value: "Directory Utility" 0x1714-0x1724.7 (17)
 0x1720|69 6c 69 74 79                                 |ility           |
       |                                               |                |            [50]{}: entry 0xc4-0x1a10.7 (6477)
@@ -1690,7 +1690,7 @@ $ fq dv recentapps.sfl2
 0x1720|                  11                           |      .         |              large_size_marker: 1 (valid) 0x1726-0x1726.3 (0.4)
 0x1720|                  11                           |      .         |              exponent: 1 0x1726.4-0x1726.7 (0.4)
 0x1720|                     02 e8                     |       ..       |              size_bigint: 744 0x1727-0x1728.7 (2)
-      |                                               |                |              size: 744 0x1729-NA (0)
+      |                                               |                |              size: 744
 0x1720|                           62 6f 6f 6b e8 02 00|         book...|              value: raw bits 0x1729-0x1a10.7 (744)
 0x1730|00 00 00 04 10 30 00 00 00 00 00 00 00 00 00 00|.....0..........|
 *     |until 0x1a10.7 (744)                           |                |
@@ -1701,7 +1701,7 @@ $ fq dv recentapps.sfl2
 0x1a10|      10                                       |  .             |              large_size_marker: 1 (valid) 0x1a12-0x1a12.3 (0.4)
 0x1a10|      10                                       |  .             |              exponent: 0 0x1a12.4-0x1a12.7 (0.4)
 0x1a10|         24                                    |   $            |              size_bigint: 36 0x1a13-0x1a13.7 (1)
-      |                                               |                |              size: 36 0x1a14-NA (0)
+      |                                               |                |              size: 36
 0x1a10|            31 36 36 46 41 42 44 39 2d 38 31 36|    166FABD9-816|              value: "166FABD9-8163-4779-B0CB-090B048FBCD5" 0x1a14-0x1a37.7 (36)
 0x1a20|33 2d 34 37 37 39 2d 42 30 43 42 2d 30 39 30 42|3-4779-B0CB-090B|
 0x1a30|30 34 38 46 42 43 44 35                        |048FBCD5        |
@@ -1712,7 +1712,7 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xf7-0xfe.7 (8)
 0x00f0|                     57                        |       W        |                    type: "ascii_string" (5) (ASCII encoded string) 0xf7-0xf7.3 (0.4)
 0x00f0|                     57                        |       W        |                    size_bits: 7 0xf7.4-0xf7.7 (0.4)
-      |                                               |                |                    size: 7 0xf8-NA (0)
+      |                                               |                |                    size: 7
 0x00f0|                        4e 53 2e 6b 65 79 73   |        NS.keys |                    value: "NS.keys" 0xf8-0xfe.7 (7)
       |                                               |                |                  value{}: 0x182-0x1a4f.7 (6350)
       |                                               |                |                    entries[0:5]: 0x182-0x1a4f.7 (6350)
@@ -1743,7 +1743,7 @@ $ fq dv recentapps.sfl2
 0x1a40|                                          00 2c|              .,|                        object_index: 44 0x1a4e-0x1a4f.7 (2)
 0x1a40|               a5                              |     .          |                    type: "array" (10) (Array) 0x1a45-0x1a45.3 (0.4)
 0x1a40|               a5                              |     .          |                    size_bits: 5 0x1a45.4-0x1a45.7 (0.4)
-      |                                               |                |                    size: 5 0x1a46-NA (0)
+      |                                               |                |                    size: 5
 0x1a30|                           00 0d               |         ..     |                  key_index: 13 0x1a39-0x1a3a.7 (2)
 0x1a30|                                             00|               .|                  value_index: 219 0x1a3f-0x1a40.7 (2)
 0x1a40|db                                             |.               |
@@ -1751,7 +1751,7 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xff-0x109.7 (11)
 0x00f0|                                             5a|               Z|                    type: "ascii_string" (5) (ASCII encoded string) 0xff-0xff.3 (0.4)
 0x00f0|                                             5a|               Z|                    size_bits: 10 0xff.4-0xff.7 (0.4)
-      |                                               |                |                    size: 10 0x100-NA (0)
+      |                                               |                |                    size: 10
 0x0100|4e 53 2e 6f 62 6a 65 63 74 73                  |NS.objects      |                    value: "NS.objects" 0x100-0x109.7 (10)
       |                                               |                |                  value{}: 0x197-0x1a6e.7 (6360)
       |                                               |                |                    entries[0:5]: 0x197-0x1a6e.7 (6360)
@@ -1783,14 +1783,14 @@ $ fq dv recentapps.sfl2
 0x1a60|                                          38   |              8 |                        value: 56 0x1a6e-0x1a6e.7 (1)
 0x1a50|                              a5               |          .     |                    type: "array" (10) (Array) 0x1a5a-0x1a5a.3 (0.4)
 0x1a50|                              a5               |          .     |                    size_bits: 5 0x1a5a.4-0x1a5a.7 (0.4)
-      |                                               |                |                    size: 5 0x1a5b-NA (0)
+      |                                               |                |                    size: 5
 0x1a30|                                 00 0e         |           ..   |                  key_index: 14 0x1a3b-0x1a3c.7 (2)
 0x1a40|   00 e1                                       | ..             |                  value_index: 225 0x1a41-0x1a42.7 (2)
       |                                               |                |                [2]{}: entry 0x10a-0x1a44.7 (6459)
       |                                               |                |                  key{}: 0x10a-0x110.7 (7)
 0x0100|                              56               |          V     |                    type: "ascii_string" (5) (ASCII encoded string) 0x10a-0x10a.3 (0.4)
 0x0100|                              56               |          V     |                    size_bits: 6 0x10a.4-0x10a.7 (0.4)
-      |                                               |                |                    size: 6 0x10b-NA (0)
+      |                                               |                |                    size: 6
 0x0100|                                 24 63 6c 61 73|           $clas|                    value: "$class" 0x10b-0x110.7 (6)
 0x0110|73                                             |s               |
       |                                               |                |                  value{}: 0x123-0x124.7 (2)
@@ -1801,7 +1801,7 @@ $ fq dv recentapps.sfl2
 0x1a40|         00 16                                 |   ..           |                  value_index: 22 0x1a43-0x1a44.7 (2)
 0x1a30|                        d3                     |        .       |              type: "dict" (13) (Dictionary) 0x1a38-0x1a38.3 (0.4)
 0x1a30|                        d3                     |        .       |              size_bits: 3 0x1a38.4-0x1a38.7 (0.4)
-      |                                               |                |              size: 3 0x1a39-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [53]{}: entry 0xca-0x1a7f.7 (6582)
 0x00c0|                              00 e8            |          ..    |              object_index: 232 0xca-0xcb.7 (2)
       |                                               |                |              entries[0:3]: 0xf7-0x1a7f.7 (6537)
@@ -1809,33 +1809,33 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xf7-0xfe.7 (8)
 0x00f0|                     57                        |       W        |                    type: "ascii_string" (5) (ASCII encoded string) 0xf7-0xf7.3 (0.4)
 0x00f0|                     57                        |       W        |                    size_bits: 7 0xf7.4-0xf7.7 (0.4)
-      |                                               |                |                    size: 7 0xf8-NA (0)
+      |                                               |                |                    size: 7
 0x00f0|                        4e 53 2e 6b 65 79 73   |        NS.keys |                    value: "NS.keys" 0xf8-0xfe.7 (7)
 0x1a70|      00 0d                                    |  ..            |                  key_index: 13 0x1a72-0x1a73.7 (2)
 0x1a70|                        00 e9                  |        ..      |                  value_index: 233 0x1a78-0x1a79.7 (2)
       |                                               |                |                  value{}: 0x1a7e-0x1a7e.7 (1)
 0x1a70|                                          a0   |              . |                    type: "array" (10) (Array) 0x1a7e-0x1a7e.3 (0.4)
 0x1a70|                                          a0   |              . |                    size_bits: 0 0x1a7e.4-0x1a7e.7 (0.4)
-      |                                               |                |                    size: 0 0x1a7f-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x1a7f-NA (0)
       |                                               |                |                [1]{}: entry 0xff-0x1a7f.7 (6529)
       |                                               |                |                  key{}: 0xff-0x109.7 (11)
 0x00f0|                                             5a|               Z|                    type: "ascii_string" (5) (ASCII encoded string) 0xff-0xff.3 (0.4)
 0x00f0|                                             5a|               Z|                    size_bits: 10 0xff.4-0xff.7 (0.4)
-      |                                               |                |                    size: 10 0x100-NA (0)
+      |                                               |                |                    size: 10
 0x0100|4e 53 2e 6f 62 6a 65 63 74 73                  |NS.objects      |                    value: "NS.objects" 0x100-0x109.7 (10)
 0x1a70|            00 0e                              |    ..          |                  key_index: 14 0x1a74-0x1a75.7 (2)
 0x1a70|                              00 ea            |          ..    |                  value_index: 234 0x1a7a-0x1a7b.7 (2)
       |                                               |                |                  value{}: 0x1a7f-0x1a7f.7 (1)
 0x1a70|                                             a0|               .|                    type: "array" (10) (Array) 0x1a7f-0x1a7f.3 (0.4)
 0x1a70|                                             a0|               .|                    size_bits: 0 0x1a7f.4-0x1a7f.7 (0.4)
-      |                                               |                |                    size: 0 0x1a80-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x1a80-NA (0)
       |                                               |                |                [2]{}: entry 0x10a-0x1a7d.7 (6516)
       |                                               |                |                  key{}: 0x10a-0x110.7 (7)
 0x0100|                              56               |          V     |                    type: "ascii_string" (5) (ASCII encoded string) 0x10a-0x10a.3 (0.4)
 0x0100|                              56               |          V     |                    size_bits: 6 0x10a.4-0x10a.7 (0.4)
-      |                                               |                |                    size: 6 0x10b-NA (0)
+      |                                               |                |                    size: 6
 0x0100|                                 24 63 6c 61 73|           $clas|                    value: "$class" 0x10b-0x110.7 (6)
 0x0110|73                                             |s               |
       |                                               |                |                  value{}: 0x123-0x124.7 (2)
@@ -1846,7 +1846,7 @@ $ fq dv recentapps.sfl2
 0x1a70|                                    00 16      |            ..  |                  value_index: 22 0x1a7c-0x1a7d.7 (2)
 0x1a70|   d3                                          | .              |              type: "dict" (13) (Dictionary) 0x1a71-0x1a71.3 (0.4)
 0x1a70|   d3                                          | .              |              size_bits: 3 0x1a71.4-0x1a71.7 (0.4)
-      |                                               |                |              size: 3 0x1a72-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [54]{}: entry 0xcc-0x1a94.7 (6601)
 0x00c0|                                    00 ec      |            ..  |              object_index: 236 0xcc-0xcd.7 (2)
 0x1a80|      5f                                       |  _             |              type: "ascii_string" (5) (ASCII encoded string) 0x1a82-0x1a82.3 (0.4)
@@ -1854,7 +1854,7 @@ $ fq dv recentapps.sfl2
 0x1a80|         10                                    |   .            |              large_size_marker: 1 (valid) 0x1a83-0x1a83.3 (0.4)
 0x1a80|         10                                    |   .            |              exponent: 0 0x1a83.4-0x1a83.7 (0.4)
 0x1a80|            10                                 |    .           |              size_bigint: 16 0x1a84-0x1a84.7 (1)
-      |                                               |                |              size: 16 0x1a85-NA (0)
+      |                                               |                |              size: 16
 0x1a80|               41 63 74 69 76 69 74 79 20 4d 6f|     Activity Mo|              value: "Activity Monitor" 0x1a85-0x1a94.7 (16)
 0x1a90|6e 69 74 6f 72                                 |nitor           |
       |                                               |                |            [55]{}: entry 0xce-0x1d50.7 (7299)
@@ -1864,7 +1864,7 @@ $ fq dv recentapps.sfl2
 0x1a90|                  11                           |      .         |              large_size_marker: 1 (valid) 0x1a96-0x1a96.3 (0.4)
 0x1a90|                  11                           |      .         |              exponent: 1 0x1a96.4-0x1a96.7 (0.4)
 0x1a90|                     02 b8                     |       ..       |              size_bigint: 696 0x1a97-0x1a98.7 (2)
-      |                                               |                |              size: 696 0x1a99-NA (0)
+      |                                               |                |              size: 696
 0x1a90|                           62 6f 6f 6b b8 02 00|         book...|              value: raw bits 0x1a99-0x1d50.7 (696)
 0x1aa0|00 00 00 04 10 30 00 00 00 00 00 00 00 00 00 00|.....0..........|
 *     |until 0x1d50.7 (696)                           |                |
@@ -1875,7 +1875,7 @@ $ fq dv recentapps.sfl2
 0x1d50|      10                                       |  .             |              large_size_marker: 1 (valid) 0x1d52-0x1d52.3 (0.4)
 0x1d50|      10                                       |  .             |              exponent: 0 0x1d52.4-0x1d52.7 (0.4)
 0x1d50|         24                                    |   $            |              size_bigint: 36 0x1d53-0x1d53.7 (1)
-      |                                               |                |              size: 36 0x1d54-NA (0)
+      |                                               |                |              size: 36
 0x1d50|            43 46 36 34 41 46 36 32 2d 39 35 37|    CF64AF62-957|              value: "CF64AF62-9577-441B-9C58-CDA711616281" 0x1d54-0x1d77.7 (36)
 0x1d60|37 2d 34 34 31 42 2d 39 43 35 38 2d 43 44 41 37|7-441B-9C58-CDA7|
 0x1d70|31 31 36 31 36 32 38 31                        |11616281        |
@@ -1886,7 +1886,7 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xf7-0xfe.7 (8)
 0x00f0|                     57                        |       W        |                    type: "ascii_string" (5) (ASCII encoded string) 0xf7-0xf7.3 (0.4)
 0x00f0|                     57                        |       W        |                    size_bits: 7 0xf7.4-0xf7.7 (0.4)
-      |                                               |                |                    size: 7 0xf8-NA (0)
+      |                                               |                |                    size: 7
 0x00f0|                        4e 53 2e 6b 65 79 73   |        NS.keys |                    value: "NS.keys" 0xf8-0xfe.7 (7)
       |                                               |                |                  value{}: 0x182-0x1d8f.7 (7182)
       |                                               |                |                    entries[0:5]: 0x182-0x1d8f.7 (7182)
@@ -1917,7 +1917,7 @@ $ fq dv recentapps.sfl2
 0x1d80|                                          00 2c|              .,|                        object_index: 44 0x1d8e-0x1d8f.7 (2)
 0x1d80|               a5                              |     .          |                    type: "array" (10) (Array) 0x1d85-0x1d85.3 (0.4)
 0x1d80|               a5                              |     .          |                    size_bits: 5 0x1d85.4-0x1d85.7 (0.4)
-      |                                               |                |                    size: 5 0x1d86-NA (0)
+      |                                               |                |                    size: 5
 0x1d70|                           00 0d               |         ..     |                  key_index: 13 0x1d79-0x1d7a.7 (2)
 0x1d70|                                             00|               .|                  value_index: 240 0x1d7f-0x1d80.7 (2)
 0x1d80|f0                                             |.               |
@@ -1925,7 +1925,7 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xff-0x109.7 (11)
 0x00f0|                                             5a|               Z|                    type: "ascii_string" (5) (ASCII encoded string) 0xff-0xff.3 (0.4)
 0x00f0|                                             5a|               Z|                    size_bits: 10 0xff.4-0xff.7 (0.4)
-      |                                               |                |                    size: 10 0x100-NA (0)
+      |                                               |                |                    size: 10
 0x0100|4e 53 2e 6f 62 6a 65 63 74 73                  |NS.objects      |                    value: "NS.objects" 0x100-0x109.7 (10)
       |                                               |                |                  value{}: 0x197-0x1dae.7 (7192)
       |                                               |                |                    entries[0:5]: 0x197-0x1dae.7 (7192)
@@ -1957,14 +1957,14 @@ $ fq dv recentapps.sfl2
 0x1da0|                                          3d   |              = |                        value: 61 0x1dae-0x1dae.7 (1)
 0x1d90|                              a5               |          .     |                    type: "array" (10) (Array) 0x1d9a-0x1d9a.3 (0.4)
 0x1d90|                              a5               |          .     |                    size_bits: 5 0x1d9a.4-0x1d9a.7 (0.4)
-      |                                               |                |                    size: 5 0x1d9b-NA (0)
+      |                                               |                |                    size: 5
 0x1d70|                                 00 0e         |           ..   |                  key_index: 14 0x1d7b-0x1d7c.7 (2)
 0x1d80|   00 f6                                       | ..             |                  value_index: 246 0x1d81-0x1d82.7 (2)
       |                                               |                |                [2]{}: entry 0x10a-0x1d84.7 (7291)
       |                                               |                |                  key{}: 0x10a-0x110.7 (7)
 0x0100|                              56               |          V     |                    type: "ascii_string" (5) (ASCII encoded string) 0x10a-0x10a.3 (0.4)
 0x0100|                              56               |          V     |                    size_bits: 6 0x10a.4-0x10a.7 (0.4)
-      |                                               |                |                    size: 6 0x10b-NA (0)
+      |                                               |                |                    size: 6
 0x0100|                                 24 63 6c 61 73|           $clas|                    value: "$class" 0x10b-0x110.7 (6)
 0x0110|73                                             |s               |
       |                                               |                |                  value{}: 0x123-0x124.7 (2)
@@ -1975,7 +1975,7 @@ $ fq dv recentapps.sfl2
 0x1d80|         00 16                                 |   ..           |                  value_index: 22 0x1d83-0x1d84.7 (2)
 0x1d70|                        d3                     |        .       |              type: "dict" (13) (Dictionary) 0x1d78-0x1d78.3 (0.4)
 0x1d70|                        d3                     |        .       |              size_bits: 3 0x1d78.4-0x1d78.7 (0.4)
-      |                                               |                |              size: 3 0x1d79-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [58]{}: entry 0xd4-0x1dbf.7 (7404)
 0x00d0|            00 fd                              |    ..          |              object_index: 253 0xd4-0xd5.7 (2)
       |                                               |                |              entries[0:3]: 0xf7-0x1dbf.7 (7369)
@@ -1983,33 +1983,33 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xf7-0xfe.7 (8)
 0x00f0|                     57                        |       W        |                    type: "ascii_string" (5) (ASCII encoded string) 0xf7-0xf7.3 (0.4)
 0x00f0|                     57                        |       W        |                    size_bits: 7 0xf7.4-0xf7.7 (0.4)
-      |                                               |                |                    size: 7 0xf8-NA (0)
+      |                                               |                |                    size: 7
 0x00f0|                        4e 53 2e 6b 65 79 73   |        NS.keys |                    value: "NS.keys" 0xf8-0xfe.7 (7)
 0x1db0|      00 0d                                    |  ..            |                  key_index: 13 0x1db2-0x1db3.7 (2)
 0x1db0|                        00 fe                  |        ..      |                  value_index: 254 0x1db8-0x1db9.7 (2)
       |                                               |                |                  value{}: 0x1dbe-0x1dbe.7 (1)
 0x1db0|                                          a0   |              . |                    type: "array" (10) (Array) 0x1dbe-0x1dbe.3 (0.4)
 0x1db0|                                          a0   |              . |                    size_bits: 0 0x1dbe.4-0x1dbe.7 (0.4)
-      |                                               |                |                    size: 0 0x1dbf-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x1dbf-NA (0)
       |                                               |                |                [1]{}: entry 0xff-0x1dbf.7 (7361)
       |                                               |                |                  key{}: 0xff-0x109.7 (11)
 0x00f0|                                             5a|               Z|                    type: "ascii_string" (5) (ASCII encoded string) 0xff-0xff.3 (0.4)
 0x00f0|                                             5a|               Z|                    size_bits: 10 0xff.4-0xff.7 (0.4)
-      |                                               |                |                    size: 10 0x100-NA (0)
+      |                                               |                |                    size: 10
 0x0100|4e 53 2e 6f 62 6a 65 63 74 73                  |NS.objects      |                    value: "NS.objects" 0x100-0x109.7 (10)
 0x1db0|            00 0e                              |    ..          |                  key_index: 14 0x1db4-0x1db5.7 (2)
 0x1db0|                              00 ff            |          ..    |                  value_index: 255 0x1dba-0x1dbb.7 (2)
       |                                               |                |                  value{}: 0x1dbf-0x1dbf.7 (1)
 0x1db0|                                             a0|               .|                    type: "array" (10) (Array) 0x1dbf-0x1dbf.3 (0.4)
 0x1db0|                                             a0|               .|                    size_bits: 0 0x1dbf.4-0x1dbf.7 (0.4)
-      |                                               |                |                    size: 0 0x1dc0-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x1dc0-NA (0)
       |                                               |                |                [2]{}: entry 0x10a-0x1dbd.7 (7348)
       |                                               |                |                  key{}: 0x10a-0x110.7 (7)
 0x0100|                              56               |          V     |                    type: "ascii_string" (5) (ASCII encoded string) 0x10a-0x10a.3 (0.4)
 0x0100|                              56               |          V     |                    size_bits: 6 0x10a.4-0x10a.7 (0.4)
-      |                                               |                |                    size: 6 0x10b-NA (0)
+      |                                               |                |                    size: 6
 0x0100|                                 24 63 6c 61 73|           $clas|                    value: "$class" 0x10b-0x110.7 (6)
 0x0110|73                                             |s               |
       |                                               |                |                  value{}: 0x123-0x124.7 (2)
@@ -2020,12 +2020,12 @@ $ fq dv recentapps.sfl2
 0x1db0|                                    00 16      |            ..  |                  value_index: 22 0x1dbc-0x1dbd.7 (2)
 0x1db0|   d3                                          | .              |              type: "dict" (13) (Dictionary) 0x1db1-0x1db1.3 (0.4)
 0x1db0|   d3                                          | .              |              size_bits: 3 0x1db1.4-0x1db1.7 (0.4)
-      |                                               |                |              size: 3 0x1db2-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [59]{}: entry 0xd6-0x1dc8.7 (7411)
 0x00d0|                  01 01                        |      ..        |              object_index: 257 0xd6-0xd7.7 (2)
 0x1dc0|      56                                       |  V             |              type: "ascii_string" (5) (ASCII encoded string) 0x1dc2-0x1dc2.3 (0.4)
 0x1dc0|      56                                       |  V             |              size_bits: 6 0x1dc2.4-0x1dc2.7 (0.4)
-      |                                               |                |              size: 6 0x1dc3-NA (0)
+      |                                               |                |              size: 6
 0x1dc0|         53 61 66 61 72 69                     |   Safari       |              value: "Safari" 0x1dc3-0x1dc8.7 (6)
       |                                               |                |            [60]{}: entry 0xd8-0x2020.7 (8009)
 0x00d0|                        01 02                  |        ..      |              object_index: 258 0xd8-0xd9.7 (2)
@@ -2034,7 +2034,7 @@ $ fq dv recentapps.sfl2
 0x1dc0|                              11               |          .     |              large_size_marker: 1 (valid) 0x1dca-0x1dca.3 (0.4)
 0x1dc0|                              11               |          .     |              exponent: 1 0x1dca.4-0x1dca.7 (0.4)
 0x1dc0|                                 02 54         |           .T   |              size_bigint: 596 0x1dcb-0x1dcc.7 (2)
-      |                                               |                |              size: 596 0x1dcd-NA (0)
+      |                                               |                |              size: 596
 0x1dc0|                                       62 6f 6f|             boo|              value: raw bits 0x1dcd-0x2020.7 (596)
 0x1dd0|6b 54 02 00 00 00 00 04 10 30 00 00 00 00 00 00|kT.......0......|
 *     |until 0x2020.7 (596)                           |                |
@@ -2045,7 +2045,7 @@ $ fq dv recentapps.sfl2
 0x2020|      10                                       |  .             |              large_size_marker: 1 (valid) 0x2022-0x2022.3 (0.4)
 0x2020|      10                                       |  .             |              exponent: 0 0x2022.4-0x2022.7 (0.4)
 0x2020|         24                                    |   $            |              size_bigint: 36 0x2023-0x2023.7 (1)
-      |                                               |                |              size: 36 0x2024-NA (0)
+      |                                               |                |              size: 36
 0x2020|            38 41 39 38 34 31 44 36 2d 41 33 33|    8A9841D6-A33|              value: "8A9841D6-A33D-468A-BA0B-4FADD9017F58" 0x2024-0x2047.7 (36)
 0x2030|44 2d 34 36 38 41 2d 42 41 30 42 2d 34 46 41 44|D-468A-BA0B-4FAD|
 0x2040|44 39 30 31 37 46 35 38                        |D9017F58        |
@@ -2056,45 +2056,45 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0x1f4-0x1fe.7 (11)
 0x01f0|            5a                                 |    Z           |                    type: "ascii_string" (5) (ASCII encoded string) 0x1f4-0x1f4.3 (0.4)
 0x01f0|            5a                                 |    Z           |                    size_bits: 10 0x1f4.4-0x1f4.7 (0.4)
-      |                                               |                |                    size: 10 0x1f5-NA (0)
+      |                                               |                |                    size: 10
 0x01f0|               24 63 6c 61 73 73 6e 61 6d 65   |     $classname |                    value: "$classname" 0x1f5-0x1fe.7 (10)
 0x2040|                           00 3f               |         .?     |                  key_index: 63 0x2049-0x204a.7 (2)
 0x2040|                                       01 05   |             .. |                  value_index: 261 0x204d-0x204e.7 (2)
       |                                               |                |                  value{}: 0x2051-0x2058.7 (8)
 0x2050|   57                                          | W              |                    type: "ascii_string" (5) (ASCII encoded string) 0x2051-0x2051.3 (0.4)
 0x2050|   57                                          | W              |                    size_bits: 7 0x2051.4-0x2051.7 (0.4)
-      |                                               |                |                    size: 7 0x2052-NA (0)
+      |                                               |                |                    size: 7
 0x2050|      4e 53 41 72 72 61 79                     |  NSArray       |                    value: "NSArray" 0x2052-0x2058.7 (7)
       |                                               |                |                [1]{}: entry 0x1ff-0x205d.7 (7775)
       |                                               |                |                  key{}: 0x1ff-0x207.7 (9)
 0x01f0|                                             58|               X|                    type: "ascii_string" (5) (ASCII encoded string) 0x1ff-0x1ff.3 (0.4)
 0x01f0|                                             58|               X|                    size_bits: 8 0x1ff.4-0x1ff.7 (0.4)
-      |                                               |                |                    size: 8 0x200-NA (0)
+      |                                               |                |                    size: 8
 0x0200|24 63 6c 61 73 73 65 73                        |$classes        |                    value: "$classes" 0x200-0x207.7 (8)
       |                                               |                |                  value{}: 0x21a-0x205d.7 (7748)
       |                                               |                |                    entries[0:2]: 0x21a-0x205d.7 (7748)
       |                                               |                |                      [0]{}: entry 0x2051-0x205b.7 (11)
 0x2050|   57                                          | W              |                        type: "ascii_string" (5) (ASCII encoded string) 0x2051-0x2051.3 (0.4)
 0x2050|   57                                          | W              |                        size_bits: 7 0x2051.4-0x2051.7 (0.4)
-      |                                               |                |                        size: 7 0x2052-NA (0)
+      |                                               |                |                        size: 7
 0x2050|      4e 53 41 72 72 61 79                     |  NSArray       |                        value: "NSArray" 0x2052-0x2058.7 (7)
 0x2050|                              01 05            |          ..    |                        object_index: 261 0x205a-0x205b.7 (2)
       |                                               |                |                      [1]{}: entry 0x21a-0x205d.7 (7748)
 0x0210|                              58               |          X     |                        type: "ascii_string" (5) (ASCII encoded string) 0x21a-0x21a.3 (0.4)
 0x0210|                              58               |          X     |                        size_bits: 8 0x21a.4-0x21a.7 (0.4)
-      |                                               |                |                        size: 8 0x21b-NA (0)
+      |                                               |                |                        size: 8
 0x0210|                                 4e 53 4f 62 6a|           NSObj|                        value: "NSObject" 0x21b-0x222.7 (8)
 0x0220|65 63 74                                       |ect             |
 0x2050|                                    00 43      |            .C  |                        object_index: 67 0x205c-0x205d.7 (2)
 0x2050|                           a2                  |         .      |                    type: "array" (10) (Array) 0x2059-0x2059.3 (0.4)
 0x2050|                           a2                  |         .      |                    size_bits: 2 0x2059.4-0x2059.7 (0.4)
-      |                                               |                |                    size: 2 0x205a-NA (0)
+      |                                               |                |                    size: 2
 0x2040|                                 00 40         |           .@   |                  key_index: 64 0x204b-0x204c.7 (2)
 0x2040|                                             01|               .|                  value_index: 262 0x204f-0x2050.7 (2)
 0x2050|06                                             |.               |
 0x2040|                        d2                     |        .       |              type: "dict" (13) (Dictionary) 0x2048-0x2048.3 (0.4)
 0x2040|                        d2                     |        .       |              size_bits: 2 0x2048.4-0x2048.7 (0.4)
-      |                                               |                |              size: 2 0x2049-NA (0)
+      |                                               |                |              size: 2
       |                                               |                |            [63]{}: entry 0xde-0x2074.7 (8087)
 0x00d0|                                          01 07|              ..|              object_index: 263 0xde-0xdf.7 (2)
       |                                               |                |              entries[0:3]: 0xf7-0x2074.7 (8062)
@@ -2102,7 +2102,7 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xf7-0xfe.7 (8)
 0x00f0|                     57                        |       W        |                    type: "ascii_string" (5) (ASCII encoded string) 0xf7-0xf7.3 (0.4)
 0x00f0|                     57                        |       W        |                    size_bits: 7 0xf7.4-0xf7.7 (0.4)
-      |                                               |                |                    size: 7 0xf8-NA (0)
+      |                                               |                |                    size: 7
 0x00f0|                        4e 53 2e 6b 65 79 73   |        NS.keys |                    value: "NS.keys" 0xf8-0xfe.7 (7)
 0x2050|                                             00|               .|                  key_index: 13 0x205f-0x2060.7 (2)
 0x2060|0d                                             |.               |
@@ -2110,7 +2110,7 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  value{}: 0x206b-0x206f.7 (5)
 0x2060|                                 a1            |           .    |                    type: "array" (10) (Array) 0x206b-0x206b.3 (0.4)
 0x2060|                                 a1            |           .    |                    size_bits: 1 0x206b.4-0x206b.7 (0.4)
-      |                                               |                |                    size: 1 0x206c-NA (0)
+      |                                               |                |                    size: 1
       |                                               |                |                    entries[0:1]: 0x206c-0x206f.7 (4)
       |                                               |                |                      [0]{}: entry 0x206c-0x206f.7 (4)
 0x2060|                                    01 09      |            ..  |                        object_index: 265 0x206c-0x206d.7 (2)
@@ -2121,14 +2121,14 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0xff-0x109.7 (11)
 0x00f0|                                             5a|               Z|                    type: "ascii_string" (5) (ASCII encoded string) 0xff-0xff.3 (0.4)
 0x00f0|                                             5a|               Z|                    size_bits: 10 0xff.4-0xff.7 (0.4)
-      |                                               |                |                    size: 10 0x100-NA (0)
+      |                                               |                |                    size: 10
 0x0100|4e 53 2e 6f 62 6a 65 63 74 73                  |NS.objects      |                    value: "NS.objects" 0x100-0x109.7 (10)
 0x2060|   00 0e                                       | ..             |                  key_index: 14 0x2061-0x2062.7 (2)
 0x2060|                     01 0a                     |       ..       |                  value_index: 266 0x2067-0x2068.7 (2)
       |                                               |                |                  value{}: 0x2070-0x2074.7 (5)
 0x2070|a1                                             |.               |                    type: "array" (10) (Array) 0x2070-0x2070.3 (0.4)
 0x2070|a1                                             |.               |                    size_bits: 1 0x2070.4-0x2070.7 (0.4)
-      |                                               |                |                    size: 1 0x2071-NA (0)
+      |                                               |                |                    size: 1
       |                                               |                |                    entries[0:1]: 0x2071-0x2074.7 (4)
       |                                               |                |                      [0]{}: entry 0x2071-0x2074.7 (4)
 0x2070|   01 0b                                       | ..             |                        object_index: 267 0x2071-0x2072.7 (2)
@@ -2139,7 +2139,7 @@ $ fq dv recentapps.sfl2
       |                                               |                |                  key{}: 0x10a-0x110.7 (7)
 0x0100|                              56               |          V     |                    type: "ascii_string" (5) (ASCII encoded string) 0x10a-0x10a.3 (0.4)
 0x0100|                              56               |          V     |                    size_bits: 6 0x10a.4-0x10a.7 (0.4)
-      |                                               |                |                    size: 6 0x10b-NA (0)
+      |                                               |                |                    size: 6
 0x0100|                                 24 63 6c 61 73|           $clas|                    value: "$class" 0x10b-0x110.7 (6)
 0x0110|73                                             |s               |
       |                                               |                |                  value{}: 0x123-0x124.7 (2)
@@ -2150,7 +2150,7 @@ $ fq dv recentapps.sfl2
 0x2060|                           00 16               |         ..     |                  value_index: 22 0x2069-0x206a.7 (2)
 0x2050|                                          d3   |              . |              type: "dict" (13) (Dictionary) 0x205e-0x205e.3 (0.4)
 0x2050|                                          d3   |              . |              size_bits: 3 0x205e.4-0x205e.7 (0.4)
-      |                                               |                |              size: 3 0x205f-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [64]{}: entry 0xe0-0x209d.7 (8126)
 0x00e0|01 0d                                          |..              |              object_index: 269 0xe0-0xe1.7 (2)
 0x2070|                     5f                        |       _        |              type: "ascii_string" (5) (ASCII encoded string) 0x2077-0x2077.3 (0.4)
@@ -2158,7 +2158,7 @@ $ fq dv recentapps.sfl2
 0x2070|                        10                     |        .       |              large_size_marker: 1 (valid) 0x2078-0x2078.3 (0.4)
 0x2070|                        10                     |        .       |              exponent: 0 0x2078.4-0x2078.7 (0.4)
 0x2070|                           24                  |         $      |              size_bigint: 36 0x2079-0x2079.7 (1)
-      |                                               |                |              size: 36 0x207a-NA (0)
+      |                                               |                |              size: 36
 0x2070|                              63 6f 6d 2e 61 70|          com.ap|              value: "com.apple.LSSharedFileList.MaxAmount" 0x207a-0x209d.7 (36)
 0x2080|70 6c 65 2e 4c 53 53 68 61 72 65 64 46 69 6c 65|ple.LSSharedFile|
 0x2090|4c 69 73 74 2e 4d 61 78 41 6d 6f 75 6e 74      |List.MaxAmount  |

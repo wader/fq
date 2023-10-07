@@ -629,7 +629,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x00940|   61 72 70 61                                 | arpa           |                          value: "arpa" 0x941-0x944.7 (4)
        |                                               |                |                        [6]{}: label 0x945-0x945.7 (1)
 0x00940|               00                              |     .          |                          length: 0 0x945-0x945.7 (1)
-       |                                               |                |                      value: "139.1.168.192.in-addr.arpa" 0x946-NA (0)
+       |                                               |                |                      value: "139.1.168.192.in-addr.arpa"
 0x00940|                  00 0c                        |      ..        |                    type: "ptr" (12) 0x946-0x947.7 (2)
 0x00940|                        00 01                  |        ..      |                    class: "in" (1) (Internet) 0x948-0x949.7 (2)
        |                                               |                |                answers[0:0]: 0x94a-NA (0)
@@ -753,7 +753,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x00a30|               61 72 70 61                     |     arpa       |                          value: "arpa" 0xa35-0xa38.7 (4)
        |                                               |                |                        [6]{}: label 0xa39-0xa39.7 (1)
 0x00a30|                           00                  |         .      |                          length: 0 0xa39-0xa39.7 (1)
-       |                                               |                |                      value: "139.1.168.192.in-addr.arpa" 0xa3a-NA (0)
+       |                                               |                |                      value: "139.1.168.192.in-addr.arpa"
 0x00a30|                              00 0c            |          ..    |                    type: "ptr" (12) 0xa3a-0xa3b.7 (2)
 0x00a30|                                    00 01      |            ..  |                    class: "in" (1) (Internet) 0xa3c-0xa3d.7 (2)
        |                                               |                |                answers[0:1]: 0xa1e-0xa57.7 (58)
@@ -784,7 +784,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x00a30|               61 72 70 61                     |     arpa       |                          value: "arpa" 0xa35-0xa38.7 (4)
        |                                               |                |                        [6]{}: label 0xa39-0xa39.7 (1)
 0x00a30|                           00                  |         .      |                          length: 0 0xa39-0xa39.7 (1)
-       |                                               |                |                      value: "139.1.168.192.in-addr.arpa" 0xa3a-NA (0)
+       |                                               |                |                      value: "139.1.168.192.in-addr.arpa"
 0x00a40|00 0c                                          |..              |                    type: "ptr" (12) 0xa40-0xa41.7 (2)
 0x00a40|      00 01                                    |  ..            |                    class: "in" (1) (Internet) 0xa42-0xa43.7 (2)
 0x00a40|            00 00 00 00                        |    ....        |                    ttl: 0 0xa44-0xa47.7 (4)
@@ -797,7 +797,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x00a50|65 6c 73 2d 4d 42 50                           |els-MBP         |
        |                                               |                |                        [1]{}: label 0xa57-0xa57.7 (1)
 0x00a50|                     00                        |       .        |                          length: 0 0xa57-0xa57.7 (1)
-       |                                               |                |                      value: "Hadriels-MBP" 0xa58-NA (0)
+       |                                               |                |                      value: "Hadriels-MBP"
        |                                               |                |                nameservers[0:0]: 0xa58-NA (0)
        |                                               |                |                additionals[0:0]: 0xa58-NA (0)
        |                                               |                |        padding: raw bits 0xa58-NA (0)
@@ -878,7 +878,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x00ac0|                     61 72 70 61               |       arpa     |                          value: "arpa" 0xac7-0xaca.7 (4)
        |                                               |                |                        [6]{}: label 0xacb-0xacb.7 (1)
 0x00ac0|                                 00            |           .    |                          length: 0 0xacb-0xacb.7 (1)
-       |                                               |                |                      value: "255.255.255.255.in-addr.arpa" 0xacc-NA (0)
+       |                                               |                |                      value: "255.255.255.255.in-addr.arpa"
 0x00ac0|                                    00 0c      |            ..  |                    type: "ptr" (12) 0xacc-0xacd.7 (2)
 0x00ac0|                                          00 01|              ..|                    class: "in" (1) (Internet) 0xace-0xacf.7 (2)
        |                                               |                |                answers[0:0]: 0xad0-NA (0)
@@ -962,7 +962,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x00b40|72 70 61                                       |rpa             |
        |                                               |                |                        [6]{}: label 0xb43-0xb43.7 (1)
 0x00b40|         00                                    |   .            |                          length: 0 0xb43-0xb43.7 (1)
-       |                                               |                |                      value: "255.255.255.255.in-addr.arpa" 0xb44-NA (0)
+       |                                               |                |                      value: "255.255.255.255.in-addr.arpa"
 0x00b40|            00 0c                              |    ..          |                    type: "ptr" (12) 0xb44-0xb45.7 (2)
 0x00b40|                  00 01                        |      ..        |                    class: "in" (1) (Internet) 0xb46-0xb47.7 (2)
        |                                               |                |                answers[0:0]: 0xb48-NA (0)
@@ -990,7 +990,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x00b60|   41 52 50 41                                 | ARPA           |                          value: "ARPA" 0xb61-0xb64.7 (4)
        |                                               |                |                        [6]{}: label 0xb65-0xb65.7 (1)
 0x00b60|               00                              |     .          |                          length: 0 0xb65-0xb65.7 (1)
-       |                                               |                |                      value: "255.255.255.255.IN-ADDR.ARPA" 0xb66-NA (0)
+       |                                               |                |                      value: "255.255.255.255.IN-ADDR.ARPA"
        |                                               |                |                    mname{}: 0xb48-0xb71.7 (42)
        |                                               |                |                      labels[0:7]: 0xb48-0xb71.7 (42)
        |                                               |                |                        [0]{}: label 0xb48-0xb71.7 (42)
@@ -1015,7 +1015,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x00b60|   41 52 50 41                                 | ARPA           |                          value: "ARPA" 0xb61-0xb64.7 (4)
        |                                               |                |                        [6]{}: label 0xb65-0xb65.7 (1)
 0x00b60|               00                              |     .          |                          length: 0 0xb65-0xb65.7 (1)
-       |                                               |                |                      value: "255.255.255.255.IN-ADDR.ARPA" 0xb66-NA (0)
+       |                                               |                |                      value: "255.255.255.255.IN-ADDR.ARPA"
 0x00b60|                  00 06                        |      ..        |                    type: "soa" (6) 0xb66-0xb67.7 (2)
 0x00b60|                        00 01                  |        ..      |                    class: "in" (1) (Internet) 0xb68-0xb69.7 (2)
 0x00b60|                              00 01 51 80      |          ..Q.  |                    ttl: 86400 0xb6a-0xb6d.7 (4)
@@ -1024,7 +1024,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |                      labels[0:1]: 0xb72-0xb72.7 (1)
        |                                               |                |                        [0]{}: label 0xb72-0xb72.7 (1)
 0x00b70|      00                                       |  .             |                          length: 0 0xb72-0xb72.7 (1)
-       |                                               |                |                      value: "" 0xb73-NA (0)
+       |                                               |                |                      value: ""
 0x00b70|         00 00 00 00                           |   ....         |                    serial: 0 0xb73-0xb76.7 (4)
 0x00b70|                     00 00 70 80               |       ..p.     |                    refresh: 28800 0xb77-0xb7a.7 (4)
 0x00b70|                                 00 00 1c 20   |           ...  |                    retry: 7200 0xb7b-0xb7e.7 (4)
@@ -1110,7 +1110,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x00bf0|               61 72 70 61                     |     arpa       |                          value: "arpa" 0xbf5-0xbf8.7 (4)
        |                                               |                |                        [6]{}: label 0xbf9-0xbf9.7 (1)
 0x00bf0|                           00                  |         .      |                          length: 0 0xbf9-0xbf9.7 (1)
-       |                                               |                |                      value: "255.1.168.192.in-addr.arpa" 0xbfa-NA (0)
+       |                                               |                |                      value: "255.1.168.192.in-addr.arpa"
 0x00bf0|                              00 0c            |          ..    |                    type: "ptr" (12) 0xbfa-0xbfb.7 (2)
 0x00bf0|                                    00 01      |            ..  |                    class: "in" (1) (Internet) 0xbfc-0xbfd.7 (2)
        |                                               |                |                answers[0:0]: 0xbfe-NA (0)
@@ -1232,7 +1232,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x00ce0|                           61 72 70 61         |         arpa   |                          value: "arpa" 0xce9-0xcec.7 (4)
        |                                               |                |                        [6]{}: label 0xced-0xced.7 (1)
 0x00ce0|                                       00      |             .  |                          length: 0 0xced-0xced.7 (1)
-       |                                               |                |                      value: "255.1.168.192.in-addr.arpa" 0xcee-NA (0)
+       |                                               |                |                      value: "255.1.168.192.in-addr.arpa"
 0x00ce0|                                          00 0c|              ..|                    type: "ptr" (12) 0xcee-0xcef.7 (2)
 0x00cf0|00 01                                          |..              |                    class: "in" (1) (Internet) 0xcf0-0xcf1.7 (2)
        |                                               |                |                answers[0:0]: 0xcf2-NA (0)
@@ -1356,7 +1356,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x00dd0|               61 72 70 61                     |     arpa       |                          value: "arpa" 0xdd5-0xdd8.7 (4)
        |                                               |                |                        [6]{}: label 0xdd9-0xdd9.7 (1)
 0x00dd0|                           00                  |         .      |                          length: 0 0xdd9-0xdd9.7 (1)
-       |                                               |                |                      value: "253.12.253.17.in-addr.arpa" 0xdda-NA (0)
+       |                                               |                |                      value: "253.12.253.17.in-addr.arpa"
 0x00dd0|                              00 0c            |          ..    |                    type: "ptr" (12) 0xdda-0xddb.7 (2)
 0x00dd0|                                    00 01      |            ..  |                    class: "in" (1) (Internet) 0xddc-0xddd.7 (2)
        |                                               |                |                answers[0:0]: 0xdde-NA (0)
@@ -1518,7 +1518,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x00f30|                           61 72 70 61         |         arpa   |                          value: "arpa" 0xf39-0xf3c.7 (4)
        |                                               |                |                        [6]{}: label 0xf3d-0xf3d.7 (1)
 0x00f30|                                       00      |             .  |                          length: 0 0xf3d-0xf3d.7 (1)
-       |                                               |                |                      value: "253.12.253.17.in-addr.arpa" 0xf3e-NA (0)
+       |                                               |                |                      value: "253.12.253.17.in-addr.arpa"
 0x00f30|                                          00 0c|              ..|                    type: "ptr" (12) 0xf3e-0xf3f.7 (2)
 0x00f40|00 01                                          |..              |                    class: "in" (1) (Internet) 0xf40-0xf41.7 (2)
        |                                               |                |                answers[0:2]: 0xf22-0xf82.7 (97)
@@ -1547,7 +1547,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x00f30|                           61 72 70 61         |         arpa   |                          value: "arpa" 0xf39-0xf3c.7 (4)
        |                                               |                |                        [6]{}: label 0xf3d-0xf3d.7 (1)
 0x00f30|                                       00      |             .  |                          length: 0 0xf3d-0xf3d.7 (1)
-       |                                               |                |                      value: "253.12.253.17.in-addr.arpa" 0xf3e-NA (0)
+       |                                               |                |                      value: "253.12.253.17.in-addr.arpa"
 0x00f40|            00 0c                              |    ..          |                    type: "ptr" (12) 0xf44-0xf45.7 (2)
 0x00f40|                  00 01                        |      ..        |                    class: "in" (1) (Internet) 0xf46-0xf47.7 (2)
 0x00f40|                        00 00 0a 8c            |        ....    |                    ttl: 2700 0xf48-0xf4b.7 (4)
@@ -1567,7 +1567,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x00f60|                  63 6f 6d                     |      com       |                          value: "com" 0xf66-0xf68.7 (3)
        |                                               |                |                        [3]{}: label 0xf69-0xf69.7 (1)
 0x00f60|                           00                  |         .      |                          length: 0 0xf69-0xf69.7 (1)
-       |                                               |                |                      value: "usmia1-ntp-002.aaplimg.com" 0xf6a-NA (0)
+       |                                               |                |                      value: "usmia1-ntp-002.aaplimg.com"
        |                                               |                |                  [1]{}: answer 0xf22-0xf82.7 (97)
        |                                               |                |                    name{}: 0xf22-0xf6b.7 (74)
        |                                               |                |                      labels[0:7]: 0xf22-0xf6b.7 (74)
@@ -1593,7 +1593,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x00f30|                           61 72 70 61         |         arpa   |                          value: "arpa" 0xf39-0xf3c.7 (4)
        |                                               |                |                        [6]{}: label 0xf3d-0xf3d.7 (1)
 0x00f30|                                       00      |             .  |                          length: 0 0xf3d-0xf3d.7 (1)
-       |                                               |                |                      value: "253.12.253.17.in-addr.arpa" 0xf3e-NA (0)
+       |                                               |                |                      value: "253.12.253.17.in-addr.arpa"
        |                                               |                |                    ptr{}: 0xf65-0xf82.7 (30)
        |                                               |                |                      labels[0:4]: 0xf65-0xf82.7 (30)
        |                                               |                |                        [0]{}: label 0xf76-0xf7a.7 (5)
@@ -1610,7 +1610,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x00f80|   c0 4f                                       | .O             |                          pointer: 79 0xf81.2-0xf82.7 (1.6)
        |                                               |                |                        [3]{}: label 0xf69-0xf69.7 (1)
 0x00f60|                           00                  |         .      |                          length: 0 0xf69-0xf69.7 (1)
-       |                                               |                |                      value: "time.apple.com" 0xf6a-NA (0)
+       |                                               |                |                      value: "time.apple.com"
 0x00f60|                                    00 0c      |            ..  |                    type: "ptr" (12) 0xf6c-0xf6d.7 (2)
 0x00f60|                                          00 01|              ..|                    class: "in" (1) (Internet) 0xf6e-0xf6f.7 (2)
 0x00f70|00 00 0a 8c                                    |....            |                    ttl: 2700 0xf70-0xf73.7 (4)
@@ -1695,7 +1695,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x00ff0|72 70 61                                       |rpa             |
        |                                               |                |                        [6]{}: label 0xff3-0xff3.7 (1)
 0x00ff0|         00                                    |   .            |                          length: 0 0xff3-0xff3.7 (1)
-       |                                               |                |                      value: "1.1.168.192.in-addr.arpa" 0xff4-NA (0)
+       |                                               |                |                      value: "1.1.168.192.in-addr.arpa"
 0x00ff0|            00 0c                              |    ..          |                    type: "ptr" (12) 0xff4-0xff5.7 (2)
 0x00ff0|                  00 01                        |      ..        |                    class: "in" (1) (Internet) 0xff6-0xff7.7 (2)
        |                                               |                |                answers[0:0]: 0xff8-NA (0)
@@ -1778,7 +1778,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x01060|         61 72 70 61                           |   arpa         |                          value: "arpa" 0x1063-0x1066.7 (4)
        |                                               |                |                        [6]{}: label 0x1067-0x1067.7 (1)
 0x01060|                     00                        |       .        |                          length: 0 0x1067-0x1067.7 (1)
-       |                                               |                |                      value: "1.1.168.192.in-addr.arpa" 0x1068-NA (0)
+       |                                               |                |                      value: "1.1.168.192.in-addr.arpa"
 0x01060|                        00 0c                  |        ..      |                    type: "ptr" (12) 0x1068-0x1069.7 (2)
 0x01060|                              00 01            |          ..    |                    class: "in" (1) (Internet) 0x106a-0x106b.7 (2)
        |                                               |                |                answers[0:1]: 0x104e-0x1080.7 (51)
@@ -1808,7 +1808,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x01060|         61 72 70 61                           |   arpa         |                          value: "arpa" 0x1063-0x1066.7 (4)
        |                                               |                |                        [6]{}: label 0x1067-0x1067.7 (1)
 0x01060|                     00                        |       .        |                          length: 0 0x1067-0x1067.7 (1)
-       |                                               |                |                      value: "1.1.168.192.in-addr.arpa" 0x1068-NA (0)
+       |                                               |                |                      value: "1.1.168.192.in-addr.arpa"
 0x01060|                                          00 0c|              ..|                    type: "ptr" (12) 0x106e-0x106f.7 (2)
 0x01070|00 01                                          |..              |                    class: "in" (1) (Internet) 0x1070-0x1071.7 (2)
 0x01070|      00 00 00 00                              |  ....          |                    ttl: 0 0x1072-0x1075.7 (4)
@@ -1820,7 +1820,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x01070|                           6b 61 70 6c 61 6b 65|         kaplake|                          value: "kaplake" 0x1079-0x107f.7 (7)
        |                                               |                |                        [1]{}: label 0x1080-0x1080.7 (1)
 0x01080|00                                             |.               |                          length: 0 0x1080-0x1080.7 (1)
-       |                                               |                |                      value: "kaplake" 0x1081-NA (0)
+       |                                               |                |                      value: "kaplake"
        |                                               |                |                nameservers[0:0]: 0x1081-NA (0)
        |                                               |                |                additionals[0:0]: 0x1081-NA (0)
 0x01080|   00 00 00                                    | ...            |        padding: raw bits 0x1081-0x1083.7 (3)
@@ -1901,7 +1901,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x010f0|         61 72 70 61                           |   arpa         |                          value: "arpa" 0x10f3-0x10f6.7 (4)
        |                                               |                |                        [6]{}: label 0x10f7-0x10f7.7 (1)
 0x010f0|                     00                        |       .        |                          length: 0 0x10f7-0x10f7.7 (1)
-       |                                               |                |                      value: "189.204.194.173.in-addr.arpa" 0x10f8-NA (0)
+       |                                               |                |                      value: "189.204.194.173.in-addr.arpa"
 0x010f0|                        00 0c                  |        ..      |                    type: "ptr" (12) 0x10f8-0x10f9.7 (2)
 0x010f0|                              00 01            |          ..    |                    class: "in" (1) (Internet) 0x10fa-0x10fb.7 (2)
        |                                               |                |                answers[0:0]: 0x10fc-NA (0)
@@ -1984,7 +1984,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x01160|                                 61 72 70 61   |           arpa |                          value: "arpa" 0x116b-0x116e.7 (4)
        |                                               |                |                        [6]{}: label 0x116f-0x116f.7 (1)
 0x01160|                                             00|               .|                          length: 0 0x116f-0x116f.7 (1)
-       |                                               |                |                      value: "189.204.194.173.in-addr.arpa" 0x1170-NA (0)
+       |                                               |                |                      value: "189.204.194.173.in-addr.arpa"
 0x01170|00 0c                                          |..              |                    type: "ptr" (12) 0x1170-0x1171.7 (2)
 0x01170|      00 01                                    |  ..            |                    class: "in" (1) (Internet) 0x1172-0x1173.7 (2)
        |                                               |                |                answers[0:1]: 0x1152-0x1195.7 (68)
@@ -2014,7 +2014,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x01160|                                 61 72 70 61   |           arpa |                          value: "arpa" 0x116b-0x116e.7 (4)
        |                                               |                |                        [6]{}: label 0x116f-0x116f.7 (1)
 0x01160|                                             00|               .|                          length: 0 0x116f-0x116f.7 (1)
-       |                                               |                |                      value: "189.204.194.173.in-addr.arpa" 0x1170-NA (0)
+       |                                               |                |                      value: "189.204.194.173.in-addr.arpa"
 0x01170|                  00 0c                        |      ..        |                    type: "ptr" (12) 0x1176-0x1177.7 (2)
 0x01170|                        00 01                  |        ..      |                    class: "in" (1) (Internet) 0x1178-0x1179.7 (2)
 0x01170|                              00 01 11 a3      |          ....  |                    ttl: 70051 0x117a-0x117d.7 (4)
@@ -2033,7 +2033,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x01190|      6e 65 74                                 |  net           |                          value: "net" 0x1192-0x1194.7 (3)
        |                                               |                |                        [3]{}: label 0x1195-0x1195.7 (1)
 0x01190|               00                              |     .          |                          length: 0 0x1195-0x1195.7 (1)
-       |                                               |                |                      value: "qb-in-f189.1e100.net" 0x1196-NA (0)
+       |                                               |                |                      value: "qb-in-f189.1e100.net"
        |                                               |                |                nameservers[0:0]: 0x1196-NA (0)
        |                                               |                |                additionals[0:0]: 0x1196-NA (0)
 0x01190|                  00 00                        |      ..        |        padding: raw bits 0x1196-0x1197.7 (2)
@@ -2105,7 +2105,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x01200|6f 6d                                          |om              |
        |                                               |                |                        [3]{}: label 0x1202-0x1202.7 (1)
 0x01200|      00                                       |  .             |                          length: 0 0x1202-0x1202.7 (1)
-       |                                               |                |                      value: "clients6.google.com" 0x1203-NA (0)
+       |                                               |                |                      value: "clients6.google.com"
 0x01200|         00 01                                 |   ..           |                    type: "a" (1) 0x1203-0x1204.7 (2)
 0x01200|               00 01                           |     ..         |                    class: "in" (1) (Internet) 0x1205-0x1206.7 (2)
        |                                               |                |                answers[0:0]: 0x1207-NA (0)
@@ -2180,7 +2180,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x01270|6f 6d                                          |om              |
        |                                               |                |                        [3]{}: label 0x1272-0x1272.7 (1)
 0x01270|      00                                       |  .             |                          length: 0 0x1272-0x1272.7 (1)
-       |                                               |                |                      value: "clients6.google.com" 0x1273-NA (0)
+       |                                               |                |                      value: "clients6.google.com"
 0x01270|         00 01                                 |   ..           |                    type: "a" (1) 0x1273-0x1274.7 (2)
 0x01270|               00 01                           |     ..         |                    class: "in" (1) (Internet) 0x1275-0x1276.7 (2)
        |                                               |                |                answers[0:12]: 0x125e-0x133e.7 (225)
@@ -2202,7 +2202,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x01270|6f 6d                                          |om              |
        |                                               |                |                        [3]{}: label 0x1272-0x1272.7 (1)
 0x01270|      00                                       |  .             |                          length: 0 0x1272-0x1272.7 (1)
-       |                                               |                |                      value: "clients6.google.com" 0x1273-NA (0)
+       |                                               |                |                      value: "clients6.google.com"
        |                                               |                |                    cname{}: 0x1267-0x128e.7 (40)
        |                                               |                |                      labels[0:5]: 0x1267-0x128e.7 (40)
        |                                               |                |                        [0]{}: label 0x1283-0x128a.7 (8)
@@ -2222,7 +2222,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x01270|6f 6d                                          |om              |
        |                                               |                |                        [4]{}: label 0x1272-0x1272.7 (1)
 0x01270|      00                                       |  .             |                          length: 0 0x1272-0x1272.7 (1)
-       |                                               |                |                      value: "clients.l.google.com" 0x1273-NA (0)
+       |                                               |                |                      value: "clients.l.google.com"
 0x01270|                           00 05               |         ..     |                    type: "cname" (5) 0x1279-0x127a.7 (2)
 0x01270|                                 00 01         |           ..   |                    class: "in" (1) (Internet) 0x127b-0x127c.7 (2)
 0x01270|                                       00 00 00|             ...|                    ttl: 16 0x127d-0x1280.7 (4)
@@ -2251,7 +2251,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x01270|6f 6d                                          |om              |
        |                                               |                |                        [4]{}: label 0x1272-0x1272.7 (1)
 0x01270|      00                                       |  .             |                          length: 0 0x1272-0x1272.7 (1)
-       |                                               |                |                      value: "clients.l.google.com" 0x1273-NA (0)
+       |                                               |                |                      value: "clients.l.google.com"
 0x01290|   00 01                                       | ..             |                    type: "a" (1) 0x1291-0x1292.7 (2)
 0x01290|         00 01                                 |   ..           |                    class: "in" (1) (Internet) 0x1293-0x1294.7 (2)
 0x01290|               00 00 00 e9                     |     ....       |                    ttl: 233 0x1295-0x1298.7 (4)
@@ -2280,7 +2280,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x01270|6f 6d                                          |om              |
        |                                               |                |                        [4]{}: label 0x1272-0x1272.7 (1)
 0x01270|      00                                       |  .             |                          length: 0 0x1272-0x1272.7 (1)
-       |                                               |                |                      value: "clients.l.google.com" 0x1273-NA (0)
+       |                                               |                |                      value: "clients.l.google.com"
 0x012a0|   00 01                                       | ..             |                    type: "a" (1) 0x12a1-0x12a2.7 (2)
 0x012a0|         00 01                                 |   ..           |                    class: "in" (1) (Internet) 0x12a3-0x12a4.7 (2)
 0x012a0|               00 00 00 e9                     |     ....       |                    ttl: 233 0x12a5-0x12a8.7 (4)
@@ -2309,7 +2309,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x01270|6f 6d                                          |om              |
        |                                               |                |                        [4]{}: label 0x1272-0x1272.7 (1)
 0x01270|      00                                       |  .             |                          length: 0 0x1272-0x1272.7 (1)
-       |                                               |                |                      value: "clients.l.google.com" 0x1273-NA (0)
+       |                                               |                |                      value: "clients.l.google.com"
 0x012b0|   00 01                                       | ..             |                    type: "a" (1) 0x12b1-0x12b2.7 (2)
 0x012b0|         00 01                                 |   ..           |                    class: "in" (1) (Internet) 0x12b3-0x12b4.7 (2)
 0x012b0|               00 00 00 e9                     |     ....       |                    ttl: 233 0x12b5-0x12b8.7 (4)
@@ -2338,7 +2338,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x01270|6f 6d                                          |om              |
        |                                               |                |                        [4]{}: label 0x1272-0x1272.7 (1)
 0x01270|      00                                       |  .             |                          length: 0 0x1272-0x1272.7 (1)
-       |                                               |                |                      value: "clients.l.google.com" 0x1273-NA (0)
+       |                                               |                |                      value: "clients.l.google.com"
 0x012c0|   00 01                                       | ..             |                    type: "a" (1) 0x12c1-0x12c2.7 (2)
 0x012c0|         00 01                                 |   ..           |                    class: "in" (1) (Internet) 0x12c3-0x12c4.7 (2)
 0x012c0|               00 00 00 e9                     |     ....       |                    ttl: 233 0x12c5-0x12c8.7 (4)
@@ -2367,7 +2367,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x01270|6f 6d                                          |om              |
        |                                               |                |                        [4]{}: label 0x1272-0x1272.7 (1)
 0x01270|      00                                       |  .             |                          length: 0 0x1272-0x1272.7 (1)
-       |                                               |                |                      value: "clients.l.google.com" 0x1273-NA (0)
+       |                                               |                |                      value: "clients.l.google.com"
 0x012d0|   00 01                                       | ..             |                    type: "a" (1) 0x12d1-0x12d2.7 (2)
 0x012d0|         00 01                                 |   ..           |                    class: "in" (1) (Internet) 0x12d3-0x12d4.7 (2)
 0x012d0|               00 00 00 e9                     |     ....       |                    ttl: 233 0x12d5-0x12d8.7 (4)
@@ -2396,7 +2396,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x01270|6f 6d                                          |om              |
        |                                               |                |                        [4]{}: label 0x1272-0x1272.7 (1)
 0x01270|      00                                       |  .             |                          length: 0 0x1272-0x1272.7 (1)
-       |                                               |                |                      value: "clients.l.google.com" 0x1273-NA (0)
+       |                                               |                |                      value: "clients.l.google.com"
 0x012e0|   00 01                                       | ..             |                    type: "a" (1) 0x12e1-0x12e2.7 (2)
 0x012e0|         00 01                                 |   ..           |                    class: "in" (1) (Internet) 0x12e3-0x12e4.7 (2)
 0x012e0|               00 00 00 e9                     |     ....       |                    ttl: 233 0x12e5-0x12e8.7 (4)
@@ -2425,7 +2425,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x01270|6f 6d                                          |om              |
        |                                               |                |                        [4]{}: label 0x1272-0x1272.7 (1)
 0x01270|      00                                       |  .             |                          length: 0 0x1272-0x1272.7 (1)
-       |                                               |                |                      value: "clients.l.google.com" 0x1273-NA (0)
+       |                                               |                |                      value: "clients.l.google.com"
 0x012f0|   00 01                                       | ..             |                    type: "a" (1) 0x12f1-0x12f2.7 (2)
 0x012f0|         00 01                                 |   ..           |                    class: "in" (1) (Internet) 0x12f3-0x12f4.7 (2)
 0x012f0|               00 00 00 e9                     |     ....       |                    ttl: 233 0x12f5-0x12f8.7 (4)
@@ -2454,7 +2454,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x01270|6f 6d                                          |om              |
        |                                               |                |                        [4]{}: label 0x1272-0x1272.7 (1)
 0x01270|      00                                       |  .             |                          length: 0 0x1272-0x1272.7 (1)
-       |                                               |                |                      value: "clients.l.google.com" 0x1273-NA (0)
+       |                                               |                |                      value: "clients.l.google.com"
 0x01300|   00 01                                       | ..             |                    type: "a" (1) 0x1301-0x1302.7 (2)
 0x01300|         00 01                                 |   ..           |                    class: "in" (1) (Internet) 0x1303-0x1304.7 (2)
 0x01300|               00 00 00 e9                     |     ....       |                    ttl: 233 0x1305-0x1308.7 (4)
@@ -2483,7 +2483,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x01270|6f 6d                                          |om              |
        |                                               |                |                        [4]{}: label 0x1272-0x1272.7 (1)
 0x01270|      00                                       |  .             |                          length: 0 0x1272-0x1272.7 (1)
-       |                                               |                |                      value: "clients.l.google.com" 0x1273-NA (0)
+       |                                               |                |                      value: "clients.l.google.com"
 0x01310|   00 01                                       | ..             |                    type: "a" (1) 0x1311-0x1312.7 (2)
 0x01310|         00 01                                 |   ..           |                    class: "in" (1) (Internet) 0x1313-0x1314.7 (2)
 0x01310|               00 00 00 e9                     |     ....       |                    ttl: 233 0x1315-0x1318.7 (4)
@@ -2512,7 +2512,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x01270|6f 6d                                          |om              |
        |                                               |                |                        [4]{}: label 0x1272-0x1272.7 (1)
 0x01270|      00                                       |  .             |                          length: 0 0x1272-0x1272.7 (1)
-       |                                               |                |                      value: "clients.l.google.com" 0x1273-NA (0)
+       |                                               |                |                      value: "clients.l.google.com"
 0x01320|   00 01                                       | ..             |                    type: "a" (1) 0x1321-0x1322.7 (2)
 0x01320|         00 01                                 |   ..           |                    class: "in" (1) (Internet) 0x1323-0x1324.7 (2)
 0x01320|               00 00 00 e9                     |     ....       |                    ttl: 233 0x1325-0x1328.7 (4)
@@ -2541,7 +2541,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
 0x01270|6f 6d                                          |om              |
        |                                               |                |                        [4]{}: label 0x1272-0x1272.7 (1)
 0x01270|      00                                       |  .             |                          length: 0 0x1272-0x1272.7 (1)
-       |                                               |                |                      value: "clients.l.google.com" 0x1273-NA (0)
+       |                                               |                |                      value: "clients.l.google.com"
 0x01330|   00 01                                       | ..             |                    type: "a" (1) 0x1331-0x1332.7 (2)
 0x01330|         00 01                                 |   ..           |                    class: "in" (1) (Internet) 0x1333-0x1334.7 (2)
 0x01330|               00 00 00 e9                     |     ....       |                    ttl: 233 0x1335-0x1338.7 (4)
@@ -5516,11 +5516,11 @@ $ fq -d pcapng dv many_interfaces.pcapng
        |                                               |                |    tcp_connections[0:2]: 0x51b8-NA (0)
        |                                               |                |      [0]{}: tcp_connection 0x51b8-NA (0)
        |                                               |                |        client{}: 0x51b8-NA (0)
-       |                                               |                |          ip: "192.168.1.139" 0x51b8-NA (0)
-       |                                               |                |          port: 50981 0x51b8-NA (0)
-       |                                               |                |          has_start: true 0x51b8-NA (0)
-       |                                               |                |          has_end: false 0x51b8-NA (0)
-       |                                               |                |          skipped_bytes: 0 0x51b8-NA (0)
+       |                                               |                |          ip: "192.168.1.139"
+       |                                               |                |          port: 50981
+       |                                               |                |          has_start: true
+       |                                               |                |          has_end: false
+       |                                               |                |          skipped_bytes: 0
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|          stream{}: (tls) 0x0-0x7b0.7 (1969)
        |                                               |                |            records[0:9]: 0x0-0x7b0.7 (1969)
        |                                               |                |              [0]{}: record 0x0-0x204.7 (517)
@@ -5721,11 +5721,11 @@ $ fq -d pcapng dv many_interfaces.pcapng
   0x079|96 50 96 ef 10 f4 be e9 a0 94 5f 07 be dc fd 50|.P........_....P|
   *    |until 0x7b0.7 (end) (41)                       |                |
        |                                               |                |        server{}: 0x51b8-NA (0)
-       |                                               |                |          ip: "74.125.228.227" 0x51b8-NA (0)
+       |                                               |                |          ip: "74.125.228.227"
        |                                               |                |          port: "https" (443) (http protocol over TLS/SSL) 0x51b8-NA (0)
-       |                                               |                |          has_start: true 0x51b8-NA (0)
-       |                                               |                |          has_end: false 0x51b8-NA (0)
-       |                                               |                |          skipped_bytes: 0 0x51b8-NA (0)
+       |                                               |                |          has_start: true
+       |                                               |                |          has_end: false
+       |                                               |                |          skipped_bytes: 0
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|          stream{}: (tls) 0x0-0x35b.7 (860)
        |                                               |                |            records[0:9]: 0x0-0x35b.7 (860)
        |                                               |                |              [0]{}: record 0x0-0x5e.7 (95)
@@ -5820,11 +5820,11 @@ $ fq -d pcapng dv many_interfaces.pcapng
   0x035|50 80 03 4c 1f a3 49 61 07 01 10 30|           |P..L..Ia...0|   |
        |                                               |                |      [1]{}: tcp_connection 0x51b8-NA (0)
        |                                               |                |        client{}: 0x51b8-NA (0)
-       |                                               |                |          ip: "192.168.1.139" 0x51b8-NA (0)
-       |                                               |                |          port: 50982 0x51b8-NA (0)
-       |                                               |                |          has_start: true 0x51b8-NA (0)
-       |                                               |                |          has_end: false 0x51b8-NA (0)
-       |                                               |                |          skipped_bytes: 0 0x51b8-NA (0)
+       |                                               |                |          ip: "192.168.1.139"
+       |                                               |                |          port: 50982
+       |                                               |                |          has_start: true
+       |                                               |                |          has_end: false
+       |                                               |                |          skipped_bytes: 0
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|          stream{}: (tls) 0x0-0xd7.7 (216)
        |                                               |                |            records[0:1]: 0x0-0xd7.7 (216)
        |                                               |                |              [0]{}: record 0x0-0xd7.7 (216)
@@ -5964,9 +5964,9 @@ $ fq -d pcapng dv many_interfaces.pcapng
   0x00d|            00 17                              |    ..          |                        [0]: 0x17 supported_group 0xd4-0xd5.7 (2)
   0x00d|                  00 18|                       |      ..|       |                        [1]: 0x18 supported_group 0xd6-0xd7.7 (2)
        |                                               |                |        server{}: 0x51b8-NA (0)
-       |                                               |                |          ip: "74.125.228.227" 0x51b8-NA (0)
+       |                                               |                |          ip: "74.125.228.227"
        |                                               |                |          port: "https" (443) (http protocol over TLS/SSL) 0x51b8-NA (0)
-       |                                               |                |          has_start: true 0x51b8-NA (0)
-       |                                               |                |          has_end: false 0x51b8-NA (0)
-       |                                               |                |          skipped_bytes: 0 0x51b8-NA (0)
+       |                                               |                |          has_start: true
+       |                                               |                |          has_end: false
+       |                                               |                |          skipped_bytes: 0
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|          stream: raw bits 0x0-NA (0)

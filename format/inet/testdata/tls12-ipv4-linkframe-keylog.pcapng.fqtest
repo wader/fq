@@ -62,39 +62,39 @@ $ fq 'first(grep_by(.type=="enhanced_packet")), .[0].tcp_connections | dv' tls12
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].tcp_connections[0:2]: 0x2814-NA (0)
        |                                               |                |  [0]{}: tcp_connection 0x2814-NA (0)
        |                                               |                |    client{}: 0x2814-NA (0)
-       |                                               |                |      ip: "10.9.0.2" 0x2814-NA (0)
-       |                                               |                |      port: 46800 0x2814-NA (0)
-       |                                               |                |      has_start: false 0x2814-NA (0)
-       |                                               |                |      has_end: false 0x2814-NA (0)
-       |                                               |                |      skipped_bytes: 0 0x2814-NA (0)
+       |                                               |                |      ip: "10.9.0.2"
+       |                                               |                |      port: 46800
+       |                                               |                |      has_start: false
+       |                                               |                |      has_end: false
+       |                                               |                |      skipped_bytes: 0
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
   0x000|16 03 01 00 e0 01 00 00 dc 03 03 f6 7a 28 b3 86|............z(..|      stream: raw bits 0x0-0x1ea.7 (491)
   *    |until 0x1ea.7 (end) (491)                      |                |
        |                                               |                |    server{}: 0x2814-NA (0)
-       |                                               |                |      ip: "93.184.216.34" 0x2814-NA (0)
+       |                                               |                |      ip: "93.184.216.34"
        |                                               |                |      port: "https" (443) (http protocol over TLS/SSL) 0x2814-NA (0)
-       |                                               |                |      has_start: false 0x2814-NA (0)
-       |                                               |                |      has_end: false 0x2814-NA (0)
-       |                                               |                |      skipped_bytes: 0 0x2814-NA (0)
+       |                                               |                |      has_start: false
+       |                                               |                |      has_end: false
+       |                                               |                |      skipped_bytes: 0
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
   0x000|16 03 03 00 70 02 00 00 6c 03 03 75 d0 16 e2 3a|....p...l..u...:|      stream: raw bits 0x0-0xe4d.7 (3662)
   *    |until 0xe4d.7 (end) (3662)                     |                |
        |                                               |                |  [1]{}: tcp_connection 0x2814-NA (0)
        |                                               |                |    client{}: 0x2814-NA (0)
-       |                                               |                |      ip: "10.9.0.2" 0x2814-NA (0)
-       |                                               |                |      port: 46802 0x2814-NA (0)
-       |                                               |                |      has_start: false 0x2814-NA (0)
-       |                                               |                |      has_end: false 0x2814-NA (0)
-       |                                               |                |      skipped_bytes: 0 0x2814-NA (0)
+       |                                               |                |      ip: "10.9.0.2"
+       |                                               |                |      port: 46802
+       |                                               |                |      has_start: false
+       |                                               |                |      has_end: false
+       |                                               |                |      skipped_bytes: 0
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
   0x000|16 03 01 00 e0 01 00 00 dc 03 03 1e 0d 63 b4 1d|.............c..|      stream: raw bits 0x0-0x1ea.7 (491)
   *    |until 0x1ea.7 (end) (491)                      |                |
        |                                               |                |    server{}: 0x2814-NA (0)
-       |                                               |                |      ip: "93.184.216.34" 0x2814-NA (0)
+       |                                               |                |      ip: "93.184.216.34"
        |                                               |                |      port: "https" (443) (http protocol over TLS/SSL) 0x2814-NA (0)
-       |                                               |                |      has_start: false 0x2814-NA (0)
-       |                                               |                |      has_end: false 0x2814-NA (0)
-       |                                               |                |      skipped_bytes: 0 0x2814-NA (0)
+       |                                               |                |      has_start: false
+       |                                               |                |      has_end: false
+       |                                               |                |      skipped_bytes: 0
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
   0x000|16 03 03 00 70 02 00 00 6c 03 03 2e af a1 24 6f|....p...l.....$o|      stream: raw bits 0x0-0xe4d.7 (3662)
   *    |until 0xe4d.7 (end) (3662)                     |                |

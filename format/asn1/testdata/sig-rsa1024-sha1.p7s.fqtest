@@ -65,7 +65,7 @@ $ fq -d bytes 'from_pem | asn1_ber | dv' sig-rsa1024-sha1.p7s
 0x0020|               05                              |     .          |                      form: "primitive" (0) 0x25.2-0x25.2 (0.1)
 0x0020|               05                              |     .          |                      tag: "null" (0x5) 0x25.3-0x25.7 (0.5)
 0x0020|                  00                           |      .         |                      length: "indefinite" (0) 0x26-0x26.7 (1)
-      |                                               |                |                      value: null 0x27-NA (0)
+      |                                               |                |                      value: null
       |                                               |                |            [2]{}: object 0x27-0x33.7 (13)
 0x0020|                     30                        |       0        |              class: "universal" (0) 0x27-0x27.1 (0.2)
 0x0020|                     30                        |       0        |              form: "constructed" (1) 0x27.2-0x27.2 (0.1)
@@ -148,7 +148,7 @@ $ fq -d bytes 'from_pem | asn1_ber | dv' sig-rsa1024-sha1.p7s
 0x0060|            05                                 |    .           |                              form: "primitive" (0) 0x64.2-0x64.2 (0.1)
 0x0060|            05                                 |    .           |                              tag: "null" (0x5) 0x64.3-0x64.7 (0.5)
 0x0060|               00                              |     .          |                              length: "indefinite" (0) 0x65-0x65.7 (1)
-      |                                               |                |                              value: null 0x66-NA (0)
+      |                                               |                |                              value: null
       |                                               |                |                        [3]{}: object 0x66-0x73.7 (14)
 0x0060|                  30                           |      0         |                          class: "universal" (0) 0x66-0x66.1 (0.2)
 0x0060|                  30                           |      0         |                          form: "constructed" (1) 0x66.2-0x66.2 (0.1)
@@ -267,7 +267,7 @@ $ fq -d bytes 'from_pem | asn1_ber | dv' sig-rsa1024-sha1.p7s
 0x00b0|      05                                       |  .             |                                  form: "primitive" (0) 0xb2.2-0xb2.2 (0.1)
 0x00b0|      05                                       |  .             |                                  tag: "null" (0x5) 0xb2.3-0xb2.7 (0.5)
 0x00b0|         00                                    |   .            |                                  length: "indefinite" (0) 0xb3-0xb3.7 (1)
-      |                                               |                |                                  value: null 0xb4-NA (0)
+      |                                               |                |                                  value: null
       |                                               |                |                            [1]{}: object 0xb4-0x143.7 (144)
 0x00b0|            03                                 |    .           |                              class: "universal" (0) 0xb4-0xb4.1 (0.2)
 0x00b0|            03                                 |    .           |                              form: "primitive" (0) 0xb4.2-0xb4.2 (0.1)
@@ -391,7 +391,7 @@ $ fq -d bytes 'from_pem | asn1_ber | dv' sig-rsa1024-sha1.p7s
 0x01a0|               05                              |     .          |                          form: "primitive" (0) 0x1a5.2-0x1a5.2 (0.1)
 0x01a0|               05                              |     .          |                          tag: "null" (0x5) 0x1a5.3-0x1a5.7 (0.5)
 0x01a0|                  00                           |      .         |                          length: "indefinite" (0) 0x1a6-0x1a6.7 (1)
-      |                                               |                |                          value: null 0x1a7-NA (0)
+      |                                               |                |                          value: null
       |                                               |                |                    [2]{}: object 0x1a7-0x22a.7 (132)
 0x01a0|                     03                        |       .        |                      class: "universal" (0) 0x1a7-0x1a7.1 (0.2)
 0x01a0|                     03                        |       .        |                      form: "primitive" (0) 0x1a7.2-0x1a7.2 (0.1)
@@ -489,7 +489,7 @@ $ fq -d bytes 'from_pem | asn1_ber | dv' sig-rsa1024-sha1.p7s
 0x0260|   05                                          | .              |                          form: "primitive" (0) 0x261.2-0x261.2 (0.1)
 0x0260|   05                                          | .              |                          tag: "null" (0x5) 0x261.3-0x261.7 (0.5)
 0x0260|      00                                       |  .             |                          length: "indefinite" (0) 0x262-0x262.7 (1)
-      |                                               |                |                          value: null 0x263-NA (0)
+      |                                               |                |                          value: null
       |                                               |                |                    [3]{}: object 0x263-0x2c1.7 (95)
 0x0260|         a0                                    |   .            |                      class: "context" (2) 0x263-0x263.1 (0.2)
 0x0260|         a0                                    |   .            |                      form: "constructed" (1) 0x263.2-0x263.2 (0.1)
@@ -622,7 +622,7 @@ $ fq -d bytes 'from_pem | asn1_ber | dv' sig-rsa1024-sha1.p7s
 0x02c0|                                             05|               .|                          form: "primitive" (0) 0x2cf.2-0x2cf.2 (0.1)
 0x02c0|                                             05|               .|                          tag: "null" (0x5) 0x2cf.3-0x2cf.7 (0.5)
 0x02d0|00                                             |.               |                          length: "indefinite" (0) 0x2d0-0x2d0.7 (1)
-      |                                               |                |                          value: null 0x2d1-NA (0)
+      |                                               |                |                          value: null
       |                                               |                |                    [5]{}: object 0x2d1-0x353.7 (131)
 0x02d0|   04                                          | .              |                      class: "universal" (0) 0x2d1-0x2d1.1 (0.2)
 0x02d0|   04                                          | .              |                      form: "primitive" (0) 0x2d1.2-0x2d1.2 (0.1)

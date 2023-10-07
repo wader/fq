@@ -395,8 +395,8 @@ $ fq -d mp4 dv dash_audio_init.mp4
 0x380|            00 00|                             |    ..|         |                sample_degradation_priority: 0 0x384-0x385.7 (2)
      |                                               |                |  tracks[0:1]: 0x386-NA (0)
      |                                               |                |    [0]{}: track 0x386-NA (0)
-     |                                               |                |      id: 1 0x386-NA (0)
-     |                                               |                |      data_format: "mp4a" (MPEG-4 Audio) 0x386-NA (0)
+     |                                               |                |      id: 1
+     |                                               |                |      data_format: "mp4a" (MPEG-4 Audio)
      |                                               |                |      samples[0:0]: 0x386-NA (0)
 $ fq -d mp4 dv dash_audio_1.m4s
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: dash_audio_1.m4s (mp4) 0x0-0x913.7 (2324)
@@ -936,8 +936,8 @@ $ fq -d mp4 dv dash_audio_1.m4s
 *    |until 0x7c5.7 (287)                            |                |
 0x900|                                             5f|               _|        [5]: raw bits sample 0x90f-0x913.7 (5)
 0x910|f1 3e 6a 77|                                   |.>jw|           |
-     |                                               |                |      id: 1 0x914-NA (0)
-     |                                               |                |      data_format: "unknown" 0x914-NA (0)
+     |                                               |                |      id: 1
+     |                                               |                |      data_format: "unknown"
 0x560|                                       44 22 33|             D"3|  gap1: raw bits 0x56d-0x58c.7 (32)
 0x570|44 55 66 77 88 99 aa bb cc dd ee ff 2b 44 22 33|DUfw........+D"3|
 0x580|44 55 66 77 88 99 aa bb cc dd ee ff 39         |DUfw........9   |
@@ -1063,5 +1063,5 @@ $ fq -d mp4 dv dash_video_1.m4s
 0x1710|   00 00 08 bc 65 88 84 0c ff fe f6 86 f8 14 d8| ....e..........|        [2]: raw bits sample 0x1711-0x1fd0.7 (2240)
 0x1720|53 23 af ff f2 50 06 7f 30 02 17 55 d4 5a 6f db|S#...P..0..U.Zo.|
 *     |until 0x1fd0.7 (end) (2240)                    |                |
-      |                                               |                |      id: 1 0x1fd1-NA (0)
-      |                                               |                |      data_format: "unknown" 0x1fd1-NA (0)
+      |                                               |                |      id: 1
+      |                                               |                |      data_format: "unknown"

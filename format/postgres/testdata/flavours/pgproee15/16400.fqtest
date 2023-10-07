@@ -1,21 +1,21 @@
 $ fq -d pg_heap -o flavour=pgproee15 ".[0].pd_linp[0, 1, 2, -1] | dv" 16400
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].pd_linp[0]{}: item_id 0x14-0x17.7 (4)
 0x10|            68 9f f2 00                        |    h...        |  item_id_data: 15900520 0x14-0x17.7 (4)
-    |                                               |                |  lp_off: 8040 0x18-NA (0)
-    |                                               |                |  lp_flags: "LP_NORMAL" (1) 0x18-NA (0)
-    |                                               |                |  lp_len: 121 0x18-NA (0)
+    |                                               |                |  lp_off: 8040
+    |                                               |                |  lp_flags: "LP_NORMAL" (1)
+    |                                               |                |  lp_len: 121
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].pd_linp[1]{}: item_id 0x18-0x1b.7 (4)
 0x10|                        e8 9e f2 00            |        ....    |  item_id_data: 15900392 0x18-0x1b.7 (4)
-    |                                               |                |  lp_off: 7912 0x1c-NA (0)
-    |                                               |                |  lp_flags: "LP_NORMAL" (1) 0x1c-NA (0)
-    |                                               |                |  lp_len: 121 0x1c-NA (0)
+    |                                               |                |  lp_off: 7912
+    |                                               |                |  lp_flags: "LP_NORMAL" (1)
+    |                                               |                |  lp_len: 121
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].pd_linp[2]{}: item_id 0x1c-0x1f.7 (4)
 0x10|                                    68 9e f2 00|            h...|  item_id_data: 15900264 0x1c-0x1f.7 (4)
-    |                                               |                |  lp_off: 7784 0x20-NA (0)
-    |                                               |                |  lp_flags: "LP_NORMAL" (1) 0x20-NA (0)
-    |                                               |                |  lp_len: 121 0x20-NA (0)
+    |                                               |                |  lp_off: 7784
+    |                                               |                |  lp_flags: "LP_NORMAL" (1)
+    |                                               |                |  lp_len: 121
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].pd_linp[60]{}: item_id 0x104-0x107.7 (4)
 0x100|            68 81 f2 00                        |    h...        |  item_id_data: 15892840 0x104-0x107.7 (4)
-     |                                               |                |  lp_off: 360 0x108-NA (0)
-     |                                               |                |  lp_flags: "LP_NORMAL" (1) 0x108-NA (0)
-     |                                               |                |  lp_len: 121 0x108-NA (0)
+     |                                               |                |  lp_off: 360
+     |                                               |                |  lp_flags: "LP_NORMAL" (1)
+     |                                               |                |  lp_len: 121

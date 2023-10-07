@@ -1,7 +1,7 @@
 $ fq -o decode_samples=true 'first(grep_by(.id=="simple_block")) | dv' aac.mkv
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.elements[1].elements[5].elements[2]{}: element 0x227-0x2fa.7 (212)
 0x220|                     a3                        |       .        |  id: "simple_block" (0xa3) (Similar to Block) 0x227-0x227.7 (1)
-     |                                               |                |  type: "binary" 0x228-NA (0)
+     |                                               |                |  type: "binary"
 0x220|                        40 d1                  |        @.      |  size: 209 0x228-0x229.7 (2)
 0x220|                              81               |          .     |  track_number: 1 0x22a-0x22a.7 (1)
 0x220|                                 00 00         |           ..   |  timestamp: 0 0x22b-0x22c.7 (2)
@@ -17,7 +17,7 @@ $ fq -o decode_samples=true 'first(grep_by(.id=="simple_block")) | dv' aac.mkv
      |                                               |                |      cnt{}: 0x22e.3-0x22f.6 (1.4)
 0x220|                                          de   |              . |        count: 15 0x22e.3-0x22e.6 (0.4)
 0x220|                                          de 02|              ..|        esc_count: 1 0x22e.7-0x22f.6 (1)
-     |                                               |                |      payload_length: 15 0x22f.7-NA (0)
+     |                                               |                |      payload_length: 15
      |                                               |                |      extension_payload{}: 0x22f.7-0x23e.6 (15)
 0x220|                                             02|               .|        extension_type: "EXT_FILL" (0) 0x22f.7-0x230.2 (0.4)
 0x230|00                                             |.               |
@@ -41,7 +41,7 @@ $ fq -o decode_samples=true 'first(grep_by(.id=="simple_block")) | dv' aac.mkv
 $ fq -o decode_samples=false 'first(grep_by(.id=="simple_block")) | dv' aac.mkv
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.elements[1].elements[5].elements[2]{}: element 0x227-0x2fa.7 (212)
 0x220|                     a3                        |       .        |  id: "simple_block" (0xa3) (Similar to Block) 0x227-0x227.7 (1)
-     |                                               |                |  type: "binary" 0x228-NA (0)
+     |                                               |                |  type: "binary"
 0x220|                        40 d1                  |        @.      |  size: 209 0x228-0x229.7 (2)
 0x220|                              81               |          .     |  track_number: 1 0x22a-0x22a.7 (1)
 0x220|                                 00 00         |           ..   |  timestamp: 0 0x22b-0x22c.7 (2)

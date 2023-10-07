@@ -66,7 +66,7 @@ $ fq dv link_type_raw.pcap
 0x60|6d                                             |m               |
     |                                               |                |                    [3]{}: label 0x61-0x61.7 (1)
 0x60|   00                                          | .              |                      length: 0 0x61-0x61.7 (1)
-    |                                               |                |                  value: "mtalk.google.com" 0x62-NA (0)
+    |                                               |                |                  value: "mtalk.google.com"
 0x60|      00 1c                                    |  ..            |                type: "aaaa" (28) 0x62-0x63.7 (2)
 0x60|            00 01|                             |    ..|         |                class: "in" (1) (Internet) 0x64-0x65.7 (2)
     |                                               |                |            answers[0:0]: 0x66-NA (0)

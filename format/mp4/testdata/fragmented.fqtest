@@ -1185,8 +1185,8 @@ $ fq -d mp4 dv fragmented.mp4
 0x02ba0|                                    00         |            .   |          version: 0 0x2bac-0x2bac.7 (1)
 0x02ba0|                                       00 00 00|             ...|          flags: 0 0x2bad-0x2baf.7 (3)
 0x02bb0|00 00 00 ba|                                   |....|           |          mfra_size: 186 0x2bb0-0x2bb3.7 (4)
-       |                                               |                |  tracks[0:2]: 0x65d-0x2bb3.7 (9559)
-       |                                               |                |    [0]{}: track 0x65d-0x2bb3.7 (9559)
+       |                                               |                |  tracks[0:2]: 0x65d-0x2af9.7 (9373)
+       |                                               |                |    [0]{}: track 0x65d-0x2af4.7 (9368)
        |                                               |                |      samples[0:3]: 0x65d-0x2af4.7 (9368)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [0][0:2]: sample (avc_au) 0x65d-0x13df.7 (3459)
        |                                               |                |          [0]{}: nalu 0x65d-0x8bd.7 (609)
@@ -1250,9 +1250,9 @@ $ fq -d mp4 dv fragmented.mp4
 0x02230|                                 84 0c ff fe f6|           .....|              data: raw bits 0x223b.1-0x2af4.7 (2233.7)
 0x02240|86 f8 14 d8 53 23 af ff f2 50 06 7f 30 02 17 55|....S#...P..0..U|
 *      |until 0x2af4.7 (2234)                          |                |
-       |                                               |                |      id: 1 0x2bb4-NA (0)
-       |                                               |                |      data_format: "avc1" (Advanced Video Coding) 0x2bb4-NA (0)
-       |                                               |                |    [1]{}: track 0x13e0-0x2bb3.7 (6100)
+       |                                               |                |      id: 1
+       |                                               |                |      data_format: "avc1" (Advanced Video Coding)
+       |                                               |                |    [1]{}: track 0x13e0-0x2af9.7 (5914)
        |                                               |                |      samples[0:6]: 0x13e0-0x2af9.7 (5914)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [0][0:4]: sample (aac_frame) 0x13e0-0x14ad.7 (206)
        |                                               |                |          [0]{}: element 0x13e0-0x13f1.6 (17.7)
@@ -1260,7 +1260,7 @@ $ fq -d mp4 dv fragmented.mp4
        |                                               |                |            cnt{}: 0x13e0.3-0x13e1.6 (1.4)
 0x013e0|de                                             |.               |              count: 15 0x13e0.3-0x13e0.6 (0.4)
 0x013e0|de 04                                          |..              |              esc_count: 2 0x13e0.7-0x13e1.6 (1)
-       |                                               |                |            payload_length: 16 0x13e1.7-NA (0)
+       |                                               |                |            payload_length: 16
        |                                               |                |            extension_payload{}: 0x13e1.7-0x13f1.6 (16)
 0x013e0|   04 00                                       | ..             |              extension_type: "EXT_FILL" (0) 0x13e1.7-0x13e2.2 (0.4)
 0x013e0|      00                                       |  .             |              fill_nibble: 0 0x13e2.3-0x13e2.6 (0.4)
@@ -1353,5 +1353,5 @@ $ fq -d mp4 dv fragmented.mp4
 0x02af0|                     81 b4                     |       ..       |              scale_factor_grouping: 109 0x2af7.7-0x2af8.5 (0.7)
 0x02af0|                        b4                     |        .       |          [1]: raw bits byte_align 0x2af8.6-0x2af8.7 (0.2)
 0x02af0|                           70                  |         p      |          [2]: raw bits data 0x2af9-0x2af9.7 (1)
-       |                                               |                |      id: 2 0x2bb4-NA (0)
-       |                                               |                |      data_format: "mp4a" (MPEG-4 Audio) 0x2bb4-NA (0)
+       |                                               |                |      id: 2
+       |                                               |                |      data_format: "mp4a" (MPEG-4 Audio)

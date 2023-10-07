@@ -71,7 +71,7 @@ $ fq -d ogg dv flac.ogg
        |                                               |                |        [3]: raw bits segment 0x31c-NA (0)
        |                                               |                |  streams[0:1]: 0x4f-NA (0)
        |                                               |                |    [0]{}: stream 0x4f-NA (0)
-       |                                               |                |      serial_number: 599479009 0x4f-NA (0)
+       |                                               |                |      serial_number: 599479009
        |                                               |                |      packets[0:3]: 0x4f-NA (0)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [0]{}: packet 0x0-0x32.7 (51)
   0x000|7f                                             |.               |          type: 127 0x0-0x0.7 (1)
@@ -129,9 +129,9 @@ $ fq -d ogg dv flac.ogg
        |                                               |                |            [0]{}: subframe 0x8-0x257.1 (591.2)
   0x000|                        4a                     |        J       |              zero_bit: 0 (valid) 0x8-0x8 (0.1)
   0x000|                        4a                     |        J       |              subframe_type: "lpc" (0b100101) 0x8.1-0x8.6 (0.6)
-       |                                               |                |              lpc_order: 6 0x8.7-NA (0)
+       |                                               |                |              lpc_order: 6
   0x000|                        4a                     |        J       |              wasted_bits_flag: 0 0x8.7-0x8.7 (0.1)
-       |                                               |                |              subframe_sample_size: 16 0x9-NA (0)
+       |                                               |                |              subframe_sample_size: 16
        |                                               |                |              warmup_samples[0:6]: 0x9-0x14.7 (12)
   0x000|                           00 00               |         ..     |                [0]: 0 value 0x9-0xa.7 (2)
   0x000|                                 01 00         |           ..   |                [1]: 256 value 0xb-0xc.7 (2)
@@ -152,10 +152,10 @@ $ fq -d ogg dv flac.ogg
   0x002|56 20                                          |V               |
   0x002|   20                                          |                |              residual_coding_method: 4 (0) (rice) 0x21.3-0x21.4 (0.2)
   0x002|   20 01                                       |  .             |              partition_order: 0 0x21.5-0x22 (0.4)
-       |                                               |                |              rice_partitions: 1 0x22.1-NA (0)
+       |                                               |                |              rice_partitions: 1
        |                                               |                |              partitions[0:1]: 0x22.1-0x257.1 (565.1)
        |                                               |                |                [0]{}: partition 0x22.1-0x257.1 (565.1)
-       |                                               |                |                  count: 2199 0x22.1-NA (0)
+       |                                               |                |                  count: 2199
   0x002|      01                                       |  .             |                  rice_parameter: 0 0x22.1-0x22.4 (0.4)
   0x002|      01 39 24 ce 12 64 92 49 39 9e 73 84 d3 39|  .9$..d.I9.s..9|                  samples: raw bits 0x22.5-0x257.1 (564.5)
   0x003|2c ce 49 29 f3 e7 e6 4e 4f 27 84 93 92 72 72 4f|,.I)...NO'...rrO|

@@ -357,5 +357,5 @@ $ fq dv png_no_hdlr.mp4
 0x360|                                          44   |              D |              safe_to_copy: false 0x36e.3-0x36e.3 (0.1)
 0x360|                                             ae|               .|              crc: 0xae426082 (valid) 0x36f-0x372.7 (4)
 0x370|42 60 82|                                      |B`.|            |
-     |                                               |                |      id: 1 0x373-NA (0)
-     |                                               |                |      data_format: "mp4v" (MPEG-4 Visual) 0x373-NA (0)
+     |                                               |                |      id: 1
+     |                                               |                |      data_format: "mp4v" (MPEG-4 Visual)

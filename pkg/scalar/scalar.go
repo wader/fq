@@ -18,6 +18,15 @@ import (
 
 //go:generate sh -c "cat scalar_gen.go.tmpl | go run ../../dev/tmpl.go ../decode/types.json | gofmt > scalar_gen.go"
 
+type Scalarable interface {
+	ScalarActual() any
+	ScalarValue() any
+	ScalarSym() any
+	ScalarDescription() string
+	ScalarFlags() Flags
+	ScalarDisplayFormat() DisplayFormat
+}
+
 type DisplayFormat int
 
 const (
@@ -41,6 +50,16 @@ func (df DisplayFormat) FormatBase() int {
 		return 0
 	}
 }
+
+const (
+	FlagGap Flags = 1 << iota
+	FlagSynthetic
+)
+
+type Flags uint
+
+func (f Flags) IsGap() bool       { return f&FlagGap != 0 }
+func (f Flags) IsSynthetic() bool { return f&FlagSynthetic != 0 }
 
 // TODO: todos
 // rename raw?

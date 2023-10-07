@@ -6,10 +6,10 @@ $ fq dv simple.luac
 0x000|         02                                    |   .            |    version: 2 0x3-0x3.7 (1)
      |                                               |                |    flags{}: 0x4-0x4.7 (1)
 0x000|            0c                                 |    .           |      raw: 12 0x4-0x4.7 (1)
-     |                                               |                |      be: false 0x5-NA (0)
-     |                                               |                |      strip: false 0x5-NA (0)
-     |                                               |                |      ffi: true 0x5-NA (0)
-     |                                               |                |      fr2: true 0x5-NA (0)
+     |                                               |                |      be: false
+     |                                               |                |      strip: false
+     |                                               |                |      ffi: true
+     |                                               |                |      fr2: true
 0x000|               0c                              |     .          |    namelen: 12 0x5-0x5.7 (1)
 0x000|                  40 65 78 61 6d 70 6c 65 2e 6c|      @example.l|    name: "@example.lua" 0x6-0x11.7 (12)
 0x010|75 61                                          |ua              |
@@ -189,16 +189,16 @@ $ fq dv simple.luac
      |                                               |                |            array[0:6]: 0xd6-0xea.7 (21)
      |                                               |                |              [0]{}: element 0xd6-0xd6.7 (1)
 0x0d0|                  00                           |      .         |                type: "nil" (0) 0xd6-0xd6.7 (1)
-     |                                               |                |                value: null 0xd7-NA (0)
+     |                                               |                |                value: null
      |                                               |                |              [1]{}: element 0xd7-0xd7.7 (1)
 0x0d0|                     02                        |       .        |                type: "true" (2) 0xd7-0xd7.7 (1)
-     |                                               |                |                value: true 0xd8-NA (0)
+     |                                               |                |                value: true
      |                                               |                |              [2]{}: element 0xd8-0xd8.7 (1)
 0x0d0|                        01                     |        .       |                type: "false" (1) 0xd8-0xd8.7 (1)
-     |                                               |                |                value: false 0xd9-NA (0)
+     |                                               |                |                value: false
      |                                               |                |              [3]{}: element 0xd9-0xd9.7 (1)
 0x0d0|                           00                  |         .      |                type: "nil" (0) 0xd9-0xd9.7 (1)
-     |                                               |                |                value: null 0xda-NA (0)
+     |                                               |                |                value: null
      |                                               |                |              [4]{}: element 0xda-0xdf.7 (6)
 0x0d0|                              03               |          .     |                type: "int" (3) 0xda-0xda.7 (1)
 0x0d0|                                 e4 a2 e0 d0 01|           .....|                value: 437784932 0xdb-0xdf.7 (5)
@@ -213,14 +213,14 @@ $ fq dv simple.luac
 0x0f0|66 61 6c 73 65                                 |false           |
      |                                               |                |                value{}: 0xf5-0xf5.7 (1)
 0x0f0|               01                              |     .          |                  type: "false" (1) 0xf5-0xf5.7 (1)
-     |                                               |                |                  value: false 0xf6-NA (0)
+     |                                               |                |                  value: false
      |                                               |                |              [1]{}: pair 0xf6-0xff.7 (10)
      |                                               |                |                key{}: 0xf6-0xfe.7 (9)
 0x0f0|                  0d                           |      .         |                  type: "str" (13) 0xf6-0xf6.7 (1)
 0x0f0|                     73 6f 6d 65 74 72 75 65   |       sometrue |                  value: "sometrue" 0xf7-0xfe.7 (8)
      |                                               |                |                value{}: 0xff-0xff.7 (1)
 0x0f0|                                             02|               .|                  type: "true" (2) 0xff-0xff.7 (1)
-     |                                               |                |                  value: true 0x100-NA (0)
+     |                                               |                |                  value: true
      |                                               |                |              [2]{}: pair 0x100-0x117.7 (24)
      |                                               |                |                key{}: 0x100-0x10a.7 (11)
 0x100|04                                             |.               |                  type: "num" (4) 0x100-0x100.7 (1)

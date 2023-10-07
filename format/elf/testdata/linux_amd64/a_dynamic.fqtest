@@ -849,22 +849,22 @@ $ fq -d elf dv a_dynamic
       |                                               |                |        [2]{}: dynamic_tags 0x2e38-0x2e47.7 (16)
 0x2e30|                        0c 00 00 00 00 00 00 00|        ........|          tag: "init" (12) (Address of the initialization function) 0x2e38-0x2e3f.7 (8)
 0x2e40|00 10 00 00 00 00 00 00                        |........        |          ptr: 0x1000 0x2e40-0x2e47.7 (8)
-      |                                               |                |          section_index: 8 0x2e48-NA (0)
+      |                                               |                |          section_index: 8
       |                                               |                |        [3]{}: dynamic_tags 0x2e48-0x2e57.7 (16)
 0x2e40|                        0d 00 00 00 00 00 00 00|        ........|          tag: "fini" (13) (Address of the termination function) 0x2e48-0x2e4f.7 (8)
 0x2e50|81 12 00 00 00 00 00 00                        |........        |          ptr: 0x1281 0x2e50-0x2e57.7 (8)
-      |                                               |                |          section_index: 12 0x2e58-NA (0)
+      |                                               |                |          section_index: 12
       |                                               |                |        [4]{}: dynamic_tags 0x2e58-0x2e67.7 (16)
 0x2e50|                        f5 fe ff 6f 00 00 00 00|        ...o....|          tag: 1879047925 0x2e58-0x2e5f.7 (8)
 0x2e60|30 03 00 00 00 00 00 00                        |0.......        |          unspecified: 0x330 0x2e60-0x2e67.7 (8)
       |                                               |                |        [5]{}: dynamic_tags 0x2e68-0x2e77.7 (16)
 0x2e60|                        05 00 00 00 00 00 00 00|        ........|          tag: "strtab" (5) (Address of string table) 0x2e68-0x2e6f.7 (8)
 0x2e70|68 04 00 00 00 00 00 00                        |h.......        |          ptr: 0x468 0x2e70-0x2e77.7 (8)
-      |                                               |                |          section_index: 5 0x2e78-NA (0)
+      |                                               |                |          section_index: 5
       |                                               |                |        [6]{}: dynamic_tags 0x2e78-0x2e87.7 (16)
 0x2e70|                        06 00 00 00 00 00 00 00|        ........|          tag: "symtab" (6) (Address of symbol table) 0x2e78-0x2e7f.7 (8)
 0x2e80|60 03 00 00 00 00 00 00                        |`.......        |          ptr: 0x360 0x2e80-0x2e87.7 (8)
-      |                                               |                |          section_index: 4 0x2e88-NA (0)
+      |                                               |                |          section_index: 4
       |                                               |                |        [7]{}: dynamic_tags 0x2e88-0x2e97.7 (16)
 0x2e80|                        0a 00 00 00 00 00 00 00|        ........|          tag: "strsz" (10) (Size in bytes of string table) 0x2e88-0x2e8f.7 (8)
 0x2e90|c2 00 00 00 00 00 00 00                        |........        |          val: 194 0x2e90-0x2e97.7 (8)
@@ -877,7 +877,7 @@ $ fq -d elf dv a_dynamic
       |                                               |                |        [10]{}: dynamic_tags 0x2eb8-0x2ec7.7 (16)
 0x2eb0|                        03 00 00 00 00 00 00 00|        ........|          tag: "pltgot" (3) (Address of PLT and/or GOT) 0x2eb8-0x2ebf.7 (8)
 0x2ec0|a8 3f 00 00 00 00 00 00                        |.?......        |          ptr: 0x3fa8 0x2ec0-0x2ec7.7 (8)
-      |                                               |                |          section_index: 19 0x2ec8-NA (0)
+      |                                               |                |          section_index: 19
       |                                               |                |        [11]{}: dynamic_tags 0x2ec8-0x2ed7.7 (16)
 0x2ec0|                        02 00 00 00 00 00 00 00|        ........|          tag: "pltrelsz" (2) (Size in bytes of PLT relocation entries) 0x2ec8-0x2ecf.7 (8)
 0x2ed0|48 00 00 00 00 00 00 00                        |H.......        |          val: 72 0x2ed0-0x2ed7.7 (8)
@@ -887,7 +887,7 @@ $ fq -d elf dv a_dynamic
       |                                               |                |        [13]{}: dynamic_tags 0x2ee8-0x2ef7.7 (16)
 0x2ee0|                        17 00 00 00 00 00 00 00|        ........|          tag: "jmprel" (23) (Address of relocation entries associated solely with the PLT) 0x2ee8-0x2eef.7 (8)
 0x2ef0|c0 05 00 00 00 00 00 00                        |........        |          ptr: 0x5c0 0x2ef0-0x2ef7.7 (8)
-      |                                               |                |          section_index: 7 0x2ef8-NA (0)
+      |                                               |                |          section_index: 7
       |                                               |                |        [14]{}: dynamic_tags 0x2ef8-0x2f07.7 (16)
 0x2ef0|                        07 00 00 00 00 00 00 00|        ........|          tag: "rela" (7) (Address of Rela relocation table) 0x2ef8-0x2eff.7 (8)
 0x2f00|30 05 00 00 00 00 00 00                        |0.......        |          ptr: 0x530 0x2f00-0x2f07.7 (8)

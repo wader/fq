@@ -13,17 +13,17 @@ $ fq -d webp dv 4x4.webp
 0x10|            30                                 |    0           |      version: 0 0x14.4-0x14.6 (0.3)
 0x10|            30                                 |    0           |      frame_type: "key_frame" (false) 0x14.7-0x14.7 (0.1)
 0x10|               01 00                           |     ..         |      first_part_size1: 1 0x15-0x16.7 (2)
-    |                                               |                |      first_part_size: 9 0x17-NA (0)
-    |                                               |                |      reconstruction: "Bicubic" 0x17-NA (0)
-    |                                               |                |      loop: "Normal" 0x17-NA (0)
+    |                                               |                |      first_part_size: 9
+    |                                               |                |      reconstruction: "Bicubic"
+    |                                               |                |      loop: "Normal"
 0x10|                     9d 01 2a                  |       ..*      |    start_code: 0x9d012a (valid) 0x17-0x19.7 (3)
 0x10|                              04               |          .     |    width0: 4 0x1a-0x1a.7 (1)
 0x10|                                 00            |           .    |    horizontal_scale: 0 0x1b-0x1b.1 (0.2)
 0x10|                                 00            |           .    |    width1: 0 0x1b.2-0x1b.7 (0.6)
-    |                                               |                |    width: 4 0x1c-NA (0)
+    |                                               |                |    width: 4
 0x10|                                    04         |            .   |    height0: 4 0x1c-0x1c.7 (1)
 0x10|                                       00      |             .  |    vertical_scale: 0 0x1d-0x1d.1 (0.2)
 0x10|                                       00      |             .  |    height1: 0 0x1d.2-0x1d.7 (0.6)
-    |                                               |                |    height: 4 0x1e-NA (0)
+    |                                               |                |    height: 4
 0x10|                                          02 00|              ..|    data: raw bits 0x1e-0x2b.7 (14)
 0x20|34 25 a4 00 03 70 00 fe fb fd 50 00|           |4%...p....P.|   |

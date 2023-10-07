@@ -1,11 +1,11 @@
 $ fq -o keylog=@all.keylog ".tcp_connections[0] | dv" TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256.pcap
           |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.tcp_connections[0]{}: tcp_connection 0xe97-NA (0)
           |                                               |                |  client{}: 0xe97-NA (0)
-          |                                               |                |    ip: "127.0.0.1" 0xe97-NA (0)
-          |                                               |                |    port: 38997 0xe97-NA (0)
-          |                                               |                |    has_start: true 0xe97-NA (0)
-          |                                               |                |    has_end: false 0xe97-NA (0)
-          |                                               |                |    skipped_bytes: 0 0xe97-NA (0)
+          |                                               |                |    ip: "127.0.0.1"
+          |                                               |                |    port: 38997
+          |                                               |                |    has_start: true
+          |                                               |                |    has_end: false
+          |                                               |                |    skipped_bytes: 0
           |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    stream{}: (tls) 0x0-0x1e5.7 (486)
           |                                               |                |      records[0:6]: 0x0-0x1e5.7 (486)
           |                                               |                |        [0]{}: record 0x0-0xa5.7 (166)
@@ -189,11 +189,11 @@ $ fq -o keylog=@all.keylog ".tcp_connections[0] | dv" TLS_ECDHE_RSA_WITH_AES_128
     0x0000|47 45 54 20 2f 20 48 54 54 50 2f 31 2e 30 0d 0a|GET / HTTP/1.0..|      stream: raw bits 0x0-0x11.7 (18)
     0x0000|0d 0a|                                         |..|             |
           |                                               |                |  server{}: 0xe97-NA (0)
-          |                                               |                |    ip: "127.0.0.1" 0xe97-NA (0)
-          |                                               |                |    port: 4430 0xe97-NA (0)
-          |                                               |                |    has_start: true 0xe97-NA (0)
-          |                                               |                |    has_end: true 0xe97-NA (0)
-          |                                               |                |    skipped_bytes: 0 0xe97-NA (0)
+          |                                               |                |    ip: "127.0.0.1"
+          |                                               |                |    port: 4430
+          |                                               |                |    has_start: true
+          |                                               |                |    has_end: true
+          |                                               |                |    skipped_bytes: 0
           |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    stream{}: (tls) 0x0-0x898.7 (2201)
           |                                               |                |      records[0:8]: 0x0-0x898.7 (2201)
           |                                               |                |        [0]{}: record 0x0-0x46.7 (71)
@@ -288,7 +288,7 @@ $ fq -o keylog=@all.keylog ".tcp_connections[0] | dv" TLS_ECDHE_RSA_WITH_AES_128
   0x000007|                  05                           |      .         |                              form: "primitive" (0) 0x76.2-0x76.2 (0.1)
   0x000007|                  05                           |      .         |                              tag: "null" (0x5) 0x76.3-0x76.7 (0.5)
   0x000007|                     00                        |       .        |                              length: "indefinite" (0) 0x77-0x77.7 (1)
-          |                                               |                |                              value: null 0x78-NA (0)
+          |                                               |                |                              value: null
           |                                               |                |                        [2]{}: object 0x78-0x98.7 (33)
   0x000007|                        30                     |        0       |                          class: "universal" (0) 0x78-0x78.1 (0.2)
   0x000007|                        30                     |        0       |                          form: "constructed" (1) 0x78.2-0x78.2 (0.1)
@@ -409,7 +409,7 @@ $ fq -o keylog=@all.keylog ".tcp_connections[0] | dv" TLS_ECDHE_RSA_WITH_AES_128
   0x00000e|                              05               |          .     |                                  form: "primitive" (0) 0xea.2-0xea.2 (0.1)
   0x00000e|                              05               |          .     |                                  tag: "null" (0x5) 0xea.3-0xea.7 (0.5)
   0x00000e|                                 00            |           .    |                                  length: "indefinite" (0) 0xeb-0xeb.7 (1)
-          |                                               |                |                                  value: null 0xec-NA (0)
+          |                                               |                |                                  value: null
           |                                               |                |                            [1]{}: object 0xec-0x17b.7 (144)
   0x00000e|                                    03         |            .   |                              class: "universal" (0) 0xec-0xec.1 (0.2)
   0x00000e|                                    03         |            .   |                              form: "primitive" (0) 0xec.2-0xec.2 (0.1)
@@ -442,7 +442,7 @@ $ fq -o keylog=@all.keylog ".tcp_connections[0] | dv" TLS_ECDHE_RSA_WITH_AES_128
   0x000018|                           05                  |         .      |                          form: "primitive" (0) 0x189.2-0x189.2 (0.1)
   0x000018|                           05                  |         .      |                          tag: "null" (0x5) 0x189.3-0x189.7 (0.5)
   0x000018|                              00               |          .     |                          length: "indefinite" (0) 0x18a-0x18a.7 (1)
-          |                                               |                |                          value: null 0x18b-NA (0)
+          |                                               |                |                          value: null
           |                                               |                |                    [2]{}: object 0x18b-0x20e.7 (132)
   0x000018|                                 03            |           .    |                      class: "universal" (0) 0x18b-0x18b.1 (0.2)
   0x000018|                                 03            |           .    |                      form: "primitive" (0) 0x18b.2-0x18b.2 (0.1)

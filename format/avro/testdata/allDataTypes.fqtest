@@ -37,7 +37,7 @@ $ fq dv allDataTypes.avro
 0x420|0c                                             |.               |
      |                                               |                |      data[0:10]: 0x421-0x728.7 (776)
      |                                               |                |        [0]{}: datum 0x421-0x46b.7 (75)
-     |                                               |                |          null: null 0x421-NA (0)
+     |                                               |                |          null: null
 0x420|   01                                          | .              |          boolean: true 0x421-0x421.7 (1)
 0x420|      0e                                       |  .             |          int: 7 0x422-0x422.7 (1)
 0x420|         42                                    |   B            |          long: 33 0x423-0x423.7 (1)
@@ -96,7 +96,7 @@ $ fq dv allDataTypes.avro
 0x460|84 ad 8d 37                                    |...7            |
 0x460|            e0 dd bf b3 a7 c0 ae 03            |    ........    |          timestampMicros: "2000-01-01T00:00:00.006Z" (946684800006000) 0x464-0x46b.7 (8)
      |                                               |                |        [1]{}: datum 0x46c-0x4b9.7 (78)
-     |                                               |                |          null: null 0x46c-NA (0)
+     |                                               |                |          null: null
 0x460|                                    00         |            .   |          boolean: false 0x46c-0x46c.7 (1)
 0x460|                                       0c      |             .  |          int: 6 0x46d-0x46d.7 (1)
 0x460|                                          40   |              @ |          long: 32 0x46e-0x46e.7 (1)
@@ -162,7 +162,7 @@ $ fq dv allDataTypes.avro
 0x4b0|8d 37                                          |.7              |
 0x4b0|      a2 a2 f9 90 ab c5 ae 03                  |  ........      |          timestampMicros: "2000-01-01T23:59:59.994001Z" (946771199994001) 0x4b2-0x4b9.7 (8)
      |                                               |                |        [2]{}: datum 0x4ba-0x509.7 (80)
-     |                                               |                |          null: null 0x4ba-NA (0)
+     |                                               |                |          null: null
 0x4b0|                              01               |          .     |          boolean: true 0x4ba-0x4ba.7 (1)
 0x4b0|                                 0a            |           .    |          int: 5 0x4bb-0x4bb.7 (1)
 0x4b0|                                    46         |            F   |          long: 35 0x4bc-0x4bc.7 (1)
@@ -231,7 +231,7 @@ $ fq dv allDataTypes.avro
 0x500|8e 37                                          |.7              |
 0x500|      e4 dd b5 ee ae ca ae 03                  |  ........      |          timestampMicros: "2000-01-03T00:00:00.006002Z" (946857600006002) 0x502-0x509.7 (8)
      |                                               |                |        [3]{}: datum 0x50a-0x554.7 (75)
-     |                                               |                |          null: null 0x50a-NA (0)
+     |                                               |                |          null: null
 0x500|                              00               |          .     |          boolean: false 0x50a-0x50a.7 (1)
 0x500|                                 08            |           .    |          int: 4 0x50b-0x50b.7 (1)
 0x500|                                    44         |            D   |          long: 34 0x50c-0x50c.7 (1)
@@ -291,7 +291,7 @@ $ fq dv allDataTypes.avro
 0x540|                                       a6 a2 ef|             ...|          timestampMicros: "2000-01-03T23:59:59.994003Z" (946943999994003) 0x54d-0x554.7 (8)
 0x550|cb b2 cf ae 03                                 |.....           |
      |                                               |                |        [4]{}: datum 0x555-0x5a3.7 (79)
-     |                                               |                |          null: null 0x555-NA (0)
+     |                                               |                |          null: null
 0x550|               01                              |     .          |          boolean: true 0x555-0x555.7 (1)
 0x550|                  06                           |      .         |          int: 3 0x556-0x556.7 (1)
 0x550|                     4a                        |       J        |          long: 37 0x557-0x557.7 (1)
@@ -356,7 +356,7 @@ $ fq dv allDataTypes.avro
 0x590|                                    e8 dd ab a9|            ....|          timestampMicros: "2000-01-05T00:00:00.006004Z" (947030400006004) 0x59c-0x5a3.7 (8)
 0x5a0|b6 d4 ae 03                                    |....            |
      |                                               |                |        [5]{}: datum 0x5a4-0x5f4.7 (81)
-     |                                               |                |          null: null 0x5a4-NA (0)
+     |                                               |                |          null: null
 0x5a0|            00                                 |    .           |          boolean: false 0x5a4-0x5a4.7 (1)
 0x5a0|               04                              |     .          |          int: 2 0x5a5-0x5a5.7 (1)
 0x5a0|                  48                           |      H         |          long: 36 0x5a6-0x5a6.7 (1)
@@ -425,7 +425,7 @@ $ fq dv allDataTypes.avro
 0x5e0|                                       aa a2 e5|             ...|          timestampMicros: "2000-01-05T23:59:59.994005Z" (947116799994005) 0x5ed-0x5f4.7 (8)
 0x5f0|86 ba d9 ae 03                                 |.....           |
      |                                               |                |        [6]{}: datum 0x5f5-0x640.7 (76)
-     |                                               |                |          null: null 0x5f5-NA (0)
+     |                                               |                |          null: null
 0x5f0|               01                              |     .          |          boolean: true 0x5f5-0x5f5.7 (1)
 0x5f0|                  02                           |      .         |          int: 1 0x5f6-0x5f6.7 (1)
 0x5f0|                     4e                        |       N        |          long: 39 0x5f7-0x5f7.7 (1)
@@ -486,7 +486,7 @@ $ fq dv allDataTypes.avro
 0x630|                           ec dd a1 e4 bd de ae|         .......|          timestampMicros: "2000-01-07T00:00:00.006006Z" (947203200006006) 0x639-0x640.7 (8)
 0x640|03                                             |.               |
      |                                               |                |        [7]{}: datum 0x641-0x68f.7 (79)
-     |                                               |                |          null: null 0x641-NA (0)
+     |                                               |                |          null: null
 0x640|   00                                          | .              |          boolean: false 0x641-0x641.7 (1)
 0x640|      00                                       |  .             |          int: 0 0x642-0x642.7 (1)
 0x640|         4c                                    |   L            |          long: 38 0x643-0x643.7 (1)
@@ -550,7 +550,7 @@ $ fq dv allDataTypes.avro
 0x680|      ce e9 e8 ed 91 37                        |  .....7        |          timestampMillis: "2000-01-08T00:01:00.007Z" (947289660007) 0x682-0x687.7 (6)
 0x680|                        ae a2 db c1 c1 e3 ae 03|        ........|          timestampMicros: "2000-01-07T23:59:59.994007Z" (947289599994007) 0x688-0x68f.7 (8)
      |                                               |                |        [8]{}: datum 0x690-0x6de.7 (79)
-     |                                               |                |          null: null 0x690-NA (0)
+     |                                               |                |          null: null
 0x690|01                                             |.               |          boolean: true 0x690-0x690.7 (1)
 0x690|   1e                                          | .              |          int: 15 0x691-0x691.7 (1)
 0x690|      52                                       |  R             |          long: 41 0x692-0x692.7 (1)
@@ -618,7 +618,7 @@ $ fq dv allDataTypes.avro
 0x6d0|   d0 d9 9b c0 92 37                           | .....7         |          timestampMillis: "2000-01-09T00:01:00.008Z" (947376060008) 0x6d1-0x6d6.7 (6)
 0x6d0|                     f0 dd 97 9f c5 e8 ae 03   |       ........ |          timestampMicros: "2000-01-09T00:00:00.006008Z" (947376000006008) 0x6d7-0x6de.7 (8)
      |                                               |                |        [9]{}: datum 0x6df-0x728.7 (74)
-     |                                               |                |          null: null 0x6df-NA (0)
+     |                                               |                |          null: null
 0x6d0|                                             00|               .|          boolean: false 0x6df-0x6df.7 (1)
 0x6e0|1c                                             |.               |          int: 14 0x6e0-0x6e0.7 (1)
 0x6e0|   50                                          | P              |          long: 40 0x6e1-0x6e1.7 (1)

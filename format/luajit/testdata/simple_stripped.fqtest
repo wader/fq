@@ -6,10 +6,10 @@ $ fq dv simple_stripped.luac
 0x000|         02                                    |   .            |    version: 2 0x3-0x3.7 (1)
      |                                               |                |    flags{}: 0x4-0x4.7 (1)
 0x000|            0e                                 |    .           |      raw: 14 0x4-0x4.7 (1)
-     |                                               |                |      be: false 0x5-NA (0)
-     |                                               |                |      strip: true 0x5-NA (0)
-     |                                               |                |      ffi: true 0x5-NA (0)
-     |                                               |                |      fr2: true 0x5-NA (0)
+     |                                               |                |      be: false
+     |                                               |                |      strip: true
+     |                                               |                |      ffi: true
+     |                                               |                |      fr2: true
      |                                               |                |  proto[0:2]: 0x5-0x132.7 (302)
      |                                               |                |    [0]{}: proto 0x5-0x3a.7 (54)
 0x000|               35                              |     5          |      length: 53 0x5-0x5.7 (1)
@@ -163,16 +163,16 @@ $ fq dv simple_stripped.luac
      |                                               |                |            array[0:6]: 0xaf-0xc3.7 (21)
      |                                               |                |              [0]{}: element 0xaf-0xaf.7 (1)
 0x0a0|                                             00|               .|                type: "nil" (0) 0xaf-0xaf.7 (1)
-     |                                               |                |                value: null 0xb0-NA (0)
+     |                                               |                |                value: null
      |                                               |                |              [1]{}: element 0xb0-0xb0.7 (1)
 0x0b0|02                                             |.               |                type: "true" (2) 0xb0-0xb0.7 (1)
-     |                                               |                |                value: true 0xb1-NA (0)
+     |                                               |                |                value: true
      |                                               |                |              [2]{}: element 0xb1-0xb1.7 (1)
 0x0b0|   01                                          | .              |                type: "false" (1) 0xb1-0xb1.7 (1)
-     |                                               |                |                value: false 0xb2-NA (0)
+     |                                               |                |                value: false
      |                                               |                |              [3]{}: element 0xb2-0xb2.7 (1)
 0x0b0|      00                                       |  .             |                type: "nil" (0) 0xb2-0xb2.7 (1)
-     |                                               |                |                value: null 0xb3-NA (0)
+     |                                               |                |                value: null
      |                                               |                |              [4]{}: element 0xb3-0xb8.7 (6)
 0x0b0|         03                                    |   .            |                type: "int" (3) 0xb3-0xb3.7 (1)
 0x0b0|            e4 a2 e0 d0 01                     |    .....       |                value: 437784932 0xb4-0xb8.7 (5)
@@ -227,7 +227,7 @@ $ fq dv simple_stripped.luac
 0x120|6f 6d 65 66 61 6c 73 65                        |omefalse        |
      |                                               |                |                value{}: 0x128-0x128.7 (1)
 0x120|                        01                     |        .       |                  type: "false" (1) 0x128-0x128.7 (1)
-     |                                               |                |                  value: false 0x129-NA (0)
+     |                                               |                |                  value: false
      |                                               |                |              [6]{}: pair 0x129-0x132.7 (10)
      |                                               |                |                key{}: 0x129-0x131.7 (9)
 0x120|                           0d                  |         .      |                  type: "str" (13) 0x129-0x129.7 (1)
@@ -235,6 +235,6 @@ $ fq dv simple_stripped.luac
 0x130|75 65                                          |ue              |
      |                                               |                |                value{}: 0x132-0x132.7 (1)
 0x130|      02                                       |  .             |                  type: "true" (2) 0x132-0x132.7 (1)
-     |                                               |                |                  value: true 0x133-NA (0)
+     |                                               |                |                  value: true
      |                                               |                |        knum[0:0]: 0x133-NA (0)
 0x130|         00|                                   |   .|           |  end: raw bits (valid) 0x133-0x133.7 (1)

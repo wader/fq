@@ -190,6 +190,9 @@ func (v *Value) postProcess() {
 				if f.IsRoot {
 					continue
 				}
+				if s, ok := f.V.(scalar.Scalarable); ok && s.ScalarFlags().IsSynthetic() {
+					continue
+				}
 
 				if first {
 					v.Range = f.Range

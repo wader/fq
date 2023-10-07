@@ -12,4 +12,4 @@ $ fq -d asn1_ber dv tc10.ber
 0x0|         04                                    |   .            |  exp_bytes: 4 0x3-0x3.7 (1)
 0x0|            ff ff ff fb                        |    ....        |  exp: -5 0x4-0x7.7 (4)
 0x0|                        05|                    |        .|      |  n: 5 0x8-0x8.7 (1)
-   |                                               |                |  value: 0.15625 0x9-NA (0)
+   |                                               |                |  value: 0.15625

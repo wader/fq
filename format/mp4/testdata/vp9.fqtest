@@ -314,14 +314,14 @@ $ fq -d mp4 dv vp9.mp4
 0x1830|                                          00 00|              ..|                          reserved: 0 0x183e-0x1841.7 (4)
 0x1840|00 00                                          |..              |
 0x1840|      4c 61 76 66 35 38 2e 34 35 2e 31 30 30|  |  Lavf58.45.100||                          data: "Lavf58.45.100" 0x1842-0x184e.7 (13)
-      |                                               |                |  tracks[0:1]: 0x2c-0x184e.7 (6179)
-      |                                               |                |    [0]{}: track 0x2c-0x184e.7 (6179)
+      |                                               |                |  tracks[0:1]: 0x2c-0x1563.7 (5432)
+      |                                               |                |    [0]{}: track 0x2c-0x1563.7 (5432)
       |                                               |                |      samples[0:1]: 0x2c-0x1563.7 (5432)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [0]{}: sample (vp9_frame) 0x2c-0x1563.7 (5432)
 0x0020|                                    a2         |            .   |          frame_marker: 2 0x2c-0x2c.1 (0.2)
 0x0020|                                    a2         |            .   |          profile_low_bit: 1 0x2c.2-0x2c.2 (0.1)
 0x0020|                                    a2         |            .   |          profile_high_bit: 0 0x2c.3-0x2c.3 (0.1)
-      |                                               |                |          profile: 1 (8 bit, chroma subsampling: 4:2:2, 4:4:0, 4:4:4) 0x2c.4-NA (0)
+      |                                               |                |          profile: 1 (8 bit, chroma subsampling: 4:2:2, 4:4:0, 4:4:4)
 0x0020|                                    a2         |            .   |          show_existing_frame: false 0x2c.4-0x2c.4 (0.1)
 0x0020|                                    a2         |            .   |          frame_type: "key_frame" (false) 0x2c.5-0x2c.5 (0.1)
 0x0020|                                    a2         |            .   |          show_frame: 1 0x2c.6-0x2c.6 (0.1)
@@ -329,16 +329,16 @@ $ fq -d mp4 dv vp9.mp4
 0x0020|                                       49      |             I  |          frame_sync_byte_0: 73 0x2d-0x2d.7 (1)
 0x0020|                                          83   |              . |          frame_sync_byte_1: 131 0x2e-0x2e.7 (1)
 0x0020|                                             42|               B|          frame_sync_byte_2: 66 0x2f-0x2f.7 (1)
-      |                                               |                |          bit_depth: 8 0x30-NA (0)
+      |                                               |                |          bit_depth: 8
 0x0030|e0                                             |.               |          color_space: "rgb" (7) 0x30-0x30.2 (0.3)
-      |                                               |                |          color_range: 1 0x30.3-NA (0)
-      |                                               |                |          subsampling_x: 0 0x30.3-NA (0)
-      |                                               |                |          subsampling_y: 0 0x30.3-NA (0)
+      |                                               |                |          color_range: 1
+      |                                               |                |          subsampling_x: 0
+      |                                               |                |          subsampling_y: 0
 0x0030|e0                                             |.               |          reserved_zero2: 0 0x30.3-0x30.3 (0.1)
 0x0030|e0 13 f0                                       |...             |          frame_width: 320 0x30.4-0x32.3 (2)
 0x0030|      f0 0e f6                                 |  ...           |          frame_height: 240 0x32.4-0x34.3 (2)
 0x0030|            f6 0a 38 24 1c 18 4a 00 0b 70 7f d9|    ..8$..J..p..|          data: raw bits 0x34.4-0x1563.7 (5423.4)
 0x0040|f9 be 8f e7 71 ff 5f 97 ef c3 f9 7e 37 b0 7e ad|....q._....~7.~.|
 *     |until 0x1563.7 (5424)                          |                |
-      |                                               |                |      id: 1 0x184f-NA (0)
-      |                                               |                |      data_format: "vp09" (VP9 video) 0x184f-NA (0)
+      |                                               |                |      id: 1
+      |                                               |                |      data_format: "vp09" (VP9 video)

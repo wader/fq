@@ -3,17 +3,17 @@ $ fq -d pcap '.tcp_connections | dv' sll2_tcp_mss_wrong.pcap
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.tcp_connections[0:1]: 0x1e5-NA (0)
      |                                               |                |  [0]{}: tcp_connection 0x1e5-NA (0)
      |                                               |                |    client{}: 0x1e5-NA (0)
-     |                                               |                |      ip: "127.0.0.1" 0x1e5-NA (0)
-     |                                               |                |      port: 47174 0x1e5-NA (0)
-     |                                               |                |      has_start: true 0x1e5-NA (0)
-     |                                               |                |      has_end: false 0x1e5-NA (0)
-     |                                               |                |      skipped_bytes: 0 0x1e5-NA (0)
+     |                                               |                |      ip: "127.0.0.1"
+     |                                               |                |      port: 47174
+     |                                               |                |      has_start: true
+     |                                               |                |      has_end: false
+     |                                               |                |      skipped_bytes: 0
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
   0x0|74 65 73 74 0a|                                |test.|          |      stream: raw bits 0x0-0x4.7 (5)
      |                                               |                |    server{}: 0x1e5-NA (0)
-     |                                               |                |      ip: "127.0.0.1" 0x1e5-NA (0)
-     |                                               |                |      port: 1234 0x1e5-NA (0)
-     |                                               |                |      has_start: true 0x1e5-NA (0)
-     |                                               |                |      has_end: false 0x1e5-NA (0)
-     |                                               |                |      skipped_bytes: 0 0x1e5-NA (0)
+     |                                               |                |      ip: "127.0.0.1"
+     |                                               |                |      port: 1234
+     |                                               |                |      has_start: true
+     |                                               |                |      has_end: false
+     |                                               |                |      skipped_bytes: 0
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      stream: raw bits 0x0-NA (0)

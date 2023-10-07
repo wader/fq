@@ -67,7 +67,7 @@ $ fq -d msgpack 'dv,torepr' types.msgpack
 0x30|   74 72 75 65                                 | true           |        value: "true" 0x31-0x34.7 (4)
     |                                               |                |      value{}: 0x35-0x35.7 (1)
 0x30|               c3                              |     .          |        type: "true" (0xc3) 0x35-0x35.7 (1)
-    |                                               |                |        value: true 0x36-NA (0)
+    |                                               |                |        value: true
     |                                               |                |    [5]{}: pair 0x36-0x3c.7 (7)
     |                                               |                |      key{}: 0x36-0x3b.7 (6)
 0x30|                  a5                           |      .         |        type: "fixstr" (0xa5) 0x36-0x36.7 (1)
@@ -75,7 +75,7 @@ $ fq -d msgpack 'dv,torepr' types.msgpack
 0x30|                     66 61 6c 73 65            |       false    |        value: "false" 0x37-0x3b.7 (5)
     |                                               |                |      value{}: 0x3c-0x3c.7 (1)
 0x30|                                    c2         |            .   |        type: "false" (0xc2) 0x3c-0x3c.7 (1)
-    |                                               |                |        value: false 0x3d-NA (0)
+    |                                               |                |        value: false
     |                                               |                |    [6]{}: pair 0x3d-0x42.7 (6)
     |                                               |                |      key{}: 0x3d-0x41.7 (5)
 0x30|                                       a4      |             .  |        type: "fixstr" (0xa4) 0x3d-0x3d.7 (1)
@@ -84,7 +84,7 @@ $ fq -d msgpack 'dv,torepr' types.msgpack
 0x40|6c 6c                                          |ll              |
     |                                               |                |      value{}: 0x42-0x42.7 (1)
 0x40|      c0|                                      |  .|            |        type: "nil" (0xc0) 0x42-0x42.7 (1)
-    |                                               |                |        value: null 0x43-NA (0)
+    |                                               |                |        value: null
 {
   "array": [
     1,

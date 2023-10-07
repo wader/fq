@@ -357,7 +357,7 @@ func (d *D) FillGaps(r ranges.Range, namePrefix string) {
 			Name: fmt.Sprintf("%s%d", namePrefix, i),
 			V: &scalar.BitBuf{
 				Actual: br,
-				Gap:    true,
+				Flags:  scalar.FlagGap,
 			},
 			RootReader: d.bitBuf,
 			Range:      gap,

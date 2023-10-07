@@ -1,11 +1,11 @@
 $ fq -d pg_heap -o flavour=pgpro11 ".[0].pd_linp[0,-1] | dv" 16396
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].pd_linp[0]{}: item_id 0x18-0x1b.7 (4)
 0x10|                        80 9f f2 00            |        ....    |  item_id_data: 15900544 0x18-0x1b.7 (4)
-    |                                               |                |  lp_off: 8064 0x1c-NA (0)
-    |                                               |                |  lp_flags: "LP_NORMAL" (1) 0x1c-NA (0)
-    |                                               |                |  lp_len: 121 0x1c-NA (0)
+    |                                               |                |  lp_off: 8064
+    |                                               |                |  lp_flags: "LP_NORMAL" (1)
+    |                                               |                |  lp_len: 121
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].pd_linp[60]{}: item_id 0x108-0x10b.7 (4)
 0x100|                        80 81 f2 00            |        ....    |  item_id_data: 15892864 0x108-0x10b.7 (4)
-     |                                               |                |  lp_off: 384 0x10c-NA (0)
-     |                                               |                |  lp_flags: "LP_NORMAL" (1) 0x10c-NA (0)
-     |                                               |                |  lp_len: 121 0x10c-NA (0)
+     |                                               |                |  lp_off: 384
+     |                                               |                |  lp_flags: "LP_NORMAL" (1)
+     |                                               |                |  lp_len: 121

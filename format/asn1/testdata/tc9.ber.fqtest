@@ -11,4 +11,4 @@ $ fq -d asn1_ber dv tc9.ber
 0x0|      bc                                       |  .             |  format: 0 0x2.6-0x2.7 (0.2)
 0x0|         fe                                    |   .            |  exp: -2 0x3-0x3.7 (1)
 0x0|            05|                                |    .|          |  n: 5 0x4-0x4.7 (1)
-   |                                               |                |  value: +Inf 0x5-NA (0)
+   |                                               |                |  value: +Inf
