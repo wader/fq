@@ -1,7 +1,7 @@
 package riff
 
 // TODO:
-// mp3 mappig, seem there can be many frames in one sample and they span samples?
+// mp3 mappig, samples can span?
 // hevc mapping?
 // DV handler https://learn.microsoft.com/en-us/windows/win32/directshow/dv-data-in-the-avi-file-format
 // palette change
@@ -120,6 +120,7 @@ type aviStream struct {
 	hasFormat   bool
 	format      *decode.Group
 	formatInArg any
+	sampleSize  uint64
 	indexes     []ranges.Range
 	ixSamples   []ranges.Range
 }
@@ -327,7 +328,7 @@ func aviDecode(d *decode.D) any {
 				d.FieldU32("length")
 				d.FieldU32("suggested_buffer_size")
 				d.FieldU32("quality")
-				d.FieldU32("sample_size")
+				sampleSize := d.FieldU32("sample_size")
 				d.FieldStruct("frame", func(d *decode.D) {
 					d.FieldU16("left")
 					d.FieldU16("top")
@@ -338,6 +339,7 @@ func aviDecode(d *decode.D) any {
 				if stream, ok := path.topData().(*aviStream); ok {
 					stream.typ = typ
 					stream.handler = handler
+					stream.sampleSize = sampleSize
 				}
 
 				return false, nil
@@ -557,14 +559,28 @@ func aviDecode(d *decode.D) any {
 					})
 				}
 
-				// TODO: handle zero length samples differently?
 				// TODO: palette change
 				decodeSample := func(d *decode.D, sr ranges.Range) {
 					d.RangeFn(sr.Start, sr.Len, func(d *decode.D) {
-						if sr.Len > 0 && ai.DecodeSamples && stream.hasFormat {
-							d.FieldFormat("sample", stream.format, stream.formatInArg)
-						} else {
+						if sr.Len == 0 {
 							d.FieldRawLen("sample", d.BitsLeft())
+							return
+						}
+
+						subSampleSize := int64(stream.sampleSize) * 8
+						// TODO: <= 4*8 heuristics to not create separate pcm samples
+						if subSampleSize == 0 || subSampleSize <= 4*8 {
+							subSampleSize = sr.Len
+						}
+
+						for d.BitsLeft() > 0 {
+							d.FramedFn(subSampleSize, func(d *decode.D) {
+								if ai.DecodeSamples && stream.hasFormat {
+									d.FieldFormat("sample", stream.format, stream.formatInArg)
+								} else {
+									d.FieldRawLen("sample", d.BitsLeft())
+								}
+							})
 						}
 					})
 				}
