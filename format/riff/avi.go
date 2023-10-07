@@ -568,8 +568,8 @@ func aviDecode(d *decode.D) any {
 						}
 
 						subSampleSize := int64(stream.sampleSize) * 8
-						// TODO: <= 4*8 heuristics to not create separate pcm samples
-						if subSampleSize == 0 || subSampleSize <= 4*8 {
+						// TODO: <= no format and <= 4*8 heuristics to not create separate pcm samples
+						if subSampleSize == 0 || (!stream.hasFormat && subSampleSize <= 4*8) {
 							subSampleSize = sr.Len
 						}
 
