@@ -298,8 +298,8 @@ $ fq -d mp4 dv prores_frame.mov
 0x6ee0|                                          00 0d|              ..|              length: 13 0x6eee-0x6eef.7 (2)
 0x6ef0|55 c4                                          |U.              |              language: "und" 0x6ef0-0x6ef1.7 (2)
 0x6ef0|      4c 61 76 66 35 39 2e 31 36 2e 31 30 30|  |  Lavf59.16.100||              value: "Lavf59.16.100" 0x6ef2-0x6efe.7 (13)
-      |                                               |                |  tracks[0:1]: 0x24-0x6efe.7 (28379)
-      |                                               |                |    [0]{}: track 0x24-0x6efe.7 (28379)
+      |                                               |                |  tracks[0:1]: 0x24-0x6c3c.7 (27673)
+      |                                               |                |    [0]{}: track 0x24-0x6c3c.7 (27673)
       |                                               |                |      samples[0:1]: 0x24-0x6c3c.7 (27673)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [0]{}: sample (prores_frame) 0x24-0x6c3c.7 (27673)
       |                                               |                |          container{}: 0x24-0x2b.7 (8)
@@ -330,5 +330,5 @@ $ fq -d mp4 dv prores_frame.mov
 *     |until 0xbf.7 (64)                              |                |
 0x00c0|40 00 00 6b 7d 00 2d 30 05 a7 05 df 00 25 05 6c|@..k}.-0.....%.l|          picture_data: raw bits 0xc0-0x6c3c.7 (27517)
 *     |until 0x6c3c.7 (27517)                         |                |
-      |                                               |                |      id: 1 0x6eff-NA (0)
-      |                                               |                |      data_format: "ap4h" (Apple ProRes 4444) 0x6eff-NA (0)
+      |                                               |                |      id: 1
+      |                                               |                |      data_format: "ap4h" (Apple ProRes 4444)

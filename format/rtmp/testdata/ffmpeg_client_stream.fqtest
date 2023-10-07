@@ -17,8 +17,8 @@ $ fq -d rtmp dv ffmpeg_client_stream
 *     |until 0xc00.7 (1528)                           |                |
       |                                               |                |  messages[0:8]: 0xc01-NA (0)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [0]{}: message 0x0-0xd1.7 (210)
-      |                                               |                |      message_stream_id: 0 0x0-NA (0)
-      |                                               |                |      message_type_id: "command_message" (20) 0x0-NA (0)
+      |                                               |                |      message_stream_id: 0
+      |                                               |                |      message_type_id: "command_message" (20)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      command_name{}: (amf0) 0x0-0x9.7 (10)
   0x00|02                                             |.               |        type: "string" (2) 0x0-0x0.7 (1)
   0x00|   00 07                                       | ..             |        length: 7 0x1-0x2.7 (2)
@@ -109,12 +109,12 @@ $ fq -d rtmp dv ffmpeg_client_stream
   0x0d|   09|                                         | .|             |              type: "object_end" (9) 0xd1-0xd1.7 (1)
       |                                               |                |      arguments[0:0]: 0xd2-NA (0)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [1]{}: message 0x0-0x3.7 (4)
-      |                                               |                |      message_stream_id: 0 0x0-NA (0)
-      |                                               |                |      message_type_id: "window_acknowledgement_size" (5) 0x0-NA (0)
+      |                                               |                |      message_stream_id: 0
+      |                                               |                |      message_type_id: "window_acknowledgement_size" (5)
   0x00|00 26 25 a0|                                   |.&%.|           |      window_size: 2500000 0x0-0x3.7 (4)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [2]{}: message 0x0-0x18.7 (25)
-      |                                               |                |      message_stream_id: 0 0x0-NA (0)
-      |                                               |                |      message_type_id: "command_message" (20) 0x0-NA (0)
+      |                                               |                |      message_stream_id: 0
+      |                                               |                |      message_type_id: "command_message" (20)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      command_name{}: (amf0) 0x0-0xe.7 (15)
   0x00|02                                             |.               |        type: "string" (2) 0x0-0x0.7 (1)
   0x00|   00 0c                                       | ..             |        length: 12 0x1-0x2.7 (2)
@@ -124,11 +124,11 @@ $ fq -d rtmp dv ffmpeg_client_stream
   0x01|40 00 00 00 00 00 00 00                        |@.......        |        value: 2 0x10-0x17.7 (8)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      command_object{}: (amf0) 0x18-0x18.7 (1)
   0x01|                        05|                    |        .|      |        type: "null" (5) 0x18-0x18.7 (1)
-      |                                               |                |        value: null 0x19-NA (0)
+      |                                               |                |        value: null
       |                                               |                |      arguments[0:0]: 0x19-NA (0)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [3]{}: message 0x0-0x14.7 (21)
-      |                                               |                |      message_stream_id: 0 0x0-NA (0)
-      |                                               |                |      message_type_id: "command_message" (20) 0x0-NA (0)
+      |                                               |                |      message_stream_id: 0
+      |                                               |                |      message_type_id: "command_message" (20)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      command_name{}: (amf0) 0x0-0xa.7 (11)
   0x00|02                                             |.               |        type: "string" (2) 0x0-0x0.7 (1)
   0x00|   00 08                                       | ..             |        length: 8 0x1-0x2.7 (2)
@@ -139,11 +139,11 @@ $ fq -d rtmp dv ffmpeg_client_stream
   0x01|00 00 00 00                                    |....            |
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      command_object{}: (amf0) 0x14-0x14.7 (1)
   0x01|            05|                                |    .|          |        type: "null" (5) 0x14-0x14.7 (1)
-      |                                               |                |        value: null 0x15-NA (0)
+      |                                               |                |        value: null
       |                                               |                |      arguments[0:0]: 0x15-NA (0)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [4]{}: message 0x0-0x1e.7 (31)
-      |                                               |                |      message_stream_id: 0 0x0-NA (0)
-      |                                               |                |      message_type_id: "command_message" (20) 0x0-NA (0)
+      |                                               |                |      message_stream_id: 0
+      |                                               |                |      message_type_id: "command_message" (20)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      command_name{}: (amf0) 0x0-0x11.7 (18)
   0x00|02                                             |.               |        type: "string" (2) 0x0-0x0.7 (1)
   0x00|   00 0f                                       | ..             |        length: 15 0x1-0x2.7 (2)
@@ -154,15 +154,15 @@ $ fq -d rtmp dv ffmpeg_client_stream
   0x01|         40 10 00 00 00 00 00 00               |   @.......     |        value: 4 0x13-0x1a.7 (8)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      command_object{}: (amf0) 0x1b-0x1b.7 (1)
   0x01|                                 05            |           .    |        type: "null" (5) 0x1b-0x1b.7 (1)
-      |                                               |                |        value: null 0x1c-NA (0)
+      |                                               |                |        value: null
       |                                               |                |      arguments[0:1]: 0x1c-0x1e.7 (3)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [0]{}: argument (amf0) 0x1c-0x1e.7 (3)
   0x01|                                    02         |            .   |          type: "string" (2) 0x1c-0x1c.7 (1)
   0x01|                                       00 00|  |             ..||          length: 0 0x1d-0x1e.7 (2)
       |                                               |                |          value: "" 0x1f-NA (0)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [5]{}: message 0x0-0x1c.7 (29)
-      |                                               |                |      message_stream_id: 1 0x0-NA (0)
-      |                                               |                |      message_type_id: "command_message" (20) 0x0-NA (0)
+      |                                               |                |      message_stream_id: 1
+      |                                               |                |      message_type_id: "command_message" (20)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      command_name{}: (amf0) 0x0-0x6.7 (7)
   0x00|02                                             |.               |        type: "string" (2) 0x0-0x0.7 (1)
   0x00|   00 04                                       | ..             |        length: 4 0x1-0x2.7 (2)
@@ -172,7 +172,7 @@ $ fq -d rtmp dv ffmpeg_client_stream
   0x00|                        40 14 00 00 00 00 00 00|        @.......|        value: 5 0x8-0xf.7 (8)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      command_object{}: (amf0) 0x10-0x10.7 (1)
   0x01|05                                             |.               |        type: "null" (5) 0x10-0x10.7 (1)
-      |                                               |                |        value: null 0x11-NA (0)
+      |                                               |                |        value: null
       |                                               |                |      arguments[0:2]: 0x11-0x1c.7 (12)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [0]{}: argument (amf0) 0x11-0x13.7 (3)
   0x01|   02                                          | .              |          type: "string" (2) 0x11-0x11.7 (1)
@@ -182,14 +182,14 @@ $ fq -d rtmp dv ffmpeg_client_stream
   0x01|            00                                 |    .           |          type: "number" (0) 0x14-0x14.7 (1)
   0x01|               c0 9f 40 00 00 00 00 00|        |     ..@.....|  |          value: -2000 0x15-0x1c.7 (8)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [6]{}: message 0x0-0x9.7 (10)
-      |                                               |                |      message_stream_id: 0 0x0-NA (0)
-      |                                               |                |      message_type_id: "user_control_message" (4) 0x0-NA (0)
+      |                                               |                |      message_stream_id: 0
+      |                                               |                |      message_type_id: "user_control_message" (4)
   0x00|00 03                                          |..              |      type: "set_buffer_length" (3) 0x0-0x1.7 (2)
   0x00|      00 00 00 01                              |  ....          |      stream_id: 1 0x2-0x5.7 (4)
   0x00|                  00 00 0b b8|                 |      ....|     |      length: 3000 0x6-0x9.7 (4)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [7]{}: message 0x0-0x21.7 (34)
-      |                                               |                |      message_stream_id: 0 0x0-NA (0)
-      |                                               |                |      message_type_id: "command_message" (20) 0x0-NA (0)
+      |                                               |                |      message_stream_id: 0
+      |                                               |                |      message_type_id: "command_message" (20)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      command_name{}: (amf0) 0x0-0xe.7 (15)
   0x00|02                                             |.               |        type: "string" (2) 0x0-0x0.7 (1)
   0x00|   00 0c                                       | ..             |        length: 12 0x1-0x2.7 (2)
@@ -199,7 +199,7 @@ $ fq -d rtmp dv ffmpeg_client_stream
   0x01|40 18 00 00 00 00 00 00                        |@.......        |        value: 6 0x10-0x17.7 (8)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      command_object{}: (amf0) 0x18-0x18.7 (1)
   0x01|                        05                     |        .       |        type: "null" (5) 0x18-0x18.7 (1)
-      |                                               |                |        value: null 0x19-NA (0)
+      |                                               |                |        value: null
       |                                               |                |      arguments[0:1]: 0x19-0x21.7 (9)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [0]{}: argument (amf0) 0x19-0x21.7 (9)
   0x01|                           00                  |         .      |          type: "number" (0) 0x19-0x19.7 (1)
@@ -213,17 +213,17 @@ $ fq -d rtmp dv ffmpeg_client_stream
 0x0c00|               00 00 d2                        |     ...        |      message_length: 210 0xc05-0xc07.7 (3)
 0x0c00|                        14                     |        .       |      message_type_id: "command_message" (20) 0xc08-0xc08.7 (1)
 0x0c00|                           00 00 00 00         |         ....   |      message_stream_id: 0 0xc09-0xc0c.7 (4)
-      |                                               |                |      calculated_timestamp: 0 0xc0d-NA (0)
+      |                                               |                |      calculated_timestamp: 0
 0x0c00|                                       02 00 07|             ...|      data: raw bits 0xc0d-0xc8c.7 (128)
 0x0c10|63 6f 6e 6e 65 63 74 00 3f f0 00 00 00 00 00 00|connect.?.......|
 *     |until 0xc8c.7 (128)                            |                |
       |                                               |                |    [1]{}: chunk 0xc8d-0xcdf.7 (83)
 0x0c80|                                       c3      |             .  |      fmt: 3 0xc8d-0xc8d.1 (0.2)
 0x0c80|                                       c3      |             .  |      chunk_stream_id: 3 0xc8d.2-0xc8d.7 (0.6)
-      |                                               |                |      message_length: 210 (previous) 0xc8e-NA (0)
-      |                                               |                |      message_type_id: 20 (previous) 0xc8e-NA (0)
-      |                                               |                |      message_stream_id: 0 (previous) 0xc8e-NA (0)
-      |                                               |                |      calculated_timestamp: 0 0xc8e-NA (0)
+      |                                               |                |      message_length: 210 (previous)
+      |                                               |                |      message_type_id: 20 (previous)
+      |                                               |                |      message_stream_id: 0 (previous)
+      |                                               |                |      calculated_timestamp: 0
 0x0c80|                                          65 73|              es|      data: raw bits 0xc8e-0xcdf.7 (82)
 0x0c90|00 40 2e 00 00 00 00 00 00 00 0b 61 75 64 69 6f|.@.........audio|
 *     |until 0xcdf.7 (82)                             |                |
@@ -234,7 +234,7 @@ $ fq -d rtmp dv ffmpeg_client_stream
 0x0ce0|            00 00 04                           |    ...         |      message_length: 4 0xce4-0xce6.7 (3)
 0x0ce0|                     05                        |       .        |      message_type_id: "window_acknowledgement_size" (5) 0xce7-0xce7.7 (1)
 0x0ce0|                        00 00 00 00            |        ....    |      message_stream_id: 0 0xce8-0xceb.7 (4)
-      |                                               |                |      calculated_timestamp: 0 0xcec-NA (0)
+      |                                               |                |      calculated_timestamp: 0
 0x0ce0|                                    00 26 25 a0|            .&%.|      data: raw bits 0xcec-0xcef.7 (4)
       |                                               |                |    [3]{}: chunk 0xcf0-0xd10.7 (33)
 0x0cf0|43                                             |C               |      fmt: 1 0xcf0-0xcf0.1 (0.2)
@@ -242,8 +242,8 @@ $ fq -d rtmp dv ffmpeg_client_stream
 0x0cf0|   00 00 00                                    | ...            |      timestamp_delta: 0 0xcf1-0xcf3.7 (3)
 0x0cf0|            00 00 19                           |    ...         |      message_length: 25 0xcf4-0xcf6.7 (3)
 0x0cf0|                     14                        |       .        |      message_type_id: "command_message" (20) 0xcf7-0xcf7.7 (1)
-      |                                               |                |      message_stream_id: 0 (previous) 0xcf8-NA (0)
-      |                                               |                |      calculated_timestamp: 0 0xcf8-NA (0)
+      |                                               |                |      message_stream_id: 0 (previous)
+      |                                               |                |      calculated_timestamp: 0
 0x0cf0|                        02 00 0c 63 72 65 61 74|        ...creat|      data: raw bits 0xcf8-0xd10.7 (25)
 0x0d00|65 53 74 72 65 61 6d 00 40 00 00 00 00 00 00 00|eStream.@.......|
 0x0d10|05                                             |.               |
@@ -253,8 +253,8 @@ $ fq -d rtmp dv ffmpeg_client_stream
 0x0d10|      00 00 00                                 |  ...           |      timestamp_delta: 0 0xd12-0xd14.7 (3)
 0x0d10|               00 00 15                        |     ...        |      message_length: 21 0xd15-0xd17.7 (3)
 0x0d10|                        14                     |        .       |      message_type_id: "command_message" (20) 0xd18-0xd18.7 (1)
-      |                                               |                |      message_stream_id: 0 (previous) 0xd19-NA (0)
-      |                                               |                |      calculated_timestamp: 0 0xd19-NA (0)
+      |                                               |                |      message_stream_id: 0 (previous)
+      |                                               |                |      calculated_timestamp: 0
 0x0d10|                           02 00 08 5f 63 68 65|         ..._che|      data: raw bits 0xd19-0xd2d.7 (21)
 0x0d20|63 6b 62 77 00 40 08 00 00 00 00 00 00 05      |ckbw.@........  |
       |                                               |                |    [5]{}: chunk 0xd2e-0xd58.7 (43)
@@ -265,7 +265,7 @@ $ fq -d rtmp dv ffmpeg_client_stream
 0x0d30|      00 00 1f                                 |  ...           |      message_length: 31 0xd32-0xd34.7 (3)
 0x0d30|               14                              |     .          |      message_type_id: "command_message" (20) 0xd35-0xd35.7 (1)
 0x0d30|                  00 00 00 00                  |      ....      |      message_stream_id: 0 0xd36-0xd39.7 (4)
-      |                                               |                |      calculated_timestamp: 0 0xd3a-NA (0)
+      |                                               |                |      calculated_timestamp: 0
 0x0d30|                              02 00 0f 67 65 74|          ...get|      data: raw bits 0xd3a-0xd58.7 (31)
 0x0d40|53 74 72 65 61 6d 4c 65 6e 67 74 68 00 40 10 00|StreamLength.@..|
 0x0d50|00 00 00 00 00 05 02 00 00                     |.........       |
@@ -276,7 +276,7 @@ $ fq -d rtmp dv ffmpeg_client_stream
 0x0d50|                                       00 00 1d|             ...|      message_length: 29 0xd5d-0xd5f.7 (3)
 0x0d60|14                                             |.               |      message_type_id: "command_message" (20) 0xd60-0xd60.7 (1)
 0x0d60|   01 00 00 00                                 | ....           |      message_stream_id: 1 0xd61-0xd64.7 (4)
-      |                                               |                |      calculated_timestamp: 0 0xd65-NA (0)
+      |                                               |                |      calculated_timestamp: 0
 0x0d60|               02 00 04 70 6c 61 79 00 40 14 00|     ...play.@..|      data: raw bits 0xd65-0xd81.7 (29)
 0x0d70|00 00 00 00 00 05 02 00 00 00 c0 9f 40 00 00 00|............@...|
 0x0d80|00 00                                          |..              |
@@ -286,8 +286,8 @@ $ fq -d rtmp dv ffmpeg_client_stream
 0x0d80|         00 00 01                              |   ...          |      timestamp_delta: 1 0xd83-0xd85.7 (3)
 0x0d80|                  00 00 0a                     |      ...       |      message_length: 10 0xd86-0xd88.7 (3)
 0x0d80|                           04                  |         .      |      message_type_id: "user_control_message" (4) 0xd89-0xd89.7 (1)
-      |                                               |                |      message_stream_id: 0 (previous) 0xd8a-NA (0)
-      |                                               |                |      calculated_timestamp: 1 0xd8a-NA (0)
+      |                                               |                |      message_stream_id: 0 (previous)
+      |                                               |                |      calculated_timestamp: 1
 0x0d80|                              00 03 00 00 00 01|          ......|      data: raw bits 0xd8a-0xd93.7 (10)
 0x0d90|00 00 0b b8                                    |....            |
       |                                               |                |    [8]{}: chunk 0xd94-0xdbd.7 (42)
@@ -296,8 +296,8 @@ $ fq -d rtmp dv ffmpeg_client_stream
 0x0d90|               00 00 00                        |     ...        |      timestamp_delta: 0 0xd95-0xd97.7 (3)
 0x0d90|                        00 00 22               |        .."     |      message_length: 34 0xd98-0xd9a.7 (3)
 0x0d90|                                 14            |           .    |      message_type_id: "command_message" (20) 0xd9b-0xd9b.7 (1)
-      |                                               |                |      message_stream_id: 0 (previous) 0xd9c-NA (0)
-      |                                               |                |      calculated_timestamp: 0 0xd9c-NA (0)
+      |                                               |                |      message_stream_id: 0 (previous)
+      |                                               |                |      calculated_timestamp: 0
 0x0d90|                                    02 00 0c 64|            ...d|      data: raw bits 0xd9c-0xdbd.7 (34)
 0x0da0|65 6c 65 74 65 53 74 72 65 61 6d 00 40 18 00 00|eleteStream.@...|
 0x0db0|00 00 00 00 05 00 3f f0 00 00 00 00 00 00|     |......?.......| |

@@ -132,6 +132,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 	}
 
 	var desc string
+	isSynthetic := false
 
 	switch vv := v.V.(type) {
 	case *decode.Compound:
@@ -143,7 +144,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 		cprint(colField, ":")
 		desc = vv.Description
 
-	case Scalarable:
+	case scalar.Scalarable:
 		cprint(colField, ":")
 		actual := vv.ScalarActual()
 		sym := vv.ScalarSym()
@@ -155,6 +156,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 			cfmt(colField, " (%s)", deco.ValueColor(actual).F(previewValue(actual, df)))
 		}
 		desc = vv.ScalarDescription()
+		isSynthetic = vv.ScalarFlags().IsSynthetic()
 
 	default:
 		panic(fmt.Sprintf("unreachable vv %#+v", vv))
@@ -181,7 +183,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 	}
 	valueErr := v.Err
 
-	if opts.Verbose {
+	if opts.Verbose && !isSynthetic {
 		cfmt(colField, " %s (%s)",
 			mathex.BitRange(innerRange).StringByteBits(opts.Addrbase), mathex.Bits(innerRange.Len).StringByteBits(opts.Sizebase))
 	}

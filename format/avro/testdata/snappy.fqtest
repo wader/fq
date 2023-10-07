@@ -33,7 +33,7 @@ $ fq 'dv({array_truncate: 25})' snappy.avro
        |                                               |                |    [0]{}: block 0x420-0x638.7 (537)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      data[0:10]: 0x0-0x307.7 (776)
        |                                               |                |        [0]{}: data 0x0-0x4a.7 (75)
-       |                                               |                |          null: null 0x0-NA (0)
+       |                                               |                |          null: null
   0x000|01                                             |.               |          boolean: true 0x0-0x0.7 (1)
   0x000|   0e                                          | .              |          int: 7 0x1-0x1.7 (1)
   0x000|      42                                       |  B             |          long: 33 0x2-0x2.7 (1)
@@ -92,7 +92,7 @@ $ fq 'dv({array_truncate: 25})' snappy.avro
   0x004|ad 8d 37                                       |..7             |
   0x004|         e0 dd bf b3 a7 c0 ae 03               |   ........     |          timestampMicros: "2000-01-01T00:00:00.006Z" (946684800006000) 0x43-0x4a.7 (8)
        |                                               |                |        [1]{}: data 0x4b-0x98.7 (78)
-       |                                               |                |          null: null 0x4b-NA (0)
+       |                                               |                |          null: null
   0x004|                                 00            |           .    |          boolean: false 0x4b-0x4b.7 (1)
   0x004|                                    0c         |            .   |          int: 6 0x4c-0x4c.7 (1)
   0x004|                                       40      |             @  |          long: 32 0x4d-0x4d.7 (1)
@@ -158,7 +158,7 @@ $ fq 'dv({array_truncate: 25})' snappy.avro
   0x009|37                                             |7               |
   0x009|   a2 a2 f9 90 ab c5 ae 03                     | ........       |          timestampMicros: "2000-01-01T23:59:59.994001Z" (946771199994001) 0x91-0x98.7 (8)
        |                                               |                |        [2]{}: data 0x99-0xe8.7 (80)
-       |                                               |                |          null: null 0x99-NA (0)
+       |                                               |                |          null: null
   0x009|                           01                  |         .      |          boolean: true 0x99-0x99.7 (1)
   0x009|                              0a               |          .     |          int: 5 0x9a-0x9a.7 (1)
   0x009|                                 46            |           F    |          long: 35 0x9b-0x9b.7 (1)
@@ -226,7 +226,7 @@ $ fq 'dv({array_truncate: 25})' snappy.avro
   0x00e|37                                             |7               |
   0x00e|   e4 dd b5 ee ae ca ae 03                     | ........       |          timestampMicros: "2000-01-03T00:00:00.006002Z" (946857600006002) 0xe1-0xe8.7 (8)
        |                                               |                |        [3]{}: data 0xe9-0x133.7 (75)
-       |                                               |                |          null: null 0xe9-NA (0)
+       |                                               |                |          null: null
   0x00e|                           00                  |         .      |          boolean: false 0xe9-0xe9.7 (1)
   0x00e|                              08               |          .     |          int: 4 0xea-0xea.7 (1)
   0x00e|                                 44            |           D    |          long: 34 0xeb-0xeb.7 (1)
@@ -284,7 +284,7 @@ $ fq 'dv({array_truncate: 25})' snappy.avro
   0x012|                                    a6 a2 ef cb|            ....|          timestampMicros: "2000-01-03T23:59:59.994003Z" (946943999994003) 0x12c-0x133.7 (8)
   0x013|b2 cf ae 03                                    |....            |
        |                                               |                |        [4]{}: data 0x134-0x182.7 (79)
-       |                                               |                |          null: null 0x134-NA (0)
+       |                                               |                |          null: null
   0x013|            01                                 |    .           |          boolean: true 0x134-0x134.7 (1)
   0x013|               06                              |     .          |          int: 3 0x135-0x135.7 (1)
   0x013|                  4a                           |      J         |          long: 37 0x136-0x136.7 (1)
@@ -350,7 +350,7 @@ $ fq 'dv({array_truncate: 25})' snappy.avro
   0x017|                                 e8 dd ab a9 b6|           .....|          timestampMicros: "2000-01-05T00:00:00.006004Z" (947030400006004) 0x17b-0x182.7 (8)
   0x018|d4 ae 03                                       |...             |
        |                                               |                |        [5]{}: data 0x183-0x1d3.7 (81)
-       |                                               |                |          null: null 0x183-NA (0)
+       |                                               |                |          null: null
   0x018|         00                                    |   .            |          boolean: false 0x183-0x183.7 (1)
   0x018|            04                                 |    .           |          int: 2 0x184-0x184.7 (1)
   0x018|               48                              |     H          |          long: 36 0x185-0x185.7 (1)
@@ -418,7 +418,7 @@ $ fq 'dv({array_truncate: 25})' snappy.avro
   0x01c|                                    aa a2 e5 86|            ....|          timestampMicros: "2000-01-05T23:59:59.994005Z" (947116799994005) 0x1cc-0x1d3.7 (8)
   0x01d|ba d9 ae 03                                    |....            |
        |                                               |                |        [6]{}: data 0x1d4-0x21f.7 (76)
-       |                                               |                |          null: null 0x1d4-NA (0)
+       |                                               |                |          null: null
   0x01d|            01                                 |    .           |          boolean: true 0x1d4-0x1d4.7 (1)
   0x01d|               02                              |     .          |          int: 1 0x1d5-0x1d5.7 (1)
   0x01d|                  4e                           |      N         |          long: 39 0x1d6-0x1d6.7 (1)
@@ -477,7 +477,7 @@ $ fq 'dv({array_truncate: 25})' snappy.avro
   0x021|      cc f9 b5 9b 91 37                        |  .....7        |          timestampMillis: "2000-01-07T00:01:00.006Z" (947203260006) 0x212-0x217.7 (6)
   0x021|                        ec dd a1 e4 bd de ae 03|        ........|          timestampMicros: "2000-01-07T00:00:00.006006Z" (947203200006006) 0x218-0x21f.7 (8)
        |                                               |                |        [7]{}: data 0x220-0x26e.7 (79)
-       |                                               |                |          null: null 0x220-NA (0)
+       |                                               |                |          null: null
   0x022|00                                             |.               |          boolean: false 0x220-0x220.7 (1)
   0x022|   00                                          | .              |          int: 0 0x221-0x221.7 (1)
   0x022|      4c                                       |  L             |          long: 38 0x222-0x222.7 (1)
@@ -542,7 +542,7 @@ $ fq 'dv({array_truncate: 25})' snappy.avro
   0x026|   ce e9 e8 ed 91 37                           | .....7         |          timestampMillis: "2000-01-08T00:01:00.007Z" (947289660007) 0x261-0x266.7 (6)
   0x026|                     ae a2 db c1 c1 e3 ae 03   |       ........ |          timestampMicros: "2000-01-07T23:59:59.994007Z" (947289599994007) 0x267-0x26e.7 (8)
        |                                               |                |        [8]{}: data 0x26f-0x2bd.7 (79)
-       |                                               |                |          null: null 0x26f-NA (0)
+       |                                               |                |          null: null
   0x026|                                             01|               .|          boolean: true 0x26f-0x26f.7 (1)
   0x027|1e                                             |.               |          int: 15 0x270-0x270.7 (1)
   0x027|   52                                          | R              |          long: 41 0x271-0x271.7 (1)
@@ -609,7 +609,7 @@ $ fq 'dv({array_truncate: 25})' snappy.avro
   0x02b|d0 d9 9b c0 92 37                              |.....7          |          timestampMillis: "2000-01-09T00:01:00.008Z" (947376060008) 0x2b0-0x2b5.7 (6)
   0x02b|                  f0 dd 97 9f c5 e8 ae 03      |      ........  |          timestampMicros: "2000-01-09T00:00:00.006008Z" (947376000006008) 0x2b6-0x2bd.7 (8)
        |                                               |                |        [9]{}: data 0x2be-0x307.7 (74)
-       |                                               |                |          null: null 0x2be-NA (0)
+       |                                               |                |          null: null
   0x02b|                                          00   |              . |          boolean: false 0x2be-0x2be.7 (1)
   0x02b|                                             1c|               .|          int: 14 0x2bf-0x2bf.7 (1)
   0x02c|50                                             |P               |          long: 40 0x2c0-0x2c0.7 (1)

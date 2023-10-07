@@ -124,7 +124,7 @@ $ fq -d ogg dv vorbis.ogg
 *      |until 0xe46.7 (end) (128)                      |                |
        |                                               |                |  streams[0:1]: 0x3a-NA (0)
        |                                               |                |    [0]{}: stream 0x3a-NA (0)
-       |                                               |                |      serial_number: 3971626214 0x3a-NA (0)
+       |                                               |                |      serial_number: 3971626214
        |                                               |                |      packets[0:7]: 0x3a-NA (0)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [0]{}: packet (vorbis_packet) 0x0-0x1d.7 (30)
   0x000|01                                             |.               |          packet_type: "Identification" (1) 0x0-0x0.7 (1)

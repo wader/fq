@@ -351,8 +351,8 @@ $ fq dv png.mp4
 0x380|                                             00|               .|                          reserved: 0 0x38f-0x392.7 (4)
 0x390|00 00 00                                       |...             |
 0x390|         4c 61 76 66 35 39 2e 32 37 2e 31 30 30|   Lavf59.27.100|                          data: "Lavf59.27.100" 0x393-0x39f.7 (13)
-     |                                               |                |  tracks[0:1]: 0x2c-0x39f.7 (884)
-     |                                               |                |    [0]{}: track 0x2c-0x39f.7 (884)
+     |                                               |                |  tracks[0:1]: 0x2c-0x88.7 (93)
+     |                                               |                |    [0]{}: track 0x2c-0x88.7 (93)
      |                                               |                |      samples[0:1]: 0x2c-0x88.7 (93)
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [0]{}: sample (png) 0x2c-0x88.7 (93)
 0x020|                                    89 50 4e 47|            .PNG|          signature: raw bits (valid) 0x2c-0x33.7 (8)
@@ -405,5 +405,5 @@ $ fq dv png.mp4
 0x080|         4e                                    |   N            |              reserved: false 0x83.3-0x83.3 (0.1)
 0x080|            44                                 |    D           |              safe_to_copy: false 0x84.3-0x84.3 (0.1)
 0x080|               ae 42 60 82                     |     .B`.       |              crc: 0xae426082 (valid) 0x85-0x88.7 (4)
-     |                                               |                |      id: 1 0x3a0-NA (0)
-     |                                               |                |      data_format: "mp4v" (MPEG-4 Visual) 0x3a0-NA (0)
+     |                                               |                |      id: 1
+     |                                               |                |      data_format: "mp4v" (MPEG-4 Visual)

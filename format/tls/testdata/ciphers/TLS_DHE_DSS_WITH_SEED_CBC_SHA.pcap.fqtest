@@ -1,11 +1,11 @@
 $ fq -o keylog=@all.keylog ".tcp_connections[0] | dv" TLS_DHE_DSS_WITH_SEED_CBC_SHA.pcap
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.tcp_connections[0]{}: tcp_connection 0xeae-NA (0)
        |                                               |                |  client{}: 0xeae-NA (0)
-       |                                               |                |    ip: "127.0.0.1" 0xeae-NA (0)
-       |                                               |                |    port: 56749 0xeae-NA (0)
-       |                                               |                |    has_start: true 0xeae-NA (0)
-       |                                               |                |    has_end: false 0xeae-NA (0)
-       |                                               |                |    skipped_bytes: 0 0xeae-NA (0)
+       |                                               |                |    ip: "127.0.0.1"
+       |                                               |                |    port: 56749
+       |                                               |                |    has_start: true
+       |                                               |                |    has_end: false
+       |                                               |                |    skipped_bytes: 0
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    stream{}: (tls) 0x0-0x175.7 (374)
        |                                               |                |      records[0:6]: 0x0-0x175.7 (374)
        |                                               |                |        [0]{}: record 0x0-0x65.7 (102)
@@ -136,11 +136,11 @@ $ fq -o keylog=@all.keylog ".tcp_connections[0] | dv" TLS_DHE_DSS_WITH_SEED_CBC_
   0x015|c4 20 72 3e 10 2c 06 a3 b5 ce 6c 49 e8 33 22 f6|. r>.,....lI.3".|
   *    |until 0x175.7 (end) (48)                       |                |
        |                                               |                |  server{}: 0xeae-NA (0)
-       |                                               |                |    ip: "127.0.0.1" 0xeae-NA (0)
-       |                                               |                |    port: 4433 0xeae-NA (0)
-       |                                               |                |    has_start: true 0xeae-NA (0)
-       |                                               |                |    has_end: true 0xeae-NA (0)
-       |                                               |                |    skipped_bytes: 0 0xeae-NA (0)
+       |                                               |                |    ip: "127.0.0.1"
+       |                                               |                |    port: 4433
+       |                                               |                |    has_start: true
+       |                                               |                |    has_end: true
+       |                                               |                |    skipped_bytes: 0
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    stream{}: (tls) 0x0-0x91f.7 (2336)
        |                                               |                |      records[0:8]: 0x0-0x91f.7 (2336)
        |                                               |                |        [0]{}: record 0x0-0x3e.7 (63)

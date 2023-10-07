@@ -314,7 +314,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x002b0|   61 72 70 61                                 | arpa           |                        value: "arpa" 0x2b1-0x2b4.7 (4)
        |                                               |                |                      [34]{}: label 0x2b5-0x2b5.7 (1)
 0x002b0|               00                              |     .          |                        length: 0 0x2b5-0x2b5.7 (1)
-       |                                               |                |                    value: "1.e.6.0.8.9.e.c.7.d.9.3.9.9.9.0.0.0.0.0.d.2.0.1..." 0x2b6-NA (0)
+       |                                               |                |                    value: "1.e.6.0.8.9.e.c.7.d.9.3.9.9.9.0.0.0.0.0.d.2.0.1..."
 0x002b0|                  00 ff                        |      ..        |                  type: 255 0x2b6-0x2b7.7 (2)
 0x002b0|                        00 01                  |        ..      |                  class: "in" (1) (Internet) 0x2b8-0x2b9.7 (2)
        |                                               |                |                [1]{}: question 0x2ba-0x2ca.7 (17)
@@ -328,7 +328,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x002c0|   6c 6f 63 61 6c                              | local          |                        value: "local" 0x2c1-0x2c5.7 (5)
        |                                               |                |                      [2]{}: label 0x2c6-0x2c6.7 (1)
 0x002c0|                  00                           |      .         |                        length: 0 0x2c6-0x2c6.7 (1)
-       |                                               |                |                    value: "linux.local" 0x2c7-NA (0)
+       |                                               |                |                    value: "linux.local"
 0x002c0|                     00 ff                     |       ..       |                  type: 255 0x2c7-0x2c8.7 (2)
 0x002c0|                           00 01               |         ..     |                  class: "in" (1) (Internet) 0x2c9-0x2ca.7 (2)
        |                                               |                |              nameservers[0:2]: 0x26c-0x2f4.7 (137)
@@ -345,7 +345,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x002c0|   6c 6f 63 61 6c                              | local          |                        value: "local" 0x2c1-0x2c5.7 (5)
        |                                               |                |                      [2]{}: label 0x2c6-0x2c6.7 (1)
 0x002c0|                  00                           |      .         |                        length: 0 0x2c6-0x2c6.7 (1)
-       |                                               |                |                    value: "linux.local" 0x2c7-NA (0)
+       |                                               |                |                    value: "linux.local"
 0x002c0|                                       00 1c   |             .. |                  type: "aaaa" (28) 0x2cd-0x2ce.7 (2)
 0x002c0|                                             00|               .|                  class: "in" (1) (Internet) 0x2cf-0x2d0.7 (2)
 0x002d0|01                                             |.               |
@@ -462,7 +462,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x002b0|   61 72 70 61                                 | arpa           |                        value: "arpa" 0x2b1-0x2b4.7 (4)
        |                                               |                |                      [34]{}: label 0x2b5-0x2b5.7 (1)
 0x002b0|               00                              |     .          |                        length: 0 0x2b5-0x2b5.7 (1)
-       |                                               |                |                    value: "1.e.6.0.8.9.e.c.7.d.9.3.9.9.9.0.0.0.0.0.d.2.0.1..." 0x2b6-NA (0)
+       |                                               |                |                    value: "1.e.6.0.8.9.e.c.7.d.9.3.9.9.9.0.0.0.0.0.d.2.0.1..."
        |                                               |                |                  ptr{}: 0x2ba-0x2f4.7 (59)
        |                                               |                |                    labels[0:3]: 0x2ba-0x2f4.7 (59)
        |                                               |                |                      [0]{}: label 0x2ba-0x2f4.7 (59)
@@ -475,7 +475,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x002c0|   6c 6f 63 61 6c                              | local          |                        value: "local" 0x2c1-0x2c5.7 (5)
        |                                               |                |                      [2]{}: label 0x2c6-0x2c6.7 (1)
 0x002c0|                  00                           |      .         |                        length: 0 0x2c6-0x2c6.7 (1)
-       |                                               |                |                    value: "linux.local" 0x2c7-NA (0)
+       |                                               |                |                    value: "linux.local"
 0x002e0|                           00 0c               |         ..     |                  type: "ptr" (12) 0x2e9-0x2ea.7 (2)
 0x002e0|                                 00 01         |           ..   |                  class: "in" (1) (Internet) 0x2eb-0x2ec.7 (2)
 0x002e0|                                       00 00 00|             ...|                  ttl: 120 0x2ed-0x2f0.7 (4)
@@ -540,7 +540,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x00350|                  6c 6f 63 61 6c               |      local     |                        value: "local" 0x356-0x35a.7 (5)
        |                                               |                |                      [2]{}: label 0x35b-0x35b.7 (1)
 0x00350|                                 00            |           .    |                        length: 0 0x35b-0x35b.7 (1)
-       |                                               |                |                    value: "linux.local" 0x35c-NA (0)
+       |                                               |                |                    value: "linux.local"
 0x00350|                                    00 0d      |            ..  |                  type: "hinfo" (13) 0x35c-0x35d.7 (2)
 0x00350|                                          80 01|              ..|                  class: "unassigned" (32769) (Unassigned) 0x35e-0x35f.7 (2)
 0x00360|00 00 00 78                                    |...x            |                  ttl: 120 0x360-0x363.7 (4)
@@ -560,7 +560,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x00350|                  6c 6f 63 61 6c               |      local     |                        value: "local" 0x356-0x35a.7 (5)
        |                                               |                |                      [2]{}: label 0x35b-0x35b.7 (1)
 0x00350|                                 00            |           .    |                        length: 0 0x35b-0x35b.7 (1)
-       |                                               |                |                    value: "linux.local" 0x35c-NA (0)
+       |                                               |                |                    value: "linux.local"
 0x00370|         00 1c                                 |   ..           |                  type: "aaaa" (28) 0x373-0x374.7 (2)
 0x00370|               80 01                           |     ..         |                  class: "unassigned" (32769) (Unassigned) 0x375-0x376.7 (2)
 0x00370|                     00 00 00 78               |       ...x     |                  ttl: 120 0x377-0x37a.7 (4)
@@ -580,7 +580,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x00350|                  6c 6f 63 61 6c               |      local     |                        value: "local" 0x356-0x35a.7 (5)
        |                                               |                |                      [2]{}: label 0x35b-0x35b.7 (1)
 0x00350|                                 00            |           .    |                        length: 0 0x35b-0x35b.7 (1)
-       |                                               |                |                    value: "linux.local" 0x35c-NA (0)
+       |                                               |                |                    value: "linux.local"
 0x00380|                                             00|               .|                  type: "aaaa" (28) 0x38f-0x390.7 (2)
 0x00390|1c                                             |.               |
 0x00390|   80 01                                       | ..             |                  class: "unassigned" (32769) (Unassigned) 0x391-0x392.7 (2)
@@ -601,7 +601,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x00350|                  6c 6f 63 61 6c               |      local     |                        value: "local" 0x356-0x35a.7 (5)
        |                                               |                |                      [2]{}: label 0x35b-0x35b.7 (1)
 0x00350|                                 00            |           .    |                        length: 0 0x35b-0x35b.7 (1)
-       |                                               |                |                    value: "linux.local" 0x35c-NA (0)
+       |                                               |                |                    value: "linux.local"
 0x003a0|                                 00 1c         |           ..   |                  type: "aaaa" (28) 0x3ab-0x3ac.7 (2)
 0x003a0|                                       80 01   |             .. |                  class: "unassigned" (32769) (Unassigned) 0x3ad-0x3ae.7 (2)
 0x003a0|                                             00|               .|                  ttl: 120 0x3af-0x3b2.7 (4)
@@ -763,7 +763,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x00460|            61 72 70 61                        |    arpa        |                        value: "arpa" 0x464-0x467.7 (4)
        |                                               |                |                      [34]{}: label 0x468-0x468.7 (1)
 0x00460|                        00                     |        .       |                        length: 0 0x468-0x468.7 (1)
-       |                                               |                |                    value: "1.e.6.0.8.9.e.c.7.d.9.3.9.9.9.0.0.0.0.0.d.2.0.1..." 0x469-NA (0)
+       |                                               |                |                    value: "1.e.6.0.8.9.e.c.7.d.9.3.9.9.9.0.0.0.0.0.d.2.0.1..."
 0x00460|                           00 ff               |         ..     |                  type: 255 0x469-0x46a.7 (2)
 0x00460|                                 00 01         |           ..   |                  class: "in" (1) (Internet) 0x46b-0x46c.7 (2)
        |                                               |                |                [1]{}: question 0x46d-0x47d.7 (17)
@@ -778,7 +778,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x00470|            6c 6f 63 61 6c                     |    local       |                        value: "local" 0x474-0x478.7 (5)
        |                                               |                |                      [2]{}: label 0x479-0x479.7 (1)
 0x00470|                           00                  |         .      |                        length: 0 0x479-0x479.7 (1)
-       |                                               |                |                    value: "linux.local" 0x47a-NA (0)
+       |                                               |                |                    value: "linux.local"
 0x00470|                              00 ff            |          ..    |                  type: 255 0x47a-0x47b.7 (2)
 0x00470|                                    00 01      |            ..  |                  class: "in" (1) (Internet) 0x47c-0x47d.7 (2)
        |                                               |                |              nameservers[0:2]: 0x41f-0x4a7.7 (137)
@@ -796,7 +796,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x00470|            6c 6f 63 61 6c                     |    local       |                        value: "local" 0x474-0x478.7 (5)
        |                                               |                |                      [2]{}: label 0x479-0x479.7 (1)
 0x00470|                           00                  |         .      |                        length: 0 0x479-0x479.7 (1)
-       |                                               |                |                    value: "linux.local" 0x47a-NA (0)
+       |                                               |                |                    value: "linux.local"
 0x00480|00 1c                                          |..              |                  type: "aaaa" (28) 0x480-0x481.7 (2)
 0x00480|      00 01                                    |  ..            |                  class: "in" (1) (Internet) 0x482-0x483.7 (2)
 0x00480|            00 00 00 78                        |    ...x        |                  ttl: 120 0x484-0x487.7 (4)
@@ -912,7 +912,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x00460|            61 72 70 61                        |    arpa        |                        value: "arpa" 0x464-0x467.7 (4)
        |                                               |                |                      [34]{}: label 0x468-0x468.7 (1)
 0x00460|                        00                     |        .       |                        length: 0 0x468-0x468.7 (1)
-       |                                               |                |                    value: "1.e.6.0.8.9.e.c.7.d.9.3.9.9.9.0.0.0.0.0.d.2.0.1..." 0x469-NA (0)
+       |                                               |                |                    value: "1.e.6.0.8.9.e.c.7.d.9.3.9.9.9.0.0.0.0.0.d.2.0.1..."
        |                                               |                |                  ptr{}: 0x46d-0x4a7.7 (59)
        |                                               |                |                    labels[0:3]: 0x46d-0x4a7.7 (59)
        |                                               |                |                      [0]{}: label 0x46d-0x4a7.7 (59)
@@ -926,7 +926,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x00470|            6c 6f 63 61 6c                     |    local       |                        value: "local" 0x474-0x478.7 (5)
        |                                               |                |                      [2]{}: label 0x479-0x479.7 (1)
 0x00470|                           00                  |         .      |                        length: 0 0x479-0x479.7 (1)
-       |                                               |                |                    value: "linux.local" 0x47a-NA (0)
+       |                                               |                |                    value: "linux.local"
 0x00490|                                    00 0c      |            ..  |                  type: "ptr" (12) 0x49c-0x49d.7 (2)
 0x00490|                                          00 01|              ..|                  class: "in" (1) (Internet) 0x49e-0x49f.7 (2)
 0x004a0|00 00 00 78                                    |...x            |                  ttl: 120 0x4a0-0x4a3.7 (4)
@@ -1083,7 +1083,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x00540|                     61 72 70 61               |       arpa     |                        value: "arpa" 0x547-0x54a.7 (4)
        |                                               |                |                      [34]{}: label 0x54b-0x54b.7 (1)
 0x00540|                                 00            |           .    |                        length: 0 0x54b-0x54b.7 (1)
-       |                                               |                |                    value: "1.e.6.0.8.9.e.c.7.d.9.3.9.9.9.0.0.0.0.0.d.2.0.1..." 0x54c-NA (0)
+       |                                               |                |                    value: "1.e.6.0.8.9.e.c.7.d.9.3.9.9.9.0.0.0.0.0.d.2.0.1..."
 0x00540|                                    00 ff      |            ..  |                  type: 255 0x54c-0x54d.7 (2)
 0x00540|                                          00 01|              ..|                  class: "in" (1) (Internet) 0x54e-0x54f.7 (2)
        |                                               |                |                [1]{}: question 0x550-0x560.7 (17)
@@ -1097,7 +1097,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x00550|                     6c 6f 63 61 6c            |       local    |                        value: "local" 0x557-0x55b.7 (5)
        |                                               |                |                      [2]{}: label 0x55c-0x55c.7 (1)
 0x00550|                                    00         |            .   |                        length: 0 0x55c-0x55c.7 (1)
-       |                                               |                |                    value: "linux.local" 0x55d-NA (0)
+       |                                               |                |                    value: "linux.local"
 0x00550|                                       00 ff   |             .. |                  type: 255 0x55d-0x55e.7 (2)
 0x00550|                                             00|               .|                  class: "in" (1) (Internet) 0x55f-0x560.7 (2)
 0x00560|01                                             |.               |
@@ -1115,7 +1115,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x00550|                     6c 6f 63 61 6c            |       local    |                        value: "local" 0x557-0x55b.7 (5)
        |                                               |                |                      [2]{}: label 0x55c-0x55c.7 (1)
 0x00550|                                    00         |            .   |                        length: 0 0x55c-0x55c.7 (1)
-       |                                               |                |                    value: "linux.local" 0x55d-NA (0)
+       |                                               |                |                    value: "linux.local"
 0x00560|         00 1c                                 |   ..           |                  type: "aaaa" (28) 0x563-0x564.7 (2)
 0x00560|               00 01                           |     ..         |                  class: "in" (1) (Internet) 0x565-0x566.7 (2)
 0x00560|                     00 00 00 78               |       ...x     |                  ttl: 120 0x567-0x56a.7 (4)
@@ -1231,7 +1231,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x00540|                     61 72 70 61               |       arpa     |                        value: "arpa" 0x547-0x54a.7 (4)
        |                                               |                |                      [34]{}: label 0x54b-0x54b.7 (1)
 0x00540|                                 00            |           .    |                        length: 0 0x54b-0x54b.7 (1)
-       |                                               |                |                    value: "1.e.6.0.8.9.e.c.7.d.9.3.9.9.9.0.0.0.0.0.d.2.0.1..." 0x54c-NA (0)
+       |                                               |                |                    value: "1.e.6.0.8.9.e.c.7.d.9.3.9.9.9.0.0.0.0.0.d.2.0.1..."
        |                                               |                |                  ptr{}: 0x550-0x58a.7 (59)
        |                                               |                |                    labels[0:3]: 0x550-0x58a.7 (59)
        |                                               |                |                      [0]{}: label 0x550-0x58a.7 (59)
@@ -1244,7 +1244,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x00550|                     6c 6f 63 61 6c            |       local    |                        value: "local" 0x557-0x55b.7 (5)
        |                                               |                |                      [2]{}: label 0x55c-0x55c.7 (1)
 0x00550|                                    00         |            .   |                        length: 0 0x55c-0x55c.7 (1)
-       |                                               |                |                    value: "linux.local" 0x55d-NA (0)
+       |                                               |                |                    value: "linux.local"
 0x00570|                                             00|               .|                  type: "ptr" (12) 0x57f-0x580.7 (2)
 0x00580|0c                                             |.               |
 0x00580|   00 01                                       | ..             |                  class: "in" (1) (Internet) 0x581-0x582.7 (2)
@@ -1310,7 +1310,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x005f0|6c                                             |l               |
        |                                               |                |                      [2]{}: label 0x5f1-0x5f1.7 (1)
 0x005f0|   00                                          | .              |                        length: 0 0x5f1-0x5f1.7 (1)
-       |                                               |                |                    value: "linux.local" 0x5f2-NA (0)
+       |                                               |                |                    value: "linux.local"
 0x005f0|      00 0d                                    |  ..            |                  type: "hinfo" (13) 0x5f2-0x5f3.7 (2)
 0x005f0|            80 01                              |    ..          |                  class: "unassigned" (32769) (Unassigned) 0x5f4-0x5f5.7 (2)
 0x005f0|                  00 00 00 78                  |      ...x      |                  ttl: 120 0x5f6-0x5f9.7 (4)
@@ -1331,7 +1331,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x005f0|6c                                             |l               |
        |                                               |                |                      [2]{}: label 0x5f1-0x5f1.7 (1)
 0x005f0|   00                                          | .              |                        length: 0 0x5f1-0x5f1.7 (1)
-       |                                               |                |                    value: "linux.local" 0x5f2-NA (0)
+       |                                               |                |                    value: "linux.local"
 0x00600|                           00 1c               |         ..     |                  type: "aaaa" (28) 0x609-0x60a.7 (2)
 0x00600|                                 80 01         |           ..   |                  class: "unassigned" (32769) (Unassigned) 0x60b-0x60c.7 (2)
 0x00600|                                       00 00 00|             ...|                  ttl: 120 0x60d-0x610.7 (4)
@@ -1353,7 +1353,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x005f0|6c                                             |l               |
        |                                               |                |                      [2]{}: label 0x5f1-0x5f1.7 (1)
 0x005f0|   00                                          | .              |                        length: 0 0x5f1-0x5f1.7 (1)
-       |                                               |                |                    value: "linux.local" 0x5f2-NA (0)
+       |                                               |                |                    value: "linux.local"
 0x00620|               00 1c                           |     ..         |                  type: "aaaa" (28) 0x625-0x626.7 (2)
 0x00620|                     80 01                     |       ..       |                  class: "unassigned" (32769) (Unassigned) 0x627-0x628.7 (2)
 0x00620|                           00 00 00 78         |         ...x   |                  ttl: 120 0x629-0x62c.7 (4)
@@ -1375,7 +1375,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x005f0|6c                                             |l               |
        |                                               |                |                      [2]{}: label 0x5f1-0x5f1.7 (1)
 0x005f0|   00                                          | .              |                        length: 0 0x5f1-0x5f1.7 (1)
-       |                                               |                |                    value: "linux.local" 0x5f2-NA (0)
+       |                                               |                |                    value: "linux.local"
 0x00640|   00 1c                                       | ..             |                  type: "aaaa" (28) 0x641-0x642.7 (2)
 0x00640|         80 01                                 |   ..           |                  class: "unassigned" (32769) (Unassigned) 0x643-0x644.7 (2)
 0x00640|               00 00 00 78                     |     ...x       |                  ttl: 120 0x645-0x648.7 (4)
@@ -1537,7 +1537,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x006f0|                              61 72 70 61      |          arpa  |                        value: "arpa" 0x6fa-0x6fd.7 (4)
        |                                               |                |                      [34]{}: label 0x6fe-0x6fe.7 (1)
 0x006f0|                                          00   |              . |                        length: 0 0x6fe-0x6fe.7 (1)
-       |                                               |                |                    value: "1.e.6.0.8.9.e.c.7.d.9.3.9.9.9.0.0.0.0.0.d.2.0.1..." 0x6ff-NA (0)
+       |                                               |                |                    value: "1.e.6.0.8.9.e.c.7.d.9.3.9.9.9.0.0.0.0.0.d.2.0.1..."
 0x006f0|                                             00|               .|                  type: "ptr" (12) 0x6ff-0x700.7 (2)
 0x00700|0c                                             |.               |
 0x00700|   80 01                                       | ..             |                  class: "unassigned" (32769) (Unassigned) 0x701-0x702.7 (2)
@@ -1553,7 +1553,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x00710|6c 6f 63 61 6c                                 |local           |                        value: "local" 0x710-0x714.7 (5)
        |                                               |                |                      [2]{}: label 0x715-0x715.7 (1)
 0x00710|               00                              |     .          |                        length: 0 0x715-0x715.7 (1)
-       |                                               |                |                    value: "linux.local" 0x716-NA (0)
+       |                                               |                |                    value: "linux.local"
        |                                               |                |                [1]{}: answer 0x709-0x731.7 (41)
        |                                               |                |                  name{}: 0x709-0x717.7 (15)
        |                                               |                |                    labels[0:3]: 0x709-0x717.7 (15)
@@ -1567,7 +1567,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x00710|6c 6f 63 61 6c                                 |local           |                        value: "local" 0x710-0x714.7 (5)
        |                                               |                |                      [2]{}: label 0x715-0x715.7 (1)
 0x00710|               00                              |     .          |                        length: 0 0x715-0x715.7 (1)
-       |                                               |                |                    value: "linux.local" 0x716-NA (0)
+       |                                               |                |                    value: "linux.local"
 0x00710|                        00 1c                  |        ..      |                  type: "aaaa" (28) 0x718-0x719.7 (2)
 0x00710|                              80 01            |          ..    |                  class: "unassigned" (32769) (Unassigned) 0x71a-0x71b.7 (2)
 0x00710|                                    00 00 00 78|            ...x|                  ttl: 120 0x71c-0x71f.7 (4)
@@ -1727,7 +1727,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x007d0|   61 72 70 61                                 | arpa           |                        value: "arpa" 0x7d1-0x7d4.7 (4)
        |                                               |                |                      [34]{}: label 0x7d5-0x7d5.7 (1)
 0x007d0|               00                              |     .          |                        length: 0 0x7d5-0x7d5.7 (1)
-       |                                               |                |                    value: "1.e.6.0.8.9.e.c.7.d.9.3.9.9.9.0.0.0.0.0.d.2.0.1..." 0x7d6-NA (0)
+       |                                               |                |                    value: "1.e.6.0.8.9.e.c.7.d.9.3.9.9.9.0.0.0.0.0.d.2.0.1..."
 0x007d0|                  00 0c                        |      ..        |                  type: "ptr" (12) 0x7d6-0x7d7.7 (2)
 0x007d0|                        80 01                  |        ..      |                  class: "unassigned" (32769) (Unassigned) 0x7d8-0x7d9.7 (2)
 0x007d0|                              00 00 00 78      |          ...x  |                  ttl: 120 0x7da-0x7dd.7 (4)
@@ -1742,7 +1742,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x007e0|                     6c 6f 63 61 6c            |       local    |                        value: "local" 0x7e7-0x7eb.7 (5)
        |                                               |                |                      [2]{}: label 0x7ec-0x7ec.7 (1)
 0x007e0|                                    00         |            .   |                        length: 0 0x7ec-0x7ec.7 (1)
-       |                                               |                |                    value: "linux.local" 0x7ed-NA (0)
+       |                                               |                |                    value: "linux.local"
        |                                               |                |                [1]{}: answer 0x7e0-0x808.7 (41)
        |                                               |                |                  name{}: 0x7e0-0x7ee.7 (15)
        |                                               |                |                    labels[0:3]: 0x7e0-0x7ee.7 (15)
@@ -1756,7 +1756,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x007e0|                     6c 6f 63 61 6c            |       local    |                        value: "local" 0x7e7-0x7eb.7 (5)
        |                                               |                |                      [2]{}: label 0x7ec-0x7ec.7 (1)
 0x007e0|                                    00         |            .   |                        length: 0 0x7ec-0x7ec.7 (1)
-       |                                               |                |                    value: "linux.local" 0x7ed-NA (0)
+       |                                               |                |                    value: "linux.local"
 0x007e0|                                             00|               .|                  type: "aaaa" (28) 0x7ef-0x7f0.7 (2)
 0x007f0|1c                                             |.               |
 0x007f0|   80 01                                       | ..             |                  class: "unassigned" (32769) (Unassigned) 0x7f1-0x7f2.7 (2)
@@ -1777,7 +1777,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x007e0|                     6c 6f 63 61 6c            |       local    |                        value: "local" 0x7e7-0x7eb.7 (5)
        |                                               |                |                      [2]{}: label 0x7ec-0x7ec.7 (1)
 0x007e0|                                    00         |            .   |                        length: 0 0x7ec-0x7ec.7 (1)
-       |                                               |                |                    value: "linux.local" 0x7ed-NA (0)
+       |                                               |                |                    value: "linux.local"
 0x00800|                                 00 1c         |           ..   |                  type: "aaaa" (28) 0x80b-0x80c.7 (2)
 0x00800|                                       80 01   |             .. |                  class: "unassigned" (32769) (Unassigned) 0x80d-0x80e.7 (2)
 0x00800|                                             00|               .|                  ttl: 120 0x80f-0x812.7 (4)
@@ -1798,7 +1798,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x007e0|                     6c 6f 63 61 6c            |       local    |                        value: "local" 0x7e7-0x7eb.7 (5)
        |                                               |                |                      [2]{}: label 0x7ec-0x7ec.7 (1)
 0x007e0|                                    00         |            .   |                        length: 0 0x7ec-0x7ec.7 (1)
-       |                                               |                |                    value: "linux.local" 0x7ed-NA (0)
+       |                                               |                |                    value: "linux.local"
 0x00820|                     00 1c                     |       ..       |                  type: "aaaa" (28) 0x827-0x828.7 (2)
 0x00820|                           80 01               |         ..     |                  class: "unassigned" (32769) (Unassigned) 0x829-0x82a.7 (2)
 0x00820|                                 00 00 00 78   |           ...x |                  ttl: 120 0x82b-0x82e.7 (4)
@@ -1819,7 +1819,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x007e0|                     6c 6f 63 61 6c            |       local    |                        value: "local" 0x7e7-0x7eb.7 (5)
        |                                               |                |                      [2]{}: label 0x7ec-0x7ec.7 (1)
 0x007e0|                                    00         |            .   |                        length: 0 0x7ec-0x7ec.7 (1)
-       |                                               |                |                    value: "linux.local" 0x7ed-NA (0)
+       |                                               |                |                    value: "linux.local"
 0x00840|         00 1c                                 |   ..           |                  type: "aaaa" (28) 0x843-0x844.7 (2)
 0x00840|               80 01                           |     ..         |                  class: "unassigned" (32769) (Unassigned) 0x845-0x846.7 (2)
 0x00840|                     00 00 00 78               |       ...x     |                  ttl: 120 0x847-0x84a.7 (4)
@@ -1982,7 +1982,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x008f0|                                    61 72 70 61|            arpa|                        value: "arpa" 0x8fc-0x8ff.7 (4)
        |                                               |                |                      [34]{}: label 0x900-0x900.7 (1)
 0x00900|00                                             |.               |                        length: 0 0x900-0x900.7 (1)
-       |                                               |                |                    value: "1.e.6.0.8.9.e.c.7.d.9.3.9.9.9.0.0.0.0.0.d.2.0.1..." 0x901-NA (0)
+       |                                               |                |                    value: "1.e.6.0.8.9.e.c.7.d.9.3.9.9.9.0.0.0.0.0.d.2.0.1..."
 0x00900|   00 0c                                       | ..             |                  type: "ptr" (12) 0x901-0x902.7 (2)
 0x00900|         80 01                                 |   ..           |                  class: "unassigned" (32769) (Unassigned) 0x903-0x904.7 (2)
 0x00900|               00 00 00 78                     |     ...x       |                  ttl: 120 0x905-0x908.7 (4)
@@ -1998,7 +1998,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x00910|      6c 6f 63 61 6c                           |  local         |                        value: "local" 0x912-0x916.7 (5)
        |                                               |                |                      [2]{}: label 0x917-0x917.7 (1)
 0x00910|                     00                        |       .        |                        length: 0 0x917-0x917.7 (1)
-       |                                               |                |                    value: "linux.local" 0x918-NA (0)
+       |                                               |                |                    value: "linux.local"
        |                                               |                |                [1]{}: answer 0x90b-0x933.7 (41)
        |                                               |                |                  name{}: 0x90b-0x919.7 (15)
        |                                               |                |                    labels[0:3]: 0x90b-0x919.7 (15)
@@ -2013,7 +2013,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x00910|      6c 6f 63 61 6c                           |  local         |                        value: "local" 0x912-0x916.7 (5)
        |                                               |                |                      [2]{}: label 0x917-0x917.7 (1)
 0x00910|                     00                        |       .        |                        length: 0 0x917-0x917.7 (1)
-       |                                               |                |                    value: "linux.local" 0x918-NA (0)
+       |                                               |                |                    value: "linux.local"
 0x00910|                              00 1c            |          ..    |                  type: "aaaa" (28) 0x91a-0x91b.7 (2)
 0x00910|                                    80 01      |            ..  |                  class: "unassigned" (32769) (Unassigned) 0x91c-0x91d.7 (2)
 0x00910|                                          00 00|              ..|                  ttl: 120 0x91e-0x921.7 (4)
@@ -2035,7 +2035,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x00910|      6c 6f 63 61 6c                           |  local         |                        value: "local" 0x912-0x916.7 (5)
        |                                               |                |                      [2]{}: label 0x917-0x917.7 (1)
 0x00910|                     00                        |       .        |                        length: 0 0x917-0x917.7 (1)
-       |                                               |                |                    value: "linux.local" 0x918-NA (0)
+       |                                               |                |                    value: "linux.local"
 0x00930|                  00 1c                        |      ..        |                  type: "aaaa" (28) 0x936-0x937.7 (2)
 0x00930|                        80 01                  |        ..      |                  class: "unassigned" (32769) (Unassigned) 0x938-0x939.7 (2)
 0x00930|                              00 00 00 78      |          ...x  |                  ttl: 120 0x93a-0x93d.7 (4)
@@ -2055,7 +2055,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x00910|      6c 6f 63 61 6c                           |  local         |                        value: "local" 0x912-0x916.7 (5)
        |                                               |                |                      [2]{}: label 0x917-0x917.7 (1)
 0x00910|                     00                        |       .        |                        length: 0 0x917-0x917.7 (1)
-       |                                               |                |                    value: "linux.local" 0x918-NA (0)
+       |                                               |                |                    value: "linux.local"
 0x00950|      00 1c                                    |  ..            |                  type: "aaaa" (28) 0x952-0x953.7 (2)
 0x00950|            80 01                              |    ..          |                  class: "unassigned" (32769) (Unassigned) 0x954-0x955.7 (2)
 0x00950|                  00 00 00 78                  |      ...x      |                  ttl: 120 0x956-0x959.7 (4)
@@ -2076,7 +2076,7 @@ $ fq -d pcap dv ipv6_http.pcap
 0x00910|      6c 6f 63 61 6c                           |  local         |                        value: "local" 0x912-0x916.7 (5)
        |                                               |                |                      [2]{}: label 0x917-0x917.7 (1)
 0x00910|                     00                        |       .        |                        length: 0 0x917-0x917.7 (1)
-       |                                               |                |                    value: "linux.local" 0x918-NA (0)
+       |                                               |                |                    value: "linux.local"
 0x00960|                                          00 1c|              ..|                  type: "aaaa" (28) 0x96e-0x96f.7 (2)
 0x00970|80 01                                          |..              |                  class: "unassigned" (32769) (Unassigned) 0x970-0x971.7 (2)
 0x00970|      00 00 00 78                              |  ...x          |                  ttl: 120 0x972-0x975.7 (4)
@@ -3484,20 +3484,20 @@ $ fq -d pcap dv ipv6_http.pcap
        |                                               |                |  tcp_connections[0:1]: 0x23c7-NA (0)
        |                                               |                |    [0]{}: tcp_connection 0x23c7-NA (0)
        |                                               |                |      client{}: 0x23c7-NA (0)
-       |                                               |                |        ip: "2001:6f8:102d:0:2d0:9ff:fee3:e8de" 0x23c7-NA (0)
-       |                                               |                |        port: 59201 0x23c7-NA (0)
-       |                                               |                |        has_start: true 0x23c7-NA (0)
-       |                                               |                |        has_end: true 0x23c7-NA (0)
-       |                                               |                |        skipped_bytes: 0 0x23c7-NA (0)
+       |                                               |                |        ip: "2001:6f8:102d:0:2d0:9ff:fee3:e8de"
+       |                                               |                |        port: 59201
+       |                                               |                |        has_start: true
+       |                                               |                |        has_end: true
+       |                                               |                |        skipped_bytes: 0
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
   0x000|47 45 54 20 2f 20 48 54 54 50 2f 31 2e 30 0d 0a|GET / HTTP/1.0..|        stream: raw bits 0x0-0xef.7 (240)
   *    |until 0xef.7 (end) (240)                       |                |
        |                                               |                |      server{}: 0x23c7-NA (0)
-       |                                               |                |        ip: "2001:6f8:900:7c0::2" 0x23c7-NA (0)
+       |                                               |                |        ip: "2001:6f8:900:7c0::2"
        |                                               |                |        port: "http" (80) (World Wide Web HTTP) 0x23c7-NA (0)
-       |                                               |                |        has_start: true 0x23c7-NA (0)
-       |                                               |                |        has_end: true 0x23c7-NA (0)
-       |                                               |                |        skipped_bytes: 0 0x23c7-NA (0)
+       |                                               |                |        has_start: true
+       |                                               |                |        has_end: true
+       |                                               |                |        skipped_bytes: 0
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
   0x000|48 54 54 50 2f 31 2e 31 20 32 30 30 20 4f 4b 0d|HTTP/1.1 200 OK.|        stream: raw bits 0x0-0x8d2.7 (2259)
   *    |until 0x8d2.7 (end) (2259)                     |                |

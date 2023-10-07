@@ -4,124 +4,124 @@ $ fq -d matroska dv mp3.mkv
      |                                               |                |  elements[0:2]: 0x0-0x4db.7 (1244)
      |                                               |                |    [0]{}: element 0x0-0x27.7 (40)
 0x000|1a 45 df a3                                    |.E..            |      id: "ebml" (0x1a45dfa3) 0x0-0x3.7 (4)
-     |                                               |                |      type: "master" 0x4-NA (0)
+     |                                               |                |      type: "master"
 0x000|            a3                                 |    .           |      size: 35 0x4-0x4.7 (1)
      |                                               |                |      elements[0:7]: 0x5-0x27.7 (35)
      |                                               |                |        [0]{}: element 0x5-0x8.7 (4)
 0x000|               42 86                           |     B.         |          id: "ebml_version" (0x4286) (EBML Version) 0x5-0x6.7 (2)
-     |                                               |                |          type: "uinteger" 0x7-NA (0)
+     |                                               |                |          type: "uinteger"
 0x000|                     81                        |       .        |          size: 1 0x7-0x7.7 (1)
 0x000|                        01                     |        .       |          value: 1 0x8-0x8.7 (1)
      |                                               |                |        [1]{}: element 0x9-0xc.7 (4)
 0x000|                           42 f7               |         B.     |          id: "ebml_read_version" (0x42f7) (Minimum EBML reader version) 0x9-0xa.7 (2)
-     |                                               |                |          type: "uinteger" 0xb-NA (0)
+     |                                               |                |          type: "uinteger"
 0x000|                                 81            |           .    |          size: 1 0xb-0xb.7 (1)
 0x000|                                    01         |            .   |          value: 1 0xc-0xc.7 (1)
      |                                               |                |        [2]{}: element 0xd-0x10.7 (4)
 0x000|                                       42 f2   |             B. |          id: "ebml_max_id_length" (0x42f2) (Maximum id length) 0xd-0xe.7 (2)
-     |                                               |                |          type: "uinteger" 0xf-NA (0)
+     |                                               |                |          type: "uinteger"
 0x000|                                             81|               .|          size: 1 0xf-0xf.7 (1)
 0x010|04                                             |.               |          value: 4 0x10-0x10.7 (1)
      |                                               |                |        [3]{}: element 0x11-0x14.7 (4)
 0x010|   42 f3                                       | B.             |          id: "ebml_max_size_length" (0x42f3) (Maximum body length) 0x11-0x12.7 (2)
-     |                                               |                |          type: "uinteger" 0x13-NA (0)
+     |                                               |                |          type: "uinteger"
 0x010|         81                                    |   .            |          size: 1 0x13-0x13.7 (1)
 0x010|            08                                 |    .           |          value: 8 0x14-0x14.7 (1)
      |                                               |                |        [4]{}: element 0x15-0x1f.7 (11)
 0x010|               42 82                           |     B.         |          id: "doc_type" (0x4282) (Document content type) 0x15-0x16.7 (2)
-     |                                               |                |          type: "string" 0x17-NA (0)
+     |                                               |                |          type: "string"
 0x010|                     88                        |       .        |          size: 8 0x17-0x17.7 (1)
 0x010|                        6d 61 74 72 6f 73 6b 61|        matroska|          value: "matroska" 0x18-0x1f.7 (8)
      |                                               |                |        [5]{}: element 0x20-0x23.7 (4)
 0x020|42 87                                          |B.              |          id: "doc_type_version" (0x4287) (Document type version) 0x20-0x21.7 (2)
-     |                                               |                |          type: "uinteger" 0x22-NA (0)
+     |                                               |                |          type: "uinteger"
 0x020|      81                                       |  .             |          size: 1 0x22-0x22.7 (1)
 0x020|         04                                    |   .            |          value: 4 0x23-0x23.7 (1)
      |                                               |                |        [6]{}: element 0x24-0x27.7 (4)
 0x020|            42 85                              |    B.          |          id: "doc_type_read_version" (0x4285) (Minimum document reader version) 0x24-0x25.7 (2)
-     |                                               |                |          type: "uinteger" 0x26-NA (0)
+     |                                               |                |          type: "uinteger"
 0x020|                  81                           |      .         |          size: 1 0x26-0x26.7 (1)
 0x020|                     02                        |       .        |          value: 2 0x27-0x27.7 (1)
      |                                               |                |    [1]{}: element 0x28-0x4db.7 (1204)
 0x020|                        18 53 80 67            |        .S.g    |      id: "segment" (0x18538067) (The Root Element that contains all other Top-Level Elements) 0x28-0x2b.7 (4)
-     |                                               |                |      type: "master" 0x2c-NA (0)
+     |                                               |                |      type: "master"
 0x020|                                    01 00 00 00|            ....|      size: 1192 0x2c-0x33.7 (8)
 0x030|00 00 04 a8                                    |....            |
      |                                               |                |      elements[0:7]: 0x34-0x4db.7 (1192)
      |                                               |                |        [0]{}: element 0x34-0x78.7 (69)
 0x030|            11 4d 9b 74                        |    .M.t        |          id: "seek_head" (0x114d9b74) (Contains seeking information of Top-Level Elements) 0x34-0x37.7 (4)
-     |                                               |                |          type: "master" 0x38-NA (0)
+     |                                               |                |          type: "master"
 0x030|                        c0                     |        .       |          size: 64 0x38-0x38.7 (1)
      |                                               |                |          elements[0:5]: 0x39-0x78.7 (64)
      |                                               |                |            [0]{}: element 0x39-0x3e.7 (6)
 0x030|                           bf                  |         .      |              id: "crc32" (0xbf) 0x39-0x39.7 (1)
-     |                                               |                |              type: "binary" 0x3a-NA (0)
+     |                                               |                |              type: "binary"
 0x030|                              84               |          .     |              size: 4 0x3a-0x3a.7 (1)
 0x030|                                 2d 95 17 9e   |           -... |              value: raw bits 0x3b-0x3e.7 (4)
      |                                               |                |            [1]{}: element 0x3f-0x4c.7 (14)
 0x030|                                             4d|               M|              id: "seek" (0x4dbb) (Contains a single seek entry to an EBML Element) 0x3f-0x40.7 (2)
 0x040|bb                                             |.               |
-     |                                               |                |              type: "master" 0x41-NA (0)
+     |                                               |                |              type: "master"
 0x040|   8b                                          | .              |              size: 11 0x41-0x41.7 (1)
      |                                               |                |              elements[0:2]: 0x42-0x4c.7 (11)
      |                                               |                |                [0]{}: element 0x42-0x48.7 (7)
 0x040|      53 ab                                    |  S.            |                  id: "seek_id" (0x53ab) (The binary EBML ID of a Top-Level Element) 0x42-0x43.7 (2)
-     |                                               |                |                  type: "binary" 0x44-NA (0)
+     |                                               |                |                  type: "binary"
 0x040|            84                                 |    .           |                  size: 4 0x44-0x44.7 (1)
 0x040|               15 49 a9 66                     |     .I.f       |                  value: raw bits 0x45-0x48.7 (4)
      |                                               |                |                [1]{}: element 0x49-0x4c.7 (4)
 0x040|                           53 ac               |         S.     |                  id: "seek_position" (0x53ac) (The Segment Position of a Top-Level Element) 0x49-0x4a.7 (2)
-     |                                               |                |                  type: "uinteger" 0x4b-NA (0)
+     |                                               |                |                  type: "uinteger"
 0x040|                                 81            |           .    |                  size: 1 0x4b-0x4b.7 (1)
 0x040|                                    a1         |            .   |                  value: 161 0x4c-0x4c.7 (1)
      |                                               |                |            [2]{}: element 0x4d-0x5a.7 (14)
 0x040|                                       4d bb   |             M. |              id: "seek" (0x4dbb) (Contains a single seek entry to an EBML Element) 0x4d-0x4e.7 (2)
-     |                                               |                |              type: "master" 0x4f-NA (0)
+     |                                               |                |              type: "master"
 0x040|                                             8b|               .|              size: 11 0x4f-0x4f.7 (1)
      |                                               |                |              elements[0:2]: 0x50-0x5a.7 (11)
      |                                               |                |                [0]{}: element 0x50-0x56.7 (7)
 0x050|53 ab                                          |S.              |                  id: "seek_id" (0x53ab) (The binary EBML ID of a Top-Level Element) 0x50-0x51.7 (2)
-     |                                               |                |                  type: "binary" 0x52-NA (0)
+     |                                               |                |                  type: "binary"
 0x050|      84                                       |  .             |                  size: 4 0x52-0x52.7 (1)
 0x050|         16 54 ae 6b                           |   .T.k         |                  value: raw bits 0x53-0x56.7 (4)
      |                                               |                |                [1]{}: element 0x57-0x5a.7 (4)
 0x050|                     53 ac                     |       S.       |                  id: "seek_position" (0x53ac) (The Segment Position of a Top-Level Element) 0x57-0x58.7 (2)
-     |                                               |                |                  type: "uinteger" 0x59-NA (0)
+     |                                               |                |                  type: "uinteger"
 0x050|                           81                  |         .      |                  size: 1 0x59-0x59.7 (1)
 0x050|                              f1               |          .     |                  value: 241 0x5a-0x5a.7 (1)
      |                                               |                |            [3]{}: element 0x5b-0x69.7 (15)
 0x050|                                 4d bb         |           M.   |              id: "seek" (0x4dbb) (Contains a single seek entry to an EBML Element) 0x5b-0x5c.7 (2)
-     |                                               |                |              type: "master" 0x5d-NA (0)
+     |                                               |                |              type: "master"
 0x050|                                       8c      |             .  |              size: 12 0x5d-0x5d.7 (1)
      |                                               |                |              elements[0:2]: 0x5e-0x69.7 (12)
      |                                               |                |                [0]{}: element 0x5e-0x64.7 (7)
 0x050|                                          53 ab|              S.|                  id: "seek_id" (0x53ab) (The binary EBML ID of a Top-Level Element) 0x5e-0x5f.7 (2)
-     |                                               |                |                  type: "binary" 0x60-NA (0)
+     |                                               |                |                  type: "binary"
 0x060|84                                             |.               |                  size: 4 0x60-0x60.7 (1)
 0x060|   12 54 c3 67                                 | .T.g           |                  value: raw bits 0x61-0x64.7 (4)
      |                                               |                |                [1]{}: element 0x65-0x69.7 (5)
 0x060|               53 ac                           |     S.         |                  id: "seek_position" (0x53ac) (The Segment Position of a Top-Level Element) 0x65-0x66.7 (2)
-     |                                               |                |                  type: "uinteger" 0x67-NA (0)
+     |                                               |                |                  type: "uinteger"
 0x060|                     82                        |       .        |                  size: 2 0x67-0x67.7 (1)
 0x060|                        01 3e                  |        .>      |                  value: 318 0x68-0x69.7 (2)
      |                                               |                |            [4]{}: element 0x6a-0x78.7 (15)
 0x060|                              4d bb            |          M.    |              id: "seek" (0x4dbb) (Contains a single seek entry to an EBML Element) 0x6a-0x6b.7 (2)
-     |                                               |                |              type: "master" 0x6c-NA (0)
+     |                                               |                |              type: "master"
 0x060|                                    8c         |            .   |              size: 12 0x6c-0x6c.7 (1)
      |                                               |                |              elements[0:2]: 0x6d-0x78.7 (12)
      |                                               |                |                [0]{}: element 0x6d-0x73.7 (7)
 0x060|                                       53 ab   |             S. |                  id: "seek_id" (0x53ab) (The binary EBML ID of a Top-Level Element) 0x6d-0x6e.7 (2)
-     |                                               |                |                  type: "binary" 0x6f-NA (0)
+     |                                               |                |                  type: "binary"
 0x060|                                             84|               .|                  size: 4 0x6f-0x6f.7 (1)
 0x070|1c 53 bb 6b                                    |.S.k            |                  value: raw bits 0x70-0x73.7 (4)
      |                                               |                |                [1]{}: element 0x74-0x78.7 (5)
 0x070|            53 ac                              |    S.          |                  id: "seek_position" (0x53ac) (The Segment Position of a Top-Level Element) 0x74-0x75.7 (2)
-     |                                               |                |                  type: "uinteger" 0x76-NA (0)
+     |                                               |                |                  type: "uinteger"
 0x070|                  82                           |      .         |                  size: 2 0x76-0x76.7 (1)
 0x070|                     04 8c                     |       ..       |                  value: 1164 0x77-0x78.7 (2)
      |                                               |                |        [1]{}: element 0x79-0xd4.7 (92)
 0x070|                           ec                  |         .      |          id: "void" (0xec) 0x79-0x79.7 (1)
-     |                                               |                |          type: "binary" 0x7a-NA (0)
+     |                                               |                |          type: "binary"
 0x070|                              01 00 00 00 00 00|          ......|          size: 83 0x7a-0x81.7 (8)
 0x080|00 53                                          |.S              |
 0x080|      00 00 00 00 00 00 00 00 00 00 00 00 00 00|  ..............|          value: raw bits 0x82-0xd4.7 (83)
@@ -129,218 +129,218 @@ $ fq -d matroska dv mp3.mkv
 *    |until 0xd4.7 (83)                              |                |
      |                                               |                |        [2]{}: element 0xd5-0x124.7 (80)
 0x0d0|               15 49 a9 66                     |     .I.f       |          id: "info" (0x1549a966) (Contains general information about the Segment) 0xd5-0xd8.7 (4)
-     |                                               |                |          type: "master" 0xd9-NA (0)
+     |                                               |                |          type: "master"
 0x0d0|                           cb                  |         .      |          size: 75 0xd9-0xd9.7 (1)
      |                                               |                |          elements[0:6]: 0xda-0x124.7 (75)
      |                                               |                |            [0]{}: element 0xda-0xdf.7 (6)
 0x0d0|                              bf               |          .     |              id: "crc32" (0xbf) 0xda-0xda.7 (1)
-     |                                               |                |              type: "binary" 0xdb-NA (0)
+     |                                               |                |              type: "binary"
 0x0d0|                                 84            |           .    |              size: 4 0xdb-0xdb.7 (1)
 0x0d0|                                    ef 85 17 86|            ....|              value: raw bits 0xdc-0xdf.7 (4)
      |                                               |                |            [1]{}: element 0xe0-0xe6.7 (7)
 0x0e0|2a d7 b1                                       |*..             |              id: "timestamp_scale" (0x2ad7b1) (Base unit for Segment Ticks and Track Ticks) 0xe0-0xe2.7 (3)
-     |                                               |                |              type: "uinteger" 0xe3-NA (0)
+     |                                               |                |              type: "uinteger"
 0x0e0|         83                                    |   .            |              size: 3 0xe3-0xe3.7 (1)
 0x0e0|            0f 42 40                           |    .B@         |              value: 1000000 0xe4-0xe6.7 (3)
      |                                               |                |            [2]{}: element 0xe7-0xf6.7 (16)
 0x0e0|                     4d 80                     |       M.       |              id: "muxing_app" (0x4d80) (Muxing application or library) 0xe7-0xe8.7 (2)
-     |                                               |                |              type: "utf8" 0xe9-NA (0)
+     |                                               |                |              type: "utf8"
 0x0e0|                           8d                  |         .      |              size: 13 0xe9-0xe9.7 (1)
 0x0e0|                              4c 61 76 66 35 38|          Lavf58|              value: "Lavf58.45.100" 0xea-0xf6.7 (13)
 0x0f0|2e 34 35 2e 31 30 30                           |.45.100         |
      |                                               |                |            [3]{}: element 0xf7-0x106.7 (16)
 0x0f0|                     57 41                     |       WA       |              id: "writing_app" (0x5741) (Writing application) 0xf7-0xf8.7 (2)
-     |                                               |                |              type: "utf8" 0xf9-NA (0)
+     |                                               |                |              type: "utf8"
 0x0f0|                           8d                  |         .      |              size: 13 0xf9-0xf9.7 (1)
 0x0f0|                              4c 61 76 66 35 38|          Lavf58|              value: "Lavf58.45.100" 0xfa-0x106.7 (13)
 0x100|2e 34 35 2e 31 30 30                           |.45.100         |
      |                                               |                |            [4]{}: element 0x107-0x119.7 (19)
 0x100|                     73 a4                     |       s.       |              id: "segment_uuid" (0x73a4) (A randomly generated unique ID to identify the Segment amongst many others chosen) 0x107-0x108.7 (2)
-     |                                               |                |              type: "binary" 0x109-NA (0)
+     |                                               |                |              type: "binary"
 0x100|                           90                  |         .      |              size: 16 0x109-0x109.7 (1)
 0x100|                              ed af 16 3e 3c c6|          ...><.|              value: raw bits 0x10a-0x119.7 (16)
 0x110|fb e3 dd 3a 64 58 04 b6 0e 21                  |...:dX...!      |
      |                                               |                |            [5]{}: element 0x11a-0x124.7 (11)
 0x110|                              44 89            |          D.    |              id: "duration" (0x4489) (Duration of the Segment) 0x11a-0x11b.7 (2)
-     |                                               |                |              type: "float" 0x11c-NA (0)
+     |                                               |                |              type: "float"
 0x110|                                    88         |            .   |              size: 8 0x11c-0x11c.7 (1)
 0x110|                                       40 52 c0|             @R.|              value: 75 0x11d-0x124.7 (8)
 0x120|00 00 00 00 00                                 |.....           |
      |                                               |                |        [3]{}: element 0x125-0x171.7 (77)
 0x120|               16 54 ae 6b                     |     .T.k       |          id: "tracks" (0x1654ae6b) (A Top-Level Element of information with many tracks described) 0x125-0x128.7 (4)
-     |                                               |                |          type: "master" 0x129-NA (0)
+     |                                               |                |          type: "master"
 0x120|                           c8                  |         .      |          size: 72 0x129-0x129.7 (1)
      |                                               |                |          elements[0:2]: 0x12a-0x171.7 (72)
      |                                               |                |            [0]{}: element 0x12a-0x12f.7 (6)
 0x120|                              bf               |          .     |              id: "crc32" (0xbf) 0x12a-0x12a.7 (1)
-     |                                               |                |              type: "binary" 0x12b-NA (0)
+     |                                               |                |              type: "binary"
 0x120|                                 84            |           .    |              size: 4 0x12b-0x12b.7 (1)
 0x120|                                    b1 28 65 ca|            .(e.|              value: raw bits 0x12c-0x12f.7 (4)
      |                                               |                |            [1]{}: element 0x130-0x171.7 (66)
 0x130|ae                                             |.               |              id: "track_entry" (0xae) (Describes a track with all Elements) 0x130-0x130.7 (1)
-     |                                               |                |              type: "master" 0x131-NA (0)
+     |                                               |                |              type: "master"
 0x130|   01 00 00 00 00 00 00 39                     | .......9       |              size: 57 0x131-0x138.7 (8)
      |                                               |                |              elements[0:7]: 0x139-0x171.7 (57)
      |                                               |                |                [0]{}: element 0x139-0x13b.7 (3)
 0x130|                           d7                  |         .      |                  id: "track_number" (0xd7) (The track number as used in the Block Header) 0x139-0x139.7 (1)
-     |                                               |                |                  type: "uinteger" 0x13a-NA (0)
+     |                                               |                |                  type: "uinteger"
 0x130|                              81               |          .     |                  size: 1 0x13a-0x13a.7 (1)
 0x130|                                 01            |           .    |                  value: 1 0x13b-0x13b.7 (1)
      |                                               |                |                [1]{}: element 0x13c-0x146.7 (11)
 0x130|                                    73 c5      |            s.  |                  id: "track_uid" (0x73c5) (A unique ID to identify the Track) 0x13c-0x13d.7 (2)
-     |                                               |                |                  type: "uinteger" 0x13e-NA (0)
+     |                                               |                |                  type: "uinteger"
 0x130|                                          88   |              . |                  size: 8 0x13e-0x13e.7 (1)
 0x130|                                             8d|               .|                  value: 10217435751272594841 0x13f-0x146.7 (8)
 0x140|cb 9f ae 75 fa bd 99                           |...u...         |
      |                                               |                |                [2]{}: element 0x147-0x149.7 (3)
 0x140|                     9c                        |       .        |                  id: "flag_lacing" (0x9c) (Set to 1 if the track **MAY** contain blocks using lacing) 0x147-0x147.7 (1)
-     |                                               |                |                  type: "uinteger" 0x148-NA (0)
+     |                                               |                |                  type: "uinteger"
 0x140|                        81                     |        .       |                  size: 1 0x148-0x148.7 (1)
 0x140|                           00                  |         .      |                  value: 0 0x149-0x149.7 (1)
      |                                               |                |                [3]{}: element 0x14a-0x150.7 (7)
 0x140|                              22 b5 9c         |          "..   |                  id: "language" (0x22b59c) (The language of the track) 0x14a-0x14c.7 (3)
-     |                                               |                |                  type: "string" 0x14d-NA (0)
+     |                                               |                |                  type: "string"
 0x140|                                       83      |             .  |                  size: 3 0x14d-0x14d.7 (1)
 0x140|                                          75 6e|              un|                  value: "und" 0x14e-0x150.7 (3)
 0x150|64                                             |d               |
      |                                               |                |                [4]{}: element 0x151-0x15b.7 (11)
 0x150|   86                                          | .              |                  id: "codec_id" (0x86) (An ID corresponding to the codec) 0x151-0x151.7 (1)
-     |                                               |                |                  type: "string" 0x152-NA (0)
+     |                                               |                |                  type: "string"
 0x150|      89                                       |  .             |                  size: 9 0x152-0x152.7 (1)
 0x150|         41 5f 4d 50 45 47 2f 4c 33            |   A_MPEG/L3    |                  value: "A_MPEG/L3" 0x153-0x15b.7 (9)
      |                                               |                |                [5]{}: element 0x15c-0x15e.7 (3)
 0x150|                                    83         |            .   |                  id: "track_type" (0x83) (The TrackType defines the type of each frame found in the Track) 0x15c-0x15c.7 (1)
-     |                                               |                |                  type: "uinteger" 0x15d-NA (0)
+     |                                               |                |                  type: "uinteger"
 0x150|                                       81      |             .  |                  size: 1 0x15d-0x15d.7 (1)
 0x150|                                          02   |              . |                  value: "audio" (2) (Audio samples) 0x15e-0x15e.7 (1)
      |                                               |                |                [6]{}: element 0x15f-0x171.7 (19)
 0x150|                                             e1|               .|                  id: "audio" (0xe1) (Audio settings) 0x15f-0x15f.7 (1)
-     |                                               |                |                  type: "master" 0x160-NA (0)
+     |                                               |                |                  type: "master"
 0x160|91                                             |.               |                  size: 17 0x160-0x160.7 (1)
      |                                               |                |                  elements[0:3]: 0x161-0x171.7 (17)
      |                                               |                |                    [0]{}: element 0x161-0x163.7 (3)
 0x160|   9f                                          | .              |                      id: "channels" (0x9f) (Numbers of channels in the track) 0x161-0x161.7 (1)
-     |                                               |                |                      type: "uinteger" 0x162-NA (0)
+     |                                               |                |                      type: "uinteger"
 0x160|      81                                       |  .             |                      size: 1 0x162-0x162.7 (1)
 0x160|         01                                    |   .            |                      value: 1 0x163-0x163.7 (1)
      |                                               |                |                    [1]{}: element 0x164-0x16d.7 (10)
 0x160|            b5                                 |    .           |                      id: "sampling_frequency" (0xb5) (Sampling frequency in Hz) 0x164-0x164.7 (1)
-     |                                               |                |                      type: "float" 0x165-NA (0)
+     |                                               |                |                      type: "float"
 0x160|               88                              |     .          |                      size: 8 0x165-0x165.7 (1)
 0x160|                  40 e5 88 80 00 00 00 00      |      @.......  |                      value: 44100 0x166-0x16d.7 (8)
      |                                               |                |                    [2]{}: element 0x16e-0x171.7 (4)
 0x160|                                          62 64|              bd|                      id: "bit_depth" (0x6264) (Bits per sample) 0x16e-0x16f.7 (2)
-     |                                               |                |                      type: "uinteger" 0x170-NA (0)
+     |                                               |                |                      type: "uinteger"
 0x170|81                                             |.               |                      size: 1 0x170-0x170.7 (1)
 0x170|   10                                          | .              |                      value: 16 0x171-0x171.7 (1)
      |                                               |                |        [4]{}: element 0x172-0x21a.7 (169)
 0x170|      12 54 c3 67                              |  .T.g          |          id: "tags" (0x1254c367) (Element containing metadata describing Tracks) 0x172-0x175.7 (4)
-     |                                               |                |          type: "master" 0x176-NA (0)
+     |                                               |                |          type: "master"
 0x170|                  40 a3                        |      @.        |          size: 163 0x176-0x177.7 (2)
      |                                               |                |          elements[0:3]: 0x178-0x21a.7 (163)
      |                                               |                |            [0]{}: element 0x178-0x17d.7 (6)
 0x170|                        bf                     |        .       |              id: "crc32" (0xbf) 0x178-0x178.7 (1)
-     |                                               |                |              type: "binary" 0x179-NA (0)
+     |                                               |                |              type: "binary"
 0x170|                           84                  |         .      |              size: 4 0x179-0x179.7 (1)
 0x170|                              c4 31 17 e4      |          .1..  |              value: raw bits 0x17a-0x17d.7 (4)
      |                                               |                |            [1]{}: element 0x17e-0x1ae.7 (49)
 0x170|                                          73 73|              ss|              id: "tag" (0x7373) (A single metadata descriptor) 0x17e-0x17f.7 (2)
-     |                                               |                |              type: "master" 0x180-NA (0)
+     |                                               |                |              type: "master"
 0x180|01 00 00 00 00 00 00 27                        |.......'        |              size: 39 0x180-0x187.7 (8)
      |                                               |                |              elements[0:2]: 0x188-0x1ae.7 (39)
      |                                               |                |                [0]{}: element 0x188-0x18a.7 (3)
 0x180|                        63 c0                  |        c.      |                  id: "targets" (0x63c0) (Specifies which other elements the metadata represented by the Tag applies to) 0x188-0x189.7 (2)
-     |                                               |                |                  type: "master" 0x18a-NA (0)
+     |                                               |                |                  type: "master"
 0x180|                              80               |          .     |                  size: 0 0x18a-0x18a.7 (1)
      |                                               |                |                  elements[0:0]: 0x18b-NA (0)
      |                                               |                |                [1]{}: element 0x18b-0x1ae.7 (36)
 0x180|                                 67 c8         |           g.   |                  id: "simple_tag" (0x67c8) (Contains general information about the target) 0x18b-0x18c.7 (2)
-     |                                               |                |                  type: "master" 0x18d-NA (0)
+     |                                               |                |                  type: "master"
 0x180|                                       01 00 00|             ...|                  size: 26 0x18d-0x194.7 (8)
 0x190|00 00 00 00 1a                                 |.....           |
      |                                               |                |                  elements[0:2]: 0x195-0x1ae.7 (26)
      |                                               |                |                    [0]{}: element 0x195-0x19e.7 (10)
 0x190|               45 a3                           |     E.         |                      id: "tag_name" (0x45a3) (The name of the Tag that is going to be stored) 0x195-0x196.7 (2)
-     |                                               |                |                      type: "utf8" 0x197-NA (0)
+     |                                               |                |                      type: "utf8"
 0x190|                     87                        |       .        |                      size: 7 0x197-0x197.7 (1)
 0x190|                        45 4e 43 4f 44 45 52   |        ENCODER |                      value: "ENCODER" 0x198-0x19e.7 (7)
      |                                               |                |                    [1]{}: element 0x19f-0x1ae.7 (16)
 0x190|                                             44|               D|                      id: "tag_string" (0x4487) (The value of the Tag) 0x19f-0x1a0.7 (2)
 0x1a0|87                                             |.               |
-     |                                               |                |                      type: "utf8" 0x1a1-NA (0)
+     |                                               |                |                      type: "utf8"
 0x1a0|   8d                                          | .              |                      size: 13 0x1a1-0x1a1.7 (1)
 0x1a0|      4c 61 76 66 35 38 2e 34 35 2e 31 30 30   |  Lavf58.45.100 |                      value: "Lavf58.45.100" 0x1a2-0x1ae.7 (13)
      |                                               |                |            [2]{}: element 0x1af-0x21a.7 (108)
 0x1a0|                                             73|               s|              id: "tag" (0x7373) (A single metadata descriptor) 0x1af-0x1b0.7 (2)
 0x1b0|73                                             |s               |
-     |                                               |                |              type: "master" 0x1b1-NA (0)
+     |                                               |                |              type: "master"
 0x1b0|   01 00 00 00 00 00 00 62                     | .......b       |              size: 98 0x1b1-0x1b8.7 (8)
      |                                               |                |              elements[0:3]: 0x1b9-0x21a.7 (98)
      |                                               |                |                [0]{}: element 0x1b9-0x1c6.7 (14)
 0x1b0|                           63 c0               |         c.     |                  id: "targets" (0x63c0) (Specifies which other elements the metadata represented by the Tag applies to) 0x1b9-0x1ba.7 (2)
-     |                                               |                |                  type: "master" 0x1bb-NA (0)
+     |                                               |                |                  type: "master"
 0x1b0|                                 8b            |           .    |                  size: 11 0x1bb-0x1bb.7 (1)
      |                                               |                |                  elements[0:1]: 0x1bc-0x1c6.7 (11)
      |                                               |                |                    [0]{}: element 0x1bc-0x1c6.7 (11)
 0x1b0|                                    63 c5      |            c.  |                      id: "tag_track_uid" (0x63c5) (A unique ID to identify the Track(s) the tags belong to) 0x1bc-0x1bd.7 (2)
-     |                                               |                |                      type: "uinteger" 0x1be-NA (0)
+     |                                               |                |                      type: "uinteger"
 0x1b0|                                          88   |              . |                      size: 8 0x1be-0x1be.7 (1)
 0x1b0|                                             8d|               .|                      value: 10217435751272594841 0x1bf-0x1c6.7 (8)
 0x1c0|cb 9f ae 75 fa bd 99                           |...u...         |
      |                                               |                |                [1]{}: element 0x1c7-0x1f5.7 (47)
 0x1c0|                     67 c8                     |       g.       |                  id: "simple_tag" (0x67c8) (Contains general information about the target) 0x1c7-0x1c8.7 (2)
-     |                                               |                |                  type: "master" 0x1c9-NA (0)
+     |                                               |                |                  type: "master"
 0x1c0|                           01 00 00 00 00 00 00|         .......|                  size: 37 0x1c9-0x1d0.7 (8)
 0x1d0|25                                             |%               |
      |                                               |                |                  elements[0:2]: 0x1d1-0x1f5.7 (37)
      |                                               |                |                    [0]{}: element 0x1d1-0x1da.7 (10)
 0x1d0|   45 a3                                       | E.             |                      id: "tag_name" (0x45a3) (The name of the Tag that is going to be stored) 0x1d1-0x1d2.7 (2)
-     |                                               |                |                      type: "utf8" 0x1d3-NA (0)
+     |                                               |                |                      type: "utf8"
 0x1d0|         87                                    |   .            |                      size: 7 0x1d3-0x1d3.7 (1)
 0x1d0|            45 4e 43 4f 44 45 52               |    ENCODER     |                      value: "ENCODER" 0x1d4-0x1da.7 (7)
      |                                               |                |                    [1]{}: element 0x1db-0x1f5.7 (27)
 0x1d0|                                 44 87         |           D.   |                      id: "tag_string" (0x4487) (The value of the Tag) 0x1db-0x1dc.7 (2)
-     |                                               |                |                      type: "utf8" 0x1dd-NA (0)
+     |                                               |                |                      type: "utf8"
 0x1d0|                                       98      |             .  |                      size: 24 0x1dd-0x1dd.7 (1)
 0x1d0|                                          4c 61|              La|                      value: "Lavc58.91.100 libmp3lame" 0x1de-0x1f5.7 (24)
 0x1e0|76 63 35 38 2e 39 31 2e 31 30 30 20 6c 69 62 6d|vc58.91.100 libm|
 0x1f0|70 33 6c 61 6d 65                              |p3lame          |
      |                                               |                |                [2]{}: element 0x1f6-0x21a.7 (37)
 0x1f0|                  67 c8                        |      g.        |                  id: "simple_tag" (0x67c8) (Contains general information about the target) 0x1f6-0x1f7.7 (2)
-     |                                               |                |                  type: "master" 0x1f8-NA (0)
+     |                                               |                |                  type: "master"
 0x1f0|                        a2                     |        .       |                  size: 34 0x1f8-0x1f8.7 (1)
      |                                               |                |                  elements[0:2]: 0x1f9-0x21a.7 (34)
      |                                               |                |                    [0]{}: element 0x1f9-0x203.7 (11)
 0x1f0|                           45 a3               |         E.     |                      id: "tag_name" (0x45a3) (The name of the Tag that is going to be stored) 0x1f9-0x1fa.7 (2)
-     |                                               |                |                      type: "utf8" 0x1fb-NA (0)
+     |                                               |                |                      type: "utf8"
 0x1f0|                                 88            |           .    |                      size: 8 0x1fb-0x1fb.7 (1)
 0x1f0|                                    44 55 52 41|            DURA|                      value: "DURATION" 0x1fc-0x203.7 (8)
 0x200|54 49 4f 4e                                    |TION            |
      |                                               |                |                    [1]{}: element 0x204-0x21a.7 (23)
 0x200|            44 87                              |    D.          |                      id: "tag_string" (0x4487) (The value of the Tag) 0x204-0x205.7 (2)
-     |                                               |                |                      type: "utf8" 0x206-NA (0)
+     |                                               |                |                      type: "utf8"
 0x200|                  94                           |      .         |                      size: 20 0x206-0x206.7 (1)
 0x200|                     30 30 3a 30 30 3a 30 30 2e|       00:00:00.|                      value: "00:00:00.075000000" 0x207-0x21a.7 (20)
 0x210|30 37 35 30 30 30 30 30 30 00 00               |075000000..     |
      |                                               |                |        [5]{}: element 0x21b-0x4bf.7 (677)
 0x210|                                 1f 43 b6 75   |           .C.u |          id: "cluster" (0x1f43b675) (The Top-Level Element containing the (monolithic) Block structure) 0x21b-0x21e.7 (4)
-     |                                               |                |          type: "master" 0x21f-NA (0)
+     |                                               |                |          type: "master"
 0x210|                                             42|               B|          size: 671 0x21f-0x220.7 (2)
 0x220|9f                                             |.               |
      |                                               |                |          elements[0:5]: 0x221-0x4bf.7 (671)
      |                                               |                |            [0]{}: element 0x221-0x226.7 (6)
 0x220|   bf                                          | .              |              id: "crc32" (0xbf) 0x221-0x221.7 (1)
-     |                                               |                |              type: "binary" 0x222-NA (0)
+     |                                               |                |              type: "binary"
 0x220|      84                                       |  .             |              size: 4 0x222-0x222.7 (1)
 0x220|         80 9c e0 10                           |   ....         |              value: raw bits 0x223-0x226.7 (4)
      |                                               |                |            [1]{}: element 0x227-0x229.7 (3)
 0x220|                     e7                        |       .        |              id: "timestamp" (0xe7) (Absolute timestamp of the cluster) 0x227-0x227.7 (1)
-     |                                               |                |              type: "uinteger" 0x228-NA (0)
+     |                                               |                |              type: "uinteger"
 0x220|                        81                     |        .       |              size: 1 0x228-0x228.7 (1)
 0x220|                           00                  |         .      |              value: 0 0x229-0x229.7 (1)
      |                                               |                |            [2]{}: element 0x22a-0x300.7 (215)
 0x220|                              a3               |          .     |              id: "simple_block" (0xa3) (Similar to Block) 0x22a-0x22a.7 (1)
-     |                                               |                |              type: "binary" 0x22b-NA (0)
+     |                                               |                |              type: "binary"
 0x220|                                 40 d4         |           @.   |              size: 212 0x22b-0x22c.7 (2)
 0x220|                                       81      |             .  |              track_number: 1 0x22d-0x22d.7 (1)
 0x220|                                          00 00|              ..|              timestamp: 0 0x22e-0x22f.7 (2)
@@ -355,7 +355,7 @@ $ fq -d matroska dv mp3.mkv
 0x230|   ff fb                                       | ..             |                  sync: 0b11111111111 (valid) 0x231-0x232.2 (1.3)
 0x230|      fb                                       |  .             |                  mpeg_version: "1" (3) (MPEG Version 1) 0x232.3-0x232.4 (0.2)
 0x230|      fb                                       |  .             |                  layer: 3 (1) (MPEG Layer 3) 0x232.5-0x232.6 (0.2)
-     |                                               |                |                  sample_count: 1152 0x232.7-NA (0)
+     |                                               |                |                  sample_count: 1152
 0x230|      fb                                       |  .             |                  protection_absent: true (No CRC) 0x232.7-0x232.7 (0.1)
 0x230|         50                                    |   P            |                  bitrate: 64000 (5) 0x233-0x233.3 (0.4)
 0x230|         50                                    |   P            |                  sample_rate: 44100 (0) 0x233.4-0x233.5 (0.2)
@@ -409,10 +409,10 @@ $ fq -d matroska dv mp3.mkv
 0x240|                  07 aa c3 8e 33 85 d3 64 f1 a1|      ....3..d..|                audio_data: raw bits 0x246-0x300.7 (187)
 0x250|c1 08 1c 58 1f 5e 1f 18 1c 46 04 1e 89 e5 b3 2e|...X.^...F......|
 *    |until 0x300.7 (187)                            |                |
-     |                                               |                |                crc_calculated: "2e0a" (raw bits) 0x301-NA (0)
+     |                                               |                |                crc_calculated: "2e0a" (raw bits)
      |                                               |                |            [3]{}: element 0x301-0x3d8.7 (216)
 0x300|   a3                                          | .              |              id: "simple_block" (0xa3) (Similar to Block) 0x301-0x301.7 (1)
-     |                                               |                |              type: "binary" 0x302-NA (0)
+     |                                               |                |              type: "binary"
 0x300|      40 d5                                    |  @.            |              size: 213 0x302-0x303.7 (2)
 0x300|            81                                 |    .           |              track_number: 1 0x304-0x304.7 (1)
 0x300|               00 1a                           |     ..         |              timestamp: 26 0x305-0x306.7 (2)
@@ -427,7 +427,7 @@ $ fq -d matroska dv mp3.mkv
 0x300|                        ff fb                  |        ..      |                  sync: 0b11111111111 (valid) 0x308-0x309.2 (1.3)
 0x300|                           fb                  |         .      |                  mpeg_version: "1" (3) (MPEG Version 1) 0x309.3-0x309.4 (0.2)
 0x300|                           fb                  |         .      |                  layer: 3 (1) (MPEG Layer 3) 0x309.5-0x309.6 (0.2)
-     |                                               |                |                  sample_count: 1152 0x309.7-NA (0)
+     |                                               |                |                  sample_count: 1152
 0x300|                           fb                  |         .      |                  protection_absent: true (No CRC) 0x309.7-0x309.7 (0.1)
 0x300|                              52               |          R     |                  bitrate: 64000 (5) 0x30a-0x30a.3 (0.4)
 0x300|                              52               |          R     |                  sample_rate: 44100 (0) 0x30a.4-0x30a.5 (0.2)
@@ -481,16 +481,16 @@ $ fq -d matroska dv mp3.mkv
 0x310|                                       01 d9 81|             ...|                audio_data: raw bits 0x31d-0x3d8.7 (188)
 0x320|38 05 c9 80 20 04 f1 80 8e 07 01 96 d2 b0 19 91|8... ...........|
 *    |until 0x3d8.7 (188)                            |                |
-     |                                               |                |                crc_calculated: "9950" (raw bits) 0x3d9-NA (0)
+     |                                               |                |                crc_calculated: "9950" (raw bits)
      |                                               |                |            [4]{}: element 0x3d9-0x4bf.7 (231)
 0x3d0|                           a0                  |         .      |              id: "block_group" (0xa0) (Basic container of information containing a single Block and information specific to that Block) 0x3d9-0x3d9.7 (1)
-     |                                               |                |              type: "master" 0x3da-NA (0)
+     |                                               |                |              type: "master"
 0x3d0|                              01 00 00 00 00 00|          ......|              size: 222 0x3da-0x3e1.7 (8)
 0x3e0|00 de                                          |..              |
      |                                               |                |              elements[0:2]: 0x3e2-0x4bf.7 (222)
      |                                               |                |                [0]{}: element 0x3e2-0x4b9.7 (216)
 0x3e0|      a1                                       |  .             |                  id: "block" (0xa1) (Block containing the actual data to be rendered and a timestamp relative to the Cluster Timestamp) 0x3e2-0x3e2.7 (1)
-     |                                               |                |                  type: "binary" 0x3e3-NA (0)
+     |                                               |                |                  type: "binary"
 0x3e0|         40 d5                                 |   @.           |                  size: 213 0x3e3-0x3e4.7 (2)
 0x3e0|               81                              |     .          |                  track_number: 1 0x3e5-0x3e5.7 (1)
 0x3e0|                  00 34                        |      .4        |                  timestamp: 52 0x3e6-0x3e7.7 (2)
@@ -504,7 +504,7 @@ $ fq -d matroska dv mp3.mkv
 0x3e0|                           ff fb               |         ..     |                      sync: 0b11111111111 (valid) 0x3e9-0x3ea.2 (1.3)
 0x3e0|                              fb               |          .     |                      mpeg_version: "1" (3) (MPEG Version 1) 0x3ea.3-0x3ea.4 (0.2)
 0x3e0|                              fb               |          .     |                      layer: 3 (1) (MPEG Layer 3) 0x3ea.5-0x3ea.6 (0.2)
-     |                                               |                |                      sample_count: 1152 0x3ea.7-NA (0)
+     |                                               |                |                      sample_count: 1152
 0x3e0|                              fb               |          .     |                      protection_absent: true (No CRC) 0x3ea.7-0x3ea.7 (0.1)
 0x3e0|                                 52            |           R    |                      bitrate: 64000 (5) 0x3eb-0x3eb.3 (0.4)
 0x3e0|                                 52            |           R    |                      sample_rate: 44100 (0) 0x3eb.4-0x3eb.5 (0.2)
@@ -558,49 +558,49 @@ $ fq -d matroska dv mp3.mkv
 0x3f0|                                          53 ca|              S.|                    audio_data: raw bits 0x3fe-0x4b9.7 (188)
 0x400|1e 59 fd 29 ba 0b 84 d4 8a f8 8d cb a0 77 10 07|.Y.).........w..|
 *    |until 0x4b9.7 (188)                            |                |
-     |                                               |                |                    crc_calculated: "c36b" (raw bits) 0x4ba-NA (0)
+     |                                               |                |                    crc_calculated: "c36b" (raw bits)
      |                                               |                |                [1]{}: element 0x4ba-0x4bf.7 (6)
 0x4b0|                              75 a2            |          u.    |                  id: "discard_padding" (0x75a2) (Duration of the silent data added to the Block) 0x4ba-0x4bb.7 (2)
-     |                                               |                |                  type: "integer" 0x4bc-NA (0)
+     |                                               |                |                  type: "integer"
 0x4b0|                                    83         |            .   |                  size: 3 0x4bc-0x4bc.7 (1)
 0x4b0|                                       32 84 42|             2.B|                  value: 3310658 0x4bd-0x4bf.7 (3)
      |                                               |                |        [6]{}: element 0x4c0-0x4db.7 (28)
 0x4c0|1c 53 bb 6b                                    |.S.k            |          id: "cues" (0x1c53bb6b) (A Top-Level Element to speed seeking access) 0x4c0-0x4c3.7 (4)
-     |                                               |                |          type: "master" 0x4c4-NA (0)
+     |                                               |                |          type: "master"
 0x4c0|            97                                 |    .           |          size: 23 0x4c4-0x4c4.7 (1)
      |                                               |                |          elements[0:2]: 0x4c5-0x4db.7 (23)
      |                                               |                |            [0]{}: element 0x4c5-0x4ca.7 (6)
 0x4c0|               bf                              |     .          |              id: "crc32" (0xbf) 0x4c5-0x4c5.7 (1)
-     |                                               |                |              type: "binary" 0x4c6-NA (0)
+     |                                               |                |              type: "binary"
 0x4c0|                  84                           |      .         |              size: 4 0x4c6-0x4c6.7 (1)
 0x4c0|                     72 d2 38 73               |       r.8s     |              value: raw bits 0x4c7-0x4ca.7 (4)
      |                                               |                |            [1]{}: element 0x4cb-0x4db.7 (17)
 0x4c0|                                 bb            |           .    |              id: "cue_point" (0xbb) (Contains all information relative to a seek point in the Segment) 0x4cb-0x4cb.7 (1)
-     |                                               |                |              type: "master" 0x4cc-NA (0)
+     |                                               |                |              type: "master"
 0x4c0|                                    8f         |            .   |              size: 15 0x4cc-0x4cc.7 (1)
      |                                               |                |              elements[0:2]: 0x4cd-0x4db.7 (15)
      |                                               |                |                [0]{}: element 0x4cd-0x4cf.7 (3)
 0x4c0|                                       b3      |             .  |                  id: "cue_time" (0xb3) (Absolute timestamp of the seek point) 0x4cd-0x4cd.7 (1)
-     |                                               |                |                  type: "uinteger" 0x4ce-NA (0)
+     |                                               |                |                  type: "uinteger"
 0x4c0|                                          81   |              . |                  size: 1 0x4ce-0x4ce.7 (1)
 0x4c0|                                             00|               .|                  value: 0 0x4cf-0x4cf.7 (1)
      |                                               |                |                [1]{}: element 0x4d0-0x4db.7 (12)
 0x4d0|b7                                             |.               |                  id: "cue_track_positions" (0xb7) (Contain positions for different tracks corresponding to the timestamp) 0x4d0-0x4d0.7 (1)
-     |                                               |                |                  type: "master" 0x4d1-NA (0)
+     |                                               |                |                  type: "master"
 0x4d0|   8a                                          | .              |                  size: 10 0x4d1-0x4d1.7 (1)
      |                                               |                |                  elements[0:3]: 0x4d2-0x4db.7 (10)
      |                                               |                |                    [0]{}: element 0x4d2-0x4d4.7 (3)
 0x4d0|      f7                                       |  .             |                      id: "cue_track" (0xf7) (The track for which a position is given) 0x4d2-0x4d2.7 (1)
-     |                                               |                |                      type: "uinteger" 0x4d3-NA (0)
+     |                                               |                |                      type: "uinteger"
 0x4d0|         81                                    |   .            |                      size: 1 0x4d3-0x4d3.7 (1)
 0x4d0|            01                                 |    .           |                      value: 1 0x4d4-0x4d4.7 (1)
      |                                               |                |                    [1]{}: element 0x4d5-0x4d8.7 (4)
 0x4d0|               f1                              |     .          |                      id: "cue_cluster_position" (0xf1) (The Segment Position of the Cluster containing the associated Block) 0x4d5-0x4d5.7 (1)
-     |                                               |                |                      type: "uinteger" 0x4d6-NA (0)
+     |                                               |                |                      type: "uinteger"
 0x4d0|                  82                           |      .         |                      size: 2 0x4d6-0x4d6.7 (1)
 0x4d0|                     01 e7                     |       ..       |                      value: 487 0x4d7-0x4d8.7 (2)
      |                                               |                |                    [2]{}: element 0x4d9-0x4db.7 (3)
 0x4d0|                           f0                  |         .      |                      id: "cue_relative_position" (0xf0) (The relative position inside the Cluster of the referenced SimpleBlock or BlockGroup with 0 being the first possible position for an Element inside that Cluster) 0x4d9-0x4d9.7 (1)
-     |                                               |                |                      type: "uinteger" 0x4da-NA (0)
+     |                                               |                |                      type: "uinteger"
 0x4d0|                              81               |          .     |                      size: 1 0x4da-0x4da.7 (1)
 0x4d0|                                 09|           |           .|   |                      value: 9 0x4db-0x4db.7 (1)

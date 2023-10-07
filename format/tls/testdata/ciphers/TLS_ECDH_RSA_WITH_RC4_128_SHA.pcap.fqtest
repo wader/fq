@@ -1,11 +1,11 @@
 $ fq -o keylog=@all.keylog ".tcp_connections[0] | dv" TLS_ECDH_RSA_WITH_RC4_128_SHA.pcap
           |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.tcp_connections[0]{}: tcp_connection 0xd03-NA (0)
           |                                               |                |  client{}: 0xd03-NA (0)
-          |                                               |                |    ip: "127.0.0.1" 0xd03-NA (0)
-          |                                               |                |    port: 48882 0xd03-NA (0)
-          |                                               |                |    has_start: true 0xd03-NA (0)
-          |                                               |                |    has_end: false 0xd03-NA (0)
-          |                                               |                |    skipped_bytes: 0 0xd03-NA (0)
+          |                                               |                |    ip: "127.0.0.1"
+          |                                               |                |    port: 48882
+          |                                               |                |    has_start: true
+          |                                               |                |    has_end: false
+          |                                               |                |    skipped_bytes: 0
           |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    stream{}: (tls) 0x0-0x19a.7 (411)
           |                                               |                |      records[0:6]: 0x0-0x19a.7 (411)
           |                                               |                |        [0]{}: record 0x0-0xa5.7 (166)
@@ -188,11 +188,11 @@ $ fq -o keylog=@all.keylog ".tcp_connections[0] | dv" TLS_ECDH_RSA_WITH_RC4_128_
     0x0000|47 45 54 20 2f 20 48 54 54 50 2f 31 2e 30 0d 0a|GET / HTTP/1.0..|      stream: raw bits 0x0-0x11.7 (18)
     0x0000|0d 0a|                                         |..|             |
           |                                               |                |  server{}: 0xd03-NA (0)
-          |                                               |                |    ip: "127.0.0.1" 0xd03-NA (0)
-          |                                               |                |    port: 4432 0xd03-NA (0)
-          |                                               |                |    has_start: true 0xd03-NA (0)
-          |                                               |                |    has_end: true 0xd03-NA (0)
-          |                                               |                |    skipped_bytes: 0 0xd03-NA (0)
+          |                                               |                |    ip: "127.0.0.1"
+          |                                               |                |    port: 4432
+          |                                               |                |    has_start: true
+          |                                               |                |    has_end: true
+          |                                               |                |    skipped_bytes: 0
           |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    stream{}: (tls) 0x0-0x74f.7 (1872)
           |                                               |                |      records[0:7]: 0x0-0x74f.7 (1872)
           |                                               |                |        [0]{}: record 0x0-0x46.7 (71)
@@ -288,7 +288,7 @@ $ fq -o keylog=@all.keylog ".tcp_connections[0] | dv" TLS_ECDH_RSA_WITH_RC4_128_
   0x000006|                                             05|               .|                              form: "primitive" (0) 0x6f.2-0x6f.2 (0.1)
   0x000006|                                             05|               .|                              tag: "null" (0x5) 0x6f.3-0x6f.7 (0.5)
   0x000007|00                                             |.               |                              length: "indefinite" (0) 0x70-0x70.7 (1)
-          |                                               |                |                              value: null 0x71-NA (0)
+          |                                               |                |                              value: null
           |                                               |                |                        [2]{}: object 0x71-0x91.7 (33)
   0x000007|   30                                          | 0              |                          class: "universal" (0) 0x71-0x71.1 (0.2)
   0x000007|   30                                          | 0              |                          form: "constructed" (1) 0x71.2-0x71.2 (0.1)
@@ -449,7 +449,7 @@ $ fq -o keylog=@all.keylog ".tcp_connections[0] | dv" TLS_ECDH_RSA_WITH_RC4_128_
   0x000015|                           05                  |         .      |                          form: "primitive" (0) 0x159.2-0x159.2 (0.1)
   0x000015|                           05                  |         .      |                          tag: "null" (0x5) 0x159.3-0x159.7 (0.5)
   0x000015|                              00               |          .     |                          length: "indefinite" (0) 0x15a-0x15a.7 (1)
-          |                                               |                |                          value: null 0x15b-NA (0)
+          |                                               |                |                          value: null
           |                                               |                |                    [2]{}: object 0x15b-0x1de.7 (132)
   0x000015|                                 03            |           .    |                      class: "universal" (0) 0x15b-0x15b.1 (0.2)
   0x000015|                                 03            |           .    |                      form: "primitive" (0) 0x15b.2-0x15b.2 (0.1)

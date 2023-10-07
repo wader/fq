@@ -4,7 +4,7 @@ $ fq -d mp3_frame dv mp3-frame-8000br-2ch-44100hz
 0x00|ff fb                                          |..              |    sync: 0b11111111111 (valid) 0x0-0x1.2 (1.3)
 0x00|   fb                                          | .              |    mpeg_version: "1" (3) (MPEG Version 1) 0x1.3-0x1.4 (0.2)
 0x00|   fb                                          | .              |    layer: 3 (1) (MPEG Layer 3) 0x1.5-0x1.6 (0.2)
-    |                                               |                |    sample_count: 1152 0x1.7-NA (0)
+    |                                               |                |    sample_count: 1152
 0x00|   fb                                          | .              |    protection_absent: true (No CRC) 0x1.7-0x1.7 (0.1)
 0x00|      12                                       |  .             |    bitrate: 32000 (1) 0x2-0x2.3 (0.4)
 0x00|      12                                       |  .             |    sample_rate: 44100 (0) 0x2.4-0x2.5 (0.2)
@@ -88,4 +88,4 @@ $ fq -d mp3_frame dv mp3-frame-8000br-2ch-44100hz
 0x20|            d7 80 04 14 ef e4 4c 01 94 2f b0 ef|    ......L../..|  audio_data: raw bits 0x24-0x68.7 (69)
 0x30|c6 d0 08 d1 e2 69 69 d0 72 21 06 34 4f 03 43 04|.....ii.r!.4O.C.|
 *   |until 0x68.7 (end) (69)                        |                |
-    |                                               |                |  crc_calculated: "aad7" (raw bits) 0x69-NA (0)
+    |                                               |                |  crc_calculated: "aad7" (raw bits)

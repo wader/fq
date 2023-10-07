@@ -277,5 +277,5 @@ $ fq dv lpcm.mp4
 0x510|30 30|                                         |00|             |
      |                                               |                |  tracks[0:1]: 0x512-NA (0)
      |                                               |                |    [0]{}: track 0x512-NA (0)
-     |                                               |                |      id: 1 0x512-NA (0)
-     |                                               |                |      data_format: "lpcm" 0x512-NA (0)
+     |                                               |                |      id: 1
+     |                                               |                |      data_format: "lpcm"

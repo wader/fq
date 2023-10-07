@@ -9,7 +9,7 @@ $ fq dv unicode.plist
 0x000|                           10                  |         .      |    large_size_marker: 1 (valid) 0x9-0x9.3 (0.4)
 0x000|                           10                  |         .      |    exponent: 0 0x9.4-0x9.7 (0.4)
 0x000|                              15               |          .     |    size_bigint: 21 0xa-0xa.7 (1)
-     |                                               |                |    size: 21 0xb-NA (0)
+     |                                               |                |    size: 21
      |                                               |                |    entries[0:21]: 0xb-0x31a.7 (784)
      |                                               |                |      [0]{}: entry 0xb-0x1dc.7 (466)
 0x000|                                 01            |           .    |        key_index: 1 0xb-0xb.7 (1)
@@ -17,7 +17,7 @@ $ fq dv unicode.plist
      |                                               |                |        key{}: 0x35-0x41.7 (13)
 0x030|               5c                              |     \          |          type: "ascii_string" (5) (ASCII encoded string) 0x35-0x35.3 (0.4)
 0x030|               5c                              |     \          |          size_bits: 12 0x35.4-0x35.7 (0.4)
-     |                                               |                |          size: 12 0x36-NA (0)
+     |                                               |                |          size: 12
 0x030|                  43 46 42 75 6e 64 6c 65 4e 61|      CFBundleNa|          value: "CFBundleName" 0x36-0x41.7 (12)
 0x040|6d 65                                          |me              |
      |                                               |                |        value{}: 0x1c7-0x1dc.7 (22)
@@ -26,7 +26,7 @@ $ fq dv unicode.plist
 0x1c0|                        10                     |        .       |          large_size_marker: 1 (valid) 0x1c8-0x1c8.3 (0.4)
 0x1c0|                        10                     |        .       |          exponent: 0 0x1c8.4-0x1c8.7 (0.4)
 0x1c0|                           13                  |         .      |          size_bigint: 19 0x1c9-0x1c9.7 (1)
-     |                                               |                |          size: 19 0x1ca-NA (0)
+     |                                               |                |          size: 19
 0x1c0|                              43 6f 72 65 44 65|          CoreDe|          value: "CoreDeviceUtilities" 0x1ca-0x1dc.7 (19)
 0x1d0|76 69 63 65 55 74 69 6c 69 74 69 65 73         |viceUtilities   |
      |                                               |                |      [1]{}: entry 0xc-0x20f.7 (516)
@@ -38,7 +38,7 @@ $ fq dv unicode.plist
 0x040|         10                                    |   .            |          large_size_marker: 1 (valid) 0x43-0x43.3 (0.4)
 0x040|         10                                    |   .            |          exponent: 0 0x43.4-0x43.7 (0.4)
 0x040|            18                                 |    .           |          size_bigint: 24 0x44-0x44.7 (1)
-     |                                               |                |          size: 24 0x45-NA (0)
+     |                                               |                |          size: 24
 0x040|               4e 53 48 75 6d 61 6e 52 65 61 64|     NSHumanRead|          value: "NSHumanReadableCopyright" 0x45-0x5c.7 (24)
 0x050|61 62 6c 65 43 6f 70 79 72 69 67 68 74         |ableCopyright   |
      |                                               |                |        value{}: 0x1dd-0x20f.7 (51)
@@ -47,7 +47,7 @@ $ fq dv unicode.plist
 0x1d0|                                          10   |              . |          large_size_marker: 1 (valid) 0x1de-0x1de.3 (0.4)
 0x1d0|                                          10   |              . |          exponent: 0 0x1de.4-0x1de.7 (0.4)
 0x1d0|                                             30|               0|          size_bigint: 48 0x1df-0x1df.7 (1)
-     |                                               |                |          size: 48 0x1e0-NA (0)
+     |                                               |                |          size: 48
 0x1e0|00 43 00 6f 00 70 00 79 00 72 00 69 00 67 00 68|.C.o.p.y.r.i.g.h|          value: "Copyright © 2021 Apple I" 0x1e0-0x20f.7 (48)
 *    |until 0x20f.7 (48)                             |                |
      |                                               |                |      [2]{}: entry 0xd-0x244.7 (568)
@@ -56,13 +56,13 @@ $ fq dv unicode.plist
      |                                               |                |        key{}: 0x5d-0x64.7 (8)
 0x050|                                       57      |             W  |          type: "ascii_string" (5) (ASCII encoded string) 0x5d-0x5d.3 (0.4)
 0x050|                                       57      |             W  |          size_bits: 7 0x5d.4-0x5d.7 (0.4)
-     |                                               |                |          size: 7 0x5e-NA (0)
+     |                                               |                |          size: 7
 0x050|                                          44 54|              DT|          value: "DTXcode" 0x5e-0x64.7 (7)
 0x060|58 63 6f 64 65                                 |Xcode           |
      |                                               |                |        value{}: 0x240-0x244.7 (5)
 0x240|54                                             |T               |          type: "ascii_string" (5) (ASCII encoded string) 0x240-0x240.3 (0.4)
 0x240|54                                             |T               |          size_bits: 4 0x240.4-0x240.7 (0.4)
-     |                                               |                |          size: 4 0x241-NA (0)
+     |                                               |                |          size: 4
 0x240|   31 33 32 30                                 | 1320           |          value: "1320" 0x241-0x244.7 (4)
      |                                               |                |      [3]{}: entry 0xe-0x264.7 (599)
 0x000|                                          04   |              . |        key_index: 4 0xe-0xe.7 (1)
@@ -70,7 +70,7 @@ $ fq dv unicode.plist
      |                                               |                |        key{}: 0x65-0x6e.7 (10)
 0x060|               59                              |     Y          |          type: "ascii_string" (5) (ASCII encoded string) 0x65-0x65.3 (0.4)
 0x060|               59                              |     Y          |          size_bits: 9 0x65.4-0x65.7 (0.4)
-     |                                               |                |          size: 9 0x66-NA (0)
+     |                                               |                |          size: 9
 0x060|                  44 54 53 44 4b 4e 61 6d 65   |      DTSDKName |          value: "DTSDKName" 0x66-0x6e.7 (9)
      |                                               |                |        value{}: 0x245-0x264.7 (32)
 0x240|               5f                              |     _          |          type: "ascii_string" (5) (ASCII encoded string) 0x245-0x245.3 (0.4)
@@ -78,7 +78,7 @@ $ fq dv unicode.plist
 0x240|                  10                           |      .         |          large_size_marker: 1 (valid) 0x246-0x246.3 (0.4)
 0x240|                  10                           |      .         |          exponent: 0 0x246.4-0x246.7 (0.4)
 0x240|                     1d                        |       .        |          size_bigint: 29 0x247-0x247.7 (1)
-     |                                               |                |          size: 29 0x248-NA (0)
+     |                                               |                |          size: 29
 0x240|                        61 70 70 6c 65 74 76 73|        appletvs|          value: "appletvsimulator15.2.internal" 0x248-0x264.7 (29)
 0x250|69 6d 75 6c 61 74 6f 72 31 35 2e 32 2e 69 6e 74|imulator15.2.int|
 0x260|65 72 6e 61 6c                                 |ernal           |
@@ -88,12 +88,12 @@ $ fq dv unicode.plist
      |                                               |                |        key{}: 0x6f-0x79.7 (11)
 0x060|                                             5a|               Z|          type: "ascii_string" (5) (ASCII encoded string) 0x6f-0x6f.3 (0.4)
 0x060|                                             5a|               Z|          size_bits: 10 0x6f.4-0x6f.7 (0.4)
-     |                                               |                |          size: 10 0x70-NA (0)
+     |                                               |                |          size: 10
 0x070|44 54 53 44 4b 42 75 69 6c 64                  |DTSDKBuild      |          value: "DTSDKBuild" 0x70-0x79.7 (10)
      |                                               |                |        value{}: 0x265-0x26a.7 (6)
 0x260|               55                              |     U          |          type: "ascii_string" (5) (ASCII encoded string) 0x265-0x265.3 (0.4)
 0x260|               55                              |     U          |          size_bits: 5 0x265.4-0x265.7 (0.4)
-     |                                               |                |          size: 5 0x266-NA (0)
+     |                                               |                |          size: 5
 0x260|                  31 39 4b 32 34               |      19K24     |          value: "19K24" 0x266-0x26a.7 (5)
      |                                               |                |      [5]{}: entry 0x10-0x272.7 (611)
 0x010|06                                             |.               |        key_index: 6 0x10-0x10.7 (1)
@@ -104,14 +104,14 @@ $ fq dv unicode.plist
 0x070|                                 10            |           .    |          large_size_marker: 1 (valid) 0x7b-0x7b.3 (0.4)
 0x070|                                 10            |           .    |          exponent: 0 0x7b.4-0x7b.7 (0.4)
 0x070|                                    19         |            .   |          size_bigint: 25 0x7c-0x7c.7 (1)
-     |                                               |                |          size: 25 0x7d-NA (0)
+     |                                               |                |          size: 25
 0x070|                                       43 46 42|             CFB|          value: "CFBundleDevelopmentRegion" 0x7d-0x95.7 (25)
 0x080|75 6e 64 6c 65 44 65 76 65 6c 6f 70 6d 65 6e 74|undleDevelopment|
 0x090|52 65 67 69 6f 6e                              |Region          |
      |                                               |                |        value{}: 0x26b-0x272.7 (8)
 0x260|                                 57            |           W    |          type: "ascii_string" (5) (ASCII encoded string) 0x26b-0x26b.3 (0.4)
 0x260|                                 57            |           W    |          size_bits: 7 0x26b.4-0x26b.7 (0.4)
-     |                                               |                |          size: 7 0x26c-NA (0)
+     |                                               |                |          size: 7
 0x260|                                    45 6e 67 6c|            Engl|          value: "English" 0x26c-0x272.7 (7)
 0x270|69 73 68                                       |ish             |
      |                                               |                |      [6]{}: entry 0x11-0x278.7 (616)
@@ -123,13 +123,13 @@ $ fq dv unicode.plist
 0x090|                     10                        |       .        |          large_size_marker: 1 (valid) 0x97-0x97.3 (0.4)
 0x090|                     10                        |       .        |          exponent: 0 0x97.4-0x97.7 (0.4)
 0x090|                        0f                     |        .       |          size_bigint: 15 0x98-0x98.7 (1)
-     |                                               |                |          size: 15 0x99-NA (0)
+     |                                               |                |          size: 15
 0x090|                           43 46 42 75 6e 64 6c|         CFBundl|          value: "CFBundleVersion" 0x99-0xa7.7 (15)
 0x0a0|65 56 65 72 73 69 6f 6e                        |eVersion        |
      |                                               |                |        value{}: 0x273-0x278.7 (6)
 0x270|         55                                    |   U            |          type: "ascii_string" (5) (ASCII encoded string) 0x273-0x273.3 (0.4)
 0x270|         55                                    |   U            |          size_bits: 5 0x273.4-0x273.7 (0.4)
-     |                                               |                |          size: 5 0x274-NA (0)
+     |                                               |                |          size: 5
 0x270|            37 38 33 2e 35                     |    783.5       |          value: "783.5" 0x274-0x278.7 (5)
      |                                               |                |      [7]{}: entry 0x12-0x282.7 (625)
 0x010|      08                                       |  .             |        key_index: 8 0x12-0x12.7 (1)
@@ -140,13 +140,13 @@ $ fq dv unicode.plist
 0x0a0|                           10                  |         .      |          large_size_marker: 1 (valid) 0xa9-0xa9.3 (0.4)
 0x0a0|                           10                  |         .      |          exponent: 0 0xa9.4-0xa9.7 (0.4)
 0x0a0|                              13               |          .     |          size_bigint: 19 0xaa-0xaa.7 (1)
-     |                                               |                |          size: 19 0xab-NA (0)
+     |                                               |                |          size: 19
 0x0a0|                                 42 75 69 6c 64|           Build|          value: "BuildMachineOSBuild" 0xab-0xbd.7 (19)
 0x0b0|4d 61 63 68 69 6e 65 4f 53 42 75 69 6c 64      |MachineOSBuild  |
      |                                               |                |        value{}: 0x279-0x282.7 (10)
 0x270|                           59                  |         Y      |          type: "ascii_string" (5) (ASCII encoded string) 0x279-0x279.3 (0.4)
 0x270|                           59                  |         Y      |          size_bits: 9 0x279.4-0x279.7 (0.4)
-     |                                               |                |          size: 9 0x27a-NA (0)
+     |                                               |                |          size: 9
 0x270|                              32 30 41 32 34 31|          20A241|          value: "20A241108" 0x27a-0x282.7 (9)
 0x280|31 30 38                                       |108             |
      |                                               |                |      [8]{}: entry 0x13-0x295.7 (643)
@@ -155,7 +155,7 @@ $ fq dv unicode.plist
      |                                               |                |        key{}: 0xbe-0xcc.7 (15)
 0x0b0|                                          5e   |              ^ |          type: "ascii_string" (5) (ASCII encoded string) 0xbe-0xbe.3 (0.4)
 0x0b0|                                          5e   |              ^ |          size_bits: 14 0xbe.4-0xbe.7 (0.4)
-     |                                               |                |          size: 14 0xbf-NA (0)
+     |                                               |                |          size: 14
 0x0b0|                                             44|               D|          value: "DTPlatformName" 0xbf-0xcc.7 (14)
 0x0c0|54 50 6c 61 74 66 6f 72 6d 4e 61 6d 65         |TPlatformName   |
      |                                               |                |        value{}: 0x283-0x295.7 (19)
@@ -164,7 +164,7 @@ $ fq dv unicode.plist
 0x280|            10                                 |    .           |          large_size_marker: 1 (valid) 0x284-0x284.3 (0.4)
 0x280|            10                                 |    .           |          exponent: 0 0x284.4-0x284.7 (0.4)
 0x280|               10                              |     .          |          size_bigint: 16 0x285-0x285.7 (1)
-     |                                               |                |          size: 16 0x286-NA (0)
+     |                                               |                |          size: 16
 0x280|                  61 70 70 6c 65 74 76 73 69 6d|      appletvsim|          value: "appletvsimulator" 0x286-0x295.7 (16)
 0x290|75 6c 61 74 6f 72                              |ulator          |
      |                                               |                |      [9]{}: entry 0x14-0x29a.7 (647)
@@ -176,13 +176,13 @@ $ fq dv unicode.plist
 0x0c0|                                          10   |              . |          large_size_marker: 1 (valid) 0xce-0xce.3 (0.4)
 0x0c0|                                          10   |              . |          exponent: 0 0xce.4-0xce.7 (0.4)
 0x0c0|                                             13|               .|          size_bigint: 19 0xcf-0xcf.7 (1)
-     |                                               |                |          size: 19 0xd0-NA (0)
+     |                                               |                |          size: 19
 0x0d0|43 46 42 75 6e 64 6c 65 50 61 63 6b 61 67 65 54|CFBundlePackageT|          value: "CFBundlePackageType" 0xd0-0xe2.7 (19)
 0x0e0|79 70 65                                       |ype             |
      |                                               |                |        value{}: 0x296-0x29a.7 (5)
 0x290|                  54                           |      T         |          type: "ascii_string" (5) (ASCII encoded string) 0x296-0x296.3 (0.4)
 0x290|                  54                           |      T         |          size_bits: 4 0x296.4-0x296.7 (0.4)
-     |                                               |                |          size: 4 0x297-NA (0)
+     |                                               |                |          size: 4
 0x290|                     46 4d 57 4b               |       FMWK     |          value: "FMWK" 0x297-0x29a.7 (4)
      |                                               |                |      [10]{}: entry 0x15-0x278.7 (612)
 0x010|               0b                              |     .          |        key_index: 11 0x15-0x15.7 (1)
@@ -193,13 +193,13 @@ $ fq dv unicode.plist
 0x0e0|            10                                 |    .           |          large_size_marker: 1 (valid) 0xe4-0xe4.3 (0.4)
 0x0e0|            10                                 |    .           |          exponent: 0 0xe4.4-0xe4.7 (0.4)
 0x0e0|               1a                              |     .          |          size_bigint: 26 0xe5-0xe5.7 (1)
-     |                                               |                |          size: 26 0xe6-NA (0)
+     |                                               |                |          size: 26
 0x0e0|                  43 46 42 75 6e 64 6c 65 53 68|      CFBundleSh|          value: "CFBundleShortVersionString" 0xe6-0xff.7 (26)
 0x0f0|6f 72 74 56 65 72 73 69 6f 6e 53 74 72 69 6e 67|ortVersionString|
      |                                               |                |        value{}: 0x273-0x278.7 (6)
 0x270|         55                                    |   U            |          type: "ascii_string" (5) (ASCII encoded string) 0x273-0x273.3 (0.4)
 0x270|         55                                    |   U            |          size_bits: 5 0x273.4-0x273.7 (0.4)
-     |                                               |                |          size: 5 0x274-NA (0)
+     |                                               |                |          size: 5
 0x270|            37 38 33 2e 35                     |    783.5       |          value: "783.5" 0x274-0x278.7 (5)
      |                                               |                |      [11]{}: entry 0x16-0x2af.7 (666)
 0x010|                  0c                           |      .         |        key_index: 12 0x16-0x16.7 (1)
@@ -210,13 +210,13 @@ $ fq dv unicode.plist
 0x100|   10                                          | .              |          large_size_marker: 1 (valid) 0x101-0x101.3 (0.4)
 0x100|   10                                          | .              |          exponent: 0 0x101.4-0x101.7 (0.4)
 0x100|      1a                                       |  .             |          size_bigint: 26 0x102-0x102.7 (1)
-     |                                               |                |          size: 26 0x103-NA (0)
+     |                                               |                |          size: 26
 0x100|         43 46 42 75 6e 64 6c 65 53 75 70 70 6f|   CFBundleSuppo|          value: "CFBundleSupportedPlatforms" 0x103-0x11c.7 (26)
 0x110|72 74 65 64 50 6c 61 74 66 6f 72 6d 73         |rtedPlatforms   |
      |                                               |                |        value{}: 0x29b-0x2af.7 (21)
 0x290|                                 a1            |           .    |          type: "array" (10) (Array) 0x29b-0x29b.3 (0.4)
 0x290|                                 a1            |           .    |          size_bits: 1 0x29b.4-0x29b.7 (0.4)
-     |                                               |                |          size: 1 0x29c-NA (0)
+     |                                               |                |          size: 1
      |                                               |                |          entries[0:1]: 0x29c-0x2af.7 (20)
      |                                               |                |            [0]{}: entry 0x29c-0x2af.7 (20)
 0x290|                                    21         |            !   |              object_index: 33 0x29c-0x29c.7 (1)
@@ -225,7 +225,7 @@ $ fq dv unicode.plist
 0x290|                                          10   |              . |              large_size_marker: 1 (valid) 0x29e-0x29e.3 (0.4)
 0x290|                                          10   |              . |              exponent: 0 0x29e.4-0x29e.7 (0.4)
 0x290|                                             10|               .|              size_bigint: 16 0x29f-0x29f.7 (1)
-     |                                               |                |              size: 16 0x2a0-NA (0)
+     |                                               |                |              size: 16
 0x2a0|41 70 70 6c 65 54 56 53 69 6d 75 6c 61 74 6f 72|AppleTVSimulator|              value: "AppleTVSimulator" 0x2a0-0x2af.7 (16)
      |                                               |                |      [12]{}: entry 0x17-0x2b3.7 (669)
 0x010|                     0d                        |       .        |        key_index: 13 0x17-0x17.7 (1)
@@ -236,13 +236,13 @@ $ fq dv unicode.plist
 0x110|                                          10   |              . |          large_size_marker: 1 (valid) 0x11e-0x11e.3 (0.4)
 0x110|                                          10   |              . |          exponent: 0 0x11e.4-0x11e.7 (0.4)
 0x110|                                             1d|               .|          size_bigint: 29 0x11f-0x11f.7 (1)
-     |                                               |                |          size: 29 0x120-NA (0)
+     |                                               |                |          size: 29
 0x120|43 46 42 75 6e 64 6c 65 49 6e 66 6f 44 69 63 74|CFBundleInfoDict|          value: "CFBundleInfoDictionaryVersion" 0x120-0x13c.7 (29)
 0x130|69 6f 6e 61 72 79 56 65 72 73 69 6f 6e         |ionaryVersion   |
      |                                               |                |        value{}: 0x2b0-0x2b3.7 (4)
 0x2b0|53                                             |S               |          type: "ascii_string" (5) (ASCII encoded string) 0x2b0-0x2b0.3 (0.4)
 0x2b0|53                                             |S               |          size_bits: 3 0x2b0.4-0x2b0.7 (0.4)
-     |                                               |                |          size: 3 0x2b1-NA (0)
+     |                                               |                |          size: 3
 0x2b0|   36 2e 30                                    | 6.0            |          value: "6.0" 0x2b1-0x2b3.7 (3)
      |                                               |                |      [13]{}: entry 0x18-0x1dc.7 (453)
 0x010|                        0e                     |        .       |        key_index: 14 0x18-0x18.7 (1)
@@ -253,7 +253,7 @@ $ fq dv unicode.plist
 0x130|                                          10   |              . |          large_size_marker: 1 (valid) 0x13e-0x13e.3 (0.4)
 0x130|                                          10   |              . |          exponent: 0 0x13e.4-0x13e.7 (0.4)
 0x130|                                             12|               .|          size_bigint: 18 0x13f-0x13f.7 (1)
-     |                                               |                |          size: 18 0x140-NA (0)
+     |                                               |                |          size: 18
 0x140|43 46 42 75 6e 64 6c 65 45 78 65 63 75 74 61 62|CFBundleExecutab|          value: "CFBundleExecutable" 0x140-0x151.7 (18)
 0x150|6c 65                                          |le              |
      |                                               |                |        value{}: 0x1c7-0x1dc.7 (22)
@@ -262,7 +262,7 @@ $ fq dv unicode.plist
 0x1c0|                        10                     |        .       |          large_size_marker: 1 (valid) 0x1c8-0x1c8.3 (0.4)
 0x1c0|                        10                     |        .       |          exponent: 0 0x1c8.4-0x1c8.7 (0.4)
 0x1c0|                           13                  |         .      |          size_bigint: 19 0x1c9-0x1c9.7 (1)
-     |                                               |                |          size: 19 0x1ca-NA (0)
+     |                                               |                |          size: 19
 0x1c0|                              43 6f 72 65 44 65|          CoreDe|          value: "CoreDeviceUtilities" 0x1ca-0x1dc.7 (19)
 0x1d0|76 69 63 65 55 74 69 6c 69 74 69 65 73         |viceUtilities   |
      |                                               |                |      [14]{}: entry 0x19-0x2d8.7 (704)
@@ -271,7 +271,7 @@ $ fq dv unicode.plist
      |                                               |                |        key{}: 0x152-0x15c.7 (11)
 0x150|      5a                                       |  Z             |          type: "ascii_string" (5) (ASCII encoded string) 0x152-0x152.3 (0.4)
 0x150|      5a                                       |  Z             |          size_bits: 10 0x152.4-0x152.7 (0.4)
-     |                                               |                |          size: 10 0x153-NA (0)
+     |                                               |                |          size: 10
 0x150|         44 54 43 6f 6d 70 69 6c 65 72         |   DTCompiler   |          value: "DTCompiler" 0x153-0x15c.7 (10)
      |                                               |                |        value{}: 0x2b4-0x2d8.7 (37)
 0x2b0|            5f                                 |    _           |          type: "ascii_string" (5) (ASCII encoded string) 0x2b4-0x2b4.3 (0.4)
@@ -279,7 +279,7 @@ $ fq dv unicode.plist
 0x2b0|               10                              |     .          |          large_size_marker: 1 (valid) 0x2b5-0x2b5.3 (0.4)
 0x2b0|               10                              |     .          |          exponent: 0 0x2b5.4-0x2b5.7 (0.4)
 0x2b0|                  22                           |      "         |          size_bigint: 34 0x2b6-0x2b6.7 (1)
-     |                                               |                |          size: 34 0x2b7-NA (0)
+     |                                               |                |          size: 34
 0x2b0|                     63 6f 6d 2e 61 70 70 6c 65|       com.apple|          value: "com.apple.compilers.llvm.clang.1_0" 0x2b7-0x2d8.7 (34)
 0x2c0|2e 63 6f 6d 70 69 6c 65 72 73 2e 6c 6c 76 6d 2e|.compilers.llvm.|
 0x2d0|63 6c 61 6e 67 2e 31 5f 30                     |clang.1_0       |
@@ -292,12 +292,12 @@ $ fq dv unicode.plist
 0x150|                                          10   |              . |          large_size_marker: 1 (valid) 0x15e-0x15e.3 (0.4)
 0x150|                                          10   |              . |          exponent: 0 0x15e.4-0x15e.7 (0.4)
 0x150|                                             10|               .|          size_bigint: 16 0x15f-0x15f.7 (1)
-     |                                               |                |          size: 16 0x160-NA (0)
+     |                                               |                |          size: 16
 0x160|4d 69 6e 69 6d 75 6d 4f 53 56 65 72 73 69 6f 6e|MinimumOSVersion|          value: "MinimumOSVersion" 0x160-0x16f.7 (16)
      |                                               |                |        value{}: 0x2d9-0x2dd.7 (5)
 0x2d0|                           54                  |         T      |          type: "ascii_string" (5) (ASCII encoded string) 0x2d9-0x2d9.3 (0.4)
 0x2d0|                           54                  |         T      |          size_bits: 4 0x2d9.4-0x2d9.7 (0.4)
-     |                                               |                |          size: 4 0x2da-NA (0)
+     |                                               |                |          size: 4
 0x2d0|                              31 30 2e 32      |          10.2  |          value: "10.2" 0x2da-0x2dd.7 (4)
      |                                               |                |      [16]{}: entry 0x1b-0x30b.7 (753)
 0x010|                                 11            |           .    |        key_index: 17 0x1b-0x1b.7 (1)
@@ -308,7 +308,7 @@ $ fq dv unicode.plist
 0x170|   10                                          | .              |          large_size_marker: 1 (valid) 0x171-0x171.3 (0.4)
 0x170|   10                                          | .              |          exponent: 0 0x171.4-0x171.7 (0.4)
 0x170|      12                                       |  .             |          size_bigint: 18 0x172-0x172.7 (1)
-     |                                               |                |          size: 18 0x173-NA (0)
+     |                                               |                |          size: 18
 0x170|         43 46 42 75 6e 64 6c 65 49 64 65 6e 74|   CFBundleIdent|          value: "CFBundleIdentifier" 0x173-0x184.7 (18)
 0x180|69 66 69 65 72                                 |ifier           |
      |                                               |                |        value{}: 0x2de-0x30b.7 (46)
@@ -317,7 +317,7 @@ $ fq dv unicode.plist
 0x2d0|                                             10|               .|          large_size_marker: 1 (valid) 0x2df-0x2df.3 (0.4)
 0x2d0|                                             10|               .|          exponent: 0 0x2df.4-0x2df.7 (0.4)
 0x2e0|2b                                             |+               |          size_bigint: 43 0x2e0-0x2e0.7 (1)
-     |                                               |                |          size: 43 0x2e1-NA (0)
+     |                                               |                |          size: 43
 0x2e0|   63 6f 6d 2e 61 70 70 6c 65 2e 43 6f 72 65 53| com.apple.CoreS|          value: "com.apple.CoreSimulator.CoreDeviceUtilities" 0x2e1-0x30b.7 (43)
 0x2f0|69 6d 75 6c 61 74 6f 72 2e 43 6f 72 65 44 65 76|imulator.CoreDev|
 0x300|69 63 65 55 74 69 6c 69 74 69 65 73            |iceUtilities    |
@@ -327,13 +327,13 @@ $ fq dv unicode.plist
      |                                               |                |        key{}: 0x185-0x193.7 (15)
 0x180|               5e                              |     ^          |          type: "ascii_string" (5) (ASCII encoded string) 0x185-0x185.3 (0.4)
 0x180|               5e                              |     ^          |          size_bits: 14 0x185.4-0x185.7 (0.4)
-     |                                               |                |          size: 14 0x186-NA (0)
+     |                                               |                |          size: 14
 0x180|                  55 49 44 65 76 69 63 65 46 61|      UIDeviceFa|          value: "UIDeviceFamily" 0x186-0x193.7 (14)
 0x190|6d 69 6c 79                                    |mily            |
      |                                               |                |        value{}: 0x30c-0x30f.7 (4)
 0x300|                                    a1         |            .   |          type: "array" (10) (Array) 0x30c-0x30c.3 (0.4)
 0x300|                                    a1         |            .   |          size_bits: 1 0x30c.4-0x30c.7 (0.4)
-     |                                               |                |          size: 1 0x30d-NA (0)
+     |                                               |                |          size: 1
      |                                               |                |          entries[0:1]: 0x30d-0x30f.7 (3)
      |                                               |                |            [0]{}: entry 0x30d-0x30f.7 (3)
 0x300|                                       27      |             '  |              object_index: 39 0x30d-0x30d.7 (1)
@@ -349,13 +349,13 @@ $ fq dv unicode.plist
 0x190|               10                              |     .          |          large_size_marker: 1 (valid) 0x195-0x195.3 (0.4)
 0x190|               10                              |     .          |          exponent: 0 0x195.4-0x195.7 (0.4)
 0x190|                  11                           |      .         |          size_bigint: 17 0x196-0x196.7 (1)
-     |                                               |                |          size: 17 0x197-NA (0)
+     |                                               |                |          size: 17
 0x190|                     44 54 50 6c 61 74 66 6f 72|       DTPlatfor|          value: "DTPlatformVersion" 0x197-0x1a7.7 (17)
 0x1a0|6d 56 65 72 73 69 6f 6e                        |mVersion        |
      |                                               |                |        value{}: 0x310-0x314.7 (5)
 0x310|54                                             |T               |          type: "ascii_string" (5) (ASCII encoded string) 0x310-0x310.3 (0.4)
 0x310|54                                             |T               |          size_bits: 4 0x310.4-0x310.7 (0.4)
-     |                                               |                |          size: 4 0x311-NA (0)
+     |                                               |                |          size: 4
 0x310|   31 35 2e 32                                 | 15.2           |          value: "15.2" 0x311-0x314.7 (4)
      |                                               |                |      [19]{}: entry 0x1e-0x31a.7 (765)
 0x010|                                          14   |              . |        key_index: 20 0x1e-0x1e.7 (1)
@@ -363,13 +363,13 @@ $ fq dv unicode.plist
      |                                               |                |        key{}: 0x1a8-0x1b4.7 (13)
 0x1a0|                        5c                     |        \       |          type: "ascii_string" (5) (ASCII encoded string) 0x1a8-0x1a8.3 (0.4)
 0x1a0|                        5c                     |        \       |          size_bits: 12 0x1a8.4-0x1a8.7 (0.4)
-     |                                               |                |          size: 12 0x1a9-NA (0)
+     |                                               |                |          size: 12
 0x1a0|                           44 54 58 63 6f 64 65|         DTXcode|          value: "DTXcodeBuild" 0x1a9-0x1b4.7 (12)
 0x1b0|42 75 69 6c 64                                 |Build           |
      |                                               |                |        value{}: 0x315-0x31a.7 (6)
 0x310|               55                              |     U          |          type: "ascii_string" (5) (ASCII encoded string) 0x315-0x315.3 (0.4)
 0x310|               55                              |     U          |          size_bits: 5 0x315.4-0x315.7 (0.4)
-     |                                               |                |          size: 5 0x316-NA (0)
+     |                                               |                |          size: 5
 0x310|                  31 33 43 37 31               |      13C71     |          value: "13C71" 0x316-0x31a.7 (5)
      |                                               |                |      [20]{}: entry 0x1f-0x26a.7 (588)
 0x010|                                             15|               .|        key_index: 21 0x1f-0x1f.7 (1)
@@ -380,13 +380,13 @@ $ fq dv unicode.plist
 0x1b0|                  10                           |      .         |          large_size_marker: 1 (valid) 0x1b6-0x1b6.3 (0.4)
 0x1b0|                  10                           |      .         |          exponent: 0 0x1b6.4-0x1b6.7 (0.4)
 0x1b0|                     0f                        |       .        |          size_bigint: 15 0x1b7-0x1b7.7 (1)
-     |                                               |                |          size: 15 0x1b8-NA (0)
+     |                                               |                |          size: 15
 0x1b0|                        44 54 50 6c 61 74 66 6f|        DTPlatfo|          value: "DTPlatformBuild" 0x1b8-0x1c6.7 (15)
 0x1c0|72 6d 42 75 69 6c 64                           |rmBuild         |
      |                                               |                |        value{}: 0x265-0x26a.7 (6)
 0x260|               55                              |     U          |          type: "ascii_string" (5) (ASCII encoded string) 0x265-0x265.3 (0.4)
 0x260|               55                              |     U          |          size_bits: 5 0x265.4-0x265.7 (0.4)
-     |                                               |                |          size: 5 0x266-NA (0)
+     |                                               |                |          size: 5
 0x260|                  31 39 4b 32 34               |      19K24     |          value: "19K24" 0x266-0x26a.7 (5)
 0x210|00 6e 00 63 00 2e 00 20 00 41 00 6c 00 6c 00 20|.n.c... .A.l.l. |  gap0: raw bits 0x210-0x23f.7 (48)
 *    |until 0x23f.7 (48)                             |                |

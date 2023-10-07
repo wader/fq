@@ -28,7 +28,6 @@ import (
 	"github.com/wader/fq/internal/pos"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
-	"github.com/wader/fq/pkg/scalar"
 
 	"github.com/wader/gojq"
 )
@@ -75,15 +74,6 @@ func init() {
 	RegisterIter1("_print_color_json", (*Interp)._printColorJSON)
 
 	RegisterFunc0("_is_completing", (*Interp)._isCompleting)
-}
-
-type Scalarable interface {
-	ScalarActual() any
-	ScalarValue() any
-	ScalarSym() any
-	ScalarDescription() string
-	ScalarIsGap() bool
-	ScalarDisplayFormat() scalar.DisplayFormat
 }
 
 type valueError struct {

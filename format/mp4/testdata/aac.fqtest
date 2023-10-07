@@ -361,8 +361,8 @@ $ fq -d mp4 dv aac.mp4
 0x580|                           00 00 01            |         ...    |                          flags: 1 0x589-0x58b.7 (3)
 0x580|                                    00 00 00 00|            ....|                          reserved: 0 0x58c-0x58f.7 (4)
 0x590|4c 61 76 66 35 38 2e 34 35 2e 31 30 30|        |Lavf58.45.100|  |                          data: "Lavf58.45.100" 0x590-0x59c.7 (13)
-     |                                               |                |  tracks[0:1]: 0x2c-0x59c.7 (1393)
-     |                                               |                |    [0]{}: track 0x2c-0x59c.7 (1393)
+     |                                               |                |  tracks[0:1]: 0x2c-0x291.7 (614)
+     |                                               |                |    [0]{}: track 0x2c-0x291.7 (614)
      |                                               |                |      samples[0:4]: 0x2c-0x291.7 (614)
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [0][0:4]: sample (aac_frame) 0x2c-0xf8.7 (205)
      |                                               |                |          [0]{}: element 0x2c-0x3c.6 (16.7)
@@ -370,7 +370,7 @@ $ fq -d mp4 dv aac.mp4
      |                                               |                |            cnt{}: 0x2c.3-0x2d.6 (1.4)
 0x020|                                    de         |            .   |              count: 15 0x2c.3-0x2c.6 (0.4)
 0x020|                                    de 02      |            ..  |              esc_count: 1 0x2c.7-0x2d.6 (1)
-     |                                               |                |            payload_length: 15 0x2d.7-NA (0)
+     |                                               |                |            payload_length: 15
      |                                               |                |            extension_payload{}: 0x2d.7-0x3c.6 (15)
 0x020|                                       02 00   |             .. |              extension_type: "EXT_FILL" (0) 0x2d.7-0x2e.2 (0.4)
 0x020|                                          00   |              . |              fill_nibble: 0 0x2e.3-0x2e.6 (0.4)
@@ -434,5 +434,5 @@ $ fq -d mp4 dv aac.mp4
 0x290|b4                                             |.               |
 0x290|b4                                             |.               |          [1]: raw bits byte_align 0x290.6-0x290.7 (0.2)
 0x290|   70                                          | p              |          [2]: raw bits data 0x291-0x291.7 (1)
-     |                                               |                |      id: 1 0x59d-NA (0)
-     |                                               |                |      data_format: "mp4a" (MPEG-4 Audio) 0x59d-NA (0)
+     |                                               |                |      id: 1
+     |                                               |                |      data_format: "mp4a" (MPEG-4 Audio)

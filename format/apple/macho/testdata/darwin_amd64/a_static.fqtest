@@ -1,9 +1,9 @@
 $ fq dv a_static
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: a_static (macho) 0x0-0x8137.7 (33080)
       |                                               |                |  header{}: 0x0-0x1f.7 (32)
-      |                                               |                |    arch_bits: 64 0x0-NA (0)
+      |                                               |                |    arch_bits: 64
 0x0000|cf fa ed fe                                    |....            |    magic: "64le" (0xfeedfacf) (64-bit little endian) 0x0-0x3.7 (4)
-      |                                               |                |    bits: 64 0x4-NA (0)
+      |                                               |                |    bits: 64
 0x0000|            07 00 00 01                        |    ....        |    cputype: "x86_64" (0x1000007) 0x4-0x7.7 (4)
 0x0000|                        03 00 00 00            |        ....    |    cpusubtype: 0x3 0x8-0xb.7 (4)
 0x0000|                                    02 00 00 00|            ....|    filetype: "execute" (2) 0xc-0xf.7 (4)
@@ -43,7 +43,7 @@ $ fq dv a_static
 0x0020|19 00 00 00                                    |....            |      cmd: "segment_64" (0x19) 0x20-0x23.7 (4)
 0x0020|            48 00 00 00                        |    H...        |      cmdsize: 72 0x24-0x27.7 (4)
       |                                               |                |      segment_command{}: 0x28-0x67.7 (64)
-      |                                               |                |        arch_bits: 64 0x28-NA (0)
+      |                                               |                |        arch_bits: 64
 0x0020|                        5f 5f 50 41 47 45 5a 45|        __PAGEZE|        segname: "__PAGEZERO" 0x28-0x37.7 (16)
 0x0030|52 4f 00 00 00 00 00 00                        |RO......        |
 0x0030|                        00 00 00 00 00 00 00 00|        ........|        vmaddr: 0x0 0x38-0x3f.7 (8)
@@ -64,7 +64,7 @@ $ fq dv a_static
 0x0060|                        19 00 00 00            |        ....    |      cmd: "segment_64" (0x19) 0x68-0x6b.7 (4)
 0x0060|                                    d8 01 00 00|            ....|      cmdsize: 472 0x6c-0x6f.7 (4)
       |                                               |                |      segment_command{}: 0x70-0xaf.7 (64)
-      |                                               |                |        arch_bits: 64 0x70-NA (0)
+      |                                               |                |        arch_bits: 64
 0x0070|5f 5f 54 45 58 54 00 00 00 00 00 00 00 00 00 00|__TEXT..........|        segname: "__TEXT" 0x70-0x7f.7 (16)
 0x0080|00 00 00 00 01 00 00 00                        |........        |        vmaddr: 0x100000000 0x80-0x87.7 (8)
 0x0080|                        00 40 00 00 00 00 00 00|        .@......|        vmsize: 16384 0x88-0x8f.7 (8)
@@ -222,7 +222,7 @@ $ fq dv a_static
 0x0240|19 00 00 00                                    |....            |      cmd: "segment_64" (0x19) 0x240-0x243.7 (4)
 0x0240|            38 01 00 00                        |    8...        |      cmdsize: 312 0x244-0x247.7 (4)
       |                                               |                |      segment_command{}: 0x248-0x287.7 (64)
-      |                                               |                |        arch_bits: 64 0x248-NA (0)
+      |                                               |                |        arch_bits: 64
 0x0240|                        5f 5f 44 41 54 41 00 00|        __DATA..|        segname: "__DATA" 0x248-0x257.7 (16)
 0x0250|00 00 00 00 00 00 00 00                        |........        |
 0x0250|                        00 40 00 00 01 00 00 00|        .@......|        vmaddr: 0x100004000 0x258-0x25f.7 (8)
@@ -327,7 +327,7 @@ $ fq dv a_static
 0x0370|                        19 00 00 00            |        ....    |      cmd: "segment_64" (0x19) 0x378-0x37b.7 (4)
 0x0370|                                    48 00 00 00|            H...|      cmdsize: 72 0x37c-0x37f.7 (4)
       |                                               |                |      segment_command{}: 0x380-0x3bf.7 (64)
-      |                                               |                |        arch_bits: 64 0x380-NA (0)
+      |                                               |                |        arch_bits: 64
 0x0380|5f 5f 4c 49 4e 4b 45 44 49 54 00 00 00 00 00 00|__LINKEDIT......|        segname: "__LINKEDIT" 0x380-0x38f.7 (16)
 0x0390|00 80 00 00 01 00 00 00                        |........        |        vmaddr: 0x100008000 0x390-0x397.7 (8)
 0x0390|                        00 40 00 00 00 00 00 00|        .@......|        vmsize: 16384 0x398-0x39f.7 (8)

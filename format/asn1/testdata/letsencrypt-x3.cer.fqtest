@@ -54,7 +54,7 @@ $ fq -d bytes 'from_pem | asn1_ber | dv' letsencrypt-x3.cer
 0x00020|                                    05         |            .   |              form: "primitive" (0) 0x2c.2-0x2c.2 (0.1)
 0x00020|                                    05         |            .   |              tag: "null" (0x5) 0x2c.3-0x2c.7 (0.5)
 0x00020|                                       00      |             .  |              length: "indefinite" (0) 0x2d-0x2d.7 (1)
-       |                                               |                |              value: null 0x2e-NA (0)
+       |                                               |                |              value: null
        |                                               |                |        [3]{}: object 0x2e-0x6e.7 (65)
 0x00020|                                          30   |              0 |          class: "universal" (0) 0x2e-0x2e.1 (0.2)
 0x00020|                                          30   |              0 |          form: "constructed" (1) 0x2e.2-0x2e.2 (0.1)
@@ -259,7 +259,7 @@ $ fq -d bytes 'from_pem | asn1_ber | dv' letsencrypt-x3.cer
 0x000e0|                                    05         |            .   |                  form: "primitive" (0) 0xec.2-0xec.2 (0.1)
 0x000e0|                                    05         |            .   |                  tag: "null" (0x5) 0xec.3-0xec.7 (0.5)
 0x000e0|                                       00      |             .  |                  length: "indefinite" (0) 0xed-0xed.7 (1)
-       |                                               |                |                  value: null 0xee-NA (0)
+       |                                               |                |                  value: null
        |                                               |                |            [1]{}: object 0xee-0x200.7 (275)
 0x000e0|                                          03   |              . |              class: "universal" (0) 0xee-0xee.1 (0.2)
 0x000e0|                                          03   |              . |              form: "primitive" (0) 0xee.2-0xee.2 (0.1)
@@ -489,7 +489,7 @@ $ fq -d bytes 'from_pem | asn1_ber | dv' letsencrypt-x3.cer
 0x00380|                                             05|               .|          form: "primitive" (0) 0x38f.2-0x38f.2 (0.1)
 0x00380|                                             05|               .|          tag: "null" (0x5) 0x38f.3-0x38f.7 (0.5)
 0x00390|00                                             |.               |          length: "indefinite" (0) 0x390-0x390.7 (1)
-       |                                               |                |          value: null 0x391-NA (0)
+       |                                               |                |          value: null
        |                                               |                |    [2]{}: object 0x391-0x495.7 (261)
 0x00390|   03                                          | .              |      class: "universal" (0) 0x391-0x391.1 (0.2)
 0x00390|   03                                          | .              |      form: "primitive" (0) 0x391.2-0x391.2 (0.1)

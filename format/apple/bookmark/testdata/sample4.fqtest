@@ -95,7 +95,7 @@ $ fq dv sample4.book
      |                                               |                |      record{}: 0x128-0x147.7 (32)
 0x120|                        18 00 00 00            |        ....    |        length: 24 (valid) 0x128-0x12b.7 (4)
 0x120|                                    01 02 00 00|            ....|        raw_type: "data" (513) (valid) 0x12c-0x12f.7 (4)
-     |                                               |                |        type: "flag_data" 0x130-NA (0)
+     |                                               |                |        type: "flag_data"
      |                                               |                |        property_flags{}: 0x130-0x137.7 (8)
 0x130|02                                             |.               |          is_hidden: false 0x130-0x130 (0.1)
 0x130|02                                             |.               |          is_user_immutable: false 0x130.1-0x130.1 (0.1)
@@ -206,7 +206,7 @@ $ fq dv sample4.book
      |                                               |                |      record{}: 0x1d4-0x1f3.7 (32)
 0x1d0|            18 00 00 00                        |    ....        |        length: 24 (valid) 0x1d4-0x1d7.7 (4)
 0x1d0|                        01 02 00 00            |        ....    |        raw_type: "data" (513) (valid) 0x1d8-0x1db.7 (4)
-     |                                               |                |        type: "flag_data" 0x1dc-NA (0)
+     |                                               |                |        type: "flag_data"
      |                                               |                |        property_flags{}: 0x1dc-0x1e3.7 (8)
 0x1d0|                                    81         |            .   |          is_internal: true 0x1dc-0x1dc (0.1)
 0x1d0|                                    81         |            .   |          is_removable: false 0x1dc.1-0x1dc.1 (0.1)

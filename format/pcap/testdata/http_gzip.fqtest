@@ -619,20 +619,20 @@ $ fq -d pcap dv http_gzip.cap
        |                                               |                |  tcp_connections[0:1]: 0x6ab-NA (0)
        |                                               |                |    [0]{}: tcp_connection 0x6ab-NA (0)
        |                                               |                |      client{}: 0x6ab-NA (0)
-       |                                               |                |        ip: "192.168.69.2" 0x6ab-NA (0)
-       |                                               |                |        port: 34059 0x6ab-NA (0)
-       |                                               |                |        has_start: true 0x6ab-NA (0)
-       |                                               |                |        has_end: true 0x6ab-NA (0)
-       |                                               |                |        skipped_bytes: 0 0x6ab-NA (0)
+       |                                               |                |        ip: "192.168.69.2"
+       |                                               |                |        port: 34059
+       |                                               |                |        has_start: true
+       |                                               |                |        has_end: true
+       |                                               |                |        skipped_bytes: 0
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
   0x000|47 45 54 20 2f 74 65 73 74 2f 65 74 68 65 72 65|GET /test/ethere|        stream: raw bits 0x0-0x1bc.7 (445)
   *    |until 0x1bc.7 (end) (445)                      |                |
        |                                               |                |      server{}: 0x6ab-NA (0)
-       |                                               |                |        ip: "192.168.69.1" 0x6ab-NA (0)
+       |                                               |                |        ip: "192.168.69.1"
        |                                               |                |        port: "http" (80) (World Wide Web HTTP) 0x6ab-NA (0)
-       |                                               |                |        has_start: true 0x6ab-NA (0)
-       |                                               |                |        has_end: true 0x6ab-NA (0)
-       |                                               |                |        skipped_bytes: 0 0x6ab-NA (0)
+       |                                               |                |        has_start: true
+       |                                               |                |        has_end: true
+       |                                               |                |        skipped_bytes: 0
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
   0x000|48 54 54 50 2f 31 2e 31 20 32 30 30 20 4f 4b 0d|HTTP/1.1 200 OK.|        stream: raw bits 0x0-0x191.7 (402)
   *    |until 0x191.7 (end) (402)                      |                |

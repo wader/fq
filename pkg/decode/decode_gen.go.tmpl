@@ -54,7 +54,7 @@ import (
 	}
 
 	func (d *D) FieldValue{{$name}}(name string, a {{$t.go_type}}, sms ...scalar.{{$name}}Mapper) {
-		d.FieldScalar{{$name}}Fn(name, func(_ *D) scalar.{{$name}} { return scalar.{{$name}}{Actual: a}}, sms...)
+		d.FieldScalar{{$name}}Fn(name, func(_ *D) scalar.{{$name}} { return scalar.{{$name}}{Actual: a, Flags: scalar.FlagSynthetic}}, sms...)
 	}
 
 	// TryFieldScalar{{$name}}Fn tries to add a field, calls {{$t.go_type}} decode function and returns scalar

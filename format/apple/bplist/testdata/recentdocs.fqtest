@@ -6,7 +6,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |  objects{}: 0x8-0x268d.7 (9862)
 0x0000|                        d4                     |        .       |    type: "dict" (13) (Dictionary) 0x8-0x8.3 (0.4)
 0x0000|                        d4                     |        .       |    size_bits: 4 0x8.4-0x8.7 (0.4)
-      |                                               |                |    size: 4 0x9-NA (0)
+      |                                               |                |    size: 4
       |                                               |                |    entries[0:4]: 0x9-0x268d.7 (9861)
       |                                               |                |      [0]{}: entry 0x9-0x36.7 (46)
 0x0000|                           01                  |         .      |        key_index: 1 0x9-0x9.7 (1)
@@ -14,7 +14,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |        key{}: 0x11-0x19.7 (9)
 0x0010|   58                                          | X              |          type: "ascii_string" (5) (ASCII encoded string) 0x11-0x11.3 (0.4)
 0x0010|   58                                          | X              |          size_bits: 8 0x11.4-0x11.7 (0.4)
-      |                                               |                |          size: 8 0x12-NA (0)
+      |                                               |                |          size: 8
 0x0010|      24 76 65 72 73 69 6f 6e                  |  $version      |          value: "$version" 0x12-0x19.7 (8)
       |                                               |                |        value{}: 0x32-0x36.7 (5)
 0x0030|      12                                       |  .             |          type: "int" (1) (Integer) 0x32-0x32.3 (0.4)
@@ -26,7 +26,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |        key{}: 0x1a-0x23.7 (10)
 0x0010|                              59               |          Y     |          type: "ascii_string" (5) (ASCII encoded string) 0x1a-0x1a.3 (0.4)
 0x0010|                              59               |          Y     |          size_bits: 9 0x1a.4-0x1a.7 (0.4)
-      |                                               |                |          size: 9 0x1b-NA (0)
+      |                                               |                |          size: 9
 0x0010|                                 24 61 72 63 68|           $arch|          value: "$archiver" 0x1b-0x23.7 (9)
 0x0020|69 76 65 72                                    |iver            |
       |                                               |                |        value{}: 0x37-0x48.7 (18)
@@ -35,7 +35,7 @@ $ fq dv recentdocs.sfl2
 0x0030|                        10                     |        .       |          large_size_marker: 1 (valid) 0x38-0x38.3 (0.4)
 0x0030|                        10                     |        .       |          exponent: 0 0x38.4-0x38.7 (0.4)
 0x0030|                           0f                  |         .      |          size_bigint: 15 0x39-0x39.7 (1)
-      |                                               |                |          size: 15 0x3a-NA (0)
+      |                                               |                |          size: 15
 0x0030|                              4e 53 4b 65 79 65|          NSKeye|          value: "NSKeyedArchiver" 0x3a-0x48.7 (15)
 0x0040|64 41 72 63 68 69 76 65 72                     |dArchiver       |
       |                                               |                |      [2]{}: entry 0xb-0x52.7 (72)
@@ -44,12 +44,12 @@ $ fq dv recentdocs.sfl2
       |                                               |                |        key{}: 0x24-0x28.7 (5)
 0x0020|            54                                 |    T           |          type: "ascii_string" (5) (ASCII encoded string) 0x24-0x24.3 (0.4)
 0x0020|            54                                 |    T           |          size_bits: 4 0x24.4-0x24.7 (0.4)
-      |                                               |                |          size: 4 0x25-NA (0)
+      |                                               |                |          size: 4
 0x0020|               24 74 6f 70                     |     $top       |          value: "$top" 0x25-0x28.7 (4)
       |                                               |                |        value{}: 0x49-0x52.7 (10)
 0x0040|                           d1                  |         .      |          type: "dict" (13) (Dictionary) 0x49-0x49.3 (0.4)
 0x0040|                           d1                  |         .      |          size_bits: 1 0x49.4-0x49.7 (0.4)
-      |                                               |                |          size: 1 0x4a-NA (0)
+      |                                               |                |          size: 1
       |                                               |                |          entries[0:1]: 0x4a-0x52.7 (9)
       |                                               |                |            [0]{}: entry 0x4a-0x52.7 (9)
 0x0040|                              08               |          .     |              key_index: 8 0x4a-0x4a.7 (1)
@@ -57,7 +57,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |              key{}: 0x4c-0x50.7 (5)
 0x0040|                                    54         |            T   |                type: "ascii_string" (5) (ASCII encoded string) 0x4c-0x4c.3 (0.4)
 0x0040|                                    54         |            T   |                size_bits: 4 0x4c.4-0x4c.7 (0.4)
-      |                                               |                |                size: 4 0x4d-NA (0)
+      |                                               |                |                size: 4
 0x0040|                                       72 6f 6f|             roo|                value: "root" 0x4d-0x50.7 (4)
 0x0050|74                                             |t               |
       |                                               |                |              value{}: 0x51-0x52.7 (2)
@@ -70,7 +70,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |        key{}: 0x29-0x31.7 (9)
 0x0020|                           58                  |         X      |          type: "ascii_string" (5) (ASCII encoded string) 0x29-0x29.3 (0.4)
 0x0020|                           58                  |         X      |          size_bits: 8 0x29.4-0x29.7 (0.4)
-      |                                               |                |          size: 8 0x2a-NA (0)
+      |                                               |                |          size: 8
 0x0020|                              24 6f 62 6a 65 63|          $objec|          value: "$objects" 0x2a-0x31.7 (8)
 0x0030|74 73                                          |ts              |
       |                                               |                |        value{}: 0x53-0x268d.7 (9787)
@@ -79,19 +79,19 @@ $ fq dv recentdocs.sfl2
 0x0050|            10                                 |    .           |          large_size_marker: 1 (valid) 0x54-0x54.3 (0.4)
 0x0050|            10                                 |    .           |          exponent: 0 0x54.4-0x54.7 (0.4)
 0x0050|               3a                              |     :          |          size_bigint: 58 0x55-0x55.7 (1)
-      |                                               |                |          size: 58 0x56-NA (0)
+      |                                               |                |          size: 58
       |                                               |                |          entries[0:58]: 0x56-0x268d.7 (9784)
       |                                               |                |            [0]{}: entry 0x56-0x95.7 (64)
 0x0050|                  0b                           |      .         |              object_index: 11 0x56-0x56.7 (1)
 0x0090|55                                             |U               |              type: "ascii_string" (5) (ASCII encoded string) 0x90-0x90.3 (0.4)
 0x0090|55                                             |U               |              size_bits: 5 0x90.4-0x90.7 (0.4)
-      |                                               |                |              size: 5 0x91-NA (0)
+      |                                               |                |              size: 5
 0x0090|   24 6e 75 6c 6c                              | $null          |              value: "$null" 0x91-0x95.7 (5)
       |                                               |                |            [1]{}: entry 0x57-0xc6.7 (112)
 0x0050|                     0c                        |       .        |              object_index: 12 0x57-0x57.7 (1)
 0x0090|                  d3                           |      .         |              type: "dict" (13) (Dictionary) 0x96-0x96.3 (0.4)
 0x0090|                  d3                           |      .         |              size_bits: 3 0x96.4-0x96.7 (0.4)
-      |                                               |                |              size: 3 0x97-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |              entries[0:3]: 0x97-0xc6.7 (48)
       |                                               |                |                [0]{}: entry 0x97-0xbd.7 (39)
 0x0090|                     0d                        |       .        |                  key_index: 13 0x97-0x97.7 (1)
@@ -99,13 +99,13 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0x9d-0xa4.7 (8)
 0x0090|                                       57      |             W  |                    type: "ascii_string" (5) (ASCII encoded string) 0x9d-0x9d.3 (0.4)
 0x0090|                                       57      |             W  |                    size_bits: 7 0x9d.4-0x9d.7 (0.4)
-      |                                               |                |                    size: 7 0x9e-NA (0)
+      |                                               |                |                    size: 7
 0x0090|                                          4e 53|              NS|                    value: "NS.keys" 0x9e-0xa4.7 (7)
 0x00a0|2e 6b 65 79 73                                 |.keys           |
       |                                               |                |                  value{}: 0xb7-0xbd.7 (7)
 0x00b0|                     a2                        |       .        |                    type: "array" (10) (Array) 0xb7-0xb7.3 (0.4)
 0x00b0|                     a2                        |       .        |                    size_bits: 2 0xb7.4-0xb7.7 (0.4)
-      |                                               |                |                    size: 2 0xb8-NA (0)
+      |                                               |                |                    size: 2
       |                                               |                |                    entries[0:2]: 0xb8-0xbd.7 (6)
       |                                               |                |                      [0]{}: entry 0xb8-0xbb.7 (4)
 0x00b0|                        11                     |        .       |                        object_index: 17 0xb8-0xb8.7 (1)
@@ -123,12 +123,12 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0xa5-0xaf.7 (11)
 0x00a0|               5a                              |     Z          |                    type: "ascii_string" (5) (ASCII encoded string) 0xa5-0xa5.3 (0.4)
 0x00a0|               5a                              |     Z          |                    size_bits: 10 0xa5.4-0xa5.7 (0.4)
-      |                                               |                |                    size: 10 0xa6-NA (0)
+      |                                               |                |                    size: 10
 0x00a0|                  4e 53 2e 6f 62 6a 65 63 74 73|      NS.objects|                    value: "NS.objects" 0xa6-0xaf.7 (10)
       |                                               |                |                  value{}: 0xbe-0xc4.7 (7)
 0x00b0|                                          a2   |              . |                    type: "array" (10) (Array) 0xbe-0xbe.3 (0.4)
 0x00b0|                                          a2   |              . |                    size_bits: 2 0xbe.4-0xbe.7 (0.4)
-      |                                               |                |                    size: 2 0xbf-NA (0)
+      |                                               |                |                    size: 2
       |                                               |                |                    entries[0:2]: 0xbf-0xc4.7 (6)
       |                                               |                |                      [0]{}: entry 0xbf-0xc2.7 (4)
 0x00b0|                                             14|               .|                        object_index: 20 0xbf-0xbf.7 (1)
@@ -146,7 +146,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0xb0-0xb6.7 (7)
 0x00b0|56                                             |V               |                    type: "ascii_string" (5) (ASCII encoded string) 0xb0-0xb0.3 (0.4)
 0x00b0|56                                             |V               |                    size_bits: 6 0xb0.4-0xb0.7 (0.4)
-      |                                               |                |                    size: 6 0xb1-NA (0)
+      |                                               |                |                    size: 6
 0x00b0|   24 63 6c 61 73 73                           | $class         |                    value: "$class" 0xb1-0xb6.7 (6)
       |                                               |                |                  value{}: 0xc5-0xc6.7 (2)
 0x00c0|               80                              |     .          |                    type: "uid" (8) (UID) 0xc5-0xc5.3 (0.4)
@@ -156,13 +156,13 @@ $ fq dv recentdocs.sfl2
 0x0050|                        17                     |        .       |              object_index: 23 0x58-0x58.7 (1)
 0x00c0|                     55                        |       U        |              type: "ascii_string" (5) (ASCII encoded string) 0xc7-0xc7.3 (0.4)
 0x00c0|                     55                        |       U        |              size_bits: 5 0xc7.4-0xc7.7 (0.4)
-      |                                               |                |              size: 5 0xc8-NA (0)
+      |                                               |                |              size: 5
 0x00c0|                        69 74 65 6d 73         |        items   |              value: "items" 0xc8-0xcc.7 (5)
       |                                               |                |            [3]{}: entry 0x59-0xd7.7 (127)
 0x0050|                           18                  |         .      |              object_index: 24 0x59-0x59.7 (1)
 0x00c0|                                       5a      |             Z  |              type: "ascii_string" (5) (ASCII encoded string) 0xcd-0xcd.3 (0.4)
 0x00c0|                                       5a      |             Z  |              size_bits: 10 0xcd.4-0xcd.7 (0.4)
-      |                                               |                |              size: 10 0xce-NA (0)
+      |                                               |                |              size: 10
 0x00c0|                                          70 72|              pr|              value: "properties" 0xce-0xd7.7 (10)
 0x00d0|6f 70 65 72 74 69 65 73                        |operties        |
       |                                               |                |            [4]{}: entry 0x5a-0xfd.7 (164)
@@ -172,14 +172,14 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0xa5-0xaf.7 (11)
 0x00a0|               5a                              |     Z          |                    type: "ascii_string" (5) (ASCII encoded string) 0xa5-0xa5.3 (0.4)
 0x00a0|               5a                              |     Z          |                    size_bits: 10 0xa5.4-0xa5.7 (0.4)
-      |                                               |                |                    size: 10 0xa6-NA (0)
+      |                                               |                |                    size: 10
 0x00a0|                  4e 53 2e 6f 62 6a 65 63 74 73|      NS.objects|                    value: "NS.objects" 0xa6-0xaf.7 (10)
 0x00d0|                           0e                  |         .      |                  key_index: 14 0xd9-0xd9.7 (1)
 0x00d0|                                 1a            |           .    |                  value_index: 26 0xdb-0xdb.7 (1)
       |                                               |                |                  value{}: 0xdd-0xfb.7 (31)
 0x00d0|                                       aa      |             .  |                    type: "array" (10) (Array) 0xdd-0xdd.3 (0.4)
 0x00d0|                                       aa      |             .  |                    size_bits: 10 0xdd.4-0xdd.7 (0.4)
-      |                                               |                |                    size: 10 0xde-NA (0)
+      |                                               |                |                    size: 10
       |                                               |                |                    entries[0:10]: 0xde-0xfb.7 (30)
       |                                               |                |                      [0]{}: entry 0xde-0xe9.7 (12)
 0x00d0|                                          1b   |              . |                        object_index: 27 0xde-0xde.7 (1)
@@ -235,7 +235,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0xb0-0xb6.7 (7)
 0x00b0|56                                             |V               |                    type: "ascii_string" (5) (ASCII encoded string) 0xb0-0xb0.3 (0.4)
 0x00b0|56                                             |V               |                    size_bits: 6 0xb0.4-0xb0.7 (0.4)
-      |                                               |                |                    size: 6 0xb1-NA (0)
+      |                                               |                |                    size: 6
 0x00b0|   24 63 6c 61 73 73                           | $class         |                    value: "$class" 0xb1-0xb6.7 (6)
 0x00d0|                              0f               |          .     |                  key_index: 15 0xda-0xda.7 (1)
 0x00d0|                                    25         |            %   |                  value_index: 37 0xdc-0xdc.7 (1)
@@ -245,7 +245,7 @@ $ fq dv recentdocs.sfl2
 0x00f0|                                       36      |             6  |                    value: 54 0xfd-0xfd.7 (1)
 0x00d0|                        d2                     |        .       |              type: "dict" (13) (Dictionary) 0xd8-0xd8.3 (0.4)
 0x00d0|                        d2                     |        .       |              size_bits: 2 0xd8.4-0xd8.7 (0.4)
-      |                                               |                |              size: 2 0xd9-NA (0)
+      |                                               |                |              size: 2
       |                                               |                |            [5]{}: entry 0x5b-0x11e.7 (196)
 0x0050|                                 26            |           &    |              object_index: 38 0x5b-0x5b.7 (1)
       |                                               |                |              entries[0:3]: 0x9d-0x11e.7 (130)
@@ -253,7 +253,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0x9d-0xa4.7 (8)
 0x0090|                                       57      |             W  |                    type: "ascii_string" (5) (ASCII encoded string) 0x9d-0x9d.3 (0.4)
 0x0090|                                       57      |             W  |                    size_bits: 7 0x9d.4-0x9d.7 (0.4)
-      |                                               |                |                    size: 7 0x9e-NA (0)
+      |                                               |                |                    size: 7
 0x0090|                                          4e 53|              NS|                    value: "NS.keys" 0x9e-0xa4.7 (7)
 0x00a0|2e 6b 65 79 73                                 |.keys           |
 0x00f0|                                             0d|               .|                  key_index: 13 0xff-0xff.7 (1)
@@ -261,7 +261,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  value{}: 0x105-0x111.7 (13)
 0x0100|               a4                              |     .          |                    type: "array" (10) (Array) 0x105-0x105.3 (0.4)
 0x0100|               a4                              |     .          |                    size_bits: 4 0x105.4-0x105.7 (0.4)
-      |                                               |                |                    size: 4 0x106-NA (0)
+      |                                               |                |                    size: 4
       |                                               |                |                    entries[0:4]: 0x106-0x111.7 (12)
       |                                               |                |                      [0]{}: entry 0x106-0x10b.7 (6)
 0x0100|                  28                           |      (         |                        object_index: 40 0x106-0x106.7 (1)
@@ -287,14 +287,14 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0xa5-0xaf.7 (11)
 0x00a0|               5a                              |     Z          |                    type: "ascii_string" (5) (ASCII encoded string) 0xa5-0xa5.3 (0.4)
 0x00a0|               5a                              |     Z          |                    size_bits: 10 0xa5.4-0xa5.7 (0.4)
-      |                                               |                |                    size: 10 0xa6-NA (0)
+      |                                               |                |                    size: 10
 0x00a0|                  4e 53 2e 6f 62 6a 65 63 74 73|      NS.objects|                    value: "NS.objects" 0xa6-0xaf.7 (10)
 0x0100|0e                                             |.               |                  key_index: 14 0x100-0x100.7 (1)
 0x0100|         2c                                    |   ,            |                  value_index: 44 0x103-0x103.7 (1)
       |                                               |                |                  value{}: 0x112-0x11e.7 (13)
 0x0110|      a4                                       |  .             |                    type: "array" (10) (Array) 0x112-0x112.3 (0.4)
 0x0110|      a4                                       |  .             |                    size_bits: 4 0x112.4-0x112.7 (0.4)
-      |                                               |                |                    size: 4 0x113-NA (0)
+      |                                               |                |                    size: 4
       |                                               |                |                    entries[0:4]: 0x113-0x11e.7 (12)
       |                                               |                |                      [0]{}: entry 0x113-0x118.7 (6)
 0x0110|         2d                                    |   -            |                        object_index: 45 0x113-0x113.7 (1)
@@ -320,7 +320,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0xb0-0xb6.7 (7)
 0x00b0|56                                             |V               |                    type: "ascii_string" (5) (ASCII encoded string) 0xb0-0xb0.3 (0.4)
 0x00b0|56                                             |V               |                    size_bits: 6 0xb0.4-0xb0.7 (0.4)
-      |                                               |                |                    size: 6 0xb1-NA (0)
+      |                                               |                |                    size: 6
 0x00b0|   24 63 6c 61 73 73                           | $class         |                    value: "$class" 0xb1-0xb6.7 (6)
       |                                               |                |                  value{}: 0xc5-0xc6.7 (2)
 0x00c0|               80                              |     .          |                    type: "uid" (8) (UID) 0xc5-0xc5.3 (0.4)
@@ -330,12 +330,12 @@ $ fq dv recentdocs.sfl2
 0x0100|            16                                 |    .           |                  value_index: 22 0x104-0x104.7 (1)
 0x00f0|                                          d3   |              . |              type: "dict" (13) (Dictionary) 0xfe-0xfe.3 (0.4)
 0x00f0|                                          d3   |              . |              size_bits: 3 0xfe.4-0xfe.7 (0.4)
-      |                                               |                |              size: 3 0xff-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [6]{}: entry 0x5c-0x12b.7 (208)
 0x0050|                                    32         |            2   |              object_index: 50 0x5c-0x5c.7 (1)
 0x0120|   5a                                          | Z              |              type: "ascii_string" (5) (ASCII encoded string) 0x121-0x121.3 (0.4)
 0x0120|   5a                                          | Z              |              size_bits: 10 0x121.4-0x121.7 (0.4)
-      |                                               |                |              size: 10 0x122-NA (0)
+      |                                               |                |              size: 10
 0x0120|      76 69 73 69 62 69 6c 69 74 79            |  visibility    |              value: "visibility" 0x122-0x12b.7 (10)
       |                                               |                |            [7]{}: entry 0x5d-0x142.7 (230)
 0x0050|                                       33      |             3  |              object_index: 51 0x5d-0x5d.7 (1)
@@ -344,7 +344,7 @@ $ fq dv recentdocs.sfl2
 0x0120|                                       10      |             .  |              large_size_marker: 1 (valid) 0x12d-0x12d.3 (0.4)
 0x0120|                                       10      |             .  |              exponent: 0 0x12d.4-0x12d.7 (0.4)
 0x0120|                                          14   |              . |              size_bigint: 20 0x12e-0x12e.7 (1)
-      |                                               |                |              size: 20 0x12f-NA (0)
+      |                                               |                |              size: 20
 0x0120|                                             43|               C|              value: "CustomItemProperties" 0x12f-0x142.7 (20)
 0x0130|75 73 74 6f 6d 49 74 65 6d 50 72 6f 70 65 72 74|ustomItemPropert|
 0x0140|69 65 73                                       |ies             |
@@ -352,13 +352,13 @@ $ fq dv recentdocs.sfl2
 0x0050|                                          34   |              4 |              object_index: 52 0x5e-0x5e.7 (1)
 0x0140|         58                                    |   X            |              type: "ascii_string" (5) (ASCII encoded string) 0x143-0x143.3 (0.4)
 0x0140|         58                                    |   X            |              size_bits: 8 0x143.4-0x143.7 (0.4)
-      |                                               |                |              size: 8 0x144-NA (0)
+      |                                               |                |              size: 8
 0x0140|            42 6f 6f 6b 6d 61 72 6b            |    Bookmark    |              value: "Bookmark" 0x144-0x14b.7 (8)
       |                                               |                |            [9]{}: entry 0x5f-0x150.7 (242)
 0x0050|                                             35|               5|              object_index: 53 0x5f-0x5f.7 (1)
 0x0140|                                    54         |            T   |              type: "ascii_string" (5) (ASCII encoded string) 0x14c-0x14c.3 (0.4)
 0x0140|                                    54         |            T   |              size_bits: 4 0x14c.4-0x14c.7 (0.4)
-      |                                               |                |              size: 4 0x14d-NA (0)
+      |                                               |                |              size: 4
 0x0140|                                       75 75 69|             uui|              value: "uuid" 0x14d-0x150.7 (4)
 0x0150|64                                             |d               |
       |                                               |                |            [10]{}: entry 0x60-0x152.7 (243)
@@ -373,7 +373,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0x9d-0xa4.7 (8)
 0x0090|                                       57      |             W  |                    type: "ascii_string" (5) (ASCII encoded string) 0x9d-0x9d.3 (0.4)
 0x0090|                                       57      |             W  |                    size_bits: 7 0x9d.4-0x9d.7 (0.4)
-      |                                               |                |                    size: 7 0x9e-NA (0)
+      |                                               |                |                    size: 7
 0x0090|                                          4e 53|              NS|                    value: "NS.keys" 0x9e-0xa4.7 (7)
 0x00a0|2e 6b 65 79 73                                 |.keys           |
 0x0150|            0d                                 |    .           |                  key_index: 13 0x154-0x154.7 (1)
@@ -381,26 +381,26 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  value{}: 0x15a-0x15a.7 (1)
 0x0150|                              a0               |          .     |                    type: "array" (10) (Array) 0x15a-0x15a.3 (0.4)
 0x0150|                              a0               |          .     |                    size_bits: 0 0x15a.4-0x15a.7 (0.4)
-      |                                               |                |                    size: 0 0x15b-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x15b-NA (0)
       |                                               |                |                [1]{}: entry 0xa5-0x15b.7 (183)
       |                                               |                |                  key{}: 0xa5-0xaf.7 (11)
 0x00a0|               5a                              |     Z          |                    type: "ascii_string" (5) (ASCII encoded string) 0xa5-0xa5.3 (0.4)
 0x00a0|               5a                              |     Z          |                    size_bits: 10 0xa5.4-0xa5.7 (0.4)
-      |                                               |                |                    size: 10 0xa6-NA (0)
+      |                                               |                |                    size: 10
 0x00a0|                  4e 53 2e 6f 62 6a 65 63 74 73|      NS.objects|                    value: "NS.objects" 0xa6-0xaf.7 (10)
 0x0150|               0e                              |     .          |                  key_index: 14 0x155-0x155.7 (1)
 0x0150|                        39                     |        9       |                  value_index: 57 0x158-0x158.7 (1)
       |                                               |                |                  value{}: 0x15b-0x15b.7 (1)
 0x0150|                                 a0            |           .    |                    type: "array" (10) (Array) 0x15b-0x15b.3 (0.4)
 0x0150|                                 a0            |           .    |                    size_bits: 0 0x15b.4-0x15b.7 (0.4)
-      |                                               |                |                    size: 0 0x15c-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x15c-NA (0)
       |                                               |                |                [2]{}: entry 0xb0-0x159.7 (170)
       |                                               |                |                  key{}: 0xb0-0xb6.7 (7)
 0x00b0|56                                             |V               |                    type: "ascii_string" (5) (ASCII encoded string) 0xb0-0xb0.3 (0.4)
 0x00b0|56                                             |V               |                    size_bits: 6 0xb0.4-0xb0.7 (0.4)
-      |                                               |                |                    size: 6 0xb1-NA (0)
+      |                                               |                |                    size: 6
 0x00b0|   24 63 6c 61 73 73                           | $class         |                    value: "$class" 0xb1-0xb6.7 (6)
       |                                               |                |                  value{}: 0xc5-0xc6.7 (2)
 0x00c0|               80                              |     .          |                    type: "uid" (8) (UID) 0xc5-0xc5.3 (0.4)
@@ -410,12 +410,12 @@ $ fq dv recentdocs.sfl2
 0x0150|                           16                  |         .      |                  value_index: 22 0x159-0x159.7 (1)
 0x0150|         d3                                    |   .            |              type: "dict" (13) (Dictionary) 0x153-0x153.3 (0.4)
 0x0150|         d3                                    |   .            |              size_bits: 3 0x153.4-0x153.7 (0.4)
-      |                                               |                |              size: 3 0x154-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [12]{}: entry 0x62-0x18f.7 (302)
 0x0060|      3b                                       |  ;             |              object_index: 59 0x62-0x62.7 (1)
 0x0150|                                          d2   |              . |              type: "dict" (13) (Dictionary) 0x15e-0x15e.3 (0.4)
 0x0150|                                          d2   |              . |              size_bits: 2 0x15e.4-0x15e.7 (0.4)
-      |                                               |                |              size: 2 0x15f-NA (0)
+      |                                               |                |              size: 2
       |                                               |                |              entries[0:2]: 0x15f-0x18f.7 (49)
       |                                               |                |                [0]{}: entry 0x15f-0x183.7 (37)
 0x0150|                                             3c|               <|                  key_index: 60 0x15f-0x15f.7 (1)
@@ -423,12 +423,12 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0x163-0x16d.7 (11)
 0x0160|         5a                                    |   Z            |                    type: "ascii_string" (5) (ASCII encoded string) 0x163-0x163.3 (0.4)
 0x0160|         5a                                    |   Z            |                    size_bits: 10 0x163.4-0x163.7 (0.4)
-      |                                               |                |                    size: 10 0x164-NA (0)
+      |                                               |                |                    size: 10
 0x0160|            24 63 6c 61 73 73 6e 61 6d 65      |    $classname  |                    value: "$classname" 0x164-0x16d.7 (10)
       |                                               |                |                  value{}: 0x177-0x183.7 (13)
 0x0170|                     5c                        |       \        |                    type: "ascii_string" (5) (ASCII encoded string) 0x177-0x177.3 (0.4)
 0x0170|                     5c                        |       \        |                    size_bits: 12 0x177.4-0x177.7 (0.4)
-      |                                               |                |                    size: 12 0x178-NA (0)
+      |                                               |                |                    size: 12
 0x0170|                        4e 53 44 69 63 74 69 6f|        NSDictio|                    value: "NSDictionary" 0x178-0x183.7 (12)
 0x0180|6e 61 72 79                                    |nary            |
       |                                               |                |                [1]{}: entry 0x160-0x18f.7 (48)
@@ -437,7 +437,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0x16e-0x176.7 (9)
 0x0160|                                          58   |              X |                    type: "ascii_string" (5) (ASCII encoded string) 0x16e-0x16e.3 (0.4)
 0x0160|                                          58   |              X |                    size_bits: 8 0x16e.4-0x16e.7 (0.4)
-      |                                               |                |                    size: 8 0x16f-NA (0)
+      |                                               |                |                    size: 8
 0x0160|                                             24|               $|                    value: "$classes" 0x16f-0x176.7 (8)
 0x0170|63 6c 61 73 73 65 73                           |classes         |
       |                                               |                |                  value{}: 0x177-0x18f.7 (25)
@@ -445,7 +445,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                      [0]{}: entry 0x177-0x185.7 (15)
 0x0170|                     5c                        |       \        |                        type: "ascii_string" (5) (ASCII encoded string) 0x177-0x177.3 (0.4)
 0x0170|                     5c                        |       \        |                        size_bits: 12 0x177.4-0x177.7 (0.4)
-      |                                               |                |                        size: 12 0x178-NA (0)
+      |                                               |                |                        size: 12
 0x0170|                        4e 53 44 69 63 74 69 6f|        NSDictio|                        value: "NSDictionary" 0x178-0x183.7 (12)
 0x0180|6e 61 72 79                                    |nary            |
 0x0180|               3e                              |     >          |                        object_index: 62 0x185-0x185.7 (1)
@@ -453,11 +453,11 @@ $ fq dv recentdocs.sfl2
 0x0180|                  40                           |      @         |                        object_index: 64 0x186-0x186.7 (1)
 0x0180|                     58                        |       X        |                        type: "ascii_string" (5) (ASCII encoded string) 0x187-0x187.3 (0.4)
 0x0180|                     58                        |       X        |                        size_bits: 8 0x187.4-0x187.7 (0.4)
-      |                                               |                |                        size: 8 0x188-NA (0)
+      |                                               |                |                        size: 8
 0x0180|                        4e 53 4f 62 6a 65 63 74|        NSObject|                        value: "NSObject" 0x188-0x18f.7 (8)
 0x0180|            a2                                 |    .           |                    type: "array" (10) (Array) 0x184-0x184.3 (0.4)
 0x0180|            a2                                 |    .           |                    size_bits: 2 0x184.4-0x184.7 (0.4)
-      |                                               |                |                    size: 2 0x185-NA (0)
+      |                                               |                |                    size: 2
       |                                               |                |            [13]{}: entry 0x63-0x48f.7 (1069)
 0x0060|         41                                    |   A            |              object_index: 65 0x63-0x63.7 (1)
 0x0190|4f                                             |O               |              type: "data" (4) (Binary data) 0x190-0x190.3 (0.4)
@@ -465,7 +465,7 @@ $ fq dv recentdocs.sfl2
 0x0190|   11                                          | .              |              large_size_marker: 1 (valid) 0x191-0x191.3 (0.4)
 0x0190|   11                                          | .              |              exponent: 1 0x191.4-0x191.7 (0.4)
 0x0190|      02 fc                                    |  ..            |              size_bigint: 764 0x192-0x193.7 (2)
-      |                                               |                |              size: 764 0x194-NA (0)
+      |                                               |                |              size: 764
 0x0190|            62 6f 6f 6b fc 02 00 00 00 00 04 10|    book........|              value: raw bits 0x194-0x48f.7 (764)
 0x01a0|30 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|0...............|
 *     |until 0x48f.7 (764)                            |                |
@@ -476,7 +476,7 @@ $ fq dv recentdocs.sfl2
 0x0490|   10                                          | .              |              large_size_marker: 1 (valid) 0x491-0x491.3 (0.4)
 0x0490|   10                                          | .              |              exponent: 0 0x491.4-0x491.7 (0.4)
 0x0490|      24                                       |  $             |              size_bigint: 36 0x492-0x492.7 (1)
-      |                                               |                |              size: 36 0x493-NA (0)
+      |                                               |                |              size: 36
 0x0490|         42 36 35 31 41 38 43 32 2d 36 42 31 35|   B651A8C2-6B15|              value: "B651A8C2-6B15-4B21-A0C0-5B440CA8ADD0" 0x493-0x4b6.7 (36)
 0x04a0|2d 34 42 32 31 2d 41 30 43 30 2d 35 42 34 34 30|-4B21-A0C0-5B440|
 0x04b0|43 41 38 41 44 44 30                           |CA8ADD0         |
@@ -487,7 +487,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0x9d-0xa4.7 (8)
 0x0090|                                       57      |             W  |                    type: "ascii_string" (5) (ASCII encoded string) 0x9d-0x9d.3 (0.4)
 0x0090|                                       57      |             W  |                    size_bits: 7 0x9d.4-0x9d.7 (0.4)
-      |                                               |                |                    size: 7 0x9e-NA (0)
+      |                                               |                |                    size: 7
 0x0090|                                          4e 53|              NS|                    value: "NS.keys" 0x9e-0xa4.7 (7)
 0x00a0|2e 6b 65 79 73                                 |.keys           |
       |                                               |                |                  value{}: 0x10a-0x4c2.7 (953)
@@ -514,14 +514,14 @@ $ fq dv recentdocs.sfl2
 0x04c0|      2b                                       |  +             |                        object_index: 43 0x4c2-0x4c2.7 (1)
 0x04b0|                                          a4   |              . |                    type: "array" (10) (Array) 0x4be-0x4be.3 (0.4)
 0x04b0|                                          a4   |              . |                    size_bits: 4 0x4be.4-0x4be.7 (0.4)
-      |                                               |                |                    size: 4 0x4bf-NA (0)
+      |                                               |                |                    size: 4
 0x04b0|                        0d                     |        .       |                  key_index: 13 0x4b8-0x4b8.7 (1)
 0x04b0|                                 44            |           D    |                  value_index: 68 0x4bb-0x4bb.7 (1)
       |                                               |                |                [1]{}: entry 0xa5-0x4d7.7 (1075)
       |                                               |                |                  key{}: 0xa5-0xaf.7 (11)
 0x00a0|               5a                              |     Z          |                    type: "ascii_string" (5) (ASCII encoded string) 0xa5-0xa5.3 (0.4)
 0x00a0|               5a                              |     Z          |                    size_bits: 10 0xa5.4-0xa5.7 (0.4)
-      |                                               |                |                    size: 10 0xa6-NA (0)
+      |                                               |                |                    size: 10
 0x00a0|                  4e 53 2e 6f 62 6a 65 63 74 73|      NS.objects|                    value: "NS.objects" 0xa6-0xaf.7 (10)
       |                                               |                |                  value{}: 0x117-0x4d7.7 (961)
       |                                               |                |                    entries[0:4]: 0x117-0x4d7.7 (961)
@@ -547,14 +547,14 @@ $ fq dv recentdocs.sfl2
 0x04d0|                     12                        |       .        |                        value: 18 0x4d7-0x4d7.7 (1)
 0x04c0|                                 a4            |           .    |                    type: "array" (10) (Array) 0x4cb-0x4cb.3 (0.4)
 0x04c0|                                 a4            |           .    |                    size_bits: 4 0x4cb.4-0x4cb.7 (0.4)
-      |                                               |                |                    size: 4 0x4cc-NA (0)
+      |                                               |                |                    size: 4
 0x04b0|                           0e                  |         .      |                  key_index: 14 0x4b9-0x4b9.7 (1)
 0x04b0|                                    49         |            I   |                  value_index: 73 0x4bc-0x4bc.7 (1)
       |                                               |                |                [2]{}: entry 0xb0-0x4bd.7 (1038)
       |                                               |                |                  key{}: 0xb0-0xb6.7 (7)
 0x00b0|56                                             |V               |                    type: "ascii_string" (5) (ASCII encoded string) 0xb0-0xb0.3 (0.4)
 0x00b0|56                                             |V               |                    size_bits: 6 0xb0.4-0xb0.7 (0.4)
-      |                                               |                |                    size: 6 0xb1-NA (0)
+      |                                               |                |                    size: 6
 0x00b0|   24 63 6c 61 73 73                           | $class         |                    value: "$class" 0xb1-0xb6.7 (6)
       |                                               |                |                  value{}: 0xc5-0xc6.7 (2)
 0x00c0|               80                              |     .          |                    type: "uid" (8) (UID) 0xc5-0xc5.3 (0.4)
@@ -564,7 +564,7 @@ $ fq dv recentdocs.sfl2
 0x04b0|                                       16      |             .  |                  value_index: 22 0x4bd-0x4bd.7 (1)
 0x04b0|                     d3                        |       .        |              type: "dict" (13) (Dictionary) 0x4b7-0x4b7.3 (0.4)
 0x04b0|                     d3                        |       .        |              size_bits: 3 0x4b7.4-0x4b7.7 (0.4)
-      |                                               |                |              size: 3 0x4b8-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [16]{}: entry 0x66-0x4e2.7 (1149)
 0x0060|                  4f                           |      O         |              object_index: 79 0x66-0x66.7 (1)
       |                                               |                |              entries[0:3]: 0x9d-0x4e2.7 (1094)
@@ -572,7 +572,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0x9d-0xa4.7 (8)
 0x0090|                                       57      |             W  |                    type: "ascii_string" (5) (ASCII encoded string) 0x9d-0x9d.3 (0.4)
 0x0090|                                       57      |             W  |                    size_bits: 7 0x9d.4-0x9d.7 (0.4)
-      |                                               |                |                    size: 7 0x9e-NA (0)
+      |                                               |                |                    size: 7
 0x0090|                                          4e 53|              NS|                    value: "NS.keys" 0x9e-0xa4.7 (7)
 0x00a0|2e 6b 65 79 73                                 |.keys           |
 0x04d0|                                 0d            |           .    |                  key_index: 13 0x4db-0x4db.7 (1)
@@ -580,26 +580,26 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  value{}: 0x4e1-0x4e1.7 (1)
 0x04e0|   a0                                          | .              |                    type: "array" (10) (Array) 0x4e1-0x4e1.3 (0.4)
 0x04e0|   a0                                          | .              |                    size_bits: 0 0x4e1.4-0x4e1.7 (0.4)
-      |                                               |                |                    size: 0 0x4e2-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x4e2-NA (0)
       |                                               |                |                [1]{}: entry 0xa5-0x4e2.7 (1086)
       |                                               |                |                  key{}: 0xa5-0xaf.7 (11)
 0x00a0|               5a                              |     Z          |                    type: "ascii_string" (5) (ASCII encoded string) 0xa5-0xa5.3 (0.4)
 0x00a0|               5a                              |     Z          |                    size_bits: 10 0xa5.4-0xa5.7 (0.4)
-      |                                               |                |                    size: 10 0xa6-NA (0)
+      |                                               |                |                    size: 10
 0x00a0|                  4e 53 2e 6f 62 6a 65 63 74 73|      NS.objects|                    value: "NS.objects" 0xa6-0xaf.7 (10)
 0x04d0|                                    0e         |            .   |                  key_index: 14 0x4dc-0x4dc.7 (1)
 0x04d0|                                             51|               Q|                  value_index: 81 0x4df-0x4df.7 (1)
       |                                               |                |                  value{}: 0x4e2-0x4e2.7 (1)
 0x04e0|      a0                                       |  .             |                    type: "array" (10) (Array) 0x4e2-0x4e2.3 (0.4)
 0x04e0|      a0                                       |  .             |                    size_bits: 0 0x4e2.4-0x4e2.7 (0.4)
-      |                                               |                |                    size: 0 0x4e3-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x4e3-NA (0)
       |                                               |                |                [2]{}: entry 0xb0-0x4e0.7 (1073)
       |                                               |                |                  key{}: 0xb0-0xb6.7 (7)
 0x00b0|56                                             |V               |                    type: "ascii_string" (5) (ASCII encoded string) 0xb0-0xb0.3 (0.4)
 0x00b0|56                                             |V               |                    size_bits: 6 0xb0.4-0xb0.7 (0.4)
-      |                                               |                |                    size: 6 0xb1-NA (0)
+      |                                               |                |                    size: 6
 0x00b0|   24 63 6c 61 73 73                           | $class         |                    value: "$class" 0xb1-0xb6.7 (6)
       |                                               |                |                  value{}: 0xc5-0xc6.7 (2)
 0x00c0|               80                              |     .          |                    type: "uid" (8) (UID) 0xc5-0xc5.3 (0.4)
@@ -609,7 +609,7 @@ $ fq dv recentdocs.sfl2
 0x04e0|16                                             |.               |                  value_index: 22 0x4e0-0x4e0.7 (1)
 0x04d0|                              d3               |          .     |              type: "dict" (13) (Dictionary) 0x4da-0x4da.3 (0.4)
 0x04d0|                              d3               |          .     |              size_bits: 3 0x4da.4-0x4da.7 (0.4)
-      |                                               |                |              size: 3 0x4db-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [17]{}: entry 0x67-0x894.7 (2094)
 0x0060|                     53                        |       S        |              object_index: 83 0x67-0x67.7 (1)
 0x04e0|               4f                              |     O          |              type: "data" (4) (Binary data) 0x4e5-0x4e5.3 (0.4)
@@ -617,7 +617,7 @@ $ fq dv recentdocs.sfl2
 0x04e0|                  11                           |      .         |              large_size_marker: 1 (valid) 0x4e6-0x4e6.3 (0.4)
 0x04e0|                  11                           |      .         |              exponent: 1 0x4e6.4-0x4e6.7 (0.4)
 0x04e0|                     03 ac                     |       ..       |              size_bigint: 940 0x4e7-0x4e8.7 (2)
-      |                                               |                |              size: 940 0x4e9-NA (0)
+      |                                               |                |              size: 940
 0x04e0|                           62 6f 6f 6b ac 03 00|         book...|              value: raw bits 0x4e9-0x894.7 (940)
 0x04f0|00 00 00 04 10 30 00 00 00 00 00 00 00 00 00 00|.....0..........|
 *     |until 0x894.7 (940)                            |                |
@@ -628,7 +628,7 @@ $ fq dv recentdocs.sfl2
 0x0890|                  10                           |      .         |              large_size_marker: 1 (valid) 0x896-0x896.3 (0.4)
 0x0890|                  10                           |      .         |              exponent: 0 0x896.4-0x896.7 (0.4)
 0x0890|                     24                        |       $        |              size_bigint: 36 0x897-0x897.7 (1)
-      |                                               |                |              size: 36 0x898-NA (0)
+      |                                               |                |              size: 36
 0x0890|                        36 42 31 30 38 46 35 35|        6B108F55|              value: "6B108F55-CC3E-4752-88FC-D20523F8CFA6" 0x898-0x8bb.7 (36)
 0x08a0|2d 43 43 33 45 2d 34 37 35 32 2d 38 38 46 43 2d|-CC3E-4752-88FC-|
 0x08b0|44 32 30 35 32 33 46 38 43 46 41 36            |D20523F8CFA6    |
@@ -639,7 +639,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0x9d-0xa4.7 (8)
 0x0090|                                       57      |             W  |                    type: "ascii_string" (5) (ASCII encoded string) 0x9d-0x9d.3 (0.4)
 0x0090|                                       57      |             W  |                    size_bits: 7 0x9d.4-0x9d.7 (0.4)
-      |                                               |                |                    size: 7 0x9e-NA (0)
+      |                                               |                |                    size: 7
 0x0090|                                          4e 53|              NS|                    value: "NS.keys" 0x9e-0xa4.7 (7)
 0x00a0|2e 6b 65 79 73                                 |.keys           |
       |                                               |                |                  value{}: 0x10a-0x8c7.7 (1982)
@@ -666,14 +666,14 @@ $ fq dv recentdocs.sfl2
 0x08c0|                     2b                        |       +        |                        object_index: 43 0x8c7-0x8c7.7 (1)
 0x08c0|         a4                                    |   .            |                    type: "array" (10) (Array) 0x8c3-0x8c3.3 (0.4)
 0x08c0|         a4                                    |   .            |                    size_bits: 4 0x8c3.4-0x8c3.7 (0.4)
-      |                                               |                |                    size: 4 0x8c4-NA (0)
+      |                                               |                |                    size: 4
 0x08b0|                                       0d      |             .  |                  key_index: 13 0x8bd-0x8bd.7 (1)
 0x08c0|56                                             |V               |                  value_index: 86 0x8c0-0x8c0.7 (1)
       |                                               |                |                [1]{}: entry 0xa5-0x8dc.7 (2104)
       |                                               |                |                  key{}: 0xa5-0xaf.7 (11)
 0x00a0|               5a                              |     Z          |                    type: "ascii_string" (5) (ASCII encoded string) 0xa5-0xa5.3 (0.4)
 0x00a0|               5a                              |     Z          |                    size_bits: 10 0xa5.4-0xa5.7 (0.4)
-      |                                               |                |                    size: 10 0xa6-NA (0)
+      |                                               |                |                    size: 10
 0x00a0|                  4e 53 2e 6f 62 6a 65 63 74 73|      NS.objects|                    value: "NS.objects" 0xa6-0xaf.7 (10)
       |                                               |                |                  value{}: 0x117-0x8dc.7 (1990)
       |                                               |                |                    entries[0:4]: 0x117-0x8dc.7 (1990)
@@ -699,14 +699,14 @@ $ fq dv recentdocs.sfl2
 0x08d0|                                    16         |            .   |                        value: 22 0x8dc-0x8dc.7 (1)
 0x08d0|a4                                             |.               |                    type: "array" (10) (Array) 0x8d0-0x8d0.3 (0.4)
 0x08d0|a4                                             |.               |                    size_bits: 4 0x8d0.4-0x8d0.7 (0.4)
-      |                                               |                |                    size: 4 0x8d1-NA (0)
+      |                                               |                |                    size: 4
 0x08b0|                                          0e   |              . |                  key_index: 14 0x8be-0x8be.7 (1)
 0x08c0|   5b                                          | [              |                  value_index: 91 0x8c1-0x8c1.7 (1)
       |                                               |                |                [2]{}: entry 0xb0-0x8c2.7 (2067)
       |                                               |                |                  key{}: 0xb0-0xb6.7 (7)
 0x00b0|56                                             |V               |                    type: "ascii_string" (5) (ASCII encoded string) 0xb0-0xb0.3 (0.4)
 0x00b0|56                                             |V               |                    size_bits: 6 0xb0.4-0xb0.7 (0.4)
-      |                                               |                |                    size: 6 0xb1-NA (0)
+      |                                               |                |                    size: 6
 0x00b0|   24 63 6c 61 73 73                           | $class         |                    value: "$class" 0xb1-0xb6.7 (6)
       |                                               |                |                  value{}: 0xc5-0xc6.7 (2)
 0x00c0|               80                              |     .          |                    type: "uid" (8) (UID) 0xc5-0xc5.3 (0.4)
@@ -716,7 +716,7 @@ $ fq dv recentdocs.sfl2
 0x08c0|      16                                       |  .             |                  value_index: 22 0x8c2-0x8c2.7 (1)
 0x08b0|                                    d3         |            .   |              type: "dict" (13) (Dictionary) 0x8bc-0x8bc.3 (0.4)
 0x08b0|                                    d3         |            .   |              size_bits: 3 0x8bc.4-0x8bc.7 (0.4)
-      |                                               |                |              size: 3 0x8bd-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [20]{}: entry 0x6a-0x8e7.7 (2174)
 0x0060|                              61               |          a     |              object_index: 97 0x6a-0x6a.7 (1)
       |                                               |                |              entries[0:3]: 0x9d-0x8e7.7 (2123)
@@ -724,7 +724,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0x9d-0xa4.7 (8)
 0x0090|                                       57      |             W  |                    type: "ascii_string" (5) (ASCII encoded string) 0x9d-0x9d.3 (0.4)
 0x0090|                                       57      |             W  |                    size_bits: 7 0x9d.4-0x9d.7 (0.4)
-      |                                               |                |                    size: 7 0x9e-NA (0)
+      |                                               |                |                    size: 7
 0x0090|                                          4e 53|              NS|                    value: "NS.keys" 0x9e-0xa4.7 (7)
 0x00a0|2e 6b 65 79 73                                 |.keys           |
 0x08e0|0d                                             |.               |                  key_index: 13 0x8e0-0x8e0.7 (1)
@@ -732,26 +732,26 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  value{}: 0x8e6-0x8e6.7 (1)
 0x08e0|                  a0                           |      .         |                    type: "array" (10) (Array) 0x8e6-0x8e6.3 (0.4)
 0x08e0|                  a0                           |      .         |                    size_bits: 0 0x8e6.4-0x8e6.7 (0.4)
-      |                                               |                |                    size: 0 0x8e7-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x8e7-NA (0)
       |                                               |                |                [1]{}: entry 0xa5-0x8e7.7 (2115)
       |                                               |                |                  key{}: 0xa5-0xaf.7 (11)
 0x00a0|               5a                              |     Z          |                    type: "ascii_string" (5) (ASCII encoded string) 0xa5-0xa5.3 (0.4)
 0x00a0|               5a                              |     Z          |                    size_bits: 10 0xa5.4-0xa5.7 (0.4)
-      |                                               |                |                    size: 10 0xa6-NA (0)
+      |                                               |                |                    size: 10
 0x00a0|                  4e 53 2e 6f 62 6a 65 63 74 73|      NS.objects|                    value: "NS.objects" 0xa6-0xaf.7 (10)
 0x08e0|   0e                                          | .              |                  key_index: 14 0x8e1-0x8e1.7 (1)
 0x08e0|            63                                 |    c           |                  value_index: 99 0x8e4-0x8e4.7 (1)
       |                                               |                |                  value{}: 0x8e7-0x8e7.7 (1)
 0x08e0|                     a0                        |       .        |                    type: "array" (10) (Array) 0x8e7-0x8e7.3 (0.4)
 0x08e0|                     a0                        |       .        |                    size_bits: 0 0x8e7.4-0x8e7.7 (0.4)
-      |                                               |                |                    size: 0 0x8e8-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x8e8-NA (0)
       |                                               |                |                [2]{}: entry 0xb0-0x8e5.7 (2102)
       |                                               |                |                  key{}: 0xb0-0xb6.7 (7)
 0x00b0|56                                             |V               |                    type: "ascii_string" (5) (ASCII encoded string) 0xb0-0xb0.3 (0.4)
 0x00b0|56                                             |V               |                    size_bits: 6 0xb0.4-0xb0.7 (0.4)
-      |                                               |                |                    size: 6 0xb1-NA (0)
+      |                                               |                |                    size: 6
 0x00b0|   24 63 6c 61 73 73                           | $class         |                    value: "$class" 0xb1-0xb6.7 (6)
       |                                               |                |                  value{}: 0xc5-0xc6.7 (2)
 0x00c0|               80                              |     .          |                    type: "uid" (8) (UID) 0xc5-0xc5.3 (0.4)
@@ -761,7 +761,7 @@ $ fq dv recentdocs.sfl2
 0x08e0|               16                              |     .          |                  value_index: 22 0x8e5-0x8e5.7 (1)
 0x08d0|                                             d3|               .|              type: "dict" (13) (Dictionary) 0x8df-0x8df.3 (0.4)
 0x08d0|                                             d3|               .|              size_bits: 3 0x8df.4-0x8df.7 (0.4)
-      |                                               |                |              size: 3 0x8e0-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [21]{}: entry 0x6b-0xbc5.7 (2907)
 0x0060|                                 65            |           e    |              object_index: 101 0x6b-0x6b.7 (1)
 0x08e0|                              4f               |          O     |              type: "data" (4) (Binary data) 0x8ea-0x8ea.3 (0.4)
@@ -769,7 +769,7 @@ $ fq dv recentdocs.sfl2
 0x08e0|                                 11            |           .    |              large_size_marker: 1 (valid) 0x8eb-0x8eb.3 (0.4)
 0x08e0|                                 11            |           .    |              exponent: 1 0x8eb.4-0x8eb.7 (0.4)
 0x08e0|                                    02 d8      |            ..  |              size_bigint: 728 0x8ec-0x8ed.7 (2)
-      |                                               |                |              size: 728 0x8ee-NA (0)
+      |                                               |                |              size: 728
 0x08e0|                                          62 6f|              bo|              value: raw bits 0x8ee-0xbc5.7 (728)
 0x08f0|6f 6b d8 02 00 00 00 00 04 10 30 00 00 00 00 00|ok........0.....|
 *     |until 0xbc5.7 (728)                            |                |
@@ -780,7 +780,7 @@ $ fq dv recentdocs.sfl2
 0x0bc0|                     10                        |       .        |              large_size_marker: 1 (valid) 0xbc7-0xbc7.3 (0.4)
 0x0bc0|                     10                        |       .        |              exponent: 0 0xbc7.4-0xbc7.7 (0.4)
 0x0bc0|                        24                     |        $       |              size_bigint: 36 0xbc8-0xbc8.7 (1)
-      |                                               |                |              size: 36 0xbc9-NA (0)
+      |                                               |                |              size: 36
 0x0bc0|                           46 39 37 37 37 45 33|         F9777E3|              value: "F9777E35-386A-4F40-A4D5-0B90C21D6B68" 0xbc9-0xbec.7 (36)
 0x0bd0|35 2d 33 38 36 41 2d 34 46 34 30 2d 41 34 44 35|5-386A-4F40-A4D5|
 0x0be0|2d 30 42 39 30 43 32 31 44 36 42 36 38         |-0B90C21D6B68   |
@@ -791,7 +791,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0x9d-0xa4.7 (8)
 0x0090|                                       57      |             W  |                    type: "ascii_string" (5) (ASCII encoded string) 0x9d-0x9d.3 (0.4)
 0x0090|                                       57      |             W  |                    size_bits: 7 0x9d.4-0x9d.7 (0.4)
-      |                                               |                |                    size: 7 0x9e-NA (0)
+      |                                               |                |                    size: 7
 0x0090|                                          4e 53|              NS|                    value: "NS.keys" 0x9e-0xa4.7 (7)
 0x00a0|2e 6b 65 79 73                                 |.keys           |
       |                                               |                |                  value{}: 0x10a-0xbf8.7 (2799)
@@ -818,14 +818,14 @@ $ fq dv recentdocs.sfl2
 0x0bf0|                        2b                     |        +       |                        object_index: 43 0xbf8-0xbf8.7 (1)
 0x0bf0|            a4                                 |    .           |                    type: "array" (10) (Array) 0xbf4-0xbf4.3 (0.4)
 0x0bf0|            a4                                 |    .           |                    size_bits: 4 0xbf4.4-0xbf4.7 (0.4)
-      |                                               |                |                    size: 4 0xbf5-NA (0)
+      |                                               |                |                    size: 4
 0x0be0|                                          0d   |              . |                  key_index: 13 0xbee-0xbee.7 (1)
 0x0bf0|   68                                          | h              |                  value_index: 104 0xbf1-0xbf1.7 (1)
       |                                               |                |                [1]{}: entry 0xa5-0xc0d.7 (2921)
       |                                               |                |                  key{}: 0xa5-0xaf.7 (11)
 0x00a0|               5a                              |     Z          |                    type: "ascii_string" (5) (ASCII encoded string) 0xa5-0xa5.3 (0.4)
 0x00a0|               5a                              |     Z          |                    size_bits: 10 0xa5.4-0xa5.7 (0.4)
-      |                                               |                |                    size: 10 0xa6-NA (0)
+      |                                               |                |                    size: 10
 0x00a0|                  4e 53 2e 6f 62 6a 65 63 74 73|      NS.objects|                    value: "NS.objects" 0xa6-0xaf.7 (10)
       |                                               |                |                  value{}: 0x117-0xc0d.7 (2807)
       |                                               |                |                    entries[0:4]: 0x117-0xc0d.7 (2807)
@@ -851,14 +851,14 @@ $ fq dv recentdocs.sfl2
 0x0c00|                                       1a      |             .  |                        value: 26 0xc0d-0xc0d.7 (1)
 0x0c00|   a4                                          | .              |                    type: "array" (10) (Array) 0xc01-0xc01.3 (0.4)
 0x0c00|   a4                                          | .              |                    size_bits: 4 0xc01.4-0xc01.7 (0.4)
-      |                                               |                |                    size: 4 0xc02-NA (0)
+      |                                               |                |                    size: 4
 0x0be0|                                             0e|               .|                  key_index: 14 0xbef-0xbef.7 (1)
 0x0bf0|      6d                                       |  m             |                  value_index: 109 0xbf2-0xbf2.7 (1)
       |                                               |                |                [2]{}: entry 0xb0-0xbf3.7 (2884)
       |                                               |                |                  key{}: 0xb0-0xb6.7 (7)
 0x00b0|56                                             |V               |                    type: "ascii_string" (5) (ASCII encoded string) 0xb0-0xb0.3 (0.4)
 0x00b0|56                                             |V               |                    size_bits: 6 0xb0.4-0xb0.7 (0.4)
-      |                                               |                |                    size: 6 0xb1-NA (0)
+      |                                               |                |                    size: 6
 0x00b0|   24 63 6c 61 73 73                           | $class         |                    value: "$class" 0xb1-0xb6.7 (6)
       |                                               |                |                  value{}: 0xc5-0xc6.7 (2)
 0x00c0|               80                              |     .          |                    type: "uid" (8) (UID) 0xc5-0xc5.3 (0.4)
@@ -868,7 +868,7 @@ $ fq dv recentdocs.sfl2
 0x0bf0|         16                                    |   .            |                  value_index: 22 0xbf3-0xbf3.7 (1)
 0x0be0|                                       d3      |             .  |              type: "dict" (13) (Dictionary) 0xbed-0xbed.3 (0.4)
 0x0be0|                                       d3      |             .  |              size_bits: 3 0xbed.4-0xbed.7 (0.4)
-      |                                               |                |              size: 3 0xbee-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [24]{}: entry 0x6e-0xc18.7 (2987)
 0x0060|                                          73   |              s |              object_index: 115 0x6e-0x6e.7 (1)
       |                                               |                |              entries[0:3]: 0x9d-0xc18.7 (2940)
@@ -876,7 +876,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0x9d-0xa4.7 (8)
 0x0090|                                       57      |             W  |                    type: "ascii_string" (5) (ASCII encoded string) 0x9d-0x9d.3 (0.4)
 0x0090|                                       57      |             W  |                    size_bits: 7 0x9d.4-0x9d.7 (0.4)
-      |                                               |                |                    size: 7 0x9e-NA (0)
+      |                                               |                |                    size: 7
 0x0090|                                          4e 53|              NS|                    value: "NS.keys" 0x9e-0xa4.7 (7)
 0x00a0|2e 6b 65 79 73                                 |.keys           |
 0x0c10|   0d                                          | .              |                  key_index: 13 0xc11-0xc11.7 (1)
@@ -884,26 +884,26 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  value{}: 0xc17-0xc17.7 (1)
 0x0c10|                     a0                        |       .        |                    type: "array" (10) (Array) 0xc17-0xc17.3 (0.4)
 0x0c10|                     a0                        |       .        |                    size_bits: 0 0xc17.4-0xc17.7 (0.4)
-      |                                               |                |                    size: 0 0xc18-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0xc18-NA (0)
       |                                               |                |                [1]{}: entry 0xa5-0xc18.7 (2932)
       |                                               |                |                  key{}: 0xa5-0xaf.7 (11)
 0x00a0|               5a                              |     Z          |                    type: "ascii_string" (5) (ASCII encoded string) 0xa5-0xa5.3 (0.4)
 0x00a0|               5a                              |     Z          |                    size_bits: 10 0xa5.4-0xa5.7 (0.4)
-      |                                               |                |                    size: 10 0xa6-NA (0)
+      |                                               |                |                    size: 10
 0x00a0|                  4e 53 2e 6f 62 6a 65 63 74 73|      NS.objects|                    value: "NS.objects" 0xa6-0xaf.7 (10)
 0x0c10|      0e                                       |  .             |                  key_index: 14 0xc12-0xc12.7 (1)
 0x0c10|               75                              |     u          |                  value_index: 117 0xc15-0xc15.7 (1)
       |                                               |                |                  value{}: 0xc18-0xc18.7 (1)
 0x0c10|                        a0                     |        .       |                    type: "array" (10) (Array) 0xc18-0xc18.3 (0.4)
 0x0c10|                        a0                     |        .       |                    size_bits: 0 0xc18.4-0xc18.7 (0.4)
-      |                                               |                |                    size: 0 0xc19-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0xc19-NA (0)
       |                                               |                |                [2]{}: entry 0xb0-0xc16.7 (2919)
       |                                               |                |                  key{}: 0xb0-0xb6.7 (7)
 0x00b0|56                                             |V               |                    type: "ascii_string" (5) (ASCII encoded string) 0xb0-0xb0.3 (0.4)
 0x00b0|56                                             |V               |                    size_bits: 6 0xb0.4-0xb0.7 (0.4)
-      |                                               |                |                    size: 6 0xb1-NA (0)
+      |                                               |                |                    size: 6
 0x00b0|   24 63 6c 61 73 73                           | $class         |                    value: "$class" 0xb1-0xb6.7 (6)
       |                                               |                |                  value{}: 0xc5-0xc6.7 (2)
 0x00c0|               80                              |     .          |                    type: "uid" (8) (UID) 0xc5-0xc5.3 (0.4)
@@ -913,7 +913,7 @@ $ fq dv recentdocs.sfl2
 0x0c10|                  16                           |      .         |                  value_index: 22 0xc16-0xc16.7 (1)
 0x0c10|d3                                             |.               |              type: "dict" (13) (Dictionary) 0xc10-0xc10.3 (0.4)
 0x0c10|d3                                             |.               |              size_bits: 3 0xc10.4-0xc10.7 (0.4)
-      |                                               |                |              size: 3 0xc11-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [25]{}: entry 0x6f-0xfb2.7 (3908)
 0x0060|                                             77|               w|              object_index: 119 0x6f-0x6f.7 (1)
 0x0c10|                                 4f            |           O    |              type: "data" (4) (Binary data) 0xc1b-0xc1b.3 (0.4)
@@ -921,7 +921,7 @@ $ fq dv recentdocs.sfl2
 0x0c10|                                    11         |            .   |              large_size_marker: 1 (valid) 0xc1c-0xc1c.3 (0.4)
 0x0c10|                                    11         |            .   |              exponent: 1 0xc1c.4-0xc1c.7 (0.4)
 0x0c10|                                       03 94   |             .. |              size_bigint: 916 0xc1d-0xc1e.7 (2)
-      |                                               |                |              size: 916 0xc1f-NA (0)
+      |                                               |                |              size: 916
 0x0c10|                                             62|               b|              value: raw bits 0xc1f-0xfb2.7 (916)
 0x0c20|6f 6f 6b 94 03 00 00 00 00 04 10 30 00 00 00 00|ook........0....|
 *     |until 0xfb2.7 (916)                            |                |
@@ -932,7 +932,7 @@ $ fq dv recentdocs.sfl2
 0x0fb0|            10                                 |    .           |              large_size_marker: 1 (valid) 0xfb4-0xfb4.3 (0.4)
 0x0fb0|            10                                 |    .           |              exponent: 0 0xfb4.4-0xfb4.7 (0.4)
 0x0fb0|               24                              |     $          |              size_bigint: 36 0xfb5-0xfb5.7 (1)
-      |                                               |                |              size: 36 0xfb6-NA (0)
+      |                                               |                |              size: 36
 0x0fb0|                  44 46 39 33 31 37 33 34 2d 42|      DF931734-B|              value: "DF931734-B97D-4237-89C7-98356EA8F78C" 0xfb6-0xfd9.7 (36)
 0x0fc0|39 37 44 2d 34 32 33 37 2d 38 39 43 37 2d 39 38|97D-4237-89C7-98|
 0x0fd0|33 35 36 45 41 38 46 37 38 43                  |356EA8F78C      |
@@ -943,7 +943,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0x9d-0xa4.7 (8)
 0x0090|                                       57      |             W  |                    type: "ascii_string" (5) (ASCII encoded string) 0x9d-0x9d.3 (0.4)
 0x0090|                                       57      |             W  |                    size_bits: 7 0x9d.4-0x9d.7 (0.4)
-      |                                               |                |                    size: 7 0x9e-NA (0)
+      |                                               |                |                    size: 7
 0x0090|                                          4e 53|              NS|                    value: "NS.keys" 0x9e-0xa4.7 (7)
 0x00a0|2e 6b 65 79 73                                 |.keys           |
       |                                               |                |                  value{}: 0x10a-0xfe5.7 (3804)
@@ -970,14 +970,14 @@ $ fq dv recentdocs.sfl2
 0x0fe0|               2b                              |     +          |                        object_index: 43 0xfe5-0xfe5.7 (1)
 0x0fe0|   a4                                          | .              |                    type: "array" (10) (Array) 0xfe1-0xfe1.3 (0.4)
 0x0fe0|   a4                                          | .              |                    size_bits: 4 0xfe1.4-0xfe1.7 (0.4)
-      |                                               |                |                    size: 4 0xfe2-NA (0)
+      |                                               |                |                    size: 4
 0x0fd0|                                 0d            |           .    |                  key_index: 13 0xfdb-0xfdb.7 (1)
 0x0fd0|                                          7a   |              z |                  value_index: 122 0xfde-0xfde.7 (1)
       |                                               |                |                [1]{}: entry 0xa5-0xffa.7 (3926)
       |                                               |                |                  key{}: 0xa5-0xaf.7 (11)
 0x00a0|               5a                              |     Z          |                    type: "ascii_string" (5) (ASCII encoded string) 0xa5-0xa5.3 (0.4)
 0x00a0|               5a                              |     Z          |                    size_bits: 10 0xa5.4-0xa5.7 (0.4)
-      |                                               |                |                    size: 10 0xa6-NA (0)
+      |                                               |                |                    size: 10
 0x00a0|                  4e 53 2e 6f 62 6a 65 63 74 73|      NS.objects|                    value: "NS.objects" 0xa6-0xaf.7 (10)
       |                                               |                |                  value{}: 0x117-0xffa.7 (3812)
       |                                               |                |                    entries[0:4]: 0x117-0xffa.7 (3812)
@@ -1003,14 +1003,14 @@ $ fq dv recentdocs.sfl2
 0x0ff0|                              1e               |          .     |                        value: 30 0xffa-0xffa.7 (1)
 0x0fe0|                                          a4   |              . |                    type: "array" (10) (Array) 0xfee-0xfee.3 (0.4)
 0x0fe0|                                          a4   |              . |                    size_bits: 4 0xfee.4-0xfee.7 (0.4)
-      |                                               |                |                    size: 4 0xfef-NA (0)
+      |                                               |                |                    size: 4
 0x0fd0|                                    0e         |            .   |                  key_index: 14 0xfdc-0xfdc.7 (1)
 0x0fd0|                                             7f|               .|                  value_index: 127 0xfdf-0xfdf.7 (1)
       |                                               |                |                [2]{}: entry 0xb0-0xfe0.7 (3889)
       |                                               |                |                  key{}: 0xb0-0xb6.7 (7)
 0x00b0|56                                             |V               |                    type: "ascii_string" (5) (ASCII encoded string) 0xb0-0xb0.3 (0.4)
 0x00b0|56                                             |V               |                    size_bits: 6 0xb0.4-0xb0.7 (0.4)
-      |                                               |                |                    size: 6 0xb1-NA (0)
+      |                                               |                |                    size: 6
 0x00b0|   24 63 6c 61 73 73                           | $class         |                    value: "$class" 0xb1-0xb6.7 (6)
       |                                               |                |                  value{}: 0xc5-0xc6.7 (2)
 0x00c0|               80                              |     .          |                    type: "uid" (8) (UID) 0xc5-0xc5.3 (0.4)
@@ -1020,7 +1020,7 @@ $ fq dv recentdocs.sfl2
 0x0fe0|16                                             |.               |                  value_index: 22 0xfe0-0xfe0.7 (1)
 0x0fd0|                              d3               |          .     |              type: "dict" (13) (Dictionary) 0xfda-0xfda.3 (0.4)
 0x0fd0|                              d3               |          .     |              size_bits: 3 0xfda.4-0xfda.7 (0.4)
-      |                                               |                |              size: 3 0xfdb-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [28]{}: entry 0x72-0x1005.7 (3988)
 0x0070|      85                                       |  .             |              object_index: 133 0x72-0x72.7 (1)
       |                                               |                |              entries[0:3]: 0x9d-0x1005.7 (3945)
@@ -1028,7 +1028,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0x9d-0xa4.7 (8)
 0x0090|                                       57      |             W  |                    type: "ascii_string" (5) (ASCII encoded string) 0x9d-0x9d.3 (0.4)
 0x0090|                                       57      |             W  |                    size_bits: 7 0x9d.4-0x9d.7 (0.4)
-      |                                               |                |                    size: 7 0x9e-NA (0)
+      |                                               |                |                    size: 7
 0x0090|                                          4e 53|              NS|                    value: "NS.keys" 0x9e-0xa4.7 (7)
 0x00a0|2e 6b 65 79 73                                 |.keys           |
 0x0ff0|                                          0d   |              . |                  key_index: 13 0xffe-0xffe.7 (1)
@@ -1036,26 +1036,26 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  value{}: 0x1004-0x1004.7 (1)
 0x1000|            a0                                 |    .           |                    type: "array" (10) (Array) 0x1004-0x1004.3 (0.4)
 0x1000|            a0                                 |    .           |                    size_bits: 0 0x1004.4-0x1004.7 (0.4)
-      |                                               |                |                    size: 0 0x1005-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x1005-NA (0)
       |                                               |                |                [1]{}: entry 0xa5-0x1005.7 (3937)
       |                                               |                |                  key{}: 0xa5-0xaf.7 (11)
 0x00a0|               5a                              |     Z          |                    type: "ascii_string" (5) (ASCII encoded string) 0xa5-0xa5.3 (0.4)
 0x00a0|               5a                              |     Z          |                    size_bits: 10 0xa5.4-0xa5.7 (0.4)
-      |                                               |                |                    size: 10 0xa6-NA (0)
+      |                                               |                |                    size: 10
 0x00a0|                  4e 53 2e 6f 62 6a 65 63 74 73|      NS.objects|                    value: "NS.objects" 0xa6-0xaf.7 (10)
 0x0ff0|                                             0e|               .|                  key_index: 14 0xfff-0xfff.7 (1)
 0x1000|      87                                       |  .             |                  value_index: 135 0x1002-0x1002.7 (1)
       |                                               |                |                  value{}: 0x1005-0x1005.7 (1)
 0x1000|               a0                              |     .          |                    type: "array" (10) (Array) 0x1005-0x1005.3 (0.4)
 0x1000|               a0                              |     .          |                    size_bits: 0 0x1005.4-0x1005.7 (0.4)
-      |                                               |                |                    size: 0 0x1006-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x1006-NA (0)
       |                                               |                |                [2]{}: entry 0xb0-0x1003.7 (3924)
       |                                               |                |                  key{}: 0xb0-0xb6.7 (7)
 0x00b0|56                                             |V               |                    type: "ascii_string" (5) (ASCII encoded string) 0xb0-0xb0.3 (0.4)
 0x00b0|56                                             |V               |                    size_bits: 6 0xb0.4-0xb0.7 (0.4)
-      |                                               |                |                    size: 6 0xb1-NA (0)
+      |                                               |                |                    size: 6
 0x00b0|   24 63 6c 61 73 73                           | $class         |                    value: "$class" 0xb1-0xb6.7 (6)
       |                                               |                |                  value{}: 0xc5-0xc6.7 (2)
 0x00c0|               80                              |     .          |                    type: "uid" (8) (UID) 0xc5-0xc5.3 (0.4)
@@ -1065,7 +1065,7 @@ $ fq dv recentdocs.sfl2
 0x1000|         16                                    |   .            |                  value_index: 22 0x1003-0x1003.7 (1)
 0x0ff0|                                       d3      |             .  |              type: "dict" (13) (Dictionary) 0xffd-0xffd.3 (0.4)
 0x0ff0|                                       d3      |             .  |              size_bits: 3 0xffd.4-0xffd.7 (0.4)
-      |                                               |                |              size: 3 0xffe-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [29]{}: entry 0x73-0x139f.7 (4909)
 0x0070|         89                                    |   .            |              object_index: 137 0x73-0x73.7 (1)
 0x1000|                        4f                     |        O       |              type: "data" (4) (Binary data) 0x1008-0x1008.3 (0.4)
@@ -1073,7 +1073,7 @@ $ fq dv recentdocs.sfl2
 0x1000|                           11                  |         .      |              large_size_marker: 1 (valid) 0x1009-0x1009.3 (0.4)
 0x1000|                           11                  |         .      |              exponent: 1 0x1009.4-0x1009.7 (0.4)
 0x1000|                              03 94            |          ..    |              size_bigint: 916 0x100a-0x100b.7 (2)
-      |                                               |                |              size: 916 0x100c-NA (0)
+      |                                               |                |              size: 916
 0x1000|                                    62 6f 6f 6b|            book|              value: raw bits 0x100c-0x139f.7 (916)
 0x1010|94 03 00 00 00 00 04 10 30 00 00 00 00 00 00 00|........0.......|
 *     |until 0x139f.7 (916)                           |                |
@@ -1084,7 +1084,7 @@ $ fq dv recentdocs.sfl2
 0x13a0|   10                                          | .              |              large_size_marker: 1 (valid) 0x13a1-0x13a1.3 (0.4)
 0x13a0|   10                                          | .              |              exponent: 0 0x13a1.4-0x13a1.7 (0.4)
 0x13a0|      24                                       |  $             |              size_bigint: 36 0x13a2-0x13a2.7 (1)
-      |                                               |                |              size: 36 0x13a3-NA (0)
+      |                                               |                |              size: 36
 0x13a0|         33 36 45 39 32 41 36 31 2d 44 42 46 44|   36E92A61-DBFD|              value: "36E92A61-DBFD-498A-AE35-FF031C0DE558" 0x13a3-0x13c6.7 (36)
 0x13b0|2d 34 39 38 41 2d 41 45 33 35 2d 46 46 30 33 31|-498A-AE35-FF031|
 0x13c0|43 30 44 45 35 35 38                           |C0DE558         |
@@ -1095,7 +1095,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0x9d-0xa4.7 (8)
 0x0090|                                       57      |             W  |                    type: "ascii_string" (5) (ASCII encoded string) 0x9d-0x9d.3 (0.4)
 0x0090|                                       57      |             W  |                    size_bits: 7 0x9d.4-0x9d.7 (0.4)
-      |                                               |                |                    size: 7 0x9e-NA (0)
+      |                                               |                |                    size: 7
 0x0090|                                          4e 53|              NS|                    value: "NS.keys" 0x9e-0xa4.7 (7)
 0x00a0|2e 6b 65 79 73                                 |.keys           |
       |                                               |                |                  value{}: 0x10a-0x13d9.7 (4816)
@@ -1127,14 +1127,14 @@ $ fq dv recentdocs.sfl2
 0x13d0|         2b                                    |   +            |                        object_index: 43 0x13d3-0x13d3.7 (1)
 0x13c0|                                          a5   |              . |                    type: "array" (10) (Array) 0x13ce-0x13ce.3 (0.4)
 0x13c0|                                          a5   |              . |                    size_bits: 5 0x13ce.4-0x13ce.7 (0.4)
-      |                                               |                |                    size: 5 0x13cf-NA (0)
+      |                                               |                |                    size: 5
 0x13c0|                        0d                     |        .       |                  key_index: 13 0x13c8-0x13c8.7 (1)
 0x13c0|                                 8c            |           .    |                  value_index: 140 0x13cb-0x13cb.7 (1)
       |                                               |                |                [1]{}: entry 0xa5-0x13ed.7 (4937)
       |                                               |                |                  key{}: 0xa5-0xaf.7 (11)
 0x00a0|               5a                              |     Z          |                    type: "ascii_string" (5) (ASCII encoded string) 0xa5-0xa5.3 (0.4)
 0x00a0|               5a                              |     Z          |                    size_bits: 10 0xa5.4-0xa5.7 (0.4)
-      |                                               |                |                    size: 10 0xa6-NA (0)
+      |                                               |                |                    size: 10
 0x00a0|                  4e 53 2e 6f 62 6a 65 63 74 73|      NS.objects|                    value: "NS.objects" 0xa6-0xaf.7 (10)
       |                                               |                |                  value{}: 0x117-0x13ed.7 (4823)
       |                                               |                |                    entries[0:5]: 0x117-0x13ed.7 (4823)
@@ -1165,14 +1165,14 @@ $ fq dv recentdocs.sfl2
 0x13e0|                                       24      |             $  |                        value: 36 0x13ed-0x13ed.7 (1)
 0x13d0|                                          a5   |              . |                    type: "array" (10) (Array) 0x13de-0x13de.3 (0.4)
 0x13d0|                                          a5   |              . |                    size_bits: 5 0x13de.4-0x13de.7 (0.4)
-      |                                               |                |                    size: 5 0x13df-NA (0)
+      |                                               |                |                    size: 5
 0x13c0|                           0e                  |         .      |                  key_index: 14 0x13c9-0x13c9.7 (1)
 0x13c0|                                    92         |            .   |                  value_index: 146 0x13cc-0x13cc.7 (1)
       |                                               |                |                [2]{}: entry 0xb0-0x13cd.7 (4894)
       |                                               |                |                  key{}: 0xb0-0xb6.7 (7)
 0x00b0|56                                             |V               |                    type: "ascii_string" (5) (ASCII encoded string) 0xb0-0xb0.3 (0.4)
 0x00b0|56                                             |V               |                    size_bits: 6 0xb0.4-0xb0.7 (0.4)
-      |                                               |                |                    size: 6 0xb1-NA (0)
+      |                                               |                |                    size: 6
 0x00b0|   24 63 6c 61 73 73                           | $class         |                    value: "$class" 0xb1-0xb6.7 (6)
       |                                               |                |                  value{}: 0xc5-0xc6.7 (2)
 0x00c0|               80                              |     .          |                    type: "uid" (8) (UID) 0xc5-0xc5.3 (0.4)
@@ -1182,12 +1182,12 @@ $ fq dv recentdocs.sfl2
 0x13c0|                                       16      |             .  |                  value_index: 22 0x13cd-0x13cd.7 (1)
 0x13c0|                     d3                        |       .        |              type: "dict" (13) (Dictionary) 0x13c7-0x13c7.3 (0.4)
 0x13c0|                     d3                        |       .        |              size_bits: 3 0x13c7.4-0x13c7.7 (0.4)
-      |                                               |                |              size: 3 0x13c8-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [32]{}: entry 0x76-0x13f4.7 (4991)
 0x0070|                  99                           |      .         |              object_index: 153 0x76-0x76.7 (1)
 0x13f0|54                                             |T               |              type: "ascii_string" (5) (ASCII encoded string) 0x13f0-0x13f0.3 (0.4)
 0x13f0|54                                             |T               |              size_bits: 4 0x13f0.4-0x13f0.7 (0.4)
-      |                                               |                |              size: 4 0x13f1-NA (0)
+      |                                               |                |              size: 4
 0x13f0|   4e 61 6d 65                                 | Name           |              value: "Name" 0x13f1-0x13f4.7 (4)
       |                                               |                |            [33]{}: entry 0x77-0x13fd.7 (4999)
 0x0070|                     9a                        |       .        |              object_index: 154 0x77-0x77.7 (1)
@@ -1196,7 +1196,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0x9d-0xa4.7 (8)
 0x0090|                                       57      |             W  |                    type: "ascii_string" (5) (ASCII encoded string) 0x9d-0x9d.3 (0.4)
 0x0090|                                       57      |             W  |                    size_bits: 7 0x9d.4-0x9d.7 (0.4)
-      |                                               |                |                    size: 7 0x9e-NA (0)
+      |                                               |                |                    size: 7
 0x0090|                                          4e 53|              NS|                    value: "NS.keys" 0x9e-0xa4.7 (7)
 0x00a0|2e 6b 65 79 73                                 |.keys           |
 0x13f0|                  0d                           |      .         |                  key_index: 13 0x13f6-0x13f6.7 (1)
@@ -1204,26 +1204,26 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  value{}: 0x13fc-0x13fc.7 (1)
 0x13f0|                                    a0         |            .   |                    type: "array" (10) (Array) 0x13fc-0x13fc.3 (0.4)
 0x13f0|                                    a0         |            .   |                    size_bits: 0 0x13fc.4-0x13fc.7 (0.4)
-      |                                               |                |                    size: 0 0x13fd-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x13fd-NA (0)
       |                                               |                |                [1]{}: entry 0xa5-0x13fd.7 (4953)
       |                                               |                |                  key{}: 0xa5-0xaf.7 (11)
 0x00a0|               5a                              |     Z          |                    type: "ascii_string" (5) (ASCII encoded string) 0xa5-0xa5.3 (0.4)
 0x00a0|               5a                              |     Z          |                    size_bits: 10 0xa5.4-0xa5.7 (0.4)
-      |                                               |                |                    size: 10 0xa6-NA (0)
+      |                                               |                |                    size: 10
 0x00a0|                  4e 53 2e 6f 62 6a 65 63 74 73|      NS.objects|                    value: "NS.objects" 0xa6-0xaf.7 (10)
 0x13f0|                     0e                        |       .        |                  key_index: 14 0x13f7-0x13f7.7 (1)
 0x13f0|                              9c               |          .     |                  value_index: 156 0x13fa-0x13fa.7 (1)
       |                                               |                |                  value{}: 0x13fd-0x13fd.7 (1)
 0x13f0|                                       a0      |             .  |                    type: "array" (10) (Array) 0x13fd-0x13fd.3 (0.4)
 0x13f0|                                       a0      |             .  |                    size_bits: 0 0x13fd.4-0x13fd.7 (0.4)
-      |                                               |                |                    size: 0 0x13fe-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x13fe-NA (0)
       |                                               |                |                [2]{}: entry 0xb0-0x13fb.7 (4940)
       |                                               |                |                  key{}: 0xb0-0xb6.7 (7)
 0x00b0|56                                             |V               |                    type: "ascii_string" (5) (ASCII encoded string) 0xb0-0xb0.3 (0.4)
 0x00b0|56                                             |V               |                    size_bits: 6 0xb0.4-0xb0.7 (0.4)
-      |                                               |                |                    size: 6 0xb1-NA (0)
+      |                                               |                |                    size: 6
 0x00b0|   24 63 6c 61 73 73                           | $class         |                    value: "$class" 0xb1-0xb6.7 (6)
       |                                               |                |                  value{}: 0xc5-0xc6.7 (2)
 0x00c0|               80                              |     .          |                    type: "uid" (8) (UID) 0xc5-0xc5.3 (0.4)
@@ -1233,12 +1233,12 @@ $ fq dv recentdocs.sfl2
 0x13f0|                                 16            |           .    |                  value_index: 22 0x13fb-0x13fb.7 (1)
 0x13f0|               d3                              |     .          |              type: "dict" (13) (Dictionary) 0x13f5-0x13f5.3 (0.4)
 0x13f0|               d3                              |     .          |              size_bits: 3 0x13f5.4-0x13f5.7 (0.4)
-      |                                               |                |              size: 3 0x13f6-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [34]{}: entry 0x78-0x140c.7 (5013)
 0x0070|                        9e                     |        .       |              object_index: 158 0x78-0x78.7 (1)
 0x1400|5c                                             |\               |              type: "ascii_string" (5) (ASCII encoded string) 0x1400-0x1400.3 (0.4)
 0x1400|5c                                             |\               |              size_bits: 12 0x1400.4-0x1400.7 (0.4)
-      |                                               |                |              size: 12 0x1401-NA (0)
+      |                                               |                |              size: 12
 0x1400|   55 6e 74 69 74 6c 65 64 2e 64 6d 67         | Untitled.dmg   |              value: "Untitled.dmg" 0x1401-0x140c.7 (12)
       |                                               |                |            [35]{}: entry 0x79-0x16c8.7 (5712)
 0x0070|                           9f                  |         .      |              object_index: 159 0x79-0x79.7 (1)
@@ -1248,7 +1248,7 @@ $ fq dv recentdocs.sfl2
 0x1400|                                          11   |              . |              exponent: 1 0x140e.4-0x140e.7 (0.4)
 0x1400|                                             02|               .|              size_bigint: 696 0x140f-0x1410.7 (2)
 0x1410|b8                                             |.               |
-      |                                               |                |              size: 696 0x1411-NA (0)
+      |                                               |                |              size: 696
 0x1410|   62 6f 6f 6b b8 02 00 00 00 00 04 10 30 00 00| book........0..|              value: raw bits 0x1411-0x16c8.7 (696)
 0x1420|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
 *     |until 0x16c8.7 (696)                           |                |
@@ -1259,7 +1259,7 @@ $ fq dv recentdocs.sfl2
 0x16c0|                              10               |          .     |              large_size_marker: 1 (valid) 0x16ca-0x16ca.3 (0.4)
 0x16c0|                              10               |          .     |              exponent: 0 0x16ca.4-0x16ca.7 (0.4)
 0x16c0|                                 24            |           $    |              size_bigint: 36 0x16cb-0x16cb.7 (1)
-      |                                               |                |              size: 36 0x16cc-NA (0)
+      |                                               |                |              size: 36
 0x16c0|                                    37 42 37 41|            7B7A|              value: "7B7A7365-C540-4B9A-A690-00CCD39633F3" 0x16cc-0x16ef.7 (36)
 0x16d0|37 33 36 35 2d 43 35 34 30 2d 34 42 39 41 2d 41|7365-C540-4B9A-A|
 0x16e0|36 39 30 2d 30 30 43 43 44 33 39 36 33 33 46 33|690-00CCD39633F3|
@@ -1270,7 +1270,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0x9d-0xa4.7 (8)
 0x0090|                                       57      |             W  |                    type: "ascii_string" (5) (ASCII encoded string) 0x9d-0x9d.3 (0.4)
 0x0090|                                       57      |             W  |                    size_bits: 7 0x9d.4-0x9d.7 (0.4)
-      |                                               |                |                    size: 7 0x9e-NA (0)
+      |                                               |                |                    size: 7
 0x0090|                                          4e 53|              NS|                    value: "NS.keys" 0x9e-0xa4.7 (7)
 0x00a0|2e 6b 65 79 73                                 |.keys           |
       |                                               |                |                  value{}: 0x10a-0x16fb.7 (5618)
@@ -1297,14 +1297,14 @@ $ fq dv recentdocs.sfl2
 0x16f0|                                 2b            |           +    |                        object_index: 43 0x16fb-0x16fb.7 (1)
 0x16f0|                     a4                        |       .        |                    type: "array" (10) (Array) 0x16f7-0x16f7.3 (0.4)
 0x16f0|                     a4                        |       .        |                    size_bits: 4 0x16f7.4-0x16f7.7 (0.4)
-      |                                               |                |                    size: 4 0x16f8-NA (0)
+      |                                               |                |                    size: 4
 0x16f0|   0d                                          | .              |                  key_index: 13 0x16f1-0x16f1.7 (1)
 0x16f0|            a2                                 |    .           |                  value_index: 162 0x16f4-0x16f4.7 (1)
       |                                               |                |                [1]{}: entry 0xa5-0x1710.7 (5740)
       |                                               |                |                  key{}: 0xa5-0xaf.7 (11)
 0x00a0|               5a                              |     Z          |                    type: "ascii_string" (5) (ASCII encoded string) 0xa5-0xa5.3 (0.4)
 0x00a0|               5a                              |     Z          |                    size_bits: 10 0xa5.4-0xa5.7 (0.4)
-      |                                               |                |                    size: 10 0xa6-NA (0)
+      |                                               |                |                    size: 10
 0x00a0|                  4e 53 2e 6f 62 6a 65 63 74 73|      NS.objects|                    value: "NS.objects" 0xa6-0xaf.7 (10)
       |                                               |                |                  value{}: 0x117-0x1710.7 (5626)
       |                                               |                |                    entries[0:4]: 0x117-0x1710.7 (5626)
@@ -1330,14 +1330,14 @@ $ fq dv recentdocs.sfl2
 0x1710|28                                             |(               |                        value: 40 0x1710-0x1710.7 (1)
 0x1700|            a4                                 |    .           |                    type: "array" (10) (Array) 0x1704-0x1704.3 (0.4)
 0x1700|            a4                                 |    .           |                    size_bits: 4 0x1704.4-0x1704.7 (0.4)
-      |                                               |                |                    size: 4 0x1705-NA (0)
+      |                                               |                |                    size: 4
 0x16f0|      0e                                       |  .             |                  key_index: 14 0x16f2-0x16f2.7 (1)
 0x16f0|               a7                              |     .          |                  value_index: 167 0x16f5-0x16f5.7 (1)
       |                                               |                |                [2]{}: entry 0xb0-0x16f6.7 (5703)
       |                                               |                |                  key{}: 0xb0-0xb6.7 (7)
 0x00b0|56                                             |V               |                    type: "ascii_string" (5) (ASCII encoded string) 0xb0-0xb0.3 (0.4)
 0x00b0|56                                             |V               |                    size_bits: 6 0xb0.4-0xb0.7 (0.4)
-      |                                               |                |                    size: 6 0xb1-NA (0)
+      |                                               |                |                    size: 6
 0x00b0|   24 63 6c 61 73 73                           | $class         |                    value: "$class" 0xb1-0xb6.7 (6)
       |                                               |                |                  value{}: 0xc5-0xc6.7 (2)
 0x00c0|               80                              |     .          |                    type: "uid" (8) (UID) 0xc5-0xc5.3 (0.4)
@@ -1347,7 +1347,7 @@ $ fq dv recentdocs.sfl2
 0x16f0|                  16                           |      .         |                  value_index: 22 0x16f6-0x16f6.7 (1)
 0x16f0|d3                                             |.               |              type: "dict" (13) (Dictionary) 0x16f0-0x16f0.3 (0.4)
 0x16f0|d3                                             |.               |              size_bits: 3 0x16f0.4-0x16f0.7 (0.4)
-      |                                               |                |              size: 3 0x16f1-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [38]{}: entry 0x7c-0x171b.7 (5792)
 0x0070|                                    ad         |            .   |              object_index: 173 0x7c-0x7c.7 (1)
       |                                               |                |              entries[0:3]: 0x9d-0x171b.7 (5759)
@@ -1355,7 +1355,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0x9d-0xa4.7 (8)
 0x0090|                                       57      |             W  |                    type: "ascii_string" (5) (ASCII encoded string) 0x9d-0x9d.3 (0.4)
 0x0090|                                       57      |             W  |                    size_bits: 7 0x9d.4-0x9d.7 (0.4)
-      |                                               |                |                    size: 7 0x9e-NA (0)
+      |                                               |                |                    size: 7
 0x0090|                                          4e 53|              NS|                    value: "NS.keys" 0x9e-0xa4.7 (7)
 0x00a0|2e 6b 65 79 73                                 |.keys           |
 0x1710|            0d                                 |    .           |                  key_index: 13 0x1714-0x1714.7 (1)
@@ -1363,26 +1363,26 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  value{}: 0x171a-0x171a.7 (1)
 0x1710|                              a0               |          .     |                    type: "array" (10) (Array) 0x171a-0x171a.3 (0.4)
 0x1710|                              a0               |          .     |                    size_bits: 0 0x171a.4-0x171a.7 (0.4)
-      |                                               |                |                    size: 0 0x171b-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x171b-NA (0)
       |                                               |                |                [1]{}: entry 0xa5-0x171b.7 (5751)
       |                                               |                |                  key{}: 0xa5-0xaf.7 (11)
 0x00a0|               5a                              |     Z          |                    type: "ascii_string" (5) (ASCII encoded string) 0xa5-0xa5.3 (0.4)
 0x00a0|               5a                              |     Z          |                    size_bits: 10 0xa5.4-0xa5.7 (0.4)
-      |                                               |                |                    size: 10 0xa6-NA (0)
+      |                                               |                |                    size: 10
 0x00a0|                  4e 53 2e 6f 62 6a 65 63 74 73|      NS.objects|                    value: "NS.objects" 0xa6-0xaf.7 (10)
 0x1710|               0e                              |     .          |                  key_index: 14 0x1715-0x1715.7 (1)
 0x1710|                        af                     |        .       |                  value_index: 175 0x1718-0x1718.7 (1)
       |                                               |                |                  value{}: 0x171b-0x171b.7 (1)
 0x1710|                                 a0            |           .    |                    type: "array" (10) (Array) 0x171b-0x171b.3 (0.4)
 0x1710|                                 a0            |           .    |                    size_bits: 0 0x171b.4-0x171b.7 (0.4)
-      |                                               |                |                    size: 0 0x171c-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x171c-NA (0)
       |                                               |                |                [2]{}: entry 0xb0-0x1719.7 (5738)
       |                                               |                |                  key{}: 0xb0-0xb6.7 (7)
 0x00b0|56                                             |V               |                    type: "ascii_string" (5) (ASCII encoded string) 0xb0-0xb0.3 (0.4)
 0x00b0|56                                             |V               |                    size_bits: 6 0xb0.4-0xb0.7 (0.4)
-      |                                               |                |                    size: 6 0xb1-NA (0)
+      |                                               |                |                    size: 6
 0x00b0|   24 63 6c 61 73 73                           | $class         |                    value: "$class" 0xb1-0xb6.7 (6)
       |                                               |                |                  value{}: 0xc5-0xc6.7 (2)
 0x00c0|               80                              |     .          |                    type: "uid" (8) (UID) 0xc5-0xc5.3 (0.4)
@@ -1392,7 +1392,7 @@ $ fq dv recentdocs.sfl2
 0x1710|                           16                  |         .      |                  value_index: 22 0x1719-0x1719.7 (1)
 0x1710|         d3                                    |   .            |              type: "dict" (13) (Dictionary) 0x1713-0x1713.3 (0.4)
 0x1710|         d3                                    |   .            |              size_bits: 3 0x1713.4-0x1713.7 (0.4)
-      |                                               |                |              size: 3 0x1714-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [39]{}: entry 0x7d-0x1c6d.7 (7153)
 0x0070|                                       b1      |             .  |              object_index: 177 0x7d-0x7d.7 (1)
 0x1710|                                          4f   |              O |              type: "data" (4) (Binary data) 0x171e-0x171e.3 (0.4)
@@ -1400,7 +1400,7 @@ $ fq dv recentdocs.sfl2
 0x1710|                                             11|               .|              large_size_marker: 1 (valid) 0x171f-0x171f.3 (0.4)
 0x1710|                                             11|               .|              exponent: 1 0x171f.4-0x171f.7 (0.4)
 0x1720|05 4c                                          |.L              |              size_bigint: 1356 0x1720-0x1721.7 (2)
-      |                                               |                |              size: 1356 0x1722-NA (0)
+      |                                               |                |              size: 1356
 0x1720|      62 6f 6f 6b 4c 05 00 00 00 00 04 10 30 00|  bookL.......0.|              value: raw bits 0x1722-0x1c6d.7 (1356)
 0x1730|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
 *     |until 0x1c6d.7 (1356)                          |                |
@@ -1411,7 +1411,7 @@ $ fq dv recentdocs.sfl2
 0x1c60|                                             10|               .|              large_size_marker: 1 (valid) 0x1c6f-0x1c6f.3 (0.4)
 0x1c60|                                             10|               .|              exponent: 0 0x1c6f.4-0x1c6f.7 (0.4)
 0x1c70|24                                             |$               |              size_bigint: 36 0x1c70-0x1c70.7 (1)
-      |                                               |                |              size: 36 0x1c71-NA (0)
+      |                                               |                |              size: 36
 0x1c70|   37 42 31 42 41 45 37 35 2d 42 46 30 46 2d 34| 7B1BAE75-BF0F-4|              value: "7B1BAE75-BF0F-483B-9DD2-1132F8342B98" 0x1c71-0x1c94.7 (36)
 0x1c80|38 33 42 2d 39 44 44 32 2d 31 31 33 32 46 38 33|83B-9DD2-1132F83|
 0x1c90|34 32 42 39 38                                 |42B98           |
@@ -1422,7 +1422,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0x9d-0xa4.7 (8)
 0x0090|                                       57      |             W  |                    type: "ascii_string" (5) (ASCII encoded string) 0x9d-0x9d.3 (0.4)
 0x0090|                                       57      |             W  |                    size_bits: 7 0x9d.4-0x9d.7 (0.4)
-      |                                               |                |                    size: 7 0x9e-NA (0)
+      |                                               |                |                    size: 7
 0x0090|                                          4e 53|              NS|                    value: "NS.keys" 0x9e-0xa4.7 (7)
 0x00a0|2e 6b 65 79 73                                 |.keys           |
       |                                               |                |                  value{}: 0x10a-0x1ca1.7 (7064)
@@ -1454,14 +1454,14 @@ $ fq dv recentdocs.sfl2
 0x1ca0|   2b                                          | +              |                        object_index: 43 0x1ca1-0x1ca1.7 (1)
 0x1c90|                                    a5         |            .   |                    type: "array" (10) (Array) 0x1c9c-0x1c9c.3 (0.4)
 0x1c90|                                    a5         |            .   |                    size_bits: 5 0x1c9c.4-0x1c9c.7 (0.4)
-      |                                               |                |                    size: 5 0x1c9d-NA (0)
+      |                                               |                |                    size: 5
 0x1c90|                  0d                           |      .         |                  key_index: 13 0x1c96-0x1c96.7 (1)
 0x1c90|                           b4                  |         .      |                  value_index: 180 0x1c99-0x1c99.7 (1)
       |                                               |                |                [1]{}: entry 0xa5-0x1cbb.7 (7191)
       |                                               |                |                  key{}: 0xa5-0xaf.7 (11)
 0x00a0|               5a                              |     Z          |                    type: "ascii_string" (5) (ASCII encoded string) 0xa5-0xa5.3 (0.4)
 0x00a0|               5a                              |     Z          |                    size_bits: 10 0xa5.4-0xa5.7 (0.4)
-      |                                               |                |                    size: 10 0xa6-NA (0)
+      |                                               |                |                    size: 10
 0x00a0|                  4e 53 2e 6f 62 6a 65 63 74 73|      NS.objects|                    value: "NS.objects" 0xa6-0xaf.7 (10)
       |                                               |                |                  value{}: 0x117-0x1cbb.7 (7077)
       |                                               |                |                    entries[0:5]: 0x117-0x1cbb.7 (7077)
@@ -1492,14 +1492,14 @@ $ fq dv recentdocs.sfl2
 0x1cb0|                                 2d            |           -    |                        value: 45 0x1cbb-0x1cbb.7 (1)
 0x1ca0|                                    a5         |            .   |                    type: "array" (10) (Array) 0x1cac-0x1cac.3 (0.4)
 0x1ca0|                                    a5         |            .   |                    size_bits: 5 0x1cac.4-0x1cac.7 (0.4)
-      |                                               |                |                    size: 5 0x1cad-NA (0)
+      |                                               |                |                    size: 5
 0x1c90|                     0e                        |       .        |                  key_index: 14 0x1c97-0x1c97.7 (1)
 0x1c90|                              ba               |          .     |                  value_index: 186 0x1c9a-0x1c9a.7 (1)
       |                                               |                |                [2]{}: entry 0xb0-0x1c9b.7 (7148)
       |                                               |                |                  key{}: 0xb0-0xb6.7 (7)
 0x00b0|56                                             |V               |                    type: "ascii_string" (5) (ASCII encoded string) 0xb0-0xb0.3 (0.4)
 0x00b0|56                                             |V               |                    size_bits: 6 0xb0.4-0xb0.7 (0.4)
-      |                                               |                |                    size: 6 0xb1-NA (0)
+      |                                               |                |                    size: 6
 0x00b0|   24 63 6c 61 73 73                           | $class         |                    value: "$class" 0xb1-0xb6.7 (6)
       |                                               |                |                  value{}: 0xc5-0xc6.7 (2)
 0x00c0|               80                              |     .          |                    type: "uid" (8) (UID) 0xc5-0xc5.3 (0.4)
@@ -1509,7 +1509,7 @@ $ fq dv recentdocs.sfl2
 0x1c90|                                 16            |           .    |                  value_index: 22 0x1c9b-0x1c9b.7 (1)
 0x1c90|               d3                              |     .          |              type: "dict" (13) (Dictionary) 0x1c95-0x1c95.3 (0.4)
 0x1c90|               d3                              |     .          |              size_bits: 3 0x1c95.4-0x1c95.7 (0.4)
-      |                                               |                |              size: 3 0x1c96-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [42]{}: entry 0x80-0x1cc6.7 (7239)
 0x0080|c1                                             |.               |              object_index: 193 0x80-0x80.7 (1)
       |                                               |                |              entries[0:3]: 0x9d-0x1cc6.7 (7210)
@@ -1517,7 +1517,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0x9d-0xa4.7 (8)
 0x0090|                                       57      |             W  |                    type: "ascii_string" (5) (ASCII encoded string) 0x9d-0x9d.3 (0.4)
 0x0090|                                       57      |             W  |                    size_bits: 7 0x9d.4-0x9d.7 (0.4)
-      |                                               |                |                    size: 7 0x9e-NA (0)
+      |                                               |                |                    size: 7
 0x0090|                                          4e 53|              NS|                    value: "NS.keys" 0x9e-0xa4.7 (7)
 0x00a0|2e 6b 65 79 73                                 |.keys           |
 0x1cb0|                                             0d|               .|                  key_index: 13 0x1cbf-0x1cbf.7 (1)
@@ -1525,26 +1525,26 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  value{}: 0x1cc5-0x1cc5.7 (1)
 0x1cc0|               a0                              |     .          |                    type: "array" (10) (Array) 0x1cc5-0x1cc5.3 (0.4)
 0x1cc0|               a0                              |     .          |                    size_bits: 0 0x1cc5.4-0x1cc5.7 (0.4)
-      |                                               |                |                    size: 0 0x1cc6-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x1cc6-NA (0)
       |                                               |                |                [1]{}: entry 0xa5-0x1cc6.7 (7202)
       |                                               |                |                  key{}: 0xa5-0xaf.7 (11)
 0x00a0|               5a                              |     Z          |                    type: "ascii_string" (5) (ASCII encoded string) 0xa5-0xa5.3 (0.4)
 0x00a0|               5a                              |     Z          |                    size_bits: 10 0xa5.4-0xa5.7 (0.4)
-      |                                               |                |                    size: 10 0xa6-NA (0)
+      |                                               |                |                    size: 10
 0x00a0|                  4e 53 2e 6f 62 6a 65 63 74 73|      NS.objects|                    value: "NS.objects" 0xa6-0xaf.7 (10)
 0x1cc0|0e                                             |.               |                  key_index: 14 0x1cc0-0x1cc0.7 (1)
 0x1cc0|         c3                                    |   .            |                  value_index: 195 0x1cc3-0x1cc3.7 (1)
       |                                               |                |                  value{}: 0x1cc6-0x1cc6.7 (1)
 0x1cc0|                  a0                           |      .         |                    type: "array" (10) (Array) 0x1cc6-0x1cc6.3 (0.4)
 0x1cc0|                  a0                           |      .         |                    size_bits: 0 0x1cc6.4-0x1cc6.7 (0.4)
-      |                                               |                |                    size: 0 0x1cc7-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x1cc7-NA (0)
       |                                               |                |                [2]{}: entry 0xb0-0x1cc4.7 (7189)
       |                                               |                |                  key{}: 0xb0-0xb6.7 (7)
 0x00b0|56                                             |V               |                    type: "ascii_string" (5) (ASCII encoded string) 0xb0-0xb0.3 (0.4)
 0x00b0|56                                             |V               |                    size_bits: 6 0xb0.4-0xb0.7 (0.4)
-      |                                               |                |                    size: 6 0xb1-NA (0)
+      |                                               |                |                    size: 6
 0x00b0|   24 63 6c 61 73 73                           | $class         |                    value: "$class" 0xb1-0xb6.7 (6)
       |                                               |                |                  value{}: 0xc5-0xc6.7 (2)
 0x00c0|               80                              |     .          |                    type: "uid" (8) (UID) 0xc5-0xc5.3 (0.4)
@@ -1554,12 +1554,12 @@ $ fq dv recentdocs.sfl2
 0x1cc0|            16                                 |    .           |                  value_index: 22 0x1cc4-0x1cc4.7 (1)
 0x1cb0|                                          d3   |              . |              type: "dict" (13) (Dictionary) 0x1cbe-0x1cbe.3 (0.4)
 0x1cb0|                                          d3   |              . |              size_bits: 3 0x1cbe.4-0x1cbe.7 (0.4)
-      |                                               |                |              size: 3 0x1cbf-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [43]{}: entry 0x81-0x1cd2.7 (7250)
 0x0080|   c5                                          | .              |              object_index: 197 0x81-0x81.7 (1)
 0x1cc0|                           59                  |         Y      |              type: "ascii_string" (5) (ASCII encoded string) 0x1cc9-0x1cc9.3 (0.4)
 0x1cc0|                           59                  |         Y      |              size_bits: 9 0x1cc9.4-0x1cc9.7 (0.4)
-      |                                               |                |              size: 9 0x1cca-NA (0)
+      |                                               |                |              size: 9
 0x1cc0|                              64 62 2e 73 71 6c|          db.sql|              value: "db.sqlite" 0x1cca-0x1cd2.7 (9)
 0x1cd0|69 74 65                                       |ite             |
       |                                               |                |            [44]{}: entry 0x82-0x1fb6.7 (7989)
@@ -1569,7 +1569,7 @@ $ fq dv recentdocs.sfl2
 0x1cd0|            11                                 |    .           |              large_size_marker: 1 (valid) 0x1cd4-0x1cd4.3 (0.4)
 0x1cd0|            11                                 |    .           |              exponent: 1 0x1cd4.4-0x1cd4.7 (0.4)
 0x1cd0|               02 e0                           |     ..         |              size_bigint: 736 0x1cd5-0x1cd6.7 (2)
-      |                                               |                |              size: 736 0x1cd7-NA (0)
+      |                                               |                |              size: 736
 0x1cd0|                     62 6f 6f 6b e0 02 00 00 00|       book.....|              value: raw bits 0x1cd7-0x1fb6.7 (736)
 0x1ce0|00 04 10 30 00 00 00 00 00 00 00 00 00 00 00 00|...0............|
 *     |until 0x1fb6.7 (736)                           |                |
@@ -1580,7 +1580,7 @@ $ fq dv recentdocs.sfl2
 0x1fb0|                        10                     |        .       |              large_size_marker: 1 (valid) 0x1fb8-0x1fb8.3 (0.4)
 0x1fb0|                        10                     |        .       |              exponent: 0 0x1fb8.4-0x1fb8.7 (0.4)
 0x1fb0|                           24                  |         $      |              size_bigint: 36 0x1fb9-0x1fb9.7 (1)
-      |                                               |                |              size: 36 0x1fba-NA (0)
+      |                                               |                |              size: 36
 0x1fb0|                              45 34 38 44 34 32|          E48D42|              value: "E48D4205-A9F0-4CB9-9D40-6DA3C7EC4D2D" 0x1fba-0x1fdd.7 (36)
 0x1fc0|30 35 2d 41 39 46 30 2d 34 43 42 39 2d 39 44 34|05-A9F0-4CB9-9D4|
 0x1fd0|30 2d 36 44 41 33 43 37 45 43 34 44 32 44      |0-6DA3C7EC4D2D  |
@@ -1591,7 +1591,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0x9d-0xa4.7 (8)
 0x0090|                                       57      |             W  |                    type: "ascii_string" (5) (ASCII encoded string) 0x9d-0x9d.3 (0.4)
 0x0090|                                       57      |             W  |                    size_bits: 7 0x9d.4-0x9d.7 (0.4)
-      |                                               |                |                    size: 7 0x9e-NA (0)
+      |                                               |                |                    size: 7
 0x0090|                                          4e 53|              NS|                    value: "NS.keys" 0x9e-0xa4.7 (7)
 0x00a0|2e 6b 65 79 73                                 |.keys           |
       |                                               |                |                  value{}: 0x10a-0x1fe9.7 (7904)
@@ -1618,14 +1618,14 @@ $ fq dv recentdocs.sfl2
 0x1fe0|                           2b                  |         +      |                        object_index: 43 0x1fe9-0x1fe9.7 (1)
 0x1fe0|               a4                              |     .          |                    type: "array" (10) (Array) 0x1fe5-0x1fe5.3 (0.4)
 0x1fe0|               a4                              |     .          |                    size_bits: 4 0x1fe5.4-0x1fe5.7 (0.4)
-      |                                               |                |                    size: 4 0x1fe6-NA (0)
+      |                                               |                |                    size: 4
 0x1fd0|                                             0d|               .|                  key_index: 13 0x1fdf-0x1fdf.7 (1)
 0x1fe0|      c9                                       |  .             |                  value_index: 201 0x1fe2-0x1fe2.7 (1)
       |                                               |                |                [1]{}: entry 0xa5-0x1ffe.7 (8026)
       |                                               |                |                  key{}: 0xa5-0xaf.7 (11)
 0x00a0|               5a                              |     Z          |                    type: "ascii_string" (5) (ASCII encoded string) 0xa5-0xa5.3 (0.4)
 0x00a0|               5a                              |     Z          |                    size_bits: 10 0xa5.4-0xa5.7 (0.4)
-      |                                               |                |                    size: 10 0xa6-NA (0)
+      |                                               |                |                    size: 10
 0x00a0|                  4e 53 2e 6f 62 6a 65 63 74 73|      NS.objects|                    value: "NS.objects" 0xa6-0xaf.7 (10)
       |                                               |                |                  value{}: 0x117-0x1ffe.7 (7912)
       |                                               |                |                    entries[0:4]: 0x117-0x1ffe.7 (7912)
@@ -1651,14 +1651,14 @@ $ fq dv recentdocs.sfl2
 0x1ff0|                                          31   |              1 |                        value: 49 0x1ffe-0x1ffe.7 (1)
 0x1ff0|      a4                                       |  .             |                    type: "array" (10) (Array) 0x1ff2-0x1ff2.3 (0.4)
 0x1ff0|      a4                                       |  .             |                    size_bits: 4 0x1ff2.4-0x1ff2.7 (0.4)
-      |                                               |                |                    size: 4 0x1ff3-NA (0)
+      |                                               |                |                    size: 4
 0x1fe0|0e                                             |.               |                  key_index: 14 0x1fe0-0x1fe0.7 (1)
 0x1fe0|         ce                                    |   .            |                  value_index: 206 0x1fe3-0x1fe3.7 (1)
       |                                               |                |                [2]{}: entry 0xb0-0x1fe4.7 (7989)
       |                                               |                |                  key{}: 0xb0-0xb6.7 (7)
 0x00b0|56                                             |V               |                    type: "ascii_string" (5) (ASCII encoded string) 0xb0-0xb0.3 (0.4)
 0x00b0|56                                             |V               |                    size_bits: 6 0xb0.4-0xb0.7 (0.4)
-      |                                               |                |                    size: 6 0xb1-NA (0)
+      |                                               |                |                    size: 6
 0x00b0|   24 63 6c 61 73 73                           | $class         |                    value: "$class" 0xb1-0xb6.7 (6)
       |                                               |                |                  value{}: 0xc5-0xc6.7 (2)
 0x00c0|               80                              |     .          |                    type: "uid" (8) (UID) 0xc5-0xc5.3 (0.4)
@@ -1668,7 +1668,7 @@ $ fq dv recentdocs.sfl2
 0x1fe0|            16                                 |    .           |                  value_index: 22 0x1fe4-0x1fe4.7 (1)
 0x1fd0|                                          d3   |              . |              type: "dict" (13) (Dictionary) 0x1fde-0x1fde.3 (0.4)
 0x1fd0|                                          d3   |              . |              size_bits: 3 0x1fde.4-0x1fde.7 (0.4)
-      |                                               |                |              size: 3 0x1fdf-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [47]{}: entry 0x85-0x2009.7 (8069)
 0x0080|               d4                              |     .          |              object_index: 212 0x85-0x85.7 (1)
       |                                               |                |              entries[0:3]: 0x9d-0x2009.7 (8045)
@@ -1676,7 +1676,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0x9d-0xa4.7 (8)
 0x0090|                                       57      |             W  |                    type: "ascii_string" (5) (ASCII encoded string) 0x9d-0x9d.3 (0.4)
 0x0090|                                       57      |             W  |                    size_bits: 7 0x9d.4-0x9d.7 (0.4)
-      |                                               |                |                    size: 7 0x9e-NA (0)
+      |                                               |                |                    size: 7
 0x0090|                                          4e 53|              NS|                    value: "NS.keys" 0x9e-0xa4.7 (7)
 0x00a0|2e 6b 65 79 73                                 |.keys           |
 0x2000|      0d                                       |  .             |                  key_index: 13 0x2002-0x2002.7 (1)
@@ -1684,26 +1684,26 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  value{}: 0x2008-0x2008.7 (1)
 0x2000|                        a0                     |        .       |                    type: "array" (10) (Array) 0x2008-0x2008.3 (0.4)
 0x2000|                        a0                     |        .       |                    size_bits: 0 0x2008.4-0x2008.7 (0.4)
-      |                                               |                |                    size: 0 0x2009-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x2009-NA (0)
       |                                               |                |                [1]{}: entry 0xa5-0x2009.7 (8037)
       |                                               |                |                  key{}: 0xa5-0xaf.7 (11)
 0x00a0|               5a                              |     Z          |                    type: "ascii_string" (5) (ASCII encoded string) 0xa5-0xa5.3 (0.4)
 0x00a0|               5a                              |     Z          |                    size_bits: 10 0xa5.4-0xa5.7 (0.4)
-      |                                               |                |                    size: 10 0xa6-NA (0)
+      |                                               |                |                    size: 10
 0x00a0|                  4e 53 2e 6f 62 6a 65 63 74 73|      NS.objects|                    value: "NS.objects" 0xa6-0xaf.7 (10)
 0x2000|         0e                                    |   .            |                  key_index: 14 0x2003-0x2003.7 (1)
 0x2000|                  d6                           |      .         |                  value_index: 214 0x2006-0x2006.7 (1)
       |                                               |                |                  value{}: 0x2009-0x2009.7 (1)
 0x2000|                           a0                  |         .      |                    type: "array" (10) (Array) 0x2009-0x2009.3 (0.4)
 0x2000|                           a0                  |         .      |                    size_bits: 0 0x2009.4-0x2009.7 (0.4)
-      |                                               |                |                    size: 0 0x200a-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x200a-NA (0)
       |                                               |                |                [2]{}: entry 0xb0-0x2007.7 (8024)
       |                                               |                |                  key{}: 0xb0-0xb6.7 (7)
 0x00b0|56                                             |V               |                    type: "ascii_string" (5) (ASCII encoded string) 0xb0-0xb0.3 (0.4)
 0x00b0|56                                             |V               |                    size_bits: 6 0xb0.4-0xb0.7 (0.4)
-      |                                               |                |                    size: 6 0xb1-NA (0)
+      |                                               |                |                    size: 6
 0x00b0|   24 63 6c 61 73 73                           | $class         |                    value: "$class" 0xb1-0xb6.7 (6)
       |                                               |                |                  value{}: 0xc5-0xc6.7 (2)
 0x00c0|               80                              |     .          |                    type: "uid" (8) (UID) 0xc5-0xc5.3 (0.4)
@@ -1713,7 +1713,7 @@ $ fq dv recentdocs.sfl2
 0x2000|                     16                        |       .        |                  value_index: 22 0x2007-0x2007.7 (1)
 0x2000|   d3                                          | .              |              type: "dict" (13) (Dictionary) 0x2001-0x2001.3 (0.4)
 0x2000|   d3                                          | .              |              size_bits: 3 0x2001.4-0x2001.7 (0.4)
-      |                                               |                |              size: 3 0x2002-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [48]{}: entry 0x86-0x2307.7 (8834)
 0x0080|                  d8                           |      .         |              object_index: 216 0x86-0x86.7 (1)
 0x2000|                                    4f         |            O   |              type: "data" (4) (Binary data) 0x200c-0x200c.3 (0.4)
@@ -1721,7 +1721,7 @@ $ fq dv recentdocs.sfl2
 0x2000|                                       11      |             .  |              large_size_marker: 1 (valid) 0x200d-0x200d.3 (0.4)
 0x2000|                                       11      |             .  |              exponent: 1 0x200d.4-0x200d.7 (0.4)
 0x2000|                                          02 f8|              ..|              size_bigint: 760 0x200e-0x200f.7 (2)
-      |                                               |                |              size: 760 0x2010-NA (0)
+      |                                               |                |              size: 760
 0x2010|62 6f 6f 6b f8 02 00 00 00 00 04 10 30 00 00 00|book........0...|              value: raw bits 0x2010-0x2307.7 (760)
 *     |until 0x2307.7 (760)                           |                |
       |                                               |                |            [49]{}: entry 0x87-0x232e.7 (8872)
@@ -1731,7 +1731,7 @@ $ fq dv recentdocs.sfl2
 0x2300|                           10                  |         .      |              large_size_marker: 1 (valid) 0x2309-0x2309.3 (0.4)
 0x2300|                           10                  |         .      |              exponent: 0 0x2309.4-0x2309.7 (0.4)
 0x2300|                              24               |          $     |              size_bigint: 36 0x230a-0x230a.7 (1)
-      |                                               |                |              size: 36 0x230b-NA (0)
+      |                                               |                |              size: 36
 0x2300|                                 39 43 33 39 31|           9C391|              value: "9C391AB9-99DC-47D2-B9DF-E2665B36418F" 0x230b-0x232e.7 (36)
 0x2310|41 42 39 2d 39 39 44 43 2d 34 37 44 32 2d 42 39|AB9-99DC-47D2-B9|
 0x2320|44 46 2d 45 32 36 36 35 42 33 36 34 31 38 46   |DF-E2665B36418F |
@@ -1742,7 +1742,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0x9d-0xa4.7 (8)
 0x0090|                                       57      |             W  |                    type: "ascii_string" (5) (ASCII encoded string) 0x9d-0x9d.3 (0.4)
 0x0090|                                       57      |             W  |                    size_bits: 7 0x9d.4-0x9d.7 (0.4)
-      |                                               |                |                    size: 7 0x9e-NA (0)
+      |                                               |                |                    size: 7
 0x0090|                                          4e 53|              NS|                    value: "NS.keys" 0x9e-0xa4.7 (7)
 0x00a0|2e 6b 65 79 73                                 |.keys           |
       |                                               |                |                  value{}: 0x10a-0x233a.7 (8753)
@@ -1769,14 +1769,14 @@ $ fq dv recentdocs.sfl2
 0x2330|                              2b               |          +     |                        object_index: 43 0x233a-0x233a.7 (1)
 0x2330|                  a4                           |      .         |                    type: "array" (10) (Array) 0x2336-0x2336.3 (0.4)
 0x2330|                  a4                           |      .         |                    size_bits: 4 0x2336.4-0x2336.7 (0.4)
-      |                                               |                |                    size: 4 0x2337-NA (0)
+      |                                               |                |                    size: 4
 0x2330|0d                                             |.               |                  key_index: 13 0x2330-0x2330.7 (1)
 0x2330|         db                                    |   .            |                  value_index: 219 0x2333-0x2333.7 (1)
       |                                               |                |                [1]{}: entry 0xa5-0x234f.7 (8875)
       |                                               |                |                  key{}: 0xa5-0xaf.7 (11)
 0x00a0|               5a                              |     Z          |                    type: "ascii_string" (5) (ASCII encoded string) 0xa5-0xa5.3 (0.4)
 0x00a0|               5a                              |     Z          |                    size_bits: 10 0xa5.4-0xa5.7 (0.4)
-      |                                               |                |                    size: 10 0xa6-NA (0)
+      |                                               |                |                    size: 10
 0x00a0|                  4e 53 2e 6f 62 6a 65 63 74 73|      NS.objects|                    value: "NS.objects" 0xa6-0xaf.7 (10)
       |                                               |                |                  value{}: 0x117-0x234f.7 (8761)
       |                                               |                |                    entries[0:4]: 0x117-0x234f.7 (8761)
@@ -1802,14 +1802,14 @@ $ fq dv recentdocs.sfl2
 0x2340|                                             35|               5|                        value: 53 0x234f-0x234f.7 (1)
 0x2340|         a4                                    |   .            |                    type: "array" (10) (Array) 0x2343-0x2343.3 (0.4)
 0x2340|         a4                                    |   .            |                    size_bits: 4 0x2343.4-0x2343.7 (0.4)
-      |                                               |                |                    size: 4 0x2344-NA (0)
+      |                                               |                |                    size: 4
 0x2330|   0e                                          | .              |                  key_index: 14 0x2331-0x2331.7 (1)
 0x2330|            e0                                 |    .           |                  value_index: 224 0x2334-0x2334.7 (1)
       |                                               |                |                [2]{}: entry 0xb0-0x2335.7 (8838)
       |                                               |                |                  key{}: 0xb0-0xb6.7 (7)
 0x00b0|56                                             |V               |                    type: "ascii_string" (5) (ASCII encoded string) 0xb0-0xb0.3 (0.4)
 0x00b0|56                                             |V               |                    size_bits: 6 0xb0.4-0xb0.7 (0.4)
-      |                                               |                |                    size: 6 0xb1-NA (0)
+      |                                               |                |                    size: 6
 0x00b0|   24 63 6c 61 73 73                           | $class         |                    value: "$class" 0xb1-0xb6.7 (6)
       |                                               |                |                  value{}: 0xc5-0xc6.7 (2)
 0x00c0|               80                              |     .          |                    type: "uid" (8) (UID) 0xc5-0xc5.3 (0.4)
@@ -1819,7 +1819,7 @@ $ fq dv recentdocs.sfl2
 0x2330|               16                              |     .          |                  value_index: 22 0x2335-0x2335.7 (1)
 0x2320|                                             d3|               .|              type: "dict" (13) (Dictionary) 0x232f-0x232f.3 (0.4)
 0x2320|                                             d3|               .|              size_bits: 3 0x232f.4-0x232f.7 (0.4)
-      |                                               |                |              size: 3 0x2330-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [51]{}: entry 0x89-0x235a.7 (8914)
 0x0080|                           e6                  |         .      |              object_index: 230 0x89-0x89.7 (1)
       |                                               |                |              entries[0:3]: 0x9d-0x235a.7 (8894)
@@ -1827,7 +1827,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0x9d-0xa4.7 (8)
 0x0090|                                       57      |             W  |                    type: "ascii_string" (5) (ASCII encoded string) 0x9d-0x9d.3 (0.4)
 0x0090|                                       57      |             W  |                    size_bits: 7 0x9d.4-0x9d.7 (0.4)
-      |                                               |                |                    size: 7 0x9e-NA (0)
+      |                                               |                |                    size: 7
 0x0090|                                          4e 53|              NS|                    value: "NS.keys" 0x9e-0xa4.7 (7)
 0x00a0|2e 6b 65 79 73                                 |.keys           |
 0x2350|         0d                                    |   .            |                  key_index: 13 0x2353-0x2353.7 (1)
@@ -1835,26 +1835,26 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  value{}: 0x2359-0x2359.7 (1)
 0x2350|                           a0                  |         .      |                    type: "array" (10) (Array) 0x2359-0x2359.3 (0.4)
 0x2350|                           a0                  |         .      |                    size_bits: 0 0x2359.4-0x2359.7 (0.4)
-      |                                               |                |                    size: 0 0x235a-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x235a-NA (0)
       |                                               |                |                [1]{}: entry 0xa5-0x235a.7 (8886)
       |                                               |                |                  key{}: 0xa5-0xaf.7 (11)
 0x00a0|               5a                              |     Z          |                    type: "ascii_string" (5) (ASCII encoded string) 0xa5-0xa5.3 (0.4)
 0x00a0|               5a                              |     Z          |                    size_bits: 10 0xa5.4-0xa5.7 (0.4)
-      |                                               |                |                    size: 10 0xa6-NA (0)
+      |                                               |                |                    size: 10
 0x00a0|                  4e 53 2e 6f 62 6a 65 63 74 73|      NS.objects|                    value: "NS.objects" 0xa6-0xaf.7 (10)
 0x2350|            0e                                 |    .           |                  key_index: 14 0x2354-0x2354.7 (1)
 0x2350|                     e8                        |       .        |                  value_index: 232 0x2357-0x2357.7 (1)
       |                                               |                |                  value{}: 0x235a-0x235a.7 (1)
 0x2350|                              a0               |          .     |                    type: "array" (10) (Array) 0x235a-0x235a.3 (0.4)
 0x2350|                              a0               |          .     |                    size_bits: 0 0x235a.4-0x235a.7 (0.4)
-      |                                               |                |                    size: 0 0x235b-NA (0)
+      |                                               |                |                    size: 0
       |                                               |                |                    entries[0:0]: 0x235b-NA (0)
       |                                               |                |                [2]{}: entry 0xb0-0x2358.7 (8873)
       |                                               |                |                  key{}: 0xb0-0xb6.7 (7)
 0x00b0|56                                             |V               |                    type: "ascii_string" (5) (ASCII encoded string) 0xb0-0xb0.3 (0.4)
 0x00b0|56                                             |V               |                    size_bits: 6 0xb0.4-0xb0.7 (0.4)
-      |                                               |                |                    size: 6 0xb1-NA (0)
+      |                                               |                |                    size: 6
 0x00b0|   24 63 6c 61 73 73                           | $class         |                    value: "$class" 0xb1-0xb6.7 (6)
       |                                               |                |                  value{}: 0xc5-0xc6.7 (2)
 0x00c0|               80                              |     .          |                    type: "uid" (8) (UID) 0xc5-0xc5.3 (0.4)
@@ -1864,7 +1864,7 @@ $ fq dv recentdocs.sfl2
 0x2350|                        16                     |        .       |                  value_index: 22 0x2358-0x2358.7 (1)
 0x2350|      d3                                       |  .             |              type: "dict" (13) (Dictionary) 0x2352-0x2352.3 (0.4)
 0x2350|      d3                                       |  .             |              size_bits: 3 0x2352.4-0x2352.7 (0.4)
-      |                                               |                |              size: 3 0x2353-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [52]{}: entry 0x8a-0x261c.7 (9619)
 0x0080|                              ea               |          .     |              object_index: 234 0x8a-0x8a.7 (1)
 0x2350|                                       4f      |             O  |              type: "data" (4) (Binary data) 0x235d-0x235d.3 (0.4)
@@ -1873,7 +1873,7 @@ $ fq dv recentdocs.sfl2
 0x2350|                                          11   |              . |              exponent: 1 0x235e.4-0x235e.7 (0.4)
 0x2350|                                             02|               .|              size_bigint: 700 0x235f-0x2360.7 (2)
 0x2360|bc                                             |.               |
-      |                                               |                |              size: 700 0x2361-NA (0)
+      |                                               |                |              size: 700
 0x2360|   62 6f 6f 6b bc 02 00 00 00 00 04 10 30 00 00| book........0..|              value: raw bits 0x2361-0x261c.7 (700)
 0x2370|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
 *     |until 0x261c.7 (700)                           |                |
@@ -1884,7 +1884,7 @@ $ fq dv recentdocs.sfl2
 0x2610|                                          10   |              . |              large_size_marker: 1 (valid) 0x261e-0x261e.3 (0.4)
 0x2610|                                          10   |              . |              exponent: 0 0x261e.4-0x261e.7 (0.4)
 0x2610|                                             24|               $|              size_bigint: 36 0x261f-0x261f.7 (1)
-      |                                               |                |              size: 36 0x2620-NA (0)
+      |                                               |                |              size: 36
 0x2620|32 36 41 38 37 34 42 41 2d 43 46 33 33 2d 34 43|26A874BA-CF33-4C|              value: "26A874BA-CF33-4C33-BDF2-17DB1B62F836" 0x2620-0x2643.7 (36)
 *     |until 0x2643.7 (36)                            |                |
       |                                               |                |            [54]{}: entry 0x8c-0x2653.7 (9672)
@@ -1894,21 +1894,21 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0x163-0x16d.7 (11)
 0x0160|         5a                                    |   Z            |                    type: "ascii_string" (5) (ASCII encoded string) 0x163-0x163.3 (0.4)
 0x0160|         5a                                    |   Z            |                    size_bits: 10 0x163.4-0x163.7 (0.4)
-      |                                               |                |                    size: 10 0x164-NA (0)
+      |                                               |                |                    size: 10
 0x0160|            24 63 6c 61 73 73 6e 61 6d 65      |    $classname  |                    value: "$classname" 0x164-0x16d.7 (10)
 0x2640|               3c                              |     <          |                  key_index: 60 0x2645-0x2645.7 (1)
 0x2640|                     ed                        |       .        |                  value_index: 237 0x2647-0x2647.7 (1)
       |                                               |                |                  value{}: 0x2649-0x2650.7 (8)
 0x2640|                           57                  |         W      |                    type: "ascii_string" (5) (ASCII encoded string) 0x2649-0x2649.3 (0.4)
 0x2640|                           57                  |         W      |                    size_bits: 7 0x2649.4-0x2649.7 (0.4)
-      |                                               |                |                    size: 7 0x264a-NA (0)
+      |                                               |                |                    size: 7
 0x2640|                              4e 53 41 72 72 61|          NSArra|                    value: "NSArray" 0x264a-0x2650.7 (7)
 0x2650|79                                             |y               |
       |                                               |                |                [1]{}: entry 0x16e-0x2653.7 (9446)
       |                                               |                |                  key{}: 0x16e-0x176.7 (9)
 0x0160|                                          58   |              X |                    type: "ascii_string" (5) (ASCII encoded string) 0x16e-0x16e.3 (0.4)
 0x0160|                                          58   |              X |                    size_bits: 8 0x16e.4-0x16e.7 (0.4)
-      |                                               |                |                    size: 8 0x16f-NA (0)
+      |                                               |                |                    size: 8
 0x0160|                                             24|               $|                    value: "$classes" 0x16f-0x176.7 (8)
 0x0170|63 6c 61 73 73 65 73                           |classes         |
       |                                               |                |                  value{}: 0x187-0x2653.7 (9421)
@@ -1916,24 +1916,24 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                      [0]{}: entry 0x2649-0x2652.7 (10)
 0x2640|                           57                  |         W      |                        type: "ascii_string" (5) (ASCII encoded string) 0x2649-0x2649.3 (0.4)
 0x2640|                           57                  |         W      |                        size_bits: 7 0x2649.4-0x2649.7 (0.4)
-      |                                               |                |                        size: 7 0x264a-NA (0)
+      |                                               |                |                        size: 7
 0x2640|                              4e 53 41 72 72 61|          NSArra|                        value: "NSArray" 0x264a-0x2650.7 (7)
 0x2650|79                                             |y               |
 0x2650|      ed                                       |  .             |                        object_index: 237 0x2652-0x2652.7 (1)
       |                                               |                |                      [1]{}: entry 0x187-0x2653.7 (9421)
 0x0180|                     58                        |       X        |                        type: "ascii_string" (5) (ASCII encoded string) 0x187-0x187.3 (0.4)
 0x0180|                     58                        |       X        |                        size_bits: 8 0x187.4-0x187.7 (0.4)
-      |                                               |                |                        size: 8 0x188-NA (0)
+      |                                               |                |                        size: 8
 0x0180|                        4e 53 4f 62 6a 65 63 74|        NSObject|                        value: "NSObject" 0x188-0x18f.7 (8)
 0x2650|         40                                    |   @            |                        object_index: 64 0x2653-0x2653.7 (1)
 0x2650|   a2                                          | .              |                    type: "array" (10) (Array) 0x2651-0x2651.3 (0.4)
 0x2650|   a2                                          | .              |                    size_bits: 2 0x2651.4-0x2651.7 (0.4)
-      |                                               |                |                    size: 2 0x2652-NA (0)
+      |                                               |                |                    size: 2
 0x2640|                  3d                           |      =         |                  key_index: 61 0x2646-0x2646.7 (1)
 0x2640|                        ee                     |        .       |                  value_index: 238 0x2648-0x2648.7 (1)
 0x2640|            d2                                 |    .           |              type: "dict" (13) (Dictionary) 0x2644-0x2644.3 (0.4)
 0x2640|            d2                                 |    .           |              size_bits: 2 0x2644.4-0x2644.7 (0.4)
-      |                                               |                |              size: 2 0x2645-NA (0)
+      |                                               |                |              size: 2
       |                                               |                |            [55]{}: entry 0x8d-0x2662.7 (9686)
 0x0080|                                       ef      |             .  |              object_index: 239 0x8d-0x8d.7 (1)
       |                                               |                |              entries[0:3]: 0x9d-0x2662.7 (9670)
@@ -1941,7 +1941,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0x9d-0xa4.7 (8)
 0x0090|                                       57      |             W  |                    type: "ascii_string" (5) (ASCII encoded string) 0x9d-0x9d.3 (0.4)
 0x0090|                                       57      |             W  |                    size_bits: 7 0x9d.4-0x9d.7 (0.4)
-      |                                               |                |                    size: 7 0x9e-NA (0)
+      |                                               |                |                    size: 7
 0x0090|                                          4e 53|              NS|                    value: "NS.keys" 0x9e-0xa4.7 (7)
 0x00a0|2e 6b 65 79 73                                 |.keys           |
 0x2650|               0d                              |     .          |                  key_index: 13 0x2655-0x2655.7 (1)
@@ -1949,7 +1949,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  value{}: 0x265b-0x265e.7 (4)
 0x2650|                                 a1            |           .    |                    type: "array" (10) (Array) 0x265b-0x265b.3 (0.4)
 0x2650|                                 a1            |           .    |                    size_bits: 1 0x265b.4-0x265b.7 (0.4)
-      |                                               |                |                    size: 1 0x265c-NA (0)
+      |                                               |                |                    size: 1
       |                                               |                |                    entries[0:1]: 0x265c-0x265e.7 (3)
       |                                               |                |                      [0]{}: entry 0x265c-0x265e.7 (3)
 0x2650|                                    f1         |            .   |                        object_index: 241 0x265c-0x265c.7 (1)
@@ -1960,14 +1960,14 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0xa5-0xaf.7 (11)
 0x00a0|               5a                              |     Z          |                    type: "ascii_string" (5) (ASCII encoded string) 0xa5-0xa5.3 (0.4)
 0x00a0|               5a                              |     Z          |                    size_bits: 10 0xa5.4-0xa5.7 (0.4)
-      |                                               |                |                    size: 10 0xa6-NA (0)
+      |                                               |                |                    size: 10
 0x00a0|                  4e 53 2e 6f 62 6a 65 63 74 73|      NS.objects|                    value: "NS.objects" 0xa6-0xaf.7 (10)
 0x2650|                  0e                           |      .         |                  key_index: 14 0x2656-0x2656.7 (1)
 0x2650|                           f2                  |         .      |                  value_index: 242 0x2659-0x2659.7 (1)
       |                                               |                |                  value{}: 0x265f-0x2662.7 (4)
 0x2650|                                             a1|               .|                    type: "array" (10) (Array) 0x265f-0x265f.3 (0.4)
 0x2650|                                             a1|               .|                    size_bits: 1 0x265f.4-0x265f.7 (0.4)
-      |                                               |                |                    size: 1 0x2660-NA (0)
+      |                                               |                |                    size: 1
       |                                               |                |                    entries[0:1]: 0x2660-0x2662.7 (3)
       |                                               |                |                      [0]{}: entry 0x2660-0x2662.7 (3)
 0x2660|f3                                             |.               |                        object_index: 243 0x2660-0x2660.7 (1)
@@ -1978,7 +1978,7 @@ $ fq dv recentdocs.sfl2
       |                                               |                |                  key{}: 0xb0-0xb6.7 (7)
 0x00b0|56                                             |V               |                    type: "ascii_string" (5) (ASCII encoded string) 0xb0-0xb0.3 (0.4)
 0x00b0|56                                             |V               |                    size_bits: 6 0xb0.4-0xb0.7 (0.4)
-      |                                               |                |                    size: 6 0xb1-NA (0)
+      |                                               |                |                    size: 6
 0x00b0|   24 63 6c 61 73 73                           | $class         |                    value: "$class" 0xb1-0xb6.7 (6)
       |                                               |                |                  value{}: 0xc5-0xc6.7 (2)
 0x00c0|               80                              |     .          |                    type: "uid" (8) (UID) 0xc5-0xc5.3 (0.4)
@@ -1988,7 +1988,7 @@ $ fq dv recentdocs.sfl2
 0x2650|                              16               |          .     |                  value_index: 22 0x265a-0x265a.7 (1)
 0x2650|            d3                                 |    .           |              type: "dict" (13) (Dictionary) 0x2654-0x2654.3 (0.4)
 0x2650|            d3                                 |    .           |              size_bits: 3 0x2654.4-0x2654.7 (0.4)
-      |                                               |                |              size: 3 0x2655-NA (0)
+      |                                               |                |              size: 3
       |                                               |                |            [56]{}: entry 0x8e-0x268b.7 (9726)
 0x0080|                                          f5   |              . |              object_index: 245 0x8e-0x8e.7 (1)
 0x2660|               5f                              |     _          |              type: "ascii_string" (5) (ASCII encoded string) 0x2665-0x2665.3 (0.4)
@@ -1996,7 +1996,7 @@ $ fq dv recentdocs.sfl2
 0x2660|                  10                           |      .         |              large_size_marker: 1 (valid) 0x2666-0x2666.3 (0.4)
 0x2660|                  10                           |      .         |              exponent: 0 0x2666.4-0x2666.7 (0.4)
 0x2660|                     24                        |       $        |              size_bigint: 36 0x2667-0x2667.7 (1)
-      |                                               |                |              size: 36 0x2668-NA (0)
+      |                                               |                |              size: 36
 0x2660|                        63 6f 6d 2e 61 70 70 6c|        com.appl|              value: "com.apple.LSSharedFileList.MaxAmount" 0x2668-0x268b.7 (36)
 0x2670|65 2e 4c 53 53 68 61 72 65 64 46 69 6c 65 4c 69|e.LSSharedFileLi|
 0x2680|73 74 2e 4d 61 78 41 6d 6f 75 6e 74            |st.MaxAmount    |

@@ -111,7 +111,7 @@ $ fq '.[] | . as $t | .hex | gsub("[^0-9a-f]";"") | fromhex | $t, (asn1_ber | dv
 0x00|                                       07      |             .  |      length: 7 0xd-0xd.7 (1)
 0x00|                                          72 73|              rs|      value: "rsa.com" 0xe-0x14.7 (7)
 0x10|61 2e 63 6f 6d|                                |a.com|          |
-    |                                               |                |  value: "test1@rsa.com" 0x15-NA (0)
+    |                                               |                |  value: "test1@rsa.com"
 {
   "decoded": 0,
   "hex": "02 01 00"
@@ -259,7 +259,7 @@ $ fq '.[] | . as $t | .hex | gsub("[^0-9a-f]";"") | fromhex | $t, (asn1_ber | dv
 0x00|                              06               |          .     |      length: 6 0xa-0xa.7 (1)
 0x00|                                 55 73 65 72 20|           User |      value: "User 1" 0xb-0x10.7 (6)
 0x10|31|                                            |1|              |
-    |                                               |                |  value: "Test User 1" 0x11-NA (0)
+    |                                               |                |  value: "Test User 1"
 {
   "decoded": "cl'es publiques",
   "hex": "14 0f | 63 6c c2 65 73 20 70 75 62 6c 69 71 75 65 73"
@@ -311,7 +311,7 @@ $ fq '.[] | . as $t | .hex | gsub("[^0-9a-f]";"") | fromhex | $t, (asn1_ber | dv
 0x00|                                       09      |             .  |      length: 9 0xd-0xd.7 (1)
 0x00|                                          70 75|              pu|      value: "publiques" 0xe-0x16.7 (9)
 0x10|62 6c 69 71 75 65 73|                          |bliques|        |
-    |                                               |                |  value: "cl�es publiques" 0x17-NA (0)
+    |                                               |                |  value: "cl�es publiques"
 {
   "decoded": "910506164540-0700",
   "hex": "17 0d 39 31 30 35 30 36 32 33 34 35 34 30 5a"

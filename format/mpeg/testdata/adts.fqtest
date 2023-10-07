@@ -24,7 +24,7 @@ $ fq -d adts dv adts
      |                                               |                |          cnt{}: 0x7.3-0x8.6 (1.4)
 0x000|                     de                        |       .        |            count: 15 0x7.3-0x7.6 (0.4)
 0x000|                     de 04                     |       ..       |            esc_count: 2 0x7.7-0x8.6 (1)
-     |                                               |                |          payload_length: 16 0x8.7-NA (0)
+     |                                               |                |          payload_length: 16
      |                                               |                |          extension_payload{}: 0x8.7-0x18.6 (16)
 0x000|                        04 00                  |        ..      |            extension_type: "EXT_FILL" (0) 0x8.7-0x9.2 (0.4)
 0x000|                           00                  |         .      |            fill_nibble: 0 0x9.3-0x9.6 (0.4)

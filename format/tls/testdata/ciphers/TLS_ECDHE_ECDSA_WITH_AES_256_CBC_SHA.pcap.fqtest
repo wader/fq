@@ -1,11 +1,11 @@
 $ fq -o keylog=@all.keylog ".tcp_connections[0] | dv" TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA.pcap
           |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.tcp_connections[0]{}: tcp_connection 0xde6-NA (0)
           |                                               |                |  client{}: 0xde6-NA (0)
-          |                                               |                |    ip: "127.0.0.1" 0xde6-NA (0)
-          |                                               |                |    port: 42380 0xde6-NA (0)
-          |                                               |                |    has_start: true 0xde6-NA (0)
-          |                                               |                |    has_end: false 0xde6-NA (0)
-          |                                               |                |    skipped_bytes: 0 0xde6-NA (0)
+          |                                               |                |    ip: "127.0.0.1"
+          |                                               |                |    port: 42380
+          |                                               |                |    has_start: true
+          |                                               |                |    has_end: false
+          |                                               |                |    skipped_bytes: 0
           |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    stream{}: (tls) 0x0-0x1b5.7 (438)
           |                                               |                |      records[0:6]: 0x0-0x1b5.7 (438)
           |                                               |                |        [0]{}: record 0x0-0xa5.7 (166)
@@ -189,11 +189,11 @@ $ fq -o keylog=@all.keylog ".tcp_connections[0] | dv" TLS_ECDHE_ECDSA_WITH_AES_2
     0x0000|47 45 54 20 2f 20 48 54 54 50 2f 31 2e 30 0d 0a|GET / HTTP/1.0..|      stream: raw bits 0x0-0x11.7 (18)
     0x0000|0d 0a|                                         |..|             |
           |                                               |                |  server{}: 0xde6-NA (0)
-          |                                               |                |    ip: "127.0.0.1" 0xde6-NA (0)
-          |                                               |                |    port: 4431 0xde6-NA (0)
-          |                                               |                |    has_start: true 0xde6-NA (0)
-          |                                               |                |    has_end: true 0xde6-NA (0)
-          |                                               |                |    skipped_bytes: 0 0xde6-NA (0)
+          |                                               |                |    ip: "127.0.0.1"
+          |                                               |                |    port: 4431
+          |                                               |                |    has_start: true
+          |                                               |                |    has_end: true
+          |                                               |                |    skipped_bytes: 0
           |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    stream{}: (tls) 0x0-0x817.7 (2072)
           |                                               |                |      records[0:8]: 0x0-0x817.7 (2072)
           |                                               |                |        [0]{}: record 0x0-0x46.7 (71)

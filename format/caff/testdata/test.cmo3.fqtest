@@ -66,10 +66,10 @@ $ fq dv test.cmo3
 0x0000c0|   00 00 00 00 00 00 00 00                     | ........       |      unused0: 0 0xc1-0xc8.7 (8)
         |                                               |                |  files[0:4]: 0xc9-0x2266.7 (8606)
         |                                               |                |    [0]{}: file 0xc9-0x128.7 (96)
-        |                                               |                |      file_path: "image.png" 0xc9-NA (0)
-        |                                               |                |      file_size: 96 0xc9-NA (0)
-        |                                               |                |      is_obfuscated: true 0xc9-NA (0)
-        |                                               |                |      compress_option: "raw" (16) 0xc9-NA (0)
+        |                                               |                |      file_path: "image.png"
+        |                                               |                |      file_size: 96
+        |                                               |                |      is_obfuscated: true
+        |                                               |                |      compress_option: "raw" (16)
 0x0000c0|                           79 a0 be b7 fd fa ea|         y......|      raw: raw bits 0xc9-0x128.7 (96)
 0x0000d0|fa f0 f0 f0 fd b9 b8 b4 a2 f0 f0 f0 b0 f0 f0 f0|................|
 *       |until 0x128.7 (96)                             |                |
@@ -112,10 +112,10 @@ $ fq dv test.cmo3
   0x0005|                                 44            |           D    |            safe_to_copy: false 0x5b.3-0x5b.3 (0.1)
   0x0005|                                    ae 42 60 82|            .B`.|            crc: 0xae426082 (valid) 0x5c-0x5f.7 (4)
         |                                               |                |    [1]{}: file 0x129-0x17b.7 (83)
-        |                                               |                |      file_path: "image_0.png" 0x129-NA (0)
-        |                                               |                |      file_size: 83 0x129-NA (0)
-        |                                               |                |      is_obfuscated: true 0x129-NA (0)
-        |                                               |                |      compress_option: "raw" (16) 0x129-NA (0)
+        |                                               |                |      file_path: "image_0.png"
+        |                                               |                |      file_size: 83
+        |                                               |                |      is_obfuscated: true
+        |                                               |                |      compress_option: "raw" (16)
 0x000120|                           79 a0 be b7 fd fa ea|         y......|      raw: raw bits 0x129-0x17b.7 (83)
 0x000130|fa f0 f0 f0 fd b9 b8 b4 a2 f0 f0 f0 d0 f0 f0 f0|................|
 *       |until 0x17b.7 (83)                             |                |
@@ -159,10 +159,10 @@ $ fq dv test.cmo3
   0x0004|                                             ae|               .|            crc: 0xae426082 (valid) 0x4f-0x52.7 (4)
   0x0005|42 60 82|                                      |B`.|            |
         |                                               |                |    [2]{}: file 0x17c-0x1c6.7 (75)
-        |                                               |                |      file_path: "image_1.png" 0x17c-NA (0)
-        |                                               |                |      file_size: 75 0x17c-NA (0)
-        |                                               |                |      is_obfuscated: true 0x17c-NA (0)
-        |                                               |                |      compress_option: "raw" (16) 0x17c-NA (0)
+        |                                               |                |      file_path: "image_1.png"
+        |                                               |                |      file_size: 75
+        |                                               |                |      is_obfuscated: true
+        |                                               |                |      compress_option: "raw" (16)
 0x000170|                                    79 a0 be b7|            y...|      raw: raw bits 0x17c-0x1c6.7 (75)
 0x000180|fd fa ea fa f0 f0 f0 fd b9 b8 b4 a2 f0 f0 f0 e0|................|
 *       |until 0x1c6.7 (75)                             |                |
@@ -205,10 +205,10 @@ $ fq dv test.cmo3
   0x0004|                  44                           |      D         |            safe_to_copy: false 0x46.3-0x46.3 (0.1)
   0x0004|                     ae 42 60 82|              |       .B`.|    |            crc: 0xae426082 (valid) 0x47-0x4a.7 (4)
         |                                               |                |    [3]{}: file 0x1c7-0x2266.7 (8352)
-        |                                               |                |      file_path: "main.xml" 0x1c7-NA (0)
-        |                                               |                |      file_size: 8352 0x1c7-NA (0)
-        |                                               |                |      is_obfuscated: true 0x1c7-NA (0)
-        |                                               |                |      compress_option: "fast" (33) 0x1c7-NA (0)
+        |                                               |                |      file_path: "main.xml"
+        |                                               |                |      file_size: 8352
+        |                                               |                |      is_obfuscated: true
+        |                                               |                |      compress_option: "fast" (33)
 0x0001c0|                     a0 bb f3 f4 e4 f0 f8 f8 f8|       .........|      raw: raw bits 0x1c7-0x2266.7 (8352)
 0x0001d0|f0 8b 6a e2 a7 f0 f0 f0 f0 f0 f0 f0 f0 f0 f0 f0|..j.............|
 *       |until 0x2266.7 (8352)                          |                |

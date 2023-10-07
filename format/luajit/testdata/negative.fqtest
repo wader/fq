@@ -6,10 +6,10 @@ $ fq dv negative.luac
 0x00|         02                                    |   .            |    version: 2 0x3-0x3.7 (1)
     |                                               |                |    flags{}: 0x4-0x4.7 (1)
 0x00|            0a                                 |    .           |      raw: 10 0x4-0x4.7 (1)
-    |                                               |                |      be: false 0x5-NA (0)
-    |                                               |                |      strip: true 0x5-NA (0)
-    |                                               |                |      ffi: false 0x5-NA (0)
-    |                                               |                |      fr2: true 0x5-NA (0)
+    |                                               |                |      be: false
+    |                                               |                |      strip: true
+    |                                               |                |      ffi: false
+    |                                               |                |      fr2: true
     |                                               |                |  proto[0:3]: 0x5-0x57.7 (83)
     |                                               |                |    [0]{}: proto 0x5-0x19.7 (21)
 0x00|               14                              |     .          |      length: 20 0x5-0x5.7 (1)

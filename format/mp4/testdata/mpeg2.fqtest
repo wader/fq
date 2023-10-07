@@ -341,8 +341,8 @@ $ fq -d mp4 dv mpeg2.mp4
 0x2290|                        00 00 00 00            |        ....    |                          reserved: 0 0x2298-0x229b.7 (4)
 0x2290|                                    4c 61 76 66|            Lavf|                          data: "Lavf58.45.100" 0x229c-0x22a8.7 (13)
 0x22a0|35 38 2e 34 35 2e 31 30 30|                    |58.45.100|      |
-      |                                               |                |  tracks[0:1]: 0x2c-0x22a8.7 (8829)
-      |                                               |                |    [0]{}: track 0x2c-0x22a8.7 (8829)
+      |                                               |                |  tracks[0:1]: 0x2c-0x1fa5.7 (8058)
+      |                                               |                |    [0]{}: track 0x2c-0x1fa5.7 (8058)
       |                                               |                |      samples[0:1]: 0x2c-0x1fa5.7 (8058)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [0]{}: sample (mpeg_pes_packet) 0x2c-0x1fa5.7 (8058)
 0x0020|                                    00 00 01   |            ... |          prefix: 0b1 (valid) 0x2c-0x2e.7 (3)
@@ -360,5 +360,5 @@ $ fq -d mp4 dv mpeg2.mp4
 0x0030|                        00 00 01 b5 14 8a 00 01|        ........|          data: raw bits 0x38-0x1fa5.7 (8046)
 0x0040|00 00 00 00 01 b8 00 08 00 40 00 00 01 00 00 0f|.........@......|
 *     |until 0x1fa5.7 (8046)                          |                |
-      |                                               |                |      id: 1 0x22a9-NA (0)
-      |                                               |                |      data_format: "mp4v" (MPEG-4 Visual) 0x22a9-NA (0)
+      |                                               |                |      id: 1
+      |                                               |                |      data_format: "mp4v" (MPEG-4 Visual)

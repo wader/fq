@@ -116,8 +116,8 @@ $ fq dv flac.avi
       |                                               |                |      chunks[0:2]: 0x163a-0x18a3.7 (618)
       |                                               |                |        [0]{}: chunk 0x163a-0x189b.7 (610)
 0x1630|                              30 30 77 62      |          00wb  |          id: "00wb" 0x163a-0x163d.7 (4)
-      |                                               |                |          stream_type: "wb" (Audio data) 0x163e-NA (0)
-      |                                               |                |          stream_nr: 0 0x163e-NA (0)
+      |                                               |                |          stream_type: "wb" (Audio data)
+      |                                               |                |          stream_nr: 0
 0x1630|                                          5a 02|              Z.|          size: 602 0x163e-0x1641.7 (4)
 0x1640|00 00                                          |..              |
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|          data{}: (flac_frame) 0x1642-0x189b.7 (602)
@@ -138,9 +138,9 @@ $ fq dv flac.avi
       |                                               |                |              [0]{}: subframe 0x164a-0x1899.1 (591.2)
 0x1640|                              4a               |          J     |                zero_bit: 0 (valid) 0x164a-0x164a (0.1)
 0x1640|                              4a               |          J     |                subframe_type: "lpc" (0b100101) 0x164a.1-0x164a.6 (0.6)
-      |                                               |                |                lpc_order: 6 0x164a.7-NA (0)
+      |                                               |                |                lpc_order: 6
 0x1640|                              4a               |          J     |                wasted_bits_flag: 0 0x164a.7-0x164a.7 (0.1)
-      |                                               |                |                subframe_sample_size: 16 0x164b-NA (0)
+      |                                               |                |                subframe_sample_size: 16
       |                                               |                |                warmup_samples[0:6]: 0x164b-0x1656.7 (12)
 0x1640|                                 00 00         |           ..   |                  [0]: 0 value 0x164b-0x164c.7 (2)
 0x1640|                                       01 00   |             .. |                  [1]: 256 value 0x164d-0x164e.7 (2)
@@ -161,10 +161,10 @@ $ fq dv flac.avi
 0x1660|   3e 56 20                                    | >V             |                  [5]: -3407 value 0x1661.4-0x1663.2 (1.7)
 0x1660|         20                                    |                |                residual_coding_method: 4 (0) (rice) 0x1663.3-0x1663.4 (0.2)
 0x1660|         20 01                                 |    .           |                partition_order: 0 0x1663.5-0x1664 (0.4)
-      |                                               |                |                rice_partitions: 1 0x1664.1-NA (0)
+      |                                               |                |                rice_partitions: 1
       |                                               |                |                partitions[0:1]: 0x1664.1-0x1899.1 (565.1)
       |                                               |                |                  [0]{}: partition 0x1664.1-0x1899.1 (565.1)
-      |                                               |                |                    count: 2199 0x1664.1-NA (0)
+      |                                               |                |                    count: 2199
 0x1660|            01                                 |    .           |                    rice_parameter: 0 0x1664.1-0x1664.4 (0.4)
 0x1660|            01 39 24 ce 12 64 92 49 39 9e 73 84|    .9$..d.I9.s.|                    samples: raw bits 0x1664.5-0x1899.1 (564.5)
 0x1670|d3 39 2c ce 49 29 f3 e7 e6 4e 4f 27 84 93 92 72|.9,.I)...NO'...r|
@@ -173,8 +173,8 @@ $ fq dv flac.avi
 0x1890|                              7b 66            |          {f    |            footer_crc: "7b66" (raw bits) (valid) 0x189a-0x189b.7 (2)
       |                                               |                |        [1]{}: chunk 0x189c-0x18a3.7 (8)
 0x1890|                                    30 30 77 62|            00wb|          id: "00wb" 0x189c-0x189f.7 (4)
-      |                                               |                |          stream_type: "wb" (Audio data) 0x18a0-NA (0)
-      |                                               |                |          stream_nr: 0 0x18a0-NA (0)
+      |                                               |                |          stream_type: "wb" (Audio data)
+      |                                               |                |          stream_nr: 0
 0x18a0|00 00 00 00                                    |....            |          size: 0 0x18a0-0x18a3.7 (4)
       |                                               |                |          data: raw bits 0x18a4-NA (0)
       |                                               |                |    [4]{}: chunk 0x18a4-0x18cb.7 (40)
@@ -183,8 +183,8 @@ $ fq dv flac.avi
       |                                               |                |      indexes[0:2]: 0x18ac-0x18cb.7 (32)
       |                                               |                |        [0]{}: index 0x18ac-0x18bb.7 (16)
 0x18a0|                                    30 30 77 62|            00wb|          id: "00wb" 0x18ac-0x18af.7 (4)
-      |                                               |                |          stream_type: "wb" (Audio data) 0x18b0-NA (0)
-      |                                               |                |          stream_nr: 0 0x18b0-NA (0)
+      |                                               |                |          stream_type: "wb" (Audio data)
+      |                                               |                |          stream_nr: 0
       |                                               |                |          flags{}: 0x18b0-0x18b3.7 (4)
 0x18b0|10                                             |.               |            unused0: raw bits 0x18b0-0x18b0.2 (0.3)
 0x18b0|10                                             |.               |            key_frame: true 0x18b0.3-0x18b0.3 (0.1)
@@ -195,8 +195,8 @@ $ fq dv flac.avi
 0x18b0|                        5a 02 00 00            |        Z...    |          length: 602 0x18b8-0x18bb.7 (4)
       |                                               |                |        [1]{}: index 0x18bc-0x18cb.7 (16)
 0x18b0|                                    30 30 77 62|            00wb|          id: "00wb" 0x18bc-0x18bf.7 (4)
-      |                                               |                |          stream_type: "wb" (Audio data) 0x18c0-NA (0)
-      |                                               |                |          stream_nr: 0 0x18c0-NA (0)
+      |                                               |                |          stream_type: "wb" (Audio data)
+      |                                               |                |          stream_nr: 0
       |                                               |                |          flags{}: 0x18c0-0x18c3.7 (4)
 0x18c0|10                                             |.               |            unused0: raw bits 0x18c0-0x18c0.2 (0.3)
 0x18c0|10                                             |.               |            key_frame: true 0x18c0.3-0x18c0.3 (0.1)
@@ -205,8 +205,8 @@ $ fq dv flac.avi
 0x18c0|   00 00 00                                    | ...            |            unused2: raw bits 0x18c1-0x18c3.7 (3)
 0x18c0|            66 02 00 00                        |    f...        |          offset: 614 0x18c4-0x18c7.7 (4)
 0x18c0|                        00 00 00 00|           |        ....|   |          length: 0 0x18c8-0x18cb.7 (4)
-      |                                               |                |  streams[0:1]: 0x1642-0x18cb.7 (650)
-      |                                               |                |    [0]{}: stream 0x1642-0x18cb.7 (650)
+      |                                               |                |  streams[0:1]: 0x1642-0x18a3.7 (610)
+      |                                               |                |    [0]{}: stream 0x1642-0x18a3.7 (610)
       |                                               |                |      samples[0:2]: 0x1642-0x18a3.7 (610)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [0]{}: sample (flac_frame) 0x1642-0x189b.7 (602)
       |                                               |                |          header{}: 0x1642-0x1649.7 (8)
@@ -226,9 +226,9 @@ $ fq dv flac.avi
       |                                               |                |            [0]{}: subframe 0x164a-0x1899.1 (591.2)
 0x1640|                              4a               |          J     |              zero_bit: 0 (valid) 0x164a-0x164a (0.1)
 0x1640|                              4a               |          J     |              subframe_type: "lpc" (0b100101) 0x164a.1-0x164a.6 (0.6)
-      |                                               |                |              lpc_order: 6 0x164a.7-NA (0)
+      |                                               |                |              lpc_order: 6
 0x1640|                              4a               |          J     |              wasted_bits_flag: 0 0x164a.7-0x164a.7 (0.1)
-      |                                               |                |              subframe_sample_size: 16 0x164b-NA (0)
+      |                                               |                |              subframe_sample_size: 16
       |                                               |                |              warmup_samples[0:6]: 0x164b-0x1656.7 (12)
 0x1640|                                 00 00         |           ..   |                [0]: 0 value 0x164b-0x164c.7 (2)
 0x1640|                                       01 00   |             .. |                [1]: 256 value 0x164d-0x164e.7 (2)
@@ -249,10 +249,10 @@ $ fq dv flac.avi
 0x1660|   3e 56 20                                    | >V             |                [5]: -3407 value 0x1661.4-0x1663.2 (1.7)
 0x1660|         20                                    |                |              residual_coding_method: 4 (0) (rice) 0x1663.3-0x1663.4 (0.2)
 0x1660|         20 01                                 |    .           |              partition_order: 0 0x1663.5-0x1664 (0.4)
-      |                                               |                |              rice_partitions: 1 0x1664.1-NA (0)
+      |                                               |                |              rice_partitions: 1
       |                                               |                |              partitions[0:1]: 0x1664.1-0x1899.1 (565.1)
       |                                               |                |                [0]{}: partition 0x1664.1-0x1899.1 (565.1)
-      |                                               |                |                  count: 2199 0x1664.1-NA (0)
+      |                                               |                |                  count: 2199
 0x1660|            01                                 |    .           |                  rice_parameter: 0 0x1664.1-0x1664.4 (0.4)
 0x1660|            01 39 24 ce 12 64 92 49 39 9e 73 84|    .9$..d.I9.s.|                  samples: raw bits 0x1664.5-0x1899.1 (564.5)
 0x1670|d3 39 2c ce 49 29 f3 e7 e6 4e 4f 27 84 93 92 72|.9,.I)...NO'...r|
@@ -260,6 +260,6 @@ $ fq dv flac.avi
 0x1890|                           c0                  |         .      |          byte_align: 0 (valid) 0x1899.2-0x1899.7 (0.6)
 0x1890|                              7b 66            |          {f    |          footer_crc: "7b66" (raw bits) (valid) 0x189a-0x189b.7 (2)
       |                                               |                |        [1]: raw bits sample 0x18a4-NA (0)
-      |                                               |                |      type: "auds" 0x18cc-NA (0)
-      |                                               |                |      handler: "\x01\x00\x00\x00" 0x18cc-NA (0)
-      |                                               |                |      format_tag: "flac" (61868) 0x18cc-NA (0)
+      |                                               |                |      type: "auds"
+      |                                               |                |      handler: "\x01\x00\x00\x00"
+      |                                               |                |      format_tag: "flac" (61868)

@@ -17,26 +17,26 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
 *      |until 0xc00.7 (1528)                           |                |
        |                                               |                |  messages[0:421]: 0xc01-NA (0)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [0]{}: message 0x0-0x3.7 (4)
-       |                                               |                |      message_stream_id: 0 0x0-NA (0)
-       |                                               |                |      message_type_id: "window_acknowledgement_size" (5) 0x0-NA (0)
+       |                                               |                |      message_stream_id: 0
+       |                                               |                |      message_type_id: "window_acknowledgement_size" (5)
   0x000|00 26 25 a0|                                   |.&%.|           |      window_size: 2500000 0x0-0x3.7 (4)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [1]{}: message 0x0-0x4.7 (5)
-       |                                               |                |      message_stream_id: 0 0x0-NA (0)
-       |                                               |                |      message_type_id: "set_peer_bandwidth" (6) 0x0-NA (0)
+       |                                               |                |      message_stream_id: 0
+       |                                               |                |      message_type_id: "set_peer_bandwidth" (6)
   0x000|00 26 25 a0                                    |.&%.            |      chunk_size: 2500000 0x0-0x3.7 (4)
   0x000|            02|                                |    .|          |      limit_type: "dynamic" (2) 0x4-0x4.7 (1)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [2]{}: message 0x0-0x5.7 (6)
-       |                                               |                |      message_stream_id: 0 0x0-NA (0)
-       |                                               |                |      message_type_id: "user_control_message" (4) 0x0-NA (0)
+       |                                               |                |      message_stream_id: 0
+       |                                               |                |      message_type_id: "user_control_message" (4)
   0x000|00 00                                          |..              |      type: "stream_begin" (0) 0x0-0x1.7 (2)
   0x000|      00 00 00 00|                             |  ....|         |      stream_id: 0 0x2-0x5.7 (4)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [3]{}: message 0x0-0x3.7 (4)
-       |                                               |                |      message_stream_id: 0 0x0-NA (0)
-       |                                               |                |      message_type_id: "set_chunk_size" (1) 0x0-NA (0)
+       |                                               |                |      message_stream_id: 0
+       |                                               |                |      message_type_id: "set_chunk_size" (1)
   0x000|00 00 00 80|                                   |....|           |      size: 128 0x0-0x3.7 (4)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [4]{}: message 0x0-0xbd.7 (190)
-       |                                               |                |      message_stream_id: 0 0x0-NA (0)
-       |                                               |                |      message_type_id: "command_message" (20) 0x0-NA (0)
+       |                                               |                |      message_stream_id: 0
+       |                                               |                |      message_type_id: "command_message" (20)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      command_name{}: (amf0) 0x0-0x9.7 (10)
   0x000|02                                             |.               |        type: "string" (2) 0x0-0x0.7 (1)
   0x000|   00 07                                       | ..             |        length: 7 0x1-0x2.7 (2)
@@ -120,8 +120,8 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
        |                                               |                |              value{}: 0xbd-0xbd.7 (1)
   0x00b|                                       09|     |             .| |                type: "object_end" (9) 0xbd-0xbd.7 (1)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [5]{}: message 0x0-0x1d.7 (30)
-       |                                               |                |      message_stream_id: 0 0x0-NA (0)
-       |                                               |                |      message_type_id: "command_message" (20) 0x0-NA (0)
+       |                                               |                |      message_stream_id: 0
+       |                                               |                |      message_type_id: "command_message" (20)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      command_name{}: (amf0) 0x0-0xa.7 (11)
   0x000|02                                             |.               |        type: "string" (2) 0x0-0x0.7 (1)
   0x000|   00 08                                       | ..             |        length: 8 0x1-0x2.7 (2)
@@ -132,14 +132,14 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
   0x001|00 00 00 00                                    |....            |
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      command_object{}: (amf0) 0x14-0x14.7 (1)
   0x001|            05                                 |    .           |        type: "null" (5) 0x14-0x14.7 (1)
-       |                                               |                |        value: null 0x15-NA (0)
+       |                                               |                |        value: null
        |                                               |                |      arguments[0:1]: 0x15-0x1d.7 (9)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [0]{}: argument (amf0) 0x15-0x1d.7 (9)
   0x001|               00                              |     .          |          type: "number" (0) 0x15-0x15.7 (1)
   0x001|                  40 c0 00 00 00 00 00 00|     |      @.......| |          value: 8192 0x16-0x1d.7 (8)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [6]{}: message 0x0-0x1c.7 (29)
-       |                                               |                |      message_stream_id: 0 0x0-NA (0)
-       |                                               |                |      message_type_id: "command_message" (20) 0x0-NA (0)
+       |                                               |                |      message_stream_id: 0
+       |                                               |                |      message_type_id: "command_message" (20)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      command_name{}: (amf0) 0x0-0x9.7 (10)
   0x000|02                                             |.               |        type: "string" (2) 0x0-0x0.7 (1)
   0x000|   00 07                                       | ..             |        length: 7 0x1-0x2.7 (2)
@@ -150,14 +150,14 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
   0x001|00 00 00                                       |...             |
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      command_object{}: (amf0) 0x13-0x13.7 (1)
   0x001|         05                                    |   .            |        type: "null" (5) 0x13-0x13.7 (1)
-       |                                               |                |        value: null 0x14-NA (0)
+       |                                               |                |        value: null
        |                                               |                |      arguments[0:1]: 0x14-0x1c.7 (9)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [0]{}: argument (amf0) 0x14-0x1c.7 (9)
   0x001|            00                                 |    .           |          type: "number" (0) 0x14-0x14.7 (1)
   0x001|               3f f0 00 00 00 00 00 00|        |     ?.......|  |          value: 1 0x15-0x1c.7 (8)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [7]{}: message 0x0-0x13.7 (20)
-       |                                               |                |      message_stream_id: 0 0x0-NA (0)
-       |                                               |                |      message_type_id: "command_message" (20) 0x0-NA (0)
+       |                                               |                |      message_stream_id: 0
+       |                                               |                |      message_type_id: "command_message" (20)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      command_name{}: (amf0) 0x0-0x9.7 (10)
   0x000|02                                             |.               |        type: "string" (2) 0x0-0x0.7 (1)
   0x000|   00 07                                       | ..             |        length: 7 0x1-0x2.7 (2)
@@ -168,16 +168,16 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
   0x001|00 00 00                                       |...             |
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      command_object{}: (amf0) 0x13-0x13.7 (1)
   0x001|         05|                                   |   .|           |        type: "null" (5) 0x13-0x13.7 (1)
-       |                                               |                |        value: null 0x14-NA (0)
+       |                                               |                |        value: null
        |                                               |                |      arguments[0:0]: 0x14-NA (0)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [8]{}: message 0x0-0x5.7 (6)
-       |                                               |                |      message_stream_id: 0 0x0-NA (0)
-       |                                               |                |      message_type_id: "user_control_message" (4) 0x0-NA (0)
+       |                                               |                |      message_stream_id: 0
+       |                                               |                |      message_type_id: "user_control_message" (4)
   0x000|00 00                                          |..              |      type: "stream_begin" (0) 0x0-0x1.7 (2)
   0x000|      00 00 00 01|                             |  ....|         |      stream_id: 1 0x2-0x5.7 (4)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [9]{}: message 0x0-0x7a.7 (123)
-       |                                               |                |      message_stream_id: 1 0x0-NA (0)
-       |                                               |                |      message_type_id: "command_message" (20) 0x0-NA (0)
+       |                                               |                |      message_stream_id: 1
+       |                                               |                |      message_type_id: "command_message" (20)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      command_name{}: (amf0) 0x0-0xa.7 (11)
   0x000|02                                             |.               |        type: "string" (2) 0x0-0x0.7 (1)
   0x000|   00 08                                       | ..             |        length: 8 0x1-0x2.7 (2)
@@ -188,7 +188,7 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
   0x001|00 00 00 00                                    |....            |
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      command_object{}: (amf0) 0x14-0x14.7 (1)
   0x001|            05                                 |    .           |        type: "null" (5) 0x14-0x14.7 (1)
-       |                                               |                |        value: null 0x15-NA (0)
+       |                                               |                |        value: null
        |                                               |                |      arguments[0:1]: 0x15-0x7a.7 (102)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [0]{}: argument (amf0) 0x15-0x7a.7 (102)
   0x001|               03                              |     .          |          type: "object" (3) 0x15-0x15.7 (1)
@@ -236,8 +236,8 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
        |                                               |                |              value{}: 0x7a-0x7a.7 (1)
   0x007|                              09|              |          .|    |                type: "object_end" (9) 0x7a-0x7a.7 (1)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [10]{}: message 0x0-0xea.7 (235)
-       |                                               |                |      message_stream_id: 0 0x0-NA (0)
-       |                                               |                |      message_type_id: "data_message" (18) 0x0-NA (0)
+       |                                               |                |      message_stream_id: 0
+       |                                               |                |      message_type_id: "data_message" (18)
        |                                               |                |      messages[0:3]: 0x0-0xea.7 (235)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [0]{}: message (amf0) 0x0-0xf.7 (16)
   0x000|02                                             |.               |          type: "string" (2) 0x0-0x0.7 (1)
@@ -335,8 +335,8 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
        |                                               |                |              value{}: 0xea-0xea.7 (1)
   0x00e|                              09|              |          .|    |                type: "object_end" (9) 0xea-0xea.7 (1)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [11]{}: message 0x0-0x6.7 (7)
-       |                                               |                |      message_stream_id: 0 0x0-NA (0)
-       |                                               |                |      message_type_id: "audio_message" (8) 0x0-NA (0)
+       |                                               |                |      message_stream_id: 0
+       |                                               |                |      message_type_id: "audio_message" (8)
   0x000|af                                             |.               |      codec: "aac" (10) 0x0-0x0.3 (0.4)
   0x000|af                                             |.               |      sample_rate: 44100 (3) 0x0.4-0x0.5 (0.2)
   0x000|af                                             |.               |      sample_size: 16 (1) 0x0.6-0x0.6 (0.1)
@@ -348,8 +348,8 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
   0x000|         10                                    |   .            |        channel_configuration: 2 (front-left, front-right) 0x3.1-0x3.4 (0.4)
   0x000|         10 56 e5 00|                          |   .V..|        |        var_aot_or_byte_align: raw bits 0x3.5-0x6.7 (3.3)
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [12]{}: message 0x0-0x14f.7 (336)
-       |                                               |                |      message_stream_id: 0 0x0-NA (0)
-       |                                               |                |      message_type_id: "audio_message" (8) 0x0-NA (0)
+       |                                               |                |      message_stream_id: 0
+       |                                               |                |      message_type_id: "audio_message" (8)
   0x000|af                                             |.               |      codec: "aac" (10) 0x0-0x0.3 (0.4)
   0x000|af                                             |.               |      sample_rate: 44100 (3) 0x0.4-0x0.5 (0.2)
   0x000|af                                             |.               |      sample_size: 16 (1) 0x0.6-0x0.6 (0.1)
@@ -359,8 +359,8 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
   0x001|31 30 30 00 42 55 9f ff ff ff e0 01 29 68 a6 43|100.BU......)h.C|
   *    |until 0x14f.7 (end) (334)                      |                |
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [13]{}: message 0x0-0x13a.7 (315)
-       |                                               |                |      message_stream_id: 0 0x0-NA (0)
-       |                                               |                |      message_type_id: "audio_message" (8) 0x0-NA (0)
+       |                                               |                |      message_stream_id: 0
+       |                                               |                |      message_type_id: "audio_message" (8)
   0x000|af                                             |.               |      codec: "aac" (10) 0x0-0x0.3 (0.4)
   0x000|af                                             |.               |      sample_rate: 44100 (3) 0x0.4-0x0.5 (0.2)
   0x000|af                                             |.               |      sample_size: 16 (1) 0x0.6-0x0.6 (0.1)
@@ -370,8 +370,8 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
   0x001|56 42 80 da 88 88 50 2b c8 c5 82 f8 a7 9e b5 3b|VB....P+.......;|
   *    |until 0x13a.7 (end) (313)                      |                |
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [14]{}: message 0x0-0x19e.7 (415)
-       |                                               |                |      message_stream_id: 0 0x0-NA (0)
-       |                                               |                |      message_type_id: "audio_message" (8) 0x0-NA (0)
+       |                                               |                |      message_stream_id: 0
+       |                                               |                |      message_type_id: "audio_message" (8)
   0x000|af                                             |.               |      codec: "aac" (10) 0x0-0x0.3 (0.4)
   0x000|af                                             |.               |      sample_rate: 44100 (3) 0x0.4-0x0.5 (0.2)
   0x000|af                                             |.               |      sample_size: 16 (1) 0x0.6-0x0.6 (0.1)
@@ -381,8 +381,8 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
   0x001|00 47 15 35 12 d0 00 00 1d 3a 44 69 22 f8 c4 66|.G.5.....:Di"..f|
   *    |until 0x19e.7 (end) (413)                      |                |
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [15]{}: message 0x0-0xc5.7 (198)
-       |                                               |                |      message_stream_id: 0 0x0-NA (0)
-       |                                               |                |      message_type_id: "audio_message" (8) 0x0-NA (0)
+       |                                               |                |      message_stream_id: 0
+       |                                               |                |      message_type_id: "audio_message" (8)
   0x000|af                                             |.               |      codec: "aac" (10) 0x0-0x0.3 (0.4)
   0x000|af                                             |.               |      sample_rate: 44100 (3) 0x0.4-0x0.5 (0.2)
   0x000|af                                             |.               |      sample_size: 16 (1) 0x0.6-0x0.6 (0.1)
@@ -392,8 +392,8 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
   0x001|40 2a a9 45 12 a8 be 74 1a 98 46 14 62 91 b7 33|@*.E...t..F.b..3|
   *    |until 0xc5.7 (end) (196)                       |                |
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [16]{}: message 0x0-0xc5.7 (198)
-       |                                               |                |      message_stream_id: 0 0x0-NA (0)
-       |                                               |                |      message_type_id: "audio_message" (8) 0x0-NA (0)
+       |                                               |                |      message_stream_id: 0
+       |                                               |                |      message_type_id: "audio_message" (8)
   0x000|af                                             |.               |      codec: "aac" (10) 0x0-0x0.3 (0.4)
   0x000|af                                             |.               |      sample_rate: 44100 (3) 0x0.4-0x0.5 (0.2)
   0x000|af                                             |.               |      sample_size: 16 (1) 0x0.6-0x0.6 (0.1)
@@ -403,8 +403,8 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
   0x001|33 9e 45 f9 97 08 00 55 2a 94 29 54 aa 0d 2d 49|3.E....U*.)T..-I|
   *    |until 0xc5.7 (end) (196)                       |                |
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [17]{}: message 0x0-0xca.7 (203)
-       |                                               |                |      message_stream_id: 0 0x0-NA (0)
-       |                                               |                |      message_type_id: "audio_message" (8) 0x0-NA (0)
+       |                                               |                |      message_stream_id: 0
+       |                                               |                |      message_type_id: "audio_message" (8)
   0x000|af                                             |.               |      codec: "aac" (10) 0x0-0x0.3 (0.4)
   0x000|af                                             |.               |      sample_rate: 44100 (3) 0x0.4-0x0.5 (0.2)
   0x000|af                                             |.               |      sample_size: 16 (1) 0x0.6-0x0.6 (0.1)
@@ -414,8 +414,8 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
   0x001|66 84 45 a1 73 2b d0 9d 74 84 00 2a 95 4a 14 a7|f.E.s+..t..*.J..|
   *    |until 0xca.7 (end) (201)                       |                |
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [18]{}: message 0x0-0xc3.7 (196)
-       |                                               |                |      message_stream_id: 0 0x0-NA (0)
-       |                                               |                |      message_type_id: "audio_message" (8) 0x0-NA (0)
+       |                                               |                |      message_stream_id: 0
+       |                                               |                |      message_type_id: "audio_message" (8)
   0x000|af                                             |.               |      codec: "aac" (10) 0x0-0x0.3 (0.4)
   0x000|af                                             |.               |      sample_rate: 44100 (3) 0x0.4-0x0.5 (0.2)
   0x000|af                                             |.               |      sample_size: 16 (1) 0x0.6-0x0.6 (0.1)
@@ -425,8 +425,8 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
   0x001|08 8b 42 dc 7b 87 9e 22 40 01 55 4a a1 4a 3e 71|..B.{.."@.UJ.J>q|
   *    |until 0xc3.7 (end) (194)                       |                |
        |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [19]{}: message 0x0-0xc2.7 (195)
-       |                                               |                |      message_stream_id: 0 0x0-NA (0)
-       |                                               |                |      message_type_id: "audio_message" (8) 0x0-NA (0)
+       |                                               |                |      message_stream_id: 0
+       |                                               |                |      message_type_id: "audio_message" (8)
   0x000|af                                             |.               |      codec: "aac" (10) 0x0-0x0.3 (0.4)
   0x000|af                                             |.               |      sample_rate: 44100 (3) 0x0.4-0x0.5 (0.2)
   0x000|af                                             |.               |      sample_size: 16 (1) 0x0.6-0x0.6 (0.1)
@@ -444,7 +444,7 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
 0x00c00|               00 00 04                        |     ...        |      message_length: 4 0xc05-0xc07.7 (3)
 0x00c00|                        05                     |        .       |      message_type_id: "window_acknowledgement_size" (5) 0xc08-0xc08.7 (1)
 0x00c00|                           00 00 00 00         |         ....   |      message_stream_id: 0 0xc09-0xc0c.7 (4)
-       |                                               |                |      calculated_timestamp: 0 0xc0d-NA (0)
+       |                                               |                |      calculated_timestamp: 0
 0x00c00|                                       00 26 25|             .&%|      data: raw bits 0xc0d-0xc10.7 (4)
 0x00c10|a0                                             |.               |
        |                                               |                |    [1]{}: chunk 0xc11-0xc1d.7 (13)
@@ -453,8 +453,8 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
 0x00c10|      00 00 00                                 |  ...           |      timestamp_delta: 0 0xc12-0xc14.7 (3)
 0x00c10|               00 00 05                        |     ...        |      message_length: 5 0xc15-0xc17.7 (3)
 0x00c10|                        06                     |        .       |      message_type_id: "set_peer_bandwidth" (6) 0xc18-0xc18.7 (1)
-       |                                               |                |      message_stream_id: 0 (previous) 0xc19-NA (0)
-       |                                               |                |      calculated_timestamp: 0 0xc19-NA (0)
+       |                                               |                |      message_stream_id: 0 (previous)
+       |                                               |                |      calculated_timestamp: 0
 0x00c10|                           00 26 25 a0 02      |         .&%..  |      data: raw bits 0xc19-0xc1d.7 (5)
        |                                               |                |    [2]{}: chunk 0xc1e-0xc2b.7 (14)
 0x00c10|                                          42   |              B |      fmt: 1 0xc1e-0xc1e.1 (0.2)
@@ -463,8 +463,8 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
 0x00c20|00 00                                          |..              |
 0x00c20|      00 00 06                                 |  ...           |      message_length: 6 0xc22-0xc24.7 (3)
 0x00c20|               04                              |     .          |      message_type_id: "user_control_message" (4) 0xc25-0xc25.7 (1)
-       |                                               |                |      message_stream_id: 0 (previous) 0xc26-NA (0)
-       |                                               |                |      calculated_timestamp: 0 0xc26-NA (0)
+       |                                               |                |      message_stream_id: 0 (previous)
+       |                                               |                |      calculated_timestamp: 0
 0x00c20|                  00 00 00 00 00 00            |      ......    |      data: raw bits 0xc26-0xc2b.7 (6)
        |                                               |                |    [3]{}: chunk 0xc2c-0xc37.7 (12)
 0x00c20|                                    42         |            B   |      fmt: 1 0xc2c-0xc2c.1 (0.2)
@@ -472,8 +472,8 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
 0x00c20|                                       00 00 00|             ...|      timestamp_delta: 0 0xc2d-0xc2f.7 (3)
 0x00c30|00 00 04                                       |...             |      message_length: 4 0xc30-0xc32.7 (3)
 0x00c30|         01                                    |   .            |      message_type_id: "set_chunk_size" (1) 0xc33-0xc33.7 (1)
-       |                                               |                |      message_stream_id: 0 (previous) 0xc34-NA (0)
-       |                                               |                |      calculated_timestamp: 0 0xc34-NA (0)
+       |                                               |                |      message_stream_id: 0 (previous)
+       |                                               |                |      calculated_timestamp: 0
 0x00c30|            00 00 00 80                        |    ....        |      data: raw bits 0xc34-0xc37.7 (4)
        |                                               |                |    [4]{}: chunk 0xc38-0xcc3.7 (140)
 0x00c30|                        03                     |        .       |      fmt: 0 0xc38-0xc38.1 (0.2)
@@ -482,17 +482,17 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
 0x00c30|                                    00 00 be   |            ... |      message_length: 190 0xc3c-0xc3e.7 (3)
 0x00c30|                                             14|               .|      message_type_id: "command_message" (20) 0xc3f-0xc3f.7 (1)
 0x00c40|00 00 00 00                                    |....            |      message_stream_id: 0 0xc40-0xc43.7 (4)
-       |                                               |                |      calculated_timestamp: 0 0xc44-NA (0)
+       |                                               |                |      calculated_timestamp: 0
 0x00c40|            02 00 07 5f 72 65 73 75 6c 74 00 3f|    ..._result.?|      data: raw bits 0xc44-0xcc3.7 (128)
 0x00c50|f0 00 00 00 00 00 00 03 00 06 66 6d 73 56 65 72|..........fmsVer|
 *      |until 0xcc3.7 (128)                            |                |
        |                                               |                |    [5]{}: chunk 0xcc4-0xd02.7 (63)
 0x00cc0|            c3                                 |    .           |      fmt: 3 0xcc4-0xcc4.1 (0.2)
 0x00cc0|            c3                                 |    .           |      chunk_stream_id: 3 0xcc4.2-0xcc4.7 (0.6)
-       |                                               |                |      message_length: 190 (previous) 0xcc5-NA (0)
-       |                                               |                |      message_type_id: 20 (previous) 0xcc5-NA (0)
-       |                                               |                |      message_stream_id: 0 (previous) 0xcc5-NA (0)
-       |                                               |                |      calculated_timestamp: 0 0xcc5-NA (0)
+       |                                               |                |      message_length: 190 (previous)
+       |                                               |                |      message_type_id: 20 (previous)
+       |                                               |                |      message_stream_id: 0 (previous)
+       |                                               |                |      calculated_timestamp: 0
 0x00cc0|               65 73 63 72 69 70 74 69 6f 6e 02|     escription.|      data: raw bits 0xcc5-0xd02.7 (62)
 0x00cd0|00 15 43 6f 6e 6e 65 63 74 69 6f 6e 20 73 75 63|..Connection suc|
 *      |until 0xd02.7 (62)                             |                |
@@ -502,8 +502,8 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
 0x00d00|            00 00 00                           |    ...         |      timestamp_delta: 0 0xd04-0xd06.7 (3)
 0x00d00|                     00 00 1e                  |       ...      |      message_length: 30 0xd07-0xd09.7 (3)
 0x00d00|                              14               |          .     |      message_type_id: "command_message" (20) 0xd0a-0xd0a.7 (1)
-       |                                               |                |      message_stream_id: 0 (previous) 0xd0b-NA (0)
-       |                                               |                |      calculated_timestamp: 0 0xd0b-NA (0)
+       |                                               |                |      message_stream_id: 0 (previous)
+       |                                               |                |      calculated_timestamp: 0
 0x00d00|                                 02 00 08 6f 6e|           ...on|      data: raw bits 0xd0b-0xd28.7 (30)
 0x00d10|42 57 44 6f 6e 65 00 00 00 00 00 00 00 00 00 05|BWDone..........|
 0x00d20|00 40 c0 00 00 00 00 00 00                     |.@.......       |
@@ -513,8 +513,8 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
 0x00d20|                              00 00 00         |          ...   |      timestamp_delta: 0 0xd2a-0xd2c.7 (3)
 0x00d20|                                       00 00 1d|             ...|      message_length: 29 0xd2d-0xd2f.7 (3)
 0x00d30|14                                             |.               |      message_type_id: "command_message" (20) 0xd30-0xd30.7 (1)
-       |                                               |                |      message_stream_id: 0 (previous) 0xd31-NA (0)
-       |                                               |                |      calculated_timestamp: 0 0xd31-NA (0)
+       |                                               |                |      message_stream_id: 0 (previous)
+       |                                               |                |      calculated_timestamp: 0
 0x00d30|   02 00 07 5f 72 65 73 75 6c 74 00 40 00 00 00| ..._result.@...|      data: raw bits 0xd31-0xd4d.7 (29)
 0x00d40|00 00 00 00 05 00 3f f0 00 00 00 00 00 00      |......?.......  |
        |                                               |                |    [8]{}: chunk 0xd4e-0xd69.7 (28)
@@ -524,8 +524,8 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
 0x00d50|00 00                                          |..              |
 0x00d50|      00 00 14                                 |  ...           |      message_length: 20 0xd52-0xd54.7 (3)
 0x00d50|               14                              |     .          |      message_type_id: "command_message" (20) 0xd55-0xd55.7 (1)
-       |                                               |                |      message_stream_id: 0 (previous) 0xd56-NA (0)
-       |                                               |                |      calculated_timestamp: 0 0xd56-NA (0)
+       |                                               |                |      message_stream_id: 0 (previous)
+       |                                               |                |      calculated_timestamp: 0
 0x00d50|                  02 00 07 5f 72 65 73 75 6c 74|      ..._result|      data: raw bits 0xd56-0xd69.7 (20)
 0x00d60|00 40 08 00 00 00 00 00 00 05                  |.@........      |
        |                                               |                |    [9]{}: chunk 0xd6a-0xd77.7 (14)
@@ -535,8 +535,8 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
 0x00d60|                                          00 00|              ..|      message_length: 6 0xd6e-0xd70.7 (3)
 0x00d70|06                                             |.               |
 0x00d70|   04                                          | .              |      message_type_id: "user_control_message" (4) 0xd71-0xd71.7 (1)
-       |                                               |                |      message_stream_id: 0 (previous) 0xd72-NA (0)
-       |                                               |                |      calculated_timestamp: 0 0xd72-NA (0)
+       |                                               |                |      message_stream_id: 0 (previous)
+       |                                               |                |      calculated_timestamp: 0
 0x00d70|      00 00 00 00 00 01                        |  ......        |      data: raw bits 0xd72-0xd77.7 (6)
        |                                               |                |    [10]{}: chunk 0xd78-0xdfe.7 (135)
 0x00d70|                        03                     |        .       |      fmt: 0 0xd78-0xd78.1 (0.2)
@@ -545,7 +545,7 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
 0x00d70|                                    00 00 7b   |            ..{ |      message_length: 123 0xd7c-0xd7e.7 (3)
 0x00d70|                                             14|               .|      message_type_id: "command_message" (20) 0xd7f-0xd7f.7 (1)
 0x00d80|01 00 00 00                                    |....            |      message_stream_id: 1 0xd80-0xd83.7 (4)
-       |                                               |                |      calculated_timestamp: 0 0xd84-NA (0)
+       |                                               |                |      calculated_timestamp: 0
 0x00d80|            02 00 08 6f 6e 53 74 61 74 75 73 00|    ...onStatus.|      data: raw bits 0xd84-0xdfe.7 (123)
 0x00d90|00 00 00 00 00 00 00 00 05 03 00 05 6c 65 76 65|............leve|
 *      |until 0xdfe.7 (123)                            |                |
@@ -556,17 +556,17 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
 0x00e00|         00 00 eb                              |   ...          |      message_length: 235 0xe03-0xe05.7 (3)
 0x00e00|                  12                           |      .         |      message_type_id: "data_message" (18) 0xe06-0xe06.7 (1)
 0x00e00|                     00 00 00 00               |       ....     |      message_stream_id: 0 0xe07-0xe0a.7 (4)
-       |                                               |                |      calculated_timestamp: 0 0xe0b-NA (0)
+       |                                               |                |      calculated_timestamp: 0
 0x00e00|                                 02 00 0d 40 73|           ...@s|      data: raw bits 0xe0b-0xe8a.7 (128)
 0x00e10|65 74 44 61 74 61 46 72 61 6d 65 02 00 0a 6f 6e|etDataFrame...on|
 *      |until 0xe8a.7 (128)                            |                |
        |                                               |                |    [12]{}: chunk 0xe8b-0xef6.7 (108)
 0x00e80|                                 c4            |           .    |      fmt: 3 0xe8b-0xe8b.1 (0.2)
 0x00e80|                                 c4            |           .    |      chunk_stream_id: 4 0xe8b.2-0xe8b.7 (0.6)
-       |                                               |                |      message_length: 235 (previous) 0xe8c-NA (0)
-       |                                               |                |      message_type_id: 18 (previous) 0xe8c-NA (0)
-       |                                               |                |      message_stream_id: 0 (previous) 0xe8c-NA (0)
-       |                                               |                |      calculated_timestamp: 0 0xe8c-NA (0)
+       |                                               |                |      message_length: 235 (previous)
+       |                                               |                |      message_type_id: 18 (previous)
+       |                                               |                |      message_stream_id: 0 (previous)
+       |                                               |                |      calculated_timestamp: 0
 0x00e80|                                    00 00 06 73|            ...s|      data: raw bits 0xe8c-0xef6.7 (107)
 0x00e90|74 65 72 65 6f 01 01 00 0c 61 75 64 69 6f 63 6f|tereo....audioco|
 *      |until 0xef6.7 (107)                            |                |
@@ -578,7 +578,7 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
 0x00ef0|                                          08   |              . |      message_type_id: "audio_message" (8) 0xefe-0xefe.7 (1)
 0x00ef0|                                             00|               .|      message_stream_id: 0 0xeff-0xf02.7 (4)
 0x00f00|00 00 00                                       |...             |
-       |                                               |                |      calculated_timestamp: 0 0xf03-NA (0)
+       |                                               |                |      calculated_timestamp: 0
 0x00f00|         af 00 12 10 56 e5 00                  |   ....V..      |      data: raw bits 0xf03-0xf09.7 (7)
        |                                               |                |    [14]{}: chunk 0xf0a-0xf95.7 (140)
 0x00f00|                              04               |          .     |      fmt: 0 0xf0a-0xf0a.1 (0.2)
@@ -588,27 +588,27 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
 0x00f10|50                                             |P               |
 0x00f10|   08                                          | .              |      message_type_id: "audio_message" (8) 0xf11-0xf11.7 (1)
 0x00f10|      00 00 00 00                              |  ....          |      message_stream_id: 0 0xf12-0xf15.7 (4)
-       |                                               |                |      calculated_timestamp: 0 0xf16-NA (0)
+       |                                               |                |      calculated_timestamp: 0
 0x00f10|                  af 01 de 04 00 4c 61 76 63 35|      .....Lavc5|      data: raw bits 0xf16-0xf95.7 (128)
 0x00f20|38 2e 31 33 34 2e 31 30 30 00 42 55 9f ff ff ff|8.134.100.BU....|
 *      |until 0xf95.7 (128)                            |                |
        |                                               |                |    [15]{}: chunk 0xf96-0x1016.7 (129)
 0x00f90|                  c4                           |      .         |      fmt: 3 0xf96-0xf96.1 (0.2)
 0x00f90|                  c4                           |      .         |      chunk_stream_id: 4 0xf96.2-0xf96.7 (0.6)
-       |                                               |                |      message_length: 336 (previous) 0xf97-NA (0)
-       |                                               |                |      message_type_id: 8 (previous) 0xf97-NA (0)
-       |                                               |                |      message_stream_id: 0 (previous) 0xf97-NA (0)
-       |                                               |                |      calculated_timestamp: 0 0xf97-NA (0)
+       |                                               |                |      message_length: 336 (previous)
+       |                                               |                |      message_type_id: 8 (previous)
+       |                                               |                |      message_stream_id: 0 (previous)
+       |                                               |                |      calculated_timestamp: 0
 0x00f90|                     9c cc e9 b3 a6 ce 9a d4 d6|       .........|      data: raw bits 0xf97-0x1016.7 (128)
 0x00fa0|a6 ce 9b 3a 6c 66 63 32 54 d9 d3 67 45 9d 16 33|...:lfc2T..gE..3|
 *      |until 0x1016.7 (128)                           |                |
        |                                               |                |    [16]{}: chunk 0x1017-0x1067.7 (81)
 0x01010|                     c4                        |       .        |      fmt: 3 0x1017-0x1017.1 (0.2)
 0x01010|                     c4                        |       .        |      chunk_stream_id: 4 0x1017.2-0x1017.7 (0.6)
-       |                                               |                |      message_length: 336 (previous) 0x1018-NA (0)
-       |                                               |                |      message_type_id: 8 (previous) 0x1018-NA (0)
-       |                                               |                |      message_stream_id: 0 (previous) 0x1018-NA (0)
-       |                                               |                |      calculated_timestamp: 0 0x1018-NA (0)
+       |                                               |                |      message_length: 336 (previous)
+       |                                               |                |      message_type_id: 8 (previous)
+       |                                               |                |      message_stream_id: 0 (previous)
+       |                                               |                |      calculated_timestamp: 0
 0x01010|                        cb 2c b2 cb 2c b2 cb 2c|        .,..,..,|      data: raw bits 0x1018-0x1067.7 (80)
 0x01020|b2 cb 2c b2 cb 2c b2 cb 2c b2 cb 2c b2 cb 2c b2|..,..,..,..,..,.|
 *      |until 0x1067.7 (80)                            |                |
@@ -618,27 +618,27 @@ $ fq -d rtmp 'dv({array_truncate: 20})' ffmpeg_server_stream
 0x01060|                           00 00 17            |         ...    |      timestamp_delta: 23 0x1069-0x106b.7 (3)
 0x01060|                                    00 01 3b   |            ..; |      message_length: 315 0x106c-0x106e.7 (3)
 0x01060|                                             08|               .|      message_type_id: "audio_message" (8) 0x106f-0x106f.7 (1)
-       |                                               |                |      message_stream_id: 0 (previous) 0x1070-NA (0)
-       |                                               |                |      calculated_timestamp: 23 0x1070-NA (0)
+       |                                               |                |      message_stream_id: 0 (previous)
+       |                                               |                |      calculated_timestamp: 23
 0x01070|af 01 21 4c 6c ff 87 fc 7f c7 fc 3f db 6b b2 d5|..!Ll......?.k..|      data: raw bits 0x1070-0x10ef.7 (128)
 *      |until 0x10ef.7 (128)                           |                |
        |                                               |                |    [18]{}: chunk 0x10f0-0x1170.7 (129)
 0x010f0|c4                                             |.               |      fmt: 3 0x10f0-0x10f0.1 (0.2)
 0x010f0|c4                                             |.               |      chunk_stream_id: 4 0x10f0.2-0x10f0.7 (0.6)
-       |                                               |                |      message_length: 315 (previous) 0x10f1-NA (0)
-       |                                               |                |      message_type_id: 8 (previous) 0x10f1-NA (0)
-       |                                               |                |      message_stream_id: 0 (previous) 0x10f1-NA (0)
-       |                                               |                |      calculated_timestamp: 46 0x10f1-NA (0)
+       |                                               |                |      message_length: 315 (previous)
+       |                                               |                |      message_type_id: 8 (previous)
+       |                                               |                |      message_stream_id: 0 (previous)
+       |                                               |                |      calculated_timestamp: 46
 0x010f0|   8c b1 64 64 d7 6e 38 63 8e 18 e1 85 38 52 ec| ..dd.n8c....8R.|      data: raw bits 0x10f1-0x1170.7 (128)
 0x01100|ec ec d5 b3 b3 bb 3b 3b 7f 3d 5e 7e 9e ae 97 aa|......;;.=^~....|
 *      |until 0x1170.7 (128)                           |                |
        |                                               |                |    [19]{}: chunk 0x1171-0x11ac.7 (60)
 0x01170|   c4                                          | .              |      fmt: 3 0x1171-0x1171.1 (0.2)
 0x01170|   c4                                          | .              |      chunk_stream_id: 4 0x1171.2-0x1171.7 (0.6)
-       |                                               |                |      message_length: 315 (previous) 0x1172-NA (0)
-       |                                               |                |      message_type_id: 8 (previous) 0x1172-NA (0)
-       |                                               |                |      message_stream_id: 0 (previous) 0x1172-NA (0)
-       |                                               |                |      calculated_timestamp: 69 0x1172-NA (0)
+       |                                               |                |      message_length: 315 (previous)
+       |                                               |                |      message_type_id: 8 (previous)
+       |                                               |                |      message_stream_id: 0 (previous)
+       |                                               |                |      calculated_timestamp: 69
 0x01170|      d3 65 59 57 e5 3a 27 44 a5 38 13 76 d1 8c|  .eYW.:'D.8.v..|      data: raw bits 0x1172-0x11ac.7 (59)
 0x01180|56 b3 a1 fc 79 d8 3d 7b 1e bd 8f 5e c1 7c 53 cf|V...y.={...^.|S.|
 *      |until 0x11ac.7 (59)                            |                |

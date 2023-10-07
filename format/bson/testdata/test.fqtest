@@ -96,7 +96,7 @@ $ fq -d bson dv test.bson
      |                                               |                |    [8]{}: element 0xd2-0xd6.7 (5)
 0x0d0|      0a                                       |  .             |      type: "null" (10) (Null value) 0xd2-0xd2.7 (1)
 0x0d0|         6e 75 6c 00                           |   nul.         |      name: "nul" 0xd3-0xd6.7 (4)
-     |                                               |                |      value: null 0xd7-NA (0)
+     |                                               |                |      value: null
      |                                               |                |    [9]{}: element 0xd7-0xe9.7 (19)
 0x0d0|                     0b                        |       .        |      type: "regexp" (11) (Regular expression) 0xd7-0xd7.7 (1)
 0x0d0|                        72 65 67 00            |        reg.    |      name: "reg" 0xd8-0xdb.7 (4)
@@ -132,11 +132,11 @@ $ fq -d bson dv test.bson
      |                                               |                |    [15]{}: element 0x136-0x13a.7 (5)
 0x130|                  ff                           |      .         |      type: "minkey" (255) (Min key) 0x136-0x136.7 (1)
 0x130|                     6d 69 6e 00               |       min.     |      name: "min" 0x137-0x13a.7 (4)
-     |                                               |                |      value: null 0x13b-NA (0)
+     |                                               |                |      value: null
      |                                               |                |    [16]{}: element 0x13b-0x13f.7 (5)
 0x130|                                 7f            |           .    |      type: "maxkey" (127) (Max key) 0x13b-0x13b.7 (1)
 0x130|                                    6d 61 78 00|            max.|      name: "max" 0x13c-0x13f.7 (4)
-     |                                               |                |      value: null 0x140-NA (0)
+     |                                               |                |      value: null
 0x140|00|                                            |.|              |  terminator: 0 (valid) 0x140-0x140.7 (1)
 $ fq -d bson torepr test.bson
 {

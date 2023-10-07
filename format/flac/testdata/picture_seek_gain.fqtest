@@ -146,9 +146,9 @@ $ fq -d flac dv picture_seek_gain.flac
       |                                               |                |        [0]{}: subframe 0x2068-0x225d.2 (501.3)
 0x2060|                        4e                     |        N       |          zero_bit: 0 (valid) 0x2068-0x2068 (0.1)
 0x2060|                        4e                     |        N       |          subframe_type: "lpc" (0b100111) 0x2068.1-0x2068.6 (0.6)
-      |                                               |                |          lpc_order: 8 0x2068.7-NA (0)
+      |                                               |                |          lpc_order: 8
 0x2060|                        4e                     |        N       |          wasted_bits_flag: 0 0x2068.7-0x2068.7 (0.1)
-      |                                               |                |          subframe_sample_size: 16 0x2069-NA (0)
+      |                                               |                |          subframe_sample_size: 16
       |                                               |                |          warmup_samples[0:8]: 0x2069-0x2078.7 (16)
 0x2060|                           00 00               |         ..     |            [0]: 0 value 0x2069-0x206a.7 (2)
 0x2060|                                 01 00         |           ..   |            [1]: 256 value 0x206b-0x206c.7 (2)
@@ -173,10 +173,10 @@ $ fq -d flac dv picture_seek_gain.flac
 0x2080|                     71 e5 80                  |       q..      |            [7]: -7221 value 0x2087.2-0x2089 (1.7)
 0x2080|                           80                  |         .      |          residual_coding_method: 4 (0) (rice) 0x2089.1-0x2089.2 (0.2)
 0x2080|                           80                  |         .      |          partition_order: 0 0x2089.3-0x2089.6 (0.4)
-      |                                               |                |          rice_partitions: 1 0x2089.7-NA (0)
+      |                                               |                |          rice_partitions: 1
       |                                               |                |          partitions[0:1]: 0x2089.7-0x225d.2 (467.4)
       |                                               |                |            [0]{}: partition 0x2089.7-0x225d.2 (467.4)
-      |                                               |                |              count: 433 0x2089.7-NA (0)
+      |                                               |                |              count: 433
 0x2080|                           80 ee               |         ..     |              rice_parameter: 7 0x2089.7-0x208a.2 (0.4)
 0x2080|                              ee e7 63 a9 cc e0|          ..c...|              samples: raw bits 0x208a.3-0x225d.2 (467)
 0x2090|6d 35 19 8c 25 c2 c9 4c 9a 47 20 bd ba 36 b3 2f|m5..%..L.G ..6./|
@@ -185,4 +185,4 @@ $ fq -d flac dv picture_seek_gain.flac
 0x2250|                                          7f ab|              ..|      footer_crc: "7fab" (raw bits) (valid) 0x225e-0x225f.7 (2)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
   0x00|89 88 7b 80 f8 10 28 5b 45 f6 c4 ec c7 2c 97 7e|..{...([E....,.~|  md5_calculated: "89887b80f810285b45f6c4ecc72c977e" (raw bits) (valid) 0x0-0xf.7 (16)
-      |                                               |                |  decoded_samples: 441 0x2260-NA (0)
+      |                                               |                |  decoded_samples: 441

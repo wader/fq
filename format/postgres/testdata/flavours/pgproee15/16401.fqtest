@@ -17,31 +17,31 @@ $ fq -d pg_heap -o flavour=pgproee15 ".[0].tuples[0,-1] | dv" 16401
 0x1fd0|                        01 00                  |        ..      |      ip_posid: 1 0x1fd8-0x1fd9.7 (2)
 0x1fd0|                              03 00            |          ..    |    t_infomask2: 3 0x1fda-0x1fdb.7 (2)
       |                                               |                |    infomask2{}: 0x1fdc-NA (0)
-      |                                               |                |      heap_keys_updated: false 0x1fdc-NA (0)
-      |                                               |                |      heap_hot_updated: false 0x1fdc-NA (0)
-      |                                               |                |      heap_only_tuple: false 0x1fdc-NA (0)
+      |                                               |                |      heap_keys_updated: false
+      |                                               |                |      heap_hot_updated: false
+      |                                               |                |      heap_only_tuple: false
 0x1fd0|                                    01 09      |            ..  |    t_infomask: 2305 0x1fdc-0x1fdd.7 (2)
       |                                               |                |    infomask{}: 0x1fde-NA (0)
-      |                                               |                |      heap_hasnull: true 0x1fde-NA (0)
-      |                                               |                |      heap_hasvarwidth: false 0x1fde-NA (0)
-      |                                               |                |      heap_hasexternal: false 0x1fde-NA (0)
-      |                                               |                |      heap_hasoid_old: false 0x1fde-NA (0)
-      |                                               |                |      heap_xmax_keyshr_lock: false 0x1fde-NA (0)
-      |                                               |                |      heap_combocid: false 0x1fde-NA (0)
-      |                                               |                |      heap_xmax_excl_lock: false 0x1fde-NA (0)
-      |                                               |                |      heap_xmax_lock_only: false 0x1fde-NA (0)
-      |                                               |                |      heap_xmax_shr_lock: false 0x1fde-NA (0)
-      |                                               |                |      heap_lock_mask: false 0x1fde-NA (0)
-      |                                               |                |      heap_xmin_committed: true 0x1fde-NA (0)
-      |                                               |                |      heap_xmin_invalid: false 0x1fde-NA (0)
-      |                                               |                |      heap_xmin_frozen: true 0x1fde-NA (0)
-      |                                               |                |      heap_xmax_committed: false 0x1fde-NA (0)
-      |                                               |                |      heap_xmax_invalid: true 0x1fde-NA (0)
-      |                                               |                |      heap_xmax_is_multi: false 0x1fde-NA (0)
-      |                                               |                |      heap_updated: false 0x1fde-NA (0)
-      |                                               |                |      heap_moved_off: false 0x1fde-NA (0)
-      |                                               |                |      heap_moved_in: false 0x1fde-NA (0)
-      |                                               |                |      heap_moved: false 0x1fde-NA (0)
+      |                                               |                |      heap_hasnull: true
+      |                                               |                |      heap_hasvarwidth: false
+      |                                               |                |      heap_hasexternal: false
+      |                                               |                |      heap_hasoid_old: false
+      |                                               |                |      heap_xmax_keyshr_lock: false
+      |                                               |                |      heap_combocid: false
+      |                                               |                |      heap_xmax_excl_lock: false
+      |                                               |                |      heap_xmax_lock_only: false
+      |                                               |                |      heap_xmax_shr_lock: false
+      |                                               |                |      heap_lock_mask: false
+      |                                               |                |      heap_xmin_committed: true
+      |                                               |                |      heap_xmin_invalid: false
+      |                                               |                |      heap_xmin_frozen: true
+      |                                               |                |      heap_xmax_committed: false
+      |                                               |                |      heap_xmax_invalid: true
+      |                                               |                |      heap_xmax_is_multi: false
+      |                                               |                |      heap_updated: false
+      |                                               |                |      heap_moved_off: false
+      |                                               |                |      heap_moved_in: false
+      |                                               |                |      heap_moved: false
 0x1fd0|                                          18   |              . |    t_hoff: 24 0x1fde-0x1fde.7 (1)
 0x1fd0|                                             03|               .|    padding0: 3 0x1fdf-0x1fdf.7 (1)
 0x1fe0|01 00 00 00 00 00 00 00                        |........        |  data: "0100000000000000" (raw bits) 0x1fe0-0x1fe7.7 (8)
@@ -63,31 +63,31 @@ $ fq -d pg_heap -o flavour=pgproee15 ".[0].tuples[0,-1] | dv" 16401
 0x1fd0|                        01 00                  |        ..      |      ip_posid: 1 0x1fd8-0x1fd9.7 (2)
 0x1fd0|                              03 00            |          ..    |    t_infomask2: 3 0x1fda-0x1fdb.7 (2)
       |                                               |                |    infomask2{}: 0x1fdc-NA (0)
-      |                                               |                |      heap_keys_updated: false 0x1fdc-NA (0)
-      |                                               |                |      heap_hot_updated: false 0x1fdc-NA (0)
-      |                                               |                |      heap_only_tuple: false 0x1fdc-NA (0)
+      |                                               |                |      heap_keys_updated: false
+      |                                               |                |      heap_hot_updated: false
+      |                                               |                |      heap_only_tuple: false
 0x1fd0|                                    01 09      |            ..  |    t_infomask: 2305 0x1fdc-0x1fdd.7 (2)
       |                                               |                |    infomask{}: 0x1fde-NA (0)
-      |                                               |                |      heap_hasnull: true 0x1fde-NA (0)
-      |                                               |                |      heap_hasvarwidth: false 0x1fde-NA (0)
-      |                                               |                |      heap_hasexternal: false 0x1fde-NA (0)
-      |                                               |                |      heap_hasoid_old: false 0x1fde-NA (0)
-      |                                               |                |      heap_xmax_keyshr_lock: false 0x1fde-NA (0)
-      |                                               |                |      heap_combocid: false 0x1fde-NA (0)
-      |                                               |                |      heap_xmax_excl_lock: false 0x1fde-NA (0)
-      |                                               |                |      heap_xmax_lock_only: false 0x1fde-NA (0)
-      |                                               |                |      heap_xmax_shr_lock: false 0x1fde-NA (0)
-      |                                               |                |      heap_lock_mask: false 0x1fde-NA (0)
-      |                                               |                |      heap_xmin_committed: true 0x1fde-NA (0)
-      |                                               |                |      heap_xmin_invalid: false 0x1fde-NA (0)
-      |                                               |                |      heap_xmin_frozen: true 0x1fde-NA (0)
-      |                                               |                |      heap_xmax_committed: false 0x1fde-NA (0)
-      |                                               |                |      heap_xmax_invalid: true 0x1fde-NA (0)
-      |                                               |                |      heap_xmax_is_multi: false 0x1fde-NA (0)
-      |                                               |                |      heap_updated: false 0x1fde-NA (0)
-      |                                               |                |      heap_moved_off: false 0x1fde-NA (0)
-      |                                               |                |      heap_moved_in: false 0x1fde-NA (0)
-      |                                               |                |      heap_moved: false 0x1fde-NA (0)
+      |                                               |                |      heap_hasnull: true
+      |                                               |                |      heap_hasvarwidth: false
+      |                                               |                |      heap_hasexternal: false
+      |                                               |                |      heap_hasoid_old: false
+      |                                               |                |      heap_xmax_keyshr_lock: false
+      |                                               |                |      heap_combocid: false
+      |                                               |                |      heap_xmax_excl_lock: false
+      |                                               |                |      heap_xmax_lock_only: false
+      |                                               |                |      heap_xmax_shr_lock: false
+      |                                               |                |      heap_lock_mask: false
+      |                                               |                |      heap_xmin_committed: true
+      |                                               |                |      heap_xmin_invalid: false
+      |                                               |                |      heap_xmin_frozen: true
+      |                                               |                |      heap_xmax_committed: false
+      |                                               |                |      heap_xmax_invalid: true
+      |                                               |                |      heap_xmax_is_multi: false
+      |                                               |                |      heap_updated: false
+      |                                               |                |      heap_moved_off: false
+      |                                               |                |      heap_moved_in: false
+      |                                               |                |      heap_moved: false
 0x1fd0|                                          18   |              . |    t_hoff: 24 0x1fde-0x1fde.7 (1)
 0x1fd0|                                             03|               .|    padding0: 3 0x1fdf-0x1fdf.7 (1)
 0x1fe0|01 00 00 00 00 00 00 00                        |........        |  data: "0100000000000000" (raw bits) 0x1fe0-0x1fe7.7 (8)

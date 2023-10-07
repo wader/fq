@@ -832,22 +832,22 @@ $ fq -d elf dv a_stripped
       |                                               |                |        [2]{}: dynamic_tags 0x2f10-0x2f17.7 (8)
 0x2f10|0c 00 00 00                                    |....            |          tag: "init" (12) (Address of the initialization function) 0x2f10-0x2f13.7 (4)
 0x2f10|            00 10 00 00                        |    ....        |          ptr: 0x1000 0x2f14-0x2f17.7 (4)
-      |                                               |                |          section_index: 8 0x2f18-NA (0)
+      |                                               |                |          section_index: 8
       |                                               |                |        [3]{}: dynamic_tags 0x2f18-0x2f1f.7 (8)
 0x2f10|                        0d 00 00 00            |        ....    |          tag: "fini" (13) (Address of the termination function) 0x2f18-0x2f1b.7 (4)
 0x2f10|                                    11 13 00 00|            ....|          ptr: 0x1311 0x2f1c-0x2f1f.7 (4)
-      |                                               |                |          section_index: 12 0x2f20-NA (0)
+      |                                               |                |          section_index: 12
       |                                               |                |        [4]{}: dynamic_tags 0x2f20-0x2f27.7 (8)
 0x2f20|f5 fe ff 6f                                    |...o            |          tag: 1879047925 0x2f20-0x2f23.7 (4)
 0x2f20|            f4 01 00 00                        |    ....        |          unspecified: 0x1f4 0x2f24-0x2f27.7 (4)
       |                                               |                |        [5]{}: dynamic_tags 0x2f28-0x2f2f.7 (8)
 0x2f20|                        05 00 00 00            |        ....    |          tag: "strtab" (5) (Address of string table) 0x2f28-0x2f2b.7 (4)
 0x2f20|                                    c8 02 00 00|            ....|          ptr: 0x2c8 0x2f2c-0x2f2f.7 (4)
-      |                                               |                |          section_index: 5 0x2f30-NA (0)
+      |                                               |                |          section_index: 5
       |                                               |                |        [6]{}: dynamic_tags 0x2f30-0x2f37.7 (8)
 0x2f30|06 00 00 00                                    |....            |          tag: "symtab" (6) (Address of symbol table) 0x2f30-0x2f33.7 (4)
 0x2f30|            18 02 00 00                        |    ....        |          ptr: 0x218 0x2f34-0x2f37.7 (4)
-      |                                               |                |          section_index: 4 0x2f38-NA (0)
+      |                                               |                |          section_index: 4
       |                                               |                |        [7]{}: dynamic_tags 0x2f38-0x2f3f.7 (8)
 0x2f30|                        0a 00 00 00            |        ....    |          tag: "strsz" (10) (Size in bytes of string table) 0x2f38-0x2f3b.7 (4)
 0x2f30|                                    cb 00 00 00|            ....|          val: 203 0x2f3c-0x2f3f.7 (4)
@@ -860,7 +860,7 @@ $ fq -d elf dv a_stripped
       |                                               |                |        [10]{}: dynamic_tags 0x2f50-0x2f57.7 (8)
 0x2f50|03 00 00 00                                    |....            |          tag: "pltgot" (3) (Address of PLT and/or GOT) 0x2f50-0x2f53.7 (4)
 0x2f50|            c8 3f 00 00                        |    .?..        |          ptr: 0x3fc8 0x2f54-0x2f57.7 (4)
-      |                                               |                |          section_index: 19 0x2f58-NA (0)
+      |                                               |                |          section_index: 19
       |                                               |                |        [11]{}: dynamic_tags 0x2f58-0x2f5f.7 (8)
 0x2f50|                        02 00 00 00            |        ....    |          tag: "pltrelsz" (2) (Size in bytes of PLT relocation entries) 0x2f58-0x2f5b.7 (4)
 0x2f50|                                    18 00 00 00|            ....|          val: 24 0x2f5c-0x2f5f.7 (4)
@@ -870,7 +870,7 @@ $ fq -d elf dv a_stripped
       |                                               |                |        [13]{}: dynamic_tags 0x2f68-0x2f6f.7 (8)
 0x2f60|                        17 00 00 00            |        ....    |          tag: "jmprel" (23) (Address of relocation entries associated solely with the PLT) 0x2f68-0x2f6b.7 (4)
 0x2f60|                                    dc 03 00 00|            ....|          ptr: 0x3dc 0x2f6c-0x2f6f.7 (4)
-      |                                               |                |          section_index: 7 0x2f70-NA (0)
+      |                                               |                |          section_index: 7
       |                                               |                |        [14]{}: dynamic_tags 0x2f70-0x2f77.7 (8)
 0x2f70|11 00 00 00                                    |....            |          tag: "rel" (17) 0x2f70-0x2f73.7 (4)
 0x2f70|            94 03 00 00                        |    ....        |          ptr: 0x394 0x2f74-0x2f77.7 (4)

@@ -113,8 +113,8 @@ $ fq dv pcm.avi
       |                                               |                |      chunks[0:5]: 0x1616-0x38b1.7 (8860)
       |                                               |                |        [0]{}: chunk 0x1616-0x1e1d.7 (2056)
 0x1610|                  30 30 77 62                  |      00wb      |          id: "00wb" 0x1616-0x1619.7 (4)
-      |                                               |                |          stream_type: "wb" (Audio data) 0x161a-NA (0)
-      |                                               |                |          stream_nr: 0 0x161a-NA (0)
+      |                                               |                |          stream_type: "wb" (Audio data)
+      |                                               |                |          stream_nr: 0
 0x1610|                              00 08 00 00      |          ....  |          size: 2048 0x161a-0x161d.7 (4)
 0x1610|                                          00 00|              ..|          data: raw bits 0x161e-0x1e1d.7 (2048)
 0x1620|00 01 ff 01 fd 02 f8 03 ee 04 e0 05 cc 06 b0 07|................|
@@ -122,16 +122,16 @@ $ fq dv pcm.avi
       |                                               |                |        [1]{}: chunk 0x1e1e-0x2625.7 (2056)
 0x1e10|                                          30 30|              00|          id: "00wb" 0x1e1e-0x1e21.7 (4)
 0x1e20|77 62                                          |wb              |
-      |                                               |                |          stream_type: "wb" (Audio data) 0x1e22-NA (0)
-      |                                               |                |          stream_nr: 0 0x1e22-NA (0)
+      |                                               |                |          stream_type: "wb" (Audio data)
+      |                                               |                |          stream_nr: 0
 0x1e20|      00 08 00 00                              |  ....          |          size: 2048 0x1e22-0x1e25.7 (4)
 0x1e20|                  a6 0f d3 0f f1 0f fe 0f fc 0f|      ..........|          data: raw bits 0x1e26-0x2625.7 (2048)
 0x1e30|e9 0f c6 0f 93 0f 51 0f ff 0e 9e 0e 2f 0e b1 0d|......Q...../...|
 *     |until 0x2625.7 (2048)                          |                |
       |                                               |                |        [2]{}: chunk 0x2626-0x2e2d.7 (2056)
 0x2620|                  30 30 77 62                  |      00wb      |          id: "00wb" 0x2626-0x2629.7 (4)
-      |                                               |                |          stream_type: "wb" (Audio data) 0x262a-NA (0)
-      |                                               |                |          stream_nr: 0 0x262a-NA (0)
+      |                                               |                |          stream_type: "wb" (Audio data)
+      |                                               |                |          stream_nr: 0
 0x2620|                              00 08 00 00      |          ....  |          size: 2048 0x262a-0x262d.7 (4)
 0x2620|                                          7d 06|              }.|          data: raw bits 0x262e-0x2e2d.7 (2048)
 0x2630|8f 05 9c 04 a4 03 a8 02 aa 01 aa 00 a9 ff a8 fe|................|
@@ -139,16 +139,16 @@ $ fq dv pcm.avi
       |                                               |                |        [3]{}: chunk 0x2e2e-0x3635.7 (2056)
 0x2e20|                                          30 30|              00|          id: "00wb" 0x2e2e-0x2e31.7 (4)
 0x2e30|77 62                                          |wb              |
-      |                                               |                |          stream_type: "wb" (Audio data) 0x2e32-NA (0)
-      |                                               |                |          stream_nr: 0 0x2e32-NA (0)
+      |                                               |                |          stream_type: "wb" (Audio data)
+      |                                               |                |          stream_nr: 0
 0x2e30|      00 08 00 00                              |  ....          |          size: 2048 0x2e32-0x2e35.7 (4)
 0x2e30|                  0a f3 7a f2 f8 f1 84 f1 1e f1|      ..z.......|          data: raw bits 0x2e36-0x3635.7 (2048)
 0x2e40|c8 f0 80 f0 49 f0 21 f0 09 f0 01 f0 09 f0 21 f0|....I.!.......!.|
 *     |until 0x3635.7 (2048)                          |                |
       |                                               |                |        [4]{}: chunk 0x3636-0x38b1.7 (636)
 0x3630|                  30 30 77 62                  |      00wb      |          id: "00wb" 0x3636-0x3639.7 (4)
-      |                                               |                |          stream_type: "wb" (Audio data) 0x363a-NA (0)
-      |                                               |                |          stream_nr: 0 0x363a-NA (0)
+      |                                               |                |          stream_type: "wb" (Audio data)
+      |                                               |                |          stream_nr: 0
 0x3630|                              74 02 00 00      |          t...  |          size: 628 0x363a-0x363d.7 (4)
 0x3630|                                          24 f4|              $.|          data: raw bits 0x363e-0x38b1.7 (628)
 0x3640|d6 f4 94 f5 5c f6 2d f7 08 f8 ea f8 d4 f9 c4 fa|....\.-.........|
@@ -159,8 +159,8 @@ $ fq dv pcm.avi
       |                                               |                |      indexes[0:5]: 0x38ba-0x3909.7 (80)
       |                                               |                |        [0]{}: index 0x38ba-0x38c9.7 (16)
 0x38b0|                              30 30 77 62      |          00wb  |          id: "00wb" 0x38ba-0x38bd.7 (4)
-      |                                               |                |          stream_type: "wb" (Audio data) 0x38be-NA (0)
-      |                                               |                |          stream_nr: 0 0x38be-NA (0)
+      |                                               |                |          stream_type: "wb" (Audio data)
+      |                                               |                |          stream_nr: 0
       |                                               |                |          flags{}: 0x38be-0x38c1.7 (4)
 0x38b0|                                          10   |              . |            unused0: raw bits 0x38be-0x38be.2 (0.3)
 0x38b0|                                          10   |              . |            key_frame: true 0x38be.3-0x38be.3 (0.1)
@@ -172,8 +172,8 @@ $ fq dv pcm.avi
 0x38c0|                  00 08 00 00                  |      ....      |          length: 2048 0x38c6-0x38c9.7 (4)
       |                                               |                |        [1]{}: index 0x38ca-0x38d9.7 (16)
 0x38c0|                              30 30 77 62      |          00wb  |          id: "00wb" 0x38ca-0x38cd.7 (4)
-      |                                               |                |          stream_type: "wb" (Audio data) 0x38ce-NA (0)
-      |                                               |                |          stream_nr: 0 0x38ce-NA (0)
+      |                                               |                |          stream_type: "wb" (Audio data)
+      |                                               |                |          stream_nr: 0
       |                                               |                |          flags{}: 0x38ce-0x38d1.7 (4)
 0x38c0|                                          10   |              . |            unused0: raw bits 0x38ce-0x38ce.2 (0.3)
 0x38c0|                                          10   |              . |            key_frame: true 0x38ce.3-0x38ce.3 (0.1)
@@ -185,8 +185,8 @@ $ fq dv pcm.avi
 0x38d0|                  00 08 00 00                  |      ....      |          length: 2048 0x38d6-0x38d9.7 (4)
       |                                               |                |        [2]{}: index 0x38da-0x38e9.7 (16)
 0x38d0|                              30 30 77 62      |          00wb  |          id: "00wb" 0x38da-0x38dd.7 (4)
-      |                                               |                |          stream_type: "wb" (Audio data) 0x38de-NA (0)
-      |                                               |                |          stream_nr: 0 0x38de-NA (0)
+      |                                               |                |          stream_type: "wb" (Audio data)
+      |                                               |                |          stream_nr: 0
       |                                               |                |          flags{}: 0x38de-0x38e1.7 (4)
 0x38d0|                                          10   |              . |            unused0: raw bits 0x38de-0x38de.2 (0.3)
 0x38d0|                                          10   |              . |            key_frame: true 0x38de.3-0x38de.3 (0.1)
@@ -198,8 +198,8 @@ $ fq dv pcm.avi
 0x38e0|                  00 08 00 00                  |      ....      |          length: 2048 0x38e6-0x38e9.7 (4)
       |                                               |                |        [3]{}: index 0x38ea-0x38f9.7 (16)
 0x38e0|                              30 30 77 62      |          00wb  |          id: "00wb" 0x38ea-0x38ed.7 (4)
-      |                                               |                |          stream_type: "wb" (Audio data) 0x38ee-NA (0)
-      |                                               |                |          stream_nr: 0 0x38ee-NA (0)
+      |                                               |                |          stream_type: "wb" (Audio data)
+      |                                               |                |          stream_nr: 0
       |                                               |                |          flags{}: 0x38ee-0x38f1.7 (4)
 0x38e0|                                          10   |              . |            unused0: raw bits 0x38ee-0x38ee.2 (0.3)
 0x38e0|                                          10   |              . |            key_frame: true 0x38ee.3-0x38ee.3 (0.1)
@@ -211,8 +211,8 @@ $ fq dv pcm.avi
 0x38f0|                  00 08 00 00                  |      ....      |          length: 2048 0x38f6-0x38f9.7 (4)
       |                                               |                |        [4]{}: index 0x38fa-0x3909.7 (16)
 0x38f0|                              30 30 77 62      |          00wb  |          id: "00wb" 0x38fa-0x38fd.7 (4)
-      |                                               |                |          stream_type: "wb" (Audio data) 0x38fe-NA (0)
-      |                                               |                |          stream_nr: 0 0x38fe-NA (0)
+      |                                               |                |          stream_type: "wb" (Audio data)
+      |                                               |                |          stream_nr: 0
       |                                               |                |          flags{}: 0x38fe-0x3901.7 (4)
 0x38f0|                                          10   |              . |            unused0: raw bits 0x38fe-0x38fe.2 (0.3)
 0x38f0|                                          10   |              . |            key_frame: true 0x38fe.3-0x38fe.3 (0.1)
@@ -222,8 +222,8 @@ $ fq dv pcm.avi
 0x3900|00 00                                          |..              |
 0x3900|      24 20 00 00                              |  $ ..          |          offset: 8228 0x3902-0x3905.7 (4)
 0x3900|                  74 02 00 00|                 |      t...|     |          length: 628 0x3906-0x3909.7 (4)
-      |                                               |                |  streams[0:1]: 0x161e-0x3909.7 (8940)
-      |                                               |                |    [0]{}: stream 0x161e-0x3909.7 (8940)
+      |                                               |                |  streams[0:1]: 0x161e-0x38b1.7 (8852)
+      |                                               |                |    [0]{}: stream 0x161e-0x38b1.7 (8852)
       |                                               |                |      samples[0:5]: 0x161e-0x38b1.7 (8852)
 0x1610|                                          00 00|              ..|        [0]: raw bits sample 0x161e-0x1e1d.7 (2048)
 0x1620|00 01 ff 01 fd 02 f8 03 ee 04 e0 05 cc 06 b0 07|................|
@@ -240,6 +240,6 @@ $ fq dv pcm.avi
 0x3630|                                          24 f4|              $.|        [4]: raw bits sample 0x363e-0x38b1.7 (628)
 0x3640|d6 f4 94 f5 5c f6 2d f7 08 f8 ea f8 d4 f9 c4 fa|....\.-.........|
 *     |until 0x38b1.7 (628)                           |                |
-      |                                               |                |      type: "auds" 0x390a-NA (0)
-      |                                               |                |      handler: "\x01\x00\x00\x00" 0x390a-NA (0)
-      |                                               |                |      format_tag: "pcm_s16le" (1) 0x390a-NA (0)
+      |                                               |                |      type: "auds"
+      |                                               |                |      handler: "\x01\x00\x00\x00"
+      |                                               |                |      format_tag: "pcm_s16le" (1)

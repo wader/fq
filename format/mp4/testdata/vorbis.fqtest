@@ -369,8 +369,8 @@ $ fq -d mp4 dv vorbis.mp4
 0x1170|                        00 00 00 00            |        ....    |                          reserved: 0 0x1178-0x117b.7 (4)
 0x1170|                                    4c 61 76 66|            Lavf|                          data: "Lavf58.45.100" 0x117c-0x1188.7 (13)
 0x1180|35 38 2e 34 35 2e 31 30 30|                    |58.45.100|      |
-      |                                               |                |  tracks[0:1]: 0x2c-0x1188.7 (4445)
-      |                                               |                |    [0]{}: track 0x2c-0x1188.7 (4445)
+      |                                               |                |  tracks[0:1]: 0x2c-0x1dc.7 (433)
+      |                                               |                |    [0]{}: track 0x2c-0x1dc.7 (433)
       |                                               |                |      samples[0:3]: 0x2c-0x1dc.7 (433)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [0]{}: sample (vorbis_packet) 0x2c-0xe1.7 (182)
 0x0020|                                    be         |            .   |          packet_type: "Audio" (0) 0x2c-0x2c.7 (1)
@@ -387,5 +387,5 @@ $ fq -d mp4 dv vorbis.mp4
 0x0120|                                             a7|               .|          data: raw bits 0x12f-0x1dc.7 (174)
 0x0130|f2 81 46 bb c2 48 52 08 27 b8 83 10 ca 08 b1 a7|..F..HR.'.......|
 *     |until 0x1dc.7 (174)                            |                |
-      |                                               |                |      id: 1 0x1189-NA (0)
-      |                                               |                |      data_format: "mp4a" (MPEG-4 Audio) 0x1189-NA (0)
+      |                                               |                |      id: 1
+      |                                               |                |      data_format: "mp4a" (MPEG-4 Audio)

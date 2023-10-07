@@ -68,7 +68,7 @@ $ fq -d bytes 'from_pem | asn1_ber | dv' sig-p256-ber.p7m
 0x000020|         05                                    |   .            |                      form: "primitive" (0) 0x23.2-0x23.2 (0.1)
 0x000020|         05                                    |   .            |                      tag: "null" (0x5) 0x23.3-0x23.7 (0.5)
 0x000020|            00                                 |    .           |                      length: "indefinite" (0) 0x24-0x24.7 (1)
-        |                                               |                |                      value: null 0x25-NA (0)
+        |                                               |                |                      value: null
         |                                               |                |            [2]{}: object 0x25-0x2797.7 (10099)
 0x000020|               30                              |     0          |              class: "universal" (0) 0x25-0x25.1 (0.2)
 0x000020|               30                              |     0          |              form: "constructed" (1) 0x25.2-0x25.2 (0.1)
@@ -598,7 +598,7 @@ $ fq -d bytes 'from_pem | asn1_ber | dv' sig-p256-ber.p7m
 0x002940|                                 05            |           .    |                          form: "primitive" (0) 0x294b.2-0x294b.2 (0.1)
 0x002940|                                 05            |           .    |                          tag: "null" (0x5) 0x294b.3-0x294b.7 (0.5)
 0x002940|                                    00         |            .   |                          length: "indefinite" (0) 0x294c-0x294c.7 (1)
-        |                                               |                |                          value: null 0x294d-NA (0)
+        |                                               |                |                          value: null
         |                                               |                |                    [3]{}: object 0x294d-0x2a46.7 (250)
 0x002940|                                       a0      |             .  |                      class: "context" (2) 0x294d-0x294d.1 (0.2)
 0x002940|                                       a0      |             .  |                      form: "constructed" (1) 0x294d.2-0x294d.2 (0.1)
@@ -734,7 +734,7 @@ $ fq -d bytes 'from_pem | asn1_ber | dv' sig-p256-ber.p7m
 0x0029a0|                  05                           |      .         |                                          form: "primitive" (0) 0x29a6.2-0x29a6.2 (0.1)
 0x0029a0|                  05                           |      .         |                                          tag: "null" (0x5) 0x29a6.3-0x29a6.7 (0.5)
 0x0029a0|                     00                        |       .        |                                          length: "indefinite" (0) 0x29a7-0x29a7.7 (1)
-        |                                               |                |                                          value: null 0x29a8-NA (0)
+        |                                               |                |                                          value: null
         |                                               |                |                                    [1]{}: object 0x29a8-0x29b3.7 (12)
 0x0029a0|                        a1                     |        .       |                                      class: "context" (2) 0x29a8-0x29a8.1 (0.2)
 0x0029a0|                        a1                     |        .       |                                      form: "constructed" (1) 0x29a8.2-0x29a8.2 (0.1)
