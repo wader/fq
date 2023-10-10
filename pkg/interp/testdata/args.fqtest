@@ -73,9 +73,9 @@ argdecode           []
 argjson             []
 array_truncate      50
 bits_format         string
-byte_colors         0-255=brightwhite,0=brightblack,32-126:9-13=white
+byte_colors         0-255=default+bold,0=brightblack,32-126:9-13=default
 color               false
-colors              array=white,dumpaddr=yellow,dumpheader=yellow+underline,error=brightred,false=yellow,index=white,null=brightblack,number=cyan,object=white,objectkey=brightblue,prompt_repl_level=brightblack,prompt_value=white,string=green,true=yellow,value=white
+colors              array=default,dumpaddr=yellow,dumpheader=yellow+underline,error=brightred,false=yellow,index=default,null=brightblack,number=cyan,object=default,objectkey=brightblue,prompt_repl_level=brightblack,prompt_value=default,string=green,true=yellow,value=default
 compact             false
 completion_timeout  10
 decode_group        probe
