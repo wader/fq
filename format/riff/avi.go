@@ -454,7 +454,7 @@ func aviDecode(d *decode.D) any {
 				chunkID := d.FieldUTF8("chunk_id", 4)
 				aviDecorateStreamID(d, chunkID)
 				d.FieldU64("base")
-				d.FieldU32("unused")
+				d.FieldU32("unused0")
 				d.FieldArray("index", func(d *decode.D) {
 					for i := 0; i < int(nEntriesInUse); i++ {
 						d.FieldStruct("index", func(d *decode.D) {
@@ -471,6 +471,9 @@ func aviDecode(d *decode.D) any {
 						})
 					}
 				})
+				if d.BitsLeft() > 0 {
+					d.FieldRawLen("unused1", d.BitsLeft())
+				}
 
 				return false, nil
 
