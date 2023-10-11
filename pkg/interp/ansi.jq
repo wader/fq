@@ -1,6 +1,8 @@
 def _esc: "\u001b";
 def _ansi_codes:
-  { black: {set: "30", reset: "39"}
+  { bold: {set: "1", reset: "0"}
+  , faint: {set: "2", reset: "0"}
+  , black: {set: "30", reset: "39"}
   , red: {set: "31", reset: "39"}
   , green: {set: "32", reset: "39"}
   , yellow: {set: "33", reset: "39"}
@@ -16,7 +18,7 @@ def _ansi_codes:
   , brightmagenta: {set: "95", reset: "39"}
   , brightcyan: {set: "96", reset: "39"}
   , brightwhite: {set: "97", reset: "39"}
-  , reset: {set: "39", reset: "39"}
+  , default: {set: "39", reset: "39"}
   , bgblack: {set: "40", reset: "49"}
   , bgred: {set: "41", reset: "49"}
   , bggreen: {set: "42", reset: "49"}

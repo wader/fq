@@ -10,16 +10,16 @@ def _opt_build_default_fixed:
     , argjson:        []
     , array_truncate: 50
     , bits_format:    "string"
-    # 0-0xff=brightwhite,0=brightblack,32-126:9-13=white
+    # 0-0xff=brightwhite,0=brightblack,32-126:9-13=default
     , byte_colors:
         [ { ranges: [[0,255]]
-          , value: "brightwhite"
+          , value: "default+bold"
           }
         , { ranges: [[0]]
           , value: "brightblack"
           }
         , { ranges: [[32,126],[9,13]]
-          , value: "white"
+          , value: "default"
           }
         ]
     , color: ($stdout.is_terminal and (env.NO_COLOR | . == null or . == ""))
@@ -30,15 +30,15 @@ def _opt_build_default_fixed:
         , number:            "cyan"
         , string:            "green"
         , objectkey:         "brightblue"
-        , array:             "white"
-        , object:            "white"
-        , index:             "white"
-        , value:             "white"
+        , array:             "default"
+        , object:            "default"
+        , index:             "default"
+        , value:             "default"
         , error:             "brightred"
         , dumpheader:        "yellow+underline"
         , dumpaddr:          "yellow"
         , prompt_repl_level: "brightblack"
-        , prompt_value:      "white"
+        , prompt_value:      "default"
         }
     , compact:            false
     , completion_timeout: (env.COMPLETION_TIMEOUT | if . != null then tonumber else 1 end)
@@ -278,7 +278,7 @@ def _opt_from_array: tojson;
 # TODO: cleanup
 def _trim: capture("^\\s*(?<str>.*?)\\s*$"; "").str;
 
-# "0-255=brightwhite,0=brightblack,32-126:9-13=white" -> [{"ranges": [[0-255]], value: "brightwhite"}, ...]
+# "0-255=brightwhite,0=brightblack,32-126:9-13=default" -> [{"ranges": [[0-255]], value: "brightwhite"}, ...]
 def _csv_ranges_to_array:
   ( split(",")
   | map(

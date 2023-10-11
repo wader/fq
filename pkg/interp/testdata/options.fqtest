@@ -16,7 +16,7 @@ $ fq -n options
           255
         ]
       ],
-      "value": "brightwhite"
+      "value": "default+bold"
     },
     {
       "ranges": [
@@ -37,26 +37,26 @@ $ fq -n options
           13
         ]
       ],
-      "value": "white"
+      "value": "default"
     }
   ],
   "color": false,
   "colors": {
-    "array": "white",
+    "array": "default",
     "dumpaddr": "yellow",
     "dumpheader": "yellow+underline",
     "error": "brightred",
     "false": "yellow",
-    "index": "white",
+    "index": "default",
     "null": "brightblack",
     "number": "cyan",
-    "object": "white",
+    "object": "default",
     "objectkey": "brightblue",
     "prompt_repl_level": "brightblack",
-    "prompt_value": "white",
+    "prompt_value": "default",
     "string": "green",
     "true": "yellow",
-    "value": "white"
+    "value": "default"
   },
   "compact": false,
   "completion_timeout": 10,

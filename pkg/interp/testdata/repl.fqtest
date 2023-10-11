@@ -6,9 +6,9 @@ null
 null> 1+1
 2
 null> repl({color: true})
-[90m>[39m [37mnull[39m> )
+[90m>[39m [39mnull[39m> )
         ^ unexpected token ")"
-[90m>[39m [37mnull[39m> ^D
+[90m>[39m [39mnull[39m> ^D
 null> )
       ^ unexpected token ")"
 null> 
