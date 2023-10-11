@@ -61,7 +61,7 @@ require (
 	// bump: gomod-golang-x-net /golang\.org\/x\/net v(.*)/ https://github.com/golang/net.git|^0
 	// bump: gomod-golang-x-net command go get -d golang.org/x/net@v$LATEST && go mod tidy
 	// bump: gomod-golang-x-net link "Tags" https://github.com/golang/net/tags
-	golang.org/x/net v0.16.0
+	golang.org/x/net v0.17.0
 
 	// bump: gomod-golang/text /golang\.org\/x\/text v(.*)/ https://github.com/golang/text.git|^0
 	// bump: gomod-golang/text command go get -d golang.org/x/text@v$LATEST && go mod tidy
