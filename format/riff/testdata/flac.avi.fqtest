@@ -263,3 +263,4 @@ $ fq dv flac.avi
       |                                               |                |      type: "auds"
       |                                               |                |      handler: "\x01\x00\x00\x00"
       |                                               |                |      format_tag: "flac" (61868)
+      |                                               |                |  extended_chunks[0:0]: 0x18cc-0x18cc (0)
