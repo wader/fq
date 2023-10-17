@@ -246,24 +246,35 @@ func (m RawBytesMap) MapBitBuf(s BitBuf) (BitBuf, error) {
 
 var unixTimeEpochDate = time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC)
 
-func UintActualDate(epoch time.Time, format string) UintFn {
+func UintActualDateDescription(epoch time.Time, unit time.Duration, format string) UintFn {
 	return UintFn(func(s Uint) (Uint, error) {
-		s.Description = epoch.Add(time.Duration(s.Actual) * time.Second).Format(format)
+		s.Description = epoch.Add(time.Duration(s.Actual) * unit).Format(format)
 		return s, nil
 	})
 }
 
-func UintActualUnixTime(format string) UintFn {
-	return UintActualDate(unixTimeEpochDate, format)
+func UintActualUnixTimeDescription(unit time.Duration, format string) UintFn {
+	return UintActualDateDescription(unixTimeEpochDate, unit, format)
 }
 
-func FltActualDate(epoch time.Time, format string) FltFn {
+func SintActualDateDescription(epoch time.Time, unit time.Duration, format string) SintFn {
+	return SintFn(func(s Sint) (Sint, error) {
+		s.Description = epoch.Add(time.Duration(s.Actual) * unit).Format(format)
+		return s, nil
+	})
+}
+
+func SintActualUnixTimeDescription(unit time.Duration, format string) SintFn {
+	return SintActualDateDescription(unixTimeEpochDate, unit, format)
+}
+
+func FltActualDateDescription(epoch time.Time, unit time.Duration, format string) FltFn {
 	return FltFn(func(s Flt) (Flt, error) {
-		s.Description = epoch.Add(time.Duration(s.Actual) * time.Second).Format(format)
+		s.Description = epoch.Add(time.Duration(s.Actual) * unit).Format(format)
 		return s, nil
 	})
 }
 
-func FltActualUnixTime(format string) FltFn {
-	return FltActualDate(unixTimeEpochDate, format)
+func FltActualUnixTimeDescription(unit time.Duration, format string) FltFn {
+	return FltActualDateDescription(unixTimeEpochDate, unit, format)
 }

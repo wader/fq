@@ -14,6 +14,7 @@ package matroska
 import (
 	"embed"
 	"fmt"
+	"time"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/matroska/ebml"
@@ -116,6 +117,8 @@ var lacingTypeNames = scalar.UintMapSymStr{
 }
 
 const tagSizeUnknown = 0xffffffffffffff
+
+var sintActualMatroskaEpochDescription = scalar.SintActualDateDescription(ebml.EpochDate, time.Nanosecond, time.RFC3339)
 
 func decodeLacingFn(d *decode.D, lacingType int, fn func(d *decode.D)) {
 	if lacingType == lacingTypeNone {
@@ -383,28 +386,14 @@ func decodeMaster(d *decode.D, bitsLimit int64, elm *ebml.Master, unknownSize bo
 				case *ebml.UTF8:
 					d.FieldUTF8NullFixedLen("value", int(tagSize))
 				case *ebml.Date:
-					// TODO:
-					/*
-						proc type_date {size label _extra} {
-						    set s [clock scan {2001-01-01 00:00:00}]
-						    set frac 0
-						    switch $size {
-						        0 {}
-						        8 {
-						            set nano [int64]
-						            set s [clock add $s [expr $nano/1000000000] seconds]
-						            set frac [expr ($nano%1000000000)/1000000000.0]
-						        }
-						        default {
-						            bytes $size $label
-						            return
-						        }
-						    }
-
-						    entry $label "[clock format $s] ${frac}s" $size [expr [pos]-$size]
-						}
-					*/
-					d.FieldRawLen("value", int64(tagSize)*8)
+					switch tagSize {
+					case 0:
+						d.FieldValueSint("value", 0, sintActualMatroskaEpochDescription)
+					case 8:
+						d.FieldS("value", int(tagSize)*8, sintActualMatroskaEpochDescription)
+					default:
+						d.FieldRawLen("value", int64(tagSize)*8)
+					}
 				case *ebml.Binary:
 					switch tagID {
 					case ebml_matroska.SimpleBlockID:

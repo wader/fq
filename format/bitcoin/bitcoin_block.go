@@ -66,7 +66,7 @@ func decodeBitcoinBlock(d *decode.D) any {
 			d.FieldU32("version", scalar.UintHex)
 			d.FieldRawLen("previous_block_hash", 32*8, rawHexReverse)
 			d.FieldRawLen("merkle_root", 32*8, rawHexReverse)
-			d.FieldU32("time", scalar.UintActualUnixTime(time.RFC3339))
+			d.FieldU32("time", scalar.UintActualUnixTimeDescription(time.Second, time.RFC3339))
 			d.FieldU32("bits", scalar.UintHex)
 			d.FieldU32("nonce", scalar.UintHex)
 		})
