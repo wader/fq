@@ -1,5 +1,10 @@
 package ebml
 
+import "time"
+
+// 2001-01-01T00:00:00.000000000 UTC
+var EpochDate = time.Date(2001, time.January, 1, 0, 0, 0, 0, time.UTC)
+
 type ID int
 
 type Element interface {

@@ -130,7 +130,7 @@ func decodeItem(d *decode.D, p *plist) bool {
 	case elementTypeDate:
 		n := 1 << decodeSize(d, d.UintAssert(4, 8))
 		d.FieldValueUint("size", uint64(n))
-		d.FieldF("value", n*8, scalar.FltActualDate(cocoaTimeEpochDate, time.RFC3339))
+		d.FieldF("value", n*8, scalar.FltActualDateDescription(cocoaTimeEpochDate, time.Second, time.RFC3339))
 	case elementTypeData:
 		n := decodeSize(d)
 		d.FieldValueUint("size", n)

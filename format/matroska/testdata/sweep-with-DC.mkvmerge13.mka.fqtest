@@ -159,7 +159,7 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
 0x10a0|               44 61                           |     Da         |              id: "date_utc" (0x4461) (The date and time that the Segment was created by the muxing application or library) 0x10a5-0x10a6.7 (2)
       |                                               |                |              type: "date"
 0x10a0|                     88                        |       .        |              size: 8 0x10a7-0x10a7.7 (1)
-0x10a0|                        09 7b f0 a0 97 43 d2 00|        .{...C..|              value: raw bits 0x10a8-0x10af.7 (8)
+0x10a0|                        09 7b f0 a0 97 43 d2 00|        .{...C..|              value: 683404341000000000 (2022-08-28T18:32:21Z) 0x10a8-0x10af.7 (8)
       |                                               |                |            [5]{}: element 0x10b0-0x10c2.7 (19)
 0x10b0|73 a4                                          |s.              |              id: "segment_uuid" (0x73a4) (A randomly generated unique ID to identify the Segment amongst many others chosen) 0x10b0-0x10b1.7 (2)
       |                                               |                |              type: "binary"

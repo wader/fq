@@ -316,7 +316,7 @@ func decodeTLSHandshake(d *decode.D, tc *tlsCtx) {
 			tc.version = d.FieldU16("version", versionNames, scalar.UintHex)
 			copy(tc.random[:], d.PeekBytes(32))
 			d.FieldStruct("random", func(d *decode.D) {
-				d.FieldU32("gmt_unix_time", scalar.UintActualUnixTime(time.RFC3339))
+				d.FieldU32("gmt_unix_time", scalar.UintActualUnixTimeDescription(time.Second, time.RFC3339))
 				d.FieldRawLen("random_bytes", 28*8)
 			})
 

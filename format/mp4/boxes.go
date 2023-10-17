@@ -207,7 +207,7 @@ func decodeLang(d *decode.D) string {
 // Quicktime time seconds in January 1, 1904 UTC
 var quicktimeEpochDate = time.Date(1904, time.January, 1, 0, 0, 0, 0, time.UTC)
 
-var uintActualQuicktimeEpoch = scalar.UintActualDate(quicktimeEpochDate, time.RFC3339)
+var uintActualQuicktimeEpochDescription = scalar.UintActualDateDescription(quicktimeEpochDate, time.Second, time.RFC3339)
 
 func decodeMvhdFieldMatrix(d *decode.D, name string) {
 	d.FieldStruct(name, func(d *decode.D) {
@@ -398,13 +398,13 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		d.FieldU24("flags")
 		switch version {
 		case 0:
-			d.FieldU32("creation_time", uintActualQuicktimeEpoch)
-			d.FieldU32("modification_time", uintActualQuicktimeEpoch)
+			d.FieldU32("creation_time", uintActualQuicktimeEpochDescription)
+			d.FieldU32("modification_time", uintActualQuicktimeEpochDescription)
 			d.FieldU32("time_scale")
 			d.FieldU32("duration")
 		case 1:
-			d.FieldU64("creation_time", uintActualQuicktimeEpoch)
-			d.FieldU64("modification_time", uintActualQuicktimeEpoch)
+			d.FieldU64("creation_time", uintActualQuicktimeEpochDescription)
+			d.FieldU64("modification_time", uintActualQuicktimeEpochDescription)
 			d.FieldU32("time_scale")
 			d.FieldU64("duration")
 		default:
@@ -458,14 +458,14 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		})
 		switch version {
 		case 0:
-			d.FieldU32("creation_time", uintActualQuicktimeEpoch)
-			d.FieldU32("modification_time", uintActualQuicktimeEpoch)
+			d.FieldU32("creation_time", uintActualQuicktimeEpochDescription)
+			d.FieldU32("modification_time", uintActualQuicktimeEpochDescription)
 			trackID = int(d.FieldU32("track_id"))
 			d.FieldU32("reserved1")
 			d.FieldU32("duration")
 		case 1:
-			d.FieldU64("creation_time", uintActualQuicktimeEpoch)
-			d.FieldU64("modification_time", uintActualQuicktimeEpoch)
+			d.FieldU64("creation_time", uintActualQuicktimeEpochDescription)
+			d.FieldU64("modification_time", uintActualQuicktimeEpochDescription)
 			trackID = int(d.FieldU32("track_id"))
 			d.FieldU32("reserved1")
 			d.FieldU64("duration")
@@ -493,13 +493,13 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		// TODO: timestamps
 		switch version {
 		case 0:
-			d.FieldU32("creation_time", uintActualQuicktimeEpoch)
-			d.FieldU32("modification_time", uintActualQuicktimeEpoch)
+			d.FieldU32("creation_time", uintActualQuicktimeEpochDescription)
+			d.FieldU32("modification_time", uintActualQuicktimeEpochDescription)
 			d.FieldU32("time_scale")
 			d.FieldU32("duration")
 		case 1:
-			d.FieldU64("creation_time", uintActualQuicktimeEpoch)
-			d.FieldU64("modification_time", uintActualQuicktimeEpoch)
+			d.FieldU64("creation_time", uintActualQuicktimeEpochDescription)
+			d.FieldU64("modification_time", uintActualQuicktimeEpochDescription)
 			d.FieldU32("time_scale")
 			d.FieldU64("duration")
 		default:

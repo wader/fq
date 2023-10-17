@@ -76,7 +76,7 @@ func gzDecode(d *decode.D) any {
 		hasComment = d.FieldBool("comment")
 		d.FieldU3("reserved")
 	})
-	d.FieldU32("mtime", scalar.UintActualUnixTime(time.RFC3339))
+	d.FieldU32("mtime", scalar.UintActualUnixTimeDescription(time.Second, time.RFC3339))
 	switch compressionMethod {
 	case deflateMethod:
 		d.FieldU8("extra_flags", deflateExtraFlagsNames)

@@ -332,7 +332,7 @@ func makeDecodeRecord() func(d *decode.D) {
 			case dataTypeNumber64F:
 				d.FieldF64("data")
 			case dataTypeDate:
-				d.FieldF64BE("data", scalar.FltActualDate(cocoaTimeEpochDate, time.RFC3339))
+				d.FieldF64BE("data", scalar.FltActualDateDescription(cocoaTimeEpochDate, time.Second, time.RFC3339))
 			case dataTypeBooleanFalse:
 			case dataTypeBooleanTrue:
 			case dataTypeArray:
