@@ -1,7 +1,7 @@
 $ fq -d asn1_ber dv tc18.ber
-   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: tc18.ber (asn1_ber) 0x0-0x4.7 (5)
-0x0|02                                             |.               |  class: "universal" (0) 0x0-0x0.1 (0.2)
-0x0|02                                             |.               |  form: "primitive" (0) 0x0.2-0x0.2 (0.1)
-0x0|02                                             |.               |  tag: "integer" (0x2) 0x0.3-0x0.7 (0.5)
-0x0|   03                                          | .              |  length: 3 0x1-0x1.7 (1)
-0x0|      ff f0 01|                                |  ...|          |  value: -4095 0x2-0x4.7 (3)
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: tc18.ber (asn1_ber) 0x0-0x5 (5)
+0x0|02                                             |.               |  class: "universal" (0) 0x0-0x0.2 (0.2)
+0x0|02                                             |.               |  form: "primitive" (0) 0x0.2-0x0.3 (0.1)
+0x0|02                                             |.               |  tag: "integer" (0x2) 0x0.3-0x1 (0.5)
+0x0|   03                                          | .              |  length: 3 0x1-0x2 (1)
+0x0|      ff f0 01|                                |  ...|          |  value: -4095 0x2-0x5 (3)

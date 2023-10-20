@@ -1,35 +1,35 @@
 $ fq dv bext.wav
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: bext.wav (wav) 0x0-0x26d.7 (622)
-0x000|52 49 46 46                                    |RIFF            |  id: "RIFF" 0x0-0x3.7 (4)
-0x000|            66 02 00 00                        |    f...        |  size: 614 0x4-0x7.7 (4)
-0x000|                        57 41 56 45            |        WAVE    |  format: "WAVE" (valid) 0x8-0xb.7 (4)
-     |                                               |                |  chunks[0:1]: 0xc-0x26d.7 (610)
-     |                                               |                |    [0]{}: chunk 0xc-0x26d.7 (610)
-0x000|                                    62 65 78 74|            bext|      id: "bext" 0xc-0xf.7 (4)
-0x010|5a 02 00 00                                    |Z...            |      size: 602 0x10-0x13.7 (4)
-0x010|            00 00 00 00 00 00 00 00 00 00 00 00|    ............|      description: "" 0x14-0x113.7 (256)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: bext.wav (wav) 0x0-0x26e (622)
+0x000|52 49 46 46                                    |RIFF            |  id: "RIFF" 0x0-0x4 (4)
+0x000|            66 02 00 00                        |    f...        |  size: 614 0x4-0x8 (4)
+0x000|                        57 41 56 45            |        WAVE    |  format: "WAVE" (valid) 0x8-0xc (4)
+     |                                               |                |  chunks[0:1]: 0xc-0x26e (610)
+     |                                               |                |    [0]{}: chunk 0xc-0x26e (610)
+0x000|                                    62 65 78 74|            bext|      id: "bext" 0xc-0x10 (4)
+0x010|5a 02 00 00                                    |Z...            |      size: 602 0x10-0x14 (4)
+0x010|            00 00 00 00 00 00 00 00 00 00 00 00|    ............|      description: "" 0x14-0x114 (256)
 0x020|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
 *    |until 0x113.7 (256)                            |                |
-0x110|            52 45 41 50 45 52 00 00 00 00 00 00|    REAPER......|      originator: "REAPER" 0x114-0x133.7 (32)
+0x110|            52 45 41 50 45 52 00 00 00 00 00 00|    REAPER......|      originator: "REAPER" 0x114-0x134 (32)
 0x120|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
 0x130|00 00 00 00                                    |....            |
-0x130|            00 00 00 00 00 00 00 00 00 00 00 00|    ............|      originator_reference: "" 0x134-0x153.7 (32)
+0x130|            00 00 00 00 00 00 00 00 00 00 00 00|    ............|      originator_reference: "" 0x134-0x154 (32)
 0x140|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
 0x150|00 00 00 00                                    |....            |
-0x150|            32 30 30 31 2d 30 32 2d 30 33      |    2001-02-03  |      originator_date: "2001-02-03" 0x154-0x15d.7 (10)
-0x150|                                          30 34|              04|      originator_time: "04-05-06" 0x15e-0x165.7 (8)
+0x150|            32 30 30 31 2d 30 32 2d 30 33      |    2001-02-03  |      originator_date: "2001-02-03" 0x154-0x15e (10)
+0x150|                                          30 34|              04|      originator_time: "04-05-06" 0x15e-0x166 (8)
 0x160|2d 30 35 2d 30 36                              |-05-06          |
-0x160|                  00 00 00 00                  |      ....      |      time_reference_low: 0 0x166-0x169.7 (4)
-0x160|                              00 00 00 00      |          ....  |      time_reference_high: 0 0x16a-0x16d.7 (4)
-0x160|                                          01 00|              ..|      version: 1 0x16e-0x16f.7 (2)
-0x170|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|      umid: raw bits 0x170-0x1af.7 (64)
+0x160|                  00 00 00 00                  |      ....      |      time_reference_low: 0 0x166-0x16a (4)
+0x160|                              00 00 00 00      |          ....  |      time_reference_high: 0 0x16a-0x16e (4)
+0x160|                                          01 00|              ..|      version: 1 0x16e-0x170 (2)
+0x170|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|      umid: raw bits 0x170-0x1b0 (64)
 *    |until 0x1af.7 (64)                             |                |
-0x1b0|00 00                                          |..              |      loudness_value: 0 0x1b0-0x1b1.7 (2)
-0x1b0|      00 00                                    |  ..            |      loudness_range: 0 0x1b2-0x1b3.7 (2)
-0x1b0|            00 00                              |    ..          |      max_true_peak_level: 0 0x1b4-0x1b5.7 (2)
-0x1b0|                  00 00                        |      ..        |      max_momentary_loudness: 0 0x1b6-0x1b7.7 (2)
-0x1b0|                        00 00                  |        ..      |      max_short_term_loudness: 0 0x1b8-0x1b9.7 (2)
-0x1b0|                              00 00 00 00 00 00|          ......|      reserved: raw bits 0x1ba-0x26d.7 (180)
+0x1b0|00 00                                          |..              |      loudness_value: 0 0x1b0-0x1b2 (2)
+0x1b0|      00 00                                    |  ..            |      loudness_range: 0 0x1b2-0x1b4 (2)
+0x1b0|            00 00                              |    ..          |      max_true_peak_level: 0 0x1b4-0x1b6 (2)
+0x1b0|                  00 00                        |      ..        |      max_momentary_loudness: 0 0x1b6-0x1b8 (2)
+0x1b0|                        00 00                  |        ..      |      max_short_term_loudness: 0 0x1b8-0x1ba (2)
+0x1b0|                              00 00 00 00 00 00|          ......|      reserved: raw bits 0x1ba-0x26e (180)
 0x1c0|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
 *    |until 0x26d.7 (end) (180)                      |                |
-     |                                               |                |      coding_history: raw bits 0x26e-NA (0)
+     |                                               |                |      coding_history: raw bits 0x26e-0x26e (0)

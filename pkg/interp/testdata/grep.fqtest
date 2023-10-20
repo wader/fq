@@ -55,7 +55,7 @@ mp3> bgrep(44100, "ID", "^ID3$", "^ID.?$", "Info", "magic", "\u00ff", [0x49, 0x4
 0x0|49 44 33                                       |ID3             |.headers[0].header.magic: "ID3" (valid)
 mp3> "64ff65ff66" | fromhex | bgrep("\u00ff"; "b")
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|64 ff 65 ff 66|                                |d.e.f|          |.: raw bits 0x0-0x4.7 (5)
+0x0|64 ff 65 ff 66|                                |d.e.f|          |.: raw bits 0x0-0x5 (5)
 mp3> grep_by(. == 44100)
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x20|                                             40|               @|.frames[0].header.sample_rate: 44100 (0)

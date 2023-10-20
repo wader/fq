@@ -36,14 +36,14 @@ cover: test
 	cat cover.out.html | grep '<option value="file' | sed -E 's/.*>(.*) \((.*)%\)<.*/\2 \1/' | sort -rn
 
 doc: always
-doc: $(wildcard doc/*.svg)
+doc: $(wildcard doc/*.svg.sh)
 doc: $(wildcard *.md doc/*.md)
 
 %.md: fq
 	@doc/mdsh.sh ./fq $@
 
-doc/%.svg: fq
-	(cd doc ; ../$@.sh ../fq) | go run github.com/wader/ansisvg@master > $@
+doc/%.svg.sh: fq
+	(cd doc ; ../$@ ../fq) | go run github.com/wader/ansisvg@master > $(@:.svg.sh=.svg)
 
 doc/formats.svg: fq
 	@# ignore graphviz version as it causes diff when nothing has changed

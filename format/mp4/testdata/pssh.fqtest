@@ -1,33 +1,33 @@
 # test pssh from https://github.com/wader/fq/issues/282
 $ fq ddv pssh.mp4
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: pssh.mp4 (mp4) 0x0-0x4d3.7 (1236)
-     |                                               |                |  boxes[0:3]: 0x0-0x4d3.7 (1236)
-     |                                               |                |    [0]{}: box 0x0-0x23.7 (36)
-0x000|00 00 00 24                                    |...$            |      size: 36 0x0-0x3.7 (4)
-0x000|            66 74 79 70                        |    ftyp        |      type: "ftyp" (File type and compatibility) 0x4-0x7.7 (4)
-0x000|                        69 73 6f 6d            |        isom    |      major_brand: "isom" 0x8-0xb.7 (4)
-0x000|                                    00 00 00 01|            ....|      minor_version: 1 0xc-0xf.7 (4)
-     |                                               |                |      brands[0:5]: 0x10-0x23.7 (20)
-0x010|69 73 6f 6d                                    |isom            |        [0]: "isom" brand (All files based on the ISO Base Media File Format) 0x10-0x13.7 (4)
-0x010|            61 76 63 31                        |    avc1        |        [1]: "avc1" brand (Advanced Video Coding extensions) 0x14-0x17.7 (4)
-0x010|                        6d 70 34 32            |        mp42    |        [2]: "mp42" brand (MP4 version 2) 0x18-0x1b.7 (4)
-0x010|                                    69 73 6f 35|            iso5|        [3]: "iso5" brand (Version of the ISO file format) 0x1c-0x1f.7 (4)
-0x020|69 73 6f 36                                    |iso6            |        [4]: "iso6" brand (Version of the ISO file format) 0x20-0x23.7 (4)
-     |                                               |                |    [1]{}: box 0x24-0x47d.7 (1114)
-0x020|            00 00 04 5a                        |    ...Z        |      size: 1114 0x24-0x27.7 (4)
-0x020|                        70 73 73 68            |        pssh    |      type: "pssh" (Protection system specific header) 0x28-0x2b.7 (4)
-0x020|                                    00         |            .   |      version: 0 0x2c-0x2c.7 (1)
-0x020|                                       00 00 00|             ...|      flags: 0 0x2d-0x2f.7 (3)
-0x030|9a 04 f0 79 98 40 42 86 ab 92 e6 5b e0 88 5f 95|...y.@B....[.._.|      system_id: "playready" (raw bits) 0x30-0x3f.7 (16)
-0x040|00 00 04 3a                                    |...:            |      data_size: 1082 0x40-0x43.7 (4)
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      data{}: (pssh_playready) 0x44-0x47d.7 (1082)
-0x040|            3a 04 00 00                        |    :...        |        size: 1082 0x44-0x47.7 (4)
-0x040|                        01 00                  |        ..      |        count: 1 0x48-0x49.7 (2)
-     |                                               |                |        records[0:1]: 0x4a-0x47d.7 (1076)
-     |                                               |                |          [0]{}: record 0x4a-0x47d.7 (1076)
-0x040|                              01 00            |          ..    |            type: "Rights management header" (1) 0x4a-0x4b.7 (2)
-0x040|                                    30 04      |            0.  |            len: 1072 0x4c-0x4d.7 (2)
-0x040|                                          3c 00|              <.|            xml: "<WRMHEADER xmlns=\"http://schemas.microsoft.com/..." 0x4e-0x47d.7 (1072)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: pssh.mp4 (mp4) 0x0-0x4d4 (1236)
+     |                                               |                |  boxes[0:3]: 0x0-0x4d4 (1236)
+     |                                               |                |    [0]{}: box 0x0-0x24 (36)
+0x000|00 00 00 24                                    |...$            |      size: 36 0x0-0x4 (4)
+0x000|            66 74 79 70                        |    ftyp        |      type: "ftyp" (File type and compatibility) 0x4-0x8 (4)
+0x000|                        69 73 6f 6d            |        isom    |      major_brand: "isom" 0x8-0xc (4)
+0x000|                                    00 00 00 01|            ....|      minor_version: 1 0xc-0x10 (4)
+     |                                               |                |      brands[0:5]: 0x10-0x24 (20)
+0x010|69 73 6f 6d                                    |isom            |        [0]: "isom" brand (All files based on the ISO Base Media File Format) 0x10-0x14 (4)
+0x010|            61 76 63 31                        |    avc1        |        [1]: "avc1" brand (Advanced Video Coding extensions) 0x14-0x18 (4)
+0x010|                        6d 70 34 32            |        mp42    |        [2]: "mp42" brand (MP4 version 2) 0x18-0x1c (4)
+0x010|                                    69 73 6f 35|            iso5|        [3]: "iso5" brand (Version of the ISO file format) 0x1c-0x20 (4)
+0x020|69 73 6f 36                                    |iso6            |        [4]: "iso6" brand (Version of the ISO file format) 0x20-0x24 (4)
+     |                                               |                |    [1]{}: box 0x24-0x47e (1114)
+0x020|            00 00 04 5a                        |    ...Z        |      size: 1114 0x24-0x28 (4)
+0x020|                        70 73 73 68            |        pssh    |      type: "pssh" (Protection system specific header) 0x28-0x2c (4)
+0x020|                                    00         |            .   |      version: 0 0x2c-0x2d (1)
+0x020|                                       00 00 00|             ...|      flags: 0 0x2d-0x30 (3)
+0x030|9a 04 f0 79 98 40 42 86 ab 92 e6 5b e0 88 5f 95|...y.@B....[.._.|      system_id: "playready" (raw bits) 0x30-0x40 (16)
+0x040|00 00 04 3a                                    |...:            |      data_size: 1082 0x40-0x44 (4)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      data{}: (pssh_playready) 0x44-0x47e (1082)
+0x040|            3a 04 00 00                        |    :...        |        size: 1082 0x44-0x48 (4)
+0x040|                        01 00                  |        ..      |        count: 1 0x48-0x4a (2)
+     |                                               |                |        records[0:1]: 0x4a-0x47e (1076)
+     |                                               |                |          [0]{}: record 0x4a-0x47e (1076)
+0x040|                              01 00            |          ..    |            type: "Rights management header" (1) 0x4a-0x4c (2)
+0x040|                                    30 04      |            0.  |            len: 1072 0x4c-0x4e (2)
+0x040|                                          3c 00|              <.|            xml: "<WRMHEADER xmlns=\"http://schemas.microsoft.com/..." 0x4e-0x47e (1072)
 0x050|57 00 52 00 4d 00 48 00 45 00 41 00 44 00 45 00|W.R.M.H.E.A.D.E.|
 0x060|52 00 20 00 78 00 6d 00 6c 00 6e 00 73 00 3d 00|R. .x.m.l.n.s.=.|
 0x070|22 00 68 00 74 00 74 00 70 00 3a 00 2f 00 2f 00|".h.t.t.p.:././.|
@@ -95,60 +95,60 @@ $ fq ddv pssh.mp4
 0x450|55 00 52 00 4c 00 3e 00 3c 00 2f 00 44 00 41 00|U.R.L.>.<./.D.A.|
 0x460|54 00 41 00 3e 00 3c 00 2f 00 57 00 52 00 4d 00|T.A.>.<./.W.R.M.|
 0x470|48 00 45 00 41 00 44 00 45 00 52 00 3e 00      |H.E.A.D.E.R.>.  |
-     |                                               |                |    [2]{}: box 0x47e-0x4d3.7 (86)
-0x470|                                          00 00|              ..|      size: 86 0x47e-0x481.7 (4)
+     |                                               |                |    [2]{}: box 0x47e-0x4d4 (86)
+0x470|                                          00 00|              ..|      size: 86 0x47e-0x482 (4)
 0x480|00 56                                          |.V              |
-0x480|      70 73 73 68                              |  pssh          |      type: "pssh" (Protection system specific header) 0x482-0x485.7 (4)
-0x480|                  00                           |      .         |      version: 0 0x486-0x486.7 (1)
-0x480|                     00 00 00                  |       ...      |      flags: 0 0x487-0x489.7 (3)
-0x480|                              ed ef 8b a9 79 d6|          ....y.|      system_id: "widevine" (raw bits) 0x48a-0x499.7 (16)
+0x480|      70 73 73 68                              |  pssh          |      type: "pssh" (Protection system specific header) 0x482-0x486 (4)
+0x480|                  00                           |      .         |      version: 0 0x486-0x487 (1)
+0x480|                     00 00 00                  |       ...      |      flags: 0 0x487-0x48a (3)
+0x480|                              ed ef 8b a9 79 d6|          ....y.|      system_id: "widevine" (raw bits) 0x48a-0x49a (16)
 0x490|4a ce a3 c8 27 dc d5 1d 21 ed                  |J...'...!.      |
-0x490|                              00 00 00 36      |          ...6  |      data_size: 54 0x49a-0x49d.7 (4)
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      data{}: (protobuf_widevine) 0x49e-0x4d3.7 (54)
-     |                                               |                |        fields[0:5]: 0x49e-0x4d3.7 (54)
-     |                                               |                |          [0]{}: field 0x49e-0x49f.7 (2)
-0x490|                                          08   |              . |            key_n: 8 0x49e-0x49e.7 (1)
+0x490|                              00 00 00 36      |          ...6  |      data_size: 54 0x49a-0x49e (4)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      data{}: (protobuf_widevine) 0x49e-0x4d4 (54)
+     |                                               |                |        fields[0:5]: 0x49e-0x4d4 (54)
+     |                                               |                |          [0]{}: field 0x49e-0x4a0 (2)
+0x490|                                          08   |              . |            key_n: 8 0x49e-0x49f (1)
      |                                               |                |            field_number: 1
      |                                               |                |            wire_type: "varint" (0)
-0x490|                                             01|               .|            wire_value: 1 0x49f-0x49f.7 (1)
+0x490|                                             01|               .|            wire_value: 1 0x49f-0x4a0 (1)
      |                                               |                |            name: "algorithm"
      |                                               |                |            type: "enum"
      |                                               |                |            enum: "aesctr"
-     |                                               |                |          [1]{}: field 0x4a0-0x4b1.7 (18)
-0x4a0|12                                             |.               |            key_n: 18 0x4a0-0x4a0.7 (1)
+     |                                               |                |          [1]{}: field 0x4a0-0x4b2 (18)
+0x4a0|12                                             |.               |            key_n: 18 0x4a0-0x4a1 (1)
      |                                               |                |            field_number: 2
      |                                               |                |            wire_type: "length_delimited" (2)
-0x4a0|   10                                          | .              |            length: 16 0x4a1-0x4a1.7 (1)
-0x4a0|      88 37 80 c4 a9 81 49 4c b9 94 9e 93 79 2f|  .7....IL....y/|            wire_value: raw bits 0x4a2-0x4b1.7 (16)
+0x4a0|   10                                          | .              |            length: 16 0x4a1-0x4a2 (1)
+0x4a0|      88 37 80 c4 a9 81 49 4c b9 94 9e 93 79 2f|  .7....IL....y/|            wire_value: raw bits 0x4a2-0x4b2 (16)
 0x4b0|f8 a7                                          |..              |
      |                                               |                |            name: "key_id"
      |                                               |                |            type: "bytes"
      |                                               |                |            value: raw bits
-     |                                               |                |          [2]{}: field 0x4b2-0x4c0.7 (15)
-0x4b0|      1a                                       |  .             |            key_n: 26 0x4b2-0x4b2.7 (1)
+     |                                               |                |          [2]{}: field 0x4b2-0x4c1 (15)
+0x4b0|      1a                                       |  .             |            key_n: 26 0x4b2-0x4b3 (1)
      |                                               |                |            field_number: 3
      |                                               |                |            wire_type: "length_delimited" (2)
-0x4b0|         0d                                    |   .            |            length: 13 0x4b3-0x4b3.7 (1)
-0x4b0|            77 69 64 65 76 69 6e 65 5f 74 65 73|    widevine_tes|            wire_value: raw bits 0x4b4-0x4c0.7 (13)
+0x4b0|         0d                                    |   .            |            length: 13 0x4b3-0x4b4 (1)
+0x4b0|            77 69 64 65 76 69 6e 65 5f 74 65 73|    widevine_tes|            wire_value: raw bits 0x4b4-0x4c1 (13)
 0x4c0|74                                             |t               |
      |                                               |                |            name: "provider"
      |                                               |                |            type: "string"
      |                                               |                |            value: "widevine_test"
-     |                                               |                |          [3]{}: field 0x4c1-0x4ca.7 (10)
-0x4c0|   22                                          | "              |            key_n: 34 0x4c1-0x4c1.7 (1)
+     |                                               |                |          [3]{}: field 0x4c1-0x4cb (10)
+0x4c0|   22                                          | "              |            key_n: 34 0x4c1-0x4c2 (1)
      |                                               |                |            field_number: 4
      |                                               |                |            wire_type: "length_delimited" (2)
-0x4c0|      08                                       |  .             |            length: 8 0x4c2-0x4c2.7 (1)
-0x4c0|         31 32 33 34 35 36 37 38               |   12345678     |            wire_value: raw bits 0x4c3-0x4ca.7 (8)
+0x4c0|      08                                       |  .             |            length: 8 0x4c2-0x4c3 (1)
+0x4c0|         31 32 33 34 35 36 37 38               |   12345678     |            wire_value: raw bits 0x4c3-0x4cb (8)
      |                                               |                |            name: "content_id"
      |                                               |                |            type: "bytes"
      |                                               |                |            value: raw bits
-     |                                               |                |          [4]{}: field 0x4cb-0x4d3.7 (9)
-0x4c0|                                 32            |           2    |            key_n: 50 0x4cb-0x4cb.7 (1)
+     |                                               |                |          [4]{}: field 0x4cb-0x4d4 (9)
+0x4c0|                                 32            |           2    |            key_n: 50 0x4cb-0x4cc (1)
      |                                               |                |            field_number: 6
      |                                               |                |            wire_type: "length_delimited" (2)
-0x4c0|                                    07         |            .   |            length: 7 0x4cc-0x4cc.7 (1)
-0x4c0|                                       64 65 66|             def|            wire_value: raw bits 0x4cd-0x4d3.7 (7)
+0x4c0|                                    07         |            .   |            length: 7 0x4cc-0x4cd (1)
+0x4c0|                                       64 65 66|             def|            wire_value: raw bits 0x4cd-0x4d4 (7)
 0x4d0|61 75 6c 74|                                   |ault|           |
      |                                               |                |            name: "policy"
      |                                               |                |            type: "string"
