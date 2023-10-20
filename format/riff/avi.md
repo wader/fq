@@ -13,6 +13,13 @@ $ fq '.streams[1].samples[] | tobytes' file.avi > stream01.mp3
 $ fq -o decode_samples=false '[.chunks[0] | grep_by(.id=="LIST" and .type=="strl") | grep_by(.id=="strh") as {$type} | grep_by(.id=="strf") as {$format_tag, $compression} | {$type,$format_tag,$compression}]' *.avi
 ```
 
+### Speed up decoding by disabling sample and extended chunks decoding
+
+If your not interested in sample details or extended chunks you can speed up decoding by using:
+```sh
+$ fq -o decode_samples=false -o decode_extended_chunks=false d file.avi
+```
+
 ### References
 
 - [AVI RIFF File Reference](https://learn.microsoft.com/en-us/windows/win32/directshow/avi-riff-file-reference)

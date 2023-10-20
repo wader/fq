@@ -243,3 +243,4 @@ $ fq dv pcm.avi
       |                                               |                |      type: "auds"
       |                                               |                |      handler: "\x01\x00\x00\x00"
       |                                               |                |      format_tag: "pcm_s16le" (1)
+      |                                               |                |  extended_chunks[0:0]: 0x390a-0x390a (0)

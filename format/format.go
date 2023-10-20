@@ -352,7 +352,8 @@ type MP4_In struct {
 }
 
 type AVI_In struct {
-	DecodeSamples bool `doc:"Decode samples"`
+	DecodeSamples        bool `doc:"Decode samples"`
+	DecodeExtendedChunks bool `doc:"Decode extended chunks"`
 }
 
 type Zip_In struct {

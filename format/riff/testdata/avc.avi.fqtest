@@ -490,3 +490,4 @@ $ fq dv avc.avi
        |                                               |                |      type: "vids"
        |                                               |                |      handler: "H264"
        |                                               |                |      compression: "H264"
+       |                                               |                |  extended_chunks[0:0]: 0x2442-0x2442 (0)

@@ -6,7 +6,6 @@ package riff
 // DV handler https://learn.microsoft.com/en-us/windows/win32/directshow/dv-data-in-the-avi-file-format
 // palette change
 // rec groups
-// AVIX, multiple RIFF headers?
 // nested indexes
 // unknown fields for unreachable chunk header for > 1gb samples
 // 2fields, field index?
@@ -42,7 +41,8 @@ func init() {
 			Description: "Audio Video Interleaved",
 			DecodeFn:    aviDecode,
 			DefaultInArg: format.AVI_In{
-				DecodeSamples: true,
+				DecodeSamples:        true,
+				DecodeExtendedChunks: true,
 			},
 			Dependencies: []decode.Dependency{
 				{Groups: []*decode.Group{format.AVC_AU}, Out: &aviMpegAVCAUGroup},
@@ -109,8 +109,6 @@ var aviStreamChunkTypeDescriptions = scalar.StrMapDescription{
 	aviStreamChunkTypeAudio:             "Audio data",
 	aviStreamChunkTypeIndex:             "Index",
 }
-
-const aviRiffType = "AVI "
 
 type idx1Sample struct {
 	offset     int64
@@ -220,17 +218,17 @@ func aviDecodeChunkIndex(d *decode.D) []ranges.Range {
 	return rs
 }
 
-func aviDecode(d *decode.D) any {
-	var ai format.AVI_In
-	d.ArgAs(&ai)
-
-	d.Endian = decode.LittleEndian
-
+func aviDecodeEx(d *decode.D, ai format.AVI_In, extendedChunk bool) {
 	var streams []*aviStream
 	var idx1Samples []idx1Sample
 	var moviListPos int64 // point to first bit after type
 
-	var riffType string
+	requiredRiffType := "AVI "
+	if extendedChunk {
+		requiredRiffType = "AVIX"
+	}
+	var foundRiffType string
+
 	riffDecode(
 		d,
 		nil,
@@ -243,7 +241,7 @@ func aviDecode(d *decode.D) any {
 		func(d *decode.D, id string, path path) (bool, any) {
 			switch id {
 			case "RIFF":
-				riffType = d.FieldUTF8("type", 4, d.StrAssert(aviRiffType))
+				foundRiffType = d.FieldUTF8("type", 4, d.StrAssert(requiredRiffType))
 				return true, nil
 
 			case "LIST":
@@ -536,97 +534,124 @@ func aviDecode(d *decode.D) any {
 		},
 	)
 
-	if riffType != aviRiffType {
-		d.Errorf("wrong or no AVI riff type found (%s)", riffType)
+	if foundRiffType != requiredRiffType {
+		d.Errorf("wrong or no AVI riff type found (%s)", requiredRiffType)
 	}
 
-	d.FieldArray("streams", func(d *decode.D) {
-		for streamIndex, stream := range streams {
+	if !extendedChunk {
+		d.FieldArray("streams", func(d *decode.D) {
+			for streamIndex, stream := range streams {
 
-			d.FieldStruct("stream", func(d *decode.D) {
-				d.FieldValueStr("type", stream.typ)
-				d.FieldValueStr("handler", stream.handler)
-				switch stream.typ {
-				case aviStrhTypeAudio:
-					d.FieldValueUint("format_tag", stream.formatTag, format.WAVTagNames)
-				case aviStrhTypeVideo:
-					d.FieldValueStr("compression", stream.compression)
-				}
+				d.FieldStruct("stream", func(d *decode.D) {
+					d.FieldValueStr("type", stream.typ)
+					d.FieldValueStr("handler", stream.handler)
+					switch stream.typ {
+					case aviStrhTypeAudio:
+						d.FieldValueUint("format_tag", stream.formatTag, format.WAVTagNames)
+					case aviStrhTypeVideo:
+						d.FieldValueStr("compression", stream.compression)
+					}
 
-				var streamIndexSampleRanges []ranges.Range
-				if len(stream.indexes) > 0 {
-					d.FieldArray("indexes", func(d *decode.D) {
-						for _, i := range stream.indexes {
-							d.FieldStruct("index", func(d *decode.D) {
-								d.RangeFn(i.Start, i.Len, func(d *decode.D) {
-									d.FieldUTF8("type", 4)
-									d.FieldU32("cb")
-									sampleRanges := aviDecodeChunkIndex(d)
-									streamIndexSampleRanges = append(streamIndexSampleRanges, sampleRanges...)
+					var streamIndexSampleRanges []ranges.Range
+					if len(stream.indexes) > 0 {
+						d.FieldArray("indexes", func(d *decode.D) {
+							for _, i := range stream.indexes {
+								d.FieldStruct("index", func(d *decode.D) {
+									d.RangeFn(i.Start, i.Len, func(d *decode.D) {
+										d.FieldUTF8("type", 4)
+										d.FieldU32("cb")
+										sampleRanges := aviDecodeChunkIndex(d)
+										streamIndexSampleRanges = append(streamIndexSampleRanges, sampleRanges...)
+									})
 								})
-							})
-						}
-					})
-				}
-
-				// TODO: palette change
-				decodeSample := func(d *decode.D, sr ranges.Range) {
-					d.RangeFn(sr.Start, sr.Len, func(d *decode.D) {
-						if sr.Len == 0 {
-							d.FieldRawLen("sample", d.BitsLeft())
-							return
-						}
-
-						subSampleSize := int64(stream.sampleSize) * 8
-						// TODO: <= no format and <= 8*8 heuristics to not create separate pcm samples
-						if subSampleSize == 0 || (!stream.hasFormat && subSampleSize <= 8*8) {
-							subSampleSize = sr.Len
-						}
-
-						for d.BitsLeft() > 0 {
-							d.FramedFn(subSampleSize, func(d *decode.D) {
-								if ai.DecodeSamples && stream.hasFormat {
-									d.FieldFormat("sample", stream.format, stream.formatInArg)
-								} else {
-									d.FieldRawLen("sample", d.BitsLeft())
-								}
-							})
-						}
-					})
-				}
-
-				// try only add indexed samples once with priority:
-				// stream index
-				// ix chunks (might be same as stream index)
-				// idx chunks
-				if len(streamIndexSampleRanges) > 0 {
-					d.FieldArray("samples", func(d *decode.D) {
-						for _, sr := range streamIndexSampleRanges {
-							decodeSample(d, sr)
-						}
-					})
-				} else if len(stream.ixSamples) > 0 {
-					d.FieldArray("samples", func(d *decode.D) {
-						for _, sr := range stream.ixSamples {
-							decodeSample(d, sr)
-						}
-					})
-				} else if len(idx1Samples) > 0 {
-					d.FieldArray("samples", func(d *decode.D) {
-						for _, is := range idx1Samples {
-							if is.streamNr != streamIndex {
-								continue
 							}
-							decodeSample(d, ranges.Range{
-								Start: moviListPos + is.offset + 32, // +32 skip size field
-								Len:   is.size,
-							})
-						}
-					})
+						})
+					}
+
+					// TODO: palette change
+					decodeSample := func(d *decode.D, sr ranges.Range) {
+						d.RangeFn(sr.Start, sr.Len, func(d *decode.D) {
+							if sr.Len == 0 {
+								d.FieldRawLen("sample", d.BitsLeft())
+								return
+							}
+
+							subSampleSize := int64(stream.sampleSize) * 8
+							// TODO: <= no format and <= 8*8 heuristics to not create separate pcm samples
+							if subSampleSize == 0 || (!stream.hasFormat && subSampleSize <= 8*8) {
+								subSampleSize = sr.Len
+							}
+
+							for d.BitsLeft() > 0 {
+								d.FramedFn(subSampleSize, func(d *decode.D) {
+									if ai.DecodeSamples && stream.hasFormat {
+										d.FieldFormat("sample", stream.format, stream.formatInArg)
+									} else {
+										d.FieldRawLen("sample", d.BitsLeft())
+									}
+								})
+							}
+						})
+					}
+
+					// try only add indexed samples once with priority:
+					// stream index
+					// ix chunks (might be same as stream index)
+					// idx1 chunks
+					if len(streamIndexSampleRanges) > 0 {
+						d.FieldArray("samples", func(d *decode.D) {
+							for _, sr := range streamIndexSampleRanges {
+								decodeSample(d, sr)
+							}
+						})
+					} else if len(stream.ixSamples) > 0 {
+						d.FieldArray("samples", func(d *decode.D) {
+							for _, sr := range stream.ixSamples {
+								decodeSample(d, sr)
+							}
+						})
+					} else if len(idx1Samples) > 0 {
+						d.FieldArray("samples", func(d *decode.D) {
+							for _, is := range idx1Samples {
+								if is.streamNr != streamIndex {
+									continue
+								}
+								decodeSample(d, ranges.Range{
+									Start: moviListPos + is.offset + 32, // +32 skip size field
+									Len:   is.size,
+								})
+							}
+						})
+					}
+				})
+			}
+		})
+	}
+}
+
+func aviDecode(d *decode.D) any {
+	var ai format.AVI_In
+	d.ArgAs(&ai)
+
+	d.Endian = decode.LittleEndian
+
+	aviDecodeEx(d, ai, false)
+
+	if ai.DecodeExtendedChunks {
+		d.FieldArray("extended_chunks", func(d *decode.D) {
+			for {
+				// TODO: other way? spec says check hdrx chunk but there seems to be none?
+				riff, _ := d.TryPeekBytes(4)
+				if string(riff) != "RIFF" {
+					break
 				}
-			})
-		}
-	})
+
+				d.FieldStruct("chunk", func(d *decode.D) {
+					aviDecodeEx(d, ai, true)
+				})
+			}
+		})
+	}
 
 	return nil
 }

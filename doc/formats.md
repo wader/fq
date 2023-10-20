@@ -267,20 +267,21 @@ Decode value as avc_au
 
 ### Options
 
-|Name            |Default|Description|
-|-               |-      |-|
-|`decode_samples`|true   |Decode samples|
+|Name                    |Default|Description|
+|-                       |-      |-|
+|`decode_extended_chunks`|true   |Decode extended chunks|
+|`decode_samples`        |true   |Decode samples|
 
 ### Examples
 
 Decode file using avi options
 ```
-$ fq -d avi -o decode_samples=true . file
+$ fq -d avi -o decode_extended_chunks=true -o decode_samples=true . file
 ```
 
 Decode value as avi
 ```
-... | avi({decode_samples:true})
+... | avi({decode_extended_chunks:true,decode_samples:true})
 ```
 
 ### Samples
@@ -296,6 +297,13 @@ $ fq '.streams[1].samples[] | tobytes' file.avi > stream01.mp3
 ### Show stream summary
 ```sh
 $ fq -o decode_samples=false '[.chunks[0] | grep_by(.id=="LIST" and .type=="strl") | grep_by(.id=="strh") as {$type} | grep_by(.id=="strf") as {$format_tag, $compression} | {$type,$format_tag,$compression}]' *.avi
+```
+
+### Speed up decoding by disabling sample and extended chunks decoding
+
+If your not interested in sample details or extended chunks you can speed up decoding by using:
+```sh
+$ fq -o decode_samples=false -o decode_extended_chunks=false d file.avi
 ```
 
 ### References

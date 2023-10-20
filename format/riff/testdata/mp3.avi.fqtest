@@ -537,3 +537,4 @@ $ fq dv mp3.avi
       |                                               |                |      type: "auds"
       |                                               |                |      handler: "\x01\x00\x00\x00"
       |                                               |                |      format_tag: "mp3" (85)
+      |                                               |                |  extended_chunks[0:0]: 0x18e8-0x18e8 (0)
