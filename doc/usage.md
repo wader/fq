@@ -138,7 +138,7 @@ Default if not explicitly used `display` will only show the root level:
 First row shows a ruler with byte offset into the line and jq path for the value.
 
 The columns are:
-- Start address for the line. For example we see that `type` starts at `0xd60`+`0x09`.
+- Start address for the line. For example we see that `type` starts at `0xd60` (row) + `0x09` (column).
 - Hex representation of input bits for value. Will show the whole byte even if the value only partially uses bits from it.
 - ASCII representation of input bits for value. Will show the whole byte even if the value only partially uses bits from it.
 - Tree structure of decoded value, symbolic value and description.
@@ -158,13 +158,19 @@ Same but verbose `dv`:
 
 In verbose mode bit ranges and array element names as shown.
 
-Bit range uses `bytes.bits` notation. For example `type` starts at byte `0xd69` bit `0` (left out if zero) and ends at `0xd6c` bit `7` (inclusive) and have byte size of `4`.
+Bit ranges uses `<start-byte>[.<bits>]-<end-byte>[.<bits>]` as notation where `.<bits>` is left out if byte aligned. For example `type` starts at byte `0xd69` bit `0` (`.0` is left out) and ends at `0xd6d` bit `0` (exclusive) and have a size of `4` bytes.
+
+This verbosely displays the header of the second frame in an mp3 file which has a bunch of non-byte-aligned fields:
+
+![fq demo](display_decode_value_dv2.svg)
+
+Here the `sync` pattern starts at `0xb79` (bit `0`) and ends at `0xb7a.3` (exclusive) and has a size of `1` byte and `3` bits, `11` bits in total (`8+3`).
 
 There are also some other `display` aliases:
-- `da` same as `display({array_truncate: 0})` which will not truncate long arrays.
-- `dd` same as `display({array_truncate: 0, display_bytes: 0})` which will not truncate long ranges.
-- `dv` same as `display({array_truncate: 0, verbose: true})`
-- `ddv` same as `display({array_truncate: 0, display_bytes: 0 verbose: true})` which will not truncate long and also display verbosely.
+- `da` is `display({array_truncate: 0})` don't truncate arrays.
+- `dd` is `display({array_truncate: 0, display_bytes: 0})` don't truncate arrays and raw bytes.
+- `dv` is `display({array_truncate: 0, verbose: true})` don't truncate arrays and display verbosely.
+- `ddv` is `display({array_truncate: 0, display_bytes: 0 verbose: true})` don't truncate arrays and raw bytes. and display verbosely.
 
 ## Interactive REPL
 

@@ -1,42 +1,42 @@
 $ fq -i
 null> "åäö" | to_iso8859_1 | ., from_iso8859_1
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|e5 e4 f6|                                      |...|            |.: raw bits 0x0-0x2.7 (3)
+0x0|e5 e4 f6|                                      |...|            |.: raw bits 0x0-0x3 (3)
 "åäö"
 null> "åäö" | to_utf8 | ., from_utf8
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|c3 a5 c3 a4 c3 b6|                             |......|         |.: raw bits 0x0-0x5.7 (6)
+0x0|c3 a5 c3 a4 c3 b6|                             |......|         |.: raw bits 0x0-0x6 (6)
 "åäö"
 null> "åäö" | to_utf16 | ., from_utf16
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|ff fe e5 00 e4 00 f6 00|                       |........|       |.: raw bits 0x0-0x7.7 (8)
+0x0|ff fe e5 00 e4 00 f6 00|                       |........|       |.: raw bits 0x0-0x8 (8)
 "åäö"
 null> "åäö" | to_utf16le | ., from_utf16le
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|e5 00 e4 00 f6 00|                             |......|         |.: raw bits 0x0-0x5.7 (6)
+0x0|e5 00 e4 00 f6 00|                             |......|         |.: raw bits 0x0-0x6 (6)
 "åäö"
 null> "åäö" | to_utf16be | ., from_utf16be
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|00 e5 00 e4 00 f6|                             |......|         |.: raw bits 0x0-0x5.7 (6)
+0x0|00 e5 00 e4 00 f6|                             |......|         |.: raw bits 0x0-0x6 (6)
 "åäö"
 null> [97,98,99] | from_iso8859_1 | ., to_iso8859_1
 "abc"
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|61 62 63|                                      |abc|            |.: raw bits 0x0-0x2.7 (3)
+0x0|61 62 63|                                      |abc|            |.: raw bits 0x0-0x3 (3)
 null> [97,98,99] | from_utf8 | ., to_utf8
 "abc"
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|61 62 63|                                      |abc|            |.: raw bits 0x0-0x2.7 (3)
+0x0|61 62 63|                                      |abc|            |.: raw bits 0x0-0x3 (3)
 null> [97,0,98,0,99,0] | from_utf16 | ., to_utf16
 "abc"
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|ff fe 61 00 62 00 63 00|                       |..a.b.c.|       |.: raw bits 0x0-0x7.7 (8)
+0x0|ff fe 61 00 62 00 63 00|                       |..a.b.c.|       |.: raw bits 0x0-0x8 (8)
 null> [97,0,98,0,99,0] | from_utf16le | ., to_utf16le
 "abc"
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|61 00 62 00 63 00|                             |a.b.c.|         |.: raw bits 0x0-0x5.7 (6)
+0x0|61 00 62 00 63 00|                             |a.b.c.|         |.: raw bits 0x0-0x6 (6)
 null> [0,97,0,98,0,99] | from_utf16be | ., to_utf16be
 "abc"
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|00 61 00 62 00 63|                             |.a.b.c|         |.: raw bits 0x0-0x5.7 (6)
+0x0|00 61 00 62 00 63|                             |.a.b.c|         |.: raw bits 0x0-0x6 (6)
 null> ^D

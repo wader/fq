@@ -1,7 +1,7 @@
 $ fq -d asn1_ber dv tc5.ber
-   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: tc5.ber (asn1_ber) 0x0-0xc.7 (13)
-0x0|9f                                             |.               |  class: "context" (2) 0x0-0x0.1 (0.2)
-0x0|9f                                             |.               |  form: "primitive" (0) 0x0.2-0x0.2 (0.1)
-0x0|9f ff ff ff ff ff ff ff ff 7f                  |..........      |  tag: 18446744073709551615 0x0.3-0x9.7 (9.5)
-0x0|                              81 01            |          ..    |  length: 1 0xa-0xb.7 (2)
-0x0|                                    40|        |            @|  |  value: raw bits 0xc-0xc.7 (1)
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: tc5.ber (asn1_ber) 0x0-0xd (13)
+0x0|9f                                             |.               |  class: "context" (2) 0x0-0x0.2 (0.2)
+0x0|9f                                             |.               |  form: "primitive" (0) 0x0.2-0x0.3 (0.1)
+0x0|9f ff ff ff ff ff ff ff ff 7f                  |..........      |  tag: 18446744073709551615 0x0.3-0xa (9.5)
+0x0|                              81 01            |          ..    |  length: 1 0xa-0xc (2)
+0x0|                                    40|        |            @|  |  value: raw bits 0xc-0xd (1)

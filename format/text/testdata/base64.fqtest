@@ -1,18 +1,18 @@
 $ fq -n '"ff7f00ff" | from_hex | ., ("", "std", "url", "rawstd", "rawurl") as $e | to_base64({encoding: $e}) | ., from_base64({encoding: $e})'
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|ff 7f 00 ff|                                   |....|           |.: raw bits 0x0-0x3.7 (4)
+0x0|ff 7f 00 ff|                                   |....|           |.: raw bits 0x0-0x4 (4)
 "/38A/w=="
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|ff 7f 00 ff|                                   |....|           |.: raw bits 0x0-0x3.7 (4)
+0x0|ff 7f 00 ff|                                   |....|           |.: raw bits 0x0-0x4 (4)
 "/38A/w=="
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|ff 7f 00 ff|                                   |....|           |.: raw bits 0x0-0x3.7 (4)
+0x0|ff 7f 00 ff|                                   |....|           |.: raw bits 0x0-0x4 (4)
 "_38A_w=="
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|ff 7f 00 ff|                                   |....|           |.: raw bits 0x0-0x3.7 (4)
+0x0|ff 7f 00 ff|                                   |....|           |.: raw bits 0x0-0x4 (4)
 "/38A/w"
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|ff 7f 00 ff|                                   |....|           |.: raw bits 0x0-0x3.7 (4)
+0x0|ff 7f 00 ff|                                   |....|           |.: raw bits 0x0-0x4 (4)
 "_38A_w"
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|ff 7f 00 ff|                                   |....|           |.: raw bits 0x0-0x3.7 (4)
+0x0|ff 7f 00 ff|                                   |....|           |.: raw bits 0x0-0x4 (4)

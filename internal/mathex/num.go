@@ -90,10 +90,7 @@ func (b Bits) StringByteBits(base int) string {
 type BitRange ranges.Range
 
 func (r BitRange) StringByteBits(base int) string {
-	if r.Len == 0 {
-		return fmt.Sprintf("%s-NA", Bits(r.Start).StringByteBits(base))
-	}
-	return fmt.Sprintf("%s-%s", Bits(r.Start).StringByteBits(base), Bits(r.Start+r.Len-1).StringByteBits(base))
+	return fmt.Sprintf("%s-%s", Bits(r.Start).StringByteBits(base), Bits(r.Start+r.Len).StringByteBits(base))
 }
 
 func TwosComplement(nBits int, n uint64) int64 {

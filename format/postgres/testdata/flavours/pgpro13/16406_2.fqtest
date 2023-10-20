@@ -1,27 +1,27 @@
 $ fq -d pg_heap -o flavour=pgpro13 ".[0].tuples[0,-1] | dv" 16406
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].tuples[0]{}: tuple 0x1fd0-0x1fff.7 (48)
-      |                                               |                |  header{}: 0x1fd0-0x1fe7.7 (24)
-      |                                               |                |    t_choice{}: 0x1fd0-0x1fdb.7 (12)
-      |                                               |                |      t_heap{}: 0x1fd0-0x1fdb.7 (12)
-0x1fd0|f2 01 00 00                                    |....            |        t_xmin: 498 0x1fd0-0x1fd3.7 (4)
-0x1fd0|            00 00 00 00                        |    ....        |        t_xmax: 0 0x1fd4-0x1fd7.7 (4)
-      |                                               |                |        t_field3{}: 0x1fd8-0x1fdb.7 (4)
-0x1fd0|                        03 00 00 00            |        ....    |          t_cid: 3 0x1fd8-0x1fdb.7 (4)
-0x1fd0|                        03 00 00 00            |        ....    |          t_xvac: 3 0x1fd8-0x1fdb.7 (4)
-      |                                               |                |      t_datum{}: 0x1fd0-0x1fdb.7 (12)
-0x1fd0|f2 01 00 00                                    |....            |        datum_len_: 498 0x1fd0-0x1fd3.7 (4)
-0x1fd0|            00 00 00 00                        |    ....        |        datum_typmod: 0 0x1fd4-0x1fd7.7 (4)
-0x1fd0|                        03 00 00 00            |        ....    |        datum_typeid: 3 0x1fd8-0x1fdb.7 (4)
-      |                                               |                |    t_ctid{}: 0x1fdc-0x1fe1.7 (6)
-0x1fd0|                                    00 00 00 00|            ....|      ip_blkid: 0 0x1fdc-0x1fdf.7 (4)
-0x1fe0|01 00                                          |..              |      ip_posid: 1 0x1fe0-0x1fe1.7 (2)
-0x1fe0|      06 00                                    |  ..            |    t_infomask2: 6 0x1fe2-0x1fe3.7 (2)
-      |                                               |                |    infomask2{}: 0x1fe4-NA (0)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].tuples[0]{}: tuple 0x1fd0-0x2000 (48)
+      |                                               |                |  header{}: 0x1fd0-0x1fe8 (24)
+      |                                               |                |    t_choice{}: 0x1fd0-0x1fdc (12)
+      |                                               |                |      t_heap{}: 0x1fd0-0x1fdc (12)
+0x1fd0|f2 01 00 00                                    |....            |        t_xmin: 498 0x1fd0-0x1fd4 (4)
+0x1fd0|            00 00 00 00                        |    ....        |        t_xmax: 0 0x1fd4-0x1fd8 (4)
+      |                                               |                |        t_field3{}: 0x1fd8-0x1fdc (4)
+0x1fd0|                        03 00 00 00            |        ....    |          t_cid: 3 0x1fd8-0x1fdc (4)
+0x1fd0|                        03 00 00 00            |        ....    |          t_xvac: 3 0x1fd8-0x1fdc (4)
+      |                                               |                |      t_datum{}: 0x1fd0-0x1fdc (12)
+0x1fd0|f2 01 00 00                                    |....            |        datum_len_: 498 0x1fd0-0x1fd4 (4)
+0x1fd0|            00 00 00 00                        |    ....        |        datum_typmod: 0 0x1fd4-0x1fd8 (4)
+0x1fd0|                        03 00 00 00            |        ....    |        datum_typeid: 3 0x1fd8-0x1fdc (4)
+      |                                               |                |    t_ctid{}: 0x1fdc-0x1fe2 (6)
+0x1fd0|                                    00 00 00 00|            ....|      ip_blkid: 0 0x1fdc-0x1fe0 (4)
+0x1fe0|01 00                                          |..              |      ip_posid: 1 0x1fe0-0x1fe2 (2)
+0x1fe0|      06 00                                    |  ..            |    t_infomask2: 6 0x1fe2-0x1fe4 (2)
+      |                                               |                |    infomask2{}: 0x1fe4-0x1fe4 (0)
       |                                               |                |      heap_keys_updated: false
       |                                               |                |      heap_hot_updated: false
       |                                               |                |      heap_only_tuple: false
-0x1fe0|            01 09                              |    ..          |    t_infomask: 2305 0x1fe4-0x1fe5.7 (2)
-      |                                               |                |    infomask{}: 0x1fe6-NA (0)
+0x1fe0|            01 09                              |    ..          |    t_infomask: 2305 0x1fe4-0x1fe6 (2)
+      |                                               |                |    infomask{}: 0x1fe6-0x1fe6 (0)
       |                                               |                |      heap_hasnull: true
       |                                               |                |      heap_hasvarwidth: false
       |                                               |                |      heap_hasexternal: false
@@ -42,33 +42,33 @@ $ fq -d pg_heap -o flavour=pgpro13 ".[0].tuples[0,-1] | dv" 16406
       |                                               |                |      heap_moved_off: false
       |                                               |                |      heap_moved_in: false
       |                                               |                |      heap_moved: false
-0x1fe0|                  18                           |      .         |    t_hoff: 24 0x1fe6-0x1fe6.7 (1)
-0x1fe0|                     1f                        |       .        |    padding0: 31 0x1fe7-0x1fe7.7 (1)
-0x1fe0|                        4e 00 00 00 04 00 00 00|        N.......|  data: "4e0000000400000053b40a00d6ffffff9982147e1d8a020..." (raw bits) 0x1fe8-0x1fff.7 (24)
+0x1fe0|                  18                           |      .         |    t_hoff: 24 0x1fe6-0x1fe7 (1)
+0x1fe0|                     1f                        |       .        |    padding0: 31 0x1fe7-0x1fe8 (1)
+0x1fe0|                        4e 00 00 00 04 00 00 00|        N.......|  data: "4e0000000400000053b40a00d6ffffff9982147e1d8a020..." (raw bits) 0x1fe8-0x2000 (24)
 0x1ff0|53 b4 0a 00 d6 ff ff ff 99 82 14 7e 1d 8a 02 00|S..........~....|
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].tuples[156]{}: tuple 0x290-0x2bf.7 (48)
-     |                                               |                |  header{}: 0x290-0x2a7.7 (24)
-     |                                               |                |    t_choice{}: 0x290-0x29b.7 (12)
-     |                                               |                |      t_heap{}: 0x290-0x29b.7 (12)
-0x290|8e 02 00 00                                    |....            |        t_xmin: 654 0x290-0x293.7 (4)
-0x290|            00 00 00 00                        |    ....        |        t_xmax: 0 0x294-0x297.7 (4)
-     |                                               |                |        t_field3{}: 0x298-0x29b.7 (4)
-0x290|                        03 00 00 00            |        ....    |          t_cid: 3 0x298-0x29b.7 (4)
-0x290|                        03 00 00 00            |        ....    |          t_xvac: 3 0x298-0x29b.7 (4)
-     |                                               |                |      t_datum{}: 0x290-0x29b.7 (12)
-0x290|8e 02 00 00                                    |....            |        datum_len_: 654 0x290-0x293.7 (4)
-0x290|            00 00 00 00                        |    ....        |        datum_typmod: 0 0x294-0x297.7 (4)
-0x290|                        03 00 00 00            |        ....    |        datum_typeid: 3 0x298-0x29b.7 (4)
-     |                                               |                |    t_ctid{}: 0x29c-0x2a1.7 (6)
-0x290|                                    00 00 00 00|            ....|      ip_blkid: 0 0x29c-0x29f.7 (4)
-0x2a0|9d 00                                          |..              |      ip_posid: 157 0x2a0-0x2a1.7 (2)
-0x2a0|      06 00                                    |  ..            |    t_infomask2: 6 0x2a2-0x2a3.7 (2)
-     |                                               |                |    infomask2{}: 0x2a4-NA (0)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].tuples[156]{}: tuple 0x290-0x2c0 (48)
+     |                                               |                |  header{}: 0x290-0x2a8 (24)
+     |                                               |                |    t_choice{}: 0x290-0x29c (12)
+     |                                               |                |      t_heap{}: 0x290-0x29c (12)
+0x290|8e 02 00 00                                    |....            |        t_xmin: 654 0x290-0x294 (4)
+0x290|            00 00 00 00                        |    ....        |        t_xmax: 0 0x294-0x298 (4)
+     |                                               |                |        t_field3{}: 0x298-0x29c (4)
+0x290|                        03 00 00 00            |        ....    |          t_cid: 3 0x298-0x29c (4)
+0x290|                        03 00 00 00            |        ....    |          t_xvac: 3 0x298-0x29c (4)
+     |                                               |                |      t_datum{}: 0x290-0x29c (12)
+0x290|8e 02 00 00                                    |....            |        datum_len_: 654 0x290-0x294 (4)
+0x290|            00 00 00 00                        |    ....        |        datum_typmod: 0 0x294-0x298 (4)
+0x290|                        03 00 00 00            |        ....    |        datum_typeid: 3 0x298-0x29c (4)
+     |                                               |                |    t_ctid{}: 0x29c-0x2a2 (6)
+0x290|                                    00 00 00 00|            ....|      ip_blkid: 0 0x29c-0x2a0 (4)
+0x2a0|9d 00                                          |..              |      ip_posid: 157 0x2a0-0x2a2 (2)
+0x2a0|      06 00                                    |  ..            |    t_infomask2: 6 0x2a2-0x2a4 (2)
+     |                                               |                |    infomask2{}: 0x2a4-0x2a4 (0)
      |                                               |                |      heap_keys_updated: false
      |                                               |                |      heap_hot_updated: false
      |                                               |                |      heap_only_tuple: false
-0x2a0|            01 09                              |    ..          |    t_infomask: 2305 0x2a4-0x2a5.7 (2)
-     |                                               |                |    infomask{}: 0x2a6-NA (0)
+0x2a0|            01 09                              |    ..          |    t_infomask: 2305 0x2a4-0x2a6 (2)
+     |                                               |                |    infomask{}: 0x2a6-0x2a6 (0)
      |                                               |                |      heap_hasnull: true
      |                                               |                |      heap_hasvarwidth: false
      |                                               |                |      heap_hasexternal: false
@@ -89,7 +89,7 @@ $ fq -d pg_heap -o flavour=pgpro13 ".[0].tuples[0,-1] | dv" 16406
      |                                               |                |      heap_moved_off: false
      |                                               |                |      heap_moved_in: false
      |                                               |                |      heap_moved: false
-0x2a0|                  18                           |      .         |    t_hoff: 24 0x2a6-0x2a6.7 (1)
-0x2a0|                     1f                        |       .        |    padding0: 31 0x2a7-0x2a7.7 (1)
-0x2a0|                        44 00 00 00 09 00 00 00|        D.......|  data: "44000000090000003f9b0e00fc090000446d1c7e1d8a020..." (raw bits) 0x2a8-0x2bf.7 (24)
+0x2a0|                  18                           |      .         |    t_hoff: 24 0x2a6-0x2a7 (1)
+0x2a0|                     1f                        |       .        |    padding0: 31 0x2a7-0x2a8 (1)
+0x2a0|                        44 00 00 00 09 00 00 00|        D.......|  data: "44000000090000003f9b0e00fc090000446d1c7e1d8a020..." (raw bits) 0x2a8-0x2c0 (24)
 0x2b0|3f 9b 0e 00 fc 09 00 00 44 6d 1c 7e 1d 8a 02 00|?.......Dm.~....|

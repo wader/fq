@@ -1,5 +1,5 @@
 $ fq -n '"test" | tobytes'
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0x0|74 65 73 74|                                   |test|           |.: raw bits 0x0-0x3.7 (4)
+0x0|74 65 73 74|                                   |test|           |.: raw bits 0x0-0x4 (4)
 $ fq -n -o raw_output=true '"test" | tobytes'
 test\
