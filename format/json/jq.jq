@@ -72,7 +72,10 @@ def from_jq:
     | if . == "TermTypeNull" then null
       elif . == "TermTypeTrue" then true
       elif . == "TermTypeFalse" then false
-      elif . == "TermTypeString" then $v.term.str.str
+      elif . == "TermTypeString" then
+        if $v.term.str.queries then error("string interpolation")
+        else $v.term.str.str
+        end
       elif . == "TermTypeNumber" then $v.term.number | tonumber
       elif . == "TermTypeObject" then
         ( $v.term.object.key_vals // []
@@ -87,10 +90,10 @@ def from_jq:
         ( def _a: if .op then .left, .right | _a end;
           [$v.term.array.query // empty | _a | _f]
         )
-      else error("unknown term")
+      else error("unsupported term \($v.term.type)")
       end
     );
   try
     (_query_fromstring | _f)
   catch
-    error("from_jq only supports constant literals");
+    error("from_jq only supports constant literals: \(.)");
