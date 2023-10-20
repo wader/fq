@@ -146,3 +146,9 @@ string
 {}
 {}
 ----
+$ fq -i
+null> `"\(123)"` | from_jq
+error: from_jq only supports constant literals: string interpolation
+null> `if true then 123 else false end` | from_jq
+error: from_jq only supports constant literals: unsupported term TermTypeIf
+null> ^D
