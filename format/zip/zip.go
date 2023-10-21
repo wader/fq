@@ -8,6 +8,7 @@ import (
 	"compress/flate"
 	"embed"
 	"io"
+	"time"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/pkg/decode"
@@ -85,62 +86,190 @@ var (
 )
 
 const (
-	headerIDZip64ExtendedInformation = 0x001
+	headerTagZip64ExtendedInformation = 0x001
+	headerTagExtendedTimestamp        = 0x5455
 )
 
-var headerIDMap = scalar.UintMapDescription{
-	headerIDZip64ExtendedInformation: "ZIP64 extended information extra field",
-	0x0007:                           "AV Info",
-	0x0009:                           "OS/2 extended attributes",
-	0x000a:                           "NTFS (Win9x/WinNT FileTimes)",
-	0x000c:                           "OpenVMS",
-	0x000d:                           "Unix",
-	0x000f:                           "Patch Descriptor",
-	0x0014:                           "PKCS#7 Store for X.509 Certificates",
-	0x0015:                           "X.509 Certificate ID and Signature for individual file",
-	0x0016:                           "X.509 Certificate ID for Central Directory",
-	0x0065:                           "IBM S/390 attributes - uncompressed",
-	0x0066:                           "IBM S/390 attributes - compressed",
-	0x07c8:                           "Info-ZIP Macintosh (old, J. Lee)",
-	0x2605:                           "ZipIt Macintosh (first version)",
-	0x2705:                           "ZipIt Macintosh v 1.3.5 and newer (w/o full filename)",
-	0x334d:                           "Info-ZIP Macintosh (new, D. Haase's 'Mac3' field )",
-	0x4154:                           "Tandem NSK",
-	0x4341:                           "Acorn/SparkFS (David Pilling)",
-	0x4453:                           "Windows NT security descriptor (binary ACL)",
-	0x4704:                           "VM/CMS",
-	0x470f:                           "MVS",
+var headerTagMap = scalar.UintMapDescription{
+	headerTagZip64ExtendedInformation: "ZIP64 extended information extra field",
+	0x0007:                            "AV Info",
+	0x0009:                            "OS/2 extended attributes",
+	0x000a:                            "NTFS (Win9x/WinNT FileTimes)",
+	0x000c:                            "OpenVMS",
+	0x000d:                            "Unix",
+	0x000f:                            "Patch Descriptor",
+	0x0014:                            "PKCS#7 Store for X.509 Certificates",
+	0x0015:                            "X.509 Certificate ID and Signature for individual file",
+	0x0016:                            "X.509 Certificate ID for Central Directory",
+	0x0065:                            "IBM S/390 attributes - uncompressed",
+	0x0066:                            "IBM S/390 attributes - compressed",
+	0x07c8:                            "Info-ZIP Macintosh (old, J. Lee)",
+	0x2605:                            "ZipIt Macintosh (first version)",
+	0x2705:                            "ZipIt Macintosh v 1.3.5 and newer (w/o full filename)",
+	0x334d:                            "Info-ZIP Macintosh (new, D. Haase's 'Mac3' field )",
+	0x4154:                            "Tandem NSK",
+	0x4341:                            "Acorn/SparkFS (David Pilling)",
+	0x4453:                            "Windows NT security descriptor (binary ACL)",
+	0x4704:                            "VM/CMS",
+	0x470f:                            "MVS",
 	// "inofficial" in original table
 	//nolint:misspell
-	0x4854: "Theos, old inofficial port",
-	0x4b46: "FWKCS MD5 (see below)",
-	0x4c41: "OS/2 access control list (text ACL)",
-	0x4d49: "Info-ZIP OpenVMS (obsolete)",
-	0x4d63: "Macintosh SmartZIP, by Macro Bambini",
-	0x4f4c: "Xceed original location extra field",
-	0x5356: "AOS/VS (binary ACL)",
-	0x5455: "extended timestamp",
-	0x5855: "Info-ZIP Unix (original; also OS/2, NT, etc.)",
-	0x554e: "Xceed unicode extra field",
-	0x6542: "BeOS (BeBox, PowerMac, etc.)",
-	0x6854: "Theos",
-	0x756e: "ASi Unix",
-	0x7855: "Info-ZIP Unix (new)",
-	0x7875: "UNIX UID/GID",
-	0xfb4a: "SMS/QDOS",
+	0x4854:                     "Theos, old inofficial port",
+	0x4b46:                     "FWKCS MD5 (see below)",
+	0x4c41:                     "OS/2 access control list (text ACL)",
+	0x4d49:                     "Info-ZIP OpenVMS (obsolete)",
+	0x4d63:                     "Macintosh SmartZIP, by Macro Bambini",
+	0x4f4c:                     "Xceed original location extra field",
+	0x5356:                     "AOS/VS (binary ACL)",
+	headerTagExtendedTimestamp: "extended timestamp",
+	0x5855:                     "Info-ZIP Unix (original; also OS/2, NT, etc.)",
+	0x554e:                     "Xceed unicode extra field",
+	0x6542:                     "BeOS (BeBox, PowerMac, etc.)",
+	0x6854:                     "Theos",
+	0x756e:                     "ASi Unix",
+	0x7855:                     "Info-ZIP Unix (new)",
+	0x7875:                     "UNIX UID/GID",
+	0xfb4a:                     "SMS/QDOS",
 }
 
 // "MS-DOS uses year values relative to 1980 and 2 second precision."
-func fieldMSDOSTime(d *decode.D) {
-	d.FieldU5("hours")
-	d.FieldU6("minutes")
-	d.FieldU5("seconds")
+// https://learn.microsoft.com/en-gb/windows/win32/api/winbase/nf-winbase-dosdatetimetofiletime?redirectedfrom=MSDN
+// https://formats.kaitai.io/dos_datetime/
+// Note all of this is a mess because time/date is stored in bit ranges inside 16 LE numbers
+// TODO: maybe can be cleaned up if bit-endian decoding is added?
+func fieldMSDOSTime(d *decode.D) (int, int, int) {
+	fatTime := d.FieldU16("fat_time", scalar.UintHex)
+
+	// second/2 b5
+	// minute b6
+	// hour b5
+	second := (fatTime >> 0) & 0b1_1111
+	minute := (fatTime >> 5) & 0b11_1111
+	hour := (fatTime >> (5 + 6)) & 0b1_1111
+	d.FieldValueUint("second", second, scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
+		s.Sym = s.Actual * 2
+		return s, nil
+	}))
+	d.FieldValueUint("minute", minute)
+	d.FieldValueUint("hour", hour)
+
+	return int(second), int(minute), int(hour)
 }
 
-func fieldMSDOSDate(d *decode.D) {
-	d.FieldU7("year")
-	d.FieldU4("month")
-	d.FieldU5("day")
+func fieldMSDOSDate(d *decode.D) (int, int, int) {
+	fatDate := d.FieldU16("fat_date", scalar.UintHex)
+
+	// day b5
+	// month b4
+	// day b7
+	day := (fatDate >> 0) & 0b1_1111
+	month := (fatDate >> 5) & 0b1111
+	year := (fatDate >> (5 + 4)) & 0b111_1111
+	d.FieldValueUint("day", day)
+	d.FieldValueUint("month", month)
+	d.FieldValueUint("year", year, scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
+		s.Sym = s.Actual + 1980
+		return s, nil
+	}))
+
+	return int(day), int(month), int(year)
+}
+
+// time.RFC3339 but no timezone
+const rfc3339Local = "2006-01-02T15:04:05"
+
+func fieldTimeDate(d *decode.D) {
+	var second, minute, hour int
+	var day, month, year int
+	second, minute, hour = fieldMSDOSTime(d)
+	day, month, year = fieldMSDOSDate(d)
+	t := time.Date(1980+year, time.Month(month), day, hour, minute, second*2, 0, time.UTC)
+	d.FieldValueUint("unix_guess", uint64(t.Unix()),
+		scalar.UintActualUnixTimeDescription(time.Second, rfc3339Local))
+}
+
+func fieldExtendedTimestamp(d *decode.D) {
+	modificationTimePresent := false
+	accessTimePresent := false
+	creationTimePresent := false
+	d.FieldStruct("flags", func(d *decode.D) {
+		d.FieldU5("unused")
+		creationTimePresent = d.FieldBool("creation_time_present")
+		accessTimePresent = d.FieldBool("access_time_present")
+		modificationTimePresent = d.FieldBool("modification_time_present")
+	})
+	// Spec says this but seem like flags and size is not in sync sometimes?
+	// ex: flags is 0x03 but size is 5
+	// > TSize should equal (1 + 4*(number of set bits in Flags))
+	if modificationTimePresent && !d.End() {
+		d.FieldU32("modification_time", scalar.UintActualUnixTimeDescription(time.Second, time.RFC3339))
+	}
+	if accessTimePresent && !d.End() {
+		d.FieldU32("access_time", scalar.UintActualUnixTimeDescription(time.Second, time.RFC3339))
+	}
+	if creationTimePresent && !d.End() {
+		d.FieldU32("creation_time", scalar.UintActualUnixTimeDescription(time.Second, time.RFC3339))
+	}
+}
+
+type zip64ExtendedInformation struct {
+	uncompressedSize                 uint64
+	uncompressedSizePresent          bool
+	compressedSize                   uint64
+	compressedSizePresent            bool
+	localFileOffset                  uint64
+	localFileOffsetPresent           bool
+	diskNumberWhereFileStarts        uint64
+	diskNumberWhereFileStartsPresent bool
+}
+
+func fieldTagZip64ExtendedInformation(d *decode.D) zip64ExtendedInformation {
+	zi := zip64ExtendedInformation{}
+
+	zi.uncompressedSize = d.FieldU64("uncompressed_size")
+	zi.uncompressedSizePresent = true
+	// TODO: spec says these should be here but real zip64 seems to not have them? optional?
+	if !d.End() {
+		zi.compressedSize = d.FieldU64("compressed_size")
+		zi.compressedSizePresent = true
+	}
+	if !d.End() {
+		zi.localFileOffset = d.FieldU64("relative_offset_of_local_file_header")
+		zi.localFileOffsetPresent = true
+	}
+	if !d.End() {
+		zi.diskNumberWhereFileStarts = d.FieldU32("disk_number_where_file_starts")
+		zi.diskNumberWhereFileStartsPresent = true
+	}
+	return zi
+}
+
+type extraFields struct {
+	zip64ExtendedInformation        zip64ExtendedInformation
+	zip64ExtendedInformationPresent bool
+}
+
+func fieldsExtraFields(d *decode.D) extraFields {
+	ef := extraFields{}
+
+	for !d.End() {
+		d.FieldStruct("extra_field", func(d *decode.D) {
+			tag := d.FieldU16("tag", headerTagMap, scalar.UintHex)
+			size := d.FieldU16("size")
+			d.FramedFn(int64(size)*8, func(d *decode.D) {
+				switch tag {
+				case headerTagZip64ExtendedInformation:
+					ef.zip64ExtendedInformation = fieldTagZip64ExtendedInformation(d)
+					ef.zip64ExtendedInformationPresent = true
+				case headerTagExtendedTimestamp:
+					fieldExtendedTimestamp(d)
+				default:
+					d.FieldRawLen("data", int64(size)*8)
+				}
+			})
+		})
+	}
+	return ef
 }
 
 func zipDecode(d *decode.D) any {
@@ -206,13 +335,15 @@ func zipDecode(d *decode.D) any {
 			offsetCD = d.FieldU64("offset_of_start_of_central_directory")
 			const sizeOfFixedFields = 44
 			d.FramedFn(int64(sizeEOCD-sizeOfFixedFields)*8, func(d *decode.D) {
-				for !d.End() {
-					d.FieldStruct("extra_field", func(d *decode.D) {
-						d.FieldU16("header_id", headerIDMap, scalar.UintHex)
-						dataSize := d.FieldU32("data_size")
-						d.FieldRawLen("data", int64(dataSize)*8)
-					})
-				}
+				d.FieldArray("extensible_data", func(d *decode.D) {
+					for !d.End() {
+						d.FieldStruct("extensible_data", func(d *decode.D) {
+							d.FieldU16("tag", headerTagMap, scalar.UintHex)
+							dataSize := d.FieldU32("size")
+							d.FieldRawLen("data", int64(dataSize)*8)
+						})
+					}
+				})
 			})
 		})
 	}
@@ -245,8 +376,7 @@ func zipDecode(d *decode.D) any {
 						d.FieldU3("unused1")
 					})
 					d.FieldU16("compression_method", compressionMethodMap)
-					d.FieldStruct("last_modification_date", fieldMSDOSTime)
-					d.FieldStruct("last_modification_time", fieldMSDOSDate)
+					d.FieldStruct("last_modification", fieldTimeDate)
 					d.FieldU32("crc32_uncompressed", scalar.UintHex)
 					d.FieldU32("compressed_size")
 					d.FieldU32("uncompressed_size")
@@ -260,29 +390,10 @@ func zipDecode(d *decode.D) any {
 					d.FieldUTF8("file_name", int(fileNameLength))
 					d.FieldArray("extra_fields", func(d *decode.D) {
 						d.FramedFn(int64(extraFieldLength)*8, func(d *decode.D) {
-							for !d.End() {
-								d.FieldStruct("extra_field", func(d *decode.D) {
-									headerID := d.FieldU16("header_id", headerIDMap, scalar.UintHex)
-									dataSize := d.FieldU16("data_size")
-									d.FramedFn(int64(dataSize)*8, func(d *decode.D) {
-										switch headerID {
-										case headerIDZip64ExtendedInformation:
-											d.FieldU64("uncompressed_size")
-											// TODO: spec says these should be here but real zip64 seems to not have them? optional?
-											if !d.End() {
-												d.FieldU64("compressed_size")
-											}
-											if !d.End() {
-												localFileOffset = d.FieldU64("relative_offset_of_local_file_header")
-											}
-											if !d.End() {
-												d.FieldU32("disk_number_where_file_starts")
-											}
-										default:
-											d.FieldRawLen("data", int64(dataSize)*8)
-										}
-									})
-								})
+							ef := fieldsExtraFields(d)
+							if ef.zip64ExtendedInformationPresent &&
+								ef.zip64ExtendedInformation.localFileOffsetPresent {
+								localFileOffset = ef.zip64ExtendedInformation.localFileOffset
 							}
 						})
 					})
@@ -321,8 +432,7 @@ func zipDecode(d *decode.D) any {
 					d.FieldU3("unused1")
 				})
 				compressionMethod := d.FieldU16("compression_method", compressionMethodMap)
-				d.FieldStruct("last_modification_date", fieldMSDOSTime)
-				d.FieldStruct("last_modification_time", fieldMSDOSDate)
+				d.FieldStruct("last_modification", fieldTimeDate)
 				d.FieldU32("crc32_uncompressed", scalar.UintHex)
 				compressedSizeBytes := d.FieldU32("compressed_size")
 				d.FieldU32("uncompressed_size")
@@ -331,23 +441,10 @@ func zipDecode(d *decode.D) any {
 				d.FieldUTF8("file_name", int(fileNameLength))
 				d.FieldArray("extra_fields", func(d *decode.D) {
 					d.FramedFn(int64(extraFieldLength)*8, func(d *decode.D) {
-						for !d.End() {
-							d.FieldStruct("extra_field", func(d *decode.D) {
-								headerID := d.FieldU16("header_id", headerIDMap, scalar.UintHex)
-								dataSize := d.FieldU16("data_size")
-								d.FramedFn(int64(dataSize)*8, func(d *decode.D) {
-									switch headerID {
-									case headerIDZip64ExtendedInformation:
-										d.FieldU64("uncompressed_size")
-										// TODO: spec says these should be here but real zip64 seems to not have them? optional?
-										if !d.End() {
-											compressedSizeBytes = d.FieldU64("compressed_size")
-										}
-									default:
-										d.FieldRawLen("data", int64(dataSize)*8)
-									}
-								})
-							})
+						ef := fieldsExtraFields(d)
+						if ef.zip64ExtendedInformationPresent &&
+							ef.zip64ExtendedInformation.compressedSizePresent {
+							compressedSizeBytes = ef.zip64ExtendedInformation.compressedSize
 						}
 					})
 				})

@@ -20,14 +20,16 @@ $ fq dv zip64-offset-not-ffffffff.zip
 0x00|                     00                        |       .        |        language_encoding: false 0x7.4-0x7.5 (0.1)
 0x00|                     00                        |       .        |        unused1: 0 0x7.5-0x8 (0.3)
 0x00|                        00 00                  |        ..      |      compression_method: "none" (0) 0x8-0xa (2)
-    |                                               |                |      last_modification_date{}: 0xa-0xc (2)
-0x00|                              4f               |          O     |        hours: 9 0xa-0xa.5 (0.5)
-0x00|                              4f 72            |          Or    |        minutes: 59 0xa.5-0xb.3 (0.6)
-0x00|                                 72            |           r    |        seconds: 18 0xb.3-0xc (0.5)
-    |                                               |                |      last_modification_time{}: 0xc-0xe (2)
-0x00|                                    5b         |            [   |        year: 45 0xc-0xc.7 (0.7)
-0x00|                                    5b 40      |            [@  |        month: 10 0xc.7-0xd.3 (0.4)
-0x00|                                       40      |             @  |        day: 0 0xd.3-0xe (0.5)
+    |                                               |                |      last_modification{}: 0xa-0xe (4)
+0x00|                              4f 72            |          Or    |        fat_time: 0x724f 0xa-0xc (2)
+    |                                               |                |        second: 30 (15)
+    |                                               |                |        minute: 18
+    |                                               |                |        hour: 14
+0x00|                                    5b 40      |            [@  |        fat_date: 0x405b 0xc-0xe (2)
+    |                                               |                |        day: 27
+    |                                               |                |        month: 2
+    |                                               |                |        year: 2012 (32)
+    |                                               |                |        unix_guess: 1330352310 (2012-02-27T14:18:30)
 0x00|                                          07 a1|              ..|      crc32_uncompressed: 0xddeaa107 0xe-0x12 (4)
 0x10|ea dd                                          |..              |
 0x10|      ff ff ff ff                              |  ....          |      compressed_size: 4294967295 0x12-0x16 (4)
@@ -37,9 +39,9 @@ $ fq dv zip64-offset-not-ffffffff.zip
 0x10|                                          2d   |              - |      file_name: "-" 0x1e-0x1f (1)
     |                                               |                |      extra_fields[0:1]: 0x1f-0x33 (20)
     |                                               |                |        [0]{}: extra_field 0x1f-0x33 (20)
-0x10|                                             01|               .|          header_id: 0x1 (ZIP64 extended information extra field) 0x1f-0x21 (2)
+0x10|                                             01|               .|          tag: 0x1 (ZIP64 extended information extra field) 0x1f-0x21 (2)
 0x20|00                                             |.               |
-0x20|   10 00                                       | ..             |          data_size: 16 0x21-0x23 (2)
+0x20|   10 00                                       | ..             |          size: 16 0x21-0x23 (2)
 0x20|         02 00 00 00 00 00 00 00               |   ........     |          uncompressed_size: 2 0x23-0x2b (8)
 0x20|                                 02 00 00 00 00|           .....|          compressed_size: 2 0x2b-0x33 (8)
 0x30|00 00 00                                       |...             |
@@ -65,14 +67,16 @@ $ fq dv zip64-offset-not-ffffffff.zip
 0x30|                                          00   |              . |        unused1: 0 0x3e.5-0x3f (0.3)
 0x30|                                             00|               .|      compression_method: "none" (0) 0x3f-0x41 (2)
 0x40|00                                             |.               |
-    |                                               |                |      last_modification_date{}: 0x41-0x43 (2)
-0x40|   4f                                          | O              |        hours: 9 0x41-0x41.5 (0.5)
-0x40|   4f 72                                       | Or             |        minutes: 59 0x41.5-0x42.3 (0.6)
-0x40|      72                                       |  r             |        seconds: 18 0x42.3-0x43 (0.5)
-    |                                               |                |      last_modification_time{}: 0x43-0x45 (2)
-0x40|         5b                                    |   [            |        year: 45 0x43-0x43.7 (0.7)
-0x40|         5b 40                                 |   [@           |        month: 10 0x43.7-0x44.3 (0.4)
-0x40|            40                                 |    @           |        day: 0 0x44.3-0x45 (0.5)
+    |                                               |                |      last_modification{}: 0x41-0x45 (4)
+0x40|   4f 72                                       | Or             |        fat_time: 0x724f 0x41-0x43 (2)
+    |                                               |                |        second: 30 (15)
+    |                                               |                |        minute: 18
+    |                                               |                |        hour: 14
+0x40|         5b 40                                 |   [@           |        fat_date: 0x405b 0x43-0x45 (2)
+    |                                               |                |        day: 27
+    |                                               |                |        month: 2
+    |                                               |                |        year: 2012 (32)
+    |                                               |                |        unix_guess: 1330352310 (2012-02-27T14:18:30)
 0x40|               07 a1 ea dd                     |     ....       |      crc32_uncompressed: 0xddeaa107 0x45-0x49 (4)
 0x40|                           02 00 00 00         |         ....   |      compressed_size: 2 0x49-0x4d (4)
 0x40|                                       02 00 00|             ...|      uncompressed_size: 2 0x4d-0x51 (4)
@@ -101,6 +105,7 @@ $ fq dv zip64-offset-not-ffffffff.zip
 0x80|                                    2f 00 00 00|            /...|    size_of_central_directory: 47 0x8c-0x94 (8)
 0x90|00 00 00 00                                    |....            |
 0x90|            35 00 00 00 00 00 00 00            |    5.......    |    offset_of_start_of_central_directory: 53 0x94-0x9c (8)
+    |                                               |                |    extensible_data[0:0]: 0x9c-0x9c (0)
     |                                               |                |  end_of_central_directory_locator{}: 0x9c-0xb0 (20)
 0x90|                                    50 4b 06 07|            PK..|    signature: raw bits (valid) 0x9c-0xa0 (4)
 0xa0|00 00 00 00                                    |....            |    disk_nr: 0 0xa0-0xa4 (4)
