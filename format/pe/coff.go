@@ -77,37 +77,37 @@ const (
 	MachineTypeWCEMIPSV2   = 0x169
 )
 
-var MachineTypeNames = scalar.UintMap{
-	MachineTypeUNKNOWN: {Sym: "unknown", Description: "The content of this field is assumed to be applicable to any machine type"},
-	MachineTypeALPHA:   {Sym: "alpha", Description: "Alpha AXP, 32-bit address space"},
-	MachineTypeALPHA64: {Sym: "alpha64", Description: "Alpha 64, 64-bit address space"},
-	MachineTypeAM33:    {Sym: "am33", Description: "Matsushita AM33"},
-	MachineTypeAMD64:   {Sym: "amd64", Description: "x64"},
-	MachineTypeARM:     {Sym: "arm", Description: "ARM little endian"},
-	MachineTypeARM64:   {Sym: "arm64", Description: "ARM64 little endian"},
-	MachineTypeARMNT:   {Sym: "armnt", Description: "ARM Thumb-2 little endian"},
-	//MachineTypeAXP64:       {Sym: "AXP64", Description: "AXP 64 (Same as Alpha 64)"},
-	MachineTypeEBC:         {Sym: "ebc", Description: "EFI byte code"},
-	MachineTypeI386:        {Sym: "i386", Description: "Intel 386 or later processors and compatible processors"},
-	MachineTypeIA64:        {Sym: "ia64", Description: "Intel Itanium processor family"},
-	MachineTypeLOONGARCH32: {Sym: "loongarch32", Description: "LoongArch 32-bit processor family"},
-	MachineTypeLOONGARCH64: {Sym: "loongarch64", Description: "LoongArch 64-bit processor family"},
-	MachineTypeM32R:        {Sym: "m32r", Description: "Mitsubishi M32R little endian"},
-	MachineTypeMIPS16:      {Sym: "mips16", Description: "MIPS16"},
-	MachineTypeMIPSFPU:     {Sym: "mipsfpu", Description: "MIPS with FPU"},
-	MachineTypeMIPSFPU16:   {Sym: "mipsfpu16", Description: "MIPS16 with FPU"},
-	MachineTypePOWERPC:     {Sym: "powerpc", Description: "Power PC little endian"},
-	MachineTypePOWERPCFP:   {Sym: "powerpcfp", Description: "Power PC with floating point support"},
-	MachineTypeR4000:       {Sym: "r4000", Description: "MIPS little endian"},
-	MachineTypeRISCV32:     {Sym: "riscv32", Description: "RISC-V 32-bit address space"},
-	MachineTypeRISCV64:     {Sym: "riscv64", Description: "RISC-V 64-bit address space"},
-	MachineTypeRISCV128:    {Sym: "riscv128", Description: "RISC-V 128-bit address space"},
-	MachineTypeSH3:         {Sym: "sh3", Description: "Hitachi SH3"},
-	MachineTypeSH3DSP:      {Sym: "sh3dsp", Description: "Hitachi SH3 DSP"},
-	MachineTypeSH4:         {Sym: "sh4", Description: "Hitachi SH4"},
-	MachineTypeSH5:         {Sym: "sh5", Description: "Hitachi SH5"},
-	MachineTypeTHUMB:       {Sym: "thumb", Description: "Thumb"},
-	MachineTypeWCEMIPSV2:   {Sym: "wcemipsv2", Description: "MIPS little-endian WCE v2"},
+var MachineTypeNames = scalar.UintMapSymStr{
+	MachineTypeUNKNOWN: "unknown",
+	MachineTypeALPHA:   "alpha",
+	MachineTypeALPHA64: "alpha64",
+	MachineTypeAM33:    "am33",
+	MachineTypeAMD64:   "amd64",
+	MachineTypeARM:     "arm",
+	MachineTypeARM64:   "arm64",
+	MachineTypeARMNT:   "armnt",
+	//MachineTypeAXP64:        "AXP64",
+	MachineTypeEBC:         "ebc",
+	MachineTypeI386:        "i386",
+	MachineTypeIA64:        "ia64",
+	MachineTypeLOONGARCH32: "loongarch32",
+	MachineTypeLOONGARCH64: "loongarch64",
+	MachineTypeM32R:        "m32r",
+	MachineTypeMIPS16:      "mips16",
+	MachineTypeMIPSFPU:     "mipsfpu",
+	MachineTypeMIPSFPU16:   "mipsfpu16",
+	MachineTypePOWERPC:     "powerpc",
+	MachineTypePOWERPCFP:   "powerpcfp",
+	MachineTypeR4000:       "r4000",
+	MachineTypeRISCV32:     "riscv32",
+	MachineTypeRISCV64:     "riscv64",
+	MachineTypeRISCV128:    "riscv128",
+	MachineTypeSH3:         "sh3",
+	MachineTypeSH3DSP:      "sh3dsp",
+	MachineTypeSH4:         "sh4",
+	MachineTypeSH5:         "sh5",
+	MachineTypeTHUMB:       "thumb",
+	MachineTypeWCEMIPSV2:   "wcemipsv2",
 }
 
 const (
@@ -127,21 +127,21 @@ const (
 	SubSystemWINDOWS_BOOT_APPLICATION = 16
 )
 
-var subSystemNames = scalar.UintMap{
-	SubSystemUNKNOWN:                  {Sym: "unknown", Description: "An unknown subsystem"},
-	SubSystemNATIVE:                   {Sym: "native", Description: "Device drivers and native Windows processes"},
-	SubSystemWINDOWS_GUI:              {Sym: "windows_gui", Description: "The Windows graphical user interface (GUI) subsystem"},
-	SubSystemWINDOWS_CUI:              {Sym: "windows_cui", Description: "The Windows character subsystem"},
-	SubSystemOS2_CUI:                  {Sym: "os2_cui", Description: "The OS/2 character subsystem"},
-	SubSystemPOSIX_CUI:                {Sym: "posix_cui", Description: "The Posix character subsystem"},
-	SubSystemNATIVE_WINDOWS:           {Sym: "native_windows", Description: "Native Win9x driver"},
-	SubSystemWINDOWS_CE_GUI:           {Sym: "windows_ce_gui", Description: "Windows CE"},
-	SubSystemEFI_APPLICATION:          {Sym: "efi_application", Description: "An Extensible Firmware Interface (EFI) application"},
-	SubSystemEFI_BOOT_SERVICE_DRIVER:  {Sym: "efi_boot_service_driver", Description: "An EFI driver with boot services"},
-	SubSystemEFI_RUNTIME_DRIVER:       {Sym: "efi_runtime_driver", Description: "An EFI driver with run-time services"},
-	SubSystemEFI_ROM:                  {Sym: "efi_rom", Description: "An EFI ROM image"},
-	SubSystemXBOX:                     {Sym: "xbox", Description: "XBOX"},
-	SubSystemWINDOWS_BOOT_APPLICATION: {Sym: "windows_boot_application", Description: "Windows boot application."},
+var subSystemNames = scalar.UintMapSymStr{
+	SubSystemUNKNOWN:                  "unknown",
+	SubSystemNATIVE:                   "native",
+	SubSystemWINDOWS_GUI:              "windows_gui",
+	SubSystemWINDOWS_CUI:              "windows_cui",
+	SubSystemOS2_CUI:                  "os2_cui",
+	SubSystemPOSIX_CUI:                "posix_cui",
+	SubSystemNATIVE_WINDOWS:           "native_windows",
+	SubSystemWINDOWS_CE_GUI:           "windows_ce_gui",
+	SubSystemEFI_APPLICATION:          "efi_application",
+	SubSystemEFI_BOOT_SERVICE_DRIVER:  "efi_boot_service_driver",
+	SubSystemEFI_RUNTIME_DRIVER:       "efi_runtime_driver",
+	SubSystemEFI_ROM:                  "efi_rom",
+	SubSystemXBOX:                     "xbox",
+	SubSystemWINDOWS_BOOT_APPLICATION: "windows_boot_application",
 }
 
 const (
@@ -149,7 +149,7 @@ const (
 	symClassNull            = 0    // No assigned storage class.
 	symClassAutomatic       = 1    // The automatic (stack) variable. The Value field specifies the stack frame offset.
 	symClassExternal        = 2    // A value that Microsoft tools use for external symbols. The Value field indicates the size if the section number is IMAGE_SYM_UNDEFINED (0). If the section number is not zero, then the Value field specifies the offset within the section.
-	symClassStati           = 3    // The offset of the symbol within the section. If the Value field is zero, then the symbol represents a section name.
+	symClassStatic          = 3    // The offset of the symbol within the section. If the Value field is zero, then the symbol represents a section name.
 	symClassRegister        = 4    // A register variable. The Value field specifies the register number.
 	symClassExternalDef     = 5    // A symbol that is defined externally.
 	symClassLabel           = 6    // A code label that is defined within the module. The Value field specifies the offset of the symbol within the section.
@@ -174,34 +174,34 @@ const (
 	symClassClrToken        = 107  // A CLR token symbol. The name is an ASCII string that consists of the hexadecimal value of the token. For more information, see CLR Token Definition (Object Only).
 )
 
-var symClassNames = scalar.UintMap{
-	symClassEndOfFunction:   {Sym: "end_of_function", Description: "A special symbol that represents the end of function, for debugging purposes."},
-	symClassNull:            {Sym: "null", Description: "No assigned storage class."},
-	symClassAutomatic:       {Sym: "automatic", Description: "The automatic (stack) variable. The Value field specifies the stack frame offset."},
-	symClassExternal:        {Sym: "external", Description: "A value that Microsoft tools use for external symbols. The Value field indicates the size if the section number is IMAGE_SYM_UNDEFINED (0). If the section number is not zero, then the Value field specifies the offset within the section."},
-	symClassStati:           {Sym: "stati", Description: "The offset of the symbol within the section. If the Value field is zero, then the symbol represents a section name."},
-	symClassRegister:        {Sym: "register", Description: "A register variable. The Value field specifies the register number."},
-	symClassExternalDef:     {Sym: "external_def", Description: "A symbol that is defined externally."},
-	symClassLabel:           {Sym: "label", Description: "A code label that is defined within the module. The Value field specifies the offset of the symbol within the section."},
-	symClassUndefinedLabel:  {Sym: "undefined_label", Description: "A reference to a code label that is not defined."},
-	symClassMemberOfStruct:  {Sym: "member_of_struct", Description: "The structure member. The Value field specifies the n th member."},
-	symClassArgument:        {Sym: "argument", Description: "A formal argument (parameter) of a function. The Value field specifies the n th argument."},
-	symClassStructTag:       {Sym: "struct_tag", Description: "The structure tag-name entry."},
-	symClassMemberOfUnion:   {Sym: "member_of_union", Description: "A union member. The Value field specifies the n th member."},
-	symClassUnionTag:        {Sym: "union_tag", Description: "The Union tag-name entry."},
-	symClassTypeDefinition:  {Sym: "type_definition", Description: "A Typedef entry."},
-	symClassUndefinedStatic: {Sym: "undefined_static", Description: "A static data declaration."},
-	symClassEnumTag:         {Sym: "enum_tag", Description: "An enumerated type tagname entry."},
-	symClassMemberOfEnum:    {Sym: "member_of_enum", Description: "A member of an enumeration. The Value field specifies the n th member."},
-	symClassRegisterParam:   {Sym: "register_param", Description: "A register parameter."},
-	symClassBitField:        {Sym: "bit_field", Description: "A bit-field reference. The Value field specifies the n th bit in the bit field."},
-	symClassBlock:           {Sym: "block", Description: "A .bb (beginning of block) or .eb (end of block) record. The Value field is the relocatable address of the code location."},
-	symClassFunction:        {Sym: "function", Description: "A value that Microsoft tools use for symbol records that define the extent of a function: begin function (.bf ), end function ( .ef ), and lines in function ( .lf ). For .lf records, the Value field gives the number of source lines in the function. For .ef records, the Value field gives the size of the function code."},
-	symClassEndOfStruct:     {Sym: "end_of_struct", Description: "An end-of-structure entry."},
-	symClassFile:            {Sym: "file", Description: "A value that Microsoft tools, as well as traditional COFF format, use for the source-file symbol record. The symbol is followed by auxiliary records that name the file."},
-	symClassSection:         {Sym: "section", Description: "A definition of a section (Microsoft tools use STATIC storage class instead)."},
-	symClassWeakExternal:    {Sym: "weak_external", Description: "A weak external. For more information, see Auxiliary Format 3: Weak Externals."},
-	symClassClrToken:        {Sym: "clr_token", Description: "A CLR token symbol. The name is an ASCII string that consists of the hexadecimal value of the token. For more information, see CLR Token Definition (Object Only)."},
+var symClassNames = scalar.UintMapSymStr{
+	symClassEndOfFunction:   "end_of_function",
+	symClassNull:            "null",
+	symClassAutomatic:       "automatic",
+	symClassExternal:        "external",
+	symClassStatic:          "static",
+	symClassRegister:        "register",
+	symClassExternalDef:     "external_def",
+	symClassLabel:           "label",
+	symClassUndefinedLabel:  "undefined_label",
+	symClassMemberOfStruct:  "member_of_struct",
+	symClassArgument:        "argument",
+	symClassStructTag:       "struct_tag",
+	symClassMemberOfUnion:   "member_of_union",
+	symClassUnionTag:        "union_tag",
+	symClassTypeDefinition:  "type_definition",
+	symClassUndefinedStatic: "undefined_static",
+	symClassEnumTag:         "enum_tag",
+	symClassMemberOfEnum:    "member_of_enum",
+	symClassRegisterParam:   "register_param",
+	symClassBitField:        "bit_field",
+	symClassBlock:           "block",
+	symClassFunction:        "function",
+	symClassEndOfStruct:     "end_of_struct",
+	symClassFile:            "file",
+	symClassSection:         "section",
+	symClassWeakExternal:    "weak_external",
+	symClassClrToken:        "clr_token",
 }
 
 const (
@@ -223,23 +223,23 @@ const (
 	symTypeDword  = 15
 )
 
-var symBaseTypeNames = scalar.UintMap{
-	symTypeNull:   {Sym: "sym_type_null", Description: "No type information or unknown base type. Microsoft tools use this setting"},
-	symTypeVoid:   {Sym: "sym_type_void", Description: "No valid type; used with void pointers and functions"},
-	symTypeChar:   {Sym: "sym_type_char", Description: "A character (signed byte)"},
-	symTypeShort:  {Sym: "sym_type_short", Description: "A 2-byte signed integer"},
-	symTypeInt:    {Sym: "sym_type_int", Description: "A natural integer type (normally 4 bytes in Windows)"},
-	symTypeLong:   {Sym: "sym_type_long", Description: "A 4-byte signed integer"},
-	symTypeFloat:  {Sym: "sym_type_float", Description: "A 4-byte floating-point number"},
-	symTypeDouble: {Sym: "sym_type_double", Description: "An 8-byte floating-point number"},
-	symTypeStruct: {Sym: "sym_type_struct", Description: "A structure"},
-	symTypeUnion:  {Sym: "sym_type_union", Description: "A union"},
-	symTypeEnum:   {Sym: "sym_type_enum", Description: "An enumerated type"},
-	symTypeMoe:    {Sym: "sym_type_moe", Description: "A member of enumeration (a specific value)"},
-	symTypeByte:   {Sym: "sym_type_byte", Description: "A byte; unsigned 1-byte integer"},
-	symTypeWord:   {Sym: "sym_type_word", Description: "A word; unsigned 2-byte integer"},
-	symTypeUint:   {Sym: "sym_type_uint", Description: "An unsigned integer of natural size (normally, 4 bytes)"},
-	symTypeDword:  {Sym: "sym_type_dword", Description: "An unsigned 4-byte integer"},
+var symBaseTypeNames = scalar.UintMapSymStr{
+	symTypeNull:   "null",
+	symTypeVoid:   "void",
+	symTypeChar:   "char",
+	symTypeShort:  "short",
+	symTypeInt:    "int",
+	symTypeLong:   "long",
+	symTypeFloat:  "float",
+	symTypeDouble: "double",
+	symTypeStruct: "struct",
+	symTypeUnion:  "union",
+	symTypeEnum:   "enum",
+	symTypeMoe:    "moe",
+	symTypeByte:   "byte",
+	symTypeWord:   "word",
+	symTypeUint:   "uint",
+	symTypeDword:  "dword",
 }
 
 const (
@@ -249,11 +249,11 @@ const (
 	symDtypeArray    = 3
 )
 
-var symBaseDTypeNames = scalar.UintMap{
-	symDtypeNull:     {Sym: "dtype_null", Description: "No derived type; the symbol is a simple scalar variable."},
-	symDtypePointer:  {Sym: "dtype_pointer", Description: "The symbol is a pointer to base type."},
-	symDtypeFunction: {Sym: "dtype_function", Description: "The symbol is a function that returns a base type."},
-	symDtypeArray:    {Sym: "dtype_array", Description: "The symbol is an array of base type."},
+var symBaseDTypeNames = scalar.UintMapSymStr{
+	symDtypeNull:     "null",
+	symDtypePointer:  "pointer",
+	symDtypeFunction: "function",
+	symDtypeArray:    "array",
 }
 
 // type stringTable []string
