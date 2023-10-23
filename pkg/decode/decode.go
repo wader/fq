@@ -1205,7 +1205,7 @@ func (d *D) FieldFormatReaderLen(name string, nBits int64, fn func(r io.Reader) 
 	return d.FieldFormatBitBuf(name, rBR, group, nil)
 }
 
-// TODO: too mant return values
+// TODO: too many return values
 func (d *D) TryFieldReaderRangeFormat(name string, startBit int64, nBits int64, fn func(r io.Reader) io.Reader, group *Group, inArg any) (int64, bitio.ReaderAtSeeker, *Value, any, error) {
 	bitLen := nBits
 	if bitLen == -1 {
@@ -1225,9 +1225,21 @@ func (d *D) TryFieldReaderRangeFormat(name string, startBit int64, nBits int64, 
 	if err != nil {
 		return 0, nil, nil, nil, err
 	}
-	dv, v, err := d.TryFieldFormatBitBuf(name, rbr, group, inArg)
 
-	return cz * 8, rbr, dv, v, err
+	if group != nil {
+		dv, v, err := d.TryFieldFormatBitBuf(name, rbr, group, inArg)
+		return cz * 8, rbr, dv, v, err
+	}
+
+	d.FieldRootBitBuf(name, rbr)
+
+	return cz * 8, rbr, nil, nil, nil
+}
+
+// TODO: refactor this
+func (d *D) FieldReaderRange(name string, startBit int64, nBits int64, fn func(r io.Reader) io.Reader) (int64, bitio.ReaderAtSeeker, error) {
+	sz, br, _, _, err := d.TryFieldReaderRangeFormat(name, startBit, nBits, fn, nil, nil)
+	return sz, br, err
 }
 
 func (d *D) FieldReaderRangeFormat(name string, startBit int64, nBits int64, fn func(r io.Reader) io.Reader, group *Group, inArg any) (int64, bitio.ReaderAtSeeker, *Value, any) {

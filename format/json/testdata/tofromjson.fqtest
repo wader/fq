@@ -36,38 +36,53 @@ $ fq . test.json
 }
 $ fq .b[1] test.json
 2
-$ fq . json.gz
+$ fq d json.gz
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: json.gz (gzip)
-0x000|1f 8b                                          |..              |  identification: raw bits (valid)
-0x000|      08                                       |  .             |  compression_method: "deflate" (8)
-0x000|         00                                    |   .            |  flags{}:
-0x000|            65 0a 08 61                        |    e..a        |  mtime: 1627916901 (2021-08-02T15:08:21Z)
-0x000|                        00                     |        .       |  extra_flags: 0
-0x000|                           03                  |         .      |  os: "unix" (3)
+     |                                               |                |  members[0:1]:
+     |                                               |                |    [0]{}: member
+0x000|1f 8b                                          |..              |      identification: raw bits (valid)
+0x000|      08                                       |  .             |      compression_method: "deflate" (8)
+     |                                               |                |      flags{}:
+0x000|         00                                    |   .            |        text: false
+0x000|         00                                    |   .            |        header_crc: false
+0x000|         00                                    |   .            |        extra: false
+0x000|         00                                    |   .            |        name: false
+0x000|         00                                    |   .            |        comment: false
+0x000|         00                                    |   .            |        reserved: 0
+0x000|            65 0a 08 61                        |    e..a        |      mtime: 1627916901 (2021-08-02T15:08:21Z)
+0x000|                        00                     |        .       |      extra_flags: 0
+0x000|                           03                  |         .      |      os: "unix" (3)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+  0x0|7b 22 61 22 3a 20 31 32 33 7d 0a|              |{"a": 123}.|    |      uncompressed: raw bits
+0x000|                              ab 56 4a 54 b2 52|          .VJT.R|      compressed: raw bits
+0x010|30 34 32 ae e5 02 00                           |042....         |
+0x010|                     20 ac d2 9c               |        ...     |      crc32: 0x9cd2ac20 (valid)
+0x010|                                 0b 00 00 00|  |           ....||      isize: 11
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
   0x0|7b 22 61 22 3a 20 31 32 33 7d 0a|              |{"a": 123}.|    |  uncompressed: {} (json)
-0x000|                              ab 56 4a 54 b2 52|          .VJT.R|  compressed: raw bits
-0x010|30 34 32 ae e5 02 00                           |042....         |
-0x010|                     20 ac d2 9c               |        ...     |  crc32: 0x9cd2ac20 (valid)
-0x010|                                 0b 00 00 00|  |           ....||  isize: 11
 $ fq tovalue json.gz
 {
-  "compressed": "\ufffdVJT\ufffdR042\ufffd\ufffd\u0002\u0000",
-  "compression_method": "deflate",
-  "crc32": 2631052320,
-  "extra_flags": 0,
-  "flags": {
-    "comment": false,
-    "extra": false,
-    "header_crc": false,
-    "name": false,
-    "reserved": 0,
-    "text": false
-  },
-  "identification": "\u001f\ufffd",
-  "isize": 11,
-  "mtime": 1627916901,
-  "os": "unix",
+  "members": [
+    {
+      "compressed": "\ufffdVJT\ufffdR042\ufffd\ufffd\u0002\u0000",
+      "compression_method": "deflate",
+      "crc32": 2631052320,
+      "extra_flags": 0,
+      "flags": {
+        "comment": false,
+        "extra": false,
+        "header_crc": false,
+        "name": false,
+        "reserved": 0,
+        "text": false
+      },
+      "identification": "\u001f\ufffd",
+      "isize": 11,
+      "mtime": 1627916901,
+      "os": "unix",
+      "uncompressed": "{\"a\": 123}\n"
+    }
+  ],
   "uncompressed": {
     "a": 123
   }
