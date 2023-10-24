@@ -4,6 +4,7 @@ package macho
 
 import (
 	"embed"
+	"log"
 	"strings"
 	"time"
 
@@ -480,30 +481,38 @@ func machoDecode(d *decode.D) any {
 									// skip, no data from file
 									// TODO: more?
 								default:
-									d.RangeFn(int64(offset)*8, int64(size)*8, func(d *decode.D) {
+									_ = size
+									d.SeekAbs(int64(offset)*8, func(d *decode.D) {
 										switch sectName {
 										case "__cstring":
-											d.FieldArray("cstrings", func(d *decode.D) {
-												for !d.End() {
-													d.FieldUTF8Null("cstring")
-												}
+											d.FramedFn(int64(size)*8, func(d *decode.D) {
+												d.FieldArray("cstrings", func(d *decode.D) {
+													for !d.End() {
+														d.FieldUTF8Null("cstring")
+													}
+												})
 											})
 										case "__ustring":
-											d.FieldArray("ustrings", func(d *decode.D) {
-												for !d.End() {
-													// TODO: always LE?
-													d.FieldUTF16LENull("ustring")
-												}
+											d.FramedFn(int64(size)*8, func(d *decode.D) {
+												d.FieldArray("ustrings", func(d *decode.D) {
+													for !d.End() {
+														// TODO: always LE?
+														d.FieldUTF16LENull("ustring")
+													}
+												})
 											})
+
 										case "__cfstring":
 											d.FieldArray("cfstrings", func(d *decode.D) {
-												for !d.End() {
+												count := int(size / (uint64(archBits*4) / 8))
+												log.Printf("count: %#+v\n", count)
+												for i := 0; i < count; i++ {
 													d.FieldStruct("cfstring", func(d *decode.D) {
 														// https://github.com/llvm-mirror/clang/blob/aa231e4be75ac4759c236b755c57876f76e3cf05/lib/CodeGen/CodeGenModule.cpp#L4708
 														const flagUTF8 = 0x07c8
 														const flagUTF16 = 0x07d0
 
-														d.FieldU("isa_vmaddr", archBits)
+														d.FieldU("isa_vmaddr", archBits, scalar.UintHex)
 														flag := d.FieldU("flags", archBits, scalar.UintHex, scalar.UintMapSymStr{
 															flagUTF8:  "utf8",
 															flagUTF16: "utf16",
@@ -511,14 +520,28 @@ func machoDecode(d *decode.D) any {
 														dataPtr := int64(d.FieldU("data_ptr", archBits, scalar.UintHex))
 														length := int64(d.FieldU("length", archBits))
 
-														offset := ((dataPtr - vmaddr) + fileoff) * 8
+														offset := dataPtr - 0x10000000000000
+
+														log.Printf("dataPtr: %x\n", dataPtr)
+														log.Printf("vmaddr: %x\n", vmaddr)
+														log.Printf("fileoff: %x\n", fileoff)
+														log.Printf("length: %x\n", length)
+
+														log.Printf("offset: %x\n", offset)
+
+														_ = offset
+														_ = length
+														_ = flag
+
 														switch flag {
 														case flagUTF8:
-															d.RangeFn(offset, length*8, func(d *decode.D) { d.FieldUTF8("string", int(length)) })
+															d.RangeFn(offset*8, length*8, func(d *decode.D) { d.FieldUTF8("string", int(length)) })
 														case flagUTF16:
 															// TODO: endian?
-															d.RangeFn(offset, length*8*2, func(d *decode.D) { d.FieldUTF16("string", int(length*2)) })
+															d.RangeFn(offset*8, length*8*2, func(d *decode.D) { d.FieldUTF16("string", int(length*2)) })
 														}
+
+														log.Println("  done")
 													})
 												}
 											})
