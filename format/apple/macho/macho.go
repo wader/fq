@@ -468,7 +468,6 @@ func machoDecode(d *decode.D) any {
 								d.FieldU32("nreloc")
 								// get section type
 								d.FieldStruct("flags", parseSectionFlags)
-								d.FieldU8("type", sectionTypes)
 								d.FieldU32("reserved1")
 								d.FieldU32("reserved2")
 								if archBits == 64 {
@@ -756,64 +755,131 @@ func machoDecode(d *decode.D) any {
 	return nil
 }
 
+// TODO: some kind of flags-endian helper?
 func parseMachHeaderFlags(d *decode.D) {
-	d.FieldRawLen("reserved", 6)
-	d.FieldBool("app_extension_safe")
-	d.FieldBool("no_heap_execution")
+	if d.Endian == decode.BigEndian {
+		d.FieldRawLen("reserved", 6)
+		d.FieldBool("app_extension_safe")
+		d.FieldBool("no_heap_execution")
 
-	d.FieldBool("has_tlv_descriptors")
-	d.FieldBool("dead_strippable_dylib")
-	d.FieldBool("pie")
-	d.FieldBool("no_reexported_dylibs")
+		d.FieldBool("has_tlv_descriptors")
+		d.FieldBool("dead_strippable_dylib")
+		d.FieldBool("pie")
+		d.FieldBool("no_reexported_dylibs")
+		d.FieldBool("setuid_safe")
+		d.FieldBool("root_safe")
+		d.FieldBool("allow_stack_execution")
+		d.FieldBool("binds_to_weak")
 
-	d.FieldBool("setuid_safe")
-	d.FieldBool("root_safe")
-	d.FieldBool("allow_stack_execution")
-	d.FieldBool("binds_to_weak")
+		d.FieldBool("weak_defines")
+		d.FieldBool("canonical")
+		d.FieldBool("subsections_via_symbols")
+		d.FieldBool("allmodsbound")
+		d.FieldBool("prebindable")
+		d.FieldBool("nofixprebinding")
+		d.FieldBool("nomultidefs")
+		d.FieldBool("force_flat")
 
-	d.FieldBool("weak_defines")
-	d.FieldBool("canonical")
-	d.FieldBool("subsections_via_symbols")
-	d.FieldBool("allmodsbound")
+		d.FieldBool("twolevel")
+		d.FieldBool("lazy_init")
+		d.FieldBool("split_segs")
+		d.FieldBool("prebound")
+		d.FieldBool("bindatload")
+		d.FieldBool("dyldlink")
+		d.FieldBool("incrlink")
+		d.FieldBool("noundefs")
+	} else {
+		d.FieldBool("twolevel")
+		d.FieldBool("lazy_init")
+		d.FieldBool("split_segs")
+		d.FieldBool("prebound")
+		d.FieldBool("bindatload")
+		d.FieldBool("dyldlink")
+		d.FieldBool("incrlink")
+		d.FieldBool("noundefs")
 
-	d.FieldBool("prebindable")
-	d.FieldBool("nofixprebinding")
-	d.FieldBool("nomultidefs")
-	d.FieldBool("force_flat")
+		d.FieldBool("weak_defines")
+		d.FieldBool("canonical")
+		d.FieldBool("subsections_via_symbols")
+		d.FieldBool("allmodsbound")
+		d.FieldBool("prebindable")
+		d.FieldBool("nofixprebinding")
+		d.FieldBool("nomultidefs")
+		d.FieldBool("force_flat")
 
-	d.FieldBool("twolevel")
-	d.FieldBool("lazy_init")
-	d.FieldBool("split_segs")
-	d.FieldBool("prebound")
+		d.FieldBool("has_tlv_descriptors")
+		d.FieldBool("dead_strippable_dylib")
+		d.FieldBool("pie")
+		d.FieldBool("no_reexported_dylibs")
+		d.FieldBool("setuid_safe")
+		d.FieldBool("root_safe")
+		d.FieldBool("allow_stack_execution")
+		d.FieldBool("binds_to_weak")
 
-	d.FieldBool("bindatload")
-	d.FieldBool("dyldlink")
-	d.FieldBool("incrlink")
-	d.FieldBool("noundefs")
+		d.FieldRawLen("reserved", 6)
+		d.FieldBool("app_extension_safe")
+		d.FieldBool("no_heap_execution")
+	}
 }
 
 func parseSegmentFlags(d *decode.D) {
-	d.FieldRawLen("reserved", 28)
-	d.FieldBool("protected_version_1")
-	d.FieldBool("noreloc")
-	d.FieldBool("fvmlib")
-	d.FieldBool("highvm")
+	if d.Endian == decode.BigEndian {
+		d.FieldRawLen("reserved0", 24)
+
+		d.FieldRawLen("reserved1", 4)
+		d.FieldBool("protected_version_1")
+		d.FieldBool("noreloc")
+		d.FieldBool("fvmlib")
+		d.FieldBool("highvm")
+	} else {
+		d.FieldRawLen("reserved0", 4)
+		d.FieldBool("protected_version_1")
+		d.FieldBool("noreloc")
+		d.FieldBool("fvmlib")
+		d.FieldBool("highvm")
+
+		d.FieldRawLen("reserved1", 24)
+	}
 }
 
 func parseSectionFlags(d *decode.D) {
-	d.FieldBool("attr_pure_instructions")
-	d.FieldBool("attr_no_toc")
-	d.FieldBool("attr_strip_static_syms")
-	d.FieldBool("attr_no_dead_strip")
+	if d.Endian == decode.BigEndian {
+		d.FieldBool("attr_pure_instructions")
+		d.FieldBool("attr_no_toc")
+		d.FieldBool("attr_strip_static_syms")
+		d.FieldBool("attr_no_dead_strip")
+		d.FieldBool("attr_live_support")
+		d.FieldBool("attr_self_modifying_code")
+		d.FieldBool("attr_debug")
+		d.FieldRawLen("reserved0", 1)
 
-	d.FieldBool("attr_live_support")
-	d.FieldBool("attr_self_modifying_code")
-	d.FieldBool("attr_debug")
-	d.FieldRawLen("reserved", 14)
+		d.FieldRawLen("reserved1", 8)
 
-	d.FieldBool("attr_some_instructions")
-	d.FieldBool("attr_ext_reloc")
-	d.FieldBool("attr_loc_reloc")
+		d.FieldRawLen("reserved2", 5)
+		d.FieldBool("attr_some_instructions")
+		d.FieldBool("attr_ext_reloc")
+		d.FieldBool("attr_loc_reloc")
+
+		d.FieldU8("type", sectionTypes)
+	} else {
+		d.FieldU8("type", sectionTypes)
+
+		d.FieldRawLen("reserved2", 5)
+		d.FieldBool("attr_some_instructions")
+		d.FieldBool("attr_ext_reloc")
+		d.FieldBool("attr_loc_reloc")
+
+		d.FieldRawLen("reserved1", 8)
+
+		d.FieldBool("attr_pure_instructions")
+		d.FieldBool("attr_no_toc")
+		d.FieldBool("attr_strip_static_syms")
+		d.FieldBool("attr_no_dead_strip")
+		d.FieldBool("attr_live_support")
+		d.FieldBool("attr_self_modifying_code")
+		d.FieldBool("attr_debug")
+		d.FieldRawLen("reserved0", 1)
+	}
 }
 
 var timestampMapper = scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
