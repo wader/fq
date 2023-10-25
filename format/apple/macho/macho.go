@@ -520,7 +520,7 @@ func machoDecode(d *decode.D) any {
 														dataPtr := int64(d.FieldU("data_ptr", archBits, scalar.UintHex))
 														length := int64(d.FieldU("length", archBits))
 
-														offset := dataPtr - 0x10000000000000
+														offset := dataPtr & ^0xf0000000000000
 
 														log.Printf("dataPtr: %x\n", dataPtr)
 														log.Printf("vmaddr: %x\n", vmaddr)
