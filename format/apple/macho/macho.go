@@ -541,7 +541,7 @@ func machoDecode(d *decode.D) any {
 					LC_REEXPORT_DYLIB:
 					d.FieldStruct("dylib_command", func(d *decode.D) {
 						offset := d.FieldU32("offset", scalar.UintHex)
-						d.FieldU32("timestamp", timestampMapper)
+						d.FieldU32("timestamp", scalar.UintActualUnixTimeDescription(time.Second, time.RFC3339))
 						d.FieldU32("current_version")
 						d.FieldU32("compatibility_version")
 						d.FieldUTF8NullFixedLen("name", int(cmdSize)-int(offset))
@@ -881,11 +881,6 @@ func parseSectionFlags(d *decode.D) {
 		d.FieldRawLen("reserved0", 1)
 	}
 }
-
-var timestampMapper = scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
-	s.Sym = time.UnixMilli(int64(s.Actual)).UTC().String()
-	return s, nil
-})
 
 func threadStateI386Decode(d *decode.D) {
 	d.FieldU32("eax")
