@@ -500,7 +500,7 @@ $ fq dv a_static
 0x04c0|                                    38 00 00 00|            8...|      cmdsize: 56 0x4cc-0x4d0 (4)
       |                                               |                |      dylib_command{}: 0x4d0-0x500 (48)
 0x04d0|18 00 00 00                                    |....            |        offset: 0x18 0x4d0-0x4d4 (4)
-0x04d0|            02 00 00 00                        |    ....        |        timestamp: "1970-01-01 00:00:00.002 +0000 UTC" (2) 0x4d4-0x4d8 (4)
+0x04d0|            02 00 00 00                        |    ....        |        timestamp: 2 (1970-01-01T00:00:02Z) 0x4d4-0x4d8 (4)
 0x04d0|                        00 00 1f 05            |        ....    |        current_version: 85917696 0x4d8-0x4dc (4)
 0x04d0|                                    00 00 01 00|            ....|        compatibility_version: 65536 0x4dc-0x4e0 (4)
 0x04e0|2f 75 73 72 2f 6c 69 62 2f 6c 69 62 53 79 73 74|/usr/lib/libSyst|        name: "/usr/lib/libSystem.B.dylib" 0x4e0-0x500 (32)
