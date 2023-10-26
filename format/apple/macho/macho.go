@@ -546,7 +546,7 @@ func machoDecode(d *decode.D) any {
 												}
 											})
 										default:
-											d.FieldRawLen("data", d.BitsLeft())
+											d.FieldRawLen("data", int64(size)*8)
 										}
 									})
 								}
