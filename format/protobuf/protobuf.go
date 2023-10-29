@@ -7,7 +7,6 @@ import (
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/internal/mathex"
-	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
@@ -50,7 +49,7 @@ func protobufDecodeField(d *decode.D, pbm *format.ProtoBufMessage) {
 
 		var value uint64
 		var length uint64
-		var valueStart int64
+		var valuePos int64
 		switch wireType {
 		case wireTypeVarint:
 			value = d.FieldULEB128("wire_value")
@@ -58,7 +57,7 @@ func protobufDecodeField(d *decode.D, pbm *format.ProtoBufMessage) {
 			value = d.FieldU64("wire_value")
 		case wireTypeLengthDelimited:
 			length = d.FieldULEB128("length")
-			valueStart = d.Pos()
+			valuePos = d.Pos()
 			d.FieldRawLen("wire_value", int64(length)*8)
 		case wireType32Bit:
 			value = d.FieldU32("wire_value")
@@ -99,9 +98,11 @@ func protobufDecodeField(d *decode.D, pbm *format.ProtoBufMessage) {
 				case format.ProtoBufTypeDouble:
 					// TODO:
 				case format.ProtoBufTypeString:
-					d.FieldValueStr("value", string(d.BytesRange(valueStart, int(length))))
+					d.SeekAbs(valuePos)
+					d.FieldUTF8("value", int(length))
 				case format.ProtoBufTypeBytes:
-					d.FieldValueBitBuf("value", bitio.NewBitReader(d.BytesRange(valueStart, int(length)), -1))
+					d.SeekAbs(valuePos)
+					d.FieldRawLen("value", int64(length)*8)
 				case format.ProtoBufTypeMessage:
 					// TODO: test
 					d.FramedFn(int64(length)*8, func(d *decode.D) {
