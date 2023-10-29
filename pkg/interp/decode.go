@@ -634,12 +634,15 @@ func (v decodeValue) JQValueToGoJQEx(optsFn func() (*Options, error)) any {
 		return v.JQValueToGoJQ()
 	}
 
-	bv, err := v.decodeValueBase.ToBinary()
-	if err != nil {
-		return err
+	if s, ok := v.dv.V.(scalar.Scalarable); ok && !s.ScalarFlags().IsSynthetic() {
+		bv, err := v.ToBinary()
+		if err != nil {
+			return err
+		}
+		return bv.JQValueToGoJQEx(optsFn)
 	}
 
-	return bv.JQValueToGoJQEx(optsFn)
+	return v.JQValueToGoJQ()
 
 }
 

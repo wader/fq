@@ -89,6 +89,8 @@ func ToGoJQValueFn(v any, valueFn func(v any) (any, error)) (any, error) {
 			vvs[k] = v
 		}
 		return vvs, nil
+	case error:
+		return nil, vv
 	default:
 		nv, err := valueFn(vv)
 		if err != nil {
