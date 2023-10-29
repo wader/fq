@@ -121,9 +121,10 @@ $ fq ddv pssh.mp4
 0x4a0|   10                                          | .              |            length: 16 0x4a1-0x4a2 (1)
 0x4a0|      88 37 80 c4 a9 81 49 4c b9 94 9e 93 79 2f|  .7....IL....y/|            wire_value: raw bits 0x4a2-0x4b2 (16)
 0x4b0|f8 a7                                          |..              |
+0x4a0|      88 37 80 c4 a9 81 49 4c b9 94 9e 93 79 2f|  .7....IL....y/|            value: raw bits 0x4a2-0x4b2 (16)
+0x4b0|f8 a7                                          |..              |
      |                                               |                |            name: "key_id"
      |                                               |                |            type: "bytes"
-     |                                               |                |            value: raw bits
      |                                               |                |          [2]{}: field 0x4b2-0x4c1 (15)
 0x4b0|      1a                                       |  .             |            key_n: 26 0x4b2-0x4b3 (1)
      |                                               |                |            field_number: 3
@@ -131,18 +132,19 @@ $ fq ddv pssh.mp4
 0x4b0|         0d                                    |   .            |            length: 13 0x4b3-0x4b4 (1)
 0x4b0|            77 69 64 65 76 69 6e 65 5f 74 65 73|    widevine_tes|            wire_value: raw bits 0x4b4-0x4c1 (13)
 0x4c0|74                                             |t               |
+0x4b0|            77 69 64 65 76 69 6e 65 5f 74 65 73|    widevine_tes|            value: "widevine_test" 0x4b4-0x4c1 (13)
+0x4c0|74                                             |t               |
      |                                               |                |            name: "provider"
      |                                               |                |            type: "string"
-     |                                               |                |            value: "widevine_test"
      |                                               |                |          [3]{}: field 0x4c1-0x4cb (10)
 0x4c0|   22                                          | "              |            key_n: 34 0x4c1-0x4c2 (1)
      |                                               |                |            field_number: 4
      |                                               |                |            wire_type: "length_delimited" (2)
 0x4c0|      08                                       |  .             |            length: 8 0x4c2-0x4c3 (1)
 0x4c0|         31 32 33 34 35 36 37 38               |   12345678     |            wire_value: raw bits 0x4c3-0x4cb (8)
+0x4c0|         31 32 33 34 35 36 37 38               |   12345678     |            value: raw bits 0x4c3-0x4cb (8)
      |                                               |                |            name: "content_id"
      |                                               |                |            type: "bytes"
-     |                                               |                |            value: raw bits
      |                                               |                |          [4]{}: field 0x4cb-0x4d4 (9)
 0x4c0|                                 32            |           2    |            key_n: 50 0x4cb-0x4cc (1)
      |                                               |                |            field_number: 6
@@ -150,6 +152,7 @@ $ fq ddv pssh.mp4
 0x4c0|                                    07         |            .   |            length: 7 0x4cc-0x4cd (1)
 0x4c0|                                       64 65 66|             def|            wire_value: raw bits 0x4cd-0x4d4 (7)
 0x4d0|61 75 6c 74|                                   |ault|           |
+0x4c0|                                       64 65 66|             def|            value: "default" 0x4cd-0x4d4 (7)
+0x4d0|61 75 6c 74|                                   |ault|           |
      |                                               |                |            name: "policy"
      |                                               |                |            type: "string"
-     |                                               |                |            value: "default"
