@@ -6,6 +6,7 @@ import (
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/internal/mathx"
+	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/checksum"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
@@ -20,6 +21,7 @@ func init() {
 			DecodeFn:    frameDecode,
 			DefaultInArg: format.FLAC_Frame_In{
 				BitsPerSample: 16, // TODO: maybe should not have a default value?
+				SampleDetails: false,
 			},
 		})
 }
@@ -466,7 +468,15 @@ func frameDecode(d *decode.D) any {
 										n += count
 									} else {
 										d.RangeFn(d.Pos(), int64(count*escapeSampleSize), func(d *decode.D) {
-											d.FieldRawLen("samples", int64(count*escapeSampleSize))
+											if ffi.SampleDetails {
+												d.FieldArray("residuals", func(d *decode.D) {
+													for i := 0; i < count; i++ {
+														d.FieldS("residual", escapeSampleSize)
+													}
+												})
+											} else {
+												d.FieldRawLen("residuals", int64(count*escapeSampleSize))
+											}
 										})
 										for range count {
 											samples[n] = d.S(escapeSampleSize)
@@ -474,17 +484,32 @@ func frameDecode(d *decode.D) any {
 										}
 									}
 								} else {
-									samplesStart := d.Pos()
-									for range count {
-										high := d.Unary(0)
-										low := d.U(riceParameter)
-										samples[n] = mathx.ZigZag[uint64, int64](high<<riceParameter | low)
-										n++
+									if ffi.SampleDetails {
+										d.FieldArray("residuals", func(d *decode.D) {
+											for i := 0; i < count; i++ {
+												d.FieldStruct("residual", func(d *decode.D) {
+													high := d.FieldUnary("high", 0)
+													low := d.FieldU("low", riceParameter)
+													residual := mathx.ZigZag[uint64, int64](high<<riceParameter | low)
+													d.FieldValueSint("value", residual)
+													samples[n] = residual
+												})
+												n++
+											}
+										})
+									} else {
+										samplesStart := d.Pos()
+										for range count {
+											high := d.Unary(0)
+											low := d.U(riceParameter)
+											samples[n] = mathx.ZigZag[uint64, int64](high<<riceParameter | low)
+											n++
+										}
+										samplesStop := d.Pos()
+										d.RangeFn(samplesStart, samplesStop-samplesStart, func(d *decode.D) {
+											d.FieldRawLen("residuals", d.BitsLeft())
+										})
 									}
-									samplesStop := d.Pos()
-									d.RangeFn(samplesStart, samplesStop-samplesStart, func(d *decode.D) {
-										d.FieldRawLen("samples", d.BitsLeft())
-									})
 								}
 							})
 						}
@@ -505,7 +530,8 @@ func frameDecode(d *decode.D) any {
 				}
 
 				samples := make([]int64, blockSize)
-				switch subframeTypeUint.SymStr() {
+				subframeType := subframeTypeUint.SymStr()
+				switch subframeType {
 				case SubframeConstant:
 					// <n> Unencoded constant value of the subblock, n = frame's bits-per-sample.
 					v := d.FieldS("value", subframeSampleSize)
@@ -516,7 +542,15 @@ func frameDecode(d *decode.D) any {
 					// <n*i> Unencoded subblock; n = frame's bits-per-sample, i = frame's blocksize.
 					// TODO: refactor into some kind of FieldBitBufLenFn?
 					d.RangeFn(d.Pos(), int64(blockSize*subframeSampleSize), func(d *decode.D) {
-						d.FieldRawLen("samples", d.BitsLeft())
+						if ffi.SampleDetails {
+							d.FieldArray("samples", func(d *decode.D) {
+								for i := 0; i < blockSize; i++ {
+									d.FieldS("sample", subframeSampleSize)
+								}
+							})
+						} else {
+							d.FieldRawLen("samples", d.BitsLeft())
+						}
 					})
 
 					for i := range blockSize {
@@ -565,6 +599,15 @@ func frameDecode(d *decode.D) any {
 					}
 				}
 
+				// for verbatim we already added samples above
+				if ffi.SampleDetails && subframeType != SubframeVerbatim {
+					d.FieldArray("samples", func(d *decode.D) {
+						for i := 0; i < len(samples); i++ {
+							d.FieldValueSint("sample", samples[i])
+						}
+					})
+				}
+
 				channelSamples = append(channelSamples, samples)
 			})
 		}
@@ -576,6 +619,7 @@ func frameDecode(d *decode.D) any {
 	footerCRC := &checksum.CRC{Bits: 16, Table: checksum.ANSI16Table}
 	d.CopyBits(footerCRC, d.BitBufRange(frameStart, d.Pos()-frameStart))
 	d.FieldRawLen("footer_crc", 16, d.ValidateBitBuf(footerCRC.Sum(nil)), scalar.RawHex)
+	d.FieldRootBitBuf("footer_crc_calculated", bitio.NewBitReader(footerCRC.Sum(nil), -1))
 
 	streamSamples := len(channelSamples[0])
 	for j := range channelSamples {

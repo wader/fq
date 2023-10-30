@@ -29,14 +29,16 @@ $ fq '.frames[1] | tobytes | flac_frame | d' mono8.flac
      |                                               |                |        [0]{}: partition
      |                                               |                |          count: 2047
 0x000|                        04 3f                  |        .?      |          rice_parameter: 0
-0x000|                           3f ff ff ff ff ff ff|         ?......|          samples: raw bits
+0x000|                           3f ff ff ff ff ff ff|         ?......|          residuals: raw bits
 0x010|ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|
 *    |until 0x196.1 (397)                            |                |
      |                                               |                |        [1]{}: partition
      |                                               |                |          count: 2048
 0x190|                  c1                           |      .         |          rice_parameter: 0
-0x190|                  c1 bb ff 39 99 32 4c 92 64 99|      ...9.2L.d.|          samples: raw bits
+0x190|                  c1 bb ff 39 99 32 4c 92 64 99|      ...9.2L.d.|          residuals: raw bits
 0x1a0|33 39 ff bb 6d 6d b6 df fe 66 66 4c 93 26 4c 99|39..mm...ffL.&L.|
 *    |until 0x33d.7 (424)                            |                |
      |                                               |                |  byte_align: 0 (valid)
 0x330|                                          5c 65|              \e|  footer_crc: "5c65" (raw bits) (valid)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+  0x0|5c 65|                                         |\e|             |  footer_crc_calculated: raw bits

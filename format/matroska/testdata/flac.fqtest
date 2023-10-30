@@ -419,7 +419,7 @@ $ fq -d matroska dv flac.mkv
      |                                               |                |                      [0]{}: partition 0x277.1-0x4ad.1 (566)
      |                                               |                |                        count: 2199
 0x270|                     01                        |       .        |                        rice_parameter: 0 0x277.1-0x277.5 (0.4)
-0x270|                     01 27 33 32 79 32 64 e6 66|       .'32y2d.f|                        samples: raw bits 0x277.5-0x4ad.1 (565.4)
+0x270|                     01 27 33 32 79 32 64 e6 66|       .'32y2d.f|                        residuals: raw bits 0x277.5-0x4ad.1 (565.4)
 0x280|73 24 d3 38 7f 99 27 99 3c 87 e6 66 49 32 72 49|s$.8..'.<..fI2rI|
 *    |until 0x4ad (566)                              |                |
      |                                               |                |                  [1]{}: subframe 0x4ad.1-0x4b0.2 (3.1)
@@ -429,6 +429,8 @@ $ fq -d matroska dv flac.mkv
      |                                               |                |                    subframe_sample_size: 17
 0x4a0|                                          00 00|              ..|                    value: 0 0x4ae.1-0x4b0.2 (2.1)
 0x4b0|00                                             |.               |
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+  0x0|82 cb|                                         |..|             |                footer_crc_calculated: raw bits 0x0-0x2 (2)
 0x4b0|00                                             |.               |                byte_align: 0 (valid) 0x4b0.2-0x4b1 (0.6)
 0x4b0|   82 cb                                       | ..             |                footer_crc: "82cb" (raw bits) (valid) 0x4b1-0x4b3 (2)
      |                                               |                |        [6]{}: element 0x4b3-0x4cf (28)

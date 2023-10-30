@@ -209,7 +209,8 @@ type CAFF_In struct {
 
 type FLAC_Frame_In struct {
 	SamplesBuf    []byte
-	BitsPerSample int `doc:"Bits per sample"`
+	BitsPerSample int  `doc:"Bits per sample"`
+	SampleDetails bool `doc:"Decode more sample details like residuals etc"`
 }
 
 type FLAC_Frame_Out struct {
