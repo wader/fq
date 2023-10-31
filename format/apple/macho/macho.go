@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
@@ -465,7 +464,7 @@ func machoDecode(d *decode.D) any {
 								}
 								offset := d.FieldU32("offset", scalar.UintHex)
 								d.FieldU32("align")
-								d.FieldU32("reloff")
+								d.FieldU32("reloff", scalar.UintHex)
 								d.FieldU32("nreloc")
 								// get section type
 								d.FieldStruct("flags", parseSectionFlags)
@@ -579,13 +578,9 @@ func machoDecode(d *decode.D) any {
 					d.FieldUTF8NullFixedLen("name", int(cmdSize)-int(offset))
 				case LC_PREBOUND_DYLIB:
 					// https://github.com/aidansteele/osx-abi-macho-file-format-reference#prebound_dylib_command
-					d.U32() // name_offset
+					d.FieldU32("name_offset")
 					nmodules := d.FieldU32("nmodules")
-					d.U32() // linked_modules_offset
-					d.FieldUTF8Null("name")
-					d.FieldBitBufFn("linked_modules", func(d *decode.D) bitio.ReaderAtSeeker {
-						return d.RawLen(int64((nmodules / 8) + (nmodules % 8)))
-					})
+					d.FieldRawLen("linked_modules", int64((nmodules/8)+(nmodules%8))*8)
 				case LC_THREAD,
 					LC_UNIXTHREAD:
 					d.FieldU32("flavor")
@@ -709,8 +704,11 @@ func machoDecode(d *decode.D) any {
 					LC_DYLIB_CODE_SIGN_DRS,
 					LC_LINKER_OPTIMIZATION_HINT:
 					d.FieldStruct("linkedit_data", func(d *decode.D) {
-						d.FieldU32("off")
-						d.FieldU32("size")
+						off := d.FieldU32("off", scalar.UintHex)
+						size := d.FieldU32("size")
+						d.RangeFn(int64(off)*8, int64(size)*8, func(d *decode.D) {
+							d.FieldRawLen("data", d.BitsLeft())
+						})
 					})
 				case LC_VERSION_MIN_IPHONEOS,
 					LC_VERSION_MIN_MACOSX,
@@ -769,6 +767,9 @@ func machoDecode(d *decode.D) any {
 						d.FieldUTF8NullFixedLen("name", int(cmdSize)-int(offset))
 					})
 				default:
+					log.Printf("cmdSize: %#+v\n", cmdSize)
+					d.FieldRawLen("data", (int64(cmdSize-8))*8)
+
 					// ignore
 				}
 			})
