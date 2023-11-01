@@ -122,7 +122,7 @@
 |`vpx_ccr`                                               |VPX&nbsp;Codec&nbsp;Configuration&nbsp;Record                                                                |<sub></sub>|
 |[`wasm`](#wasm)                                         |WebAssembly&nbsp;Binary&nbsp;Format                                                                          |<sub></sub>|
 |`wav`                                                   |WAV&nbsp;file                                                                                                |<sub>`id3v2` `id3v1` `id3v11`</sub>|
-|`webp`                                                  |WebP&nbsp;image                                                                                              |<sub>`vp8_frame`</sub>|
+|`webp`                                                  |WebP&nbsp;image                                                                                              |<sub>`exif` `vp8_frame` `icc_profile` `xml`</sub>|
 |[`xml`](#xml)                                           |Extensible&nbsp;Markup&nbsp;Language                                                                         |<sub></sub>|
 |`yaml`                                                  |YAML&nbsp;Ain't&nbsp;Markup&nbsp;Language                                                                    |<sub></sub>|
 |[`zip`](#zip)                                           |ZIP&nbsp;archive                                                                                             |<sub>`probe`</sub>|
