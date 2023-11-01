@@ -237,8 +237,8 @@ func tiffDecode(d *decode.D) any {
 	})
 
 	if len(s.offsets) != len(s.byteCounts) {
-		// TODO: warning
-	} else {
+		d.Errorf("unmatched strips offset (%d) and byte counts (%d)", len(s.offsets), len(s.byteCounts))
+	} else if len(s.offsets) > 0 {
 		d.FieldArray("strips", func(d *decode.D) {
 			for i := 0; i < len(s.offsets); i++ {
 				d.RangeFn(s.offsets[i], s.byteCounts[i], func(d *decode.D) {

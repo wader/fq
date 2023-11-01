@@ -58,7 +58,6 @@ import (
 	_ "github.com/wader/fq/format/vorbis"
 	_ "github.com/wader/fq/format/vpx"
 	_ "github.com/wader/fq/format/wasm"
-	_ "github.com/wader/fq/format/webp"
 	_ "github.com/wader/fq/format/xml"
 	_ "github.com/wader/fq/format/yaml"
 	_ "github.com/wader/fq/format/zip"
