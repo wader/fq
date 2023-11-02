@@ -331,7 +331,7 @@ func peCoffStubDecode(d *decode.D) any {
 	d.FieldRawLen("signature", 4*8, d.AssertBitBuf([]byte("PE\x00\x00")))
 	d.FieldU16("machine", MachineTypeNames, scalar.UintHex)
 	numberOfSections := d.FieldU16("number_of_sections")
-	d.FieldU32("time_date_stamp", scalar.UintActualUnixTime(time.RFC3339))
+	d.FieldU32("time_date_stamp", scalar.UintActualUnixTimeDescription(time.Second, time.RFC3339))
 	pointerToSymbolTable := d.FieldU32("pointer_to_symbol_table", scalar.UintHex)
 	numberOfSymbols := d.FieldU32("number_of_symbols")
 	sizeOfOptionalHeader := d.FieldU16("size_of_optional_header")
