@@ -121,5 +121,5 @@ $ fq -d tiff dv 4x4.tiff
 0x0b0|      01 00 00 00                              |  ....          |          value_offset: 1 0xb2-0xb6 (4)
      |                                               |                |          values[0:1]: 0xb2-0xb4 (2)
 0x0b0|      01 00                                    |  ..            |            [0]: 1 value 0xb2-0xb4 (2)
-0x0b0|                  00 00 00 00                  |      ....      |      next_ifd: 0 0xb6-0xba (4)
+0x0b0|                  00 00 00 00                  |      ....      |      next_ifd: 0x0 0xb6-0xba (4)
 0x0c0|         00                                    |   .            |  gap0: raw bits 0xc3-0xc4 (1)
