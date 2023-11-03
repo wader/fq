@@ -196,7 +196,7 @@ func decodeIfd(d *decode.D, s *strips, tagNames scalar.UintMapSymStr) int64 {
 			}
 		})
 
-		nextIfdOffset = int64(d.FieldU32("next_ifd"))
+		nextIfdOffset = int64(d.FieldU32("next_ifd", scalar.UintHex))
 	})
 
 	return nextIfdOffset
@@ -226,7 +226,8 @@ func tiffDecode(d *decode.D) any {
 	ifdSeen := map[int64]struct{}{}
 
 	d.FieldArray("ifds", func(d *decode.D) {
-		for ifdOffset != 0 {
+		// sanity check offset
+		for ifdOffset > 0 && ifdOffset*8 < d.Len() {
 			if _, ok := ifdSeen[ifdOffset]; ok {
 				d.Fatalf("ifd loop detected for %d", ifdOffset)
 			}

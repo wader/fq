@@ -148,9 +148,9 @@ $ fq -d webp dv xmp_exif.webp
 0x0f0|                              05 00 00 00      |          ....  |                    value_offset: 83886080 0xfa-0xfe (4)
      |                                               |                |                    values[0:1]: 0xfa-0xfc (2)
 0x0f0|                              05 00            |          ..    |                      [0]: 1280 value 0xfa-0xfc (2)
-0x0f0|                                          00 00|              ..|                next_ifd: 0 0xfe-0x102 (4)
+0x0f0|                                          00 00|              ..|                next_ifd: 0x0 0xfe-0x102 (4)
 0x100|00 00                                          |..              |
-0x0a0|00 00 00 00                                    |....            |          next_ifd: 0 0xa0-0xa4 (4)
+0x0a0|00 00 00 00                                    |....            |          next_ifd: 0x0 0xa0-0xa4 (4)
      |                                               |                |    [3]{}: chunk 0x102-0xd02 (3072)
 0x100|      58 4d 50 20                              |  XMP           |      id: "XMP " 0x102-0x106 (4)
 0x100|                  f7 0b 00 00                  |      ....      |      size: 3063 0x106-0x10a (4)
