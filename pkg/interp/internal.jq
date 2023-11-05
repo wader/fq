@@ -117,7 +117,7 @@ def _intdiv($a; $b):
   | ($a - ($a % $b)) / $b
   );
 
-# escape " and \
+# escape \ and "
 def _escape_ident: gsub("(?<g>[\\\\\"])"; "\\\(.g)");
 
 # format number with fixed number of decimals
