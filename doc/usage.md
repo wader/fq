@@ -825,7 +825,7 @@ How to represent raw binary as JSON.
 - `-o bits_format=snippet` Truncated Base64 string prefixed with bit length.
 
 ```sh
-$ fq -V -o bits_format=base64 . file`
+$ fq -V -o bits_format=base64 . file
 ```
 In query
 ```jq
@@ -837,7 +837,7 @@ tovalue({bits_format: "md5"})
 Skip gaps fields (`gap0` etc) when using `tovalue` or `-V`. Note that this might affect array indexes if one more more gaps fields are skipped in an array.
 
 ```sh
-$ fq -V -o skip_gaps=true . file`
+$ fq -V -o skip_gaps=true . file
 ```
 In query
 ```jq
