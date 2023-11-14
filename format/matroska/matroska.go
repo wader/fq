@@ -513,6 +513,9 @@ func matroskaDecode(d *decode.D) any {
 		case "V_MS/VFW/FOURCC":
 			t.parentD.RangeFn(t.codecPrivatePos, t.codecPrivateTagSize, func(d *decode.D) {
 				d.FieldStruct("bitmap_info_header", func(d *decode.D) {
+					// TODO: share VfW (video for windows) struct with riff formats?
+					d.Endian = decode.LittleEndian
+
 					d.FieldU32("bi_size")
 					d.FieldU32("width")
 					d.FieldU32("height")
@@ -530,6 +533,8 @@ func matroskaDecode(d *decode.D) any {
 						// TODO: hack? remove codecToFormat?
 						t.codec = "V_FFV1"
 					}
+
+					d.FieldFormat("ffv1_parameters", &ffv1FrameGroup, nil)
 				})
 			})
 
