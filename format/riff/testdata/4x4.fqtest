@@ -6,7 +6,7 @@ $ fq -d webp dv 4x4.webp
 0x00|                        57 45 42 50            |        WEBP    |  format: "WEBP" (valid) 0x8-0xc (4)
     |                                               |                |  chunks[0:1]: 0xc-0x2c (32)
     |                                               |                |    [0]{}: chunk 0xc-0x2c (32)
-0x00|                                    56 50 38 20|            VP8 |      id: "VP8 " 0xc-0x10 (4)
+0x00|                                    56 50 38 20|            VP8 |      id: "VP8" 0xc-0x10 (4)
 0x10|18 00 00 00                                    |....            |      size: 24 0x10-0x14 (4)
     |                                               |                |      tag{}: 0x14-0x17 (3)
 0x10|            30                                 |    0           |        first_part_size0: 1 0x14-0x14.3 (0.3)

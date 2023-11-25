@@ -38,7 +38,7 @@ func aiffDecode(d *decode.D) any {
 		d,
 		nil,
 		func(d *decode.D, path path) (string, int64) {
-			id := d.FieldUTF8("id", 4, chunkIDDescriptions)
+			id := d.FieldUTF8("id", 4, scalar.ActualTrimSpace, chunkIDDescriptions)
 
 			const restOfFileLen = 0xffffffff
 			size := int64(d.FieldScalarUintFn("size", func(d *decode.D) scalar.Uint {

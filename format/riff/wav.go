@@ -59,7 +59,7 @@ func wavDecode(d *decode.D) any {
 		d,
 		nil,
 		func(d *decode.D, path path) (string, int64) {
-			id := d.FieldUTF8("id", 4, chunkIDDescriptions)
+			id := d.FieldUTF8("id", 4, scalar.ActualTrimSpace, chunkIDDescriptions)
 
 			const restOfFileLen = 0xffffffff
 			size := int64(d.FieldScalarUintFn("size", func(d *decode.D) scalar.Uint {
@@ -86,7 +86,7 @@ func wavDecode(d *decode.D) any {
 				d.FieldUTF8("type", 4)
 				return true, nil
 
-			case "fmt ":
+			case "fmt":
 				audioFormat := d.FieldU16("audio_format", format.WAVTagNames)
 				d.FieldU16("num_channels")
 				d.FieldU32("sample_rate")

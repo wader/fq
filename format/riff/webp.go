@@ -40,7 +40,7 @@ func webpDecode(d *decode.D) any {
 		d,
 		nil,
 		func(d *decode.D, path path) (string, int64) {
-			id := d.FieldUTF8("id", 4, chunkIDDescriptions)
+			id := d.FieldUTF8("id", 4, scalar.ActualTrimSpace, chunkIDDescriptions)
 			size := d.FieldU32("size")
 			return id, int64(size)
 		},
@@ -49,7 +49,7 @@ func webpDecode(d *decode.D) any {
 			case "RIFF":
 				riffType = d.FieldUTF8("format", 4, d.StrAssert(webpRiffType))
 				return true, nil
-			case "VP8 ":
+			case "VP8":
 				d.Format(&vp8FrameGroup, nil)
 				return false, nil
 			case "VP8X":
@@ -76,7 +76,7 @@ func webpDecode(d *decode.D) any {
 			case "ICCP":
 				d.Format(&iccpGroup, nil)
 				return false, nil
-			case "XMP ":
+			case "XMP":
 				d.FieldFormatOrRawLen("data", d.BitsLeft(), &xmlGroup, nil)
 				return false, nil
 			default:

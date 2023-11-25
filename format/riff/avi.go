@@ -233,7 +233,7 @@ func aviDecodeEx(d *decode.D, ai format.AVI_In, extendedChunk bool) {
 		d,
 		nil,
 		func(d *decode.D, path path) (string, int64) {
-			id := d.FieldUTF8("id", 4, chunkIDDescriptions)
+			id := d.FieldUTF8("id", 4, scalar.ActualTrimSpace, chunkIDDescriptions)
 			aviDecorateStreamID(d, id)
 			size := d.FieldU32("size")
 			return id, int64(size)
