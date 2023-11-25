@@ -6,7 +6,7 @@ $ fq -d wav dv stereo.wav
 0x000|                        57 41 56 45            |        WAVE    |  format: "WAVE" (valid) 0x8-0xc (4)
      |                                               |                |  chunks[0:3]: 0xc-0x732 (1830)
      |                                               |                |    [0]{}: chunk 0xc-0x24 (24)
-0x000|                                    66 6d 74 20|            fmt |      id: "fmt " 0xc-0x10 (4)
+0x000|                                    66 6d 74 20|            fmt |      id: "fmt" 0xc-0x10 (4)
 0x010|10 00 00 00                                    |....            |      size: 16 0x10-0x14 (4)
 0x010|            01 00                              |    ..          |      audio_format: "pcm_s16le" (1) 0x14-0x16 (2)
 0x010|                  02 00                        |      ..        |      num_channels: 2 0x16-0x18 (2)
