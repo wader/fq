@@ -1,3 +1,135 @@
+# 0.9.0
+
+## Changes
+
+- Make synthetic values not look like decode values with a zero range. #777
+- Bit ranges are now displayed using exclusive end notation to be more consistent. For example if a field at byte offset 5 is 8 bit in size using the `<byte>[.<bits>]` notation it is now shown as `5-6`, before it was shown as `5-5.7`. See usage documentation for more examples. #789
+- Improve colors when using a light background. Thanks @adedomin for reporting. #781
+- Better `from_jq` error handling. Thanks @emanuele6 for reporting. #788
+- Updated gojq fork. Notable changes from upstream below. #808
+  - Adds `pick/1` function. Outputs value and nested values for given input expression.
+    ```sh
+    # pick out all string values from a ELF header
+    $ fq '.header | pick(.. | select(type == "string"))' /bin/ls
+    {
+      "ident": {
+        "data": "little_endian",
+        "magic": "\u007fELF",
+        "os_abi": "sysv",
+        "pad": "\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+      },
+      "machine": "x86_64",
+      "type": "dyn"
+    }
+    # bonus tip:
+    # if you only need to pick one level then jq has a shortcut syntax
+    $ fq '.header | {type, machine}' /bin/ls
+    {
+      "machine": "x86_64",
+      "type": "dyn"
+    }
+    ```
+  - Implements comment continuation with backslash.
+- Updated gopacket to 1.2.1. Notable changes from upstream below. #815
+  - fix(ip4defrag): allow final fragment to be less than 8 octets by @niklaskb
+  - refactor: don't fill empty metadata slots by @smira
+  - refactor: optimize port map to switch statement by @smira
+
+## Decoder changes
+
+- `avi`
+  - Some general clean up fixes. Thanks to Marion Jaks at mediathek.at for testing and motivation.
+  - Add extended chunks support and `decode_extended_chunks` option. This is trailing chunks used by big AVI files. #786
+  - Add type, handler, compression (video) and format_tag (audio) per stream. #775
+    ```sh
+    $ fq '.streams[0]' file.avi
+          │00 01 02 03 04 05 06 07│01234567│.streams[0]{}: stream
+    0x1680│      00 00 00 01 67 f4│  ....g.│  samples[0:3]:
+    0x1688│00 0d 91 9b 28 28 3f 60│....((?`│
+    0x1690│22 00 00 03 00 02 00 00│".......│
+    *     │until 0x2409.7 (3464)  │        │
+          │                       │        │  type: "vids"
+          │                       │        │  handler: "H264"
+          │                       │        │  compression: "H264"
+    ```
+  - Properly use sample size field when decoding samples. #776
+- `exif` (and `tiff`)
+  - Handle broken last next ifd offset by treating it as end marker. #804
+- `gzip`
+  - Correctly handle multiple members. Thanks @TomiBelan for the bug report and assistance. #795
+  - Now gzip is modelled as a struct with a `members` array and a `uncompressed` field that is the concatenation of the uncompressed members.
+- `macho`
+  - Properly respect endian when decoding some flag fields. #796
+  - Move formatted timestamp to description so that numeric value is easier to access. #797
+- `matroska`
+  - Support decoding EBML date type. #787
+- `protobuf`
+  - No need to use synthetic fields for string and bytes. #800
+- `webp`
+  - Refactor to use common RIFF decoder and also decode VP8X, EXIF, ICCP and XMP chunks. #803
+- `zip` Better timestamp support and fixes
+  - Fix incorrect MSDOS time/date decoding and add extended timestamp support. Also remodel time/date to be a struct with raw values, components and a synthetics UTC unixtime guess. Thanks @TomiBelan for the bug report and assistance. #793
+  ```sh
+  $ fq '.local_files[] | select(.file_name == "a").last_modification' file.zip
+      │00 01 02 03 04 05 06 07│01234567│.local_files[3].last_modification{}:
+  0xd0│            81 01      │    ..  │  fat_time: 0x181
+      │                       │        │  second: 2 (1)
+      │                       │        │  minute: 12
+      │                       │        │  hour: 0
+  0xd0│                  73 53│      sS│  fat_date: 0x5373
+      │                       │        │  day: 19
+      │                       │        │  month: 11
+      │                       │        │  year: 2021 (41)
+      │                       │        │  unix_guess: 1637280722 (2021-11-19T00:12:02)
+  ```
+
+## Changelog
+
+* b7022183 Update docker-golang to 1.21.2 from 1.21.1
+* d7047116 Update docker-golang to 1.21.3 from 1.21.2
+* c31fc874 Update docker-golang to 1.21.4 from 1.21.3
+* 861487d4 Update github-go-version to 1.21.2 from 1.21.1
+* d7663569 Update github-go-version to 1.21.3 from 1.21.2
+* caef93ce Update github-go-version to 1.21.4 from 1.21.3
+* de7fdae5 Update github-golangci-lint to 1.55.0 from 1.54.2
+* 60edf973 Update github-golangci-lint to 1.55.1 from 1.55.0
+* 534a2c8c Update github-golangci-lint to 1.55.2 from 1.55.1
+* 906bc3bb Update gomod-golang-x-crypto to 0.14.0 from 0.13.0
+* 8d4d18d3 Update gomod-golang-x-crypto to 0.15.0 from 0.14.0
+* f108194d Update gomod-golang-x-net to 0.16.0 from 0.15.0
+* 5381f381 Update gomod-golang-x-net to 0.17.0 from 0.16.0
+* 14fe728c Update gomod-golang-x-net to 0.18.0 from 0.17.0
+* 1011f19c Update gomod-golang/text to 0.14.0 from 0.13.0
+* 527aad6c Update gomod-gopacket to 1.2.0 from 1.1.1
+* 0c22c79b Update make-golangci-lint to 1.55.0 from 1.54.2
+* 5f06364f Update make-golangci-lint to 1.55.1 from 1.55.0
+* 36576a5c Update make-golangci-lint to 1.55.2 from 1.55.1
+* d703321a avi: Add extended chunks support and option
+* 55521bba avi: Add stream type constants
+* 51965549 avi: Add type, handler, format_tag and compreession per stream
+* 0f225c32 avi: Add unused field for extra indx chunk space
+* df085b91 avi: Handle stream sample size
+* c7ec18d6 avi: Increase sample size heuristics to 32bit stereo
+* a745b12d avi: More correct strf chunk extra data
+* 9b10e598 avi: Only use sample size heuristics if there is no format
+* 23ae4d97 decode,interp: Make synthetic values more visible and not act as decode values
+* 5abf151f doc: Remove spurious backtick
+* 02b35276 exif,tiff: Handle broken last next ifd offset by treating it as end marker
+* dc376f34 gojq: Update rebased fq fork
+* ac276ee1 gzip: Correctly handle multiple members
+* 45a8dd9c interp: Better from_jq error handling
+* 051a70bd interp: Change bit ranges to use exclusive end
+* 29e75411 interp: Fix infinite recursion when casting synthetic raw value into a jq value
+* c28163f8 interp: Improve colors when using light background
+* 797c7d90 macho: Move timestamp string to description
+* 71a5fc91 macho: Respect endian when decoding flags
+* 1d14ea51 matroska: Decode ebml date type
+* b24ed161 mod: Update golang.org/x/exp and github.com/gomarkdown/markdown
+* 5e2e49e3 protobuf: No need for synthetic for string and bytes value
+* 6034c705 webp,avi,wav,aiff: Trim RIFF id string
+* 9e58067f webp: Refactor to use riff code and decode VP8X, EXIF, ICCP and XMP chunks
+* a83cac60 zip: Fix incorrect time/date, add extended timestamp and refactor
+
 # 0.8.0
 
 Fix handling of shadowing order for `_<name>` keys, 3 new decoders `caff`, `moc3` and `opentimestamps`, some smaller fixes and improvements.
