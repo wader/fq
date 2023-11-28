@@ -34,7 +34,6 @@ archives:
   - files:
       # skip all other files
       - none*
-    rlcp: true
     format_overrides:
       - goos: windows
         format: zip
@@ -57,7 +56,7 @@ changelog:
 
 brews:
   - skip_upload: auto
-    tap:
+    repository:
       owner: wader
       name: homebrew-tap
     folder: Formula
