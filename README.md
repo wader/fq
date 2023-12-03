@@ -297,7 +297,7 @@ for inventing the [jq](https://github.com/stedolan/jq) language.
 - [Let's Solve the File Format Problem](http://fileformats.archiveteam.org).
 - [PRONOM](https://www.nationalarchives.gov.uk/PRONOM/) file format registry.
 - [Sustainability of Digital Formats](https://www.loc.gov/preservation/digital/formats/) at Library of Congress.
-- [Data Format Description Language](https://en.wikipedia.org/wiki/Data_Format_Description_Language).
+- [Data Format Description Language (DFDL)](https://en.wikipedia.org/wiki/Data_Format_Description_Language).
 
 ## License
 
