@@ -125,6 +125,7 @@ var (
 	JPEG                = &decode.Group{Name: "jpeg"}
 	JSON                = &decode.Group{Name: "json"}
 	JSONL               = &decode.Group{Name: "jsonl"}
+	LDB                 = &decode.Group{Name: "ldb"}
 	LuaJIT              = &decode.Group{Name: "luajit"}
 	MachO               = &decode.Group{Name: "macho"}
 	MachO_Fat           = &decode.Group{Name: "macho_fat"}
