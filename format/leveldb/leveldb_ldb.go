@@ -1,4 +1,4 @@
-package ldb
+package leveldb
 
 // https://github.com/google/leveldb/blob/main/doc/table_format.md
 // https://github.com/google/leveldb/blob/main/doc/impl.md
@@ -6,8 +6,7 @@ package ldb
 
 import (
 	"bytes"
-	"encoding/binary"
-	"fmt"
+	"embed"
 	"hash/crc32"
 
 	"github.com/golang/snappy"
@@ -18,6 +17,9 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
+//go:embed leveldb_ldb.md
+var leveldbFS embed.FS
+
 func init() {
 	interp.RegisterFormat(
 		format.LDB,
@@ -26,19 +28,18 @@ func init() {
 			Groups:      []*decode.Group{format.Probe},
 			DecodeFn:    ldbDecode,
 		})
+	interp.RegisterFS(leveldbFS)
 }
 
 const (
 	// four varints (each max 10 bytes) + magic number (8 bytes)
 	// https://github.com/google/leveldb/blob/main/table/format.h#L53
-	footerEncodedLength = 4*10 + 8
+	footerEncodedLength = (4*10 + 8) * 8
+	magicNumberLength   = 8 * 8
 	// leading 64 bits of
 	//     echo http://code.google.com/p/leveldb/ | sha1sum
 	// https://github.com/google/leveldb/blob/main/table/format.h#L76
 	tableMagicNumber = 0xdb4775248b80fb57
-	// 1-byte compression type + 4-bytes CRC
-	// https://github.com/google/leveldb/blob/main/table/format.h#L79
-	blockTrailerSize = 5
 )
 
 // https://github.com/google/leveldb/blob/main/include/leveldb/options.h#L25
@@ -50,8 +51,8 @@ const (
 
 var compressionTypes = scalar.UintMapSymStr{
 	compressionTypeNone:      "none",
-	compressionTypeSnappy:    "Snappy",
-	compressionTypeZstandard: "Zstandard",
+	compressionTypeSnappy:    "snappy",
+	compressionTypeZstandard: "zstd",
 }
 
 // https://github.com/google/leveldb/blob/main/db/dbformat.h#L54
@@ -70,22 +71,24 @@ func ldbDecode(d *decode.D) any {
 
 	// footer
 
-	d.SeekAbs(d.Len() - footerEncodedLength*8)
 	var indexOffset int64
 	var indexSize int64
 	var metaIndexOffset int64
 	var metaIndexSize int64
 
+	d.SeekAbs(d.Len() - footerEncodedLength)
 	d.FieldStruct("footer", func(d *decode.D) {
-		d.FieldStruct("metaindex_handle", func(d *decode.D) {
-			metaIndexOffset = int64(d.FieldUintFn("offset", decodeVarInt))
-			metaIndexSize = int64(d.FieldUintFn("size", decodeVarInt))
+		handleLength := d.LimitedFn(footerEncodedLength, func(d *decode.D) {
+			d.FieldStruct("metaindex_handle", func(d *decode.D) {
+				metaIndexOffset = int64(d.FieldULEB128("offset"))
+				metaIndexSize = int64(d.FieldULEB128("size"))
+			})
+			d.FieldStruct("index_handle", func(d *decode.D) {
+				indexOffset = int64(d.FieldULEB128("offset"))
+				indexSize = int64(d.FieldULEB128("size"))
+			})
 		})
-		d.FieldStruct("index_handle", func(d *decode.D) {
-			indexOffset = int64(d.FieldUintFn("offset", decodeVarInt))
-			indexSize = int64(d.FieldUintFn("size", decodeVarInt))
-		})
-		d.FieldRawLen("padding", d.Len()-d.Pos()-8*8)
+		d.FieldRawLen("padding", footerEncodedLength-handleLength-magicNumberLength)
 		d.FieldU64("magic_number", d.UintAssert(tableMagicNumber), scalar.UintHex)
 	})
 
@@ -93,12 +96,12 @@ func ldbDecode(d *decode.D) any {
 
 	d.SeekAbs(metaIndexOffset * 8)
 	var metaHandles []BlockHandle
-	fieldStructBlock("metaindex", metaIndexSize, readKeyValueContent, func(d *decode.D) {
+	readBlock("metaindex", metaIndexSize, readKeyValueContent, func(d *decode.D) {
 		// BlockHandle
 		// https://github.com/google/leveldb/blob/main/table/format.cc#L24
 		handle := BlockHandle{
-			Offset: d.FieldUintFn("offset", decodeVarInt),
-			Size:   d.FieldUintFn("size", decodeVarInt),
+			Offset: d.FieldULEB128("offset"),
+			Size:   d.FieldULEB128("size"),
 		}
 		metaHandles = append(metaHandles, handle)
 	}, d)
@@ -107,12 +110,12 @@ func ldbDecode(d *decode.D) any {
 
 	d.SeekAbs(indexOffset * 8)
 	var dataHandles []BlockHandle
-	fieldStructBlock("index", indexSize, readKeyValueContent, func(d *decode.D) {
+	readBlock("index", indexSize, readKeyValueContent, func(d *decode.D) {
 		// BlockHandle
 		// https://github.com/google/leveldb/blob/main/table/format.cc#L24
 		handle := BlockHandle{
-			Offset: d.FieldUintFn("offset", decodeVarInt),
-			Size:   d.FieldUintFn("size", decodeVarInt),
+			Offset: d.FieldULEB128("offset"),
+			Size:   d.FieldULEB128("size"),
 		}
 		dataHandles = append(dataHandles, handle)
 	}, d)
@@ -123,7 +126,7 @@ func ldbDecode(d *decode.D) any {
 		d.FieldArray("meta", func(d *decode.D) {
 			for _, handle := range metaHandles {
 				d.SeekAbs(int64(handle.Offset) * 8)
-				fieldStructBlock("meta_block", int64(handle.Size), readMetaContent, nil, d)
+				readBlock("meta_block", int64(handle.Size), readMetaContent, nil, d)
 			}
 		})
 	}
@@ -134,7 +137,7 @@ func ldbDecode(d *decode.D) any {
 		d.FieldArray("data", func(d *decode.D) {
 			for _, handle := range dataHandles {
 				d.SeekAbs(int64(handle.Offset) * 8)
-				fieldStructBlock("data_block", int64(handle.Size), readKeyValueContent, nil, d)
+				readBlock("data_block", int64(handle.Size), readKeyValueContent, nil, d)
 			}
 		})
 	}
@@ -142,20 +145,21 @@ func ldbDecode(d *decode.D) any {
 	return nil
 }
 
-// Helpers
+// Readers
 
-func fieldStructBlock(name string, size int64, readBlockContent func(size int64, valueCallbackFn func(d *decode.D), d *decode.D), valueCallbackFn func(d *decode.D), d *decode.D) *decode.D {
+func readBlock(name string, size int64, readBlockContent func(size int64, valueCallbackFn func(d *decode.D), d *decode.D), valueCallbackFn func(d *decode.D), d *decode.D) {
 	// ReadBlock: https://github.com/google/leveldb/blob/main/table/format.cc#L69
-	return d.FieldStruct(name, func(d *decode.D) {
+	d.FieldStruct(name, func(d *decode.D) {
 		start := d.Pos()
 		br := d.RawLen(size * 8)
+		// compression (1 byte)
 		compressionType := d.FieldU8("compression", compressionTypes, scalar.UintHex)
-		// validate crc
+		// crc (4 bytes)
 		data := d.ReadAllBits(br)
 		bytesToCheck := append(data, uint8(compressionType))
 		maskedCRCInt := maskedCrc32(bytesToCheck)
 		d.FieldU32("crc", d.UintAssert(uint64(maskedCRCInt)), scalar.UintHex)
-
+		// decompress if needed
 		d.SeekAbs(start)
 		if compressionType == compressionTypeNone {
 			d.FieldStruct("uncompressed", func(d *decode.D) {
@@ -165,7 +169,6 @@ func fieldStructBlock(name string, size int64, readBlockContent func(size int64,
 			compressedSize := size
 			compressed := data
 			bb := &bytes.Buffer{}
-			_ = bb
 			switch compressionType {
 			case compressionTypeSnappy:
 				decompressed, err := snappy.Decode(nil, compressed)
@@ -206,7 +209,7 @@ func readKeyValueContent(size int64, valueCallbackFn func(d *decode.D), d *decod
 		})
 	})
 	// TK: how do you make an empty entries-array appear _above_ the trailer?
-	// Right now, its omited if empty.
+	// Right now, its omitted if empty.
 	if restartOffset <= 0 {
 		return
 	}
@@ -214,9 +217,9 @@ func readKeyValueContent(size int64, valueCallbackFn func(d *decode.D), d *decod
 	d.FieldArray("entries", func(d *decode.D) {
 		for d.Pos() < start+restartOffset {
 			d.FieldStruct("entry", func(d *decode.D) {
-				d.FieldUintFn("shared_bytes", decodeVarInt)
-				unshared := int64(d.FieldUintFn("unshared_bytes", decodeVarInt))
-				valueLength := d.FieldUintFn("value_length", decodeVarInt)
+				d.FieldULEB128("shared_bytes")
+				unshared := int64(d.FieldULEB128("unshared_bytes"))
+				valueLength := d.FieldULEB128("value_length")
 				// InternalKey
 				// https://github.com/google/leveldb/blob/main/db/dbformat.h#L171
 				d.FieldStruct("key_delta", func(d *decode.D) {
@@ -241,29 +244,7 @@ func readMetaContent(size int64, valueCallbackFn func(d *decode.D), d *decode.D)
 	d.FieldRawLen("raw", size*8)
 }
 
-func decodeVarInt(d *decode.D) uint64 {
-	var value uint64 = 0
-	var shift uint64 = 0
-
-	for {
-		b := d.U8()
-		value |= (b & 0b01111111) << shift
-		shift += 7
-		if b&0b10000000 == 0 {
-			break
-		}
-	}
-
-	return value
-}
-
-// Return a masked representation of the crc.
-// https://github.com/google/leveldb/blob/main/util/crc32c.h#L29
-func mask(crc uint32) uint32 {
-	const kMaskDelta = 0xa282ead8
-	// Rotate right by 15 bits and add a constant.
-	return ((crc >> 15) | (crc << 17)) + kMaskDelta
-}
+// Helpers
 
 func maskedCrc32(bytes []uint8) uint32 {
 	crc32C := crc32.New(crc32.MakeTable(crc32.Castagnoli))
@@ -271,9 +252,10 @@ func maskedCrc32(bytes []uint8) uint32 {
 	return mask(crc32C.Sum32())
 }
 
-// Print the hexadecimal representation in little-endian format.
-func printLE(name string, value uint32) {
-	buf := make([]byte, 4)
-	binary.LittleEndian.PutUint32(buf, value)
-	fmt.Printf("%s: % x\n", name, buf)
+// Return a masked representation of a CRC.
+// https://github.com/google/leveldb/blob/main/util/crc32c.h#L29
+func mask(crc uint32) uint32 {
+	const kMaskDelta = 0xa282ead8
+	// Rotate right by 15 bits and add a constant.
+	return ((crc >> 15) | (crc << 17)) + kMaskDelta
 }

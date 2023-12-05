@@ -1,5 +1,5 @@
-$ fq -d ldb dv uncompressed.ldb/000005.ldb
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: uncompressed.ldb/000005.ldb (ldb) 0x0-0x65a (1626)
+$ fq -d leveldb_ldb dv uncompressed.ldb/000005.ldb
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: uncompressed.ldb/000005.ldb (leveldb_ldb) 0x0-0x65a (1626)
      |                                               |                |  data[0:1]: 0x0-0x601 (1537)
      |                                               |                |    [0]{}: data_block 0x0-0x601 (1537)
      |                                               |                |      uncompressed{}: 0x0-0x5fc (1532)

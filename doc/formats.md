@@ -72,6 +72,7 @@
 |`jpeg`                                                  |Joint&nbsp;Photographic&nbsp;Experts&nbsp;Group&nbsp;file                                                    |<sub>`exif` `icc_profile`</sub>|
 |`json`                                                  |JavaScript&nbsp;Object&nbsp;Notation                                                                         |<sub></sub>|
 |`jsonl`                                                 |JavaScript&nbsp;Object&nbsp;Notation&nbsp;Lines                                                              |<sub></sub>|
+|[`leveldb_ldb`](#leveldb_ldb)                           |LevelDB&nbsp;Table                                                                                           |<sub></sub>|
 |[`luajit`](#luajit)                                     |LuaJIT&nbsp;2.0&nbsp;bytecode                                                                                |<sub></sub>|
 |[`macho`](#macho)                                       |Mach-O&nbsp;macOS&nbsp;executable                                                                            |<sub></sub>|
 |`macho_fat`                                             |Fat&nbsp;Mach-O&nbsp;macOS&nbsp;executable&nbsp;(multi-architecture)                                         |<sub>`macho`</sub>|
@@ -131,7 +132,7 @@
 |`ip_packet`                                             |Group                                                                                                        |<sub>`icmp` `icmpv6` `tcp_segment` `udp_datagram`</sub>|
 |`link_frame`                                            |Group                                                                                                        |<sub>`bsd_loopback_frame` `ether8023_frame` `ipv4_packet` `ipv6_packet` `sll2_packet` `sll_packet`</sub>|
 |`mp3_frame_tags`                                        |Group                                                                                                        |<sub>`mp3_frame_vbri` `mp3_frame_xing`</sub>|
-|`probe`                                                 |Group                                                                                                        |<sub>`adts` `aiff` `apple_bookmark` `ar` `avi` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `caff` `elf` `flac` `gif` `gzip` `html` `jpeg` `json` `jsonl` `luajit` `macho` `macho_fat` `matroska` `moc3` `mp3` `mp4` `mpeg_ts` `ogg` `opentimestamps` `pcap` `pcapng` `png` `tar` `tiff` `toml` `tzif` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
+|`probe`                                                 |Group                                                                                                        |<sub>`adts` `aiff` `apple_bookmark` `ar` `avi` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `caff` `elf` `flac` `gif` `gzip` `html` `jpeg` `json` `jsonl` `leveldb_ldb` `luajit` `macho` `macho_fat` `matroska` `moc3` `mp3` `mp4` `mpeg_ts` `ogg` `opentimestamps` `pcap` `pcapng` `png` `tar` `tiff` `toml` `tzif` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
 |`tcp_stream`                                            |Group                                                                                                        |<sub>`dns_tcp` `rtmp` `tls`</sub>|
 |`udp_payload`                                           |Group                                                                                                        |<sub>`dns`</sub>|
 
@@ -689,6 +690,23 @@ $ fq -n -d html '[inputs | {key: input_filename, value: .html.head.title?}] | fr
 # <a> href:s in file
 $ fq -r -o array=true -d html '.. | select(.[0] == "a" and .[1].href)?.[1].href' file.html
 ```
+
+## leveldb_ldb
+
+### Limitations
+
+- no Meta Blocks (like "filter") are decoded yet.
+- Zstandard uncompression is not implemented yet.
+
+### Authors
+
+- [@mikez](https://github.com/mikez), original author
+
+### References
+
+- https://github.com/google/leveldb/blob/main/doc/table_format.md
+- https://github.com/google/leveldb/blob/main/doc/impl.md
+- https://github.com/google/leveldb/blob/main/doc/index.md
 
 ## luajit
 
