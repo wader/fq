@@ -96,7 +96,7 @@ func ldbDecode(d *decode.D) any {
 
 	d.SeekAbs(metaIndexOffset * 8)
 	var metaHandles []BlockHandle
-	readBlock("metaindex", metaIndexSize, readKeyValueContent, func(d *decode.D) {
+	readBlock("metaindex", metaIndexSize, readKeyValueContents, func(d *decode.D) {
 		// BlockHandle
 		// https://github.com/google/leveldb/blob/main/table/format.cc#L24
 		handle := BlockHandle{
@@ -110,7 +110,7 @@ func ldbDecode(d *decode.D) any {
 
 	d.SeekAbs(indexOffset * 8)
 	var dataHandles []BlockHandle
-	readBlock("index", indexSize, readKeyValueContent, func(d *decode.D) {
+	readBlock("index", indexSize, readKeyValueContents, func(d *decode.D) {
 		// BlockHandle
 		// https://github.com/google/leveldb/blob/main/table/format.cc#L24
 		handle := BlockHandle{
@@ -137,7 +137,7 @@ func ldbDecode(d *decode.D) any {
 		d.FieldArray("data", func(d *decode.D) {
 			for _, handle := range dataHandles {
 				d.SeekAbs(int64(handle.Offset) * 8)
-				readBlock("data_block", int64(handle.Size), readKeyValueContent, nil, d)
+				readBlock("data_block", int64(handle.Size), readKeyValueContents, nil, d)
 			}
 		})
 	}
@@ -147,8 +147,10 @@ func ldbDecode(d *decode.D) any {
 
 // Readers
 
-func readBlock(name string, size int64, readBlockContent func(size int64, valueCallbackFn func(d *decode.D), d *decode.D), valueCallbackFn func(d *decode.D), d *decode.D) {
-	// ReadBlock: https://github.com/google/leveldb/blob/main/table/format.cc#L69
+// Read block contents as well as compression + crc bytes following it.
+// The function `readBlockContents` gets the uncompressed bytebuffer.
+// https://github.com/google/leveldb/blob/main/table/format.cc#L69
+func readBlock(name string, size int64, readBlockContents func(size int64, valueCallbackFn func(d *decode.D), d *decode.D), valueCallbackFn func(d *decode.D), d *decode.D) {
 	d.FieldStruct(name, func(d *decode.D) {
 		start := d.Pos()
 		br := d.RawLen(size * 8)
@@ -163,7 +165,7 @@ func readBlock(name string, size int64, readBlockContent func(size int64, valueC
 		d.SeekAbs(start)
 		if compressionType == compressionTypeNone {
 			d.FieldStruct("uncompressed", func(d *decode.D) {
-				readBlockContent(size, valueCallbackFn, d)
+				readBlockContents(size, valueCallbackFn, d)
 			})
 		} else {
 			compressedSize := size
@@ -180,7 +182,7 @@ func readBlock(name string, size int64, readBlockContent func(size int64, valueC
 				d.Fatalf("Unsupported compression type: %x", compressionType)
 			}
 			d.FieldStructRootBitBufFn("uncompressed", bitio.NewBitReader(bb.Bytes(), -1), func(d *decode.D) {
-				readBlockContent(int64(bb.Len()), valueCallbackFn, d)
+				readBlockContents(int64(bb.Len()), valueCallbackFn, d)
 			})
 			d.FieldRawLen("compressed", compressedSize*8)
 		}
@@ -188,9 +190,10 @@ func readBlock(name string, size int64, readBlockContent func(size int64, valueC
 	})
 }
 
-func readKeyValueContent(size int64, valueCallbackFn func(d *decode.D), d *decode.D) {
-	// https://github.com/google/leveldb/blob/main/table/block_builder.cc#L16
-	// https://github.com/google/leveldb/blob/main/table/block.cc
+// Read content encoded as a sequence of key/value-entries and a trailer of restarts.
+// https://github.com/google/leveldb/blob/main/table/block_builder.cc#L16
+// https://github.com/google/leveldb/blob/main/table/block.cc
+func readKeyValueContents(size int64, valueCallbackFn func(d *decode.D), d *decode.D) {
 	uint32Size := int64(32)
 	uint64Size := int64(64)
 	start := d.Pos()
@@ -237,10 +240,11 @@ func readKeyValueContent(size int64, valueCallbackFn func(d *decode.D), d *decod
 	})
 }
 
+// Read content encoded in the "filter" or "stats" Meta Block format.
+// https://github.com/google/leveldb/blob/main/doc/table_format.md#filter-meta-block
+// https://github.com/google/leveldb/blob/main/table/filter_block.cc
 func readMetaContent(size int64, valueCallbackFn func(d *decode.D), d *decode.D) {
 	// TK(2023-12-04)
-	// https://github.com/google/leveldb/blob/main/doc/table_format.md#filter-meta-block
-	// https://github.com/google/leveldb/blob/main/table/filter_block.cc
 	d.FieldRawLen("raw", size*8)
 }
 
