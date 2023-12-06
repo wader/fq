@@ -42,7 +42,7 @@ tear_down() {
       echo "$ fq -d wasm dv $f" > "$of"
     done
 
-  WRITE_ACTUAL=1 go test -run TestFQTests/wasm "$d/../../.."
+  go test -run TestFQTests/wasm "$d/../../.." -update
   if grep "error" ./*.fqtest; then
     exit 1
   fi

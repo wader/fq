@@ -11,12 +11,12 @@ import (
 	"github.com/wader/fq/pkg/interp"
 )
 
-func TestPath(t *testing.T, registry *interp.Registry) {
+func TestPath(t *testing.T, registry *interp.Registry, update bool) {
 	difftest.TestWithOptions(t, difftest.Options{
 		Path:        ".",
 		Pattern:     "*.fqtest",
 		ColorDiff:   os.Getenv("DIFF_COLOR") != "",
-		WriteOutput: os.Getenv("WRITE_ACTUAL") != "",
+		WriteOutput: os.Getenv("WRITE_ACTUAL") != "" || update,
 		Fn: func(t *testing.T, path, input string) (string, string, error) {
 			t.Parallel()
 

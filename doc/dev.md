@@ -41,7 +41,7 @@ Flags can be struct with bit-fields.
   - If possible use a pair of `testdata/file` and `testdata/file.fqtest` where `file.fqtest` is `$ fq dv file` or `$ fq 'dv,torepr' file` if there is `torepr` support.
   - If `dv` produces a lof of output maybe use `dv({array_truncate: 50})` etc
   - Run `go test ./format -run TestFormats/<name>` to test expected output.
-  - Run `WRITE_ACTUAL=1 go test ./format -run TestFormats/<name>` to write current output as expected output.
+  - Run `go test ./format -run TestFormats/<name> -update` to update current output as expected output.
 - If you have format specific documentation:
   - Put it in `format/*/<name>.md` and use `//go:embed <name>.md`/`interp.RegisterFS(..)` to embed/register it.
   - Use simple markdown, just sections (depth starts at 3, `### Section`), paragraphs, lists and links.
@@ -236,10 +236,10 @@ make test
 go test ./...
 # run all tests for one format
 go test -run TestFormats/mp4 ./format/
-# write all actual outputs
-WRITE_ACTUAL=1 go test ./...
-# write actual output for specific tests
-WRITE_ACTUAL=1 go run -run ...
+# update all actual outputs in tests
+go test ./... -update
+# update actual output for specific tests
+go run ./format -run TestFormats/elf -update
 # color diff
 DIFF_COLOR=1 go test ...
 ```
