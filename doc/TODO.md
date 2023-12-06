@@ -58,7 +58,7 @@
 
 ### Tests
 
-- WRITE_ACTUAL does not preserve comment order for readlines
+- update tests does not preserve comment order for readlines
 - empty file test
 - CLI tests, raw write, colors?
 - Interactive tests
