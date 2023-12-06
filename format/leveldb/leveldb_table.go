@@ -26,7 +26,7 @@ var leveldbFS embed.FS
 
 func init() {
 	interp.RegisterFormat(
-		format.LDB,
+		format.LevelDB_LDB,
 		&decode.Format{
 			Description: "LevelDB Table",
 			Groups:      []*decode.Group{format.Probe},
@@ -82,9 +82,13 @@ func ldbTableDecode(d *decode.D) any {
 	var metaIndexOffset int64
 	var metaIndexSize int64
 
-	d.SeekAbs(d.Len() - footerEncodedLength)
 	d.FieldStruct("footer", func(d *decode.D) {
-		handleLength := d.LimitedFn(footerEncodedLength, func(d *decode.D) {
+		// check for magic number and fail fast if it isn't there
+		d.SeekAbs(d.Len() - magicNumberLength)
+		d.FieldU64("magic_number", d.UintAssert(tableMagicNumber), scalar.UintHex)
+
+		d.SeekAbs(d.Len() - footerEncodedLength)
+		d.LimitedFn(footerEncodedLength-magicNumberLength, func(d *decode.D) {
 			d.FieldStruct("metaindex_handle", func(d *decode.D) {
 				metaIndexOffset = int64(d.FieldULEB128("offset"))
 				metaIndexSize = int64(d.FieldULEB128("size"))
@@ -93,9 +97,8 @@ func ldbTableDecode(d *decode.D) any {
 				indexOffset = int64(d.FieldULEB128("offset"))
 				indexSize = int64(d.FieldULEB128("size"))
 			})
+			d.FieldRawLen("padding", d.BitsLeft())
 		})
-		d.FieldRawLen("padding", footerEncodedLength-handleLength-magicNumberLength)
-		d.FieldU64("magic_number", d.UintAssert(tableMagicNumber), scalar.UintHex)
 	})
 
 	// metaindex

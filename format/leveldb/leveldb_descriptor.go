@@ -23,7 +23,6 @@ func init() {
 		format.LevelDB_Descriptor,
 		&decode.Format{
 			Description: "LevelDB Descriptor",
-			Groups:      []*decode.Group{format.Probe},
 			DecodeFn:    ldbDescriptorDecode,
 		})
 	interp.RegisterFS(leveldbDescriptorFS)
@@ -70,10 +69,7 @@ func ldbDescriptorDecode(d *decode.D) any {
 // List of sorted tables for each level involving key ranges and other metadata.
 func readManifest(d *decode.D) {
 	d.FieldArray("tags", func(d *decode.D) {
-		for {
-			if d.End() {
-				break
-			}
+		for !d.End() {
 			d.FieldStruct("tag", func(d *decode.D) {
 				tag := d.FieldULEB128("key", tagTypes)
 				switch tag {

@@ -21,10 +21,9 @@ var leveldbLogFS embed.FS
 
 func init() {
 	interp.RegisterFormat(
-		format.LOG,
+		format.LevelDB_LOG,
 		&decode.Format{
 			Description: "LevelDB Log",
-			Groups:      []*decode.Group{format.Probe},
 			DecodeFn:    ldbLogDecode,
 		})
 	interp.RegisterFS(leveldbLogFS)
