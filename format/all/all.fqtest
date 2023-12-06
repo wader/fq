@@ -14,8 +14,6 @@ $ fq -n _registry.groups.probe
   "gif",
   "gzip",
   "jpeg",
-  "leveldb_descriptor",
-  "leveldb_log",
   "leveldb_table",
   "luajit",
   "macho",
