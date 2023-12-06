@@ -1,0 +1,23 @@
+$ fq -d mp4 -o force=true d iods_box_es_iod_decrs
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: iods_box_es_iod_decrs (mp4)
+    |                                               |                |  boxes[0:1]:
+    |                                               |                |    [0]{}: box
+0x00|00 00 00 21                                    |...!            |      size: 33
+0x00|            69 6f 64 73                        |    iods        |      type: "iods" (Object Descriptor container box)
+0x00|                        00 00 00 00            |        ....    |      version: 0
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      descriptor{}: (mpeg_es)
+0x00|                                    10         |            .   |        tag_id: "MP4_IOD_Tag" (16)
+0x00|                                       80 80 80|             ...|        length: 16
+0x10|10                                             |.               |
+0x10|   00 4f                                       | .O             |        od_id: 79
+0x10|         ff                                    |   .            |        od_profile_level: 255
+0x10|            ff                                 |    .           |        scene_profile_level: 255
+0x10|               31                              |     1          |        audio_profile_level: 49
+0x10|                  ff                           |      .         |        video_profile_level: 255
+0x10|                     ff                        |       .        |        graphics_profile_level: 255
+    |                                               |                |        descriptors[0:1]:
+    |                                               |                |          [0]{}: desc
+0x10|                        0e                     |        .       |            tag_id: "ES_ID_IncTag" (14)
+0x10|                           80 80 80 04         |         ....   |            length: 4
+0x10|                                       00 00 00|             ...|            track_id: 1
+0x20|01|                                            |.|              |

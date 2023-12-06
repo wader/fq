@@ -264,6 +264,7 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, _ int, fn func(d *decode.D))
 		// TODO: where is the spec?
 		// https://xhelmboyx.tripod.com/formats/mp4-layout.txt
 		// https://github.com/FFmpeg/FFmpeg/blob/master/libavformat/movenc.c mov_write_iods_tag
+		// TODO: IOD = initial object descriptor?
 		MP4_IOD_Tag: func(d *decode.D) {
 			d.FieldU16("od_id")
 			d.FieldU8("od_profile_level")
@@ -271,6 +272,14 @@ func odDecodeTag(d *decode.D, edc *esDecodeContext, _ int, fn func(d *decode.D))
 			d.FieldU8("audio_profile_level")
 			d.FieldU8("video_profile_level")
 			d.FieldU8("graphics_profile_level")
+			d.FieldArray("descriptors", func(d *decode.D) {
+				for !d.End() {
+					fieldODDecodeTag(d, edc, "desc", -1, nil)
+				}
+			})
+		},
+		ES_ID_IncTag: func(d *decode.D) {
+			d.FieldU32("track_id")
 		},
 	}
 

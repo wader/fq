@@ -56,6 +56,7 @@ $ fq -d mp4 'dv' stz2.mp4
 0x090|                              fe               |          .     |            audio_profile_level: 254 0x9a-0x9b (1)
 0x090|                                 ff            |           .    |            video_profile_level: 255 0x9b-0x9c (1)
 0x090|                                    ff         |            .   |            graphics_profile_level: 255 0x9c-0x9d (1)
+     |                                               |                |            descriptors[0:0]: 0x9d-0x9d (0)
      |                                               |                |        [2]{}: box 0x9d-0x27c (479)
 0x090|                                       00 00 01|             ...|          size: 479 0x9d-0xa1 (4)
 0x0a0|df                                             |.               |
