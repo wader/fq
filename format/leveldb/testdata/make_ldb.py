@@ -9,11 +9,12 @@ import snappy  # pip install python-snappy
 
 
 def main():
-    make("./lorem.json", "./uncompressed.ldb", compression=None)
-    make("./lorem.json", "./snappy.ldb", compression="snappy")
+    make("./lorem.json", "./uncompressed.ldb", reopen=True)
+    make("./lorem.json", "./snappy.ldb", compression="snappy", reopen=True)
+    make("./lorem.json", "./log_only.ldb", compression=None)
 
 
-def make(input_filepath, output_filepath, compression):
+def make(input_filepath, output_filepath, compression=None, reopen=False):
     if os.path.exists(output_filepath):
         raise FileExistsError(f"The file {output_filepath} already exists.")
     # make a .ldb file and a .log file within
@@ -21,9 +22,11 @@ def make(input_filepath, output_filepath, compression):
     for key, value in read_json(input_filepath).items():
         db.put(key.encode(), value.encode())
     db.close()
-    # reopen, so a .ldb file is generated within the .ldb directory
-    db = plyvel.DB(output_filepath, compression=compression)
-    db.close()
+    if reopen:
+        # reopen, so a .ldb file is generated within the .ldb directory;
+        # otherwise there's a .log file only with the fresh changes.
+        db = plyvel.DB(output_filepath, compression=compression)
+        db.close()
 
 
 # Helpers

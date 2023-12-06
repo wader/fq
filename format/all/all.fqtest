@@ -14,6 +14,9 @@ $ fq -n _registry.groups.probe
   "gif",
   "gzip",
   "jpeg",
+  "leveldb_descriptor",
+  "leveldb_log",
+  "leveldb_table",
   "luajit",
   "macho",
   "macho_fat",
@@ -111,6 +114,9 @@ ipv6_packet          Internet protocol v6 packet
 jpeg                 Joint Photographic Experts Group file
 json                 JavaScript Object Notation
 jsonl                JavaScript Object Notation Lines
+leveldb_descriptor   LevelDB Descriptor
+leveldb_log          LevelDB Log
+leveldb_table        LevelDB Table
 luajit               LuaJIT 2.0 bytecode
 macho                Mach-O macOS executable
 macho_fat            Fat Mach-O macOS executable (multi-architecture)

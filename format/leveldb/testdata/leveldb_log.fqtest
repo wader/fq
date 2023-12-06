@@ -1,0 +1,40 @@
+$ fq -d leveldb_log dv log_only.ldb/000003.log
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: log_only.ldb/000003.log (leveldb_log) 0x0-0x62c (1580)
+     |                                               |                |  blocks[0:1]: 0x0-0x62c (1580)
+     |                                               |                |    [0]{}: block 0x0-0x62c (1580)
+     |                                               |                |      records[0:4]: 0x0-0x62c (1580)
+     |                                               |                |        [0]{}: record 0x0-0x1df (479)
+     |                                               |                |          header{}: 0x0-0x7 (7)
+0x000|18 93 40 61                                    |..@a            |            checksum: 0x61409318 (valid) 0x0-0x4 (4)
+0x000|            d8 01                              |    ..          |            length: 472 0x4-0x6 (2)
+0x000|                  01                           |      .         |            record_type: "full" (1) 0x6-0x7 (1)
+0x000|                     01 00 00 00 00 00 00 00 01|       .........|          data: raw bits 0x7-0x1df (472)
+0x010|00 00 00 01 0b 6c 6f 72 65 6d 2e 6c 6f 72 65 6d|.....lorem.lorem|
+*    |until 0x1de.7 (472)                            |                |
+     |                                               |                |        [1]{}: record 0x1df-0x3be (479)
+     |                                               |                |          header{}: 0x1df-0x1e6 (7)
+0x1d0|                                             5a|               Z|            checksum: 0x12ba655a (valid) 0x1df-0x1e3 (4)
+0x1e0|65 ba 12                                       |e..             |
+0x1e0|         d8 01                                 |   ..           |            length: 472 0x1e3-0x1e5 (2)
+0x1e0|               01                              |     .          |            record_type: "full" (1) 0x1e5-0x1e6 (1)
+0x1e0|                  02 00 00 00 00 00 00 00 01 00|      ..........|          data: raw bits 0x1e6-0x3be (472)
+0x1f0|00 00 01 0b 6c 6f 72 65 6d 2e 69 70 73 75 6d bd|....lorem.ipsum.|
+*    |until 0x3bd.7 (472)                            |                |
+     |                                               |                |        [2]{}: record 0x3be-0x59d (479)
+     |                                               |                |          header{}: 0x3be-0x3c5 (7)
+0x3b0|                                          09 81|              ..|            checksum: 0x890d8109 (valid) 0x3be-0x3c2 (4)
+0x3c0|0d 89                                          |..              |
+0x3c0|      d8 01                                    |  ..            |            length: 472 0x3c2-0x3c4 (2)
+0x3c0|            01                                 |    .           |            record_type: "full" (1) 0x3c4-0x3c5 (1)
+0x3c0|               03 00 00 00 00 00 00 00 01 00 00|     ...........|          data: raw bits 0x3c5-0x59d (472)
+0x3d0|00 01 0b 6c 6f 72 65 6d 2e 64 6f 6c 6f 72 bd 03|...lorem.dolor..|
+*    |until 0x59c.7 (472)                            |                |
+     |                                               |                |        [3]{}: record 0x59d-0x62c (143)
+     |                                               |                |          header{}: 0x59d-0x5a4 (7)
+0x590|                                       a0 86 3e|             ..>|            checksum: 0xb3e86a0 (valid) 0x59d-0x5a1 (4)
+0x5a0|0b                                             |.               |
+0x5a0|   88 00                                       | ..             |            length: 136 0x5a1-0x5a3 (2)
+0x5a0|         01                                    |   .            |            record_type: "full" (1) 0x5a3-0x5a4 (1)
+0x5a0|            04 00 00 00 00 00 00 00 01 00 00 00|    ............|          data: raw bits 0x5a4-0x62c (136)
+0x5b0|01 03 72 6f 77 76 52 6f 77 2c 20 72 6f 77 2c 20|..rowvRow, row, |
+*    |until 0x62b.7 (end) (136)                      |                |

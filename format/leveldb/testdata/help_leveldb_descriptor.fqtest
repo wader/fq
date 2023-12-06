@@ -1,0 +1,11 @@
+$ fq -h leveldb_descriptor
+leveldb_descriptor: LevelDB Descriptor decoder
+
+Decode examples
+===============
+
+  # Decode file as leveldb_descriptor
+  $ fq -d leveldb_descriptor . file
+  # Decode value as leveldb_descriptor
+  ... | leveldb_descriptor
+

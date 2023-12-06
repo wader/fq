@@ -1,13 +1,13 @@
-$ fq -h leveldb_ldb
-leveldb_ldb: LevelDB Table decoder
+$ fq -h leveldb_table
+leveldb_table: LevelDB Table decoder
 
 Decode examples
 ===============
 
-  # Decode file as leveldb_ldb
-  $ fq -d leveldb_ldb . file
-  # Decode value as leveldb_ldb
-  ... | leveldb_ldb
+  # Decode file as leveldb_table
+  $ fq -d leveldb_table . file
+  # Decode value as leveldb_table
+  ... | leveldb_table
 
 Limitations
 ===========
