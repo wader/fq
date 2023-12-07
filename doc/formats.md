@@ -712,7 +712,7 @@ $ fq -r -o array=true -d html '.. | select(.[0] == "a" and .[1].href)?.[1].href'
 
 ### Limitations
 
-- fragmented non-"full" records are not merged and decoded further.
+- individual record contents are not merged nor decoded further.
 
 ### Authors
 
