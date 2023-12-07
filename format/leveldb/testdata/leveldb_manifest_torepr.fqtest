@@ -1,0 +1,39 @@
+$ fq -d leveldb_descriptor torepr uncompressed.ldb/MANIFEST-000004
+[
+  [
+    {
+      "comparator": "leveldb.BytewiseComparator"
+    }
+  ],
+  [
+    {
+      "log_number": 6
+    },
+    {
+      "previous_log_number": 0
+    },
+    {
+      "next_file_number": 7
+    },
+    {
+      "last_sequence": 4
+    },
+    {
+      "new_file": {
+        "file_number": 5,
+        "file_size": 1626,
+        "largest_internal_key": {
+          "sequence_number": 4,
+          "type": "value",
+          "user_key": "row"
+        },
+        "level": 0,
+        "smallest_internal_key": {
+          "sequence_number": 3,
+          "type": "value",
+          "user_key": "lorem.dolor"
+        }
+      }
+    }
+  ]
+]
