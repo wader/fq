@@ -7,7 +7,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-var hevcDCRNALGroup decode.Group
+var hevcHEVCNALUGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
@@ -16,7 +16,7 @@ func init() {
 			Description: "H.265/HEVC Decoder Configuration Record",
 			DecodeFn:    hevcDcrDecode,
 			Dependencies: []decode.Dependency{
-				{Groups: []*decode.Group{format.HEVC_NALU}, Out: &hevcDCRNALGroup},
+				{Groups: []*decode.Group{format.HEVC_NALU}, Out: &hevcHEVCNALUGroup},
 			},
 		})
 }
@@ -56,7 +56,7 @@ func hevcDcrDecode(d *decode.D) any {
 					for i := uint64(0); i < numNals; i++ {
 						d.FieldStruct("nal", func(d *decode.D) {
 							nalUnitLength := int64(d.FieldU16("nal_unit_length"))
-							d.FieldFormatLen("nal", nalUnitLength*8, &hevcDCRNALGroup, nil)
+							d.FieldFormatLen("nal", nalUnitLength*8, &hevcHEVCNALUGroup, nil)
 						})
 					}
 				})

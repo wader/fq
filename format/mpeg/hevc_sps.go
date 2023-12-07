@@ -89,16 +89,16 @@ func profileTierLevelDecode(d *decode.D, profilePresentFlag bool, maxNumSubLayer
 		}
 	})
 	if maxNumSubLayersMinus1 > 0 {
-		for i := maxNumSubLayersMinus1; i < 8; i++ {
-			d.FieldArray("reserved_zero_2bits", func(d *decode.D) {
-				d.FieldU33("reserved_zero_2bits")
-			})
-		}
+		d.FieldArray("reserved_zero_2bits", func(d *decode.D) {
+			for i := maxNumSubLayersMinus1; i < 8; i++ {
+				d.FieldU2("reserved_zero_2bits")
+			}
+		})
 	}
 	d.FieldArray("sub_layers", func(d *decode.D) {
 		for i := uint64(0); i < maxNumSubLayersMinus1; i++ {
 			d.FieldStruct("sub_layer", func(d *decode.D) {
-				profileLayerDecode(d, "", subLayerProfilePresentFlags[i], subLayerProfilePresentFlags[i], true)
+				profileLayerDecode(d, "", subLayerProfilePresentFlags[i], subLayerLevelPresentFlags[i], true)
 			})
 		}
 	})
