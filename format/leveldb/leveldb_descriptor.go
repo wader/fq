@@ -45,12 +45,12 @@ const (
 var tagTypes = scalar.UintMapSymStr{
 	tagTypeComparator:     "comparator",
 	tagTypeLogNumber:      "log_number",
-	tagTypeNextFileNumber: "next file number",
-	tagTypeLastSequence:   "last sequence",
-	tagTypeCompactPointer: "compact pointer",
-	tagTypeDeletedFile:    "deleted file",
-	tagTypeNewFile:        "new file",
-	tagTypePrevLogNumber:  "previous log number",
+	tagTypeNextFileNumber: "next_file_number",
+	tagTypeLastSequence:   "last_sequence",
+	tagTypeCompactPointer: "compact_pointer",
+	tagTypeDeletedFile:    "deleted_file",
+	tagTypeNewFile:        "new_file",
+	tagTypePrevLogNumber:  "previous_log_number",
 }
 
 func ldbDescriptorDecode(d *decode.D) any {

@@ -27,12 +27,12 @@ def _leveldb_descriptor_torepr:
       (
         .value
         | if .comparator then (.comparator |= .data) else . end
-        | if ."new file" then (
-            ."new file".largest_internal_key |= .data
-            | ."new file".smallest_internal_key |= .data
+        | if .new_file then (
+            .new_file.largest_internal_key |= .data
+            | .new_file.smallest_internal_key |= .data
           ) else . end
-        | if ."compact pointer" then (
-            ."compact pointer".internal_key |= .data
+        | if .compact_pointer then (
+            .compact_pointer.internal_key |= .data
           ) else . end
       )
     end
