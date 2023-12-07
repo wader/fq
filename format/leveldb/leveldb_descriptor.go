@@ -15,7 +15,8 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-//go:embed leveldb_log.md
+//go:embed leveldb_descriptor.jq
+//go:embed leveldb_descriptor.md
 var leveldbDescriptorFS embed.FS
 
 func init() {
@@ -24,6 +25,7 @@ func init() {
 		&decode.Format{
 			Description: "LevelDB Descriptor",
 			DecodeFn:    ldbDescriptorDecode,
+			Functions:   []string{"torepr"},
 		})
 	interp.RegisterFS(leveldbDescriptorFS)
 }

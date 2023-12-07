@@ -1,6 +1,6 @@
 ### Limitations
 
-- individual records are not merged and its data further decoded.
+- fragmented non-"full" records are not merged and decoded further.
 
 ### Authors
 
