@@ -118,6 +118,8 @@ func readLengthPrefixedString(name string, d *decode.D) {
 func readTagInternalKey(name string, d *decode.D) {
 	d.FieldStruct(name, func(d *decode.D) {
 		length := d.FieldULEB128("length")
-		readInternalKey("data", int64(length), d)
+		d.FieldStruct("data", func(d *decode.D) {
+			readInternalKey(int(length), d)
+		})
 	})
 }

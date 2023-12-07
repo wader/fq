@@ -144,6 +144,7 @@ func readLogRecord(rro recordReadOptions, d *decode.D) {
 	rro.readDataFn(dataSize, recordType, d)
 }
 
+// simplified `functools.partial` (Python) or `Function.prototype.bind` (JavaScript)
 func bind(f func(recordReadOptions, *decode.D), rro recordReadOptions) func(*decode.D) {
 	return func(d *decode.D) {
 		f(rro, d)

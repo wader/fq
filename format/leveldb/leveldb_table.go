@@ -10,7 +10,6 @@ package leveldb
 import (
 	"bytes"
 	"embed"
-	"fmt"
 	"hash/crc32"
 
 	"github.com/golang/snappy"
@@ -22,7 +21,7 @@ import (
 )
 
 //go:embed leveldb_table.md
-var leveldbFS embed.FS
+var leveldbTableFS embed.FS
 
 func init() {
 	interp.RegisterFormat(
@@ -32,7 +31,7 @@ func init() {
 			Groups:      []*decode.Group{format.Probe},
 			DecodeFn:    ldbTableDecode,
 		})
-	interp.RegisterFS(leveldbFS)
+	interp.RegisterFS(leveldbTableFS)
 }
 
 const (
@@ -44,8 +43,8 @@ const (
 	//     echo http://code.google.com/p/leveldb/ | sha1sum
 	// https://github.com/google/leveldb/blob/main/table/format.h#L76
 	tableMagicNumber = 0xdb4775248b80fb57
-	uint32Size       = int64(32)
-	uint64Size       = int64(64)
+	uint32Size       = 32
+	uint64Size       = 64
 )
 
 // https://github.com/google/leveldb/blob/main/include/leveldb/options.h#L25
@@ -105,7 +104,7 @@ func ldbTableDecode(d *decode.D) any {
 
 	d.SeekAbs(metaIndexOffset * 8)
 	var metaHandles []blockHandle
-	readTableBlock("metaindex", metaIndexSize, readKeyValueContents, func(d *decode.D) {
+	readTableBlock("metaindex", metaIndexSize, keyValueContentsReader(nil, func(size int, d *decode.D) {
 		// blockHandle
 		// https://github.com/google/leveldb/blob/main/table/format.cc#L24
 		handle := blockHandle{
@@ -113,13 +112,13 @@ func ldbTableDecode(d *decode.D) any {
 			size:   d.FieldULEB128("size"),
 		}
 		metaHandles = append(metaHandles, handle)
-	}, d)
+	}), d)
 
 	// index
 
 	d.SeekAbs(indexOffset * 8)
 	var dataHandles []blockHandle
-	readTableBlock("index", indexSize, readKeyValueContents, func(d *decode.D) {
+	readTableBlock("index", indexSize, keyValueContentsReader(readInternalKey, func(size int, d *decode.D) {
 		// blockHandle
 		// https://github.com/google/leveldb/blob/main/table/format.cc#L24
 		handle := blockHandle{
@@ -127,7 +126,7 @@ func ldbTableDecode(d *decode.D) any {
 			size:   d.FieldULEB128("size"),
 		}
 		dataHandles = append(dataHandles, handle)
-	}, d)
+	}), d)
 
 	// meta
 
@@ -135,7 +134,7 @@ func ldbTableDecode(d *decode.D) any {
 		d.FieldArray("meta", func(d *decode.D) {
 			for _, handle := range metaHandles {
 				d.SeekAbs(int64(handle.offset) * 8)
-				readTableBlock("meta_block", int64(handle.size), readMetaContent, nil, d)
+				readTableBlock("meta_block", int64(handle.size), readMetaContent, d)
 			}
 		})
 	}
@@ -146,7 +145,12 @@ func ldbTableDecode(d *decode.D) any {
 		d.FieldArray("data", func(d *decode.D) {
 			for _, handle := range dataHandles {
 				d.SeekAbs(int64(handle.offset) * 8)
-				readTableBlock("data_block", int64(handle.size), readKeyValueContents, nil, d)
+				readTableBlock(
+					"data_block",
+					int64(handle.size),
+					keyValueContentsReader(readInternalKey, nil),
+					d,
+				)
 			}
 		})
 	}
@@ -159,7 +163,12 @@ func ldbTableDecode(d *decode.D) any {
 // Read block contents as well as compression + checksum bytes following it.
 // The function `readTableBlockContents` gets the uncompressed bytebuffer.
 // https://github.com/google/leveldb/blob/main/table/format.cc#L69
-func readTableBlock(name string, size int64, readTableBlockContents func(size int64, valueCallbackFn func(d *decode.D), d *decode.D), valueCallbackFn func(d *decode.D), d *decode.D) {
+func readTableBlock(
+	name string,
+	size int64,
+	readTableBlockContents func(size int64, d *decode.D),
+	d *decode.D,
+) {
 	d.FieldStruct(name, func(d *decode.D) {
 		start := d.Pos()
 		br := d.RawLen(size * 8)
@@ -174,13 +183,12 @@ func readTableBlock(name string, size int64, readTableBlockContents func(size in
 		d.SeekAbs(start)
 		if compressionType == compressionTypeNone {
 			d.FieldStruct("uncompressed", func(d *decode.D) {
-				readTableBlockContents(size, valueCallbackFn, d)
+				readTableBlockContents(size, d)
 			})
 		} else {
 			compressedSize := size
 			compressed := data
 			bb := &bytes.Buffer{}
-			fmt.Println(bb, bb.Len())
 			switch compressionType {
 			case compressionTypeSnappy:
 				decompressed, err := snappy.Decode(nil, compressed)
@@ -192,9 +200,13 @@ func readTableBlock(name string, size int64, readTableBlockContents func(size in
 				d.Errorf("Unsupported compression type: %x", compressionType)
 			}
 			if bb.Len() > 0 {
-				d.FieldStructRootBitBufFn("uncompressed", bitio.NewBitReader(bb.Bytes(), -1), func(d *decode.D) {
-					readTableBlockContents(int64(bb.Len()), valueCallbackFn, d)
-				})
+				d.FieldStructRootBitBufFn(
+					"uncompressed",
+					bitio.NewBitReader(bb.Bytes(), -1),
+					func(d *decode.D) {
+						readTableBlockContents(int64(bb.Len()), d)
+					},
+				)
 			}
 			d.FieldRawLen("compressed", compressedSize*8)
 		}
@@ -205,7 +217,12 @@ func readTableBlock(name string, size int64, readTableBlockContents func(size in
 // Read content encoded as a sequence of key/value-entries and a trailer of restarts.
 // https://github.com/google/leveldb/blob/main/table/block_builder.cc#L16
 // https://github.com/google/leveldb/blob/main/table/block.cc
-func readKeyValueContents(size int64, valueCallbackFn func(d *decode.D), d *decode.D) {
+func readKeyValueContents(
+	keyCallbackFn func(size int, d *decode.D),
+	valueCallbackFn func(size int, d *decode.D),
+	size int64,
+	d *decode.D,
+) {
 	start := d.Pos()
 	end := start + size*8
 
@@ -231,38 +248,53 @@ func readKeyValueContents(size int64, valueCallbackFn func(d *decode.D), d *deco
 		for d.Pos() < start+restartOffset {
 			d.FieldStruct("entry", func(d *decode.D) {
 				d.FieldULEB128("shared_bytes")
-				unshared := int64(d.FieldULEB128("unshared_bytes"))
-				valueLength := d.FieldULEB128("value_length")
-				readInternalKey("internal_key", unshared, d)
-				if valueCallbackFn == nil {
-					d.FieldUTF8("value", int(valueLength))
+				unshared := int(d.FieldULEB128("unshared_bytes"))
+				valueLength := int(d.FieldULEB128("value_length"))
+				if keyCallbackFn == nil {
+					d.FieldUTF8("key", unshared)
 				} else {
-					d.FieldStruct("value", valueCallbackFn)
+					d.FieldStruct("key", func(d *decode.D) {
+						keyCallbackFn(unshared, d)
+					})
+				}
+				if valueCallbackFn == nil {
+					d.FieldUTF8("value", valueLength)
+				} else {
+					d.FieldStruct("value", func(d *decode.D) {
+						valueCallbackFn(valueLength, d)
+					})
 				}
 			})
 		}
 	})
 }
 
-func readInternalKey(name string, bitSize int64, d *decode.D) {
+func readInternalKey(bitSize int, d *decode.D) {
 	// InternalKey
 	// https://github.com/google/leveldb/blob/main/db/dbformat.h#L171
-	d.FieldStruct(name, func(d *decode.D) {
-		d.FieldUTF8("user_key", int(bitSize-uint64Size/8))
-		d.FieldU8("type", valueTypes, scalar.UintHex)
-		d.FieldU56("sequence_number")
-	})
+	d.FieldUTF8("user_key", bitSize-uint64Size/8)
+	d.FieldU8("type", valueTypes, scalar.UintHex)
+	d.FieldU56("sequence_number")
 }
 
 // Read content encoded in the "filter" or "stats" Meta Block format.
 // https://github.com/google/leveldb/blob/main/doc/table_format.md#filter-meta-block
 // https://github.com/google/leveldb/blob/main/table/filter_block.cc
-func readMetaContent(size int64, valueCallbackFn func(d *decode.D), d *decode.D) {
+func readMetaContent(size int64, d *decode.D) {
 	// TK(2023-12-04)
 	d.FieldRawLen("raw", size*8)
 }
 
 // Helpers
+
+func keyValueContentsReader(
+	keyCallbackFn func(size int, d *decode.D),
+	valueCallbackFn func(size int, d *decode.D),
+) func(size int64, d *decode.D) {
+	return func(size int64, d *decode.D) {
+		readKeyValueContents(keyCallbackFn, valueCallbackFn, size, d)
+	}
+}
 
 // Compute the checksum: a CRC32 as in RFC3720 + custom mask.
 // https://datatracker.ietf.org/doc/html/rfc3720#appendix-B.4
