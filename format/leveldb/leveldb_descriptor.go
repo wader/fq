@@ -119,7 +119,12 @@ func readTagInternalKey(name string, d *decode.D) {
 	d.FieldStruct(name, func(d *decode.D) {
 		length := d.FieldULEB128("length")
 		d.FieldStruct("data", func(d *decode.D) {
-			readInternalKey(int(length), d)
+			err := readInternalKey(nil, int(length), d)
+			if err != nil {
+				// TK(2023-12-08): how do I propagate this
+				// error `err` into the `d` object?
+				d.Errorf("Key read failure (size %d)", length)
+			}
 		})
 	})
 }
