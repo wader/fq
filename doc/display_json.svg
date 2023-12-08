@@ -1,8 +1,9 @@
-<svg viewBox="0 0 168 80" width="168" height="80" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg viewBox="0 0 168 80" width="168" height="80" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve">
     <style>
         rect { shape-rendering: crispEdges; }
-        text {
+        tspan, text {
             dominant-baseline: text-before-edge;
+            alignment-baseline: text-before-edge;
             white-space: pre;
             font: 14px Courier, monospace;
             fill: #bbbbbb;
@@ -10,48 +11,9 @@
         .u { text-decoration: underline; }
     </style>
     <rect width="100%" height="100%" x="0" y="0" style="fill: #000000"/>
-    <text x="0" y="0">$</text>
-    <text x="16" y="0">f</text>
-    <text x="24" y="0">q</text>
-    <text x="40" y="0">-</text>
-    <text x="48" y="0">n</text>
-    <text x="64" y="0">&#39;</text>
-    <text x="72" y="0">&#34;</text>
-    <text x="80" y="0">h</text>
-    <text x="88" y="0">e</text>
-    <text x="96" y="0">l</text>
-    <text x="104" y="0">l</text>
-    <text x="112" y="0">o</text>
-    <text x="120" y="0">&#34;</text>
-    <text x="128" y="0">&#39;</text>
-    <text x="0" y="16" style="fill: #00bb00">&#34;</text>
-    <text x="8" y="16" style="fill: #00bb00">h</text>
-    <text x="16" y="16" style="fill: #00bb00">e</text>
-    <text x="24" y="16" style="fill: #00bb00">l</text>
-    <text x="32" y="16" style="fill: #00bb00">l</text>
-    <text x="40" y="16" style="fill: #00bb00">o</text>
-    <text x="48" y="16" style="fill: #00bb00">&#34;</text>
-    <text x="0" y="48">$</text>
-    <text x="16" y="48">f</text>
-    <text x="24" y="48">q</text>
-    <text x="40" y="48">-</text>
-    <text x="48" y="48">n</text>
-    <text x="64" y="48">&#39;</text>
-    <text x="72" y="48">&#34;</text>
-    <text x="80" y="48">h</text>
-    <text x="88" y="48">e</text>
-    <text x="96" y="48">l</text>
-    <text x="104" y="48">l</text>
-    <text x="112" y="48">o</text>
-    <text x="120" y="48">&#34;</text>
-    <text x="136" y="48">|</text>
-    <text x="152" y="48">d</text>
-    <text x="160" y="48">&#39;</text>
-    <text x="0" y="64" style="fill: #00bb00">&#34;</text>
-    <text x="8" y="64" style="fill: #00bb00">h</text>
-    <text x="16" y="64" style="fill: #00bb00">e</text>
-    <text x="24" y="64" style="fill: #00bb00">l</text>
-    <text x="32" y="64" style="fill: #00bb00">l</text>
-    <text x="40" y="64" style="fill: #00bb00">o</text>
-    <text x="48" y="64" style="fill: #00bb00">&#34;</text>
+    <text x="0" y="0"><tspan x="0" y="0">$</tspan><tspan x="8" y="0"> </tspan><tspan x="16" y="0">f</tspan><tspan x="24" y="0">q</tspan><tspan x="32" y="0"> </tspan><tspan x="40" y="0">-</tspan><tspan x="48" y="0">n</tspan><tspan x="56" y="0"> </tspan><tspan x="64" y="0">&#39;</tspan><tspan x="72" y="0">&#34;</tspan><tspan x="80" y="0">h</tspan><tspan x="88" y="0">e</tspan><tspan x="96" y="0">l</tspan><tspan x="104" y="0">l</tspan><tspan x="112" y="0">o</tspan><tspan x="120" y="0">&#34;</tspan><tspan x="128" y="0">&#39;</tspan></text>
+    <text x="0" y="16"><tspan x="0" y="16" style="fill: #00bb00">&#34;</tspan><tspan x="8" y="16" style="fill: #00bb00">h</tspan><tspan x="16" y="16" style="fill: #00bb00">e</tspan><tspan x="24" y="16" style="fill: #00bb00">l</tspan><tspan x="32" y="16" style="fill: #00bb00">l</tspan><tspan x="40" y="16" style="fill: #00bb00">o</tspan><tspan x="48" y="16" style="fill: #00bb00">&#34;</tspan></text>
+    <text x="0" y="32"></text>
+    <text x="0" y="48"><tspan x="0" y="48">$</tspan><tspan x="8" y="48"> </tspan><tspan x="16" y="48">f</tspan><tspan x="24" y="48">q</tspan><tspan x="32" y="48"> </tspan><tspan x="40" y="48">-</tspan><tspan x="48" y="48">n</tspan><tspan x="56" y="48"> </tspan><tspan x="64" y="48">&#39;</tspan><tspan x="72" y="48">&#34;</tspan><tspan x="80" y="48">h</tspan><tspan x="88" y="48">e</tspan><tspan x="96" y="48">l</tspan><tspan x="104" y="48">l</tspan><tspan x="112" y="48">o</tspan><tspan x="120" y="48">&#34;</tspan><tspan x="128" y="48"> </tspan><tspan x="136" y="48">|</tspan><tspan x="144" y="48"> </tspan><tspan x="152" y="48">d</tspan><tspan x="160" y="48">&#39;</tspan></text>
+    <text x="0" y="64"><tspan x="0" y="64" style="fill: #00bb00">&#34;</tspan><tspan x="8" y="64" style="fill: #00bb00">h</tspan><tspan x="16" y="64" style="fill: #00bb00">e</tspan><tspan x="24" y="64" style="fill: #00bb00">l</tspan><tspan x="32" y="64" style="fill: #00bb00">l</tspan><tspan x="40" y="64" style="fill: #00bb00">o</tspan><tspan x="48" y="64" style="fill: #00bb00">&#34;</tspan></text>
 </svg>
