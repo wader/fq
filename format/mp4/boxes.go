@@ -878,10 +878,10 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		var i uint64
 		d.FieldStructArrayLoop("entries", "entry", func() bool { return i < entryCount }, func(d *decode.D) {
 			d.FieldS32("sample_count")
+			// ISO/IEC14496-12 says version 0 is unsigned and version 1 is signed
+			// in preactice it seems muxers write it as signed for both version
 			switch version {
-			case 0:
-				d.FieldU32("sample_offset")
-			case 1:
+			case 0, 1:
 				d.FieldS32("sample_offset")
 			}
 			i++
