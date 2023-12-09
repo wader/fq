@@ -121,9 +121,7 @@ func readTagInternalKey(name string, d *decode.D) {
 		d.FieldStruct("data", func(d *decode.D) {
 			err := readInternalKey(nil, int(length), d)
 			if err != nil {
-				// TK(2023-12-08): how do I propagate this
-				// error `err` into the `d` object?
-				d.Errorf("Key read failure (size %d)", length)
+				d.Errorf(err.Error())
 			}
 		})
 	})

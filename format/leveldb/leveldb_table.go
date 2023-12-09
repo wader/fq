@@ -277,9 +277,7 @@ func readKeyValueContents(
 						}
 						err := keyCallbackFn(keyPrefix, int(unshared), d)
 						if err != nil {
-							// TK(2023-12-08): how do I propagate this
-							// error `err` into the `d` object?
-							d.Errorf("Key read failure (size %d)", unshared)
+							d.Errorf(err.Error())
 						}
 					})
 				}
@@ -349,7 +347,7 @@ func readInternalKey(sharedBytes []byte, unsharedSize int, d *decode.D) error {
 	//               ⁞
 	//             cutoff
 	if keySize < typeAndSequenceNumberSize || int64(unsharedSize) > d.BitsLeft()/8 {
-		return fmt.Errorf("invalid key size")
+		return fmt.Errorf("key size %d or unshared size %d invalid", keySize, unsharedSize)
 	}
 
 	// case 1: user_key, type, and sequence_number fit fully in unshared.
