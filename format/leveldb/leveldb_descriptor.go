@@ -121,7 +121,7 @@ func readTagInternalKey(name string, d *decode.D) {
 		d.FieldStruct("data", func(d *decode.D) {
 			err := readInternalKey(nil, int(length), d)
 			if err != nil {
-				d.Errorf(err.Error())
+				d.Errorf("%v", err)
 			}
 		})
 	})

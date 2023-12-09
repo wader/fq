@@ -277,7 +277,7 @@ func readKeyValueContents(
 						}
 						err := keyCallbackFn(keyPrefix, int(unshared), d)
 						if err != nil {
-							d.Errorf(err.Error())
+							d.Errorf("%v", err)
 						}
 					})
 				}
