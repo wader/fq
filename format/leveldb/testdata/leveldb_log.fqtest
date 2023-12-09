@@ -8,33 +8,80 @@ $ fq -d leveldb_log dv log_only.ldb/000003.log
 0x000|18 93 40 61                                    |..@a            |            checksum: 0x61409318 (valid) 0x0-0x4 (4)
 0x000|            d8 01                              |    ..          |            length: 472 0x4-0x6 (2)
 0x000|                  01                           |      .         |            record_type: "full" (1) 0x6-0x7 (1)
-0x000|                     01 00 00 00 00 00 00 00 01|       .........|          data: raw bits 0x7-0x1df (472)
-0x010|00 00 00 01 0b 6c 6f 72 65 6d 2e 6c 6f 72 65 6d|.....lorem.lorem|
-*    |until 0x1de.7 (472)                            |                |
+     |                                               |                |          data{}: 0x7-0x1df (472)
+0x000|                     01 00 00 00 00 00 00 00   |       ........ |            sequence: 1 0x7-0xf (8)
+0x000|                                             01|               .|            count: 1 0xf-0x13 (4)
+0x010|00 00 00                                       |...             |
+     |                                               |                |            records[0:1]: 0x13-0x1df (460)
+     |                                               |                |              [0]{}: record 0x13-0x1df (460)
+0x010|         01                                    |   .            |                type: "value" (1) 0x13-0x14 (1)
+     |                                               |                |                key{}: 0x14-0x20 (12)
+0x010|            0b                                 |    .           |                  length: 11 0x14-0x15 (1)
+0x010|               6c 6f 72 65 6d 2e 6c 6f 72 65 6d|     lorem.lorem|                  data: "lorem.lorem" 0x15-0x20 (11)
+     |                                               |                |                value{}: 0x20-0x1df (447)
+0x020|bd 03                                          |..              |                  length: 445 0x20-0x22 (2)
+0x020|      4c 6f 72 65 6d 20 69 70 73 75 6d 20 64 6f|  Lorem ipsum do|                  data: "Lorem ipsum dolor sit amet, consectetur adipisc..." 0x22-0x1df (445)
+0x030|6c 6f 72 20 73 69 74 20 61 6d 65 74 2c 20 63 6f|lor sit amet, co|
+*    |until 0x1de.7 (445)                            |                |
      |                                               |                |        [1]{}: record 0x1df-0x3be (479)
      |                                               |                |          header{}: 0x1df-0x1e6 (7)
 0x1d0|                                             5a|               Z|            checksum: 0x12ba655a (valid) 0x1df-0x1e3 (4)
 0x1e0|65 ba 12                                       |e..             |
 0x1e0|         d8 01                                 |   ..           |            length: 472 0x1e3-0x1e5 (2)
 0x1e0|               01                              |     .          |            record_type: "full" (1) 0x1e5-0x1e6 (1)
-0x1e0|                  02 00 00 00 00 00 00 00 01 00|      ..........|          data: raw bits 0x1e6-0x3be (472)
-0x1f0|00 00 01 0b 6c 6f 72 65 6d 2e 69 70 73 75 6d bd|....lorem.ipsum.|
-*    |until 0x3bd.7 (472)                            |                |
+     |                                               |                |          data{}: 0x1e6-0x3be (472)
+0x1e0|                  02 00 00 00 00 00 00 00      |      ........  |            sequence: 2 0x1e6-0x1ee (8)
+0x1e0|                                          01 00|              ..|            count: 1 0x1ee-0x1f2 (4)
+0x1f0|00 00                                          |..              |
+     |                                               |                |            records[0:1]: 0x1f2-0x3be (460)
+     |                                               |                |              [0]{}: record 0x1f2-0x3be (460)
+0x1f0|      01                                       |  .             |                type: "value" (1) 0x1f2-0x1f3 (1)
+     |                                               |                |                key{}: 0x1f3-0x1ff (12)
+0x1f0|         0b                                    |   .            |                  length: 11 0x1f3-0x1f4 (1)
+0x1f0|            6c 6f 72 65 6d 2e 69 70 73 75 6d   |    lorem.ipsum |                  data: "lorem.ipsum" 0x1f4-0x1ff (11)
+     |                                               |                |                value{}: 0x1ff-0x3be (447)
+0x1f0|                                             bd|               .|                  length: 445 0x1ff-0x201 (2)
+0x200|03                                             |.               |
+0x200|   4c 6f 72 65 6d 20 69 70 73 75 6d 20 64 6f 6c| Lorem ipsum dol|                  data: "Lorem ipsum dolor sit amet, consectetur adipisc..." 0x201-0x3be (445)
+0x210|6f 72 20 73 69 74 20 61 6d 65 74 2c 20 63 6f 6e|or sit amet, con|
+*    |until 0x3bd.7 (445)                            |                |
      |                                               |                |        [2]{}: record 0x3be-0x59d (479)
      |                                               |                |          header{}: 0x3be-0x3c5 (7)
 0x3b0|                                          09 81|              ..|            checksum: 0x890d8109 (valid) 0x3be-0x3c2 (4)
 0x3c0|0d 89                                          |..              |
 0x3c0|      d8 01                                    |  ..            |            length: 472 0x3c2-0x3c4 (2)
 0x3c0|            01                                 |    .           |            record_type: "full" (1) 0x3c4-0x3c5 (1)
-0x3c0|               03 00 00 00 00 00 00 00 01 00 00|     ...........|          data: raw bits 0x3c5-0x59d (472)
-0x3d0|00 01 0b 6c 6f 72 65 6d 2e 64 6f 6c 6f 72 bd 03|...lorem.dolor..|
-*    |until 0x59c.7 (472)                            |                |
+     |                                               |                |          data{}: 0x3c5-0x59d (472)
+0x3c0|               03 00 00 00 00 00 00 00         |     ........   |            sequence: 3 0x3c5-0x3cd (8)
+0x3c0|                                       01 00 00|             ...|            count: 1 0x3cd-0x3d1 (4)
+0x3d0|00                                             |.               |
+     |                                               |                |            records[0:1]: 0x3d1-0x59d (460)
+     |                                               |                |              [0]{}: record 0x3d1-0x59d (460)
+0x3d0|   01                                          | .              |                type: "value" (1) 0x3d1-0x3d2 (1)
+     |                                               |                |                key{}: 0x3d2-0x3de (12)
+0x3d0|      0b                                       |  .             |                  length: 11 0x3d2-0x3d3 (1)
+0x3d0|         6c 6f 72 65 6d 2e 64 6f 6c 6f 72      |   lorem.dolor  |                  data: "lorem.dolor" 0x3d3-0x3de (11)
+     |                                               |                |                value{}: 0x3de-0x59d (447)
+0x3d0|                                          bd 03|              ..|                  length: 445 0x3de-0x3e0 (2)
+0x3e0|4c 6f 72 65 6d 20 69 70 73 75 6d 20 64 6f 6c 6f|Lorem ipsum dolo|                  data: "Lorem ipsum dolor sit amet, consectetur adipisc..." 0x3e0-0x59d (445)
+*    |until 0x59c.7 (445)                            |                |
      |                                               |                |        [3]{}: record 0x59d-0x62c (143)
      |                                               |                |          header{}: 0x59d-0x5a4 (7)
 0x590|                                       a0 86 3e|             ..>|            checksum: 0xb3e86a0 (valid) 0x59d-0x5a1 (4)
 0x5a0|0b                                             |.               |
 0x5a0|   88 00                                       | ..             |            length: 136 0x5a1-0x5a3 (2)
 0x5a0|         01                                    |   .            |            record_type: "full" (1) 0x5a3-0x5a4 (1)
-0x5a0|            04 00 00 00 00 00 00 00 01 00 00 00|    ............|          data: raw bits 0x5a4-0x62c (136)
-0x5b0|01 03 72 6f 77 76 52 6f 77 2c 20 72 6f 77 2c 20|..rowvRow, row, |
-*    |until 0x62b.7 (end) (136)                      |                |
+     |                                               |                |          data{}: 0x5a4-0x62c (136)
+0x5a0|            04 00 00 00 00 00 00 00            |    ........    |            sequence: 4 0x5a4-0x5ac (8)
+0x5a0|                                    01 00 00 00|            ....|            count: 1 0x5ac-0x5b0 (4)
+     |                                               |                |            records[0:1]: 0x5b0-0x62c (124)
+     |                                               |                |              [0]{}: record 0x5b0-0x62c (124)
+0x5b0|01                                             |.               |                type: "value" (1) 0x5b0-0x5b1 (1)
+     |                                               |                |                key{}: 0x5b1-0x5b5 (4)
+0x5b0|   03                                          | .              |                  length: 3 0x5b1-0x5b2 (1)
+0x5b0|      72 6f 77                                 |  row           |                  data: "row" 0x5b2-0x5b5 (3)
+     |                                               |                |                value{}: 0x5b5-0x62c (119)
+0x5b0|               76                              |     v          |                  length: 118 0x5b5-0x5b6 (1)
+0x5b0|                  52 6f 77 2c 20 72 6f 77 2c 20|      Row, row, |                  data: "Row, row, row your boat\nGently down the stream...." 0x5b6-0x62c (118)
+0x5c0|72 6f 77 20 79 6f 75 72 20 62 6f 61 74 0a 47 65|row your boat.Ge|
+*    |until 0x62b.7 (end) (118)                      |                |

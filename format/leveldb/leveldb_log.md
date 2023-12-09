@@ -1,6 +1,6 @@
 ### Limitations
 
-- individual record contents are not merged nor decoded further.
+- fragmented non-"full" records are not merged and decoded further.
 
 ### Authors
 
@@ -8,4 +8,6 @@
 
 ### References
 
+- https://github.com/google/leveldb/blob/main/doc/impl.md#log-files
 - https://github.com/google/leveldb/blob/main/doc/log_format.md
+- https://github.com/google/leveldb/blob/main/db/write_batch.cc

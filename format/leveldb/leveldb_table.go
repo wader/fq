@@ -61,9 +61,14 @@ var compressionTypes = scalar.UintMapSymStr{
 }
 
 // https://github.com/google/leveldb/blob/main/db/dbformat.h#L54
+const (
+	valueTypeDeletion = 0x0
+	valueTypeValue    = 0x1
+)
+
 var valueTypes = scalar.UintMapSymStr{
-	0x0: "deletion",
-	0x1: "value",
+	valueTypeDeletion: "deletion",
+	valueTypeValue:    "value",
 }
 
 type blockHandle struct {
@@ -360,8 +365,8 @@ func readInternalKey(sharedBytes []byte, unsharedSize int, d *decode.D) error {
 
 	// case 2: type and sequence_number fit fully in unshared: simulate user_key value.
 	if unsharedSize >= typeAndSequenceNumberSize {
-		br := d.FieldRawLen("user_key_suffix", int64(unsharedSize-typeAndSequenceNumberSize)*8)
-		d.FieldValueStr("user_key", string(append(sharedBytes, d.ReadAllBits(br)...)), strInferred)
+		suffix := fieldUTF8ReturnBytes("user_key_suffix", unsharedSize-typeAndSequenceNumberSize, d)
+		d.FieldValueStr("user_key", stringify(sharedBytes, suffix), strInferred)
 		d.FieldU8("type", valueTypes, scalar.UintHex)
 		d.FieldU56("sequence_number")
 		return nil
@@ -440,4 +445,22 @@ func mask(crc uint32) uint32 {
 	const kMaskDelta = 0xa282ead8
 	// Rotate right by 15 bits and add a constant.
 	return ((crc >> 15) | (crc << 17)) + kMaskDelta
+}
+
+// Concatinate byteslices and convert into a string.
+func stringify(byteSlices ...[]byte) string {
+	var result []byte
+	for _, b := range byteSlices {
+		result = append(result, b...)
+	}
+	return string(result)
+}
+
+func fieldUTF8ReturnBytes(name string, nBytes int, d *decode.D) []byte {
+	var result []byte
+	d.RangeFn(d.Pos(), int64(nBytes)*8, func(d *decode.D) {
+		result = d.BytesLen(nBytes)
+	})
+	d.FieldUTF8(name, nBytes)
+	return result
 }

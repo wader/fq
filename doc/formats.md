@@ -706,13 +706,14 @@ $ fq -r -o array=true -d html '.. | select(.[0] == "a" and .[1].href)?.[1].href'
 ### References
 
 - https://github.com/google/leveldb/blob/main/doc/impl.md#manifest
+- https://github.com/google/leveldb/blob/main/doc/log_format.md
 - https://github.com/google/leveldb/blob/main/db/version_edit.cc
 
 ## leveldb_log
 
 ### Limitations
 
-- individual record contents are not merged nor decoded further.
+- fragmented non-"full" records are not merged and decoded further.
 
 ### Authors
 
@@ -720,7 +721,9 @@ $ fq -r -o array=true -d html '.. | select(.[0] == "a" and .[1].href)?.[1].href'
 
 ### References
 
+- https://github.com/google/leveldb/blob/main/doc/impl.md#log-files
 - https://github.com/google/leveldb/blob/main/doc/log_format.md
+- https://github.com/google/leveldb/blob/main/db/write_batch.cc
 
 ## leveldb_table
 

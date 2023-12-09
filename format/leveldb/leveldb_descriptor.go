@@ -108,13 +108,6 @@ func readManifest(d *decode.D) {
 	})
 }
 
-func readLengthPrefixedString(name string, d *decode.D) {
-	d.FieldStruct(name, func(d *decode.D) {
-		length := d.FieldULEB128("length")
-		d.FieldUTF8("data", int(length))
-	})
-}
-
 func readTagInternalKey(name string, d *decode.D) {
 	d.FieldStruct(name, func(d *decode.D) {
 		length := d.FieldULEB128("length")

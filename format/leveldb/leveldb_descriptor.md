@@ -9,4 +9,5 @@
 ### References
 
 - https://github.com/google/leveldb/blob/main/doc/impl.md#manifest
+- https://github.com/google/leveldb/blob/main/doc/log_format.md
 - https://github.com/google/leveldb/blob/main/db/version_edit.cc
