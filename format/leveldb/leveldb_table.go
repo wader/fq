@@ -449,10 +449,17 @@ func mask(crc uint32) uint32 {
 
 // Concatinate byteslices and convert into a string.
 func stringify(byteSlices ...[]byte) string {
-	var result []byte
+	totalSize := 0
+	for _, b := range byteSlices {
+		totalSize += len(b)
+	}
+
+	result := make([]byte, 0, totalSize)
+
 	for _, b := range byteSlices {
 		result = append(result, b...)
 	}
+
 	return string(result)
 }
 
