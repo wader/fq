@@ -247,10 +247,15 @@ func (d *D) tryBool() (bool, error) {
 	return n == 1, nil
 }
 
-// Unsigned LEB128, description from wasm spec
+// Unsigned LEB128, also known as "Base 128 Varint".
+//
+// Description from wasm spec:
 //
 //	uN ::= n:byte          => n                     (if n < 2^7 && n < 2^N)
 //	       n:byte m:u(N-7) => 2^7 * m + (n - 2^7)   (if n >= 2^7 && N > 7)
+//
+// Varint description:
+// https://protobuf.dev/programming-guides/encoding/#varints
 func (d *D) tryULEB128() (uint64, error) {
 	var result uint64
 	var shift uint
@@ -260,8 +265,8 @@ func (d *D) tryULEB128() (uint64, error) {
 		if shift >= 63 && b != 0 {
 			return 0, fmt.Errorf("overflow when reading unsigned leb128, shift %d >= 63", shift)
 		}
-		result |= (b & 0x7f) << shift
-		if b&0x80 == 0 {
+		result |= (b & 0b01111111) << shift
+		if b&0b10000000 == 0 {
 			break
 		}
 		shift += 7

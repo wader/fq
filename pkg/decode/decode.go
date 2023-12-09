@@ -938,7 +938,7 @@ func (d *D) FramedFn(nBits int64, fn func(d *D)) int64 {
 	return decodeLen
 }
 
-// LimitedFn decode from current position nBits forward. When done position will after last bit decoded.
+// LimitedFn decode from current position nBits forward. When done position will be after last bit decoded.
 func (d *D) LimitedFn(nBits int64, fn func(d *D)) int64 {
 	if nBits < 0 {
 		d.Fatalf("%d nBits < 0", nBits)
