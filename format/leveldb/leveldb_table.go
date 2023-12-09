@@ -383,7 +383,7 @@ func readInternalKey(sharedBytes []byte, unsharedSize int, d *decode.D) error {
 	d.FieldValueUint("type", uint64(sharedBytes[typeByteIndex]), valueTypes, scalar.UintHex, uintInferred)
 	var suffixBytes []byte
 	if unsharedSize > 0 {
-		br := d.FieldRawLen("suffix", int64(unsharedSize)*8)
+		br := d.FieldRawLen("sequence_number_suffix", int64(unsharedSize)*8)
 		suffixBytes = d.ReadAllBits(br)
 	}
 	sequenceNumberBytes := append(
