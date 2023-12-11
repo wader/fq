@@ -175,7 +175,7 @@ $ fq dv lpcm.mp4
 0x410|               75 72 6c 20                     |     url        |                              type: "url " 0x415-0x419 (4)
 0x410|                           00                  |         .      |                              version: 0 0x419-0x41a (1)
 0x410|                              00 00 01         |          ...   |                              flags: 1 0x41a-0x41d (3)
-     |                                               |                |                              data: raw bits 0x41d-0x41d (0)
+     |                                               |                |                              data: "" 0x41d-0x41d (0)
      |                                               |                |                    [3]{}: box 0x41d-0x4f1 (212)
 0x410|                                       00 00 00|             ...|                      size: 212 0x41d-0x421 (4)
 0x420|d4                                             |.               |

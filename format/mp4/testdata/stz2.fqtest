@@ -178,7 +178,7 @@ $ fq -d mp4 'dv' stz2.mp4
 0x1b0|6c 20                                          |l               |
 0x1b0|      00                                       |  .             |                              version: 0 0x1b2-0x1b3 (1)
 0x1b0|         00 00 01                              |   ...          |                              flags: 1 0x1b3-0x1b6 (3)
-     |                                               |                |                              data: raw bits 0x1b6-0x1b6 (0)
+     |                                               |                |                              data: "" 0x1b6-0x1b6 (0)
      |                                               |                |                    [2]{}: box 0x1b6-0x27c (198)
 0x1b0|                  00 00 00 c6                  |      ....      |                      size: 198 0x1b6-0x1ba (4)
 0x1b0|                              73 74 62 6c      |          stbl  |                      type: "stbl" (Sample table box, container for the time/space map) 0x1ba-0x1be (4)

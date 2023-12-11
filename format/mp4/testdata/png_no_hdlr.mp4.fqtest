@@ -147,7 +147,7 @@ $ fq dv png_no_hdlr.mp4
 0x180|75 72 6c 20                                    |url             |                              type: "url " 0x180-0x184 (4)
 0x180|            00                                 |    .           |                              version: 0 0x184-0x185 (1)
 0x180|               00 00 01                        |     ...        |                              flags: 1 0x185-0x188 (3)
-     |                                               |                |                              data: raw bits 0x188-0x188 (0)
+     |                                               |                |                              data: "" 0x188-0x188 (0)
      |                                               |                |                    [2]{}: box 0x188-0x2ac (292)
 0x180|                        00 00 01 24            |        ...$    |                      size: 292 0x188-0x18c (4)
 0x180|                                    73 74 62 6c|            stbl|                      type: "stbl" (Sample table box, container for the time/space map) 0x18c-0x190 (4)

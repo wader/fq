@@ -183,7 +183,7 @@ $ fq -d mp4 dv vorbis.mp4
 0x0360|      75 72 6c 20                              |  url           |                              type: "url " 0x362-0x366 (4)
 0x0360|                  00                           |      .         |                              version: 0 0x366-0x367 (1)
 0x0360|                     00 00 01                  |       ...      |                              flags: 1 0x367-0x36a (3)
-      |                                               |                |                              data: raw bits 0x36a-0x36a (0)
+      |                                               |                |                              data: "" 0x36a-0x36a (0)
       |                                               |                |                    [2]{}: box 0x36a-0x1127 (3517)
 0x0360|                              00 00 0d bd      |          ....  |                      size: 3517 0x36a-0x36e (4)
 0x0360|                                          73 74|              st|                      type: "stbl" (Sample table box, container for the time/space map) 0x36e-0x372 (4)

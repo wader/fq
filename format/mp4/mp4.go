@@ -145,6 +145,8 @@ type track struct {
 	objectType         int // if data format is "mp4a"
 	defaultIVSize      int
 	moofs              []*moof // for fmp4
+	dref               bool
+	drefURL            string
 }
 
 type pathEntry struct {
@@ -306,8 +308,12 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 						trackSDDataFormat = sd.originalFormat
 					}
 				}
-
 				d.FieldValueStr("data_format", trackSDDataFormat, dataFormatNames)
+
+				if t.dref && t.drefURL != "" {
+					d.FieldValueStr("data_reference_url", t.drefURL)
+					return
+				}
 
 				switch trackSDDataFormat {
 				case "lpcm",

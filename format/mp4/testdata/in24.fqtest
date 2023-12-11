@@ -174,7 +174,7 @@ $ fq dv in24.mp4
 0x2e0|20                                             |                |
 0x2e0|   00                                          | .              |                              version: 0 0x2e1-0x2e2 (1)
 0x2e0|      00 00 01                                 |  ...           |                              flags: 1 0x2e2-0x2e5 (3)
-     |                                               |                |                              data: raw bits 0x2e5-0x2e5 (0)
+     |                                               |                |                              data: "" 0x2e5-0x2e5 (0)
      |                                               |                |                    [3]{}: box 0x2e5-0x3cb (230)
 0x2e0|               00 00 00 e6                     |     ....       |                      size: 230 0x2e5-0x2e9 (4)
 0x2e0|                           73 74 62 6c         |         stbl   |                      type: "stbl" (Sample table box, container for the time/space map) 0x2e9-0x2ed (4)

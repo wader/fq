@@ -185,7 +185,7 @@ $ fq dv png.mp4
 0x210|      75 72 6c 20                              |  url           |                              type: "url " 0x212-0x216 (4)
 0x210|                  00                           |      .         |                              version: 0 0x216-0x217 (1)
 0x210|                     00 00 01                  |       ...      |                              flags: 1 0x217-0x21a (3)
-     |                                               |                |                              data: raw bits 0x21a-0x21a (0)
+     |                                               |                |                              data: "" 0x21a-0x21a (0)
      |                                               |                |                    [2]{}: box 0x21a-0x33e (292)
 0x210|                              00 00 01 24      |          ...$  |                      size: 292 0x21a-0x21e (4)
 0x210|                                          73 74|              st|                      type: "stbl" (Sample table box, container for the time/space map) 0x21e-0x222 (4)

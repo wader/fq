@@ -182,7 +182,7 @@ $ fq -d mp4 dv aac.mp4
 0x410|                     75 72 6c 20               |       url      |                              type: "url " 0x417-0x41b (4)
 0x410|                                 00            |           .    |                              version: 0 0x41b-0x41c (1)
 0x410|                                    00 00 01   |            ... |                              flags: 1 0x41c-0x41f (3)
-     |                                               |                |                              data: raw bits 0x41f-0x41f (0)
+     |                                               |                |                              data: "" 0x41f-0x41f (0)
      |                                               |                |                    [2]{}: box 0x41f-0x53b (284)
 0x410|                                             00|               .|                      size: 284 0x41f-0x423 (4)
 0x420|00 01 1c                                       |...             |
