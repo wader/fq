@@ -198,7 +198,7 @@ $ fq -d mp4 dv prores_frame.mov
 0x6df0|      75 72 6c 20                              |  url           |                              type: "url " 0x6df2-0x6df6 (4)
 0x6df0|                  00                           |      .         |                              version: 0 0x6df6-0x6df7 (1)
 0x6df0|                     00 00 01                  |       ...      |                              flags: 1 0x6df7-0x6dfa (3)
-      |                                               |                |                              data: raw bits 0x6dfa-0x6dfa (0)
+      |                                               |                |                              data: "" 0x6dfa-0x6dfa (0)
       |                                               |                |                    [3]{}: box 0x6dfa-0x6ede (228)
 0x6df0|                              00 00 00 e4      |          ....  |                      size: 228 0x6dfa-0x6dfe (4)
 0x6df0|                                          73 74|              st|                      type: "stbl" (Sample table box, container for the time/space map) 0x6dfe-0x6e02 (4)

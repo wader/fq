@@ -168,7 +168,7 @@ $ fq -d mp4 dv av1.mp4
 0x1340|                                       00      |             .  |                              version: 0 0x134d-0x134e (1)
 0x1340|                                          00 00|              ..|                              flags: 1 0x134e-0x1351 (3)
 0x1350|01                                             |.               |
-      |                                               |                |                              data: raw bits 0x1351-0x1351 (0)
+      |                                               |                |                              data: "" 0x1351-0x1351 (0)
       |                                               |                |                    [2]{}: box 0x1351-0x1450 (255)
 0x1350|   00 00 00 ff                                 | ....           |                      size: 255 0x1351-0x1355 (4)
 0x1350|               73 74 62 6c                     |     stbl       |                      type: "stbl" (Sample table box, container for the time/space map) 0x1355-0x1359 (4)

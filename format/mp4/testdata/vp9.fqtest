@@ -167,7 +167,7 @@ $ fq -d mp4 dv vp9.mp4
 0x16f0|20                                             |                |
 0x16f0|   00                                          | .              |                              version: 0 0x16f1-0x16f2 (1)
 0x16f0|      00 00 01                                 |  ...           |                              flags: 1 0x16f2-0x16f5 (3)
-      |                                               |                |                              data: raw bits 0x16f5-0x16f5 (0)
+      |                                               |                |                              data: "" 0x16f5-0x16f5 (0)
       |                                               |                |                    [2]{}: box 0x16f5-0x17ed (248)
 0x16f0|               00 00 00 f8                     |     ....       |                      size: 248 0x16f5-0x16f9 (4)
 0x16f0|                           73 74 62 6c         |         stbl   |                      type: "stbl" (Sample table box, container for the time/space map) 0x16f9-0x16fd (4)

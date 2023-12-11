@@ -178,7 +178,7 @@ $ fq -d mp4 dv opus.mp4
 0x310|                                    75 72 6c 20|            url |                              type: "url " 0x31c-0x320 (4)
 0x320|00                                             |.               |                              version: 0 0x320-0x321 (1)
 0x320|   00 00 01                                    | ...            |                              flags: 1 0x321-0x324 (3)
-     |                                               |                |                              data: raw bits 0x324-0x324 (0)
+     |                                               |                |                              data: "" 0x324-0x324 (0)
      |                                               |                |                    [2]{}: box 0x324-0x3d7 (179)
 0x320|            00 00 00 b3                        |    ....        |                      size: 179 0x324-0x328 (4)
 0x320|                        73 74 62 6c            |        stbl    |                      type: "stbl" (Sample table box, container for the time/space map) 0x328-0x32c (4)

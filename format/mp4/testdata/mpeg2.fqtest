@@ -184,7 +184,7 @@ $ fq -d mp4 dv mpeg2.mp4
 0x2130|72 6c 20                                       |rl              |
 0x2130|         00                                    |   .            |                              version: 0 0x2133-0x2134 (1)
 0x2130|            00 00 01                           |    ...         |                              flags: 1 0x2134-0x2137 (3)
-      |                                               |                |                              data: raw bits 0x2137-0x2137 (0)
+      |                                               |                |                              data: "" 0x2137-0x2137 (0)
       |                                               |                |                    [2]{}: box 0x2137-0x2247 (272)
 0x2130|                     00 00 01 10               |       ....     |                      size: 272 0x2137-0x213b (4)
 0x2130|                                 73 74 62 6c   |           stbl |                      type: "stbl" (Sample table box, container for the time/space map) 0x213b-0x213f (4)

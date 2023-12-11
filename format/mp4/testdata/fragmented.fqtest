@@ -144,7 +144,7 @@ $ fq -d mp4 dv fragmented.mp4
 0x00180|                                       00      |             .  |                              version: 0 0x18d-0x18e (1)
 0x00180|                                          00 00|              ..|                              flags: 1 0x18e-0x191 (3)
 0x00190|01                                             |.               |
-       |                                               |                |                              data: raw bits 0x191-0x191 (0)
+       |                                               |                |                              data: "" 0x191-0x191 (0)
        |                                               |                |                    [2]{}: box 0x191-0x284 (243)
 0x00190|   00 00 00 f3                                 | ....           |                      size: 243 0x191-0x195 (4)
 0x00190|               73 74 62 6c                     |     stbl       |                      type: "stbl" (Sample table box, container for the time/space map) 0x195-0x199 (4)
@@ -405,7 +405,7 @@ $ fq -d mp4 dv fragmented.mp4
 0x00370|   75 72 6c 20                                 | url            |                              type: "url " 0x371-0x375 (4)
 0x00370|               00                              |     .          |                              version: 0 0x375-0x376 (1)
 0x00370|                  00 00 01                     |      ...       |                              flags: 1 0x376-0x379 (3)
-       |                                               |                |                              data: raw bits 0x379-0x379 (0)
+       |                                               |                |                              data: "" 0x379-0x379 (0)
        |                                               |                |                    [2]{}: box 0x379-0x443 (202)
 0x00370|                           00 00 00 ca         |         ....   |                      size: 202 0x379-0x37d (4)
 0x00370|                                       73 74 62|             stb|                      type: "stbl" (Sample table box, container for the time/space map) 0x37d-0x381 (4)

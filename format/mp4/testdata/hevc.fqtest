@@ -186,7 +186,7 @@ $ fq -d mp4 dv hevc.mp4
 0x0a00|                                          00   |              . |                              version: 0 0xa0e-0xa0f (1)
 0x0a00|                                             00|               .|                              flags: 1 0xa0f-0xa12 (3)
 0x0a10|00 01                                          |..              |
-      |                                               |                |                              data: raw bits 0xa12-0xa12 (0)
+      |                                               |                |                              data: "" 0xa12-0xa12 (0)
       |                                               |                |                    [2]{}: box 0xa12-0x1439 (2599)
 0x0a10|      00 00 0a 27                              |  ...'          |                      size: 2599 0xa12-0xa16 (4)
 0x0a10|                  73 74 62 6c                  |      stbl      |                      type: "stbl" (Sample table box, container for the time/space map) 0xa16-0xa1a (4)

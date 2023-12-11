@@ -181,7 +181,7 @@ $ fq -d mp4 dv mp3.mp4
 0x420|         75 72 6c 20                           |   url          |                              type: "url " 0x423-0x427 (4)
 0x420|                     00                        |       .        |                              version: 0 0x427-0x428 (1)
 0x420|                        00 00 01               |        ...     |                              flags: 1 0x428-0x42b (3)
-     |                                               |                |                              data: raw bits 0x42b-0x42b (0)
+     |                                               |                |                              data: "" 0x42b-0x42b (0)
      |                                               |                |                    [2]{}: box 0x42b-0x503 (216)
 0x420|                                 00 00 00 d8   |           .... |                      size: 216 0x42b-0x42f (4)
 0x420|                                             73|               s|                      type: "stbl" (Sample table box, container for the time/space map) 0x42f-0x433 (4)

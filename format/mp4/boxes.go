@@ -247,7 +247,6 @@ func decodeSampleFlags(d *decode.D) {
 }
 
 func decodeBoxWithParentData(ctx *decodeContext, d *decode.D, parentData any, extraTypeMappers ...scalar.StrMapper) {
-	var typ string
 	var dataSize uint64
 	typeMappers := []scalar.StrMapper{boxDescriptions}
 	if len(extraTypeMappers) > 0 {
@@ -255,7 +254,7 @@ func decodeBoxWithParentData(ctx *decodeContext, d *decode.D, parentData any, ex
 	}
 
 	boxSize := d.FieldU32("size", boxSizeNames)
-	typ = d.FieldStr("type", 4, charmap.ISO8859_1, typeMappers...)
+	typ := d.FieldStr("type", 4, charmap.ISO8859_1, typeMappers...)
 
 	switch boxSize {
 	case boxSizeRestOfFile:
@@ -555,15 +554,27 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		d.FieldU24("flags")
 		entryCount := d.FieldU32("entry_count")
 		var i uint64
+		var drefURL string
 		d.FieldStructArrayLoop("boxes", "box", func() bool { return i < entryCount }, func(d *decode.D) {
 			size := d.FieldU32("size")
-			d.FieldUTF8("type", 4)
+			typ := d.FieldUTF8("type", 4)
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			dataSize := size - 12
-			d.FieldRawLen("data", int64(dataSize*8))
+			switch typ {
+			case "url ":
+				drefURL = d.FieldUTF8("data", int(dataSize))
+			default:
+				d.FieldRawLen("data", int64(dataSize*8))
+			}
 			i++
 		})
+
+		if t := ctx.currentTrack(); t != nil {
+			t.dref = true
+			t.drefURL = drefURL
+		}
+
 	case "stbl":
 		decodeBoxes(ctx, d)
 	case "stsd":
@@ -1770,6 +1781,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		default:
 			d.FieldRawLen("message_data", d.BitsLeft())
 		}
+
 	default:
 		// there are at least 4 ways to encode udta metadata in mov/mp4 files.
 		//
