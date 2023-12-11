@@ -313,7 +313,7 @@ type irefBox struct {
 }
 
 type trakBox struct {
-	trackID int
+	track *track
 }
 
 type moofBox struct {
@@ -321,7 +321,7 @@ type moofBox struct {
 }
 
 type trafBox struct {
-	trackID        int
+	track          *track
 	baseDataOffset int64
 	moof           *moof
 }
@@ -422,7 +422,11 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		d.FieldU32("current_time")
 		d.FieldU32("next_track_id")
 	case "trak":
-		decodeBoxesWithParentData(ctx, d, &trakBox{})
+		t := &track{}
+		ctx.tracks = append(ctx.tracks, t)
+		decodeBoxesWithParentData(ctx, d, &trakBox{
+			track: t,
+		})
 	case "edts":
 		decodeBoxes(ctx, d)
 	case "elst":
@@ -482,8 +486,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		d.FieldFP32("track_height")
 
 		if t := ctx.currentTrakBox(); t != nil {
-			t.trackID = trackID
-			_ = ctx.currentTrack()
+			t.track.id = trackID
 		}
 	case "mdia":
 		decodeBoxes(ctx, d)
@@ -964,16 +967,17 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 	case "moof":
 		offset := (d.Pos() / 8) - 8
 		decodeBoxesWithParentData(ctx, d, &moofBox{offset: offset})
-		// Track Fragment
-	case "traf":
-		decodeBoxesWithParentData(ctx, d, &trafBox{})
-		// Movie Fragment Header
-	case "mfhd":
+	case "traf": // Track Fragment
+		t := &track{fragment: true}
+		ctx.tracks = append(ctx.tracks, t)
+		decodeBoxesWithParentData(ctx, d, &trafBox{
+			track: t,
+		})
+	case "mfhd": // Movie Fragment Header
 		d.FieldU8("version")
 		d.FieldU24("flags")
 		d.FieldU32("sequence_number")
-		// Track Fragment Header
-	case "tfhd":
+	case "tfhd": // Track Fragment Header
 		d.FieldU8("version")
 		baseDataOffsetPresent := false
 		sampleDescriptionIndexPresent := false
@@ -1016,15 +1020,14 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		}
 
 		if t := ctx.currentTrafBox(); t != nil {
-			t.trackID = trackID
+			t.track.id = trackID
 			t.moof = m
 			t.baseDataOffset = baseDataOffset
 		}
 		if t := ctx.currentTrack(); t != nil {
 			t.moofs = append(t.moofs, m)
 		}
-		// Track Fragment Run
-	case "trun":
+	case "trun": // Track Fragment Run
 		m := &moof{}
 		if t := ctx.currentTrafBox(); t != nil {
 			m = t.moof
@@ -1140,9 +1143,9 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		d.FieldU8("version")
 		d.FieldU24("flags")
 		d.FieldU32("mfra_size")
+
+	case "iloc": // HEIC image
 		// TODO: item location
-		// HEIC image
-	case "iloc":
 		version := d.FieldU8("version")
 		d.FieldU24("flags")
 
