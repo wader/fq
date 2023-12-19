@@ -27,8 +27,8 @@ github.com/wader/gojq v0.12.1-0.20231105164134-2b6d9e2f4985 h1:Zot2YzBLbILdZN2pr
 github.com/wader/gojq v0.12.1-0.20231105164134-2b6d9e2f4985/go.mod h1:cenZ41I34RfINFzOtmUa1MIFu0k+n6bLkaQcsZY/nnw=
 github.com/wader/readline v0.0.0-20230307172220-bcb7158e7448 h1:AzpBtmgdXa3uznrb3esNeEoaLqtNEwckRmaUH0qWD6w=
 github.com/wader/readline v0.0.0-20230307172220-bcb7158e7448/go.mod h1:Zgz8IJWvJoe7NK23CCPpC109XMCqJCpUhpHcnnA4XaM=
-golang.org/x/crypto v0.16.0 h1:mMMrFzRSCF0GvB7Ne27XVtVAaXLrPmgPC7/v0tkwHaY=
-golang.org/x/crypto v0.16.0/go.mod h1:gCAAfMLgwOJRpTjQ2zCCt2OcSfYMTeZVSRtQlPC7Nq4=
+golang.org/x/crypto v0.17.0 h1:r8bRNjWL3GshPW3gkd+RpvzWrZAwPS49OmTGZ/uhM4k=
+golang.org/x/crypto v0.17.0/go.mod h1:gCAAfMLgwOJRpTjQ2zCCt2OcSfYMTeZVSRtQlPC7Nq4=
 golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa h1:FRnLl4eNAQl8hwxVVC17teOw8kdjVDVAiFMtgUdTSRQ=
 golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa/go.mod h1:zk2irFbV9DP96SEBUUAy67IdHUaZuSnrz1n472HUCLE=
 golang.org/x/net v0.19.0 h1:zTwKpTd2XuCqf8huc7Fo2iSy+4RHPd10s4KzeTnVr1c=
