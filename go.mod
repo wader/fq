@@ -80,6 +80,8 @@ require (
 	gopkg.in/yaml.v3 v3.0.1
 )
 
+require github.com/dsnet/compress v0.0.2-0.20230904184137-39efe44ab707
+
 require (
 	github.com/itchyny/timefmt-go v0.1.5 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect

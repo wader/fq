@@ -141,10 +141,10 @@ var (
 	MP4                 = &decode.Group{Name: "mp4"}
 	MPEG_ASC            = &decode.Group{Name: "mpeg_asc"}
 	MPEG_ES             = &decode.Group{Name: "mpeg_es"}
-	MPES_PES            = &decode.Group{Name: "mpeg_pes"}
 	MPEG_PES_Packet     = &decode.Group{Name: "mpeg_pes_packet"}
 	MPEG_SPU            = &decode.Group{Name: "mpeg_spu"}
 	MPEG_TS             = &decode.Group{Name: "mpeg_ts"}
+	MPES_PES            = &decode.Group{Name: "mpeg_pes"}
 	MsgPack             = &decode.Group{Name: "msgpack"}
 	Ogg                 = &decode.Group{Name: "ogg"}
 	Ogg_Page            = &decode.Group{Name: "ogg_page"}
@@ -178,6 +178,7 @@ var (
 	WASM                = &decode.Group{Name: "wasm"}
 	WAV                 = &decode.Group{Name: "wav"}
 	WebP                = &decode.Group{Name: "webp"}
+	WOFF2               = &decode.Group{Name: "woff2"}
 	XML                 = &decode.Group{Name: "xml"}
 	YAML                = &decode.Group{Name: "yaml"}
 	Zip                 = &decode.Group{Name: "zip"}
