@@ -77,7 +77,6 @@ cpuprof: prof
 	go tool pprof -http :5555 fq.prof fq.cpu.prof
 
 update-gomod: always
-	GOPROXY=direct go get -d github.com/wader/readline@fq
 	GOPROXY=direct go get -d github.com/wader/gojq@fq
 	go mod tidy
 
@@ -98,7 +97,6 @@ fuzz: always
 # tag forked dependeces for history and to make then stay around
 release: always
 release: WADER_GOJQ_COMMIT=$(shell go list -m -f '{{.Version}}' github.com/wader/gojq | sed 's/.*-\(.*\)/\1/')
-release: WADER_READLINE_COMMIT=$(shell go list -m -f '{{.Version}}' github.com/wader/readline | sed 's/.*-\(.*\)/\1/')
 release:
 	@echo "# wader/fq":
 	@echo "# make sure head is at wader/master"
@@ -119,10 +117,6 @@ release:
 	@echo
 	@echo "# wader/gojq:"
 	@echo git tag fq-v${VERSION} ${WADER_GOJQ_COMMIT}
-	@echo git push wader fq-v${VERSION}:fq-v${VERSION}
-	@echo
-	@echo "# wader/readline:"
-	@echo git tag fq-v${VERSION} ${WADER_READLINE_COMMIT}
 	@echo git push wader fq-v${VERSION}:fq-v${VERSION}
 	@echo
 	@echo "# wader/fq":

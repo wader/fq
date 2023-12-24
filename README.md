@@ -311,7 +311,7 @@ See the [LICENSE](LICENSE) file for license details.
 Licenses of direct dependencies:
 
 - Forked version of gojq - https://github.com/itchyny/gojq/blob/main/LICENSE (MIT)
-- Forked version of readline - https://github.com/chzyer/readline/blob/master/LICENSE (MIT)
+- github.com/ergochat/readline - https://github.com/ergochat/readline/blob/master/LICENSE (MIT)
 - github.com/BurntSushi/toml - https://github.com/BurntSushi/toml/blob/master/COPYING (MIT)
 - github.com/creasty/defaults - https://github.com/creasty/defaults/blob/master/LICENSE (MIT)
 - github.com/gomarkdown/markdown - https://github.com/gomarkdown/markdown/blob/master/LICENSE.txt (BSD)
