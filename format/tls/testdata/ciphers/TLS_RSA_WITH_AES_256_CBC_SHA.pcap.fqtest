@@ -39,7 +39,7 @@ $ fq -o keylog=@all.keylog ".tcp_connections[0] | dv" TLS_RSA_WITH_AES_256_CBC_S
           |                                               |                |              [1]{}: extension 0x3b-0x61 (38)
   0x000003|                                 00 0d         |           ..   |                type: "signature_algorithms" (13) 0x3b-0x3d (2)
   0x000003|                                       00 22   |             ." |                length: 34 0x3d-0x3f (2)
-  0x000003|                                             00|               .|                signature_algorithm_length: 32 0x3f-0x41 (2)
+  0x000003|                                             00|               .|                signature_algorithms_length: 32 0x3f-0x41 (2)
   0x000004|20                                             |                |
           |                                               |                |                signature_algorithms[0:16]: 0x41-0x61 (32)
           |                                               |                |                  [0]{}: signature_algorithm 0x41-0x43 (2)

@@ -243,7 +243,7 @@ func decodeTLSExtension(d *decode.D) {
 	d.FramedFn(int64(length)*8, func(d *decode.D) {
 		switch typ {
 		case extensionServerName:
-			serverNameLength := d.FieldU16("serer_names_length")
+			serverNameLength := d.FieldU16("server_names_length")
 			d.FieldArray("server_names", func(d *decode.D) {
 				d.FramedFn(int64(serverNameLength)*8, func(d *decode.D) {
 					for !d.End() {
@@ -256,7 +256,7 @@ func decodeTLSExtension(d *decode.D) {
 				})
 			})
 		case extensionApplicationLayerProtocolNegotiation:
-			protocolsLength := d.FieldU16("serer_names_length")
+			protocolsLength := d.FieldU16("protocols_length")
 			d.FieldArray("protocols", func(d *decode.D) {
 				d.FramedFn(int64(protocolsLength)*8, func(d *decode.D) {
 					for !d.End() {
@@ -268,7 +268,7 @@ func decodeTLSExtension(d *decode.D) {
 				})
 			})
 		case extensionEcPointFormats:
-			protocolsLength := d.FieldU8("ex_points_format_length")
+			protocolsLength := d.FieldU8("ex_points_formats_length")
 			d.FieldArray("ex_points_formats", func(d *decode.D) {
 				d.FramedFn(int64(protocolsLength)*8, func(d *decode.D) {
 					for !d.End() {
@@ -277,7 +277,7 @@ func decodeTLSExtension(d *decode.D) {
 				})
 			})
 		case extensionSupportedGroups:
-			protocolsLength := d.FieldU16("supported_group_length")
+			protocolsLength := d.FieldU16("supported_groups_length")
 			d.FieldArray("supported_groups", func(d *decode.D) {
 				d.FramedFn(int64(protocolsLength)*8, func(d *decode.D) {
 					for !d.End() {
@@ -286,7 +286,7 @@ func decodeTLSExtension(d *decode.D) {
 				})
 			})
 		case extensionSignatureAlgorithms:
-			protocolsLength := d.FieldU16("signature_algorithm_length")
+			protocolsLength := d.FieldU16("signature_algorithms_length")
 			d.FieldArray("signature_algorithms", func(d *decode.D) {
 				d.FramedFn(int64(protocolsLength)*8, func(d *decode.D) {
 					for !d.End() {
