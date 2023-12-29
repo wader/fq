@@ -19,7 +19,7 @@ require (
 	// bump: ergochat-readline /github\.com\/ergochat\/readline .*-(.{12})$/ gitrefs:https://github.com/ergochat/readline.git|/master/|@commit|/(.{12})/
 	// bump: ergochat-readline command go get -d github.com/ergochat/readline@$LATEST && go mod tidy
 	// bump: ergochat-readline link "Source diff $CURRENT..$LATEST" https://github.com/ergochat/readline/compare/v$CURRENT..v$LATEST
-	github.com/ergochat/readline v0.0.7-0.20231224214744-cca60bf24c9f
+	github.com/ergochat/readline v0.0.7-0.20231229043057-81f0f2329ad3
 
 	// bump: gomod-golang-snappy /github\.com\/golang\/snappy v(.*)/ https://github.com/golang/snappy.git|^0
 	// bump: gomod-golang-snappy command go get -d github.com/golang/snappy@v$LATEST && go mod tidy
