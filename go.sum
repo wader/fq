@@ -25,8 +25,8 @@ github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e h1:fD57ERR4JtEqsWb
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/wader/gojq v0.12.1-0.20231105164134-2b6d9e2f4985 h1:Zot2YzBLbILdZN2priMf/GS+Hwtyc2HBGRv85Zc3HlA=
-github.com/wader/gojq v0.12.1-0.20231105164134-2b6d9e2f4985/go.mod h1:cenZ41I34RfINFzOtmUa1MIFu0k+n6bLkaQcsZY/nnw=
+github.com/wader/gojq v0.12.1-0.20240101141557-d23e96d745f5 h1:66fRapbsJJbwbuLpM5EJFjLHWRJdq8BigVPC9aFGEeM=
+github.com/wader/gojq v0.12.1-0.20240101141557-d23e96d745f5/go.mod h1:E7walEZ03d5WBrEMutC7+tagVBDdtNTDe0jRxMCC6N0=
 golang.org/x/crypto v0.17.0 h1:r8bRNjWL3GshPW3gkd+RpvzWrZAwPS49OmTGZ/uhM4k=
 golang.org/x/crypto v0.17.0/go.mod h1:gCAAfMLgwOJRpTjQ2zCCt2OcSfYMTeZVSRtQlPC7Nq4=
 golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa h1:FRnLl4eNAQl8hwxVVC17teOw8kdjVDVAiFMtgUdTSRQ=
