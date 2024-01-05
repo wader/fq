@@ -89,7 +89,7 @@ func pngDecode(d *decode.D) any {
 		chunkType := d.FieldUTF8("type", 4)
 		// upper/lower case in chunk type is used for flags
 		d.SeekRel(-4 * 8)
-		d.SeekRel(3)
+		d.SeekRel(2)
 		d.FieldBool("ancillary")
 		d.SeekRel(7)
 		d.FieldBool("private")
@@ -97,7 +97,7 @@ func pngDecode(d *decode.D) any {
 		d.FieldBool("reserved")
 		d.SeekRel(7)
 		d.FieldBool("safe_to_copy")
-		d.SeekRel(4)
+		d.SeekRel(5)
 
 		d.FramedFn(int64(chunkLength)*8, func(d *decode.D) {
 			switch chunkType {
