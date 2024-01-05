@@ -16,9 +16,7 @@ require (
 	// bump: gomod-creasty-defaults link "Source diff $CURRENT..$LATEST" https://github.com/creasty/defaults/compare/v$CURRENT..v$LATEST
 	github.com/creasty/defaults v1.7.0
 
-	// bump: ergochat-readline /github\.com\/ergochat\/readline .*-(.{12})$/ gitrefs:https://github.com/ergochat/readline.git|/master/|@commit|/(.{12})/
-	// bump: ergochat-readline command go get -d github.com/ergochat/readline@$LATEST && go mod tidy
-	// bump: ergochat-readline link "Source diff $CURRENT..$LATEST" https://github.com/ergochat/readline/compare/$CURRENT..$LATEST
+	// bump using tags once not rc
 	github.com/ergochat/readline v0.1.0-rc1
 
 	// bump: gomod-golang-snappy /github\.com\/golang\/snappy v(.*)/ https://github.com/golang/snappy.git|^0
