@@ -1,0 +1,18 @@
+# convert -size 4x4 "xc:#000" -define webp:lossless=true 4x4.lossless.webp
+$ fq -d webp dv 4x4.lossless.webp
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: 4x4.lossless.webp (webp) 0x0-0x22 (34)
+0x00|52 49 46 46                                    |RIFF            |  id: "RIFF" 0x0-0x4 (4)
+0x00|            1a 00 00 00                        |    ....        |  size: 26 0x4-0x8 (4)
+0x00|                        57 45 42 50            |        WEBP    |  format: "WEBP" (valid) 0x8-0xc (4)
+    |                                               |                |  chunks[0:1]: 0xc-0x22 (22)
+    |                                               |                |    [0]{}: chunk 0xc-0x22 (22)
+0x00|                                    56 50 38 4c|            VP8L|      id: "VP8L" 0xc-0x10 (4)
+0x10|0e 00 00 00                                    |....            |      size: 14 0x10-0x14 (4)
+0x10|            2f                                 |    /           |      signature: 0x2f (valid) 0x14-0x15 (1)
+0x10|               03 c0 00 00                     |     ....       |      width_height_flags: 49155 0x15-0x19 (4)
+    |                                               |                |      width: 4
+    |                                               |                |      height: 4
+    |                                               |                |      alpha_is_used: false
+    |                                               |                |      version_number: 0
+0x10|                           07 10 11 fd 0f 44 44|         .....DD|      data: raw bits 0x19-0x22 (9)
+0x20|ff 03|                                         |..|             |
