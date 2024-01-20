@@ -52,6 +52,26 @@ func webpDecode(d *decode.D) any {
 			case "VP8":
 				d.Format(&vp8FrameGroup, nil)
 				return false, nil
+			case "VP8L":
+				d.FieldU8("signature", d.UintAssert(0x2f), scalar.UintHex)
+				n := d.FieldU32("width_height_flags")
+				// TODO: replace with "bit endian" decoding
+				b0 := (n >> 24) & 0xff
+				b1 := (n >> 16) & 0xff
+				b2 := (n >> 8) & 0xff
+				b3 := (n >> 0) & 0xf
+				width := b3 | (b2&0b0011_111)<<8
+				width += 1
+				height := (b2&0b1100_0000)>>6 | b1<<8 | (b0&0b0000_1111)<<16
+				height += 1
+				alphaIsUsed := b3&0b0001_0000 != 0
+				versionNumber := (b3 & 0b1110_0000) >> 5
+				d.FieldValueUint("width", width)
+				d.FieldValueUint("height", height)
+				d.FieldValueBool("alpha_is_used", alphaIsUsed)
+				d.FieldValueUint("version_number", versionNumber)
+				d.FieldRawLen("data", d.BitsLeft())
+				return false, nil
 			case "VP8X":
 				d.FieldU2("reserved0")
 				d.FieldBool("icc_profile")
