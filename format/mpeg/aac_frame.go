@@ -162,6 +162,15 @@ func aacIndividualChannelStream(d *decode.D, objectType int, commonWindow bool, 
 	}
 }
 
+func aacChannelPairElement(d *decode.D) {
+	d.FieldU4("element_instance_tag")
+	d.FieldBool("common_window")
+	// TODO:
+	// if commonWindow ...
+	// aacIndividualChannelStream
+	// aacIndividualChannelStream
+}
+
 func aacSingleChannelElement(d *decode.D, objectType int) {
 	d.FieldU4("element_instance_tag")
 	aacIndividualChannelStream(d, objectType, false, false)
@@ -294,15 +303,15 @@ func aacDecode(d *decode.D) any {
 				switch se {
 				case FIL:
 					aacFillElement(d)
-
+				case CPE:
+					aacChannelPairElement(d)
+					seenTerm = true
 				case SCE:
 					aacSingleChannelElement(d, ai.ObjectType)
 					seenTerm = true
-
 				case PCE:
 					aacProgramConfigElement(d, 0)
 					seenTerm = true
-
 				default:
 					fallthrough
 				case TERM:

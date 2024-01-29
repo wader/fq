@@ -11,9 +11,11 @@ $ fq -d aac_frame dv aac_frame
 0x000|      00                                       |  .             |      fill_nibble: 0 0x2.3-0x2.7 (0.4)
 0x000|      00 4c 61 76 63 35 38 2e 31 33 34 2e 31 30|  .Lavc58.134.10|      fill_byte: raw bits 0x2.7-0x11.7 (15)
 0x010|30 00                                          |0.              |
-     |                                               |                |  [1]{}: element 0x11.7-0x12.2 (0.3)
+     |                                               |                |  [1]{}: element 0x11.7-0x12.7 (1)
 0x010|   00 42                                       | .B             |    syntax_element: "CPE" (1) 0x11.7-0x12.2 (0.3)
-0x010|      42                                       |  B             |  [2]: raw bits byte_align 0x12.2-0x13 (0.6)
+0x010|      42                                       |  B             |    element_instance_tag: 0 0x12.2-0x12.6 (0.4)
+0x010|      42                                       |  B             |    common_window: true 0x12.6-0x12.7 (0.1)
+0x010|      42                                       |  B             |  [2]: raw bits byte_align 0x12.7-0x13 (0.1)
 0x010|         55 9f ff ff ff c0 01 29 68 a7 33 11 20|   U......)h.3. |  [3]: raw bits data 0x13-0x14d (314)
 0x020|02 6a e5 c4 96 89 11 11 04 20 36 76 e1 e2 ee 35|.j....... 6v...5|
 *    |until 0x14c.7 (end) (314)                      |                |
