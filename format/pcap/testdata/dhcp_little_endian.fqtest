@@ -2,29 +2,29 @@
 # TODO: move once we can have decode value tests somehow
 $ fq '.[0].blocks[0]' dhcp_little_endian.pcapng
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].blocks[0]{}: block
-0x00|0a 0d 0d 0a                                    |....            |  type: "section_header" (0xa0d0d0a) (Section Header Block)
+0x00|0a 0d 0d 0a                                    |....            |  type: "section_header" (0xa0d0d0a)
 0x00|            1c 00 00 00                        |    ....        |  length: 28
 0x00|                        4d 3c 2b 1a            |        M<+.    |  byte_order_magic: "little_endian" (0x4d3c2b1a)
 0x00|                                    01 00      |            ..  |  major_version: 1
 0x00|                                          00 00|              ..|  minor_version: 0
 0x10|ff ff ff ff ff ff ff ff                        |........        |  section_length: -1
     |                                               |                |  options[0:0]:
-0x10|                        1c 00 00 00            |        ....    |  footer_total_length: 28
+0x10|                        1c 00 00 00            |        ....    |  footer_length: 28
 $ fq dv dhcp_little_endian.pcapng
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0:1]: dhcp_little_endian.pcapng (pcapng) 0x0-0x5fc (1532)
      |                                               |                |  [0]{}: section 0x0-0x5fc (1532)
      |                                               |                |    blocks[0:7]: 0x0-0x5fc (1532)
      |                                               |                |      [0]{}: block 0x0-0x1c (28)
-0x000|0a 0d 0d 0a                                    |....            |        type: "section_header" (0xa0d0d0a) (Section Header Block) 0x0-0x4 (4)
+0x000|0a 0d 0d 0a                                    |....            |        type: "section_header" (0xa0d0d0a) 0x0-0x4 (4)
 0x000|            1c 00 00 00                        |    ....        |        length: 28 0x4-0x8 (4)
 0x000|                        4d 3c 2b 1a            |        M<+.    |        byte_order_magic: "little_endian" (0x4d3c2b1a) 0x8-0xc (4)
 0x000|                                    01 00      |            ..  |        major_version: 1 0xc-0xe (2)
 0x000|                                          00 00|              ..|        minor_version: 0 0xe-0x10 (2)
 0x010|ff ff ff ff ff ff ff ff                        |........        |        section_length: -1 0x10-0x18 (8)
      |                                               |                |        options[0:0]: 0x18-0x18 (0)
-0x010|                        1c 00 00 00            |        ....    |        footer_total_length: 28 0x18-0x1c (4)
+0x010|                        1c 00 00 00            |        ....    |        footer_length: 28 0x18-0x1c (4)
      |                                               |                |      [1]{}: block 0x1c-0x30 (20)
-0x010|                                    01 00 00 00|            ....|        type: "interface_description" (0x1) (Interface Description Block) 0x1c-0x20 (4)
+0x010|                                    01 00 00 00|            ....|        type: "interface_description" (0x1) 0x1c-0x20 (4)
 0x020|14 00 00 00                                    |....            |        length: 20 0x20-0x24 (4)
 0x020|            01 00                              |    ..          |        link_type: "ethernet" (1) (IEEE 802.3 Ethernet) 0x24-0x26 (2)
 0x020|                  00 00                        |      ..        |        reserved: 0 0x26-0x28 (2)
@@ -32,7 +32,7 @@ $ fq dv dhcp_little_endian.pcapng
      |                                               |                |        options[0:0]: 0x2c-0x2c (0)
 0x020|                                    14 00 00 00|            ....|        footer_length: 20 0x2c-0x30 (4)
      |                                               |                |      [2]{}: block 0x30-0x54 (36)
-0x030|04 00 00 00                                    |....            |        type: "name_resolution" (0x4) (Name Resolution Block) 0x30-0x34 (4)
+0x030|04 00 00 00                                    |....            |        type: "name_resolution" (0x4) 0x30-0x34 (4)
 0x030|            24 00 00 00                        |    $...        |        length: 36 0x34-0x38 (4)
      |                                               |                |        records[0:2]: 0x38-0x50 (24)
      |                                               |                |          [0]{}: record 0x38-0x4c (20)
@@ -48,7 +48,7 @@ $ fq dv dhcp_little_endian.pcapng
      |                                               |                |        options[0:0]: 0x50-0x50 (0)
 0x050|24 00 00 00                                    |$...            |        footer_length: 36 0x50-0x54 (4)
      |                                               |                |      [3]{}: block 0x54-0x1b0 (348)
-0x050|            06 00 00 00                        |    ....        |        type: "enhanced_packet" (0x6) (Enhanced Packet Block) 0x54-0x58 (4)
+0x050|            06 00 00 00                        |    ....        |        type: "enhanced_packet" (0x6) 0x54-0x58 (4)
 0x050|                        5c 01 00 00            |        \...    |        length: 348 0x58-0x5c (4)
 0x050|                                    00 00 00 00|            ....|        interface_id: 0 0x5c-0x60 (4)
 0x060|88 5e b3 41                                    |.^.A            |        timestamp_high: 1102274184 0x60-0x64 (4)
@@ -88,7 +88,7 @@ $ fq dv dhcp_little_endian.pcapng
      |                                               |                |        options[0:0]: 0x1ac-0x1ac (0)
 0x1a0|                                    5c 01 00 00|            \...|        footer_length: 348 0x1ac-0x1b0 (4)
      |                                               |                |      [4]{}: block 0x1b0-0x328 (376)
-0x1b0|06 00 00 00                                    |....            |        type: "enhanced_packet" (0x6) (Enhanced Packet Block) 0x1b0-0x1b4 (4)
+0x1b0|06 00 00 00                                    |....            |        type: "enhanced_packet" (0x6) 0x1b0-0x1b4 (4)
 0x1b0|            78 01 00 00                        |    x...        |        length: 376 0x1b4-0x1b8 (4)
 0x1b0|                        00 00 00 00            |        ....    |        interface_id: 0 0x1b8-0x1bc (4)
 0x1b0|                                    88 5e b3 41|            .^.A|        timestamp_high: 1102274184 0x1bc-0x1c0 (4)
@@ -128,7 +128,7 @@ $ fq dv dhcp_little_endian.pcapng
      |                                               |                |        options[0:0]: 0x324-0x324 (0)
 0x320|            78 01 00 00                        |    x...        |        footer_length: 376 0x324-0x328 (4)
      |                                               |                |      [5]{}: block 0x328-0x484 (348)
-0x320|                        06 00 00 00            |        ....    |        type: "enhanced_packet" (0x6) (Enhanced Packet Block) 0x328-0x32c (4)
+0x320|                        06 00 00 00            |        ....    |        type: "enhanced_packet" (0x6) 0x328-0x32c (4)
 0x320|                                    5c 01 00 00|            \...|        length: 348 0x32c-0x330 (4)
 0x330|00 00 00 00                                    |....            |        interface_id: 0 0x330-0x334 (4)
 0x330|            88 5e b3 41                        |    .^.A        |        timestamp_high: 1102274184 0x334-0x338 (4)
@@ -168,7 +168,7 @@ $ fq dv dhcp_little_endian.pcapng
      |                                               |                |        options[0:0]: 0x480-0x480 (0)
 0x480|5c 01 00 00                                    |\...            |        footer_length: 348 0x480-0x484 (4)
      |                                               |                |      [6]{}: block 0x484-0x5fc (376)
-0x480|            06 00 00 00                        |    ....        |        type: "enhanced_packet" (0x6) (Enhanced Packet Block) 0x484-0x488 (4)
+0x480|            06 00 00 00                        |    ....        |        type: "enhanced_packet" (0x6) 0x484-0x488 (4)
 0x480|                        78 01 00 00            |        x...    |        length: 376 0x488-0x48c (4)
 0x480|                                    00 00 00 00|            ....|        interface_id: 0 0x48c-0x490 (4)
 0x490|88 5e b3 41                                    |.^.A            |        timestamp_high: 1102274184 0x490-0x494 (4)

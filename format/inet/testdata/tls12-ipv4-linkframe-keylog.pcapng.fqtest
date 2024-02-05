@@ -1,7 +1,7 @@
 # tls12-dsb.pcapng from https://gitlab.com/wireshark/wireshark/-/tree/master/test/captures
 $ fq 'first(grep_by(.type=="enhanced_packet")), .[0].tcp_connections | dv' tls12-ipv4-linkframe-keylog.pcapng
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].blocks[3]{}: block 0x12c-0x268 (316)
-0x120|                                    06 00 00 00|            ....|  type: "enhanced_packet" (0x6) (Enhanced Packet Block) 0x12c-0x130 (4)
+0x120|                                    06 00 00 00|            ....|  type: "enhanced_packet" (0x6) 0x12c-0x130 (4)
 0x130|3c 01 00 00                                    |<...            |  length: 316 0x130-0x134 (4)
 0x130|            00 00 00 00                        |    ....        |  interface_id: 0 0x134-0x138 (4)
 0x130|                        dd 7a 05 00            |        .z..    |  timestamp_high: 359133 0x138-0x13c (4)

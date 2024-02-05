@@ -53,12 +53,12 @@ const (
 
 // from https://pcapng.github.io/pcapng/draft-ietf-opsawg-pcapng.html#section_block_code_registry
 var blockTypeMap = scalar.UintMap{
-	blockTypeInterfaceDescription: {Sym: "interface_description", Description: "Interface Description Block"},
+	blockTypeInterfaceDescription: {Sym: "interface_description"},
 	0x00000002:                    {Description: "Packet Block"},
 	0x00000003:                    {Description: "Simple Packet Block"},
-	blockTypeNameResolution:       {Sym: "name_resolution", Description: "Name Resolution Block"},
-	blockTypeInterfaceStatistics:  {Sym: "interface_statistics", Description: "Interface Statistics Block"},
-	blockTypeEnhancedPacketBlock:  {Sym: "enhanced_packet", Description: "Enhanced Packet Block"},
+	blockTypeNameResolution:       {Sym: "name_resolution"},
+	blockTypeInterfaceStatistics:  {Sym: "interface_statistics"},
+	blockTypeEnhancedPacketBlock:  {Sym: "enhanced_packet"},
 	0x00000007:                    {Description: "IRIG Timestamp Block"},
 	0x00000008:                    {Description: "ARINC 429 in AFDX Encapsulation Information Block"},
 	0x00000009:                    {Description: "systemd Journal Export Block"},
@@ -80,7 +80,7 @@ var blockTypeMap = scalar.UintMap{
 	0x00000213:                    {Description: "Sysdig Process Info Block, version 7"},
 	0x00000bad:                    {Description: "Custom Block that rewriters can copy into new files"},
 	0x40000bad:                    {Description: "Custom Block that rewriters should not copy into new files"},
-	blockTypeSectionHeader:        {Sym: "section_header", Description: "Section Header Block"},
+	blockTypeSectionHeader:        {Sym: "section_header"},
 }
 
 const (
@@ -216,6 +216,15 @@ var mapUToIPv4Sym = scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
 var blockFns = map[uint64]func(d *decode.D, dc *decodeContext){
 	// TODO: SimplePacket
 	// TODO: Packet
+	blockTypeSectionHeader: func(d *decode.D, dc *decodeContext) {
+		d.FieldU32BE("byte_order_magic", ngEndianMap, scalar.UintHex)
+		d.FieldU16("major_version")
+		d.FieldU16("minor_version")
+		dc.sectionLength = d.FieldS64("section_length")
+		d.FieldArray("options", func(d *decode.D) { decoodeOptions(d, sectionHeaderOptionsMap) })
+
+		dc.sectionHeaderFound = true
+	},
 	blockTypeInterfaceDescription: func(d *decode.D, dc *decodeContext) {
 		typ := d.FieldU16("link_type", format.LinkTypeMap)
 		d.FieldU16("reserved")
@@ -293,7 +302,24 @@ var blockFns = map[uint64]func(d *decode.D, dc *decodeContext){
 }
 
 func decodeBlock(d *decode.D, dc *decodeContext) {
+	d.Endian = dc.endian
+
 	typ := d.FieldU32("type", blockTypeMap, scalar.UintHex)
+	// section header is special as it stores byte order marker
+	if typ == blockTypeSectionHeader {
+		d.SeekRel(32)       // skip length
+		endian := d.U32BE() // force BE
+		switch endian {
+		case ngBigEndian:
+			dc.endian = decode.BigEndian
+		case ngLittleEndian:
+			dc.endian = decode.LittleEndian
+		default:
+			d.Fatalf("unknown endian %d", endian)
+		}
+		d.Endian = dc.endian
+		d.SeekRel(-64)
+	}
 	length := d.FieldU32("length") - 8
 	const footerLengthSize = 32
 	blockLen := int64(length)*8 - footerLengthSize
@@ -312,51 +338,19 @@ func decodeBlock(d *decode.D, dc *decodeContext) {
 
 func decodeSection(d *decode.D, dc *decodeContext) {
 	d.FieldArray("blocks", func(d *decode.D) {
-		sectionLength := int64(-1)
-		sectionD := d
 		sectionStart := d.Pos()
-
-		// treat header block differently as it has endian info
-		d.FieldStruct("block", func(d *decode.D) {
-			d.FieldU32("type", d.UintAssert(blockTypeSectionHeader), blockTypeMap, scalar.UintHex)
-
-			d.SeekRel(32)
-			endian := d.FieldU32("byte_order_magic", ngEndianMap, scalar.UintHex)
-			// peeks length and byte-order magic and marks away length
-			switch endian {
-			case ngBigEndian:
-				d.Endian = decode.BigEndian
-			case ngLittleEndian:
-				d.Endian = decode.LittleEndian
-			default:
-				d.Fatalf("unknown endian %d", endian)
-			}
-			sectionD.Endian = d.Endian
-			d.SeekRel(-64)
-			length := d.FieldU32("length") - 8 - 4
-			d.SeekRel(32)
-
-			d.FramedFn(int64(length)*8, func(d *decode.D) {
-				d.FieldU16("major_version")
-				d.FieldU16("minor_version")
-				sectionLength = d.FieldS64("section_length")
-				d.FramedFn(d.BitsLeft()-32, func(d *decode.D) {
-					d.FieldArray("options", func(d *decode.D) { decoodeOptions(d, sectionHeaderOptionsMap) })
-				})
-				d.FieldU32("footer_total_length")
-			})
-
-			dc.sectionHeaderFound = true
-		})
-
-		for (sectionLength == -1 && !d.End()) ||
-			(sectionLength != -1 && d.Pos()-sectionStart < sectionLength*8) {
+		// assume and read first section header
+		d.FieldStruct("block", func(d *decode.D) { decodeBlock(d, dc) })
+		for (dc.sectionLength == -1 && !d.End()) ||
+			(dc.sectionLength != -1 && d.Pos()-sectionStart < dc.sectionLength*8) {
 			d.FieldStruct("block", func(d *decode.D) { decodeBlock(d, dc) })
 		}
 	})
 }
 
 type decodeContext struct {
+	endian             decode.Endian
+	sectionLength      int64
 	sectionHeaderFound bool
 	interfaceTypes     map[int]int
 	flowDecoder        *flowsdecoder.Decoder
@@ -378,7 +372,6 @@ func decodePcapng(d *decode.D) any {
 		})
 		if dc.sectionHeaderFound {
 			sectionHeaders++
-
 		}
 	}
 
