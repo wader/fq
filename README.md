@@ -16,7 +16,7 @@ It was originally designed to query, inspect and debug media codecs and containe
 
 In summary it aims to be jq, hexdump, dd and gdb for files combined into one.
 
-**NOTE :** fq is still early in development so things might change, be broken or do not make sense. That also means that there is a great opportunity to help out!
+**NOTE:** fq is still early in development so things might change, be broken or do not make sense. That also means that there is a great opportunity to help out!
 
 ### Goals
 
@@ -238,9 +238,9 @@ apk add -X http://dl-cdn.alpinelinux.org/alpine/edge/testing fq
 
 ### Build from source
 
-Make sure you have version of [go](https://go.dev) 1.18 or later installed.
+Make sure you have [go](https://go.dev) 1.18 or later installed.
 
-To install directly from git repository (no clone needed) :
+To install directly from git repository (no clone needed):
 ```sh
 # build and install latest release
 go install github.com/wader/fq@latest
