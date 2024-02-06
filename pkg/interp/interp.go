@@ -1049,7 +1049,7 @@ func OptionsFromValue(v any) (*Options, error) {
 	opts.Depth = mathex.Max(0, opts.Depth)
 	opts.Addrbase = mathex.Clamp(2, 36, opts.Addrbase)
 	opts.Sizebase = mathex.Clamp(2, 36, opts.Sizebase)
-	opts.LineBytes = mathex.Max(0, opts.LineBytes)
+	opts.LineBytes = mathex.Max(1, opts.LineBytes)
 	opts.DisplayBytes = mathex.Max(0, opts.DisplayBytes)
 	opts.Decorator = decoratorFromOptions(opts)
 	if fn, err := bitsFormatFnFromOptions(opts); err != nil {

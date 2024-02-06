@@ -724,3 +724,6 @@ $ fq -o unicode=true . test.mp3
 0x030│c0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00│................│
 *    │until 0x283.7 (end) (599)                      │                │
      │                                               │                │  footers[0:0]:
+$ fq -o line_bytes=0 -n '1 | tobytes | d'
+   |00|0|
+0x0|01|.|.: raw bits 0x0-0x1 (1)
