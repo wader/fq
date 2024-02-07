@@ -1,0 +1,19 @@
+$ fq -d nes '.header | dv' header_ines_31.nes
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.header{}: 0x0-0x10 (16)
+0x00|4e 45 53 1a                                    |NES.            |  identifier: raw bits (valid) 0x0-0x4 (4)
+0x00|            01                                 |    .           |  prg_rom_size: 16384 (1) 0x4-0x5 (1)
+0x00|               01                              |     .          |  chr_rom_size: 8192 (1) 0x5-0x6 (1)
+0x00|                  f0                           |      .         |  mapper0: 15 0x6-0x6.4 (0.4)
+0x00|                  f0                           |      .         |  alternative_nametables: "no" (0) 0x6.4-0x6.5 (0.1)
+0x00|                  f0                           |      .         |  trainer: "no" (0) 0x6.5-0x6.6 (0.1)
+0x00|                  f0                           |      .         |  battery: "no" (0) 0x6.6-0x6.7 (0.1)
+0x00|                  f0                           |      .         |  nametable_layout: "vertical" (0) 0x6.7-0x7 (0.1)
+0x00|                     10                        |       .        |  mapper1: 1 0x7-0x7.4 (0.4)
+0x00|                     10                        |       .        |  nes20_identifier: "no" (0) (iNES) 0x7.4-0x7.6 (0.2)
+0x00|                     10                        |       .        |  console_type: "nes" (0) (Nintendo Entertainment System/Family Computer) 0x7.6-0x8 (0.2)
+    |                                               |                |  mapper: 31
+    |                                               |                |  chr_ram_size: 0
+0x00|                        00                     |        .       |  prg_ram_size: 8192 (0) 0x8-0x9 (1)
+0x00|                           00                  |         .      |  byte_9: 0 0x9-0xa (1)
+0x00|                              00               |          .     |  byte_10: 0 0xa-0xb (1)
+0x00|                                 00 00 00 00 00|           .....|  unused: raw bits (valid) 0xb-0x10 (5)

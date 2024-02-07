@@ -1,0 +1,28 @@
+$ fq -d nes '.header | dv' header_nes20_4_0.nes
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.header{}: 0x0-0x10 (16)
+0x00|4e 45 53 1a                                    |NES.            |  identifier: raw bits (valid) 0x0-0x4 (4)
+0x00|            04                                 |    .           |  prg_rom_size0: 4 0x4-0x5 (1)
+0x00|               00                              |     .          |  chr_rom_size0: 0 0x5-0x6 (1)
+0x00|                  40                           |      @         |  mapper0: 4 0x6-0x6.4 (0.4)
+0x00|                  40                           |      @         |  alternative_nametables: "no" (0) 0x6.4-0x6.5 (0.1)
+0x00|                  40                           |      @         |  trainer: "no" (0) 0x6.5-0x6.6 (0.1)
+0x00|                  40                           |      @         |  battery: "no" (0) 0x6.6-0x6.7 (0.1)
+0x00|                  40                           |      @         |  nametable_layout: "vertical" (0) 0x6.7-0x7 (0.1)
+0x00|                     08                        |       .        |  mapper1: 0 0x7-0x7.4 (0.4)
+0x00|                     08                        |       .        |  nes20_identifier: "yes" (2) (NES 2.0) 0x7.4-0x7.6 (0.2)
+0x00|                     08                        |       .        |  console_type: "nes" (0) (Nintendo Entertainment System/Family Computer) 0x7.6-0x8 (0.2)
+0x00|                        00                     |        .       |  submapper: 0 0x8-0x8.4 (0.4)
+0x00|                        00                     |        .       |  mapper2: 0 0x8.4-0x9 (0.4)
+    |                                               |                |  mapper: 4
+0x00|                           00                  |         .      |  chr_rom_size1: 0 0x9-0x9.4 (0.4)
+0x00|                           00                  |         .      |  prg_rom_size1: 0 0x9.4-0xa (0.4)
+    |                                               |                |  chr_rom_size: 0
+    |                                               |                |  prg_rom_size: 65536
+0x00|                              00               |          .     |  prg_nvram_size: 0 0xa-0xa.4 (0.4)
+0x00|                              00               |          .     |  prg_ram_size: 0 0xa.4-0xb (0.4)
+0x00|                                 09            |           .    |  chr_nvram_size: 0 0xb-0xb.4 (0.4)
+0x00|                                 09            |           .    |  chr_ram_size: 32768 (9) 0xb.4-0xc (0.4)
+0x00|                                    00         |            .   |  cpu_ppu_timing_mode: "ntsc" (0) (RP2C02 (NTSC NES)) 0xc-0xd (1)
+0x00|                                       00      |             .  |  byte_13: 0 0xd-0xe (1)
+0x00|                                          00   |              . |  misc_roms: 0 (0) 0xe-0xf (1)
+0x00|                                             00|               .|  default_exp_device: 0 (0) (Unspecified) 0xf-0x10 (1)

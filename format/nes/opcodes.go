@@ -1,0 +1,335 @@
+package nes
+
+import (
+	"fmt"
+
+	"github.com/wader/fq/pkg/scalar"
+)
+
+type Op struct {
+	Name string
+	Type int
+}
+
+const (
+	Implied          = 0
+	Accumulator      = 1
+	Immediate        = 2
+	Absolute         = 3
+	AbsoluteX        = 4
+	AbsoluteY        = 5
+	AbsoluteIndirect = 6
+	IndexedIndirect  = 7
+	IndirectIndexed  = 8
+	ZeroPage         = 9
+	ZeroPageX        = 10
+	ZeroPageY        = 11
+	Relative         = 12
+)
+
+var argFormatMap = map[int]string{
+	Implied:          "",
+	Accumulator:      "a",
+	Immediate:        "#$%02x",
+	Absolute:         "$%04x",
+	AbsoluteX:        "$%04x,y",
+	AbsoluteY:        "$%04x,y",
+	AbsoluteIndirect: "($%04x)",
+	IndexedIndirect:  "($%02x,x)",
+	IndirectIndexed:  "($%02x),y",
+	ZeroPage:         "$%02x",
+	ZeroPageX:        "$%02xX,x",
+	ZeroPageY:        "$%02xX,y",
+	Relative:         "$%02x",
+}
+
+var opMap = map[uint64]Op{
+	0x00: {Name: "brk", Type: Implied},
+	0x01: {Name: "ora", Type: IndexedIndirect},
+	0x02: {Name: "stp", Type: Implied},
+	0x03: {Name: "slo", Type: IndexedIndirect},
+	0x04: {Name: "nop", Type: ZeroPage},
+	0x05: {Name: "ora", Type: ZeroPage},
+	0x06: {Name: "asl", Type: ZeroPage},
+	0x07: {Name: "slo", Type: ZeroPage},
+	0x08: {Name: "php", Type: Implied},
+	0x09: {Name: "ora", Type: Immediate},
+	0x0A: {Name: "asl", Type: Implied},
+	0x0B: {Name: "anc", Type: Immediate},
+	0x0C: {Name: "nop", Type: Absolute},
+	0x0D: {Name: "ora", Type: Absolute},
+	0x0E: {Name: "asl", Type: Absolute},
+	0x0F: {Name: "slo", Type: Absolute},
+
+	0x10: {Name: "bpl", Type: Relative},
+	0x11: {Name: "ora", Type: IndirectIndexed},
+	0x12: {Name: "stp", Type: Implied},
+	0x13: {Name: "slo", Type: IndirectIndexed},
+	0x14: {Name: "nop", Type: ZeroPageX},
+	0x15: {Name: "ora", Type: ZeroPageX},
+	0x16: {Name: "asl", Type: ZeroPageX},
+	0x17: {Name: "slo", Type: ZeroPageX},
+	0x18: {Name: "clc", Type: Implied},
+	0x19: {Name: "ora", Type: AbsoluteY},
+	0x1A: {Name: "nop", Type: Implied},
+	0x1B: {Name: "slo", Type: AbsoluteY},
+	0x1C: {Name: "nop", Type: AbsoluteX},
+	0x1D: {Name: "ora", Type: AbsoluteX},
+	0x1E: {Name: "asl", Type: AbsoluteX},
+	0x1F: {Name: "slo", Type: AbsoluteX},
+
+	0x20: {Name: "jsr", Type: Absolute},
+	0x21: {Name: "and", Type: IndexedIndirect},
+	0x22: {Name: "stp", Type: Implied},
+	0x23: {Name: "rla", Type: IndexedIndirect},
+	0x24: {Name: "bit", Type: ZeroPage},
+	0x25: {Name: "and", Type: ZeroPage},
+	0x26: {Name: "rol", Type: ZeroPage},
+	0x27: {Name: "rla", Type: ZeroPage},
+	0x28: {Name: "plp", Type: Implied},
+	0x29: {Name: "and", Type: Immediate},
+	0x2A: {Name: "rol", Type: Implied},
+	0x2B: {Name: "anc", Type: Immediate},
+	0x2C: {Name: "bit", Type: Absolute},
+	0x2D: {Name: "and", Type: Absolute},
+	0x2E: {Name: "rol", Type: Absolute},
+	0x2F: {Name: "rla", Type: Absolute},
+
+	0x30: {Name: "bmi", Type: Relative},
+	0x31: {Name: "and", Type: IndirectIndexed},
+	0x32: {Name: "stp", Type: Implied},
+	0x33: {Name: "rla", Type: IndirectIndexed},
+	0x34: {Name: "nop", Type: ZeroPageX},
+	0x35: {Name: "and", Type: ZeroPageX},
+	0x36: {Name: "rol", Type: ZeroPageX},
+	0x37: {Name: "rla", Type: ZeroPageX},
+	0x38: {Name: "sec", Type: Implied},
+	0x39: {Name: "and", Type: AbsoluteY},
+	0x3A: {Name: "nop", Type: Implied},
+	0x3B: {Name: "rla", Type: AbsoluteY},
+	0x3C: {Name: "nop", Type: AbsoluteX},
+	0x3D: {Name: "and", Type: AbsoluteX},
+	0x3E: {Name: "rol", Type: AbsoluteX},
+	0x3F: {Name: "rla", Type: AbsoluteX},
+
+	0x40: {Name: "rti", Type: Implied},
+	0x41: {Name: "eor", Type: IndexedIndirect},
+	0x42: {Name: "stp", Type: Implied},
+	0x43: {Name: "sre", Type: IndexedIndirect},
+	0x44: {Name: "nop", Type: ZeroPage},
+	0x45: {Name: "eor", Type: ZeroPage},
+	0x46: {Name: "lsr", Type: ZeroPage},
+	0x47: {Name: "sre", Type: ZeroPage},
+	0x48: {Name: "pha", Type: Implied},
+	0x49: {Name: "eor", Type: Immediate},
+	0x4A: {Name: "lsr", Type: Implied},
+	0x4B: {Name: "alr", Type: Immediate},
+	0x4C: {Name: "jmp", Type: Absolute},
+	0x4D: {Name: "eor", Type: Absolute},
+	0x4E: {Name: "lsr", Type: Absolute},
+	0x4F: {Name: "sre", Type: Absolute},
+
+	0x50: {Name: "bvc", Type: Relative},
+	0x51: {Name: "eor", Type: IndirectIndexed},
+	0x52: {Name: "stp", Type: Implied},
+	0x53: {Name: "sre", Type: IndirectIndexed},
+	0x54: {Name: "nop", Type: ZeroPageX},
+	0x55: {Name: "eor", Type: ZeroPageX},
+	0x56: {Name: "lsr", Type: ZeroPageX},
+	0x57: {Name: "sre", Type: ZeroPageX},
+	0x58: {Name: "cli", Type: Implied},
+	0x59: {Name: "eor", Type: AbsoluteY},
+	0x5A: {Name: "nop", Type: Implied},
+	0x5B: {Name: "sre", Type: AbsoluteY},
+	0x5C: {Name: "nop", Type: AbsoluteX},
+	0x5D: {Name: "eor", Type: AbsoluteX},
+	0x5E: {Name: "lsr", Type: AbsoluteX},
+	0x5F: {Name: "sre", Type: AbsoluteX},
+
+	0x60: {Name: "rts", Type: Implied},
+	0x61: {Name: "adc", Type: IndexedIndirect},
+	0x62: {Name: "stp", Type: Implied},
+	0x63: {Name: "rra", Type: IndexedIndirect},
+	0x64: {Name: "nop", Type: ZeroPage},
+	0x65: {Name: "adc", Type: ZeroPage},
+	0x66: {Name: "ror", Type: ZeroPage},
+	0x67: {Name: "rra", Type: ZeroPage},
+	0x68: {Name: "pla", Type: Implied},
+	0x69: {Name: "adc", Type: Immediate},
+	0x6A: {Name: "ror", Type: Implied},
+	0x6B: {Name: "arr", Type: Immediate},
+	0x6C: {Name: "jmp", Type: AbsoluteIndirect},
+	0x6D: {Name: "adc", Type: Absolute},
+	0x6E: {Name: "ror", Type: Absolute},
+	0x6F: {Name: "rra", Type: Absolute},
+
+	0x70: {Name: "bvs", Type: Relative},
+	0x71: {Name: "adc", Type: IndirectIndexed},
+	0x72: {Name: "stp", Type: Implied},
+	0x73: {Name: "rra", Type: IndirectIndexed},
+	0x74: {Name: "nop", Type: ZeroPageX},
+	0x75: {Name: "adc", Type: ZeroPageX},
+	0x76: {Name: "ror", Type: ZeroPageX},
+	0x77: {Name: "rra", Type: ZeroPageX},
+	0x78: {Name: "sei", Type: Implied},
+	0x79: {Name: "adc", Type: AbsoluteY},
+	0x7A: {Name: "nop", Type: Implied},
+	0x7B: {Name: "rra", Type: AbsoluteY},
+	0x7C: {Name: "nop", Type: AbsoluteX},
+	0x7D: {Name: "adc", Type: AbsoluteX},
+	0x7E: {Name: "ror", Type: AbsoluteX},
+	0x7F: {Name: "rra", Type: AbsoluteX},
+
+	0x80: {Name: "nop", Type: Immediate},
+	0x81: {Name: "sta", Type: IndexedIndirect},
+	0x82: {Name: "nop", Type: Immediate},
+	0x83: {Name: "sax", Type: IndexedIndirect},
+	0x84: {Name: "sty", Type: ZeroPage},
+	0x85: {Name: "sta", Type: ZeroPage},
+	0x86: {Name: "stx", Type: ZeroPage},
+	0x87: {Name: "sax", Type: ZeroPage},
+	0x88: {Name: "dey", Type: Implied},
+	0x89: {Name: "nop", Type: Immediate},
+	0x8A: {Name: "txa", Type: Implied},
+	0x8B: {Name: "xaa", Type: Immediate},
+	0x8C: {Name: "sty", Type: Absolute},
+	0x8D: {Name: "sta", Type: Absolute},
+	0x8E: {Name: "stx", Type: Absolute},
+	0x8F: {Name: "sax", Type: Absolute},
+
+	0x90: {Name: "bcc", Type: Relative},
+	0x91: {Name: "sta", Type: IndirectIndexed},
+	0x92: {Name: "stp", Type: Implied},
+	0x93: {Name: "ahx", Type: IndirectIndexed},
+	0x94: {Name: "sty", Type: ZeroPageX},
+	0x95: {Name: "sta", Type: ZeroPageX},
+	0x96: {Name: "stx", Type: ZeroPageY},
+	0x97: {Name: "sax", Type: ZeroPageY},
+	0x98: {Name: "tya", Type: Implied},
+	0x99: {Name: "sta", Type: AbsoluteY},
+	0x9A: {Name: "txs", Type: Implied},
+	0x9B: {Name: "tas", Type: AbsoluteY},
+	0x9C: {Name: "shy", Type: AbsoluteX},
+	0x9D: {Name: "sta", Type: AbsoluteX},
+	0x9E: {Name: "shx", Type: AbsoluteY},
+	0x9F: {Name: "ahx", Type: AbsoluteY},
+
+	0xA0: {Name: "ldy", Type: Immediate},
+	0xA1: {Name: "lda", Type: IndexedIndirect},
+	0xA2: {Name: "ldx", Type: Immediate},
+	0xA3: {Name: "lax", Type: IndexedIndirect},
+	0xA4: {Name: "ldy", Type: ZeroPage},
+	0xA5: {Name: "lda", Type: ZeroPage},
+	0xA6: {Name: "ldx", Type: ZeroPage},
+	0xA7: {Name: "lax", Type: ZeroPage},
+	0xA8: {Name: "tay", Type: Implied},
+	0xA9: {Name: "lda", Type: Immediate},
+	0xAA: {Name: "tax", Type: Implied},
+	0xAB: {Name: "lax", Type: Immediate},
+	0xAC: {Name: "ldy", Type: Absolute},
+	0xAD: {Name: "lda", Type: Absolute},
+	0xAE: {Name: "ldx", Type: Absolute},
+	0xAF: {Name: "lax", Type: Absolute},
+
+	0xB0: {Name: "bcs", Type: Relative},
+	0xB1: {Name: "lda", Type: IndirectIndexed},
+	0xB2: {Name: "stp", Type: Implied},
+	0xB3: {Name: "lax", Type: IndirectIndexed},
+	0xB4: {Name: "ldy", Type: ZeroPageX},
+	0xB5: {Name: "lda", Type: ZeroPageX},
+	0xB6: {Name: "ldx", Type: ZeroPageY},
+	0xB7: {Name: "lax", Type: ZeroPageY},
+	0xB8: {Name: "clv", Type: Implied},
+	0xB9: {Name: "lda", Type: AbsoluteY},
+	0xBA: {Name: "tsx", Type: Implied},
+	0xBB: {Name: "las", Type: AbsoluteY},
+	0xBC: {Name: "ldy", Type: AbsoluteX},
+	0xBD: {Name: "lda", Type: AbsoluteX},
+	0xBE: {Name: "ldx", Type: AbsoluteY},
+	0xBF: {Name: "lax", Type: AbsoluteY},
+
+	0xC0: {Name: "cpy", Type: Immediate},
+	0xC1: {Name: "cmp", Type: IndexedIndirect},
+	0xC2: {Name: "nop", Type: Immediate},
+	0xC3: {Name: "dcp", Type: IndexedIndirect},
+	0xC4: {Name: "cpy", Type: ZeroPage},
+	0xC5: {Name: "cmp", Type: ZeroPage},
+	0xC6: {Name: "dec", Type: ZeroPage},
+	0xC7: {Name: "dcp", Type: ZeroPage},
+	0xC8: {Name: "iny", Type: Implied},
+	0xC9: {Name: "cmp", Type: Immediate},
+	0xCA: {Name: "dex", Type: Implied},
+	0xCB: {Name: "axs", Type: Immediate},
+	0xCC: {Name: "cpy", Type: Absolute},
+	0xCD: {Name: "cmp", Type: Absolute},
+	0xCE: {Name: "dec", Type: Absolute},
+	0xCF: {Name: "dcp", Type: Absolute},
+
+	0xD0: {Name: "bne", Type: Relative},
+	0xD1: {Name: "cmp", Type: IndirectIndexed},
+	0xD2: {Name: "stp", Type: Implied},
+	0xD3: {Name: "dcp", Type: IndirectIndexed},
+	0xD4: {Name: "nop", Type: ZeroPageX},
+	0xD5: {Name: "cmp", Type: ZeroPageX},
+	0xD6: {Name: "dec", Type: ZeroPageX},
+	0xD7: {Name: "dcp", Type: ZeroPageX},
+	0xD8: {Name: "cld", Type: Implied},
+	0xD9: {Name: "cmp", Type: AbsoluteY},
+	0xDA: {Name: "nop", Type: Implied},
+	0xDB: {Name: "dcp", Type: AbsoluteY},
+	0xDC: {Name: "nop", Type: AbsoluteX},
+	0xDD: {Name: "cmp", Type: AbsoluteX},
+	0xDE: {Name: "dec", Type: AbsoluteX},
+	0xDF: {Name: "dcp", Type: AbsoluteX},
+
+	0xE0: {Name: "cpx", Type: Immediate},
+	0xE1: {Name: "sbc", Type: IndexedIndirect},
+	0xE2: {Name: "nop", Type: Immediate},
+	0xE3: {Name: "isc", Type: IndexedIndirect},
+	0xE4: {Name: "cpx", Type: ZeroPage},
+	0xE5: {Name: "sbc", Type: ZeroPage},
+	0xE6: {Name: "inc", Type: ZeroPage},
+	0xE7: {Name: "isc", Type: ZeroPage},
+	0xE8: {Name: "inx", Type: Implied},
+	0xE9: {Name: "sbc", Type: Immediate},
+	0xEA: {Name: "nop", Type: Implied},
+	0xEB: {Name: "sbc", Type: Immediate},
+	0xEC: {Name: "cpx", Type: Absolute},
+	0xED: {Name: "sbc", Type: Absolute},
+	0xEE: {Name: "inc", Type: Absolute},
+	0xEF: {Name: "isc", Type: Absolute},
+
+	0xF0: {Name: "beq", Type: Relative},
+	0xF1: {Name: "sbc", Type: IndirectIndexed},
+	0xF2: {Name: "stp", Type: Implied},
+	0xF3: {Name: "isc", Type: IndirectIndexed},
+	0xF4: {Name: "nop", Type: ZeroPageX},
+	0xF5: {Name: "sbc", Type: ZeroPageX},
+	0xF6: {Name: "inc", Type: ZeroPageX},
+	0xF7: {Name: "isc", Type: ZeroPageX},
+	0xF8: {Name: "sed", Type: Implied},
+	0xF9: {Name: "sbc", Type: AbsoluteY},
+	0xFA: {Name: "nop", Type: Implied},
+	0xFB: {Name: "isc", Type: AbsoluteX},
+	0xFC: {Name: "nop", Type: AbsoluteX},
+	0xFD: {Name: "sbc", Type: AbsoluteX},
+	0xFE: {Name: "inc", Type: AbsoluteX},
+	0xFF: {Name: "isc", Type: AbsoluteX},
+}
+
+func GetArgFormatter(typ int) scalar.UintFn {
+	return scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
+		s.Sym = fmt.Sprintf(argFormatMap[typ], s.Actual)
+		return s, nil
+	})
+}
+
+func ArgLength(opType int) uint64 {
+	switch opType {
+	case Implied, Accumulator:
+		return 0
+	case Absolute, AbsoluteX, AbsoluteY, AbsoluteIndirect:
+		return 2
+	}
+	return 1
+}
