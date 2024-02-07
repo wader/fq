@@ -7,24 +7,53 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-// Convertion from semicircles to decimal longitude latitude
-var scConst = float64(180 / math.Pow(2, 31))
+// Used for conversion from semicircles to decimal longitude latitude
+var scConst = 180 / math.Pow(2, 31)
 
-func GetUintFormatter(formatter string, unit string, scale float64, offset int64) scalar.UintFn {
+var invalidUint = map[string]uint64{
+	"byte":    0xFF,
+	"enum":    0xFF,
+	"uint8":   0xFF,
+	"uint8z":  0x00,
+	"uint16":  0xFFFF,
+	"uint16z": 0x0000,
+	"uint32":  0xFFFFFFFF,
+	"uint32z": 0x00000000,
+	"uint64":  0xFFFFFFFFFFFFFFFF,
+	"uint64z": 0x0000000000000000,
+}
+
+var invalidSint = map[string]int64{
+	"sint8":  0x7F,
+	"sint16": 0x7FFF,
+	"sint32": 0x7FFFFFFF,
+	"sint64": 0x7FFFFFFFFFFFFFFF,
+}
+
+var invalidFloat = map[string]float64{
+	"float32": 0xFFFFFFFF,
+	"float64": 0xFFFFFFFFFFFFFFFF,
+}
+
+func GetUintFormatter(fDef FieldDef) scalar.UintFn {
 	return scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
-		if scale != 0.0 && offset != 0 {
-			s.Sym = (float64(s.Actual) / scale) - float64(offset)
+		if s.Actual == invalidUint[fDef.Type] {
+			s.Sym = "[invalid]"
+			return s, nil
+		}
+		if fDef.Scale != 0.0 && fDef.Offset != 0 {
+			s.Sym = (float64(s.Actual) / fDef.Scale) - float64(fDef.Offset)
 		} else {
-			if scale != 0.0 {
-				s.Sym = float64(s.Actual) / scale
+			if fDef.Scale != 0.0 {
+				s.Sym = float64(s.Actual) / fDef.Scale
 			}
-			if offset != 0 {
-				s.Sym = int64(s.Actual) - (offset)
+			if fDef.Offset != 0 {
+				s.Sym = int64(s.Actual) - fDef.Offset
 			}
 		}
 
-		s.Description = unit
-		if t, ok := TypeDefMap[formatter]; ok {
+		s.Description = fDef.Unit
+		if t, ok := TypeDefMap[fDef.Format]; ok {
 			if u, innerok := t[s.Actual]; innerok {
 				s.Sym = u.Name
 			}
@@ -33,24 +62,50 @@ func GetUintFormatter(formatter string, unit string, scale float64, offset int64
 	})
 }
 
-func GetSintFormatter(formatter string, unit string, scale float64, offset int64) scalar.SintFn {
+func GetSintFormatter(fDef FieldDef) scalar.SintFn {
 	return scalar.SintFn(func(s scalar.Sint) (scalar.Sint, error) {
-		if unit == "semicircles" {
+		if s.Actual == invalidSint[fDef.Type] {
+			s.Sym = "[invalid]"
+			return s, nil
+		}
+		if fDef.Unit == "semicircles" {
 			s.Sym = fmt.Sprintf("%f", float64(s.Actual)*scConst)
 		} else {
-			if scale != 0.0 && offset != 0 {
-				s.Sym = (float64(s.Actual) / scale) - float64(offset)
+			if fDef.Scale != 0.0 && fDef.Offset != 0 {
+				s.Sym = (float64(s.Actual) / fDef.Scale) - float64(fDef.Offset)
 			} else {
-				if scale != 0.0 {
-					s.Sym = float64(s.Actual) / scale
+				if fDef.Scale != 0.0 {
+					s.Sym = float64(s.Actual) / fDef.Scale
 				}
-				if offset != 0 {
-					s.Sym = int64(s.Actual) - (offset)
+				if fDef.Offset != 0 {
+					s.Sym = s.Actual - fDef.Offset
 				}
 			}
 
-			s.Description = unit
+			s.Description = fDef.Unit
 		}
+		return s, nil
+	})
+}
+
+func GetFloatFormatter(fDef FieldDef) scalar.FltFn {
+	return scalar.FltFn(func(s scalar.Flt) (scalar.Flt, error) {
+		if s.Actual == invalidFloat[fDef.Type] {
+			s.Sym = "[invalid]"
+			return s, nil
+		}
+		if fDef.Scale != 0.0 && fDef.Offset != 0 {
+			s.Sym = (s.Actual / fDef.Scale) - float64(fDef.Offset)
+		} else {
+			if fDef.Scale != 0.0 {
+				s.Sym = s.Actual / fDef.Scale
+			}
+			if fDef.Offset != 0 {
+				s.Sym = s.Actual - float64(fDef.Offset)
+			}
+		}
+
+		s.Description = fDef.Unit
 		return s, nil
 	})
 }

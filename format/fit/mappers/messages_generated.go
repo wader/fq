@@ -1247,7 +1247,7 @@ var FieldDefMap = map[uint64]fieldDefMap{
 		5:   {Name: "time_in_power_zone", Unit: "s", Scale: 1000},
 		6:   {Name: "hr_zone_high_boundary", Unit: "bpm"},
 		7:   {Name: "speed_zone_high_boundary", Unit: "m/s", Scale: 1000},
-		8:   {Name: "cadence_zone_high_bondary", Unit: "rpm"},
+		8:   {Name: "cadence_zone_high_boundary", Unit: "rpm"},
 		9:   {Name: "power_zone_high_boundary", Unit: "watts"},
 		10:  {Name: "hr_calc_type", Type: "hr_zone_calc"},
 		11:  {Name: "max_heart_rate"},

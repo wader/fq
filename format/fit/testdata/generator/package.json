@@ -1,0 +1,14 @@
+{
+  "name": "parser",
+  "version": "1.0.0",
+  "description": "Parse ANT Fit Profile to GoLang/fq",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mikael Lofjärd",
+  "license": "MIT",
+  "dependencies": {
+    "node-xlsx": "^0.23.0"
+  }
+}

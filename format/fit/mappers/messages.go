@@ -4,15 +4,17 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-type FieldDefLookup struct {
-	Name      string
-	Type      string
-	Formatter string
-	Unit      string
-	Scale     float64
-	Offset    int64
+type FieldDef struct {
+	Name   string
+	Type   string
+	Format string
+	Unit   string
+	Scale  float64
+	Offset int64
+	Size   uint64
 }
-type fieldDefMap map[uint64]FieldDefLookup
+
+type fieldDefMap map[uint64]FieldDef
 
 func (m fieldDefMap) MapUint(s scalar.Uint) (scalar.Uint, error) {
 	if t, ok := m[s.Actual]; ok {
