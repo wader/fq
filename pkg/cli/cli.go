@@ -260,7 +260,7 @@ func Main(r *interp.Registry, version string) {
 		}
 
 		if err := i.Main(context.Background(), sos.Stdout(), version); err != nil {
-			if ex, ok := err.(interp.Exiter); ok { //nolint:errorlint
+			if ex, ok := err.(interp.Exiter); ok {
 				return ex.ExitCode()
 			}
 			return 1
