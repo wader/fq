@@ -300,7 +300,7 @@ func toBytes(v any) ([]byte, error) {
 func queryErrorPosition(expr string, v error) pos.Pos {
 	var offset int
 
-	if tokIf, ok := v.(interface{ Token() (string, int) }); ok { //nolint:errorlint
+	if tokIf, ok := v.(interface{ Token() (string, int) }); ok {
 		_, offset = tokIf.Token()
 	}
 	if offset >= 0 {
@@ -403,7 +403,7 @@ func (i *Interp) Main(ctx context.Context, output Output, versionStr string) err
 
 		switch v := v.(type) {
 		case error:
-			if emptyErr, ok := v.(IsEmptyErrorer); ok && emptyErr.IsEmptyError() { //nolint:errorlint
+			if emptyErr, ok := v.(IsEmptyErrorer); ok && emptyErr.IsEmptyError() {
 				// no output
 			} else if errors.Is(v, context.Canceled) {
 				// ignore context cancel here for now, which means user somehow interrupted the interpreter
