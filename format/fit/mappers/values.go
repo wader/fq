@@ -1,7 +1,6 @@
 package mappers
 
 import (
-	"fmt"
 	"math"
 
 	"github.com/wader/fq/pkg/scalar"
@@ -69,7 +68,7 @@ func GetSintFormatter(fDef FieldDef) scalar.SintFn {
 			return s, nil
 		}
 		if fDef.Unit == "semicircles" {
-			s.Sym = fmt.Sprintf("%f", float64(s.Actual)*scConst)
+			s.Sym = float64(s.Actual) * scConst
 		} else {
 			if fDef.Scale != 0.0 && fDef.Offset != 0 {
 				s.Sym = (float64(s.Actual) / fDef.Scale) - float64(fDef.Offset)
