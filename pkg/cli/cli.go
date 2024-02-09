@@ -151,11 +151,27 @@ func (*stdOS) Args() []string { return os.Args }
 func (*stdOS) Environ() []string { return os.Environ() }
 
 func (*stdOS) ConfigDir() (string, error) {
-	p, err := os.UserConfigDir()
+	configDir, err := os.UserConfigDir()
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(p, "fq"), nil
+	fqDir := filepath.Join(configDir, "fq")
+
+	if runtime.GOOS != "darwin" {
+		return fqDir, nil
+	}
+
+	// this is to support fallback to ~/.config on macOS/darwin
+	if _, err := os.Stat(fqDir); err == nil {
+		return fqDir, nil
+	}
+
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Join(homeDir, ".config", "fq"), nil
 }
 
 type stdOSFS struct{}
