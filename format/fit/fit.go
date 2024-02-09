@@ -19,7 +19,7 @@ func init() {
 	interp.RegisterFormat(
 		format.FIT,
 		&decode.Format{
-			Description: "ANT FIT",
+			Description: "Garmin Flexible and Interoperable Data Transfer",
 			Groups:      []*decode.Group{format.Probe},
 			DecodeFn:    decodeFIT,
 		})
@@ -75,15 +75,20 @@ type devFieldDefMap map[uint64]map[uint64]mappers.FieldDef
 type localFieldDefMap map[uint64]map[uint64]mappers.FieldDef
 type localMsgIsDevDef map[uint64]bool
 
+// "Magic" numbers
+const (
+	developerFieldDescMesgNo = 206 // Special data message used as dynamic field definition message
+)
+
 func fitDecodeFileHeader(d *decode.D, fc *fitContext) {
 	frameStart := d.Pos()
 
-	headerSize := d.FieldU8("headerSize")
-	d.FieldU8("protocolVersion")
-	d.FieldU16("profileVersion")
-	dataSize := d.FieldU32("dataSize")
+	headerSize := d.FieldU8("header_size")
+	d.FieldU8("protocol_version")
+	d.FieldU16("profile_version")
+	dataSize := d.FieldU32("data_size")
 
-	d.FieldRawLen("dataType", 4*8, d.AssertBitBuf([]byte(".FIT")))
+	d.FieldRawLen("data_type", 4*8, d.AssertBitBuf([]byte(".FIT")))
 	if headerSize == 14 {
 		headerCRC := calcCRC(d.BytesRange(frameStart, int(headerSize)-2))
 		d.FieldU16("crc", d.UintValidate(uint64(headerCRC)))
@@ -93,18 +98,18 @@ func fitDecodeFileHeader(d *decode.D, fc *fitContext) {
 }
 
 func fitDecodeDataRecordHeader(d *decode.D, drc *dataRecordContext) {
-	headerType := d.FieldU1("headerType", scalar.UintMapDescription{0: "Normal header", 1: "Compressed header"})
+	headerType := d.FieldU1("header_type", scalar.UintMapSymStr{0: "normal", 1: "compressed"})
 	drc.compressed = headerType == 1
 	if drc.compressed {
-		localMessageType := d.FieldU2("localMessageType")
-		d.FieldU32("timeOffset")
+		localMessageType := d.FieldU2("local_message_type")
+		d.FieldU32("time_offset")
 		drc.localMessageType = localMessageType
 		drc.data = true
 	} else {
-		mTypeIsDef := d.FieldU1("messageType", scalar.UintMapDescription{0: "Data message", 1: "Definition message"})
-		hasDeveloperFields := d.FieldBool("hasDeveloperFields")
+		mTypeIsDef := d.FieldU1("message_type", scalar.UintMapSymStr{0: "data", 1: "definition"})
+		hasDeveloperFields := d.FieldBool("has_developer_fields")
 		d.FieldBool("reserved")
-		localMessageType := d.FieldU4("localMessageType")
+		localMessageType := d.FieldU4("local_message_type")
 
 		drc.hasDeveloperFields = hasDeveloperFields
 		drc.localMessageType = localMessageType
@@ -114,7 +119,7 @@ func fitDecodeDataRecordHeader(d *decode.D, drc *dataRecordContext) {
 
 func fitDecodeDefinitionMessage(d *decode.D, drc *dataRecordContext, lmfd localFieldDefMap, dmfd devFieldDefMap, isDevMap localMsgIsDevDef) {
 	d.FieldU8("reserved")
-	endian := d.FieldU8("architecture")
+	endian := d.FieldU8("architecture", scalar.UintMapSymStr{0: "little_endian", 1: "big_endian"})
 	switch endian {
 	case 0:
 		d.Endian = decode.LittleEndian
@@ -123,65 +128,81 @@ func fitDecodeDefinitionMessage(d *decode.D, drc *dataRecordContext, lmfd localF
 	default:
 		d.Fatalf("Unknown endian %d", endian)
 	}
-	messageNo := d.FieldU16("globalMessageNumber", mappers.TypeDefMap["mesg_num"])
-	if messageNo == 206 { // developer field_description
-		isDevMap[drc.localMessageType] = true
-	} else {
-		isDevMap[drc.localMessageType] = false
-	}
+
+	messageNo := d.FieldU16("global_message_number", mappers.TypeDefMap["mesg_num"])
+	isDevMap[drc.localMessageType] = messageNo == developerFieldDescMesgNo
+
 	numFields := d.FieldU8("fields")
 	lmfd[drc.localMessageType] = make(map[uint64]mappers.FieldDef, numFields)
-	d.FieldArray("fieldDefinitions", func(d *decode.D) {
+
+	d.FieldArray("field_definitions", func(d *decode.D) {
 		for i := uint64(0); i < numFields; i++ {
-			d.FieldStruct("fieldDefinition", func(d *decode.D) {
-				fieldDefNo := d.FieldU8("fieldDefNo", mappers.FieldDefMap[messageNo])
+			d.FieldStruct("field_definition", func(d *decode.D) {
+				fieldDefNo := d.FieldU8("field_definition_number", mappers.FieldDefMap[messageNo])
 				size := d.FieldU8("size")
-				baseType := d.FieldU8("baseType", mappers.TypeDefMap["fit_base_type"])
+				baseType := d.FieldU8("base_type", mappers.TypeDefMap["fit_base_type"])
 
 				var typ = mappers.TypeDefMap["fit_base_type"][baseType].Name
 				fDefLookup, isSet := mappers.FieldDefMap[messageNo][fieldDefNo]
 				if isSet {
 					var foundName = fDefLookup.Name
-					lmfd[drc.localMessageType][i] = mappers.FieldDef{Name: foundName, Type: typ, Size: size, Format: fDefLookup.Type, Unit: fDefLookup.Unit, Scale: fDefLookup.Scale, Offset: fDefLookup.Offset}
+					lmfd[drc.localMessageType][i] = mappers.FieldDef{
+						Name:   foundName,
+						Type:   typ,
+						Size:   size,
+						Format: fDefLookup.Type,
+						Unit:   fDefLookup.Unit,
+						Scale:  fDefLookup.Scale,
+						Offset: fDefLookup.Offset,
+					}
 				} else {
 					var foundName = fmt.Sprintf("UNKNOWN_%d", fieldDefNo)
-					lmfd[drc.localMessageType][i] = mappers.FieldDef{Name: foundName, Type: typ, Size: size, Format: "unknown"}
+					lmfd[drc.localMessageType][i] = mappers.FieldDef{
+						Name:   foundName,
+						Type:   typ,
+						Size:   size,
+						Format: "unknown",
+					}
 				}
 			})
 		}
 	})
 	if drc.hasDeveloperFields {
-		numDevFields := d.FieldU8("devFields")
+		numDevFields := d.FieldU8("developer_fields")
 
-		d.FieldArray("devFieldDefinitions", func(d *decode.D) {
+		d.FieldArray("developer_field_definitions", func(d *decode.D) {
 			for i := numFields; i < (numDevFields + numFields); i++ {
-				d.FieldStruct("devFieldDefinition", func(d *decode.D) {
-					fieldDefNo := d.FieldU8("fieldDefNo")
+				d.FieldStruct("developer_field_definition", func(d *decode.D) {
+					fieldDefNo := d.FieldU8("field_definition_number")
 					size := d.FieldU8("size")
-					devDataIdx := d.FieldU8("devDataIdx")
+					devDataIdx := d.FieldU8("developer_data_index")
 
 					fDefLookup, isSet := dmfd[devDataIdx][fieldDefNo]
 
 					if isSet {
 						var foundName = fDefLookup.Name
-						lmfd[drc.localMessageType][i] = mappers.FieldDef{Name: foundName, Type: fDefLookup.Type, Size: size, Unit: fDefLookup.Unit, Scale: fDefLookup.Scale, Offset: fDefLookup.Offset}
+						lmfd[drc.localMessageType][i] = mappers.FieldDef{
+							Name:   foundName,
+							Type:   fDefLookup.Type,
+							Size:   size,
+							Unit:   fDefLookup.Unit,
+							Scale:  fDefLookup.Scale,
+							Offset: fDefLookup.Offset,
+						}
 					} else {
 						var foundName = fmt.Sprintf("UNKNOWN_%d", fieldDefNo)
-						lmfd[drc.localMessageType][i] = mappers.FieldDef{Name: foundName, Type: "UNKNOWN", Size: size, Format: "unknown"}
+						lmfd[drc.localMessageType][i] = mappers.FieldDef{
+							Name:   foundName,
+							Type:   "UNKNOWN",
+							Size:   size,
+							Format: "UNKNOWN",
+						}
 					}
 				})
 			}
 		})
 	}
 
-}
-
-func ensureDevFieldMap(dmfd devFieldDefMap, devIdx uint64) {
-	_, devIsSet := dmfd[devIdx]
-
-	if !devIsSet {
-		dmfd[devIdx] = make(map[uint64]mappers.FieldDef)
-	}
 }
 
 func fieldUint(fieldFn func(string, ...scalar.UintMapper) uint64, expectedSize uint64, fDef mappers.FieldDef, uintFormatter scalar.UintFn, fdc *fileDescriptionContext) {
@@ -242,7 +263,7 @@ func fieldFloat(fieldFn func(string, ...scalar.FltMapper) float64, expectedSize 
 }
 
 func fieldString(d *decode.D, fDef mappers.FieldDef, fdc *fileDescriptionContext) {
-	val := d.FieldUTF8NullFixedLen(fDef.Name, int(fDef.Size), scalar.StrMapSymStr{"": "[invalid]"})
+	val := d.FieldUTF8NullFixedLen(fDef.Name, int(fDef.Size), scalar.StrMapDescription{"": "Invalid"})
 
 	// Save developer field definitions
 	switch fDef.Name {
@@ -301,8 +322,16 @@ func fitDecodeDataMessage(d *decode.D, drc *dataRecordContext, lmfd localFieldDe
 	}
 
 	if isDevDep {
-		ensureDevFieldMap(dmfd, fdc.devIdx)
-		dmfd[fdc.devIdx][fdc.fDefNo] = mappers.FieldDef{Name: fdc.name, Type: fdc.typ, Unit: fdc.unit, Scale: 0, Offset: 0}
+		if _, ok := dmfd[fdc.devIdx]; !ok {
+			dmfd[fdc.devIdx] = make(map[uint64]mappers.FieldDef)
+		}
+		dmfd[fdc.devIdx][fdc.fDefNo] = mappers.FieldDef{
+			Name:   fdc.name,
+			Type:   fdc.typ,
+			Unit:   fdc.unit,
+			Scale:  0,
+			Offset: 0,
+		}
 	}
 }
 
@@ -316,16 +345,16 @@ func decodeFIT(d *decode.D) any {
 
 	d.FieldStruct("header", func(d *decode.D) { fitDecodeFileHeader(d, &fc) })
 
-	d.FieldArray("dataRecords", func(d *decode.D) {
+	d.FieldArray("data_records", func(d *decode.D) {
 		for d.Pos() < int64((fc.headerSize+fc.dataSize)*8) {
-			d.FieldStruct("dataRecord", func(d *decode.D) {
+			d.FieldStruct("data_record", func(d *decode.D) {
 				var drc dataRecordContext
-				d.FieldStruct("dataRecordHeader", func(d *decode.D) { fitDecodeDataRecordHeader(d, &drc) })
+				d.FieldStruct("record_header", func(d *decode.D) { fitDecodeDataRecordHeader(d, &drc) })
 				switch drc.data {
 				case true:
-					d.FieldStruct("dataMessage", func(d *decode.D) { fitDecodeDataMessage(d, &drc, lmfd, dmfd, isDevMap) })
+					d.FieldStruct("data_message", func(d *decode.D) { fitDecodeDataMessage(d, &drc, lmfd, dmfd, isDevMap) })
 				case false:
-					d.FieldStruct("definitionMessage", func(d *decode.D) { fitDecodeDefinitionMessage(d, &drc, lmfd, dmfd, isDevMap) })
+					d.FieldStruct("definition_message", func(d *decode.D) { fitDecodeDefinitionMessage(d, &drc, lmfd, dmfd, isDevMap) })
 				}
 			})
 		}

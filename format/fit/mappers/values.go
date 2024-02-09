@@ -37,7 +37,7 @@ var invalidFloat = map[string]float64{
 func GetUintFormatter(fDef FieldDef) scalar.UintFn {
 	return scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
 		if s.Actual == invalidUint[fDef.Type] {
-			s.Sym = "[invalid]"
+			s.Description = "Invalid"
 			return s, nil
 		}
 		if fDef.Scale != 0.0 && fDef.Offset != 0 {
@@ -64,7 +64,7 @@ func GetUintFormatter(fDef FieldDef) scalar.UintFn {
 func GetSintFormatter(fDef FieldDef) scalar.SintFn {
 	return scalar.SintFn(func(s scalar.Sint) (scalar.Sint, error) {
 		if s.Actual == invalidSint[fDef.Type] {
-			s.Sym = "[invalid]"
+			s.Description = "Invalid"
 			return s, nil
 		}
 		if fDef.Unit == "semicircles" {
@@ -90,7 +90,7 @@ func GetSintFormatter(fDef FieldDef) scalar.SintFn {
 func GetFloatFormatter(fDef FieldDef) scalar.FltFn {
 	return scalar.FltFn(func(s scalar.Flt) (scalar.Flt, error) {
 		if s.Actual == invalidFloat[fDef.Type] {
-			s.Sym = "[invalid]"
+			s.Description = "Invalid"
 			return s, nil
 		}
 		if fDef.Scale != 0.0 && fDef.Offset != 0 {
