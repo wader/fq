@@ -853,9 +853,9 @@ variable `CLIUNICODE`.
 ## Configuration
 
 To add own functions you can use `init.fq` that will be read from
-- `$HOME/Library/Application Support/fq/init.jq` on macOS
-- `$HOME/.config/fq/init.jq` on Linux, BSD etc
-- `%AppData%\fq\init.jq` on Windows
+- `$HOME/Library/Application Support/fq` or `$HOME/.config/fq` on macOS
+- `$HOME/.config/fq` on Linux, BSD etc
+- `%AppData%` on Windows
 
 ## Use as script interpreter
 
