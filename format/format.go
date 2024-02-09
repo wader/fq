@@ -140,11 +140,13 @@ var (
 	MP3_Frame_XING      = &decode.Group{Name: "mp3_frame_xing"}
 	MP4                 = &decode.Group{Name: "mp4"}
 	MPEG_ASC            = &decode.Group{Name: "mpeg_asc"}
+	MPEG_CC_Data        = &decode.Group{Name: "mpeg_cc_data"}
 	MPEG_ES             = &decode.Group{Name: "mpeg_es"}
-	MPES_PES            = &decode.Group{Name: "mpeg_pes"}
+	MPEG_ITU_T35        = &decode.Group{Name: "mpeg_itu_t35"}
 	MPEG_PES_Packet     = &decode.Group{Name: "mpeg_pes_packet"}
 	MPEG_SPU            = &decode.Group{Name: "mpeg_spu"}
 	MPEG_TS             = &decode.Group{Name: "mpeg_ts"}
+	MPES_PES            = &decode.Group{Name: "mpeg_pes"}
 	MsgPack             = &decode.Group{Name: "msgpack"}
 	Ogg                 = &decode.Group{Name: "ogg"}
 	Ogg_Page            = &decode.Group{Name: "ogg_page"}
