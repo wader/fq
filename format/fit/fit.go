@@ -71,9 +71,15 @@ type fileDescriptionContext struct {
 	nativeMsgNo   uint64
 }
 
+type valueType struct {
+	value uint64
+	typ   string
+}
+
 type devFieldDefMap map[uint64]map[uint64]mappers.FieldDef
-type localFieldDefMap map[uint64]map[uint64]mappers.FieldDef
+type localFieldDefMap map[uint64]map[uint64]mappers.LocalFieldDef
 type localMsgIsDevDef map[uint64]bool
+type valueMap map[string]valueType
 
 // "Magic" numbers
 const (
@@ -133,7 +139,7 @@ func fitDecodeDefinitionMessage(d *decode.D, drc *dataRecordContext, lmfd localF
 	isDevMap[drc.localMessageType] = messageNo == developerFieldDescMesgNo
 
 	numFields := d.FieldU8("fields")
-	lmfd[drc.localMessageType] = make(map[uint64]mappers.FieldDef, numFields)
+	lmfd[drc.localMessageType] = make(map[uint64]mappers.LocalFieldDef, numFields)
 
 	d.FieldArray("field_definitions", func(d *decode.D) {
 		for i := uint64(0); i < numFields; i++ {
@@ -146,18 +152,21 @@ func fitDecodeDefinitionMessage(d *decode.D, drc *dataRecordContext, lmfd localF
 				fDefLookup, isSet := mappers.FieldDefMap[messageNo][fieldDefNo]
 				if isSet {
 					var foundName = fDefLookup.Name
-					lmfd[drc.localMessageType][i] = mappers.FieldDef{
-						Name:   foundName,
-						Type:   typ,
-						Size:   size,
-						Format: fDefLookup.Type,
-						Unit:   fDefLookup.Unit,
-						Scale:  fDefLookup.Scale,
-						Offset: fDefLookup.Offset,
+					lmfd[drc.localMessageType][i] = mappers.LocalFieldDef{
+						Name:             foundName,
+						Type:             typ,
+						Size:             size,
+						Format:           fDefLookup.Type,
+						Unit:             fDefLookup.Unit,
+						Scale:            fDefLookup.Scale,
+						Offset:           fDefLookup.Offset,
+						GlobalFieldDef:   fDefLookup,
+						GlobalMessageNo:  messageNo,
+						GlobalFieldDefNo: fieldDefNo,
 					}
 				} else {
 					var foundName = fmt.Sprintf("UNKNOWN_%d", fieldDefNo)
-					lmfd[drc.localMessageType][i] = mappers.FieldDef{
+					lmfd[drc.localMessageType][i] = mappers.LocalFieldDef{
 						Name:   foundName,
 						Type:   typ,
 						Size:   size,
@@ -181,7 +190,7 @@ func fitDecodeDefinitionMessage(d *decode.D, drc *dataRecordContext, lmfd localF
 
 					if isSet {
 						var foundName = fDefLookup.Name
-						lmfd[drc.localMessageType][i] = mappers.FieldDef{
+						lmfd[drc.localMessageType][i] = mappers.LocalFieldDef{
 							Name:   foundName,
 							Type:   fDefLookup.Type,
 							Size:   size,
@@ -191,7 +200,7 @@ func fitDecodeDefinitionMessage(d *decode.D, drc *dataRecordContext, lmfd localF
 						}
 					} else {
 						var foundName = fmt.Sprintf("UNKNOWN_%d", fieldDefNo)
-						lmfd[drc.localMessageType][i] = mappers.FieldDef{
+						lmfd[drc.localMessageType][i] = mappers.LocalFieldDef{
 							Name:   foundName,
 							Type:   "UNKNOWN",
 							Size:   size,
@@ -202,10 +211,9 @@ func fitDecodeDefinitionMessage(d *decode.D, drc *dataRecordContext, lmfd localF
 			}
 		})
 	}
-
 }
 
-func fieldUint(fieldFn func(string, ...scalar.UintMapper) uint64, expectedSize uint64, fDef mappers.FieldDef, uintFormatter scalar.UintFn, fdc *fileDescriptionContext) {
+func fieldUint(fieldFn func(string, ...scalar.UintMapper) uint64, expectedSize uint64, fDef mappers.LocalFieldDef, uintFormatter scalar.UintFn, fdc *fileDescriptionContext, valMap valueMap) {
 	var val uint64
 
 	if fDef.Size != expectedSize {
@@ -214,11 +222,33 @@ func fieldUint(fieldFn func(string, ...scalar.UintMapper) uint64, expectedSize u
 			fieldFn(fmt.Sprintf("%s_%d", fDef.Name, i), uintFormatter)
 		}
 	} else {
-		if uintFormatter != nil {
-			val = fieldFn(fDef.Name, uintFormatter)
+		if fDef.GlobalFieldDef.HasSubField {
+			var found = false
+			if subFieldValueMap, ok := mappers.SubFieldDefMap[fDef.GlobalMessageNo][fDef.GlobalFieldDefNo]; ok {
+				for k := range subFieldValueMap {
+					if subFieldDef, ok := subFieldValueMap[k][mappers.TypeDefMap[valMap[k].typ][valMap[k].value].Name]; ok {
+						subUintFormatter := mappers.GetUintFormatter(mappers.LocalFieldDef{
+							Name:   subFieldDef.Name,
+							Type:   fDef.Type,
+							Size:   fDef.Size,
+							Format: subFieldDef.Type,
+							Unit:   subFieldDef.Unit,
+							Scale:  subFieldDef.Scale,
+							Offset: subFieldDef.Offset,
+						})
+						val = fieldFn(subFieldDef.Name, subUintFormatter)
+						found = true
+						continue
+					}
+				}
+			}
+			if !found { // SubField conditions could not be resolved
+				val = fieldFn(fDef.Name, uintFormatter)
+			}
 		} else {
-			val = fieldFn(fDef.Name)
+			val = fieldFn(fDef.Name, uintFormatter)
 		}
+		valMap[fDef.Name] = valueType{value: val, typ: fDef.Format}
 
 		// Save developer field definitions
 		switch fDef.Name {
@@ -236,22 +266,18 @@ func fieldUint(fieldFn func(string, ...scalar.UintMapper) uint64, expectedSize u
 	}
 }
 
-func fieldSint(fieldFn func(string, ...scalar.SintMapper) int64, expectedSize uint64, fDef mappers.FieldDef, sintFormatter scalar.SintFn) {
+func fieldSint(fieldFn func(string, ...scalar.SintMapper) int64, expectedSize uint64, fDef mappers.LocalFieldDef, sintFormatter scalar.SintFn) {
 	if fDef.Size != expectedSize {
 		arrayCount := fDef.Size / expectedSize
 		for i := uint64(0); i < arrayCount; i++ {
 			fieldFn(fmt.Sprintf("%s_%d", fDef.Name, i), sintFormatter)
 		}
 	} else {
-		if sintFormatter != nil {
-			fieldFn(fDef.Name, sintFormatter)
-		} else {
-			fieldFn(fDef.Name)
-		}
+		fieldFn(fDef.Name, sintFormatter)
 	}
 }
 
-func fieldFloat(fieldFn func(string, ...scalar.FltMapper) float64, expectedSize uint64, fDef mappers.FieldDef, floatFormatter scalar.FltFn) {
+func fieldFloat(fieldFn func(string, ...scalar.FltMapper) float64, expectedSize uint64, fDef mappers.LocalFieldDef, floatFormatter scalar.FltFn) {
 	if fDef.Size != expectedSize {
 		arrayCount := fDef.Size / expectedSize
 		for i := uint64(0); i < arrayCount; i++ {
@@ -262,7 +288,7 @@ func fieldFloat(fieldFn func(string, ...scalar.FltMapper) float64, expectedSize 
 	}
 }
 
-func fieldString(d *decode.D, fDef mappers.FieldDef, fdc *fileDescriptionContext) {
+func fieldString(d *decode.D, fDef mappers.LocalFieldDef, fdc *fileDescriptionContext) {
 	val := d.FieldUTF8NullFixedLen(fDef.Name, int(fDef.Size), scalar.StrMapDescription{"": "Invalid"})
 
 	// Save developer field definitions
@@ -276,6 +302,7 @@ func fieldString(d *decode.D, fDef mappers.FieldDef, fdc *fileDescriptionContext
 
 func fitDecodeDataMessage(d *decode.D, drc *dataRecordContext, lmfd localFieldDefMap, dmfd devFieldDefMap, isDevMap localMsgIsDevDef) {
 	var fdc fileDescriptionContext
+	valMap := make(valueMap, len(lmfd[drc.localMessageType]))
 	keys := make([]int, len(lmfd[drc.localMessageType]))
 	i := 0
 	for k := range lmfd[drc.localMessageType] {
@@ -295,13 +322,13 @@ func fitDecodeDataMessage(d *decode.D, drc *dataRecordContext, lmfd localFieldDe
 
 		switch fDef.Type {
 		case "enum", "uint8", "uint8z", "byte":
-			fieldUint(d.FieldU8, 1, fDef, uintFormatter, &fdc)
+			fieldUint(d.FieldU8, 1, fDef, uintFormatter, &fdc, valMap)
 		case "uint16", "uint16z":
-			fieldUint(d.FieldU16, 2, fDef, uintFormatter, &fdc)
+			fieldUint(d.FieldU16, 2, fDef, uintFormatter, &fdc, valMap)
 		case "uint32", "uint32z":
-			fieldUint(d.FieldU32, 4, fDef, uintFormatter, &fdc)
+			fieldUint(d.FieldU32, 4, fDef, uintFormatter, &fdc, valMap)
 		case "uint64", "uint64z":
-			fieldUint(d.FieldU64, 8, fDef, uintFormatter, &fdc)
+			fieldUint(d.FieldU64, 8, fDef, uintFormatter, &fdc, valMap)
 		case "sint8":
 			fieldSint(d.FieldS8, 1, fDef, sintFormatter)
 		case "sint16":

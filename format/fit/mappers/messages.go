@@ -5,13 +5,26 @@ import (
 )
 
 type FieldDef struct {
-	Name   string
-	Type   string
-	Format string
-	Unit   string
-	Scale  float64
-	Offset int64
-	Size   uint64
+	Name        string
+	Type        string
+	Unit        string
+	Scale       float64
+	Offset      int64
+	Size        uint64
+	HasSubField bool
+}
+
+type LocalFieldDef struct {
+	Name             string
+	Type             string
+	Format           string
+	Unit             string
+	Scale            float64
+	Offset           int64
+	Size             uint64
+	GlobalFieldDef   FieldDef
+	GlobalMessageNo  uint64
+	GlobalFieldDefNo uint64
 }
 
 type fieldDefMap map[uint64]FieldDef

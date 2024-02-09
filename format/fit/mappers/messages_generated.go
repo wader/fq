@@ -1,10 +1,207 @@
 package mappers
 
+var SubFieldDefMap = map[uint64]map[uint64]map[string]map[string]FieldDef{
+	0: {
+		2: {
+			"manufacturer": {
+				"garmin":         {Name: "garmin_product", Type: "garmin_product"},
+				"dynastream":     {Name: "garmin_product", Type: "garmin_product"},
+				"dynastream_oem": {Name: "garmin_product", Type: "garmin_product"},
+				"tacx":           {Name: "garmin_product", Type: "garmin_product"},
+			},
+		},
+	},
+	18: {
+		10: {
+			"sport": {
+				"cycling":                 {Name: "total_strokes", Unit: "strokes"},
+				"swimming":                {Name: "total_strokes", Unit: "strokes"},
+				"rowing":                  {Name: "total_strokes", Unit: "strokes"},
+				"stand_up_paddleboarding": {Name: "total_strokes", Unit: "strokes"},
+			},
+		},
+		18: {
+			"sport": {
+				"running": {Name: "avg_running_cadence", Unit: "strides/min"},
+			},
+		},
+		19: {
+			"sport": {
+				"running": {Name: "max_running_cadence", Unit: "strides/min"},
+			},
+		},
+	},
+	19: {
+		10: {
+			"sport": {
+				"cycling":                 {Name: "total_strokes", Unit: "strokes"},
+				"swimming":                {Name: "total_strokes", Unit: "strokes"},
+				"rowing":                  {Name: "total_strokes", Unit: "strokes"},
+				"stand_up_paddleboarding": {Name: "total_strokes", Unit: "strokes"},
+			},
+		},
+		17: {
+			"sport": {
+				"running": {Name: "avg_running_cadence", Unit: "strides/min"},
+			},
+		},
+		18: {
+			"sport": {
+				"running": {Name: "max_running_cadence", Unit: "strides/min"},
+			},
+		},
+	},
+	21: {
+		3: {
+			"event": {
+				"radar_threat_alert": {Name: "radar_threat_alert"},
+			},
+		},
+		15: {
+			"event": {
+				"auto_activity_detect": {Name: "auto_activity_detect_start_timestamp", Type: "date_time", Unit: "s"},
+			},
+		},
+	},
+	23: {
+		1: {
+			"source_type": {
+				"local": {Name: "local_device_type", Type: "local_device_type"},
+			},
+		},
+		4: {
+			"manufacturer": {
+				"garmin":         {Name: "garmin_product", Type: "garmin_product"},
+				"dynastream":     {Name: "garmin_product", Type: "garmin_product"},
+				"dynastream_oem": {Name: "garmin_product", Type: "garmin_product"},
+				"tacx":           {Name: "garmin_product", Type: "garmin_product"},
+			},
+		},
+	},
+	27: {
+		2: {
+			"duration_type": {
+				"reps": {Name: "duration_reps"},
+			},
+		},
+		4: {
+			"target_type": {
+				"swim_stroke": {Name: "target_stroke_type", Type: "swim_stroke"},
+			},
+		},
+		5: {
+			"target_type": {
+				"power": {Name: "custom_target_power_low", Type: "workout_power", Unit: "% or watts"},
+			},
+		},
+		6: {
+			"target_type": {
+				"power": {Name: "custom_target_power_high", Type: "workout_power", Unit: "% or watts"},
+			},
+		},
+		20: {
+			"secondary_target_type": {
+				"swim_stroke": {Name: "secondary_target_stroke_type", Type: "swim_stroke"},
+			},
+		},
+		21: {
+			"secondary_target_type": {
+				"power": {Name: "secondary_custom_target_power_low", Type: "workout_power", Unit: "% or watts"},
+			},
+		},
+		22: {
+			"secondary_target_type": {
+				"power": {Name: "secondary_custom_target_power_high", Type: "workout_power", Unit: "% or watts"},
+			},
+		},
+	},
+	28: {
+		1: {
+			"manufacturer": {
+				"garmin":         {Name: "garmin_product", Type: "garmin_product"},
+				"dynastream":     {Name: "garmin_product", Type: "garmin_product"},
+				"dynastream_oem": {Name: "garmin_product", Type: "garmin_product"},
+				"tacx":           {Name: "garmin_product", Type: "garmin_product"},
+			},
+		},
+	},
+	38: {
+		3: {
+			"count_type": {
+				"max_per_file_type": {Name: "max_per_file_type"},
+			},
+		},
+	},
+	55: {
+		3: {
+			"activity_type": {
+				"cycling":  {Name: "strokes", Unit: "strokes", Scale: 2},
+				"swimming": {Name: "strokes", Unit: "strokes", Scale: 2},
+			},
+		},
+	},
+	72: {
+		2: {
+			"manufacturer": {
+				"garmin":         {Name: "garmin_product", Type: "garmin_product"},
+				"dynastream":     {Name: "garmin_product", Type: "garmin_product"},
+				"dynastream_oem": {Name: "garmin_product", Type: "garmin_product"},
+				"tacx":           {Name: "garmin_product", Type: "garmin_product"},
+			},
+		},
+	},
+	106: {
+		1: {
+			"manufacturer": {
+				"garmin":         {Name: "garmin_product", Type: "garmin_product"},
+				"dynastream":     {Name: "garmin_product", Type: "garmin_product"},
+				"dynastream_oem": {Name: "garmin_product", Type: "garmin_product"},
+				"tacx":           {Name: "garmin_product", Type: "garmin_product"},
+			},
+		},
+	},
+	142: {
+		10: {
+			"sport": {
+				"cycling": {Name: "total_strokes", Unit: "strokes"},
+			},
+		},
+	},
+	159: {
+		1: {
+			"mode": {
+				"analog": {Name: "analog_layout", Type: "analog_watchface_layout"},
+			},
+		},
+	},
+	167: {
+		1: {
+			"sensor_type": {
+				"gyroscope": {Name: "gyro_cal_factor", Unit: "deg/s"},
+			},
+		},
+	},
+	210: {
+		1: {
+			"sensor_type": {
+				"barometer": {Name: "baro_cal_factor", Unit: "Pa"},
+			},
+		},
+	},
+	258: {
+		20: {
+			"heart_rate_source_type": {
+				"local": {Name: "heart_rate_local_device_type", Type: "local_device_type"},
+			},
+		},
+	},
+}
+
 var FieldDefMap = map[uint64]fieldDefMap{
 	0: {
 		0: {Name: "type", Type: "file"},
 		1: {Name: "manufacturer", Type: "manufacturer"},
-		2: {Name: "product"},
+		2: {Name: "product", HasSubField: true},
 		3: {Name: "serial_number"},
 		4: {Name: "time_created", Type: "date_time"},
 		5: {Name: "number"},
@@ -180,15 +377,15 @@ var FieldDefMap = map[uint64]fieldDefMap{
 		7:   {Name: "total_elapsed_time", Unit: "s", Scale: 1000},
 		8:   {Name: "total_timer_time", Unit: "s", Scale: 1000},
 		9:   {Name: "total_distance", Unit: "m", Scale: 100},
-		10:  {Name: "total_cycles", Unit: "cycles"},
+		10:  {Name: "total_cycles", Unit: "cycles", HasSubField: true},
 		11:  {Name: "total_calories", Unit: "kcal"},
 		13:  {Name: "total_fat_calories", Unit: "kcal"},
 		14:  {Name: "avg_speed", Unit: "m/s", Scale: 1000},
 		15:  {Name: "max_speed", Unit: "m/s", Scale: 1000},
 		16:  {Name: "avg_heart_rate", Unit: "bpm"},
 		17:  {Name: "max_heart_rate", Unit: "bpm"},
-		18:  {Name: "avg_cadence", Unit: "rpm"},
-		19:  {Name: "max_cadence", Unit: "rpm"},
+		18:  {Name: "avg_cadence", Unit: "rpm", HasSubField: true},
+		19:  {Name: "max_cadence", Unit: "rpm", HasSubField: true},
 		20:  {Name: "avg_power", Unit: "watts"},
 		21:  {Name: "max_power", Unit: "watts"},
 		22:  {Name: "total_ascent", Unit: "m"},
@@ -336,15 +533,15 @@ var FieldDefMap = map[uint64]fieldDefMap{
 		7:   {Name: "total_elapsed_time", Unit: "s", Scale: 1000},
 		8:   {Name: "total_timer_time", Unit: "s", Scale: 1000},
 		9:   {Name: "total_distance", Unit: "m", Scale: 100},
-		10:  {Name: "total_cycles", Unit: "cycles"},
+		10:  {Name: "total_cycles", Unit: "cycles", HasSubField: true},
 		11:  {Name: "total_calories", Unit: "kcal"},
 		12:  {Name: "total_fat_calories", Unit: "kcal"},
 		13:  {Name: "avg_speed", Unit: "m/s", Scale: 1000},
 		14:  {Name: "max_speed", Unit: "m/s", Scale: 1000},
 		15:  {Name: "avg_heart_rate", Unit: "bpm"},
 		16:  {Name: "max_heart_rate", Unit: "bpm"},
-		17:  {Name: "avg_cadence", Unit: "rpm"},
-		18:  {Name: "max_cadence", Unit: "rpm"},
+		17:  {Name: "avg_cadence", Unit: "rpm", HasSubField: true},
+		18:  {Name: "max_cadence", Unit: "rpm", HasSubField: true},
 		19:  {Name: "avg_power", Unit: "watts"},
 		20:  {Name: "max_power", Unit: "watts"},
 		21:  {Name: "total_ascent", Unit: "m"},
@@ -539,7 +736,7 @@ var FieldDefMap = map[uint64]fieldDefMap{
 		0:   {Name: "event", Type: "event"},
 		1:   {Name: "event_type", Type: "event_type"},
 		2:   {Name: "data16"},
-		3:   {Name: "data"},
+		3:   {Name: "data", HasSubField: true},
 		4:   {Name: "event_group"},
 		7:   {Name: "score"},
 		8:   {Name: "opponent_score"},
@@ -549,7 +746,7 @@ var FieldDefMap = map[uint64]fieldDefMap{
 		12:  {Name: "rear_gear"},
 		13:  {Name: "device_index", Type: "device_index"},
 		14:  {Name: "activity_type", Type: "activity_type"},
-		15:  {Name: "start_timestamp", Type: "date_time", Unit: "s"},
+		15:  {Name: "start_timestamp", Type: "date_time", Unit: "s", HasSubField: true},
 		21:  {Name: "radar_threat_level_max", Type: "radar_threat_level_type"},
 		22:  {Name: "radar_threat_count"},
 		23:  {Name: "radar_threat_avg_approach_speed", Unit: "m/s", Scale: 10},
@@ -558,10 +755,10 @@ var FieldDefMap = map[uint64]fieldDefMap{
 	23: {
 		253: {Name: "timestamp", Type: "date_time", Unit: "s"},
 		0:   {Name: "device_index", Type: "device_index"},
-		1:   {Name: "device_type"},
+		1:   {Name: "device_type", HasSubField: true},
 		2:   {Name: "manufacturer", Type: "manufacturer"},
 		3:   {Name: "serial_number"},
-		4:   {Name: "product"},
+		4:   {Name: "product", HasSubField: true},
 		5:   {Name: "software_version", Scale: 100},
 		6:   {Name: "hardware_version"},
 		7:   {Name: "cum_operating_time", Unit: "s"},
@@ -590,11 +787,11 @@ var FieldDefMap = map[uint64]fieldDefMap{
 		254: {Name: "message_index", Type: "message_index"},
 		0:   {Name: "wkt_step_name"},
 		1:   {Name: "duration_type", Type: "wkt_step_duration"},
-		2:   {Name: "duration_value"},
+		2:   {Name: "duration_value", HasSubField: true},
 		3:   {Name: "target_type", Type: "wkt_step_target"},
-		4:   {Name: "target_value"},
-		5:   {Name: "custom_target_value_low"},
-		6:   {Name: "custom_target_value_high"},
+		4:   {Name: "target_value", HasSubField: true},
+		5:   {Name: "custom_target_value_low", HasSubField: true},
+		6:   {Name: "custom_target_value_high", HasSubField: true},
 		7:   {Name: "intensity", Type: "intensity"},
 		8:   {Name: "notes"},
 		9:   {Name: "equipment", Type: "workout_equipment"},
@@ -603,13 +800,13 @@ var FieldDefMap = map[uint64]fieldDefMap{
 		12:  {Name: "exercise_weight", Unit: "kg", Scale: 100},
 		13:  {Name: "weight_display_unit", Type: "fit_base_unit"},
 		19:  {Name: "secondary_target_type", Type: "wkt_step_target"},
-		20:  {Name: "secondary_target_value"},
-		21:  {Name: "secondary_custom_target_value_low"},
-		22:  {Name: "secondary_custom_target_value_high"},
+		20:  {Name: "secondary_target_value", HasSubField: true},
+		21:  {Name: "secondary_custom_target_value_low", HasSubField: true},
+		22:  {Name: "secondary_custom_target_value_high", HasSubField: true},
 	},
 	28: {
 		0: {Name: "manufacturer", Type: "manufacturer"},
-		1: {Name: "product"},
+		1: {Name: "product", HasSubField: true},
 		2: {Name: "serial_number"},
 		3: {Name: "time_created", Type: "date_time"},
 		4: {Name: "completed"},
@@ -688,7 +885,7 @@ var FieldDefMap = map[uint64]fieldDefMap{
 		0:   {Name: "file", Type: "file"},
 		1:   {Name: "mesg_num", Type: "mesg_num"},
 		2:   {Name: "count_type", Type: "mesg_count"},
-		3:   {Name: "count"},
+		3:   {Name: "count", HasSubField: true},
 	},
 	39: {
 		254: {Name: "message_index", Type: "message_index"},
@@ -724,7 +921,7 @@ var FieldDefMap = map[uint64]fieldDefMap{
 		0:   {Name: "device_index", Type: "device_index"},
 		1:   {Name: "calories", Unit: "kcal"},
 		2:   {Name: "distance", Unit: "m", Scale: 100},
-		3:   {Name: "cycles", Unit: "cycles", Scale: 2},
+		3:   {Name: "cycles", Unit: "cycles", Scale: 2, HasSubField: true},
 		4:   {Name: "active_time", Unit: "s", Scale: 1000},
 		5:   {Name: "activity_type", Type: "activity_type"},
 		6:   {Name: "activity_subtype", Type: "activity_subtype"},
@@ -754,7 +951,7 @@ var FieldDefMap = map[uint64]fieldDefMap{
 		253: {Name: "timestamp", Type: "date_time"},
 		0:   {Name: "type", Type: "file"},
 		1:   {Name: "manufacturer", Type: "manufacturer"},
-		2:   {Name: "product"},
+		2:   {Name: "product", HasSubField: true},
 		3:   {Name: "serial_number"},
 		4:   {Name: "time_created", Type: "date_time"},
 	},
@@ -818,7 +1015,7 @@ var FieldDefMap = map[uint64]fieldDefMap{
 	},
 	106: {
 		0: {Name: "manufacturer", Type: "manufacturer"},
-		1: {Name: "product"},
+		1: {Name: "product", HasSubField: true},
 	},
 	127: {
 		0:  {Name: "bluetooth_enabled"},
@@ -887,7 +1084,7 @@ var FieldDefMap = map[uint64]fieldDefMap{
 		7:   {Name: "total_elapsed_time", Unit: "s", Scale: 1000},
 		8:   {Name: "total_timer_time", Unit: "s", Scale: 1000},
 		9:   {Name: "total_distance", Unit: "m", Scale: 100},
-		10:  {Name: "total_cycles", Unit: "cycles"},
+		10:  {Name: "total_cycles", Unit: "cycles", HasSubField: true},
 		11:  {Name: "total_calories", Unit: "kcal"},
 		12:  {Name: "total_fat_calories", Unit: "kcal"},
 		13:  {Name: "avg_speed", Unit: "m/s", Scale: 1000},
@@ -1031,7 +1228,7 @@ var FieldDefMap = map[uint64]fieldDefMap{
 	159: {
 		254: {Name: "message_index", Type: "message_index"},
 		0:   {Name: "mode", Type: "watchface_mode"},
-		1:   {Name: "layout"},
+		1:   {Name: "layout", HasSubField: true},
 	},
 	160: {
 		253: {Name: "timestamp", Type: "date_time", Unit: "s"},
@@ -1088,7 +1285,7 @@ var FieldDefMap = map[uint64]fieldDefMap{
 	167: {
 		253: {Name: "timestamp", Type: "date_time", Unit: "s"},
 		0:   {Name: "sensor_type", Type: "sensor_type"},
-		1:   {Name: "calibration_factor"},
+		1:   {Name: "calibration_factor", HasSubField: true},
 		2:   {Name: "calibration_divisor", Unit: "counts"},
 		3:   {Name: "level_shift"},
 		4:   {Name: "offset_cal"},
@@ -1227,7 +1424,7 @@ var FieldDefMap = map[uint64]fieldDefMap{
 	210: {
 		253: {Name: "timestamp", Type: "date_time", Unit: "s"},
 		0:   {Name: "sensor_type", Type: "sensor_type"},
-		1:   {Name: "calibration_factor"},
+		1:   {Name: "calibration_factor", HasSubField: true},
 		2:   {Name: "calibration_divisor", Unit: "counts"},
 		3:   {Name: "level_shift"},
 		4:   {Name: "offset_cal"},
@@ -1306,7 +1503,7 @@ var FieldDefMap = map[uint64]fieldDefMap{
 		17:  {Name: "repeat_dive_interval", Unit: "s", Scale: 1},
 		18:  {Name: "safety_stop_time", Unit: "s", Scale: 1},
 		19:  {Name: "heart_rate_source_type", Type: "source_type"},
-		20:  {Name: "heart_rate_source"},
+		20:  {Name: "heart_rate_source", HasSubField: true},
 		21:  {Name: "travel_gas", Type: "message_index"},
 		22:  {Name: "ccr_low_setpoint_switch_mode", Type: "ccr_setpoint_switch_mode"},
 		23:  {Name: "ccr_low_setpoint", Unit: "percent", Scale: 100},

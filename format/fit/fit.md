@@ -1,9 +1,8 @@
 ### Limitations
 
-- "compressed_speed_distance" field on globalMessageNumber 20 is not represented correctly. 
+- Fields with subcomponents, such as "compressed_speed_distance" field on globalMessageNumber 20 is not represented correctly. 
   The field is read as 3 separate bytes where the first 12 bits are speed and the last 12 bits are distance.
 - There are still lots of UNKOWN fields due to gaps in Garmins SDK Profile documentation. (Currently FIT SDK 21.126)
-- Dynamically referenced fields are named incorrectly and lacks scaling, offset and units (just raw values)
 - Compressed timestamp messages are not accumulated against last known full timestamp.
 
 ### Convert stream of data messages to JSON array
