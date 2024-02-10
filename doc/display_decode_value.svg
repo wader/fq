@@ -10,16 +10,33 @@
             white-space: pre;
             fill: #bbbbbb;
         }
+        .bg {
+            stroke-width: "0.5px";
+        }
+        .bold {
+            font-weight: bold;
+        }
+        .underline {
+            text-decoration: underline;
+        }
+        <!-- Foreground ANSI colors -->
+        .fa2 { fill: #00bb00; }
+        .fa3 { fill: #bbbb00; }
+        .fa6 { fill: #00bbbb; }
+        .fa8 { fill: #555555; }
+        .fa12 { fill: #5555ff; }
     </style>
     <rect width="100%" height="100%" x="0" y="0" style="fill: #000000"/>
-<text x="0" y="0.5em"><tspan>$ fq &#39;first(grep_by(.type == &#34;elst&#34;))&#39; file.mp4</tspan></text>
-<text x="0" y="1.5em"><tspan>     │</tspan><tspan style="fill:#bbbb00" text-decoration="underline">00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f</tspan><tspan>│</tspan><tspan style="fill:#bbbb00" text-decoration="underline">0123456789abcdef</tspan><tspan>│.</tspan><tspan style="fill:#5555ff">boxes</tspan><tspan>[</tspan><tspan style="fill:#00bbbb">3</tspan><tspan>].</tspan><tspan style="fill:#5555ff">boxes</tspan><tspan>[</tspan><tspan style="fill:#00bbbb">1</tspan><tspan>].</tspan><tspan style="fill:#5555ff">boxes</tspan><tspan>[</tspan><tspan style="fill:#00bbbb">1</tspan><tspan>].</tspan><tspan style="fill:#5555ff">boxes</tspan><tspan>[</tspan><tspan style="fill:#00bbbb">0</tspan><tspan>]{}: box</tspan></text>
-<text x="0" y="2.5em"><tspan style="fill:#bbbb00">0xd60</tspan><tspan>│               </tspan><tspan style="fill:#555555">00</tspan><tspan> </tspan><tspan style="fill:#555555">00</tspan><tspan> </tspan><tspan style="fill:#555555">00</tspan><tspan> </tspan><tspan style="font-weight:bold">1c</tspan><tspan>                     │     </tspan><tspan style="fill:#555555">...</tspan><tspan style="font-weight:bold">.</tspan><tspan>       │  </tspan><tspan style="fill:#5555ff">size</tspan><tspan>: </tspan><tspan style="fill:#00bbbb">28</tspan></text>
-<text x="0" y="3.5em"><tspan style="fill:#bbbb00">0xd60</tspan><tspan>│                           65 6c 73 74         │         elst   │  </tspan><tspan style="fill:#5555ff">type</tspan><tspan>: </tspan><tspan style="fill:#00bb00">&#34;elst&#34;</tspan><tspan> (An edit list)</tspan></text>
-<text x="0" y="4.5em"><tspan style="fill:#bbbb00">0xd60</tspan><tspan>│                                       </tspan><tspan style="fill:#555555">00</tspan><tspan>      │             </tspan><tspan style="fill:#555555">.</tspan><tspan>  │  </tspan><tspan style="fill:#5555ff">version</tspan><tspan>: </tspan><tspan style="fill:#00bbbb">0</tspan></text>
-<text x="0" y="5.5em"><tspan style="fill:#bbbb00">0xd60</tspan><tspan>│                                          </tspan><tspan style="fill:#555555">00</tspan><tspan> </tspan><tspan style="fill:#555555">00</tspan><tspan>│              </tspan><tspan style="fill:#555555">..</tspan><tspan>│  </tspan><tspan style="fill:#5555ff">flags</tspan><tspan>: </tspan><tspan style="fill:#00bbbb">0</tspan></text>
-<text x="0" y="6.5em"><tspan style="fill:#bbbb00">0xd70</tspan><tspan>│</tspan><tspan style="fill:#555555">00</tspan><tspan>                                             │</tspan><tspan style="fill:#555555">.</tspan><tspan>               │</tspan></text>
-<text x="0" y="7.5em"><tspan style="fill:#bbbb00">0xd70</tspan><tspan>│   </tspan><tspan style="fill:#555555">00</tspan><tspan> </tspan><tspan style="fill:#555555">00</tspan><tspan> </tspan><tspan style="fill:#555555">00</tspan><tspan> </tspan><tspan style="font-weight:bold">01</tspan><tspan>                                 │ </tspan><tspan style="fill:#555555">...</tspan><tspan style="font-weight:bold">.</tspan><tspan>           │  </tspan><tspan style="fill:#5555ff">entry_count</tspan><tspan>: </tspan><tspan style="fill:#00bbbb">1</tspan></text>
-<text x="0" y="8.5em"><tspan style="fill:#bbbb00">0xd70</tspan><tspan>│               </tspan><tspan style="fill:#555555">00</tspan><tspan> </tspan><tspan style="fill:#555555">00</tspan><tspan> </tspan><tspan style="fill:#555555">00</tspan><tspan> 28 </tspan><tspan style="fill:#555555">00</tspan><tspan> </tspan><tspan style="fill:#555555">00</tspan><tspan> </tspan><tspan style="fill:#555555">00</tspan><tspan> </tspan><tspan style="fill:#555555">00</tspan><tspan> </tspan><tspan style="fill:#555555">00</tspan><tspan> </tspan><tspan style="font-weight:bold">01</tspan><tspan> </tspan><tspan style="fill:#555555">00</tspan><tspan>│     </tspan><tspan style="fill:#555555">...</tspan><tspan>(</tspan><tspan style="fill:#555555">.....</tspan><tspan style="font-weight:bold">.</tspan><tspan style="fill:#555555">.</tspan><tspan>│  </tspan><tspan style="fill:#5555ff">entries</tspan><tspan>[</tspan><tspan style="fill:#00bbbb">0</tspan><tspan>:</tspan><tspan style="fill:#00bbbb">1</tspan><tspan>]:</tspan></text>
-<text x="0" y="9.5em"><tspan style="fill:#bbbb00">0xd80</tspan><tspan>│</tspan><tspan style="fill:#555555">00</tspan><tspan>                                             │</tspan><tspan style="fill:#555555">.</tspan><tspan>               │</tspan></text>
+<g x="0">
+<text y="0.5em"><tspan>$ fq &#39;first(grep_by(.type == &#34;elst&#34;))&#39; file.mp4</tspan></text>
+<text y="1.5em"><tspan>     │</tspan><tspan class="underline fa3">00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f</tspan><tspan>│</tspan><tspan class="underline fa3">0123456789abcdef</tspan><tspan>│.</tspan><tspan class="fa12">boxes</tspan><tspan>[</tspan><tspan class="fa6">3</tspan><tspan>].</tspan><tspan class="fa12">boxes</tspan><tspan>[</tspan><tspan class="fa6">1</tspan><tspan>].</tspan><tspan class="fa12">boxes</tspan><tspan>[</tspan><tspan class="fa6">1</tspan><tspan>].</tspan><tspan class="fa12">boxes</tspan><tspan>[</tspan><tspan class="fa6">0</tspan><tspan>]{}: box</tspan></text>
+<text y="2.5em"><tspan class="fa3">0xd60</tspan><tspan>│               </tspan><tspan class="fa8">00 00 00 </tspan><tspan class="bold">1c                     </tspan><tspan>│     </tspan><tspan class="fa8">...</tspan><tspan class="bold">.       </tspan><tspan>│  </tspan><tspan class="fa12">size</tspan><tspan>: </tspan><tspan class="fa6">28</tspan></text>
+<text y="3.5em"><tspan class="fa3">0xd60</tspan><tspan>│                           65 6c 73 74         │         elst   │  </tspan><tspan class="fa12">type</tspan><tspan>: </tspan><tspan class="fa2">&#34;elst&#34; </tspan><tspan>(An edit list)</tspan></text>
+<text y="4.5em"><tspan class="fa3">0xd60</tspan><tspan>│                                       </tspan><tspan class="fa8">00      </tspan><tspan>│             </tspan><tspan class="fa8">.  </tspan><tspan>│  </tspan><tspan class="fa12">version</tspan><tspan>: </tspan><tspan class="fa6">0</tspan></text>
+<text y="5.5em"><tspan class="fa3">0xd60</tspan><tspan>│                                          </tspan><tspan class="fa8">00 00</tspan><tspan>│              </tspan><tspan class="fa8">..</tspan><tspan>│  </tspan><tspan class="fa12">flags</tspan><tspan>: </tspan><tspan class="fa6">0</tspan></text>
+<text y="6.5em"><tspan class="fa3">0xd70</tspan><tspan>│</tspan><tspan class="fa8">00                                             </tspan><tspan>│</tspan><tspan class="fa8">.               </tspan><tspan>│</tspan></text>
+<text y="7.5em"><tspan class="fa3">0xd70</tspan><tspan>│   </tspan><tspan class="fa8">00 00 00 </tspan><tspan class="bold">01                                 </tspan><tspan>│ </tspan><tspan class="fa8">...</tspan><tspan class="bold">.           </tspan><tspan>│  </tspan><tspan class="fa12">entry_count</tspan><tspan>: </tspan><tspan class="fa6">1</tspan></text>
+<text y="8.5em"><tspan class="fa3">0xd70</tspan><tspan>│               </tspan><tspan class="fa8">00 00 00 </tspan><tspan>28 </tspan><tspan class="fa8">00 00 00 00 00 </tspan><tspan class="bold">01 </tspan><tspan class="fa8">00</tspan><tspan>│     </tspan><tspan class="fa8">...</tspan><tspan>(</tspan><tspan class="fa8">.....</tspan><tspan class="bold">.</tspan><tspan class="fa8">.</tspan><tspan>│  </tspan><tspan class="fa12">entries</tspan><tspan>[</tspan><tspan class="fa6">0</tspan><tspan>:</tspan><tspan class="fa6">1</tspan><tspan>]:</tspan></text>
+<text y="9.5em"><tspan class="fa3">0xd80</tspan><tspan>│</tspan><tspan class="fa8">00                                             </tspan><tspan>│</tspan><tspan class="fa8">.               </tspan><tspan>│</tspan></text>
+</g>
 </svg>

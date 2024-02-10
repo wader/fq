@@ -45,6 +45,7 @@
 |`ether8023_frame`                                               |Ethernet&nbsp;802.3&nbsp;frame                                                                               |<sub>`inet_packet`</sub>|
 |`exif`                                                          |Exchangeable&nbsp;Image&nbsp;File&nbsp;Format                                                                |<sub></sub>|
 |`fairplay_spc`                                                  |FairPlay&nbsp;Server&nbsp;Playback&nbsp;Context                                                              |<sub></sub>|
+|[`fit`](#fit)                                                   |Garmin&nbsp;Flexible&nbsp;and&nbsp;Interoperable&nbsp;Data&nbsp;Transfer                                     |<sub></sub>|
 |`flac`                                                          |Free&nbsp;Lossless&nbsp;Audio&nbsp;Codec&nbsp;file                                                           |<sub>`flac_metadatablocks` `flac_frame`</sub>|
 |[`flac_frame`](#flac_frame)                                     |FLAC&nbsp;frame                                                                                              |<sub></sub>|
 |`flac_metadatablock`                                            |FLAC&nbsp;metadatablock                                                                                      |<sub>`flac_streaminfo` `flac_picture` `vorbis_comment`</sub>|
@@ -134,7 +135,7 @@
 |`ip_packet`                                                     |Group                                                                                                        |<sub>`icmp` `icmpv6` `tcp_segment` `udp_datagram`</sub>|
 |`link_frame`                                                    |Group                                                                                                        |<sub>`bsd_loopback_frame` `ether8023_frame` `ipv4_packet` `ipv6_packet` `sll2_packet` `sll_packet`</sub>|
 |`mp3_frame_tags`                                                |Group                                                                                                        |<sub>`mp3_frame_vbri` `mp3_frame_xing`</sub>|
-|`probe`                                                         |Group                                                                                                        |<sub>`adts` `aiff` `apple_bookmark` `ar` `avi` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `caff` `elf` `flac` `gif` `gzip` `html` `jpeg` `json` `jsonl` `leveldb_table` `luajit` `macho` `macho_fat` `matroska` `moc3` `mp3` `mp4` `mpeg_ts` `ogg` `opentimestamps` `pcap` `pcapng` `png` `tar` `tiff` `toml` `tzif` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
+|`probe`                                                         |Group                                                                                                        |<sub>`adts` `aiff` `apple_bookmark` `ar` `avi` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `caff` `elf` `fit` `flac` `gif` `gzip` `html` `jpeg` `json` `jsonl` `leveldb_table` `luajit` `macho` `macho_fat` `matroska` `moc3` `mp3` `mp4` `mpeg_ts` `ogg` `opentimestamps` `pcap` `pcapng` `png` `tar` `tiff` `toml` `tzif` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
 |`tcp_stream`                                                    |Group                                                                                                        |<sub>`dns_tcp` `rtmp` `tls`</sub>|
 |`udp_payload`                                                   |Group                                                                                                        |<sub>`dns`</sub>|
 
@@ -569,6 +570,27 @@ $ fq -d csv -o comma="\t" to_csv file.tsv
 ```sh
 $ fq -d csv '.[0] as $t | .[1:] | map(with_entries(.key = $t[.key]))' file.csv
 ```
+
+## fit
+
+### Limitations
+
+- Fields with subcomponents, such as "compressed_speed_distance" field on globalMessageNumber 20 is not represented correctly. 
+  The field is read as 3 separate bytes where the first 12 bits are speed and the last 12 bits are distance.
+- There are still lots of UNKOWN fields due to gaps in Garmins SDK Profile documentation. (Currently FIT SDK 21.126)
+- Compressed timestamp messages are not accumulated against last known full timestamp.
+
+### Convert stream of data messages to JSON array
+
+```
+$ fq '[.data_records[] | select(.record_header.message_type == "data").data_message]' file.fit 
+```
+
+### Authors
+- Mikael Lofjärd mikael.lofjard@gmail.com, original author
+
+### References
+- https://developer.garmin.com/fit/protocol/
 
 ## flac_frame
 
