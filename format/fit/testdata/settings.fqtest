@@ -122,4 +122,4 @@ $ fq -d fit dv settings.fit
 0x40|                                       00      |             .  |        local_message_type: 0 0x4d.4-0x4e (0.4)
     |                                               |                |      data_message{}: 0x4e-0x50 (2)
 0x40|                                          00 64|              .d|        hrm_ant_id: 25600 0x4e-0x50 (2)
-0x50|39 50|                                         |9P|             |  crc: 20537 (valid) 0x50-0x52 (2)
+0x50|39 50|                                         |9P|             |  crc: 0x5039 (valid) 0x50-0x52 (2)
