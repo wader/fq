@@ -28,8 +28,8 @@ func init() {
 }
 
 var fitCRCTable = [16]uint16{
-	0x0000, 0xCC01, 0xD801, 0x1400, 0xF001, 0x3C00, 0x2800, 0xE401,
-	0xA001, 0x6C00, 0x7800, 0xB401, 0x5000, 0x9C01, 0x8801, 0x4400,
+	0x0000, 0xcc01, 0xd801, 0x1400, 0xf001, 0x3c00, 0x2800, 0xe401,
+	0xa001, 0x6c00, 0x7800, 0xb401, 0x5000, 0x9c01, 0x8801, 0x4400,
 }
 
 func calcCRC(bytes []byte) uint16 {
@@ -38,12 +38,12 @@ func calcCRC(bytes []byte) uint16 {
 	for i := 0; i < len(bytes); i++ {
 		// compute checksum of lower four bits of byte
 		var checkByte = bytes[i]
-		var tmp = fitCRCTable[crc&0xF]
-		crc = (crc >> 4) & 0x0FFF
-		crc = crc ^ tmp ^ fitCRCTable[checkByte&0xF]
-		tmp = fitCRCTable[crc&0xF]
-		crc = (crc >> 4) & 0x0FFF
-		crc = crc ^ tmp ^ fitCRCTable[(checkByte>>4)&0xF]
+		var tmp = fitCRCTable[crc&0xf]
+		crc = (crc >> 4) & 0x0fff
+		crc = crc ^ tmp ^ fitCRCTable[checkByte&0xf]
+		tmp = fitCRCTable[crc&0xf]
+		crc = (crc >> 4) & 0x0fff
+		crc = crc ^ tmp ^ fitCRCTable[(checkByte>>4)&0xf]
 	}
 
 	return crc
@@ -97,7 +97,7 @@ func fitDecodeFileHeader(d *decode.D, fc *fitContext) {
 	d.FieldRawLen("data_type", 4*8, d.AssertBitBuf([]byte(".FIT")))
 	if headerSize == 14 {
 		headerCRC := calcCRC(d.BytesRange(frameStart, int(headerSize)-2))
-		d.FieldU16("crc", d.UintValidate(uint64(headerCRC)))
+		d.FieldU16("crc", d.UintValidate(uint64(headerCRC)), scalar.UintHex)
 	}
 	fc.headerSize = headerSize
 	fc.dataSize = dataSize
@@ -393,7 +393,7 @@ func decodeFIT(d *decode.D) any {
 	} else {
 		fileCRC = calcCRC(d.BytesRange(14*8, int(fc.dataSize))) // 14 byte header - CRC everything below header except the CRC itself
 	}
-	d.FieldU16("crc", d.UintValidate(uint64(fileCRC)))
+	d.FieldU16("crc", d.UintValidate(uint64(fileCRC)), scalar.UintHex)
 
 	return nil
 }

@@ -10,34 +10,34 @@ import (
 var scConst = 180 / math.Pow(2, 31)
 
 var invalidUint = map[string]uint64{
-	"byte":    0xFF,
-	"enum":    0xFF,
-	"uint8":   0xFF,
+	"byte":    0xff,
+	"enum":    0xff,
+	"uint8":   0xff,
 	"uint8z":  0x00,
-	"uint16":  0xFFFF,
+	"uint16":  0xffff,
 	"uint16z": 0x0000,
-	"uint32":  0xFFFFFFFF,
-	"uint32z": 0x00000000,
-	"uint64":  0xFFFFFFFFFFFFFFFF,
-	"uint64z": 0x0000000000000000,
+	"uint32":  0xffff_ffff,
+	"uint32z": 0x0000_0000,
+	"uint64":  0xffff_ffff_ffff_ffff,
+	"uint64z": 0x0000_0000_0000_0000,
 }
 
 var invalidSint = map[string]int64{
-	"sint8":  0x7F,
-	"sint16": 0x7FFF,
-	"sint32": 0x7FFFFFFF,
-	"sint64": 0x7FFFFFFFFFFFFFFF,
+	"sint8":  0x7f,
+	"sint16": 0x7fff,
+	"sint32": 0x7fff_ffff,
+	"sint64": 0x7fff_ffff_ffff_ffff,
 }
 
 var invalidFloat = map[string]float64{
-	"float32": 0xFFFFFFFF,
-	"float64": 0xFFFFFFFFFFFFFFFF,
+	"float32": 0xffff_ffff,
+	"float64": 0xffff_ffff_ffff_ffff,
 }
 
 func GetUintFormatter(fDef LocalFieldDef) scalar.UintFn {
 	return scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
 		if s.Actual == invalidUint[fDef.Type] {
-			s.Description = "Invalid"
+			s.Description = "invalid"
 			return s, nil
 		}
 		if fDef.Scale != 0.0 && fDef.Offset != 0 {
@@ -53,7 +53,7 @@ func GetUintFormatter(fDef LocalFieldDef) scalar.UintFn {
 
 		s.Description = fDef.Unit
 		if t, ok := TypeDefMap[fDef.Format]; ok {
-			if u, innerok := t[s.Actual]; innerok {
+			if u, innerOk := t[s.Actual]; innerOk {
 				s.Sym = u.Name
 			}
 		}
@@ -64,7 +64,7 @@ func GetUintFormatter(fDef LocalFieldDef) scalar.UintFn {
 func GetSintFormatter(fDef LocalFieldDef) scalar.SintFn {
 	return scalar.SintFn(func(s scalar.Sint) (scalar.Sint, error) {
 		if s.Actual == invalidSint[fDef.Type] {
-			s.Description = "Invalid"
+			s.Description = "invalid"
 			return s, nil
 		}
 		if fDef.Unit == "semicircles" {
@@ -90,7 +90,7 @@ func GetSintFormatter(fDef LocalFieldDef) scalar.SintFn {
 func GetFloatFormatter(fDef LocalFieldDef) scalar.FltFn {
 	return scalar.FltFn(func(s scalar.Flt) (scalar.Flt, error) {
 		if s.Actual == invalidFloat[fDef.Type] {
-			s.Description = "Invalid"
+			s.Description = "invalid"
 			return s, nil
 		}
 		if fDef.Scale != 0.0 && fDef.Offset != 0 {
