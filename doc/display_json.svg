@@ -10,10 +10,17 @@
             white-space: pre;
             fill: #bbbbbb;
         }
+        .bg {
+            stroke-width: "0.5px";
+        }
+        <!-- Foreground ANSI colors -->
+        .fa2 { fill: #00bb00; }
     </style>
     <rect width="100%" height="100%" x="0" y="0" style="fill: #000000"/>
-<text x="0" y="0.5em"><tspan>$ fq -n &#39;&#34;hello&#34;&#39;</tspan></text>
-<text x="0" y="1.5em"><tspan style="fill:#00bb00">&#34;hello&#34;</tspan></text>
-<text x="0" y="3.5em"><tspan>$ fq -n &#39;&#34;hello&#34; | d&#39;</tspan></text>
-<text x="0" y="4.5em"><tspan style="fill:#00bb00">&#34;hello&#34;</tspan></text>
+<g x="0">
+<text y="0.5em"><tspan>$ fq -n &#39;&#34;hello&#34;&#39;</tspan></text>
+<text y="1.5em"><tspan class="fa2">&#34;hello&#34;</tspan></text>
+<text y="3.5em"><tspan>$ fq -n &#39;&#34;hello&#34; | d&#39;</tspan></text>
+<text y="4.5em"><tspan class="fa2">&#34;hello&#34;</tspan></text>
+</g>
 </svg>
