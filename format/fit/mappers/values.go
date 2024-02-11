@@ -2,9 +2,12 @@ package mappers
 
 import (
 	"math"
+	"time"
 
 	"github.com/wader/fq/pkg/scalar"
 )
+
+var epochDate = time.Date(1989, time.December, 31, 0, 0, 0, 0, time.UTC)
 
 // Used for conversion from semicircles to decimal longitude latitude
 var scConst = 180 / math.Pow(2, 31)
@@ -51,12 +54,20 @@ func GetUintFormatter(fDef LocalFieldDef) scalar.UintFn {
 			}
 		}
 
-		s.Description = fDef.Unit
 		if t, ok := TypeDefMap[fDef.Format]; ok {
 			if u, innerOk := t[s.Actual]; innerOk {
 				s.Sym = u.Name
 			}
 		}
+
+		switch fDef.Format {
+		case "date_time",
+			"local_date_time":
+			s.Description = epochDate.Add(time.Duration(s.Actual) * time.Second).Format(time.RFC3339)
+		default:
+			s.Description = fDef.Unit
+		}
+
 		return s, nil
 	})
 }

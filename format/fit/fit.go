@@ -1,5 +1,8 @@
 package fit
 
+// https://developer.garmin.com/fit/protocol/
+// https://developer.garmin.com/fit/cookbook/decoding-activity-files/
+
 import (
 	"embed"
 	"fmt"

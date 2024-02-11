@@ -591,6 +591,7 @@ $ fq '[.data_records[] | select(.record_header.message_type == "data").data_mess
 
 ### References
 - https://developer.garmin.com/fit/protocol/
+- https://developer.garmin.com/fit/cookbook/decoding-activity-files/
 
 ## flac_frame
 
