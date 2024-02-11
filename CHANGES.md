@@ -1,3 +1,142 @@
+# 0.10.0
+
+Adds support for various LevelDB formats (thanks @mikez) and Garmin Flexible and Interoperable Data Transfer format (FIT) (thanks @mlofjard).
+
+And as usual some small fixes and dependency updates.
+
+## Changes
+
+- On macOS fq now reads init script from `~/.config/fq` in addition to `~/Library/Application Support/fq`. #871
+- Switch readline module from own fork to https://github.com/ergochat/readline #854
+- Updated gojq fork. Notable changes from upstream below. #844
+  - Fix pre-defined variables to be available in initial modules
+  - Fix object construction with duplicate keys
+
+## Format changes
+
+- `aac_frame` Decode instance tag and common window flag. #859
+- `fit` Add support for Garmin Flexible and Interoperable Data Transfer decoder. Thanks @mlofjard #874
+  - This format is used by various GPS tracking devices to record location, speed etc.
+  - Example of converting position information to KML:
+  ```jq
+  # to_kml.jq
+  # convert locations in a fit structure to KML
+  def to_kml:
+    ( [ .data_records[].data_message as {position_lat: $lat, position_long: $long}
+      | select($lat and $long)
+      | [$long, $lat, 0]
+      | join(",")
+      ]
+    | join(". ")
+    | { kml: {"@xmlns":"http://earth.google.com/kml/2.0"
+      , Document: {Placemark: {LineString: {coordinates: .}}}}
+      }
+    | to_xml({indent:2})
+    );
+  ```
+  Usage:
+  ```sh
+  # -L to add current directory to library path
+  # -r for raw string output
+  # 'include "to_ml";' to include to_kml.jq
+  # to_kml calls to_kml function
+  $ fq -L . -r 'include "to_kml"; to_kml' file.fit > file.kml
+  ```
+
+
+- `hevc_sps` Fix some incorrect profile_tier_level decoding. #829
+- `html` Fix issue parsing elements including SOLIDUS "/". #870
+  - Upstream issue https://github.com/golang/go/issues/63402
+- `mpeg_es` Support ES_ID_Inc and decode descriptors for IOD tags
+- `leveldb_descriptor`, `leveldb_log`, `leveldb_table` Add support for LevelDB. Thanks @mikez #824
+  - This format is used by many database backends and applications like Google chrome.
+- `pcapng` Decode all section headers instead of just the first. #860
+- `png` Fix incorrect decoding of type flags. #847
+- `hevc_sps` Fix incorrect decoding of profile_tier_level. #829
+- `tls` Fix field name typos. #839
+- `mp4`
+  - Don't try decode samples for a track that has an external reference. #834
+  - Use box structure instead of track id to keep track for sample table data. #833
+  - `ctts` box v0 sample offset seems to be signed in practice but not in spec. #832
+- `webp` Decode width, height and flags for lossless WebP. #857
+
+## Changelog
+
+* 6c3914aa Add DFDL acronym to README.md
+* 43c76937 Update docker-golang to 1.21.5 from 1.21.4
+* 836af78a Update docker-golang to 1.21.6 from 1.21.5
+* f9e1e759 Update docker-golang to 1.22.0 from 1.21.6
+* 54da5efc Update ergochat-readline to 81f0f2329ad3 from cca60bf24c9f
+* bed912c3 Update github-go-version to 1.21.5 from 1.21.4
+* 3f48e3be Update github-go-version to 1.21.6 from 1.21.5
+* 5bfb2bb1 Update github-go-version to 1.22.0 from 1.21.6
+* 888b0be0 Update github-golangci-lint to 1.56.0 from 1.55.2
+* 283380ba Update github-golangci-lint to 1.56.1 from 1.56.0
+* be79c193 Update gomod-golang-x-crypto to 0.16.0 from 0.15.0
+* 6aba928f Update gomod-golang-x-crypto to 0.17.0 from 0.16.0
+* 561fed97 Update gomod-golang-x-crypto to 0.18.0 from 0.17.0
+* b5388eaa Update gomod-golang-x-crypto to 0.19.0 from 0.18.0
+* 0200a4ee Update gomod-golang-x-net to 0.19.0 from 0.18.0
+* 2e22e1b8 Update gomod-golang-x-net to 0.20.0 from 0.19.0
+* 40bcb194 Update gomod-golang-x-net to 0.21.0 from 0.20.0
+* 2a1d9707 Update gomod-golang-x-term to 0.16.0 from 0.15.0
+* 310c78ea Update gomod-golang-x-term to 0.17.0 from 0.16.0
+* 536583cf Update make-golangci-lint to 1.56.0 from 1.55.2
+* 5369576d Update make-golangci-lint to 1.56.1 from 1.56.0
+* e51c746d aac_frame: CPE: Decode instance tag and common window flag
+* f5f8e93c bson: Fix jq style a bit
+* d0a1b301 bump readline to 0.1.0-rc1
+* b56258cf bump,readline: Add bump config and update to latest master
+* 0070e389 bump,readline: Skip bump until not rc
+* 63e0aa3c doc: Fix weird wording in README.md
+* e5fd1eb4 doc: Generate svgs with new ansisvg
+* 55470deb doc: Update docs to include fit format
+* c47756dc doc: Update svgs after ansisvg update
+* 54c6f0cd fit: Added support for "invalid" value checking.
+* 46dbf5b7 fit: Added support for ANT+ FIT format (used by Garmin devices)
+* 6219d57c fit: Added support for dynamic subfields
+* 33e5851d fit: Fix field casing to snake_case. Misc cleanup.
+* 76307e4d fit: Formatted date/time description for timestamp fields
+* 88622804 fit: Made long/lat present as float64
+* 788088f8 fit: Show crc as hex, lower case "invalid" and some style harmonization
+* a07ce117 fq: Relicense float80 code to MIT
+* 5829c6b4 gojq: Update fq fork
+* d155c80c gojq: Update fq fork
+* a793d109 goreleaser: Fix deprecated options
+* 919e0795 hevc_sps: Fix some incorrect profile_tier_level decoding
+* 69ae7659 interp: Fix crash when using line_bytes=0
+* 21766000 interp: Support ~/.config/fq as fallback on macOS
+* fb910bd4 ldb: first draft
+* efc59a81 ldb: uncompression support
+* 41f27a13 leveldb: add `torepr` for descriptor
+* 2df0f0fb leveldb: add log and descriptor decoders
+* b05aa997 leveldb: address PR comments
+* 2f5f1831 leveldb: decode unfragmented .log files further; fix UTF8 decoding
+* e826f097 leveldb: fix Errorf arguments
+* 42830911 leveldb: fix all.fqtest failures
+* 287ed366 leveldb: fix metaindex keys, refactoring, and jq syntax per PR
+* 8665df56 leveldb: fix table's data blocks' internal keys decoding
+* 08e3d2d2 leveldb: improve `stringify` by preallocating result
+* 3a396e15 leveldb: improve log documentation
+* 1ba8dec5 leveldb: in some properties, change spaces to underscores
+* e735cead leveldb: propagate error
+* 07ad9401 leveldb: rename "suffix" to "sequence_number_suffix"
+* 78a3e94b leveldb: rename functions and add comments
+* cc0d5a8b leveldb: update docs
+* fe1099b9 leveldb: updates per PR comments
+* 0d06e0a4 mp4: Don't decode samples if track has external data reference
+* d2c5ce55 mp4: Use box structure instead of track id to keep track for sample table data
+* aadf26f6 mp4: ctts v0 sample_offset seems to be signed in practice
+* fca55b2c mpeg_es: Support ES_ID_Inc and decode descriptors for IOD tags
+* e3af4670 pcapng: Decode all section headers, clenaup descriptions
+* 38b4412a png: Type flags were off-by-one bit
+* fb1c625a readline,bump: Fix version compare link
+* 41226f48 readline: Switch to ergochat/readline
+* cd572d3a readline: Update to 0.1.0 and add bump config
+* 7906f33d test: Support to more common -update flag
+* 3b7cc1f4 tls: Fix field name typos
+* b0421dfc webp: Decode width, height and flags for lossless webp
+
 # 0.9.0
 
 ## Changes
