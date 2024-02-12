@@ -84,6 +84,26 @@ type localFieldDefMap map[uint64]map[uint64]mappers.LocalFieldDef
 type localMsgIsDevDef map[uint64]bool
 type valueMap map[string]valueType
 
+// expected size in bytes
+var expectedSizeMap = map[string]uint64{
+	"byte":    1,
+	"enum":    1,
+	"float32": 4,
+	"float64": 8,
+	"sint8":   1,
+	"sint16":  2,
+	"sint32":  4,
+	"sint64":  8,
+	"uint8":   1,
+	"uint8z":  1,
+	"uint16":  2,
+	"uint16z": 2,
+	"uint32":  4,
+	"uint32z": 4,
+	"uint64":  8,
+	"uint64z": 8,
+}
+
 // "Magic" numbers
 const (
 	developerFieldDescMesgNo = 206 // Special data message used as dynamic field definition message
@@ -216,13 +236,24 @@ func fitDecodeDefinitionMessage(d *decode.D, drc *dataRecordContext, lmfd localF
 	}
 }
 
-func fieldUint(fieldFn func(string, ...scalar.UintMapper) uint64, expectedSize uint64, fDef mappers.LocalFieldDef, uintFormatter scalar.UintFn, fdc *fileDescriptionContext, valMap valueMap) {
+func readUint(d *decode.D, fDef mappers.LocalFieldDef, valMap valueMap) {
+	expectedSize := expectedSizeMap[fDef.Type]
+	if fDef.Size != expectedSize {
+		d.SeekRel(int64(fDef.Size) * 8) // skip over array types since they cannot be referenced by subfields
+	} else {
+		val := d.U(int(expectedSize) * 8)
+		valMap[fDef.Name] = valueType{value: val, typ: fDef.Format}
+	}
+}
+
+func fieldUint(d *decode.D, fDef mappers.LocalFieldDef, uintFormatter scalar.UintFn, fdc *fileDescriptionContext, valMap valueMap) {
 	var val uint64
+	expectedSize := expectedSizeMap[fDef.Type]
 
 	if fDef.Size != expectedSize {
 		arrayCount := fDef.Size / expectedSize
 		for i := uint64(0); i < arrayCount; i++ {
-			fieldFn(fmt.Sprintf("%s_%d", fDef.Name, i), uintFormatter)
+			d.FieldU(fmt.Sprintf("%s_%d", fDef.Name, i), int(expectedSize)*8, uintFormatter)
 		}
 	} else {
 		if fDef.GlobalFieldDef.HasSubField {
@@ -239,17 +270,17 @@ func fieldUint(fieldFn func(string, ...scalar.UintMapper) uint64, expectedSize u
 							Scale:  subFieldDef.Scale,
 							Offset: subFieldDef.Offset,
 						})
-						val = fieldFn(subFieldDef.Name, subUintFormatter)
+						val = d.FieldU(subFieldDef.Name, int(expectedSize)*8, subUintFormatter)
 						found = true
 						continue
 					}
 				}
 			}
 			if !found { // SubField conditions could not be resolved
-				val = fieldFn(fDef.Name, uintFormatter)
+				val = d.FieldU(fDef.Name, int(expectedSize)*8, uintFormatter)
 			}
 		} else {
-			val = fieldFn(fDef.Name, uintFormatter)
+			val = d.FieldU(fDef.Name, int(expectedSize)*8, uintFormatter)
 		}
 
 		// Save developer field definitions
@@ -268,25 +299,27 @@ func fieldUint(fieldFn func(string, ...scalar.UintMapper) uint64, expectedSize u
 	}
 }
 
-func fieldSint(fieldFn func(string, ...scalar.SintMapper) int64, expectedSize uint64, fDef mappers.LocalFieldDef, sintFormatter scalar.SintFn) {
+func fieldSint(d *decode.D, fDef mappers.LocalFieldDef, sintFormatter scalar.SintFn) {
+	expectedSize := expectedSizeMap[fDef.Type]
 	if fDef.Size != expectedSize {
 		arrayCount := fDef.Size / expectedSize
 		for i := uint64(0); i < arrayCount; i++ {
-			fieldFn(fmt.Sprintf("%s_%d", fDef.Name, i), sintFormatter)
+			d.FieldS(fmt.Sprintf("%s_%d", fDef.Name, i), int(expectedSize)*8, sintFormatter)
 		}
 	} else {
-		fieldFn(fDef.Name, sintFormatter)
+		d.FieldS(fDef.Name, int(expectedSize)*8, sintFormatter)
 	}
 }
 
-func fieldFloat(fieldFn func(string, ...scalar.FltMapper) float64, expectedSize uint64, fDef mappers.LocalFieldDef, floatFormatter scalar.FltFn) {
+func fieldFloat(d *decode.D, fDef mappers.LocalFieldDef, floatFormatter scalar.FltFn) {
+	expectedSize := expectedSizeMap[fDef.Type]
 	if fDef.Size != expectedSize {
 		arrayCount := fDef.Size / expectedSize
 		for i := uint64(0); i < arrayCount; i++ {
-			fieldFn(fmt.Sprintf("%s_%d", fDef.Name, i), floatFormatter)
+			d.FieldF(fmt.Sprintf("%s_%d", fDef.Name, i), int(expectedSize)*8, floatFormatter)
 		}
 	} else {
-		fieldFn(fDef.Name)
+		d.FieldF(fDef.Name, int(expectedSize)*8)
 	}
 }
 
@@ -317,23 +350,12 @@ func fitDecodeDataMessage(d *decode.D, drc *dataRecordContext, lmfd localFieldDe
 
 	// pre read all integer fields and store them in the value map
 	// so that they can be referenced by eventual subfields
-	var val uint64
 	curPos := d.Pos()
 	for _, k := range keys {
 		fDef := lmfd[drc.localMessageType][uint64(k)]
 		switch fDef.Type {
-		case "enum", "uint8", "uint8z", "byte":
-			val = d.U8()
-			valMap[fDef.Name] = valueType{value: val, typ: fDef.Format}
-		case "uint16", "uint16z":
-			val = d.U16()
-			valMap[fDef.Name] = valueType{value: val, typ: fDef.Format}
-		case "uint32", "uint32z":
-			val = d.U32()
-			valMap[fDef.Name] = valueType{value: val, typ: fDef.Format}
-		case "uint64", "uint64z":
-			val = d.U64()
-			valMap[fDef.Name] = valueType{value: val, typ: fDef.Format}
+		case "enum", "byte", "uint8", "uint8z", "uint16", "uint16z", "uint32", "uint32z", "uint64", "uint64z":
+			readUint(d, fDef, valMap)
 		default:
 			d.SeekRel(int64(fDef.Size) * 8)
 		}
@@ -348,26 +370,12 @@ func fitDecodeDataMessage(d *decode.D, drc *dataRecordContext, lmfd localFieldDe
 		var floatFormatter = mappers.GetFloatFormatter(fDef)
 
 		switch fDef.Type {
-		case "enum", "uint8", "uint8z", "byte":
-			fieldUint(d.FieldU8, 1, fDef, uintFormatter, &fdc, valMap)
-		case "uint16", "uint16z":
-			fieldUint(d.FieldU16, 2, fDef, uintFormatter, &fdc, valMap)
-		case "uint32", "uint32z":
-			fieldUint(d.FieldU32, 4, fDef, uintFormatter, &fdc, valMap)
-		case "uint64", "uint64z":
-			fieldUint(d.FieldU64, 8, fDef, uintFormatter, &fdc, valMap)
-		case "sint8":
-			fieldSint(d.FieldS8, 1, fDef, sintFormatter)
-		case "sint16":
-			fieldSint(d.FieldS16, 2, fDef, sintFormatter)
-		case "sint32":
-			fieldSint(d.FieldS32, 4, fDef, sintFormatter)
-		case "sint64":
-			fieldSint(d.FieldS64, 8, fDef, sintFormatter)
-		case "float32":
-			fieldFloat(d.FieldF32, 4, fDef, floatFormatter)
-		case "float64":
-			fieldFloat(d.FieldF64, 8, fDef, floatFormatter)
+		case "enum", "byte", "uint8", "uint8z", "uint16", "uint16z", "uint32", "uint32z", "uint64", "uint64z":
+			fieldUint(d, fDef, uintFormatter, &fdc, valMap)
+		case "sint8", "sint16", "sint32", "sint64":
+			fieldSint(d, fDef, sintFormatter)
+		case "float32", "float64":
+			fieldFloat(d, fDef, floatFormatter)
 		case "string":
 			fieldString(d, fDef, &fdc)
 		default:
