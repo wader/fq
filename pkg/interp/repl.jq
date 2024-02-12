@@ -52,9 +52,10 @@ def _complete($line; $cursor_pos):
   def _is_separator: . as $c | " .;[]()|=" | contains($c);
   def _is_internal: startswith("_") or startswith("$_");
   def _query_index_or_key($q):
-    ( ([.[] | _eval($q; {}) | type]) as $n
-    | if ($n | all(. == "object")) then "."
-      elif ($n | all(. == "array")) then "[]"
+    ( ([.[] | _eval($q; {}) | type])
+    | if length > 0 and all(. == "object") then "."
+      # TODO: only [] if not first [1,2,3]\t -> [][] not [].[]
+      elif length > 0 and all(. == "array") then ".[]"
       else null
       end
     );
