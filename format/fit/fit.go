@@ -251,7 +251,6 @@ func fieldUint(fieldFn func(string, ...scalar.UintMapper) uint64, expectedSize u
 		} else {
 			val = fieldFn(fDef.Name, uintFormatter)
 		}
-		valMap[fDef.Name] = valueType{value: val, typ: fDef.Format}
 
 		// Save developer field definitions
 		switch fDef.Name {
@@ -315,6 +314,31 @@ func fitDecodeDataMessage(d *decode.D, drc *dataRecordContext, lmfd localFieldDe
 	sort.Ints(keys)
 
 	isDevDep := isDevMap[drc.localMessageType]
+
+	// pre read all integer fields and store them in the value map
+	// so that they can be referenced by eventual subfields
+	var val uint64
+	curPos := d.Pos()
+	for _, k := range keys {
+		fDef := lmfd[drc.localMessageType][uint64(k)]
+		switch fDef.Type {
+		case "enum", "uint8", "uint8z", "byte":
+			val = d.U8()
+			valMap[fDef.Name] = valueType{value: val, typ: fDef.Format}
+		case "uint16", "uint16z":
+			val = d.U16()
+			valMap[fDef.Name] = valueType{value: val, typ: fDef.Format}
+		case "uint32", "uint32z":
+			val = d.U32()
+			valMap[fDef.Name] = valueType{value: val, typ: fDef.Format}
+		case "uint64", "uint64z":
+			val = d.U64()
+			valMap[fDef.Name] = valueType{value: val, typ: fDef.Format}
+		default:
+			d.SeekRel(int64(fDef.Size) * 8)
+		}
+	}
+	d.SeekRel(curPos - d.Pos())
 
 	for _, k := range keys {
 		fDef := lmfd[drc.localMessageType][uint64(k)]
