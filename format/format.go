@@ -179,6 +179,7 @@ var (
 	WASM                = &decode.Group{Name: "wasm"}
 	WAV                 = &decode.Group{Name: "wav"}
 	WebP                = &decode.Group{Name: "webp"}
+	WOFF2               = &decode.Group{Name: "woff2"}
 	XML                 = &decode.Group{Name: "xml"}
 	YAML                = &decode.Group{Name: "yaml"}
 	Zip                 = &decode.Group{Name: "zip"}
