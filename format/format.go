@@ -45,17 +45,17 @@ type Probe_Args_In struct {
 
 var (
 	Image          = &decode.Group{Name: "image"}
-	Probe          = &decode.Group{Name: "probe", DefaultInArg: Probe_In{}}
-	Probe_Args     = &decode.Group{Name: "probe_args", DefaultInArg: Probe_Args_In{}}
-	Link_Frame     = &decode.Group{Name: "link_frame", DefaultInArg: Link_Frame_In{}}   // ex: ethernet
 	INET_Packet    = &decode.Group{Name: "inet_packet", DefaultInArg: INET_Packet_In{}} // ex: ipv4
 	IP_Packet      = &decode.Group{Name: "ip_packet", DefaultInArg: INET_Packet_In{}}   // ex: tcp
+	Link_Frame     = &decode.Group{Name: "link_frame", DefaultInArg: Link_Frame_In{}}   // ex: ethernet
+	MP3_Frame_Tags = &decode.Group{Name: "mp3_frame_tags"}
+	Probe          = &decode.Group{Name: "probe", DefaultInArg: Probe_In{}}
+	Probe_Args     = &decode.Group{Name: "probe_args", DefaultInArg: Probe_Args_In{}}
 	TCP_Stream     = &decode.Group{Name: "tcp_stream", DefaultInArg: TCP_Stream_In{}}   // ex: http
 	UDP_Payload    = &decode.Group{Name: "udp_payload", DefaultInArg: UDP_Payload_In{}} // ex: dns
-	MP3_Frame_Tags = &decode.Group{Name: "mp3_frame_tags"}
 
-	Bytes = &decode.Group{Name: "bytes"}
 	Bits  = &decode.Group{Name: "bits"}
+	Bytes = &decode.Group{Name: "bytes"}
 
 	AAC_Frame           = &decode.Group{Name: "aac_frame"}
 	ADTS                = &decode.Group{Name: "adts"}
@@ -83,7 +83,6 @@ var (
 	Bitcoin_Block       = &decode.Group{Name: "bitcoin_block"}
 	Bitcoin_Script      = &decode.Group{Name: "bitcoin_script"}
 	Bitcoin_Transaction = &decode.Group{Name: "bitcoin_transaction"}
-	Opentimestamps      = &decode.Group{Name: "opentimestamps"}
 	Bplist              = &decode.Group{Name: "bplist"}
 	BSD_Loopback_Frame  = &decode.Group{Name: "bsd_loopback_frame"}
 	BSON                = &decode.Group{Name: "bson"}
@@ -142,13 +141,14 @@ var (
 	MP4                 = &decode.Group{Name: "mp4"}
 	MPEG_ASC            = &decode.Group{Name: "mpeg_asc"}
 	MPEG_ES             = &decode.Group{Name: "mpeg_es"}
-	MPES_PES            = &decode.Group{Name: "mpeg_pes"}
 	MPEG_PES_Packet     = &decode.Group{Name: "mpeg_pes_packet"}
 	MPEG_SPU            = &decode.Group{Name: "mpeg_spu"}
 	MPEG_TS             = &decode.Group{Name: "mpeg_ts"}
+	MPES_PES            = &decode.Group{Name: "mpeg_pes"}
 	MsgPack             = &decode.Group{Name: "msgpack"}
 	Ogg                 = &decode.Group{Name: "ogg"}
 	Ogg_Page            = &decode.Group{Name: "ogg_page"}
+	Opentimestamps      = &decode.Group{Name: "opentimestamps"}
 	Opus_Packet         = &decode.Group{Name: "opus_packet"}
 	PCAP                = &decode.Group{Name: "pcap"}
 	PCAPNG              = &decode.Group{Name: "pcapng"}
