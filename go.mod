@@ -48,7 +48,7 @@ require (
 	// bump: gomod-golang-x-crypto /golang\.org\/x\/crypto v(.*)/ https://github.com/golang/crypto.git|^0
 	// bump: gomod-golang-x-crypto command go get -d golang.org/x/crypto@v$LATEST && go mod tidy
 	// bump: gomod-golang-x-crypto link "Tags" https://github.com/golang/crypto/tags
-	golang.org/x/crypto v0.19.0
+	golang.org/x/crypto v0.20.0
 
 	// has no tags
 	// go get -d golang.org/x/exp@master && go mod tidy
