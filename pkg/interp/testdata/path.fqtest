@@ -1,0 +1,5 @@
+# TODO: possibly fix this in the future. the eval wrapper in it's eval
+# error path currently builds a new object and indexes into it which
+# makes gojq eval bail out when in "path"-mode
+$ fq -n 'try path(eval("error")) catch .'
+"invalid path against: object ({\"error\":null,\"input\":null})"
