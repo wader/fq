@@ -22,8 +22,8 @@ const (
 )
 
 var recordTypeNames = scalar.UintMapSymStr{
-	recordTypeRightsManagementHeader: "Rights management header",
-	recordTypeLicenseStore:           "License store",
+	recordTypeRightsManagementHeader: "rights_management_header",
+	recordTypeLicenseStore:           "license_store",
 }
 
 func playreadyPsshDecode(d *decode.D) any {
