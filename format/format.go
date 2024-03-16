@@ -146,6 +146,7 @@ var (
 	MPEG_TS             = &decode.Group{Name: "mpeg_ts"}
 	MPES_PES            = &decode.Group{Name: "mpeg_pes"}
 	MsgPack             = &decode.Group{Name: "msgpack"}
+	NES                 = &decode.Group{Name: "nes"}
 	Ogg                 = &decode.Group{Name: "ogg"}
 	Ogg_Page            = &decode.Group{Name: "ogg_page"}
 	Opentimestamps      = &decode.Group{Name: "opentimestamps"}

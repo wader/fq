@@ -22,6 +22,7 @@ $ fq -n _registry.groups.probe
   "matroska",
   "moc3",
   "mp4",
+  "nes",
   "ogg",
   "opentimestamps",
   "pcap",
@@ -135,6 +136,7 @@ mpeg_pes_packet      MPEG Packetized elementary stream packet
 mpeg_spu             Sub Picture Unit (DVD subtitle)
 mpeg_ts              MPEG Transport Stream
 msgpack              MessagePack
+nes                  iNES/NES 2.0 cartridge ROM format
 ogg                  OGG file
 ogg_page             OGG page
 opentimestamps       OpenTimestamps file
