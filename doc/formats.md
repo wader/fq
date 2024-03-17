@@ -94,6 +94,7 @@
 |`mpeg_spu`                                                      |Sub&nbsp;Picture&nbsp;Unit&nbsp;(DVD&nbsp;subtitle)                                                          |<sub></sub>|
 |`mpeg_ts`                                                       |MPEG&nbsp;Transport&nbsp;Stream                                                                              |<sub></sub>|
 |[`msgpack`](#msgpack)                                           |MessagePack                                                                                                  |<sub></sub>|
+|[`nes`](#nes)                                                   |iNES/NES&nbsp;2.0&nbsp;cartridge&nbsp;ROM&nbsp;format                                                        |<sub></sub>|
 |`ogg`                                                           |OGG&nbsp;file                                                                                                |<sub>`ogg_page` `vorbis_packet` `opus_packet` `flac_metadatablock` `flac_frame`</sub>|
 |`ogg_page`                                                      |OGG&nbsp;page                                                                                                |<sub></sub>|
 |[`opentimestamps`](#opentimestamps)                             |OpenTimestamps&nbsp;file                                                                                     |<sub></sub>|
@@ -135,7 +136,7 @@
 |`ip_packet`                                                     |Group                                                                                                        |<sub>`icmp` `icmpv6` `tcp_segment` `udp_datagram`</sub>|
 |`link_frame`                                                    |Group                                                                                                        |<sub>`bsd_loopback_frame` `ether8023_frame` `ipv4_packet` `ipv6_packet` `sll2_packet` `sll_packet`</sub>|
 |`mp3_frame_tags`                                                |Group                                                                                                        |<sub>`mp3_frame_vbri` `mp3_frame_xing`</sub>|
-|`probe`                                                         |Group                                                                                                        |<sub>`adts` `aiff` `apple_bookmark` `ar` `avi` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `caff` `elf` `fit` `flac` `gif` `gzip` `html` `jpeg` `json` `jsonl` `leveldb_table` `luajit` `macho` `macho_fat` `matroska` `moc3` `mp3` `mp4` `mpeg_ts` `ogg` `opentimestamps` `pcap` `pcapng` `png` `tar` `tiff` `toml` `tzif` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
+|`probe`                                                         |Group                                                                                                        |<sub>`adts` `aiff` `apple_bookmark` `ar` `avi` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `caff` `elf` `fit` `flac` `gif` `gzip` `html` `jpeg` `json` `jsonl` `leveldb_table` `luajit` `macho` `macho_fat` `matroska` `moc3` `mp3` `mp4` `mpeg_ts` `nes` `ogg` `opentimestamps` `pcap` `pcapng` `png` `tar` `tiff` `toml` `tzif` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
 |`tcp_stream`                                                    |Group                                                                                                        |<sub>`dns_tcp` `rtmp` `tls`</sub>|
 |`udp_payload`                                                   |Group                                                                                                        |<sub>`dns`</sub>|
 
@@ -939,6 +940,42 @@ $ fq -d msgpack torepr file.msgpack
 
 ### References
 - https://github.com/msgpack/msgpack/blob/master/spec.md
+
+## nes
+
+### Limitations
+
+- `prg_rom`, `chr_rom` and `trainer` fields may contain data that is just random
+  junk from the memory chips, since they are of a fixed size.
+- The `nes_toasm` function outputs ALL opcodes, including the unofficial ones,
+  which means that none of the regular assemblers can recompile it.
+- The `nes_tokitty` function works on tiles in `chr_rom` but only outputs a Kitty
+  graphics compatible string. You need to manually `printf` that string to get
+  Kitty (or another compatible terminal) to output the graphics.
+
+### Decompile PRG ROM
+```
+$ fq -r '.prg_rom[] | nes_toasm' file.nes
+```
+
+### Print out first CHR ROM tile in Kitty (or Konsole, wayst, WezTerm) at size 5
+```
+$ printf $(fq -r -d nes '.chr_rom[0] | nes_tokitty(5)' file.nes)
+```
+
+### Print out all CHR ROM tiles in Kitty (with Bash) at size 5
+```
+$ for line in $(fq -r '.chr_rom[] | nes_tokitty(5)' file.nes);do printf "%b%s" "$line";done
+```
+
+### Authors
+- Mikael Lofjärd mikael.lofjard@gmail.com, original author
+
+### References
+- https://www.nesdev.org/wiki/INES
+- https://www.nesdev.org/wiki/NES_2.0
+- https://www.nesdev.org/wiki/CPU
+- https://bugzmanov.github.io/nes_ebook/chapter_6_3.html
 
 ## opentimestamps
 
