@@ -339,13 +339,7 @@ type keysBox struct {
 	keys []keysBoxKey
 }
 
-func decodeBoxIrefEntry(ctx *decodeContext, d *decode.D) {
-	irefBox, ok := ctx.parent().data.(*irefBox)
-	if !ok {
-		d.FieldRawLen("data", d.BitsLeft())
-		return
-	}
-
+func decodeBoxIrefEntry(irefBox *irefBox, d *decode.D) {
 	idSize := 16
 	if irefBox.version != 0 {
 		idSize = 32
@@ -1714,11 +1708,26 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		d.FieldU24("flags")
 		decodeBoxesWithParentData(ctx, d, &irefBox{version: int(version)})
 	case "dimg":
-		decodeBoxIrefEntry(ctx, d)
+		if irefBox, ok := ctx.parent().data.(*irefBox); ok {
+			decodeBoxIrefEntry(irefBox, d)
+		} else {
+			d.FieldRawLen("data", d.BitsLeft())
+		}
 	case "thmb":
-		decodeBoxIrefEntry(ctx, d)
+		if irefBox, ok := ctx.parent().data.(*irefBox); ok {
+			decodeBoxIrefEntry(irefBox, d)
+		} else {
+			d.FieldU8("version")
+			d.FieldU24("flags")
+			d.FieldUTF8("format", 4)
+			d.FieldFormatOrRawLen("image", d.BitsLeft(), &imageGroup, nil)
+		}
 	case "cdsc":
-		decodeBoxIrefEntry(ctx, d)
+		if irefBox, ok := ctx.parent().data.(*irefBox); ok {
+			decodeBoxIrefEntry(irefBox, d)
+		} else {
+			d.FieldRawLen("data", d.BitsLeft())
+		}
 	case "irot":
 		d.FieldU8("rotation", scalar.UintMapSymUint{
 			0: 0,

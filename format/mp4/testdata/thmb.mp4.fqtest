@@ -1,0 +1,10 @@
+$ fq dv -o force=true thmb.mp4
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: thmb.mp4 (mp4) 0x0-0x14 (20)
+    |                                               |                |  boxes[0:1]: 0x0-0x14 (20)
+    |                                               |                |    [0]{}: box 0x0-0x14 (20)
+0x00|00 00 00 14                                    |....            |      size: 20 0x0-0x4 (4)
+0x00|            74 68 6d 62                        |    thmb        |      type: "thmb" (Thumbnail image of the media) 0x4-0x8 (4)
+0x00|                        00                     |        .       |      version: 0 0x8-0x9 (1)
+0x00|                           00 00 00            |         ...    |      flags: 0 0x9-0xc (3)
+0x00|                                    66 6f 72 6d|            form|      format: "form" 0xc-0x10 (4)
+0x10|64 61 74 61|                                   |data|           |      image: raw bits 0x10-0x14 (4)
