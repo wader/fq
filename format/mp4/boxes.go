@@ -533,7 +533,12 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		switch majorBrand {
 		case "qt":
 			// qt brand seems to use length prefixed strings
-			d.FieldUTF8ShortStringFixedLen("component_name", int(d.BitsLeft()/8))
+			// From QuickTime File Format specification:
+			// > A (counted) string that specifies the name of the component—that is, the media handler used
+			// > when this media was created. This field may contain a zero-length (empty) string.
+			if d.BitsLeft() > 0 {
+				d.FieldUTF8ShortStringFixedLen("component_name", int(d.BitsLeft()/8))
+			}
 		default:
 			d.FieldUTF8NullFixedLen("component_name", int(d.BitsLeft()/8))
 		}
