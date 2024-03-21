@@ -61,7 +61,7 @@ gogenerate: always
 lint: always
 # bump: make-golangci-lint /golangci-lint@v([\d.]+)/ git:https://github.com/golangci/golangci-lint.git|^1
 # bump: make-golangci-lint link "Release notes" https://github.com/golangci/golangci-lint/releases/tag/v$LATEST
-	go run github.com/golangci/golangci-lint/cmd/golangci-lint@v1.57.0 run
+	go run github.com/golangci/golangci-lint/cmd/golangci-lint@v1.57.1 run
 
 depgraph.svg: always
 	go run github.com/kisielk/godepgraph@latest github.com/wader/fq | dot -Tsvg -o godepgraph.svg
