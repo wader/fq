@@ -126,7 +126,7 @@ def _opt_eval($rest):
               )
             catch
               ( "-o \($opt)=@\($v[1:]): \(.)"
-              | halt_error(_exit_code_args_error)
+              | _fatal_error(_exit_code_args_error)
               )
           )
       )
@@ -140,7 +140,7 @@ def _opt_eval($rest):
                 try fromjson
                 catch
                   ( "--argjson \($a[0]): \(.)"
-                  | halt_error(_exit_code_args_error)
+                  | _fatal_error(_exit_code_args_error)
                   )
               )
             )
@@ -160,7 +160,7 @@ def _opt_eval($rest):
         | . as $expr_file
         | if . then
             try (open | tobytes | tostring)
-            catch ("\($expr_file): \(.)" | halt_error(_exit_code_args_error))
+            catch ("\($expr_file): \(.)" | _fatal_error(_exit_code_args_error))
           else $rest[0] // null
           end
         )
@@ -201,7 +201,7 @@ def _opt_eval($rest):
             ( map(.[1] |=
                 ( . as $f
                 | try (open | tobytes | tostring)
-                  catch ("\($f): \(.)" | halt_error(_exit_code_args_error))
+                  catch ("\($f): \(.)" | _fatal_error(_exit_code_args_error))
                 )
               )
             )

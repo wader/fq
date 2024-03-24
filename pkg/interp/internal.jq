@@ -40,6 +40,8 @@ def stderr:
   , .
   );
 
+def _fatal_error($code): "error: \(.)\n" | halt_error($code);
+
 # try to be same exit codes as jq
 # TODO: jq seems to halt processing inputs on JSON decode error but not IO errors,
 # seems strange.
