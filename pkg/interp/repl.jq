@@ -195,7 +195,7 @@ def _repl_on_expr_error:
 def _repl_on_error:
   # was interrupted by user, just ignore
   if .error | _is_context_canceled_error then empty
-  else halt_error(_exit_code_expr_error)
+  else _fatal_error(_exit_code_expr_error)
   end;
 # compile error
 def _repl_on_compile_error:

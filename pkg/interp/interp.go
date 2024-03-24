@@ -115,11 +115,6 @@ type Exiter interface {
 	ExitCode() int
 }
 
-// gojq halt_error uses this
-type IsEmptyErrorer interface {
-	IsEmptyError() bool
-}
-
 type Terminal interface {
 	Size() (int, int)
 	IsTerminal() bool
@@ -403,8 +398,25 @@ func (i *Interp) Main(ctx context.Context, output Output, versionStr string) err
 
 		switch v := v.(type) {
 		case error:
-			if emptyErr, ok := v.(IsEmptyErrorer); ok && emptyErr.IsEmptyError() {
-				// no output
+			var haltErr gojq.HaltError
+			if errors.As(v, &haltErr) {
+				if haltErrV := haltErr.Value(); haltErrV != nil {
+					if str, ok := haltErrV.(string); ok {
+						if _, err := i.OS.Stderr().Write([]byte(str)); err != nil {
+							return err
+						}
+					} else {
+						bs, _ := gojq.Marshal(haltErrV)
+						if _, err := i.OS.Stderr().Write(bs); err != nil {
+							return err
+						}
+						if _, err := i.OS.Stderr().Write([]byte{'\n'}); err != nil {
+							return err
+						}
+					}
+				}
+
+				return haltErr
 			} else if errors.Is(v, context.Canceled) {
 				// ignore context cancel here for now, which means user somehow interrupted the interpreter
 				// TODO: handle this inside interp.jq instead but then we probably have to do nested
@@ -413,8 +425,6 @@ func (i *Interp) Main(ctx context.Context, output Output, versionStr string) err
 				fmt.Fprintln(i.OS.Stderr(), v)
 			}
 			return v
-		case [2]any:
-			fmt.Fprintln(i.OS.Stderr(), v[:]...)
 		default:
 			// TODO: can this happen?
 			fmt.Fprintln(i.OS.Stderr(), v)
