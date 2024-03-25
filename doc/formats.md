@@ -601,17 +601,18 @@ $ fq '[.data_records[] | select(.record_header.message_type == "data").data_mess
 |Name             |Default|Description|
 |-                |-      |-|
 |`bits_per_sample`|16     |Bits per sample|
+|`sample_details` |false  |Decode more sample details like residuals etc|
 
 ### Examples
 
 Decode file using flac_frame options
 ```
-$ fq -d flac_frame -o bits_per_sample=16 . file
+$ fq -d flac_frame -o bits_per_sample=16 -o sample_details=false . file
 ```
 
 Decode value as flac_frame
 ```
-... | flac_frame({bits_per_sample:16})
+... | flac_frame({bits_per_sample:16,sample_details:false})
 ```
 
 ## hevc_au

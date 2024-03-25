@@ -105,192 +105,192 @@ $ fq -d flac dv mono24.flac
       |                                               |                |            [0]{}: partition 0x20b7-0x20c7.1 (16.1)
       |                                               |                |              count: 125
 0x20b0|                     0f                        |       .        |              rice_parameter: 0 0x20b7-0x20b7.4 (0.4)
-0x20b0|                     0f ff ff ff ff ff ff ff ff|       .........|              samples: raw bits 0x20b7.4-0x20c7.1 (15.5)
+0x20b0|                     0f ff ff ff ff ff ff ff ff|       .........|              residuals: raw bits 0x20b7.4-0x20c7.1 (15.5)
 0x20c0|ff ff ff ff ff ff ff 87                        |........        |
       |                                               |                |            [1]{}: partition 0x20c7.1-0x20d7.5 (16.4)
       |                                               |                |              count: 128
 0x20c0|                     87                        |       .        |              rice_parameter: 0 0x20c7.1-0x20c7.5 (0.4)
-0x20c0|                     87 ff ff ff ff ff ff ff ff|       .........|              samples: raw bits 0x20c7.5-0x20d7.5 (16)
+0x20c0|                     87 ff ff ff ff ff ff ff ff|       .........|              residuals: raw bits 0x20c7.5-0x20d7.5 (16)
 0x20d0|ff ff ff ff ff ff ff f9                        |........        |
       |                                               |                |            [2]{}: partition 0x20d7.5-0x2133 (91.3)
       |                                               |                |              count: 128
 0x20d0|                     f9 c4                     |       ..       |              rice_parameter: 3 0x20d7.5-0x20d8.1 (0.4)
-0x20d0|                        c4 44 44 44 44 44 44 44|        .DDDDDDD|              samples: raw bits 0x20d8.1-0x2133 (90.7)
+0x20d0|                        c4 44 44 44 44 44 44 44|        .DDDDDDD|              residuals: raw bits 0x20d8.1-0x2133 (90.7)
 0x20e0|44 44 44 44 44 44 44 44 44 44 44 44 44 44 44 44|DDDDDDDDDDDDDDDD|
 *     |until 0x2132.7 (91)                            |                |
       |                                               |                |            [3]{}: partition 0x2133-0x216f.5 (60.5)
       |                                               |                |              count: 128
 0x2130|         23                                    |   #            |              rice_parameter: 2 0x2133-0x2133.4 (0.4)
-0x2130|         23 c5 57 8a ab fb e7 ab 6c f6 cd 2e 49|   #.W.....l...I|              samples: raw bits 0x2133.4-0x216f.5 (60.1)
+0x2130|         23 c5 57 8a ab fb e7 ab 6c f6 cd 2e 49|   #.W.....l...I|              residuals: raw bits 0x2133.4-0x216f.5 (60.1)
 0x2140|b2 13 9a 12 1b 13 32 11 33 32 24 64 d1 94 cb b2|......2.32$d....|
 *     |until 0x216f.4 (61)                            |                |
       |                                               |                |            [4]{}: partition 0x216f.5-0x21a9.2 (57.5)
       |                                               |                |              count: 128
 0x2160|                                             a1|               .|              rice_parameter: 2 0x216f.5-0x2170.1 (0.4)
 0x2170|24                                             |$               |
-0x2170|24 6e 92 7d 3d bf c7 f0 b7 a9 50 ab 5e be 7f e2|$n.}=.....P.^...|              samples: raw bits 0x2170.1-0x21a9.2 (57.1)
+0x2170|24 6e 92 7d 3d bf c7 f0 b7 a9 50 ab 5e be 7f e2|$n.}=.....P.^...|              residuals: raw bits 0x2170.1-0x21a9.2 (57.1)
 0x2180|ea                                             |.               |
 *     |until 0x21a9.1 (58)                            |                |
       |                                               |                |            [5]{}: partition 0x21a9.2-0x21e3.1 (57.7)
       |                                               |                |              count: 128
 0x21a0|                           8b                  |         .      |              rice_parameter: 2 0x21a9.2-0x21a9.6 (0.4)
-0x21a0|                           8b 13 21 11 18 94 48|         ..!...H|              samples: raw bits 0x21a9.6-0x21e3.1 (57.3)
+0x21a0|                           8b 13 21 11 18 94 48|         ..!...H|              residuals: raw bits 0x21a9.6-0x21e3.1 (57.3)
 0x21b0|c8 db 12 e4 da cd 3c 9f db d7 c3 e2 c3 e7 5e f8|......<.......^.|
 *     |until 0x21e3 (58)                              |                |
       |                                               |                |            [6]{}: partition 0x21e3.1-0x221e.6 (59.5)
       |                                               |                |              count: 128
 0x21e0|         95                                    |   .            |              rice_parameter: 2 0x21e3.1-0x21e3.5 (0.4)
-0x21e0|         95 cf 27 4b 29 2e cd c6 e4 c4 d8 c9 8c|   ..'K)........|              samples: raw bits 0x21e3.5-0x221e.6 (59.1)
+0x21e0|         95 cf 27 4b 29 2e cd c6 e4 c4 d8 c9 8c|   ..'K)........|              residuals: raw bits 0x21e3.5-0x221e.6 (59.1)
 0x21f0|90 c9 0d 9b 89 63 27 8c a8 a8 ec 58 b8 bf 1e 2a|.....c'....X...*|
 *     |until 0x221e.5 (60)                            |                |
       |                                               |                |            [7]{}: partition 0x221e.6-0x225a.7 (60.1)
       |                                               |                |              count: 128
 0x2210|                                          90 8a|              ..|              rice_parameter: 2 0x221e.6-0x221f.2 (0.4)
-0x2210|                                             8a|               .|              samples: raw bits 0x221f.2-0x225a.7 (59.5)
+0x2210|                                             8a|               .|              residuals: raw bits 0x221f.2-0x225a.7 (59.5)
 0x2220|56 2a d5 5e b4 f9 e3 ff 8a 8b 77 d2 e6 56 48 8d|V*.^......w..VH.|
 *     |until 0x225a.6 (60)                            |                |
       |                                               |                |            [8]{}: partition 0x225a.7-0x2292.4 (55.5)
       |                                               |                |              count: 128
 0x2250|                              08 39            |          .9    |              rice_parameter: 1 0x225a.7-0x225b.3 (0.4)
-0x2250|                                 39 05 ac 10 62|           9...b|              samples: raw bits 0x225b.3-0x2292.4 (55.1)
+0x2250|                                 39 05 ac 10 62|           9...b|              residuals: raw bits 0x225b.3-0x2292.4 (55.1)
 0x2260|bf 9b 41 cc ce 30 e3 33 81 c3 41 ed f3 fa 5e 13|..A..0.3..A...^.|
 *     |until 0x2292.3 (56)                            |                |
       |                                               |                |            [9]{}: partition 0x2292.4-0x22ce.2 (59.6)
       |                                               |                |              count: 128
 0x2290|      22                                       |  "             |              rice_parameter: 2 0x2292.4-0x2293 (0.4)
-0x2290|         e2 52 63 53 35 13 12 31 23 64 c4 56 8c|   .RcS5..1#d.V.|              samples: raw bits 0x2293-0x22ce.2 (59.2)
+0x2290|         e2 52 63 53 35 13 12 31 23 64 c4 56 8c|   .RcS5..1#d.V.|              residuals: raw bits 0x2293-0x22ce.2 (59.2)
 0x22a0|e9 bc 8f af 58 af 29 ef 55 f4 f3 bc 5f ee 79 3a|....X.).U..._.y:|
 *     |until 0x22ce.1 (60)                            |                |
       |                                               |                |            [10]{}: partition 0x22ce.2-0x230a (59.6)
       |                                               |                |              count: 128
 0x22c0|                                          ca   |              . |              rice_parameter: 2 0x22ce.2-0x22ce.6 (0.4)
-0x22c0|                                          ca ad|              ..|              samples: raw bits 0x22ce.6-0x230a (59.2)
+0x22c0|                                          ca ad|              ..|              residuals: raw bits 0x22ce.6-0x230a (59.2)
 0x22d0|b3 db 34 b9 26 c8 4e 68 48 6c 4c c8 44 cc c8 91|..4.&.NhHlL.D...|
 *     |until 0x2309.7 (60)                            |                |
       |                                               |                |            [11]{}: partition 0x230a-0x2345.1 (59.1)
       |                                               |                |              count: 128
 0x2300|                              2f               |          /     |              rice_parameter: 2 0x230a-0x230a.4 (0.4)
-0x2300|                              2f 1f c2 de a5 42|          /....B|              samples: raw bits 0x230a.4-0x2345.1 (58.5)
+0x2300|                              2f 1f c2 de a5 42|          /....B|              residuals: raw bits 0x230a.4-0x2345.1 (58.5)
 0x2310|ad 7a f9 ff 8b ab b7 93 6d 51 13 26 22 50 95 0d|.z......mQ.&"P..|
 *     |until 0x2345 (59)                              |                |
       |                                               |                |            [12]{}: partition 0x2345.1-0x237d.4 (56.3)
       |                                               |                |              count: 128
 0x2340|               08                              |     .          |              rice_parameter: 1 0x2345.1-0x2345.5 (0.4)
-0x2340|               08 92 0b 44 97 29 d3 7e cd c0 d0|     ...D.).~...|              samples: raw bits 0x2345.5-0x237d.4 (55.7)
+0x2340|               08 92 0b 44 97 29 d3 7e cd c0 d0|     ...D.).~...|              residuals: raw bits 0x2345.5-0x237d.4 (55.7)
 0x2350|70 34 33 63 41 ed b7 6e 6a a8 5c 09 82 60 58 48|p43cA..nj.\..`XH|
 *     |until 0x237d.3 (56)                            |                |
       |                                               |                |            [13]{}: partition 0x237d.4-0x23ba.3 (60.7)
       |                                               |                |              count: 128
 0x2370|                                       22      |             "  |              rice_parameter: 2 0x237d.4-0x237e (0.4)
-0x2370|                                          6e 37|              n7|              samples: raw bits 0x237e-0x23ba.3 (60.3)
+0x2370|                                          6e 37|              n7|              residuals: raw bits 0x237e-0x23ba.3 (60.3)
 0x2380|26 26 c6 4c 64 86 48 6c dc 4b 19 3c 65 45 47 62|&&.Ld.Hl.K.<eEGb|
 *     |until 0x23ba.2 (61)                            |                |
       |                                               |                |            [14]{}: partition 0x23ba.3-0x23f5.6 (59.3)
       |                                               |                |              count: 128
 0x23b0|                              e5               |          .     |              rice_parameter: 2 0x23ba.3-0x23ba.7 (0.4)
-0x23b0|                              e5 1f fc 54 5b be|          ...T[.|              samples: raw bits 0x23ba.7-0x23f5.6 (58.7)
+0x23b0|                              e5 1f fc 54 5b be|          ...T[.|              residuals: raw bits 0x23ba.7-0x23f5.6 (58.7)
 0x23c0|97 32 b2 44 6c 8d 8c a1 b9 08 ca 1a e1 22 66 89|.2.Dl........"f.|
 *     |until 0x23f5.5 (59)                            |                |
       |                                               |                |            [15]{}: partition 0x23f5.6-0x242f.2 (57.4)
       |                                               |                |              count: 128
 0x23f0|               b0 bf                           |     ..         |              rice_parameter: 2 0x23f5.6-0x23f6.2 (0.4)
-0x23f0|                  bf c5 9d 56 29 62 aa c3 c7 c5|      ...V)b....|              samples: raw bits 0x23f6.2-0x242f.2 (57)
+0x23f0|                  bf c5 9d 56 29 62 aa c3 c7 c5|      ...V)b....|              residuals: raw bits 0x23f6.2-0x242f.2 (57)
 0x2400|bf d9 ed 93 5a 4e da 32 66 c4 c8 44 46 25 12 32|....ZN.2f..DF%.2|
 *     |until 0x242f.1 (57)                            |                |
       |                                               |                |            [16]{}: partition 0x242f.2-0x2469.3 (58.1)
       |                                               |                |              count: 128
 0x2420|                                             09|               .|              rice_parameter: 2 0x242f.2-0x242f.6 (0.4)
-0x2420|                                             09|               .|              samples: raw bits 0x242f.6-0x2469.3 (57.5)
+0x2420|                                             09|               .|              residuals: raw bits 0x242f.6-0x2469.3 (57.5)
 0x2430|89 1b 26 22 b4 67 4d e4 7d 7a c5 79 4f 7a af a7|..&".gM.}z.yOz..|
 *     |until 0x2469.2 (58)                            |                |
       |                                               |                |            [17]{}: partition 0x2469.3-0x24a6.1 (60.6)
       |                                               |                |              count: 128
 0x2460|                           85                  |         .      |              rice_parameter: 2 0x2469.3-0x2469.7 (0.4)
-0x2460|                           85 36 42 73 42 43 62|         .6BsBCb|              samples: raw bits 0x2469.7-0x24a6.1 (60.2)
+0x2460|                           85 36 42 73 42 43 62|         .6BsBCb|              residuals: raw bits 0x2469.7-0x24a6.1 (60.2)
 0x2470|66 42 26 66 44 8c 9a 32 99 76 54 ff 3a 0a 42 95|fB&fD..2.vT.:.B.|
 *     |until 0x24a6 (61)                              |                |
       |                                               |                |            [18]{}: partition 0x24a6.1-0x24e0.4 (58.3)
       |                                               |                |              count: 128
 0x24a0|                  93                           |      .         |              rice_parameter: 2 0x24a6.1-0x24a6.5 (0.4)
-0x24a0|                  93 d7 cf fc 5d 5d bc 9b 6a 88|      ....]]..j.|              samples: raw bits 0x24a6.5-0x24e0.4 (57.7)
+0x24a0|                  93 d7 cf fc 5d 5d bc 9b 6a 88|      ....]]..j.|              residuals: raw bits 0x24a6.5-0x24e0.4 (57.7)
 0x24b0|99 31 12 84 a8 6c 86 c9 02 74 25 42 5d 4c 56 96|.1...l...t%B]LV.|
 *     |until 0x24e0.3 (58)                            |                |
       |                                               |                |            [19]{}: partition 0x24e0.4-0x251a.2 (57.6)
       |                                               |                |              count: 128
 0x24e0|72                                             |r               |              rice_parameter: 2 0x24e0.4-0x24e1 (0.4)
-0x24e0|   93 fb 7a f8 7c 58 7c eb df 16 ff fc be 7d 24| ..z.|X|......}$|              samples: raw bits 0x24e1-0x251a.2 (57.2)
+0x24e0|   93 fb 7a f8 7c 58 7c eb df 16 ff fc be 7d 24| ..z.|X|......}$|              residuals: raw bits 0x24e1-0x251a.2 (57.2)
 0x24f0|8d 61 b9 b8 94 98 d4 cd 44 c4 8c 48 d9 31 15 a3|.a......D..H.1..|
 *     |until 0x251a.1 (58)                            |                |
       |                                               |                |            [20]{}: partition 0x251a.2-0x2556 (59.6)
       |                                               |                |              count: 128
 0x2510|                              0a               |          .     |              rice_parameter: 2 0x251a.2-0x251a.6 (0.4)
-0x2510|                              0a 19 21 b3 71 2c|          ..!.q,|              samples: raw bits 0x251a.6-0x2556 (59.2)
+0x2510|                              0a 19 21 b3 71 2c|          ..!.q,|              residuals: raw bits 0x251a.6-0x2556 (59.2)
 0x2520|64 f1 95 15 1d 8b 17 17 e3 c5 57 8a ab fb e7 ab|d.........W.....|
 *     |until 0x2555.7 (60)                            |                |
       |                                               |                |            [21]{}: partition 0x2556-0x2591.5 (59.5)
       |                                               |                |              count: 128
 0x2550|                  2c                           |      ,         |              rice_parameter: 2 0x2556-0x2556.4 (0.4)
-0x2550|                  2c ca c9 11 b2 36 24 12 90 8c|      ,....6$...|              samples: raw bits 0x2556.4-0x2591.5 (59.1)
+0x2550|                  2c ca c9 11 b2 36 24 12 90 8c|      ,....6$...|              residuals: raw bits 0x2556.4-0x2591.5 (59.1)
 0x2560|a1 ae 12 26 68 91 ba 49 f4 f6 ff 1f c2 de a5 42|...&h..I.......B|
 *     |until 0x2591.4 (60)                            |                |
       |                                               |                |            [22]{}: partition 0x2591.5-0x25cb.4 (57.7)
       |                                               |                |              count: 128
 0x2590|   a9 2c                                       | .,             |              rice_parameter: 2 0x2591.5-0x2592.1 (0.4)
-0x2590|      2c 3c 7c 5b fd 9e d9 35 a4 ed a3 26 6c 4c|  ,<|[...5...&lL|              samples: raw bits 0x2592.1-0x25cb.4 (57.3)
+0x2590|      2c 3c 7c 5b fd 9e d9 35 a4 ed a3 26 6c 4c|  ,<|[...5...&lL|              residuals: raw bits 0x2592.1-0x25cb.4 (57.3)
 0x25a0|84 44 62 51 23 23 6c 4b 93 6b 34 f2 7f 6f 5f 0f|.DbQ##lK.k4..o_.|
 *     |until 0x25cb.3 (58)                            |                |
       |                                               |                |            [23]{}: partition 0x25cb.4-0x2605.4 (58)
       |                                               |                |              count: 128
 0x25c0|                                 42            |           B    |              rice_parameter: 2 0x25cb.4-0x25cc (0.4)
-0x25c0|                                    de 47 d7 ac|            .G..|              samples: raw bits 0x25cc-0x2605.4 (57.4)
+0x25c0|                                    de 47 d7 ac|            .G..|              residuals: raw bits 0x25cc-0x2605.4 (57.4)
 0x25d0|57 94 f7 aa fa 79 de 2f f7 3c 9d 2c a4 bb 37 1b|W....y./.<.,..7.|
 *     |until 0x2605.3 (58)                            |                |
       |                                               |                |            [24]{}: partition 0x2605.4-0x2641.3 (59.7)
       |                                               |                |              count: 128
 0x2600|               62                              |     b          |              rice_parameter: 2 0x2605.4-0x2606 (0.4)
-0x2600|                  64 22 66 64 48 c9 a3 29 97 65|      d"fdH..).e|              samples: raw bits 0x2606-0x2641.3 (59.3)
+0x2600|                  64 22 66 64 48 c9 a3 29 97 65|      d"fdH..).e|              residuals: raw bits 0x2606-0x2641.3 (59.3)
 0x2610|4f f3 a0 a4 29 58 ab 55 7a d3 e7 8f fe 2a 2d df|O...)X.Uz....*-.|
 *     |until 0x2641.2 (60)                            |                |
       |                                               |                |            [25]{}: partition 0x2641.3-0x267b.3 (58)
       |                                               |                |              count: 128
 0x2640|   e3                                          | .              |              rice_parameter: 1 0x2641.3-0x2641.7 (0.4)
-0x2640|   e3 49 2c 88 91 20 8b 00 b2 04 88 12 28 02 64| .I,.. ......(.d|              samples: raw bits 0x2641.7-0x267b.3 (57.4)
+0x2640|   e3 49 2c 88 91 20 8b 00 b2 04 88 12 28 02 64| .I,.. ......(.d|              residuals: raw bits 0x2641.7-0x267b.3 (57.4)
 0x2650|16 41 6b 04 18 af e6 d0 73 33 8c 38 cc e0 70 d0|.Ak.....s3.8..p.|
 *     |until 0x267b.2 (58)                            |                |
       |                                               |                |            [26]{}: partition 0x267b.3-0x26b5.7 (58.4)
       |                                               |                |              count: 128
 0x2670|                                 c4            |           .    |              rice_parameter: 2 0x267b.3-0x267b.7 (0.4)
-0x2670|                                 c4 7c eb df 16|           .|...|              samples: raw bits 0x267b.7-0x26b5.7 (58)
+0x2670|                                 c4 7c eb df 16|           .|...|              residuals: raw bits 0x267b.7-0x26b5.7 (58)
 0x2680|ff fc be 7d 24 8d 61 b9 b8 94 98 d4 cd 44 c4 8c|...}$.a......D..|
 *     |until 0x26b5.6 (58)                            |                |
       |                                               |                |            [27]{}: partition 0x26b5.7-0x26f1.4 (59.5)
       |                                               |                |              count: 128
 0x26b0|               4e 51                           |     NQ         |              rice_parameter: 2 0x26b5.7-0x26b6.3 (0.4)
-0x26b0|                  51 95 15 1d 8b 17 17 e3 c5 57|      Q........W|              samples: raw bits 0x26b6.3-0x26f1.4 (59.1)
+0x26b0|                  51 95 15 1d 8b 17 17 e3 c5 57|      Q........W|              residuals: raw bits 0x26b6.3-0x26f1.4 (59.1)
 0x26c0|8a ab fb e7 ab 6c f6 cd 2e 49 b2 13 9a 12 1b 13|.....l...I......|
 *     |until 0x26f1.3 (60)                            |                |
       |                                               |                |            [28]{}: partition 0x26f1.4-0x272c.5 (59.1)
       |                                               |                |              count: 128
 0x26f0|   42                                          | B              |              rice_parameter: 2 0x26f1.4-0x26f2 (0.4)
-0x26f0|      12 90 8c a1 ae 12 26 68 91 ba 49 f4 f6 ff|  ......&h..I...|              samples: raw bits 0x26f2-0x272c.5 (58.5)
+0x26f0|      12 90 8c a1 ae 12 26 68 91 ba 49 f4 f6 ff|  ......&h..I...|              residuals: raw bits 0x26f2-0x272c.5 (58.5)
 0x2700|1f c2 de a5 42 ad 7a f9 ff 8b ab b7 93 6d 51 13|....B.z......mQ.|
 *     |until 0x272c.4 (59)                            |                |
       |                                               |                |            [29]{}: partition 0x272c.5-0x2767 (58.3)
       |                                               |                |              count: 128
 0x2720|                                    e8 f4      |            ..  |              rice_parameter: 1 0x272c.5-0x272d.1 (0.4)
-0x2720|                                       f4 bc 26|             ..&|              samples: raw bits 0x272d.1-0x2767 (57.7)
+0x2720|                                       f4 bc 26|             ..&|              residuals: raw bits 0x272d.1-0x2767 (57.7)
 0x2730|25 08 90 90 48 82 22 10 58 14 22 12 41 68 92 e5|%...H.".X.".Ah..|
 *     |until 0x2766.7 (58)                            |                |
       |                                               |                |            [30]{}: partition 0x2767-0x27a1.7 (58.7)
       |                                               |                |              count: 128
 0x2760|                     23                        |       #        |              rice_parameter: 2 0x2767-0x2767.4 (0.4)
-0x2760|                     23 de ab e9 e7 78 bf dc f2|       #....x...|              samples: raw bits 0x2767.4-0x27a1.7 (58.3)
+0x2760|                     23 de ab e9 e7 78 bf dc f2|       #....x...|              residuals: raw bits 0x2767.4-0x27a1.7 (58.3)
 0x2770|74 b2 92 ec dc 6e 4c 4d 8c 98 c9 0c 90 d9 b8 96|t....nLM........|
 *     |until 0x27a1.6 (59)                            |                |
       |                                               |                |            [31]{}: partition 0x27a1.7-0x27dd.2 (59.3)
       |                                               |                |              count: 128
 0x27a0|   68 4c                                       | hL             |              rice_parameter: 2 0x27a1.7-0x27a2.3 (0.4)
-0x27a0|      4c a6 5d 95 3f ce 82 90 a5 62 ad 55 eb 4f|  L.].?....b.U.O|              samples: raw bits 0x27a2.3-0x27dd.2 (58.7)
+0x27a0|      4c a6 5d 95 3f ce 82 90 a5 62 ad 55 eb 4f|  L.].?....b.U.O|              residuals: raw bits 0x27a2.3-0x27dd.2 (58.7)
 0x27b0|9e 3f f8 a8 b7 7d 2e 65 64 88 d9 1b 12 09 48 46|.?...}.ed.....HF|
 *     |until 0x27dd.1 (59)                            |                |
 0x27d0|                                       00      |             .  |      byte_align: 0 (valid) 0x27dd.2-0x27de (0.6)
@@ -323,194 +323,194 @@ $ fq -d flac dv mono24.flac
       |                                               |                |            [0]{}: partition 0x27e7.6-0x2940.4 (344.6)
       |                                               |                |              count: 128
 0x27e0|                     56 75                     |       Vu       |              rice_parameter: 19 0x27e7.6-0x27e8.3 (0.5)
-0x27e0|                        75 eb ff 8f 9f fc 13 ff|        u.......|              samples: raw bits 0x27e8.3-0x2940.4 (344.1)
+0x27e0|                        75 eb ff 8f 9f fc 13 ff|        u.......|              residuals: raw bits 0x27e8.3-0x2940.4 (344.1)
 0x27f0|f3 5f e9 2a ff 55 c7 fb 10 bf db 87 fe f3 af f2|._.*.U..........|
 *     |until 0x2940.3 (345)                           |                |
       |                                               |                |            [1]{}: partition 0x2940.4-0x2a8d.3 (332.7)
       |                                               |                |              count: 128
 0x2940|09 d9                                          |..              |              rice_parameter: 19 0x2940.4-0x2941.1 (0.5)
-0x2940|   d9 a8 05 e0 00 61 78 06 40 00 65 a0 06 65 80| .....ax.@.e..e.|              samples: raw bits 0x2941.1-0x2a8d.3 (332.2)
+0x2940|   d9 a8 05 e0 00 61 78 06 40 00 65 a0 06 65 80| .....ax.@.e..e.|              residuals: raw bits 0x2941.1-0x2a8d.3 (332.2)
 0x2950|66 28 06 51 00 63 10 06 04 00 5c 98 05 81 80 52|f(.Q.c....\....R|
 *     |until 0x2a8d.2 (333)                           |                |
       |                                               |                |            [2]{}: partition 0x2a8d.3-0x2be6.2 (344.7)
       |                                               |                |              count: 128
 0x2a80|                                       13      |             .  |              rice_parameter: 19 0x2a8d.3-0x2a8e (0.5)
-0x2a80|                                          f4 f0|              ..|              samples: raw bits 0x2a8e-0x2be6.2 (344.2)
+0x2a80|                                          f4 f0|              ..|              residuals: raw bits 0x2a8e-0x2be6.2 (344.2)
 0x2a90|04 5c 00 28 a8 01 74 40 0d 1d 00 74 b8 01 02 00|.\.(..t@...t....|
 *     |until 0x2be6.1 (345)                           |                |
       |                                               |                |            [3]{}: partition 0x2be6.2-0x2d35.6 (335.4)
       |                                               |                |              count: 128
 0x2be0|                  e6                           |      .         |              rice_parameter: 19 0x2be6.2-0x2be6.7 (0.5)
-0x2be0|                  e6 93 9f f4 fb ff aa 6b fd 63|      .......k.c|              samples: raw bits 0x2be6.7-0x2d35.6 (334.7)
+0x2be0|                  e6 93 9f f4 fb ff aa 6b fd 63|      .......k.c|              residuals: raw bits 0x2be6.7-0x2d35.6 (334.7)
 0x2bf0|ff eb 88 ff 5e 9f fb 00 3f d8 1f fe c0 2f f5 ec|....^...?..../..|
 *     |until 0x2d35.5 (335)                           |                |
       |                                               |                |            [4]{}: partition 0x2d35.6-0x2e92.4 (348.6)
       |                                               |                |              count: 128
 0x2d30|               fe 98                           |     ..         |              rice_parameter: 20 0x2d35.6-0x2d36.3 (0.5)
-0x2d30|                  98 63 ff cd 1f fe bb 7f f8 81|      .c........|              samples: raw bits 0x2d36.3-0x2e92.4 (348.1)
+0x2d30|                  98 63 ff cd 1f fe bb 7f f8 81|      .c........|              residuals: raw bits 0x2d36.3-0x2e92.4 (348.1)
 0x2d40|ff d9 af ff 7b ff a0 ab fe 8d 97 fa 61 7f ea 2e|....{.......a...|
 *     |until 0x2e92.3 (349)                           |                |
       |                                               |                |            [5]{}: partition 0x2e92.4-0x300e.2 (379.6)
       |                                               |                |              count: 128
 0x2e90|      fb 17                                    |  ..            |              rice_parameter: 22 0x2e92.4-0x2e93.1 (0.5)
-0x2e90|         17 20 47 0f 30 57 90 7f 80 15 cd df 5b|   . G.0W......[|              samples: raw bits 0x2e93.1-0x300e.2 (379.1)
+0x2e90|         17 20 47 0f 30 57 90 7f 80 15 cd df 5b|   . G.0W......[|              residuals: raw bits 0x2e93.1-0x300e.2 (379.1)
 0x2ea0|20 4a d8 2f 21 7a e4 c2 de 56 7f 74 a0 97 a2 5b| J./!z...V.t...[|
 *     |until 0x300e.1 (380)                           |                |
       |                                               |                |            [6]{}: partition 0x300e.2-0x318d.6 (383.4)
       |                                               |                |              count: 128
 0x3000|                                          ad   |              . |              rice_parameter: 22 0x300e.2-0x300e.7 (0.5)
-0x3000|                                          ad 63|              .c|              samples: raw bits 0x300e.7-0x318d.6 (382.7)
+0x3000|                                          ad 63|              .c|              residuals: raw bits 0x300e.7-0x318d.6 (382.7)
 0x3010|0b e5 dc e4 e2 3b 75 01 c9 68 86 83 50 32 32 cd|.....;u..h..P22.|
 *     |until 0x318d.5 (383)                           |                |
       |                                               |                |            [7]{}: partition 0x318d.6-0x330c.5 (382.7)
       |                                               |                |              count: 128
 0x3180|                                       6e c3   |             n. |              rice_parameter: 22 0x318d.6-0x318e.3 (0.5)
-0x3180|                                          c3 28|              .(|              samples: raw bits 0x318e.3-0x330c.5 (382.2)
+0x3180|                                          c3 28|              .(|              residuals: raw bits 0x318e.3-0x330c.5 (382.2)
 0x3190|44 13 b8 0b ea d3 78 ab dd 39 45 49 c9 c9 0a 77|D.....x..9EI...w|
 *     |until 0x330c.4 (383)                           |                |
       |                                               |                |            [8]{}: partition 0x330c.5-0x3489.5 (381)
       |                                               |                |              count: 128
 0x3300|                                    fd a7      |            ..  |              rice_parameter: 22 0x330c.5-0x330d.2 (0.5)
-0x3300|                                       a7 08 86|             ...|              samples: raw bits 0x330d.2-0x3489.5 (380.3)
+0x3300|                                       a7 08 86|             ...|              residuals: raw bits 0x330d.2-0x3489.5 (380.3)
 0x3310|45 42 e5 75 42 af 30 f4 48 ea fd dd 3b d6 5e eb|EB.uB.0.H...;.^.|
 *     |until 0x3489.4 (381)                           |                |
       |                                               |                |            [9]{}: partition 0x3489.5-0x3607.3 (381.6)
       |                                               |                |              count: 128
 0x3480|                           0d b8               |         ..     |              rice_parameter: 22 0x3489.5-0x348a.2 (0.5)
-0x3480|                              b8 31 72 3e 67 bd|          .1r>g.|              samples: raw bits 0x348a.2-0x3607.3 (381.1)
+0x3480|                              b8 31 72 3e 67 bd|          .1r>g.|              residuals: raw bits 0x348a.2-0x3607.3 (381.1)
 0x3490|99 20 ef 13 02 c5 e6 c4 76 75 bf 9c 83 b4 4e 4b|. ......vu....NK|
 *     |until 0x3607.2 (382)                           |                |
       |                                               |                |            [10]{}: partition 0x3607.3-0x3787.1 (383.6)
       |                                               |                |              count: 128
 0x3600|                     96                        |       .        |              rice_parameter: 22 0x3607.3-0x3608 (0.5)
-0x3600|                        78 9f 54 4e d7 51 bc 5c|        x.TN.Q.\|              samples: raw bits 0x3608-0x3787.1 (383.1)
+0x3600|                        78 9f 54 4e d7 51 bc 5c|        x.TN.Q.\|              residuals: raw bits 0x3608-0x3787.1 (383.1)
 0x3610|fe 9d 31 8c 45 f5 ca 8b b7 c7 7b 33 30 ca 42 a9|..1.E.....{30.B.|
 *     |until 0x3787 (384)                             |                |
       |                                               |                |            [11]{}: partition 0x3787.1-0x3905 (381.7)
       |                                               |                |              count: 128
 0x3780|                     59                        |       Y        |              rice_parameter: 22 0x3787.1-0x3787.6 (0.5)
-0x3780|                     59 3e 8e 9e ef 21 3c 43 a3|       Y>...!<C.|              samples: raw bits 0x3787.6-0x3905 (381.2)
+0x3780|                     59 3e 8e 9e ef 21 3c 43 a3|       Y>...!<C.|              residuals: raw bits 0x3787.6-0x3905 (381.2)
 0x3790|b3 01 f7 e8 b7 37 1c 73 ba 4a 35 d7 0b ba a9 e2|.....7.s.J5.....|
 *     |until 0x3904.7 (382)                           |                |
       |                                               |                |            [12]{}: partition 0x3905-0x3a85 (384)
       |                                               |                |              count: 128
 0x3900|               b4                              |     .          |              rice_parameter: 22 0x3905-0x3905.5 (0.5)
-0x3900|               b4 7d e0 56 3d 75 97 d2 02 8a d3|     .}.V=u.....|              samples: raw bits 0x3905.5-0x3a85 (383.3)
+0x3900|               b4 7d e0 56 3d 75 97 d2 02 8a d3|     .}.V=u.....|              residuals: raw bits 0x3905.5-0x3a85 (383.3)
 0x3910|22 8e bc bf 2f 07 85 0d 36 b7 dc 45 54 e7 93 a6|".../...6..ET...|
 *     |until 0x3a84.7 (384)                           |                |
       |                                               |                |            [13]{}: partition 0x3a85-0x3c02.4 (381.4)
       |                                               |                |              count: 128
 0x3a80|               b5                              |     .          |              rice_parameter: 22 0x3a85-0x3a85.5 (0.5)
-0x3a80|               b5 74 8d 12 3d eb 46 45 57 b3 95|     .t..=.FEW..|              samples: raw bits 0x3a85.5-0x3c02.4 (380.7)
+0x3a80|               b5 74 8d 12 3d eb 46 45 57 b3 95|     .t..=.FEW..|              residuals: raw bits 0x3a85.5-0x3c02.4 (380.7)
 0x3a90|78 04 a1 7d cc ca 83 d3 14 44 cd 4d 99 43 76 bc|x..}.....D.M.Cv.|
 *     |until 0x3c02.3 (381)                           |                |
       |                                               |                |            [14]{}: partition 0x3c02.4-0x3d80.5 (382.1)
       |                                               |                |              count: 128
 0x3c00|      3b 2a                                    |  ;*            |              rice_parameter: 22 0x3c02.4-0x3c03.1 (0.5)
-0x3c00|         2a 51 1c 1d a0 1e 97 2c 13 99 d9 90 95|   *Q.....,.....|              samples: raw bits 0x3c03.1-0x3d80.5 (381.4)
+0x3c00|         2a 51 1c 1d a0 1e 97 2c 13 99 d9 90 95|   *Q.....,.....|              residuals: raw bits 0x3c03.1-0x3d80.5 (381.4)
 0x3c10|c5 5c 8c b6 e0 f7 91 1d 92 c3 51 f3 64 30 8d eb|.\........Q.d0..|
 *     |until 0x3d80.4 (382)                           |                |
       |                                               |                |            [15]{}: partition 0x3d80.5-0x3efe.6 (382.1)
       |                                               |                |              count: 128
 0x3d80|15 b2                                          |..              |              rice_parameter: 22 0x3d80.5-0x3d81.2 (0.5)
-0x3d80|   b2 9d 12 b5 9d b4 21 54 c1 a6 d3 3e 54 1c 04| ......!T...>T..|              samples: raw bits 0x3d81.2-0x3efe.6 (381.4)
+0x3d80|   b2 9d 12 b5 9d b4 21 54 c1 a6 d3 3e 54 1c 04| ......!T...>T..|              residuals: raw bits 0x3d81.2-0x3efe.6 (381.4)
 0x3d90|1a a3 18 d1 8a 13 e8 ac 4c 1e 24 0d df fc e1 93|........L.$.....|
 *     |until 0x3efe.5 (382)                           |                |
       |                                               |                |            [16]{}: partition 0x3efe.6-0x407c (381.2)
       |                                               |                |              count: 128
 0x3ef0|                                          aa cb|              ..|              rice_parameter: 22 0x3efe.6-0x3eff.3 (0.5)
-0x3ef0|                                             cb|               .|              samples: raw bits 0x3eff.3-0x407c (380.5)
+0x3ef0|                                             cb|               .|              residuals: raw bits 0x3eff.3-0x407c (380.5)
 0x3f00|c0 1b f5 f9 b9 64 1d 4b 1a 3b 4c 8a f0 29 0a e2|.....d.K.;L..)..|
 *     |until 0x407b.7 (381)                           |                |
       |                                               |                |            [17]{}: partition 0x407c-0x41fa.1 (382.1)
       |                                               |                |              count: 128
 0x4070|                                    b1         |            .   |              rice_parameter: 22 0x407c-0x407c.5 (0.5)
-0x4070|                                    b1 14 e6 26|            ...&|              samples: raw bits 0x407c.5-0x41fa.1 (381.4)
+0x4070|                                    b1 14 e6 26|            ...&|              residuals: raw bits 0x407c.5-0x41fa.1 (381.4)
 0x4080|04 8f ea 3a e2 a5 b6 81 cc 86 2b a9 62 83 30 56|...:......+.b.0V|
 *     |until 0x41fa (382)                             |                |
       |                                               |                |            [18]{}: partition 0x41fa.1-0x4379.2 (383.1)
       |                                               |                |              count: 128
 0x41f0|                              d9               |          .     |              rice_parameter: 22 0x41fa.1-0x41fa.6 (0.5)
-0x41f0|                              d9 c1 ae d2 46 58|          ....FX|              samples: raw bits 0x41fa.6-0x4379.2 (382.4)
+0x41f0|                              d9 c1 ae d2 46 58|          ....FX|              residuals: raw bits 0x41fa.6-0x4379.2 (382.4)
 0x4200|38 b4 a9 73 93 41 19 8f 30 9f 21 bd ef 09 37 b4|8..s.A..0.!...7.|
 *     |until 0x4379.1 (383)                           |                |
       |                                               |                |            [19]{}: partition 0x4379.2-0x44f8.5 (383.3)
       |                                               |                |              count: 128
 0x4370|                           6c                  |         l      |              rice_parameter: 22 0x4379.2-0x4379.7 (0.5)
-0x4370|                           6c 89 31 2a 29 31 fd|         l.1*)1.|              samples: raw bits 0x4379.7-0x44f8.5 (382.6)
+0x4370|                           6c 89 31 2a 29 31 fd|         l.1*)1.|              residuals: raw bits 0x4379.7-0x44f8.5 (382.6)
 0x4380|16 3b 91 04 8c e7 4e 9d 3a 17 77 d0 62 33 ab 50|.;....N.:.w.b3.P|
 *     |until 0x44f8.4 (383)                           |                |
       |                                               |                |            [20]{}: partition 0x44f8.5-0x4678.6 (384.1)
       |                                               |                |              count: 128
 0x44f0|                        4d b3                  |        M.      |              rice_parameter: 22 0x44f8.5-0x44f9.2 (0.5)
-0x44f0|                           b3 b9 55 aa 98 6a 24|         ..U..j$|              samples: raw bits 0x44f9.2-0x4678.6 (383.4)
+0x44f0|                           b3 b9 55 aa 98 6a 24|         ..U..j$|              residuals: raw bits 0x44f9.2-0x4678.6 (383.4)
 0x4500|5b b3 9e 36 79 e6 70 df be 4b ca 49 15 3e ce 86|[..6y.p..K.I.>..|
 *     |until 0x4678.5 (384)                           |                |
       |                                               |                |            [21]{}: partition 0x4678.6-0x47f9.2 (384.4)
       |                                               |                |              count: 128
 0x4670|                        a6 db                  |        ..      |              rice_parameter: 22 0x4678.6-0x4679.3 (0.5)
-0x4670|                           db bf b1 16 5d 5e 22|         ....]^"|              samples: raw bits 0x4679.3-0x47f9.2 (383.7)
+0x4670|                           db bf b1 16 5d 5e 22|         ....]^"|              residuals: raw bits 0x4679.3-0x47f9.2 (383.7)
 0x4680|f4 40 46 71 cf 2c b0 97 28 f4 84 1c 0f ca ea 4d|.@Fq.,..(......M|
 *     |until 0x47f9.1 (384)                           |                |
       |                                               |                |            [22]{}: partition 0x47f9.2-0x4978.3 (383.1)
       |                                               |                |              count: 128
 0x47f0|                           ed                  |         .      |              rice_parameter: 22 0x47f9.2-0x47f9.7 (0.5)
-0x47f0|                           ed 35 83 9d 8d fc 6b|         .5....k|              samples: raw bits 0x47f9.7-0x4978.3 (382.4)
+0x47f0|                           ed 35 83 9d 8d fc 6b|         .5....k|              residuals: raw bits 0x47f9.7-0x4978.3 (382.4)
 0x4800|dc ba 11 48 60 de 2d cf 52 d3 4b e9 d2 6b 02 a6|...H`.-.R.K..k..|
 *     |until 0x4978.2 (383)                           |                |
       |                                               |                |            [23]{}: partition 0x4978.3-0x4af6.2 (381.7)
       |                                               |                |              count: 128
 0x4970|                        76                     |        v       |              rice_parameter: 22 0x4978.3-0x4979 (0.5)
-0x4970|                           e8 c6 e8 70 e0 aa 4f|         ...p..O|              samples: raw bits 0x4979-0x4af6.2 (381.2)
+0x4970|                           e8 c6 e8 70 e0 aa 4f|         ...p..O|              residuals: raw bits 0x4979-0x4af6.2 (381.2)
 0x4980|84 f7 32 0a 0f 3d 8b 1f a5 fd 51 f9 9a 3d 21 76|..2..=....Q..=!v|
 *     |until 0x4af6.1 (382)                           |                |
       |                                               |                |            [24]{}: partition 0x4af6.2-0x4c75.4 (383.2)
       |                                               |                |              count: 128
 0x4af0|                  6d                           |      m         |              rice_parameter: 22 0x4af6.2-0x4af6.7 (0.5)
-0x4af0|                  6d df 40 77 26 2a f3 93 b0 51|      m.@w&*...Q|              samples: raw bits 0x4af6.7-0x4c75.4 (382.5)
+0x4af0|                  6d df 40 77 26 2a f3 93 b0 51|      m.@w&*...Q|              residuals: raw bits 0x4af6.7-0x4c75.4 (382.5)
 0x4b00|59 0c a4 c3 6f 7a bb 0d 1a 5a be a2 21 91 22 8c|Y...oz...Z..!.".|
 *     |until 0x4c75.3 (383)                           |                |
       |                                               |                |            [25]{}: partition 0x4c75.4-0x4df3.1 (381.5)
       |                                               |                |              count: 128
 0x4c70|               db 41                           |     .A         |              rice_parameter: 22 0x4c75.4-0x4c76.1 (0.5)
-0x4c70|                  41 a1 db 81 26 61 86 a4 ad 42|      A...&a...B|              samples: raw bits 0x4c76.1-0x4df3.1 (381)
+0x4c70|                  41 a1 db 81 26 61 86 a4 ad 42|      A...&a...B|              residuals: raw bits 0x4c76.1-0x4df3.1 (381)
 0x4c80|96 96 b8 f5 29 6a d5 2c bc 12 4d 14 4a 7a 69 9e|....)j.,..M.Jzi.|
 *     |until 0x4df3 (381)                             |                |
       |                                               |                |            [26]{}: partition 0x4df3.1-0x4f70.7 (381.6)
       |                                               |                |              count: 128
 0x4df0|         58                                    |   X            |              rice_parameter: 22 0x4df3.1-0x4df3.6 (0.5)
-0x4df0|         58 d2 02 83 0d 98 c1 49 70 25 bc e8 64|   X......Ip%..d|              samples: raw bits 0x4df3.6-0x4f70.7 (381.1)
+0x4df0|         58 d2 02 83 0d 98 c1 49 70 25 bc e8 64|   X......Ip%..d|              residuals: raw bits 0x4df3.6-0x4f70.7 (381.1)
 0x4e00|5f b5 1f 7b bb 7e 98 e8 8e ed b4 17 7f a1 34 4b|_..{.~........4K|
 *     |until 0x4f70.6 (382)                           |                |
       |                                               |                |            [27]{}: partition 0x4f70.7-0x50ef.7 (383)
       |                                               |                |              count: 128
 0x4f70|6b 68                                          |kh              |              rice_parameter: 22 0x4f70.7-0x4f71.4 (0.5)
-0x4f70|   68 1a ef 7d d7 d8 bf 98 9d cf 0b 0a 12 d7 bb| h..}...........|              samples: raw bits 0x4f71.4-0x50ef.7 (382.3)
+0x4f70|   68 1a ef 7d d7 d8 bf 98 9d cf 0b 0a 12 d7 bb| h..}...........|              residuals: raw bits 0x4f71.4-0x50ef.7 (382.3)
 0x4f80|a1 ef 2e 3e 8a 3f c8 d8 86 17 01 ef 92 63 39 11|...>.?.......c9.|
 *     |until 0x50ef.6 (383)                           |                |
       |                                               |                |            [28]{}: partition 0x50ef.7-0x526f (383.1)
       |                                               |                |              count: 128
 0x50e0|                                             93|               .|              rice_parameter: 22 0x50ef.7-0x50f0.4 (0.5)
 0x50f0|6e                                             |n               |
-0x50f0|6e 91 77 6d b0 36 b1 67 20 73 11 f5 70 25 7e 5c|n.wm.6.g s..p%~\|              samples: raw bits 0x50f0.4-0x526f (382.4)
+0x50f0|6e 91 77 6d b0 36 b1 67 20 73 11 f5 70 25 7e 5c|n.wm.6.g s..p%~\|              residuals: raw bits 0x50f0.4-0x526f (382.4)
 0x5100|d5 7c d7 b9 4c 61 db fe 26 e5 b7 97 4c 82 e2 52|.|..La..&...L..R|
 *     |until 0x526e.7 (383)                           |                |
       |                                               |                |            [29]{}: partition 0x526f-0x53ef.2 (384.2)
       |                                               |                |              count: 128
 0x5260|                                             b7|               .|              rice_parameter: 22 0x526f-0x526f.5 (0.5)
-0x5260|                                             b7|               .|              samples: raw bits 0x526f.5-0x53ef.2 (383.5)
+0x5260|                                             b7|               .|              residuals: raw bits 0x526f.5-0x53ef.2 (383.5)
 0x5270|4e 0f 47 18 8f c5 24 20 ab e2 56 79 cf 5e 12 eb|N.G...$ ..Vy.^..|
 *     |until 0x53ef.1 (384)                           |                |
       |                                               |                |            [30]{}: partition 0x53ef.2-0x556f.1 (383.7)
       |                                               |                |              count: 128
 0x53e0|                                             2d|               -|              rice_parameter: 22 0x53ef.2-0x53ef.7 (0.5)
-0x53e0|                                             2d|               -|              samples: raw bits 0x53ef.7-0x556f.1 (383.2)
+0x53e0|                                             2d|               -|              residuals: raw bits 0x53ef.7-0x556f.1 (383.2)
 0x53f0|1e 8d e0 4d a5 07 96 23 30 ac ee de 88 40 00 35|...M...#0....@.5|
 *     |until 0x556f (384)                             |                |
       |                                               |                |            [31]{}: partition 0x556f.1-0x56ec.7 (381.6)
       |                                               |                |              count: 128
 0x5560|                                             5a|               Z|              rice_parameter: 22 0x556f.1-0x556f.6 (0.5)
-0x5560|                                             5a|               Z|              samples: raw bits 0x556f.6-0x56ec.7 (381.1)
+0x5560|                                             5a|               Z|              residuals: raw bits 0x556f.6-0x56ec.7 (381.1)
 0x5570|bf 07 dc 2c fa 0f 07 fe 37 b3 be 3e 0d a0 4f 55|...,....7..>..OU|
 *     |until 0x56ec.6 (382)                           |                |
 0x56e0|                                    e8         |            .   |      byte_align: 0 (valid) 0x56ec.7-0x56ed (0.1)
@@ -545,25 +545,25 @@ $ fq -d flac dv mono24.flac
       |                                               |                |            [0]{}: partition 0x56f9.6-0x631a.5 (3104.7)
       |                                               |                |              count: 1023
 0x56f0|                           4a d6               |         J.     |              rice_parameter: 22 0x56f9.6-0x56fa.3 (0.5)
-0x56f0|                              d6 a0 73 8d b3 75|          ..s..u|              samples: raw bits 0x56fa.3-0x631a.5 (3104.2)
+0x56f0|                              d6 a0 73 8d b3 75|          ..s..u|              residuals: raw bits 0x56fa.3-0x631a.5 (3104.2)
 0x5700|81 16 a7 5d 05 ac ed 75 60 eb c0 97 c5 cc 22 96|...]...u`.....".|
 *     |until 0x631a.4 (3105)                          |                |
       |                                               |                |            [1]{}: partition 0x631a.5-0x6bb9.4 (2206.7)
       |                                               |                |              count: 1024
 0x6310|                              03 ca            |          ..    |              rice_parameter: 15 0x631a.5-0x631b.2 (0.5)
-0x6310|                                 ca 70 02 50 01|           .p.P.|              samples: raw bits 0x631b.2-0x6bb9.4 (2206.2)
+0x6310|                                 ca 70 02 50 01|           .p.P.|              residuals: raw bits 0x631b.2-0x6bb9.4 (2206.2)
 0x6320|fc 00 e6 00 67 00 2c c0 12 e0 1f 60 1b e0 18 00|....g.,....`....|
 *     |until 0x6bb9.3 (2207)                          |                |
       |                                               |                |            [2]{}: partition 0x6bb9.4-0x7458.4 (2207)
       |                                               |                |              count: 1024
 0x6bb0|                           07 9a               |         ..     |              rice_parameter: 15 0x6bb9.4-0x6bba.1 (0.5)
-0x6bb0|                              9a 60 06 48 01 7a|          .`.H.z|              samples: raw bits 0x6bba.1-0x7458.4 (2206.3)
+0x6bb0|                              9a 60 06 48 01 7a|          .`.H.z|              residuals: raw bits 0x6bba.1-0x7458.4 (2206.3)
 0x6bc0|00 58 00 13 e0 04 70 03 e8 01 c8 00 cb 00 59 80|.X....p.......Y.|
 *     |until 0x7458.3 (2207)                          |                |
       |                                               |                |            [3]{}: partition 0x7458.4-0x7cf7.3 (2206.7)
       |                                               |                |              count: 1024
 0x7450|                        07 98                  |        ..      |              rice_parameter: 15 0x7458.4-0x7459.1 (0.5)
-0x7450|                           98 00 06 20 01 86 00|         ... ...|              samples: raw bits 0x7459.1-0x7cf7.3 (2206.2)
+0x7450|                           98 00 06 20 01 86 00|         ... ...|              residuals: raw bits 0x7459.1-0x7cf7.3 (2206.2)
 0x7460|61 80 18 00 05 d0 01 60 00 52 00 13 00 04 38 03|a......`.R....8.|
 *     |until 0x7cf7.2 (2207)                          |                |
 0x7cf0|                     00                        |       .        |      byte_align: 0 (valid) 0x7cf7.3-0x7cf8 (0.5)
@@ -601,97 +601,97 @@ $ fq -d flac dv mono24.flac
       |                                               |                |            [0]{}: partition 0x7d07.6-0x7fab.4 (675.6)
       |                                               |                |              count: 255
 0x7d00|                     52 6e                     |       Rn       |              rice_parameter: 19 0x7d07.6-0x7d08.3 (0.5)
-0x7d00|                        6e 12 eb 67 bf 7a f5 25|        n..g.z.%|              samples: raw bits 0x7d08.3-0x7fab.4 (675.1)
+0x7d00|                        6e 12 eb 67 bf 7a f5 25|        n..g.z.%|              residuals: raw bits 0x7d08.3-0x7fab.4 (675.1)
 0x7d10|55 4d 2a 97 40 54 1e d3 f8 33 9e e7 a4 e4 e0 fd|UM*.@T...3......|
 *     |until 0x7fab.3 (676)                           |                |
       |                                               |                |            [1]{}: partition 0x7fab.4-0x824a.5 (671.1)
       |                                               |                |              count: 256
 0x7fa0|                                 19 d0         |           ..   |              rice_parameter: 19 0x7fab.4-0x7fac.1 (0.5)
-0x7fa0|                                    d0 45 4d 84|            .EM.|              samples: raw bits 0x7fac.1-0x824a.5 (670.4)
+0x7fa0|                                    d0 45 4d 84|            .EM.|              residuals: raw bits 0x7fac.1-0x824a.5 (670.4)
 0x7fb0|75 e0 bb 0e 99 a0 f2 d4 8f c5 33 a3 07 8d 3f 81|u.........3...?.|
 *     |until 0x824a.4 (671)                           |                |
       |                                               |                |            [2]{}: partition 0x824a.5-0x84f5.7 (683.2)
       |                                               |                |              count: 256
 0x8240|                              d4 e8            |          ..    |              rice_parameter: 19 0x824a.5-0x824b.2 (0.5)
-0x8240|                                 e8 8c 52 cb 77|           ..R.w|              samples: raw bits 0x824b.2-0x84f5.7 (682.5)
+0x8240|                                 e8 8c 52 cb 77|           ..R.w|              residuals: raw bits 0x824b.2-0x84f5.7 (682.5)
 0x8250|31 2f 93 5e 88 3a ce c3 fe 71 92 96 b0 aa 27 05|1/.^.:...q....'.|
 *     |until 0x84f5.6 (683)                           |                |
       |                                               |                |            [3]{}: partition 0x84f5.7-0x8797.4 (673.5)
       |                                               |                |              count: 256
 0x84f0|               05 32                           |     .2         |              rice_parameter: 19 0x84f5.7-0x84f6.4 (0.5)
-0x84f0|                  32 34 61 9f a8 10 ec 27 26 ce|      24a....'&.|              samples: raw bits 0x84f6.4-0x8797.4 (673)
+0x84f0|                  32 34 61 9f a8 10 ec 27 26 ce|      24a....'&.|              residuals: raw bits 0x84f6.4-0x8797.4 (673)
 0x8500|d9 31 a2 f1 64 ae 89 d5 c4 43 d4 b7 8b f2 6d 84|.1..d....C....m.|
 *     |until 0x8797.3 (673)                           |                |
       |                                               |                |            [4]{}: partition 0x8797.4-0x8a4c.6 (693.2)
       |                                               |                |              count: 256
 0x8790|                     1a 38                     |       .8       |              rice_parameter: 20 0x8797.4-0x8798.1 (0.5)
-0x8790|                        38 22 6a da 6a bb 4e 2c|        8"j.j.N,|              samples: raw bits 0x8798.1-0x8a4c.6 (692.5)
+0x8790|                        38 22 6a da 6a bb 4e 2c|        8"j.j.N,|              residuals: raw bits 0x8798.1-0x8a4c.6 (692.5)
 0x87a0|2c c0 b4 b0 f8 8e bb 40 1a c8 8c 2a 89 30 a7 ad|,......@...*.0..|
 *     |until 0x8a4c.5 (693)                           |                |
       |                                               |                |            [5]{}: partition 0x8a4c.6-0x8d40.7 (756.1)
       |                                               |                |              count: 256
 0x8a40|                                    5a db      |            Z.  |              rice_parameter: 22 0x8a4c.6-0x8a4d.3 (0.5)
-0x8a40|                                       db 72 8d|             .r.|              samples: raw bits 0x8a4d.3-0x8d40.7 (755.4)
+0x8a40|                                       db 72 8d|             .r.|              residuals: raw bits 0x8a4d.3-0x8d40.7 (755.4)
 0x8a50|b9 5e cb ab 79 97 b7 97 77 5b a8 dc c0 54 16 ca|.^..y...w[...T..|
 *     |until 0x8d40.6 (756)                           |                |
       |                                               |                |            [6]{}: partition 0x8d40.7-0x902d.7 (749)
       |                                               |                |              count: 256
 0x8d40|39 57                                          |9W              |              rice_parameter: 21 0x8d40.7-0x8d41.4 (0.5)
-0x8d40|   57 9e 50 6d dc 50 99 35 ce 09 a2 68 a5 aa a5| W.Pm.P.5...h...|              samples: raw bits 0x8d41.4-0x902d.7 (748.3)
+0x8d40|   57 9e 50 6d dc 50 99 35 ce 09 a2 68 a5 aa a5| W.Pm.P.5...h...|              residuals: raw bits 0x8d41.4-0x902d.7 (748.3)
 0x8d50|39 d1 6c 9d 5f c4 f4 06 fc 24 dc b8 44 7c fe 6d|9.l._....$..D|.m|
 *     |until 0x902d.6 (749)                           |                |
       |                                               |                |            [7]{}: partition 0x902d.7-0x931e.4 (752.5)
       |                                               |                |              count: 256
 0x9020|                                       9b 56   |             .V |              rice_parameter: 21 0x902d.7-0x902e.4 (0.5)
-0x9020|                                          56 1f|              V.|              samples: raw bits 0x902e.4-0x931e.4 (752)
+0x9020|                                          56 1f|              V.|              residuals: raw bits 0x902e.4-0x931e.4 (752)
 0x9030|b1 82 cf ab c2 80 b5 a0 8b 31 d0 63 83 27 87 d3|.........1.c.'..|
 *     |until 0x931e.3 (752)                           |                |
       |                                               |                |            [8]{}: partition 0x931e.4-0x9611.2 (754.6)
       |                                               |                |              count: 256
 0x9310|                                          7b 5d|              {]|              rice_parameter: 22 0x931e.4-0x931f.1 (0.5)
-0x9310|                                             5d|               ]|              samples: raw bits 0x931f.1-0x9611.2 (754.1)
+0x9310|                                             5d|               ]|              residuals: raw bits 0x931f.1-0x9611.2 (754.1)
 0x9320|a2 8b 43 1e c1 d1 a3 23 9d 57 e1 08 d6 e3 23 2f|..C....#.W....#/|
 *     |until 0x9611.1 (755)                           |                |
       |                                               |                |            [9]{}: partition 0x9611.2-0x9903 (753.6)
       |                                               |                |              count: 256
 0x9610|   ed                                          | .              |              rice_parameter: 22 0x9611.2-0x9611.7 (0.5)
-0x9610|   ed 40 21 51 b9 30 3b 7e 7b 6d 71 03 de ec 14| .@!Q.0;~{mq....|              samples: raw bits 0x9611.7-0x9903 (753.1)
+0x9610|   ed 40 21 51 b9 30 3b 7e 7b 6d 71 03 de ec 14| .@!Q.0;~{mq....|              residuals: raw bits 0x9611.7-0x9903 (753.1)
 0x9620|7c b5 11 58 d8 e1 1e fe d9 9d cf ab 24 b0 af b4||..X........$...|
 *     |until 0x9902.7 (754)                           |                |
       |                                               |                |            [10]{}: partition 0x9903-0x9bf5.4 (754.4)
       |                                               |                |              count: 256
 0x9900|         b2                                    |   .            |              rice_parameter: 22 0x9903-0x9903.5 (0.5)
-0x9900|         b2 37 50 4b ab f3 d7 ef b5 e8 71 4d 09|   .7PK......qM.|              samples: raw bits 0x9903.5-0x9bf5.4 (753.7)
+0x9900|         b2 37 50 4b ab f3 d7 ef b5 e8 71 4d 09|   .7PK......qM.|              residuals: raw bits 0x9903.5-0x9bf5.4 (753.7)
 0x9910|88 51 16 67 21 17 8a 05 5e 3f 14 13 83 29 91 8a|.Q.g!...^?...)..|
 *     |until 0x9bf5.3 (754)                           |                |
       |                                               |                |            [11]{}: partition 0x9bf5.4-0x9ee7.5 (754.1)
       |                                               |                |              count: 256
 0x9bf0|               8b 2d                           |     .-         |              rice_parameter: 22 0x9bf5.4-0x9bf6.1 (0.5)
-0x9bf0|                  2d de 24 72 db b6 27 2a fe c3|      -.$r..'*..|              samples: raw bits 0x9bf6.1-0x9ee7.5 (753.4)
+0x9bf0|                  2d de 24 72 db b6 27 2a fe c3|      -.$r..'*..|              residuals: raw bits 0x9bf6.1-0x9ee7.5 (753.4)
 0x9c00|a7 dd 68 aa e6 66 81 bc c0 7c 66 d5 a7 de e7 f3|..h..f...|f.....|
 *     |until 0x9ee7.4 (754)                           |                |
       |                                               |                |            [12]{}: partition 0x9ee7.5-0xa1da (754.3)
       |                                               |                |              count: 256
 0x9ee0|                     45 b5                     |       E.       |              rice_parameter: 22 0x9ee7.5-0x9ee8.2 (0.5)
-0x9ee0|                        b5 7b 69 22 b6 40 a0 2a|        .{i".@.*|              samples: raw bits 0x9ee8.2-0xa1da (753.6)
+0x9ee0|                        b5 7b 69 22 b6 40 a0 2a|        .{i".@.*|              residuals: raw bits 0x9ee8.2-0xa1da (753.6)
 0x9ef0|4a 12 d6 ad d0 81 8e 78 c8 de 20 57 06 69 21 ea|J......x.. W.i!.|
 *     |until 0xa1d9.7 (754)                           |                |
       |                                               |                |            [13]{}: partition 0xa1da-0xa4ca.2 (752.2)
       |                                               |                |              count: 256
 0xa1d0|                              ab               |          .     |              rice_parameter: 21 0xa1da-0xa1da.5 (0.5)
-0xa1d0|                              ab 0b 6d ba 90 6c|          ..m..l|              samples: raw bits 0xa1da.5-0xa4ca.2 (751.5)
+0xa1d0|                              ab 0b 6d ba 90 6c|          ..m..l|              residuals: raw bits 0xa1da.5-0xa4ca.2 (751.5)
 0xa1e0|9b ae e4 bc de 89 10 a4 a2 9f 44 a2 0c 25 f2 ce|..........D..%..|
 *     |until 0xa4ca.1 (752)                           |                |
       |                                               |                |            [14]{}: partition 0xa4ca.2-0xa7bc.7 (754.5)
       |                                               |                |              count: 256
 0xa4c0|                              2d               |          -     |              rice_parameter: 22 0xa4ca.2-0xa4ca.7 (0.5)
-0xa4c0|                              2d ff de 5a 66 46|          -..ZfF|              samples: raw bits 0xa4ca.7-0xa7bc.7 (754)
+0xa4c0|                              2d ff de 5a 66 46|          -..ZfF|              residuals: raw bits 0xa4ca.7-0xa7bc.7 (754)
 0xa4d0|87 65 81 7b 17 aa 19 6d d6 13 c4 df a6 14 a7 b8|.e.{...m........|
 *     |until 0xa7bc.6 (754)                           |                |
       |                                               |                |            [15]{}: partition 0xa7bc.7-0xaaaf.4 (754.5)
       |                                               |                |              count: 256
 0xa7b0|                                    fd 6b      |            .k  |              rice_parameter: 22 0xa7bc.7-0xa7bd.4 (0.5)
-0xa7b0|                                       6b b0 dd|             k..|              samples: raw bits 0xa7bd.4-0xaaaf.4 (754)
+0xa7b0|                                       6b b0 dd|             k..|              residuals: raw bits 0xa7bd.4-0xaaaf.4 (754)
 0xa7c0|39 5c 9e 9b 14 20 6e e2 d0 db c9 de ee eb 33 8d|9\... n.......3.|
 *     |until 0xaaaf.3 (754)                           |                |
 0xaaa0|                                             00|               .|      byte_align: 0 (valid) 0xaaaf.4-0xaab0 (0.4)
@@ -725,7 +725,7 @@ $ fq -d flac dv mono24.flac
       |                                               |                |            [0]{}: partition 0xaabb.6-0xbcc8.1 (4620.3)
       |                                               |                |              count: 1570
 0xaab0|                                 42 a5         |           B.   |              rice_parameter: 21 0xaabb.6-0xaabc.3 (0.5)
-0xaab0|                                    a5 bf 5d 86|            ..].|              samples: raw bits 0xaabc.3-0xbcc8.1 (4619.6)
+0xaab0|                                    a5 bf 5d 86|            ..].|              residuals: raw bits 0xaabc.3-0xbcc8.1 (4619.6)
 0xaac0|a5 4e 41 16 ea f1 3b b4 90 8e 95 e4 b9 b3 3d 1a|.NA...;.......=.|
 *     |until 0xbcc8 (4620)                            |                |
 0xbcc0|                        80                     |        .       |      byte_align: 0 (valid) 0xbcc8.1-0xbcc9 (0.7)

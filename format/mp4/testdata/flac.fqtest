@@ -365,7 +365,7 @@ $ fq -d mp4 dv flac.mp4
      |                                               |                |                [0]{}: partition 0x4e.1-0x284.1 (566)
      |                                               |                |                  count: 2199
 0x040|                                          01   |              . |                  rice_parameter: 0 0x4e.1-0x4e.5 (0.4)
-0x040|                                          01 27|              .'|                  samples: raw bits 0x4e.5-0x284.1 (565.4)
+0x040|                                          01 27|              .'|                  residuals: raw bits 0x4e.5-0x284.1 (565.4)
 0x050|33 32 79 32 64 e6 66 73 24 d3 38 7f 99 27 99 3c|32y2d.fs$.8..'.<|
 *    |until 0x284 (566)                              |                |
      |                                               |                |            [1]{}: subframe 0x284.1-0x287.2 (3.1)

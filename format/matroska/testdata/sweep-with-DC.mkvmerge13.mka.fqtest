@@ -743,13 +743,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x16b6.6-0x1727.1 (112.3)
       |                                               |                |                          count: 895
 0x16b0|                  04 3f                        |      .?        |                          rice_parameter: 0 0x16b6.6-0x16b7.2 (0.4)
-0x16b0|                     3f ff ff ff ff ff ff ff ff|       ?........|                          samples: raw bits 0x16b7.2-0x1727.1 (111.7)
+0x16b0|                     3f ff ff ff ff ff ff ff ff|       ?........|                          residuals: raw bits 0x16b7.2-0x1727.1 (111.7)
 0x16c0|ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|
 *     |until 0x1727 (112)                             |                |
       |                                               |                |                        [1]{}: partition 0x1727.1-0x1798 (112.7)
       |                                               |                |                          count: 896
 0x1720|                     87                        |       .        |                          rice_parameter: 0 0x1727.1-0x1727.5 (0.4)
-0x1720|                     87 ff ff ff ff ff fe ff ff|       .........|                          samples: raw bits 0x1727.5-0x1798 (112.3)
+0x1720|                     87 ff ff ff ff ff fe ff ff|       .........|                          residuals: raw bits 0x1727.5-0x1798 (112.3)
 0x1730|ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|
 *     |until 0x1797.7 (113)                           |                |
       |                                               |                |                  byte_align: 0 (valid) 0x1798-0x1798 (0)
@@ -785,13 +785,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x17a5.6-0x1816.4 (112.6)
       |                                               |                |                          count: 895
 0x17a0|               04 3f                           |     .?         |                          rice_parameter: 0 0x17a5.6-0x17a6.2 (0.4)
-0x17a0|                  3f ff ff ff ff ff ff ff ff ff|      ?.........|                          samples: raw bits 0x17a6.2-0x1816.4 (112.2)
+0x17a0|                  3f ff ff ff ff ff ff ff ff ff|      ?.........|                          residuals: raw bits 0x17a6.2-0x1816.4 (112.2)
 0x17b0|ff ff ff ff ff ff ff ff ff ff ff f3 ff ff ff ff|................|
 *     |until 0x1816.3 (113)                           |                |
       |                                               |                |                        [1]{}: partition 0x1816.4-0x1887.3 (112.7)
       |                                               |                |                          count: 896
 0x1810|                  f0                           |      .         |                          rice_parameter: 0 0x1816.4-0x1817 (0.4)
-0x1810|                     ff ff ff ff ff ff ff ff ff|       .........|                          samples: raw bits 0x1817-0x1887.3 (112.3)
+0x1810|                     ff ff ff ff ff ff ff ff ff|       .........|                          residuals: raw bits 0x1817-0x1887.3 (112.3)
 0x1820|ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|
 *     |until 0x1887.2 (113)                           |                |
 0x1880|                     e0                        |       .        |                  byte_align: 0 (valid) 0x1887.3-0x1888 (0.5)
@@ -827,13 +827,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x1895.6-0x1906.3 (112.5)
       |                                               |                |                          count: 895
 0x1890|               04 3f                           |     .?         |                          rice_parameter: 0 0x1895.6-0x1896.2 (0.4)
-0x1890|                  3f ff ff ff ff ff ff ff ff ff|      ?.........|                          samples: raw bits 0x1896.2-0x1906.3 (112.1)
+0x1890|                  3f ff ff ff ff ff ff ff ff ff|      ?.........|                          residuals: raw bits 0x1896.2-0x1906.3 (112.1)
 0x18a0|ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|
 *     |until 0x1906.2 (113)                           |                |
       |                                               |                |                        [1]{}: partition 0x1906.3-0x1977.1 (112.6)
       |                                               |                |                          count: 896
 0x1900|                  e1                           |      .         |                          rice_parameter: 0 0x1906.3-0x1906.7 (0.4)
-0x1900|                  e1 ff ff ff ff ff ff ff ff ff|      ..........|                          samples: raw bits 0x1906.7-0x1977.1 (112.2)
+0x1900|                  e1 ff ff ff ff ff ff ff ff ff|      ..........|                          residuals: raw bits 0x1906.7-0x1977.1 (112.2)
 0x1910|ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|
 *     |until 0x1977 (113)                             |                |
 0x1970|                     80                        |       .        |                  byte_align: 0 (valid) 0x1977.1-0x1978 (0.7)
@@ -900,14 +900,14 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x199e.6-0x1a0f.5 (112.7)
       |                                               |                |                          count: 895
 0x1990|                                          04 3f|              .?|                          rice_parameter: 0 0x199e.6-0x199f.2 (0.4)
-0x1990|                                             3f|               ?|                          samples: raw bits 0x199f.2-0x1a0f.5 (112.3)
+0x1990|                                             3f|               ?|                          residuals: raw bits 0x199f.2-0x1a0f.5 (112.3)
 0x19a0|ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|
 *     |until 0x1a0f.4 (113)                           |                |
       |                                               |                |                        [1]{}: partition 0x1a0f.5-0x1a80.2 (112.5)
       |                                               |                |                          count: 896
 0x1a00|                                             f8|               .|                          rice_parameter: 0 0x1a0f.5-0x1a10.1 (0.4)
 0x1a10|7f                                             |.               |
-0x1a10|7f ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|                          samples: raw bits 0x1a10.1-0x1a80.2 (112.1)
+0x1a10|7f ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|                          residuals: raw bits 0x1a10.1-0x1a80.2 (112.1)
 0x1a20|ff                                             |.               |
 *     |until 0x1a80.1 (113)                           |                |
 0x1a80|c0                                             |.               |                  byte_align: 0 (valid) 0x1a80.2-0x1a81 (0.6)
@@ -942,13 +942,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x1a8e.6-0x1aff.4 (112.6)
       |                                               |                |                          count: 895
 0x1a80|                                          04 3f|              .?|                          rice_parameter: 0 0x1a8e.6-0x1a8f.2 (0.4)
-0x1a80|                                             3f|               ?|                          samples: raw bits 0x1a8f.2-0x1aff.4 (112.2)
+0x1a80|                                             3f|               ?|                          residuals: raw bits 0x1a8f.2-0x1aff.4 (112.2)
 0x1a90|ff ff ff ff ff ff ff ff ff 7f ff ff ff ff ff ff|................|
 *     |until 0x1aff.3 (113)                           |                |
       |                                               |                |                        [1]{}: partition 0x1aff.4-0x1b70.2 (112.6)
       |                                               |                |                          count: 896
 0x1af0|                                             f0|               .|                          rice_parameter: 0 0x1aff.4-0x1b00 (0.4)
-0x1b00|ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|                          samples: raw bits 0x1b00-0x1b70.2 (112.2)
+0x1b00|ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|                          residuals: raw bits 0x1b00-0x1b70.2 (112.2)
 *     |until 0x1b70.1 (113)                           |                |
 0x1b70|c0                                             |.               |                  byte_align: 0 (valid) 0x1b70.2-0x1b71 (0.6)
 0x1b70|   4d 53                                       | MS             |                  footer_crc: "4d53" (raw bits) (valid) 0x1b71-0x1b73 (2)
@@ -982,13 +982,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x1b7e.6-0x1bef.3 (112.5)
       |                                               |                |                          count: 895
 0x1b70|                                          04 3f|              .?|                          rice_parameter: 0 0x1b7e.6-0x1b7f.2 (0.4)
-0x1b70|                                             3f|               ?|                          samples: raw bits 0x1b7f.2-0x1bef.3 (112.1)
+0x1b70|                                             3f|               ?|                          residuals: raw bits 0x1b7f.2-0x1bef.3 (112.1)
 0x1b80|ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|
 *     |until 0x1bef.2 (113)                           |                |
       |                                               |                |                        [1]{}: partition 0x1bef.3-0x1c60.3 (113)
       |                                               |                |                          count: 896
 0x1be0|                                             e1|               .|                          rice_parameter: 0 0x1bef.3-0x1bef.7 (0.4)
-0x1be0|                                             e1|               .|                          samples: raw bits 0x1bef.7-0x1c60.3 (112.4)
+0x1be0|                                             e1|               .|                          residuals: raw bits 0x1bef.7-0x1c60.3 (112.4)
 0x1bf0|ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|
 *     |until 0x1c60.2 (113)                           |                |
 0x1c60|e0                                             |.               |                  byte_align: 0 (valid) 0x1c60.3-0x1c61 (0.5)
@@ -1023,14 +1023,14 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x1c6e.6-0x1cdf.6 (113)
       |                                               |                |                          count: 895
 0x1c60|                                          04 3f|              .?|                          rice_parameter: 0 0x1c6e.6-0x1c6f.2 (0.4)
-0x1c60|                                             3f|               ?|                          samples: raw bits 0x1c6f.2-0x1cdf.6 (112.4)
+0x1c60|                                             3f|               ?|                          residuals: raw bits 0x1c6f.2-0x1cdf.6 (112.4)
 0x1c70|ff ff f9 ff ff ff ff ff ff ff ff ff ff ff ff ff|................|
 *     |until 0x1cdf.5 (113)                           |                |
       |                                               |                |                        [1]{}: partition 0x1cdf.6-0x1d50.7 (113.1)
       |                                               |                |                          count: 896
 0x1cd0|                                             fc|               .|                          rice_parameter: 0 0x1cdf.6-0x1ce0.2 (0.4)
 0x1ce0|3f                                             |?               |
-0x1ce0|3f ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|?...............|                          samples: raw bits 0x1ce0.2-0x1d50.7 (112.5)
+0x1ce0|3f ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|?...............|                          residuals: raw bits 0x1ce0.2-0x1d50.7 (112.5)
 0x1cf0|ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff|................|
 *     |until 0x1d50.6 (113)                           |                |
 0x1d50|fe                                             |.               |                  byte_align: 0 (valid) 0x1d50.7-0x1d51 (0.1)
@@ -1065,14 +1065,14 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x1d5e.6-0x1dcf.6 (113)
       |                                               |                |                          count: 895
 0x1d50|                                          04 3f|              .?|                          rice_parameter: 0 0x1d5e.6-0x1d5f.2 (0.4)
-0x1d50|                                             3f|               ?|                          samples: raw bits 0x1d5f.2-0x1dcf.6 (112.4)
+0x1d50|                                             3f|               ?|                          residuals: raw bits 0x1d5f.2-0x1dcf.6 (112.4)
 0x1d60|ff ff ff ff ff ff ff fe 7f ff ff ff ff ff ff ff|................|
 *     |until 0x1dcf.5 (113)                           |                |
       |                                               |                |                        [1]{}: partition 0x1dcf.6-0x1e40.5 (112.7)
       |                                               |                |                          count: 896
 0x1dc0|                                             fc|               .|                          rice_parameter: 0 0x1dcf.6-0x1dd0.2 (0.4)
 0x1dd0|3f                                             |?               |
-0x1dd0|3f ff ff ff ff ff ff ff ff fe ff ff ff ff ff ff|?...............|                          samples: raw bits 0x1dd0.2-0x1e40.5 (112.3)
+0x1dd0|3f ff ff ff ff ff ff ff ff fe ff ff ff ff ff ff|?...............|                          residuals: raw bits 0x1dd0.2-0x1e40.5 (112.3)
 0x1de0|ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff fb|................|
 *     |until 0x1e40.4 (113)                           |                |
 0x1e40|f8                                             |.               |                  byte_align: 0 (valid) 0x1e40.5-0x1e41 (0.3)
@@ -1107,13 +1107,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x1e4e.6-0x1ec0.1 (113.3)
       |                                               |                |                          count: 895
 0x1e40|                                          04 3f|              .?|                          rice_parameter: 0 0x1e4e.6-0x1e4f.2 (0.4)
-0x1e40|                                             3f|               ?|                          samples: raw bits 0x1e4f.2-0x1ec0.1 (112.7)
+0x1e40|                                             3f|               ?|                          residuals: raw bits 0x1e4f.2-0x1ec0.1 (112.7)
 0x1e50|ff ff ff ff ff ff ff ff ff ff 3f ff ff ff ff ff|..........?.....|
 *     |until 0x1ec0 (113)                             |                |
       |                                               |                |                        [1]{}: partition 0x1ec0.1-0x1f31.1 (113)
       |                                               |                |                          count: 896
 0x1ec0|87                                             |.               |                          rice_parameter: 0 0x1ec0.1-0x1ec0.5 (0.4)
-0x1ec0|87 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|                          samples: raw bits 0x1ec0.5-0x1f31.1 (112.4)
+0x1ec0|87 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|                          residuals: raw bits 0x1ec0.5-0x1f31.1 (112.4)
 0x1ed0|ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|
 *     |until 0x1f31 (113)                             |                |
 0x1f30|   80                                          | .              |                  byte_align: 0 (valid) 0x1f31.1-0x1f32 (0.7)
@@ -1149,13 +1149,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                          count: 895
 0x1f30|                                             04|               .|                          rice_parameter: 0 0x1f3f.6-0x1f40.2 (0.4)
 0x1f40|3f                                             |?               |
-0x1f40|3f ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|?...............|                          samples: raw bits 0x1f40.2-0x1fb1.2 (113)
+0x1f40|3f ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|?...............|                          residuals: raw bits 0x1f40.2-0x1fb1.2 (113)
 0x1f50|ff ff ff ff fb ff ff ff ff ff ff ff e7 ff ff ff|................|
 *     |until 0x1fb1.1 (113)                           |                |
       |                                               |                |                        [1]{}: partition 0x1fb1.2-0x2022.5 (113.3)
       |                                               |                |                          count: 896
 0x1fb0|   c3                                          | .              |                          rice_parameter: 0 0x1fb1.2-0x1fb1.6 (0.4)
-0x1fb0|   c3 ff ff ff ff f3 ff ff ff ff ff ff ff ff ff| ...............|                          samples: raw bits 0x1fb1.6-0x2022.5 (112.7)
+0x1fb0|   c3 ff ff ff ff f3 ff ff ff ff ff ff ff ff ff| ...............|                          residuals: raw bits 0x1fb1.6-0x2022.5 (112.7)
 0x1fc0|ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff fe|................|
 *     |until 0x2022.4 (113)                           |                |
 0x2020|      f8                                       |  .             |                  byte_align: 0 (valid) 0x2022.5-0x2023 (0.3)
@@ -1190,13 +1190,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x2030.6-0x20a1.6 (113)
       |                                               |                |                          count: 895
 0x2030|04 3f                                          |.?              |                          rice_parameter: 0 0x2030.6-0x2031.2 (0.4)
-0x2030|   3f ff ff ff ff ff ff ff ff fe ff ff ff ff ff| ?..............|                          samples: raw bits 0x2031.2-0x20a1.6 (112.4)
+0x2030|   3f ff ff ff ff ff ff ff ff fe ff ff ff ff ff| ?..............|                          residuals: raw bits 0x2031.2-0x20a1.6 (112.4)
 0x2040|ff ff ff ff ff ff ff ff ff ff ff 7f ff ff ff ff|................|
 *     |until 0x20a1.5 (113)                           |                |
       |                                               |                |                        [1]{}: partition 0x20a1.6-0x2113.4 (113.6)
       |                                               |                |                          count: 896
 0x20a0|   fc 3f                                       | .?             |                          rice_parameter: 0 0x20a1.6-0x20a2.2 (0.4)
-0x20a0|      3f ff ff e7 ff ff ff ff ff ff ff ff ff ff|  ?.............|                          samples: raw bits 0x20a2.2-0x2113.4 (113.2)
+0x20a0|      3f ff ff e7 ff ff ff ff ff ff ff ff ff ff|  ?.............|                          residuals: raw bits 0x20a2.2-0x2113.4 (113.2)
 0x20b0|ff ff ff ff fe 7f ff ff ff ff ff ff ff ff ff ff|................|
 *     |until 0x2113.3 (114)                           |                |
 0x2110|         f0                                    |   .            |                  byte_align: 0 (valid) 0x2113.4-0x2114 (0.4)
@@ -1253,13 +1253,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x2130.6-0x21a1.7 (113.1)
       |                                               |                |                          count: 895
 0x2130|04 3f                                          |.?              |                          rice_parameter: 0 0x2130.6-0x2131.2 (0.4)
-0x2130|   3f ff ff ff ff ff ff ff ff ff fe ff ff ff ff| ?..............|                          samples: raw bits 0x2131.2-0x21a1.7 (112.5)
+0x2130|   3f ff ff ff ff ff ff ff ff ff fe ff ff ff ff| ?..............|                          residuals: raw bits 0x2131.2-0x21a1.7 (112.5)
 0x2140|ff ff ff ff ff ff ff ff ff ff ff ff ff ef ff ff|................|
 *     |until 0x21a1.6 (113)                           |                |
       |                                               |                |                        [1]{}: partition 0x21a1.7-0x2213.7 (114)
       |                                               |                |                          count: 896
 0x21a0|   fe 1f                                       | ..             |                          rice_parameter: 0 0x21a1.7-0x21a2.3 (0.4)
-0x21a0|      1f ff ff ff ff ff ff ff ff ff ff ff ff ff|  ..............|                          samples: raw bits 0x21a2.3-0x2213.7 (113.4)
+0x21a0|      1f ff ff ff ff ff ff ff ff ff ff ff ff ff|  ..............|                          residuals: raw bits 0x21a2.3-0x2213.7 (113.4)
 0x21b0|ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|
 *     |until 0x2213.6 (114)                           |                |
 0x2210|         fe                                    |   .            |                  byte_align: 0 (valid) 0x2213.7-0x2214 (0.1)
@@ -1295,13 +1295,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x2221.6-0x2293.1 (113.3)
       |                                               |                |                          count: 895
 0x2220|   04 3f                                       | .?             |                          rice_parameter: 0 0x2221.6-0x2222.2 (0.4)
-0x2220|      3f ff ff ff ff ff ff ff ff ff ff ff ff fc|  ?.............|                          samples: raw bits 0x2222.2-0x2293.1 (112.7)
+0x2220|      3f ff ff ff ff ff ff ff ff ff ff ff ff fc|  ?.............|                          residuals: raw bits 0x2222.2-0x2293.1 (112.7)
 0x2230|ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|
 *     |until 0x2293 (113)                             |                |
       |                                               |                |                        [1]{}: partition 0x2293.1-0x2304.5 (113.4)
       |                                               |                |                          count: 896
 0x2290|         87                                    |   .            |                          rice_parameter: 0 0x2293.1-0x2293.5 (0.4)
-0x2290|         87 ff ff ff ff ff ff ff ff ff ff ff ff|   .............|                          samples: raw bits 0x2293.5-0x2304.5 (113)
+0x2290|         87 ff ff ff ff ff ff ff ff ff ff ff ff|   .............|                          residuals: raw bits 0x2293.5-0x2304.5 (113)
 0x22a0|bf ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|
 *     |until 0x2304.4 (113)                           |                |
 0x2300|            f8                                 |    .           |                  byte_align: 0 (valid) 0x2304.5-0x2305 (0.3)
@@ -1336,13 +1336,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x2312.6-0x2384.4 (113.6)
       |                                               |                |                          count: 895
 0x2310|      04 39                                    |  .9            |                          rice_parameter: 0 0x2312.6-0x2313.2 (0.4)
-0x2310|         39 ff ff ff ff ff ff ff ff ff ff cf ff|   9............|                          samples: raw bits 0x2313.2-0x2384.4 (113.2)
+0x2310|         39 ff ff ff ff ff ff ff ff ff ff cf ff|   9............|                          residuals: raw bits 0x2313.2-0x2384.4 (113.2)
 0x2320|ff ff ff ff ff ff ff ff ff 9f ff ff ff ff ff ff|................|
 *     |until 0x2384.3 (114)                           |                |
       |                                               |                |                        [1]{}: partition 0x2384.4-0x23f6.2 (113.6)
       |                                               |                |                          count: 896
 0x2380|            f0                                 |    .           |                          rice_parameter: 0 0x2384.4-0x2385 (0.4)
-0x2380|               ff ff f7 ff ff ff ff ff ff ff ff|     ...........|                          samples: raw bits 0x2385-0x23f6.2 (113.2)
+0x2380|               ff ff f7 ff ff ff ff ff ff ff ff|     ...........|                          residuals: raw bits 0x2385-0x23f6.2 (113.2)
 0x2390|ff ff fd ff ff ff ff ff ff ff ff ff ff 7f ff ff|................|
 *     |until 0x23f6.1 (114)                           |                |
 0x23f0|                  c0                           |      .         |                  byte_align: 0 (valid) 0x23f6.2-0x23f7 (0.6)
@@ -1377,13 +1377,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x2404.6-0x2477.3 (114.5)
       |                                               |                |                          count: 895
 0x2400|            04 3f                              |    .?          |                          rice_parameter: 0 0x2404.6-0x2405.2 (0.4)
-0x2400|               3f ff ff ff ff ff ff ff ff ff ff|     ?..........|                          samples: raw bits 0x2405.2-0x2477.3 (114.1)
+0x2400|               3f ff ff ff ff ff ff ff ff ff ff|     ?..........|                          residuals: raw bits 0x2405.2-0x2477.3 (114.1)
 0x2410|ff ff ff ff 9f ff ff ff ff ff ff ff ff ff ff ff|................|
 *     |until 0x2477.2 (115)                           |                |
       |                                               |                |                        [1]{}: partition 0x2477.3-0x24e9 (113.5)
       |                                               |                |                          count: 896
 0x2470|                     e1                        |       .        |                          rice_parameter: 0 0x2477.3-0x2477.7 (0.4)
-0x2470|                     e1 ff ff ff ff ff ff ff ff|       .........|                          samples: raw bits 0x2477.7-0x24e9 (113.1)
+0x2470|                     e1 ff ff ff ff ff ff ff ff|       .........|                          residuals: raw bits 0x2477.7-0x24e9 (113.1)
 0x2480|ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|
 *     |until 0x24e8.7 (114)                           |                |
       |                                               |                |                  byte_align: 0 (valid) 0x24e9-0x24e9 (0)
@@ -1418,13 +1418,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x24f6.6-0x2569 (114.2)
       |                                               |                |                          count: 895
 0x24f0|                  04 3f                        |      .?        |                          rice_parameter: 0 0x24f6.6-0x24f7.2 (0.4)
-0x24f0|                     3f ff ff ff ff ff ff ef ff|       ?........|                          samples: raw bits 0x24f7.2-0x2569 (113.6)
+0x24f0|                     3f ff ff ff ff ff ff ef ff|       ?........|                          residuals: raw bits 0x24f7.2-0x2569 (113.6)
 0x2500|ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|
 *     |until 0x2568.7 (114)                           |                |
       |                                               |                |                        [1]{}: partition 0x2569-0x25db.1 (114.1)
       |                                               |                |                          count: 896
 0x2560|                           0f                  |         .      |                          rice_parameter: 0 0x2569-0x2569.4 (0.4)
-0x2560|                           0f ff ff ff ff fc ff|         .......|                          samples: raw bits 0x2569.4-0x25db.1 (113.5)
+0x2560|                           0f ff ff ff ff fc ff|         .......|                          residuals: raw bits 0x2569.4-0x25db.1 (113.5)
 0x2570|ff ff ff ff ff ff ff ff cf ff ff ff ff ff ff ff|................|
 *     |until 0x25db (114)                             |                |
 0x25d0|                                 80            |           .    |                  byte_align: 0 (valid) 0x25db.1-0x25dc (0.7)
@@ -1459,13 +1459,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x25e9.6-0x265b.4 (113.6)
       |                                               |                |                          count: 895
 0x25e0|                           04 3f               |         .?     |                          rice_parameter: 0 0x25e9.6-0x25ea.2 (0.4)
-0x25e0|                              3f ff ff ff 7f ff|          ?.....|                          samples: raw bits 0x25ea.2-0x265b.4 (113.2)
+0x25e0|                              3f ff ff ff 7f ff|          ?.....|                          residuals: raw bits 0x25ea.2-0x265b.4 (113.2)
 0x25f0|ff ff ff ff ff f7 ff ff ff ff ff ff ff bf ff ff|................|
 *     |until 0x265b.3 (114)                           |                |
       |                                               |                |                        [1]{}: partition 0x265b.4-0x26ce.4 (115)
       |                                               |                |                          count: 896
 0x2650|                                 f0            |           .    |                          rice_parameter: 0 0x265b.4-0x265c (0.4)
-0x2650|                                    ff ff ff fc|            ....|                          samples: raw bits 0x265c-0x26ce.4 (114.4)
+0x2650|                                    ff ff ff fc|            ....|                          residuals: raw bits 0x265c-0x26ce.4 (114.4)
 0x2660|ff ff ff ff ff ff ff ff cf ff ff ff ff ff ff ff|................|
 *     |until 0x26ce.3 (115)                           |                |
 0x26c0|                                          f0   |              . |                  byte_align: 0 (valid) 0x26ce.4-0x26cf (0.4)
@@ -1501,13 +1501,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x26dc.6-0x274e.6 (114)
       |                                               |                |                          count: 895
 0x26d0|                                    04 3f      |            .?  |                          rice_parameter: 0 0x26dc.6-0x26dd.2 (0.4)
-0x26d0|                                       3f ff ff|             ?..|                          samples: raw bits 0x26dd.2-0x274e.6 (113.4)
+0x26d0|                                       3f ff ff|             ?..|                          residuals: raw bits 0x26dd.2-0x274e.6 (113.4)
 0x26e0|ff ff ff ff ff f7 ff ff ff ff ff ff ff ff ff ff|................|
 *     |until 0x274e.5 (114)                           |                |
       |                                               |                |                        [1]{}: partition 0x274e.6-0x27c2.2 (115.4)
       |                                               |                |                          count: 896
 0x2740|                                          fc 3f|              .?|                          rice_parameter: 0 0x274e.6-0x274f.2 (0.4)
-0x2740|                                             3f|               ?|                          samples: raw bits 0x274f.2-0x27c2.2 (115)
+0x2740|                                             3f|               ?|                          residuals: raw bits 0x274f.2-0x27c2.2 (115)
 0x2750|ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|
 *     |until 0x27c2.1 (115)                           |                |
 0x27c0|      c0                                       |  .             |                  byte_align: 0 (valid) 0x27c2.2-0x27c3 (0.6)
@@ -1542,13 +1542,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x27d0.6-0x2842.6 (114)
       |                                               |                |                          count: 895
 0x27d0|04 3f                                          |.?              |                          rice_parameter: 0 0x27d0.6-0x27d1.2 (0.4)
-0x27d0|   3f f3 ff ff ff ff ff ff ff ff ff ff ff 9f ff| ?..............|                          samples: raw bits 0x27d1.2-0x2842.6 (113.4)
+0x27d0|   3f f3 ff ff ff ff ff ff ff ff ff ff ff 9f ff| ?..............|                          residuals: raw bits 0x27d1.2-0x2842.6 (113.4)
 0x27e0|ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|
 *     |until 0x2842.5 (114)                           |                |
       |                                               |                |                        [1]{}: partition 0x2842.6-0x28b5.6 (115)
       |                                               |                |                          count: 896
 0x2840|      fc 2f                                    |  ./            |                          rice_parameter: 0 0x2842.6-0x2843.2 (0.4)
-0x2840|         2f ff ff ff ff ff fe ff ff ff ff ff ff|   /............|                          samples: raw bits 0x2843.2-0x28b5.6 (114.4)
+0x2840|         2f ff ff ff ff ff fe ff ff ff ff ff ff|   /............|                          residuals: raw bits 0x2843.2-0x28b5.6 (114.4)
 0x2850|fd ff ff ff ff ff ff ff f7 ff ff ff ff ff ff ff|................|
 *     |until 0x28b5.5 (115)                           |                |
 0x28b0|               3c                              |     <          |                  byte_align: 0 (valid) 0x28b5.6-0x28b6 (0.2)
@@ -1600,13 +1600,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x28cd.6-0x2940.6 (115)
       |                                               |                |                          count: 895
 0x28c0|                                       04 3f   |             .? |                          rice_parameter: 0 0x28cd.6-0x28ce.2 (0.4)
-0x28c0|                                          3f ff|              ?.|                          samples: raw bits 0x28ce.2-0x2940.6 (114.4)
+0x28c0|                                          3f ff|              ?.|                          residuals: raw bits 0x28ce.2-0x2940.6 (114.4)
 0x28d0|ff ff ff 9f ff ff ff ff fe 7f ff ff ff ff f9 ff|................|
 *     |until 0x2940.5 (115)                           |                |
       |                                               |                |                        [1]{}: partition 0x2940.6-0x29b2.7 (114.1)
       |                                               |                |                          count: 896
 0x2940|fc 3f                                          |.?              |                          rice_parameter: 0 0x2940.6-0x2941.2 (0.4)
-0x2940|   3f ff ff ff ff df ff ff ff ff ff f7 ff ff ff| ?..............|                          samples: raw bits 0x2941.2-0x29b2.7 (113.5)
+0x2940|   3f ff ff ff ff df ff ff ff ff ff f7 ff ff ff| ?..............|                          residuals: raw bits 0x2941.2-0x29b2.7 (113.5)
 0x2950|ff ff df ff ff ff ff fd ff ff ff ff ff bf ff ff|................|
 *     |until 0x29b2.6 (114)                           |                |
 0x29b0|      fe                                       |  .             |                  byte_align: 0 (valid) 0x29b2.7-0x29b3 (0.1)
@@ -1641,13 +1641,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x29c0.6-0x2a35.3 (116.5)
       |                                               |                |                          count: 895
 0x29c0|04 3f                                          |.?              |                          rice_parameter: 0 0x29c0.6-0x29c1.2 (0.4)
-0x29c0|   3f ff ff ff ff ff f9 ff ff ff ff ff ff ff ff| ?..............|                          samples: raw bits 0x29c1.2-0x2a35.3 (116.1)
+0x29c0|   3f ff ff ff ff ff f9 ff ff ff ff ff ff ff ff| ?..............|                          residuals: raw bits 0x29c1.2-0x2a35.3 (116.1)
 0x29d0|fe 7f ff ff ff ff ff ff 9f ff ff ff ff ff f9 ff|................|
 *     |until 0x2a35.2 (117)                           |                |
       |                                               |                |                        [1]{}: partition 0x2a35.3-0x2aa7.7 (114.4)
       |                                               |                |                          count: 896
 0x2a30|               e1                              |     .          |                          rice_parameter: 0 0x2a35.3-0x2a35.7 (0.4)
-0x2a30|               e1 ff ff ff ff ff ff ff ff ff ff|     ...........|                          samples: raw bits 0x2a35.7-0x2aa7.7 (114)
+0x2a30|               e1 ff ff ff ff ff ff ff ff ff ff|     ...........|                          residuals: raw bits 0x2a35.7-0x2aa7.7 (114)
 0x2a40|ff ff ff ff ff ff ff ff ff ff ff ef ff ff ff ff|................|
 *     |until 0x2aa7.6 (114)                           |                |
 0x2aa0|                     fe                        |       .        |                  byte_align: 0 (valid) 0x2aa7.7-0x2aa8 (0.1)
@@ -1683,13 +1683,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x2ab5.6-0x2b29.3 (115.5)
       |                                               |                |                          count: 895
 0x2ab0|               04 3f                           |     .?         |                          rice_parameter: 0 0x2ab5.6-0x2ab6.2 (0.4)
-0x2ab0|                  3f ff bf ff ff ff ff ff ff ff|      ?.........|                          samples: raw bits 0x2ab6.2-0x2b29.3 (115.1)
+0x2ab0|                  3f ff bf ff ff ff ff ff ff ff|      ?.........|                          residuals: raw bits 0x2ab6.2-0x2b29.3 (115.1)
 0x2ac0|ff 7f ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|
 *     |until 0x2b29.2 (116)                           |                |
       |                                               |                |                        [1]{}: partition 0x2b29.3-0x2b9c.5 (115.2)
       |                                               |                |                          count: 896
 0x2b20|                           e0                  |         .      |                          rice_parameter: 0 0x2b29.3-0x2b29.7 (0.4)
-0x2b20|                           e0 7f ff ff ff fe 7f|         .......|                          samples: raw bits 0x2b29.7-0x2b9c.5 (114.6)
+0x2b20|                           e0 7f ff ff ff fe 7f|         .......|                          residuals: raw bits 0x2b29.7-0x2b9c.5 (114.6)
 0x2b30|ff ff ff ff 9f ff ff ff ff fe 7f ff ff ff ff ff|................|
 *     |until 0x2b9c.4 (115)                           |                |
 0x2b90|                                    f8         |            .   |                  byte_align: 0 (valid) 0x2b9c.5-0x2b9d (0.3)
@@ -1757,13 +1757,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x2bc4.6-0x2c37.2 (114.4)
       |                                               |                |                          count: 895
 0x2bc0|            04 3f                              |    .?          |                          rice_parameter: 0 0x2bc4.6-0x2bc5.2 (0.4)
-0x2bc0|               3f ff ff ff ef ff ff ff fb ff ff|     ?..........|                          samples: raw bits 0x2bc5.2-0x2c37.2 (114)
+0x2bc0|               3f ff ff ff ef ff ff ff fb ff ff|     ?..........|                          residuals: raw bits 0x2bc5.2-0x2c37.2 (114)
 0x2bd0|ff ff 7f ff ff ff df ff ff ff fd ff ff ff ff ef|................|
 *     |until 0x2c37.1 (114)                           |                |
       |                                               |                |                        [1]{}: partition 0x2c37.2-0x2cac.3 (117.1)
       |                                               |                |                          count: 896
 0x2c30|                     c3                        |       .        |                          rice_parameter: 0 0x2c37.2-0x2c37.6 (0.4)
-0x2c30|                     c3 3f ff ff ff ff 9f ff ff|       .?.......|                          samples: raw bits 0x2c37.6-0x2cac.3 (116.5)
+0x2c30|                     c3 3f ff ff ff ff 9f ff ff|       .?.......|                          residuals: raw bits 0x2c37.6-0x2cac.3 (116.5)
 0x2c40|ff fe 7f ff ff ff f3 ff ff ff fe 7f ff ff ff cf|................|
 *     |until 0x2cac.2 (117)                           |                |
 0x2ca0|                                    e0         |            .   |                  byte_align: 0 (valid) 0x2cac.3-0x2cad (0.5)
@@ -1799,13 +1799,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x2cba.6-0x2d2d.7 (115.1)
       |                                               |                |                          count: 895
 0x2cb0|                              04 3f            |          .?    |                          rice_parameter: 0 0x2cba.6-0x2cbb.2 (0.4)
-0x2cb0|                                 3f ff ff ff ff|           ?....|                          samples: raw bits 0x2cbb.2-0x2d2d.7 (114.5)
+0x2cb0|                                 3f ff ff ff ff|           ?....|                          residuals: raw bits 0x2cbb.2-0x2d2d.7 (114.5)
 0x2cc0|ff fb ff ff ff ff ff ff ef ff ff ff ff ff bf ff|................|
 *     |until 0x2d2d.6 (115)                           |                |
       |                                               |                |                        [1]{}: partition 0x2d2d.7-0x2da3.7 (118)
       |                                               |                |                          count: 896
 0x2d20|                                       fa 1f   |             .. |                          rice_parameter: 0 0x2d2d.7-0x2d2e.3 (0.4)
-0x2d20|                                          1f ff|              ..|                          samples: raw bits 0x2d2e.3-0x2da3.7 (117.4)
+0x2d20|                                          1f ff|              ..|                          residuals: raw bits 0x2d2e.3-0x2da3.7 (117.4)
 0x2d30|ff ff ff ff ff ff ff ff ff fc ff ff ff ff ff ff|................|
 *     |until 0x2da3.6 (118)                           |                |
 0x2da0|         fe                                    |   .            |                  byte_align: 0 (valid) 0x2da3.7-0x2da4 (0.1)
@@ -1841,13 +1841,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x2db1.6-0x2e24.6 (115)
       |                                               |                |                          count: 895
 0x2db0|   04 3f                                       | .?             |                          rice_parameter: 0 0x2db1.6-0x2db2.2 (0.4)
-0x2db0|      3f ff ff ff fc ff ff ff ff ff ff ff ff e7|  ?.............|                          samples: raw bits 0x2db2.2-0x2e24.6 (114.4)
+0x2db0|      3f ff ff ff fc ff ff ff ff ff ff ff ff e7|  ?.............|                          residuals: raw bits 0x2db2.2-0x2e24.6 (114.4)
 0x2dc0|ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|
 *     |until 0x2e24.5 (115)                           |                |
       |                                               |                |                        [1]{}: partition 0x2e24.6-0x2e99.2 (116.4)
       |                                               |                |                          count: 896
 0x2e20|            fc 3f                              |    .?          |                          rice_parameter: 0 0x2e24.6-0x2e25.2 (0.4)
-0x2e20|               3f 7f ff ff ff 7f ff ff ff bf ff|     ?..........|                          samples: raw bits 0x2e25.2-0x2e99.2 (116)
+0x2e20|               3f 7f ff ff ff 7f ff ff ff bf ff|     ?..........|                          residuals: raw bits 0x2e25.2-0x2e99.2 (116)
 0x2e30|ff ff fb ff ff ff ff ef ff ff ff ff ff 7f ff ff|................|
 *     |until 0x2e99.1 (116)                           |                |
 0x2e90|                           c0                  |         .      |                  byte_align: 0 (valid) 0x2e99.2-0x2e9a (0.6)
@@ -1882,13 +1882,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x2ea7.6-0x2f1c.2 (116.4)
       |                                               |                |                          count: 895
 0x2ea0|                     04 3f                     |       .?       |                          rice_parameter: 0 0x2ea7.6-0x2ea8.2 (0.4)
-0x2ea0|                        3f fc ff ff ff 9f ff ff|        ?.......|                          samples: raw bits 0x2ea8.2-0x2f1c.2 (116)
+0x2ea0|                        3f fc ff ff ff 9f ff ff|        ?.......|                          residuals: raw bits 0x2ea8.2-0x2f1c.2 (116)
 0x2eb0|f9 ff ff ff cf ff ff fc ff ff ff e7 ff ff ff 9f|................|
 *     |until 0x2f1c.1 (116)                           |                |
       |                                               |                |                        [1]{}: partition 0x2f1c.2-0x2f8f.6 (115.4)
       |                                               |                |                          count: 896
 0x2f10|                                    c1         |            .   |                          rice_parameter: 0 0x2f1c.2-0x2f1c.6 (0.4)
-0x2f10|                                    c1 ff ff ff|            ....|                          samples: raw bits 0x2f1c.6-0x2f8f.6 (115)
+0x2f10|                                    c1 ff ff ff|            ....|                          residuals: raw bits 0x2f1c.6-0x2f8f.6 (115)
 0x2f20|f7 ff ff ff bf ff ff fb ff ff ff 7f ff ff ef ff|................|
 *     |until 0x2f8f.5 (115)                           |                |
 0x2f80|                                             fc|               .|                  byte_align: 0 (valid) 0x2f8f.6-0x2f90 (0.2)
@@ -1923,13 +1923,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x2f9d.6-0x3015.1 (119.3)
       |                                               |                |                          count: 895
 0x2f90|                                       04 33   |             .3 |                          rice_parameter: 0 0x2f9d.6-0x2f9e.2 (0.4)
-0x2f90|                                          33 ff|              3.|                          samples: raw bits 0x2f9e.2-0x3015.1 (118.7)
+0x2f90|                                          33 ff|              3.|                          residuals: raw bits 0x2f9e.2-0x3015.1 (118.7)
 0x2fa0|ff ff ff ff f3 ff ff ff ff f9 ff ff ff ff 9f ff|................|
 *     |until 0x3015 (119)                             |                |
       |                                               |                |                        [1]{}: partition 0x3015.1-0x3089.1 (116)
       |                                               |                |                          count: 896
 0x3010|               87                              |     .          |                          rice_parameter: 0 0x3015.1-0x3015.5 (0.4)
-0x3010|               87 ff ff ff ff ff ff ff ff fd ff|     ...........|                          samples: raw bits 0x3015.5-0x3089.1 (115.4)
+0x3010|               87 ff ff ff ff ff ff ff ff fd ff|     ...........|                          residuals: raw bits 0x3015.5-0x3089.1 (115.4)
 0x3020|ff ff ff ff ff ff ff ff fe ff ff ff ff ff ff bf|................|
 *     |until 0x3089 (116)                             |                |
 0x3080|                           80                  |         .      |                  byte_align: 0 (valid) 0x3089.1-0x308a (0.7)
@@ -1964,13 +1964,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x3097.6-0x310e.1 (118.3)
       |                                               |                |                          count: 895
 0x3090|                     04 3f                     |       .?       |                          rice_parameter: 0 0x3097.6-0x3098.2 (0.4)
-0x3090|                        3f fd ff ff ff ff ff ff|        ?.......|                          samples: raw bits 0x3098.2-0x310e.1 (117.7)
+0x3090|                        3f fd ff ff ff ff ff ff|        ?.......|                          residuals: raw bits 0x3098.2-0x310e.1 (117.7)
 0x30a0|fb ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|
 *     |until 0x310e (118)                             |                |
       |                                               |                |                        [1]{}: partition 0x310e.1-0x3182.6 (116.5)
       |                                               |                |                          count: 896
 0x3100|                                          87   |              . |                          rice_parameter: 0 0x310e.1-0x310e.5 (0.4)
-0x3100|                                          87 fc|              ..|                          samples: raw bits 0x310e.5-0x3182.6 (116.1)
+0x3100|                                          87 fc|              ..|                          residuals: raw bits 0x310e.5-0x3182.6 (116.1)
 0x3110|ff ff ff 9f ff ff fc ff ff ff fc ff ff ff fe 7f|................|
 *     |until 0x3182.5 (117)                           |                |
 0x3180|      ec                                       |  .             |                  byte_align: 0 (valid) 0x3182.6-0x3183 (0.2)
@@ -2005,13 +2005,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x3190.6-0x3205.3 (116.5)
       |                                               |                |                          count: 895
 0x3190|04 3f                                          |.?              |                          rice_parameter: 0 0x3190.6-0x3191.2 (0.4)
-0x3190|   3f ff ef ff ff bf ff fe ff ff fb ff ff ef ff| ?..............|                          samples: raw bits 0x3191.2-0x3205.3 (116.1)
+0x3190|   3f ff ef ff ff bf ff fe ff ff fb ff ff ef ff| ?..............|                          residuals: raw bits 0x3191.2-0x3205.3 (116.1)
 0x31a0|ff df ff ff df ff ff df ff ff ef ff ff fb ff ff|................|
 *     |until 0x3205.2 (117)                           |                |
       |                                               |                |                        [1]{}: partition 0x3205.3-0x327c.6 (119.3)
       |                                               |                |                          count: 896
 0x3200|               e1                              |     .          |                          rice_parameter: 0 0x3205.3-0x3205.7 (0.4)
-0x3200|               e1 e7 ff ff cf ff ff cf ff ff 3f|     ..........?|                          samples: raw bits 0x3205.7-0x327c.6 (118.7)
+0x3200|               e1 e7 ff ff cf ff ff cf ff ff 3f|     ..........?|                          residuals: raw bits 0x3205.7-0x327c.6 (118.7)
 0x3210|ff fe 7f ff f9 ff ff e7 ff ff 9f ff fc ff ff f3|................|
 *     |until 0x327c.5 (119)                           |                |
 0x3270|                                    fc         |            .   |                  byte_align: 0 (valid) 0x327c.6-0x327d (0.2)
@@ -2047,13 +2047,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x328a.6-0x32ff.2 (116.4)
       |                                               |                |                          count: 895
 0x3280|                              04 2f            |          ./    |                          rice_parameter: 0 0x328a.6-0x328b.2 (0.4)
-0x3280|                                 2f ff ff ff f7|           /....|                          samples: raw bits 0x328b.2-0x32ff.2 (116)
+0x3280|                                 2f ff ff ff f7|           /....|                          residuals: raw bits 0x328b.2-0x32ff.2 (116)
 0x3290|ff ff ff df ff ff fb ff ff fd ff ff fe ff ff fd|................|
 *     |until 0x32ff.1 (116)                           |                |
       |                                               |                |                        [1]{}: partition 0x32ff.2-0x3378.6 (121.4)
       |                                               |                |                          count: 896
 0x32f0|                                             c3|               .|                          rice_parameter: 0 0x32ff.2-0x32ff.6 (0.4)
-0x32f0|                                             c3|               .|                          samples: raw bits 0x32ff.6-0x3378.6 (121)
+0x32f0|                                             c3|               .|                          residuals: raw bits 0x32ff.6-0x3378.6 (121)
 0x3300|ff ff ff ff ff ff ff ff fc ff ff ff ff ff ff cf|................|
 *     |until 0x3378.5 (121)                           |                |
 0x3370|                        7c                     |        |       |                  byte_align: 0 (valid) 0x3378.6-0x3379 (0.2)
@@ -2111,13 +2111,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x3396.6-0x340b.2 (116.4)
       |                                               |                |                          count: 895
 0x3390|                  04 3f                        |      .?        |                          rice_parameter: 0 0x3396.6-0x3397.2 (0.4)
-0x3390|                     3f ff ff ff ff ff 9f ff ff|       ?........|                          samples: raw bits 0x3397.2-0x340b.2 (116)
+0x3390|                     3f ff ff ff ff ff 9f ff ff|       ?........|                          residuals: raw bits 0x3397.2-0x340b.2 (116)
 0x33a0|ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|
 *     |until 0x340b.1 (116)                           |                |
       |                                               |                |                        [1]{}: partition 0x340b.2-0x3482.6 (119.4)
       |                                               |                |                          count: 896
 0x3400|                                 c2            |           .    |                          rice_parameter: 0 0x340b.2-0x340b.6 (0.4)
-0x3400|                                 c2 ff ff fe ff|           .....|                          samples: raw bits 0x340b.6-0x3482.6 (119)
+0x3400|                                 c2 ff ff fe ff|           .....|                          residuals: raw bits 0x340b.6-0x3482.6 (119)
 0x3410|ff ff 7f ff ff df ff ff ff 7f ff ff ff df ff ff|................|
 *     |until 0x3482.5 (119)                           |                |
 0x3480|      7c                                       |  |             |                  byte_align: 0 (valid) 0x3482.6-0x3483 (0.2)
@@ -2152,13 +2152,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x3490.6-0x3507.2 (118.4)
       |                                               |                |                          count: 895
 0x3490|04 3f                                          |.?              |                          rice_parameter: 0 0x3490.6-0x3491.2 (0.4)
-0x3490|   3f f9 ff ff 3f ff e7 ff fc ff ff cf ff fe 7f| ?...?..........|                          samples: raw bits 0x3491.2-0x3507.2 (118)
+0x3490|   3f f9 ff ff 3f ff e7 ff fc ff ff cf ff fe 7f| ?...?..........|                          residuals: raw bits 0x3491.2-0x3507.2 (118)
 0x34a0|ff e7 ff ff 9f ff fe 7f ff fc ff ff fc ff ff ff|................|
 *     |until 0x3507.1 (118)                           |                |
       |                                               |                |                        [1]{}: partition 0x3507.2-0x357c.6 (117.4)
       |                                               |                |                          count: 896
 0x3500|                     c3                        |       .        |                          rice_parameter: 0 0x3507.2-0x3507.6 (0.4)
-0x3500|                     c3 ff fb ff fd ff ff 7f ff|       .........|                          samples: raw bits 0x3507.6-0x357c.6 (117)
+0x3500|                     c3 ff fb ff fd ff ff 7f ff|       .........|                          residuals: raw bits 0x3507.6-0x357c.6 (117)
 0x3510|bf ff df ff ef ff f7 ff fb ff fd ff fe ff ff 7f|................|
 *     |until 0x357c.5 (117)                           |                |
 0x3570|                                    fc         |            .   |                  byte_align: 0 (valid) 0x357c.6-0x357d (0.2)
@@ -2194,13 +2194,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x358a.6-0x3605 (122.2)
       |                                               |                |                          count: 895
 0x3580|                              04 39            |          .9    |                          rice_parameter: 0 0x358a.6-0x358b.2 (0.4)
-0x3580|                                 39 ff ff f9 ff|           9....|                          samples: raw bits 0x358b.2-0x3605 (121.6)
+0x3580|                                 39 ff ff f9 ff|           9....|                          residuals: raw bits 0x358b.2-0x3605 (121.6)
 0x3590|ff e7 ff ff 3f ff f9 ff ff 9f ff f3 ff fe 7f ff|....?...........|
 *     |until 0x3604.7 (122)                           |                |
       |                                               |                |                        [1]{}: partition 0x3605-0x367b.1 (118.1)
       |                                               |                |                          count: 896
 0x3600|               0f                              |     .          |                          rice_parameter: 0 0x3605-0x3605.4 (0.4)
-0x3600|               0f ff bf ff ff ff ff f7 ff ff ff|     ...........|                          samples: raw bits 0x3605.4-0x367b.1 (117.5)
+0x3600|               0f ff bf ff ff ff ff f7 ff ff ff|     ...........|                          residuals: raw bits 0x3605.4-0x367b.1 (117.5)
 0x3610|fb ff ff ff df ff ff f7 ff ff f7 ff ff df ff fe|................|
 *     |until 0x367b (118)                             |                |
 0x3670|                                 80            |           .    |                  byte_align: 0 (valid) 0x367b.1-0x367c (0.7)
@@ -2235,13 +2235,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x3689.6-0x3704.3 (122.5)
       |                                               |                |                          count: 895
 0x3680|                           04 3f               |         .?     |                          rice_parameter: 0 0x3689.6-0x368a.2 (0.4)
-0x3680|                              3f ff ff ff ff ff|          ?.....|                          samples: raw bits 0x368a.2-0x3704.3 (122.1)
+0x3680|                              3f ff ff ff ff ff|          ?.....|                          residuals: raw bits 0x368a.2-0x3704.3 (122.1)
 0x3690|ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff f9|................|
 *     |until 0x3704.2 (123)                           |                |
       |                                               |                |                        [1]{}: partition 0x3704.3-0x377a.4 (118.1)
       |                                               |                |                          count: 896
 0x3700|            e1                                 |    .           |                          rice_parameter: 0 0x3704.3-0x3704.7 (0.4)
-0x3700|            e1 9f ff ff 9f ff ff f3 ff ff ff 9f|    ............|                          samples: raw bits 0x3704.7-0x377a.4 (117.5)
+0x3700|            e1 9f ff ff 9f ff ff f3 ff ff ff 9f|    ............|                          residuals: raw bits 0x3704.7-0x377a.4 (117.5)
 0x3710|ff ff ff f3 ff ff ff ff ff 9f ff ff ff ff ff ff|................|
 *     |until 0x377a.3 (118)                           |                |
 0x3770|                              f0               |          .     |                  byte_align: 0 (valid) 0x377a.4-0x377b (0.4)
@@ -2276,13 +2276,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x3788.6-0x3800.5 (119.7)
       |                                               |                |                          count: 895
 0x3780|                        04 3b                  |        .;      |                          rice_parameter: 0 0x3788.6-0x3789.2 (0.4)
-0x3780|                           3b ff fb ff fb ff fb|         ;......|                          samples: raw bits 0x3789.2-0x3800.5 (119.3)
+0x3780|                           3b ff fb ff fb ff fb|         ;......|                          residuals: raw bits 0x3789.2-0x3800.5 (119.3)
 0x3790|ff fd ff fe ff ff bf ff ef ff fd ff ff ef ff ff|................|
 *     |until 0x3800.4 (120)                           |                |
       |                                               |                |                        [1]{}: partition 0x3800.5-0x3879.6 (121.1)
       |                                               |                |                          count: 896
 0x3800|f8 79                                          |.y              |                          rice_parameter: 0 0x3800.5-0x3801.1 (0.4)
-0x3800|   79 ff f9 ff f3 ff e7 ff cf ff 9f ff 3f fe 7f| y...........?..|                          samples: raw bits 0x3801.1-0x3879.6 (120.5)
+0x3800|   79 ff f9 ff f3 ff e7 ff cf ff 9f ff 3f fe 7f| y...........?..|                          residuals: raw bits 0x3801.1-0x3879.6 (120.5)
 0x3810|fe 7f fc ff f9 ff f9 ff f9 ff f9 ff f9 ff fc ff|................|
 *     |until 0x3879.5 (121)                           |                |
 0x3870|                           fc                  |         .      |                  byte_align: 0 (valid) 0x3879.6-0x387a (0.2)
@@ -2317,13 +2317,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x3887.6-0x38fe.1 (118.3)
       |                                               |                |                          count: 895
 0x3880|                     04 3f                     |       .?       |                          rice_parameter: 0 0x3887.6-0x3888.2 (0.4)
-0x3880|                        3f 7f ff 7f ff 7f fe ff|        ?.......|                          samples: raw bits 0x3888.2-0x38fe.1 (117.7)
+0x3880|                        3f 7f ff 7f ff 7f fe ff|        ?.......|                          residuals: raw bits 0x3888.2-0x38fe.1 (117.7)
 0x3890|fd ff fb ff ef ff bf ff 7f fd ff ef ff bf fe ff|................|
 *     |until 0x38fe (118)                             |                |
       |                                               |                |                        [1]{}: partition 0x38fe.1-0x397b.5 (125.4)
       |                                               |                |                          count: 896
 0x38f0|                                          87   |              . |                          rice_parameter: 0 0x38fe.1-0x38fe.5 (0.4)
-0x38f0|                                          87 ff|              ..|                          samples: raw bits 0x38fe.5-0x397b.5 (125)
+0x38f0|                                          87 ff|              ..|                          residuals: raw bits 0x38fe.5-0x397b.5 (125)
 0x3900|ff 3f ff ff 9f ff fe 7f ff f9 ff ff 9f ff f3 ff|.?..............|
 *     |until 0x397b.4 (125)                           |                |
 0x3970|                                 f8            |           .    |                  byte_align: 0 (valid) 0x397b.5-0x397c (0.3)
@@ -2358,13 +2358,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x3989.6-0x3a00.7 (119.1)
       |                                               |                |                          count: 895
 0x3980|                           04 3f               |         .?     |                          rice_parameter: 0 0x3989.6-0x398a.2 (0.4)
-0x3980|                              3f ff ff ff ff ff|          ?.....|                          samples: raw bits 0x398a.2-0x3a00.7 (118.5)
+0x3980|                              3f ff ff ff ff ff|          ?.....|                          residuals: raw bits 0x398a.2-0x3a00.7 (118.5)
 0x3990|ff ff ff ff f7 ff ff ff ff fd ff ff ff fb ff ff|................|
 *     |until 0x3a00.6 (119)                           |                |
       |                                               |                |                        [1]{}: partition 0x3a00.7-0x3a7d.2 (124.3)
       |                                               |                |                          count: 896
 0x3a00|fe 1f                                          |..              |                          rice_parameter: 0 0x3a00.7-0x3a01.3 (0.4)
-0x3a00|   1f ff ef ff ff ff df ff ff ff ff df ff ff ff| ...............|                          samples: raw bits 0x3a01.3-0x3a7d.2 (123.7)
+0x3a00|   1f ff ef ff ff ff df ff ff ff ff df ff ff ff| ...............|                          residuals: raw bits 0x3a01.3-0x3a7d.2 (123.7)
 0x3a10|ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|................|
 *     |until 0x3a7d.1 (124)                           |                |
 0x3a70|                                       c0      |             .  |                  byte_align: 0 (valid) 0x3a7d.2-0x3a7e (0.6)
@@ -2399,13 +2399,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x3a8b.6-0x3b03.5 (119.7)
       |                                               |                |                          count: 895
 0x3a80|                                 04 3c         |           .<   |                          rice_parameter: 0 0x3a8b.6-0x3a8c.2 (0.4)
-0x3a80|                                    3c ff f9 ff|            <...|                          samples: raw bits 0x3a8c.2-0x3b03.5 (119.3)
+0x3a80|                                    3c ff f9 ff|            <...|                          residuals: raw bits 0x3a8c.2-0x3b03.5 (119.3)
 0x3a90|fc ff fe 7f ff 3f ff cf ff f9 ff ff 9f ff fe 7f|.....?..........|
 *     |until 0x3b03.4 (120)                           |                |
       |                                               |                |                        [1]{}: partition 0x3b03.5-0x3b7c.7 (121.2)
       |                                               |                |                          count: 896
 0x3b00|         78 7f                                 |   x.           |                          rice_parameter: 0 0x3b03.5-0x3b04.1 (0.4)
-0x3b00|            7f 7f f7 ff 7f f7 ff 7f f7 ff bf fb|    ............|                          samples: raw bits 0x3b04.1-0x3b7c.7 (120.6)
+0x3b00|            7f 7f f7 ff 7f f7 ff 7f f7 ff bf fb|    ............|                          residuals: raw bits 0x3b04.1-0x3b7c.7 (120.6)
 0x3b10|ff df fe ff f7 ff bf fe ff f7 ff ef ff bf ff 7f|................|
 *     |until 0x3b7c.6 (121)                           |                |
 0x3b70|                                    3e         |            >   |                  byte_align: 0 (valid) 0x3b7c.7-0x3b7d (0.1)
@@ -2458,13 +2458,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x3b95.6-0x3c12.2 (124.4)
       |                                               |                |                          count: 895
 0x3b90|               04 3f                           |     .?         |                          rice_parameter: 0 0x3b95.6-0x3b96.2 (0.4)
-0x3b90|                  3f 3f f9 ff cf fe 7f e7 ff 3f|      ??.......?|                          samples: raw bits 0x3b96.2-0x3c12.2 (124)
+0x3b90|                  3f 3f f9 ff cf fe 7f e7 ff 3f|      ??.......?|                          residuals: raw bits 0x3b96.2-0x3c12.2 (124)
 0x3ba0|f9 ff cf fc ff e7 fe 7f f3 ff 3f f9 ff 9f fc ff|..........?.....|
 *     |until 0x3c12.1 (124)                           |                |
       |                                               |                |                        [1]{}: partition 0x3c12.2-0x3c8a.2 (120)
       |                                               |                |                          count: 896
 0x3c10|      c3                                       |  .             |                          rice_parameter: 0 0x3c12.2-0x3c12.6 (0.4)
-0x3c10|      c3 ff ef ff df ff bf ff 7f fd ff ef ff 7f|  ..............|                          samples: raw bits 0x3c12.6-0x3c8a.2 (119.4)
+0x3c10|      c3 ff ef ff df ff bf ff 7f fd ff ef ff 7f|  ..............|                          residuals: raw bits 0x3c12.6-0x3c8a.2 (119.4)
 0x3c20|fb ff df fe ff ef fe ff ef fe ff ef fd ff df fb|................|
 *     |until 0x3c8a.1 (120)                           |                |
 0x3c80|                              c0               |          .     |                  byte_align: 0 (valid) 0x3c8a.2-0x3c8b (0.6)
@@ -2499,13 +2499,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x3c98.6-0x3d19.7 (129.1)
       |                                               |                |                          count: 895
 0x3c90|                        04 3f                  |        .?      |                          rice_parameter: 0 0x3c98.6-0x3c99.2 (0.4)
-0x3c90|                           3f cf ff ff ff f3 ff|         ?......|                          samples: raw bits 0x3c99.2-0x3d19.7 (128.5)
+0x3c90|                           3f cf ff ff ff f3 ff|         ?......|                          residuals: raw bits 0x3c99.2-0x3d19.7 (128.5)
 0x3ca0|ff fe 7f ff fc ff ff f3 ff ff 3f ff cf ff f3 ff|..........?.....|
 *     |until 0x3d19.6 (129)                           |                |
       |                                               |                |                        [1]{}: partition 0x3d19.7-0x3d92.4 (120.5)
       |                                               |                |                          count: 896
 0x3d10|                           fe 1f               |         ..     |                          rice_parameter: 0 0x3d19.7-0x3d1a.3 (0.4)
-0x3d10|                              1f ff ff cf ff ff|          ......|                          samples: raw bits 0x3d1a.3-0x3d92.4 (120.1)
+0x3d10|                              1f ff ff cf ff ff|          ......|                          residuals: raw bits 0x3d1a.3-0x3d92.4 (120.1)
 0x3d20|ff ff ff ff ff ff ff ff ff ff ff 7f ff ff ff ff|................|
 *     |until 0x3d92.3 (121)                           |                |
 0x3d90|      d0                                       |  .             |                  byte_align: 0 (valid) 0x3d92.4-0x3d93 (0.4)
@@ -2540,13 +2540,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x3da0.6-0x3e1e.5 (125.7)
       |                                               |                |                          count: 895
 0x3da0|04 3f                                          |.?              |                          rice_parameter: 0 0x3da0.6-0x3da1.2 (0.4)
-0x3da0|   3f fe ff fe ff ff bf ff f7 ff ff bf ff ff bf| ?..............|                          samples: raw bits 0x3da1.2-0x3e1e.5 (125.3)
+0x3da0|   3f fe ff fe ff ff bf ff f7 ff ff bf ff ff bf| ?..............|                          residuals: raw bits 0x3da1.2-0x3e1e.5 (125.3)
 0x3db0|ff ff fd ff ff ff ff fb ff ff ff ff ff ff ff ff|................|
 *     |until 0x3e1e.4 (126)                           |                |
       |                                               |                |                        [1]{}: partition 0x3e1e.5-0x3e99.1 (122.4)
       |                                               |                |                          count: 896
 0x3e10|                                          f8 4f|              .O|                          rice_parameter: 0 0x3e1e.5-0x3e1f.1 (0.4)
-0x3e10|                                             4f|               O|                          samples: raw bits 0x3e1f.1-0x3e99.1 (122)
+0x3e10|                                             4f|               O|                          residuals: raw bits 0x3e1f.1-0x3e99.1 (122)
 0x3e20|fc ff cf fc ff cf fe 7f f3 ff 3f fc ff e7 ff 9f|..........?.....|
 *     |until 0x3e99 (122)                             |                |
 0x3e90|                           80                  |         .      |                  byte_align: 0 (valid) 0x3e99.1-0x3e9a (0.7)
@@ -2614,13 +2614,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x3ec1.6-0x3f3c.1 (122.3)
       |                                               |                |                          count: 895
 0x3ec0|   04 2f                                       | ./             |                          rice_parameter: 0 0x3ec1.6-0x3ec2.2 (0.4)
-0x3ec0|      2f fb fe ff bf ef f7 fd ff 7f df f7 fd ff|  /.............|                          samples: raw bits 0x3ec2.2-0x3f3c.1 (121.7)
+0x3ec0|      2f fb fe ff bf ef f7 fd ff 7f df f7 fd ff|  /.............|                          residuals: raw bits 0x3ec2.2-0x3f3c.1 (121.7)
 0x3ed0|7f df f7 fd ff 7f ef fb ff 7f df fb ff 7f ef fd|................|
 *     |until 0x3f3c (122)                             |                |
       |                                               |                |                        [1]{}: partition 0x3f3c.1-0x3fbc.3 (128.2)
       |                                               |                |                          count: 896
 0x3f30|                                    87         |            .   |                          rice_parameter: 0 0x3f3c.1-0x3f3c.5 (0.4)
-0x3f30|                                    87 f9 ff 3f|            ...?|                          samples: raw bits 0x3f3c.5-0x3fbc.3 (127.6)
+0x3f30|                                    87 f9 ff 3f|            ...?|                          residuals: raw bits 0x3f3c.5-0x3fbc.3 (127.6)
 0x3f40|f3 ff 3f e7 fe 7f cf f9 ff 3f e7 fc ff 9f e7 fc|..?......?......|
 *     |until 0x3fbc.2 (128)                           |                |
 0x3fb0|                                    e0         |            .   |                  byte_align: 0 (valid) 0x3fbc.3-0x3fbd (0.5)
@@ -2656,13 +2656,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x3fca.6-0x4044.4 (121.6)
       |                                               |                |                          count: 895
 0x3fc0|                              04 3f            |          .?    |                          rice_parameter: 0 0x3fca.6-0x3fcb.2 (0.4)
-0x3fc0|                                 3f ef ff ef ff|           ?....|                          samples: raw bits 0x3fcb.2-0x4044.4 (121.2)
+0x3fc0|                                 3f ef ff ef ff|           ?....|                          residuals: raw bits 0x3fcb.2-0x4044.4 (121.2)
 0x3fd0|df ff 7f fd ff ef ff 7f f7 ff 7f f7 fe ff df fb|................|
 *     |until 0x4044.3 (122)                           |                |
       |                                               |                |                        [1]{}: partition 0x4044.4-0x40c9 (132.4)
       |                                               |                |                          count: 896
 0x4040|            f0                                 |    .           |                          rice_parameter: 0 0x4044.4-0x4045 (0.4)
-0x4040|               ff ff ff ff fc ff ff ff ff cf ff|     ...........|                          samples: raw bits 0x4045-0x40c9 (132)
+0x4040|               ff ff ff ff fc ff ff ff ff cf ff|     ...........|                          residuals: raw bits 0x4045-0x40c9 (132)
 0x4050|ff fc ff ff f9 ff ff 9f ff f3 ff f9 ff fc ff f9|................|
 *     |until 0x40c8.7 (132)                           |                |
       |                                               |                |                  byte_align: 0 (valid) 0x40c9-0x40c9 (0)
@@ -2697,13 +2697,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x40d6.6-0x4151.1 (122.3)
       |                                               |                |                          count: 895
 0x40d0|                  04 3c                        |      .<        |                          rice_parameter: 0 0x40d6.6-0x40d7.2 (0.4)
-0x40d0|                     3c ff ff fe 7f ff ff fe 7f|       <........|                          samples: raw bits 0x40d7.2-0x4151.1 (121.7)
+0x40d0|                     3c ff ff fe 7f ff ff fe 7f|       <........|                          residuals: raw bits 0x40d7.2-0x4151.1 (121.7)
 0x40e0|ff ff ff ff ff ff e7 ff ff ff fd ff ff ff ff ff|................|
 *     |until 0x4151 (122)                             |                |
       |                                               |                |                        [1]{}: partition 0x4151.1-0x41d1.2 (128.1)
       |                                               |                |                          count: 896
 0x4150|   87                                          | .              |                          rice_parameter: 0 0x4151.1-0x4151.5 (0.4)
-0x4150|   87 fd ff df fd ff df fd ff f7 ff bf ff 7f fe| ...............|                          samples: raw bits 0x4151.5-0x41d1.2 (127.5)
+0x4150|   87 fd ff df fd ff df fd ff f7 ff bf ff 7f fe| ...............|                          residuals: raw bits 0x4151.5-0x41d1.2 (127.5)
 0x4160|ff fe ff ff bf ff f7 ff ff ef ff ff fd ff ff ff|................|
 *     |until 0x41d1.1 (128)                           |                |
 0x41d0|   c0                                          | .              |                  byte_align: 0 (valid) 0x41d1.2-0x41d2 (0.6)
@@ -2739,13 +2739,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                          count: 895
 0x41d0|                                             04|               .|                          rice_parameter: 0 0x41df.6-0x41e0.2 (0.4)
 0x41e0|39                                             |9               |
-0x41e0|39 fc ff 3f cf f3 fc ff 3f cf f3 fe 7f 9f f3 fc|9..?....?.......|                          samples: raw bits 0x41e0.2-0x425d (124.6)
+0x41e0|39 fc ff 3f cf f3 fc ff 3f cf f3 fe 7f 9f f3 fc|9..?....?.......|                          residuals: raw bits 0x41e0.2-0x425d (124.6)
 0x41f0|ff 9f f3 fe 7f cf fc ff cf f9 ff cf fc ff e7 ff|................|
 *     |until 0x425c.7 (125)                           |                |
       |                                               |                |                        [1]{}: partition 0x425d-0x42d8.7 (123.7)
       |                                               |                |                          count: 896
 0x4250|                                       0e      |             .  |                          rice_parameter: 0 0x425d-0x425d.4 (0.4)
-0x4250|                                       0e fe ff|             ...|                          samples: raw bits 0x425d.4-0x42d8.7 (123.3)
+0x4250|                                       0e fe ff|             ...|                          residuals: raw bits 0x425d.4-0x42d8.7 (123.3)
 0x4260|7f 7f 7f bf bf bf df df df ef ef ef ef f7 f7 f7|................|
 *     |until 0x42d8.6 (124)                           |                |
 0x42d0|                        fe                     |        .       |                  byte_align: 0 (valid) 0x42d8.7-0x42d9 (0.1)
@@ -2780,13 +2780,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x42e6.6-0x436b.1 (132.3)
       |                                               |                |                          count: 895
 0x42e0|                  04 27                        |      .'        |                          rice_parameter: 0 0x42e6.6-0x42e7.2 (0.4)
-0x42e0|                     27 fc ff 9f f3 fc ff 9f e7|       '........|                          samples: raw bits 0x42e7.2-0x436b.1 (131.7)
+0x42e0|                     27 fc ff 9f f3 fc ff 9f e7|       '........|                          residuals: raw bits 0x42e7.2-0x436b.1 (131.7)
 0x42f0|f9 fe 7f 9f e7 f9 fc ff 3f 9f e7 f3 fc fe 7f 3f|........?......?|
 *     |until 0x436b (132)                             |                |
       |                                               |                |                        [1]{}: partition 0x436b.1-0x43e7.3 (124.2)
       |                                               |                |                          count: 896
 0x4360|                                 87            |           .    |                          rice_parameter: 0 0x436b.1-0x436b.5 (0.4)
-0x4360|                                 87 fd ff fe ff|           .....|                          samples: raw bits 0x436b.5-0x43e7.3 (123.6)
+0x4360|                                 87 fd ff fe ff|           .....|                          residuals: raw bits 0x436b.5-0x43e7.3 (123.6)
 0x4370|fd ff f7 ff df fd ff ef fd ff df fb ff 7f df f7|................|
 *     |until 0x43e7.2 (124)                           |                |
 0x43e0|                     e0                        |       .        |                  byte_align: 0 (valid) 0x43e7.3-0x43e8 (0.5)
@@ -2822,13 +2822,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x43f5.6-0x447d.7 (136.1)
       |                                               |                |                          count: 895
 0x43f0|               04 3f                           |     .?         |                          rice_parameter: 0 0x43f5.6-0x43f6.2 (0.4)
-0x43f0|                  3f ff ff ff ff e7 ff ff ff ff|      ?.........|                          samples: raw bits 0x43f6.2-0x447d.7 (135.5)
+0x43f0|                  3f ff ff ff ff e7 ff ff ff ff|      ?.........|                          residuals: raw bits 0x43f6.2-0x447d.7 (135.5)
 0x4400|ff e7 ff ff ff 3f ff fc ff ff cf ff f3 ff f9 ff|.....?..........|
 *     |until 0x447d.6 (136)                           |                |
       |                                               |                |                        [1]{}: partition 0x447d.7-0x44fa (124.1)
       |                                               |                |                          count: 896
 0x4470|                                       e6 1f   |             .. |                          rice_parameter: 0 0x447d.7-0x447e.3 (0.4)
-0x4470|                                          1f fc|              ..|                          samples: raw bits 0x447e.3-0x44fa (123.5)
+0x4470|                                          1f fc|              ..|                          residuals: raw bits 0x447e.3-0x44fa (123.5)
 0x4480|ff fe 7f ff cf ff fe 7f ff ff 3f ff ff ff cf ff|..........?.....|
 *     |until 0x44f9.7 (124)                           |                |
       |                                               |                |                  byte_align: 0 (valid) 0x44fa-0x44fa (0)
@@ -2863,13 +2863,13 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                        [0]{}: partition 0x4507.6-0x458a.2 (130.4)
       |                                               |                |                          count: 895
 0x4500|                     04 3b                     |       .;       |                          rice_parameter: 0 0x4507.6-0x4508.2 (0.4)
-0x4500|                        3b fd fe ff bf df ef fb|        ;.......|                          samples: raw bits 0x4508.2-0x458a.2 (130)
+0x4500|                        3b fd fe ff bf df ef fb|        ;.......|                          residuals: raw bits 0x4508.2-0x458a.2 (130)
 0x4510|fe ff bf f7 fe ff df fb ff bf fd ff ef ff bf ff|................|
 *     |until 0x458a.1 (130)                           |                |
       |                                               |                |                        [1]{}: partition 0x458a.2-0x460a.7 (128.5)
       |                                               |                |                          count: 896
 0x4580|                              c3               |          .     |                          rice_parameter: 0 0x458a.2-0x458a.6 (0.4)
-0x4580|                              c3 9f 9f 9f cf cf|          ......|                          samples: raw bits 0x458a.6-0x460a.7 (128.1)
+0x4580|                              c3 9f 9f 9f cf cf|          ......|                          residuals: raw bits 0x458a.6-0x460a.7 (128.1)
 0x4590|e7 e7 f3 f3 f9 f9 fc fc fe 7f 3f 9f cf e7 f3 f9|..........?.....|
 *     |until 0x460a.6 (129)                           |                |
 0x4600|                              7e               |          ~     |                  byte_align: 0 (valid) 0x460a.7-0x460b (0.1)
@@ -2920,7 +2920,7 @@ $ fq dv sweep-with-DC.mkvmerge13.mka
       |                                               |                |                          [0]{}: partition 0x4620.6-0x466f (78.2)
       |                                               |                |                            count: 311
 0x4620|00 7a                                          |.z              |                            rice_parameter: 1 0x4620.6-0x4621.2 (0.4)
-0x4620|   7a ab aa ba aa ea ae aa ea ae aa ba ab aa ba| z..............|                            samples: raw bits 0x4621.2-0x466f (77.6)
+0x4620|   7a ab aa ba aa ea ae aa ea ae aa ba ab aa ba| z..............|                            residuals: raw bits 0x4621.2-0x466f (77.6)
 0x4630|ab aa ba ab aa ba ab aa ae aa ea ae aa ea ae aa|................|
 *     |until 0x466e.7 (78)                            |                |
       |                                               |                |                    byte_align: 0 (valid) 0x466f-0x466f (0)
