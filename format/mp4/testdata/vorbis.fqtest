@@ -244,7 +244,7 @@ $ fq -d mp4 dv vorbis.mp4
 0x03d0|         10                                    |   .            |                                          [1]: 16 lace 0x3d3-0x3d4 (1)
       |                                               |                |                                        packets[0:3]: 0x3d4-0x10b1 (3293)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|                                          [0]{}: packet (vorbis_packet) 0x3d4-0x3f2 (30)
-0x03d0|            01                                 |    .           |                                            packet_type: "Identification" (1) 0x3d4-0x3d5 (1)
+0x03d0|            01                                 |    .           |                                            packet_type: "identification" (1) 0x3d4-0x3d5 (1)
 0x03d0|               76 6f 72 62 69 73               |     vorbis     |                                            magic: "vorbis" (valid) 0x3d5-0x3db (6)
 0x03d0|                                 00 00 00 00   |           .... |                                            vorbis_version: 0 (valid) 0x3db-0x3df (4)
 0x03d0|                                             02|               .|                                            audio_channels: 2 0x3df-0x3e0 (1)
@@ -257,7 +257,7 @@ $ fq -d mp4 dv vorbis.mp4
 0x03f0|   01                                          | .              |                                            padding0: raw bits (all zero) 0x3f1-0x3f1.7 (0.7)
 0x03f0|   01                                          | .              |                                            framing_flag: 1 (valid) 0x3f1.7-0x3f2 (0.1)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|                                          [1]{}: packet (vorbis_packet) 0x3f2-0x402 (16)
-0x03f0|      03                                       |  .             |                                            packet_type: "Comment" (3) 0x3f2-0x3f3 (1)
+0x03f0|      03                                       |  .             |                                            packet_type: "comment" (3) 0x3f2-0x3f3 (1)
 0x03f0|         76 6f 72 62 69 73                     |   vorbis       |                                            magic: "vorbis" (valid) 0x3f3-0x3f9 (6)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|                                            comment{}: (vorbis_comment) 0x3f9-0x401 (8)
 0x03f0|                           00 00 00 00         |         ....   |                                              vendor_length: 0 0x3f9-0x3fd (4)
@@ -268,7 +268,7 @@ $ fq -d mp4 dv vorbis.mp4
 0x0400|   01                                          | .              |                                            padding0: raw bits (all zero) 0x401-0x401.7 (0.7)
 0x0400|   01                                          | .              |                                            frame_bit: 1 (valid) 0x401.7-0x402 (0.1)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|                                          [2]{}: packet (vorbis_packet) 0x402-0x10b1 (3247)
-0x0400|      05                                       |  .             |                                            packet_type: "Setup" (5) 0x402-0x403 (1)
+0x0400|      05                                       |  .             |                                            packet_type: "setup" (5) 0x402-0x403 (1)
 0x0400|         76 6f 72 62 69 73                     |   vorbis       |                                            magic: "vorbis" (valid) 0x403-0x409 (6)
 0x0400|                           1c                  |         .      |                                            vorbis_codebook_count: 29 0x409-0x40a (1)
 0x0400|                              42 43 56         |          BCV   |                                            codecooke_sync: 0x564342 (valid) 0x40a-0x40d (3)
@@ -373,17 +373,17 @@ $ fq -d mp4 dv vorbis.mp4
       |                                               |                |    [0]{}: track 0x2c-0x1dd (433)
       |                                               |                |      samples[0:3]: 0x2c-0x1dd (433)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [0]{}: sample (vorbis_packet) 0x2c-0xe2 (182)
-0x0020|                                    be         |            .   |          packet_type: "Audio" (0) 0x2c-0x2d (1)
+0x0020|                                    be         |            .   |          packet_type: "audio" (0) 0x2c-0x2d (1)
 0x0020|                                       b7 f2 81|             ...|          data: raw bits 0x2d-0xe2 (181)
 0x0030|46 74 15 42 0b 52 08 17 32 8e 43 08 65 84 84 f6|Ft.B.R..2.C.e...|
 *     |until 0xe1.7 (181)                             |                |
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [1]{}: sample (vorbis_packet) 0xe2-0x12e (76)
-0x00e0|      be                                       |  .             |          packet_type: "Audio" (0) 0xe2-0xe3 (1)
+0x00e0|      be                                       |  .             |          packet_type: "audio" (0) 0xe2-0xe3 (1)
 0x00e0|         13 a2 9b 06 0a b6 ff 13 10 ff 25 62 ec|   ..........%b.|          data: raw bits 0xe3-0x12e (75)
 0x00f0|8f d9 f7 a2 11 72 ca 44 3b 21 ba 69 a0 60 fb 3f|.....r.D;!.i.`.?|
 *     |until 0x12d.7 (75)                             |                |
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [2]{}: sample (vorbis_packet) 0x12e-0x1dd (175)
-0x0120|                                          be   |              . |          packet_type: "Audio" (0) 0x12e-0x12f (1)
+0x0120|                                          be   |              . |          packet_type: "audio" (0) 0x12e-0x12f (1)
 0x0120|                                             a7|               .|          data: raw bits 0x12f-0x1dd (174)
 0x0130|f2 81 46 bb c2 48 52 08 27 b8 83 10 ca 08 b1 a7|..F..HR.'.......|
 *     |until 0x1dc.7 (174)                            |                |

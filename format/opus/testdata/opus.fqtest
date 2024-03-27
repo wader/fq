@@ -6,8 +6,8 @@ $ fq -d opus_packet dv opus-audio
      |                                               |                |  toc{}: 0x0-0x1b6 (438)
      |                                               |                |    config{}: 0x0-0x0.5 (0.5)
 0x000|fc                                             |.               |      config: 31 0x0-0x0.5 (0.5)
-     |                                               |                |      mode: "CELT-only"
-     |                                               |                |      bandwidth: "FB"
+     |                                               |                |      mode: "celt_only"
+     |                                               |                |      bandwidth: "fb"
      |                                               |                |      frame_size: 20
 0x000|fc                                             |.               |    stereo: true 0x0.5-0x0.6 (0.1)
      |                                               |                |    frames_per_packet{}: 0x0.6-0x1 (0.2)

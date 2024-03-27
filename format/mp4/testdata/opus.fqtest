@@ -212,8 +212,8 @@ $ fq -d mp4 dv opus.mp4
      |                                               |                |                                    toc{}: 0x368-0x373 (11)
      |                                               |                |                                      config{}: 0x368-0x368.5 (0.5)
 0x360|                        00                     |        .       |                                        config: 0 0x368-0x368.5 (0.5)
-     |                                               |                |                                        mode: "SILK-only"
-     |                                               |                |                                        bandwidth: "NB"
+     |                                               |                |                                        mode: "silk_only"
+     |                                               |                |                                        bandwidth: "nb"
      |                                               |                |                                        frame_size: 10
 0x360|                        00                     |        .       |                                      stereo: false 0x368.5-0x368.6 (0.1)
      |                                               |                |                                      frames_per_packet{}: 0x368.6-0x369 (0.2)
@@ -314,8 +314,8 @@ $ fq -d mp4 dv opus.mp4
      |                                               |                |          toc{}: 0x2c-0xa5 (121)
      |                                               |                |            config{}: 0x2c-0x2c.5 (0.5)
 0x020|                                    f8         |            .   |              config: 31 0x2c-0x2c.5 (0.5)
-     |                                               |                |              mode: "CELT-only"
-     |                                               |                |              bandwidth: "FB"
+     |                                               |                |              mode: "celt_only"
+     |                                               |                |              bandwidth: "fb"
      |                                               |                |              frame_size: 20
 0x020|                                    f8         |            .   |            stereo: false 0x2c.5-0x2c.6 (0.1)
      |                                               |                |            frames_per_packet{}: 0x2c.6-0x2d (0.2)
@@ -330,8 +330,8 @@ $ fq -d mp4 dv opus.mp4
      |                                               |                |          toc{}: 0xa5-0x11e (121)
      |                                               |                |            config{}: 0xa5-0xa5.5 (0.5)
 0x0a0|               f8                              |     .          |              config: 31 0xa5-0xa5.5 (0.5)
-     |                                               |                |              mode: "CELT-only"
-     |                                               |                |              bandwidth: "FB"
+     |                                               |                |              mode: "celt_only"
+     |                                               |                |              bandwidth: "fb"
      |                                               |                |              frame_size: 20
 0x0a0|               f8                              |     .          |            stereo: false 0xa5.5-0xa5.6 (0.1)
      |                                               |                |            frames_per_packet{}: 0xa5.6-0xa6 (0.2)
@@ -346,8 +346,8 @@ $ fq -d mp4 dv opus.mp4
      |                                               |                |          toc{}: 0x11e-0x197 (121)
      |                                               |                |            config{}: 0x11e-0x11e.5 (0.5)
 0x110|                                          f8   |              . |              config: 31 0x11e-0x11e.5 (0.5)
-     |                                               |                |              mode: "CELT-only"
-     |                                               |                |              bandwidth: "FB"
+     |                                               |                |              mode: "celt_only"
+     |                                               |                |              bandwidth: "fb"
      |                                               |                |              frame_size: 20
 0x110|                                          f8   |              . |            stereo: false 0x11e.5-0x11e.6 (0.1)
      |                                               |                |            frames_per_packet{}: 0x11e.6-0x11f (0.2)
