@@ -243,7 +243,7 @@ $ fq -d matroska dv vorbis.mkv
 0x0170|                        10                     |        .       |                    [1]: 16 lace_size 0x178-0x179 (1)
       |                                               |                |                  laces[0:3]: 0x179-0xe56 (3293)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|                    [0]{}: packet (vorbis_packet) 0x179-0x197 (30)
-0x0170|                           01                  |         .      |                      packet_type: "Identification" (1) 0x179-0x17a (1)
+0x0170|                           01                  |         .      |                      packet_type: "identification" (1) 0x179-0x17a (1)
 0x0170|                              76 6f 72 62 69 73|          vorbis|                      magic: "vorbis" (valid) 0x17a-0x180 (6)
 0x0180|00 00 00 00                                    |....            |                      vorbis_version: 0 (valid) 0x180-0x184 (4)
 0x0180|            02                                 |    .           |                      audio_channels: 2 0x184-0x185 (1)
@@ -257,7 +257,7 @@ $ fq -d matroska dv vorbis.mkv
 0x0190|                  01                           |      .         |                      padding0: raw bits (all zero) 0x196-0x196.7 (0.7)
 0x0190|                  01                           |      .         |                      framing_flag: 1 (valid) 0x196.7-0x197 (0.1)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|                    [1]{}: packet (vorbis_packet) 0x197-0x1a7 (16)
-0x0190|                     03                        |       .        |                      packet_type: "Comment" (3) 0x197-0x198 (1)
+0x0190|                     03                        |       .        |                      packet_type: "comment" (3) 0x197-0x198 (1)
 0x0190|                        76 6f 72 62 69 73      |        vorbis  |                      magic: "vorbis" (valid) 0x198-0x19e (6)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|                      comment{}: (vorbis_comment) 0x19e-0x1a6 (8)
 0x0190|                                          00 00|              ..|                        vendor_length: 0 0x19e-0x1a2 (4)
@@ -268,7 +268,7 @@ $ fq -d matroska dv vorbis.mkv
 0x01a0|                  01                           |      .         |                      padding0: raw bits (all zero) 0x1a6-0x1a6.7 (0.7)
 0x01a0|                  01                           |      .         |                      frame_bit: 1 (valid) 0x1a6.7-0x1a7 (0.1)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|                    [2]{}: packet (vorbis_packet) 0x1a7-0xe56 (3247)
-0x01a0|                     05                        |       .        |                      packet_type: "Setup" (5) 0x1a7-0x1a8 (1)
+0x01a0|                     05                        |       .        |                      packet_type: "setup" (5) 0x1a7-0x1a8 (1)
 0x01a0|                        76 6f 72 62 69 73      |        vorbis  |                      magic: "vorbis" (valid) 0x1a8-0x1ae (6)
 0x01a0|                                          1c   |              . |                      vorbis_codebook_count: 29 0x1ae-0x1af (1)
 0x01a0|                                             42|               B|                      codecooke_sync: 0x564342 (valid) 0x1af-0x1b2 (3)
@@ -396,7 +396,7 @@ $ fq -d matroska dv vorbis.mkv
 0x0f10|80                                             |.               |                lacing: "none" (0) 0xf10.5-0xf10.7 (0.2)
 0x0f10|80                                             |.               |                discardable: false 0xf10.7-0xf11 (0.1)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|              packet{}: (vorbis_packet) 0xf11-0xfc7 (182)
-0x0f10|   be                                          | .              |                packet_type: "Audio" (0) 0xf11-0xf12 (1)
+0x0f10|   be                                          | .              |                packet_type: "audio" (0) 0xf11-0xf12 (1)
 0x0f10|      b7 f2 81 46 74 15 42 0b 52 08 17 32 8e 43|  ...Ft.B.R..2.C|                data: raw bits 0xf12-0xfc7 (181)
 0x0f20|08 65 84 84 f6 56 3e d0 88 ae 42 68 41 0a e1 42|.e...V>...BhA..B|
 *     |until 0xfc6.7 (181)                            |                |
@@ -413,7 +413,7 @@ $ fq -d matroska dv vorbis.mkv
 0x0fc0|                                    80         |            .   |                lacing: "none" (0) 0xfcc.5-0xfcc.7 (0.2)
 0x0fc0|                                    80         |            .   |                discardable: false 0xfcc.7-0xfcd (0.1)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|              packet{}: (vorbis_packet) 0xfcd-0x1019 (76)
-0x0fc0|                                       be      |             .  |                packet_type: "Audio" (0) 0xfcd-0xfce (1)
+0x0fc0|                                       be      |             .  |                packet_type: "audio" (0) 0xfcd-0xfce (1)
 0x0fc0|                                          13 a2|              ..|                data: raw bits 0xfce-0x1019 (75)
 0x0fd0|9b 06 0a b6 ff 13 10 ff 25 62 ec 8f d9 f7 a2 11|........%b......|
 *     |until 0x1018.7 (75)                            |                |
@@ -435,7 +435,7 @@ $ fq -d matroska dv vorbis.mkv
 0x1020|                        00                     |        .       |                    lacing: "none" (0) 0x1028.5-0x1028.7 (0.2)
 0x1020|                        00                     |        .       |                    not_used: false 0x1028.7-0x1029 (0.1)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|                  packet{}: (vorbis_packet) 0x1029-0x10d8 (175)
-0x1020|                           be                  |         .      |                    packet_type: "Audio" (0) 0x1029-0x102a (1)
+0x1020|                           be                  |         .      |                    packet_type: "audio" (0) 0x1029-0x102a (1)
 0x1020|                              a7 f2 81 46 bb c2|          ...F..|                    data: raw bits 0x102a-0x10d8 (174)
 0x1030|48 52 08 27 b8 83 10 ca 08 b1 a7 f2 81 46 bb c2|HR.'.........F..|
 *     |until 0x10d7.7 (174)                           |                |

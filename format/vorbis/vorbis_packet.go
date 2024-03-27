@@ -33,10 +33,10 @@ const (
 )
 
 var packetTypeNames = map[uint]string{
-	packetTypeAudio:          "Audio",
-	packetTypeIdentification: "Identification",
-	packetTypeComment:        "Comment",
-	packetTypeSetup:          "Setup",
+	packetTypeAudio:          "audio",
+	packetTypeIdentification: "identification",
+	packetTypeComment:        "comment",
+	packetTypeSetup:          "setup",
 }
 
 func vorbisDecode(d *decode.D) any {
