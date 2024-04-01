@@ -1,13 +1,12 @@
 package ranges
 
 import (
+	"cmp"
 	"fmt"
 	"strconv"
 	"strings"
 
 	"golang.org/x/exp/slices"
-
-	"github.com/wader/fq/internal/cmpex"
 )
 
 func max(a, b int64) int64 {
@@ -65,7 +64,7 @@ func Gaps(total Range, ranges []Range) []Range {
 		return []Range{total}
 	}
 
-	slices.SortFunc(ranges, func(a, b Range) int { return cmpex.Compare(a.Start, b.Start) })
+	slices.SortFunc(ranges, func(a, b Range) int { return cmp.Compare(a.Start, b.Start) })
 
 	// worst case ranges+1 gaps
 	merged := make([]Range, 0, len(ranges)+1)

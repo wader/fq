@@ -16,11 +16,11 @@ package mp4
 // TODO: better probe, find first 2 boxes, should be free,ftyp or mdat?
 
 import (
+	"cmp"
 	"embed"
 	"fmt"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/internal/cmpex"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
 	"golang.org/x/exp/slices"
@@ -240,10 +240,10 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 
 	// sort by id then order in file
 	slices.SortStableFunc(tracksCollected, func(a, b *trackCollected) int {
-		if r := cmpex.Compare(a.track.id, b.track.id); r != 0 {
+		if r := cmp.Compare(a.track.id, b.track.id); r != 0 {
 			return r
 		}
-		return cmpex.Compare(a.order, b.order)
+		return cmp.Compare(a.order, b.order)
 	})
 
 	d.FieldArray("tracks", func(d *decode.D) {

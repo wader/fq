@@ -6,7 +6,7 @@ package fit
 import (
 	"embed"
 	"fmt"
-	"sort"
+	"slices"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/format/fit/mappers"
@@ -344,7 +344,7 @@ func fitDecodeDataMessage(d *decode.D, drc *dataRecordContext, lmfd localFieldDe
 		keys[i] = int(k)
 		i++
 	}
-	sort.Ints(keys)
+	slices.Sort(keys)
 
 	isDevDep := isDevMap[drc.localMessageType]
 

@@ -1,11 +1,11 @@
-package mathex_test
+package mathx_test
 
 import (
 	"fmt"
 	"math/big"
 	"testing"
 
-	"github.com/wader/fq/internal/mathex"
+	"github.com/wader/fq/internal/mathx"
 )
 
 func TestBigIntSetBytesSigned(t *testing.T) {
@@ -28,7 +28,7 @@ func TestBigIntSetBytesSigned(t *testing.T) {
 		t.Run(fmt.Sprintf("%v %s", tC.buf, tC.s), func(t *testing.T) {
 			var n big.Int
 			expected := tC.s
-			actual := mathex.BigIntSetBytesSigned(&n, tC.buf).String()
+			actual := mathx.BigIntSetBytesSigned(&n, tC.buf).String()
 			if expected != actual {
 				t.Errorf("expected %s, got %s", expected, actual)
 			}

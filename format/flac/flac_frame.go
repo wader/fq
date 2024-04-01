@@ -5,7 +5,7 @@ import (
 	"math/bits"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/internal/mathex"
+	"github.com/wader/fq/internal/mathx"
 	"github.com/wader/fq/pkg/checksum"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
@@ -478,7 +478,7 @@ func frameDecode(d *decode.D) any {
 									for j := 0; j < count; j++ {
 										high := d.Unary(0)
 										low := d.U(riceParameter)
-										samples[n] = mathex.ZigZag[uint64, int64](high<<riceParameter | low)
+										samples[n] = mathx.ZigZag[uint64, int64](high<<riceParameter | low)
 										n++
 									}
 									samplesStop := d.Pos()

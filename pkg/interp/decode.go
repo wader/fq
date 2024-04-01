@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/mitchellh/copystructure"
-	"github.com/wader/fq/internal/bitioex"
-	"github.com/wader/fq/internal/gojqex"
-	"github.com/wader/fq/internal/ioex"
+	"github.com/wader/fq/internal/bitiox"
+	"github.com/wader/fq/internal/gojqx"
+	"github.com/wader/fq/internal/iox"
 	"github.com/wader/fq/internal/mapstruct"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
@@ -106,7 +106,7 @@ func (i *Interp) _registry(c any) any {
 					delete(args, k)
 				}
 			}
-			vf["decode_in_arg"] = gojqex.Normalize(args)
+			vf["decode_in_arg"] = gojqx.Normalize(args)
 		}
 
 		if f.Functions != nil {
@@ -192,7 +192,7 @@ func (i *Interp) _decode(c any, format string, opts decodeOpts) any {
 					c,
 					opts.Progress,
 					nil,
-					EvalOpts{output: ioex.DiscardCtxWriter{Ctx: i.EvalInstance.Ctx}},
+					EvalOpts{output: iox.DiscardCtxWriter{Ctx: i.EvalInstance.Ctx}},
 				)
 			}
 			lastProgress := time.Now()
@@ -304,7 +304,7 @@ func valueOrFallbackHas(key any, baseHas func(key any) any, valueHas func(key an
 // TODO: make more efficient somehow? shallow values but might be hard
 // when things like tovalue.key should behave like a jq value and not a decode value etc
 func toValue(optsFn func() (*Options, error), v any) (any, error) {
-	return gojqex.ToGoJQValueFn(v, func(v any) (any, error) {
+	return gojqx.ToGoJQValueFn(v, func(v any) (any, error) {
 		switch v := v.(type) {
 		case JQValueEx:
 			if optsFn == nil {
@@ -357,7 +357,7 @@ func makeDecodeValueOut(dv *decode.Value, kind decodeValueKind, out any) any {
 			// create another binary we don't have to read and create a string, ex:
 			// .unknown0 | tobytes[1:] | ...
 			return decodeValue{
-				JQValue: &gojqex.Lazy{
+				JQValue: &gojqx.Lazy{
 					Type:     "string",
 					IsScalar: true,
 					Fn: func() (gojq.JQValue, error) {
@@ -366,10 +366,10 @@ func makeDecodeValueOut(dv *decode.Value, kind decodeValueKind, out any) any {
 						if err != nil {
 							return nil, err
 						}
-						if _, err := bitioex.CopyBits(buf, vvvC); err != nil {
+						if _, err := bitiox.CopyBits(buf, vvvC); err != nil {
 							return nil, err
 						}
-						return gojqex.String([]rune(buf.String())), nil
+						return gojqx.String([]rune(buf.String())), nil
 					},
 				},
 				decodeValueBase: decodeValueBase{dv: dv},
@@ -377,52 +377,52 @@ func makeDecodeValueOut(dv *decode.Value, kind decodeValueKind, out any) any {
 			}
 		case bool:
 			return decodeValue{
-				JQValue:         gojqex.Boolean(vvv),
+				JQValue:         gojqx.Boolean(vvv),
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case int:
 			return decodeValue{
-				JQValue:         gojqex.Number{V: vvv},
+				JQValue:         gojqx.Number{V: vvv},
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case int64:
 			return decodeValue{
-				JQValue:         gojqex.Number{V: big.NewInt(vvv)},
+				JQValue:         gojqx.Number{V: big.NewInt(vvv)},
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case uint64:
 			return decodeValue{
-				JQValue:         gojqex.Number{V: new(big.Int).SetUint64(vvv)},
+				JQValue:         gojqx.Number{V: new(big.Int).SetUint64(vvv)},
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case float64:
 			return decodeValue{
-				JQValue:         gojqex.Number{V: vvv},
+				JQValue:         gojqx.Number{V: vvv},
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case string:
 			return decodeValue{
-				JQValue:         gojqex.String(vvv),
+				JQValue:         gojqx.String(vvv),
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case []any:
 			return decodeValue{
-				JQValue:         gojqex.Array(vvv),
+				JQValue:         gojqx.Array(vvv),
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case map[string]any:
 			return decodeValue{
-				JQValue:         gojqex.Object(vvv),
+				JQValue:         gojqx.Object(vvv),
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case nil:
 			return decodeValue{
-				JQValue:         gojqex.Null{},
+				JQValue:         gojqx.Null{},
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case *big.Int:
 			return decodeValue{
-				JQValue:         gojqex.Number{V: vvv},
+				JQValue:         gojqx.Number{V: vvv},
 				decodeValueBase: decodeValueBase{dv: dv},
 			}
 		case Binary:
@@ -651,7 +651,7 @@ func (v decodeValue) JQValueToGoJQEx(optsFn func() (*Options, error)) any {
 var _ DecodeValue = ArrayDecodeValue{}
 
 type ArrayDecodeValue struct {
-	gojqex.Base
+	gojqx.Base
 	decodeValueBase
 	*decode.Compound
 }
@@ -659,7 +659,7 @@ type ArrayDecodeValue struct {
 func NewArrayDecodeValue(dv *decode.Value, out any, c *decode.Compound) ArrayDecodeValue {
 	return ArrayDecodeValue{
 		decodeValueBase: decodeValueBase{dv: dv, out: out},
-		Base:            gojqex.Base{Typ: gojq.JQTypeArray},
+		Base:            gojqx.Base{Typ: gojq.JQTypeArray},
 		Compound:        c,
 	}
 }
@@ -704,7 +704,7 @@ func (v ArrayDecodeValue) JQValueHas(key any) any {
 		func(key any) any {
 			intKey, ok := key.(int)
 			if !ok {
-				return gojqex.HasKeyTypeError{L: gojq.JQTypeArray, R: fmt.Sprintf("%v", key)}
+				return gojqx.HasKeyTypeError{L: gojq.JQTypeArray, R: fmt.Sprintf("%v", key)}
 			}
 			return intKey >= 0 && intKey < len(v.Compound.Children)
 		})
@@ -738,7 +738,7 @@ func (v ArrayDecodeValue) JQValueToGoJQ() any {
 var _ DecodeValue = StructDecodeValue{}
 
 type StructDecodeValue struct {
-	gojqex.Base
+	gojqx.Base
 	decodeValueBase
 	*decode.Compound
 }
@@ -746,7 +746,7 @@ type StructDecodeValue struct {
 func NewStructDecodeValue(dv *decode.Value, out any, c *decode.Compound) StructDecodeValue {
 	return StructDecodeValue{
 		decodeValueBase: decodeValueBase{dv: dv, out: out},
-		Base:            gojqex.Base{Typ: gojq.JQTypeObject},
+		Base:            gojqx.Base{Typ: gojq.JQTypeObject},
 		Compound:        c,
 	}
 }
@@ -801,7 +801,7 @@ func (v StructDecodeValue) JQValueHas(key any) any {
 		func(key any) any {
 			stringKey, ok := key.(string)
 			if !ok {
-				return gojqex.HasKeyTypeError{L: gojq.JQTypeObject, R: fmt.Sprintf("%v", key)}
+				return gojqx.HasKeyTypeError{L: gojq.JQTypeObject, R: fmt.Sprintf("%v", key)}
 			}
 
 			if v.Compound.ByName != nil {

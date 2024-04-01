@@ -8,7 +8,7 @@ import (
 	"io"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/internal/gojqex"
+	"github.com/wader/fq/internal/gojqx"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
@@ -46,7 +46,7 @@ func decodeYAML(d *decode.D) any {
 	}
 
 	var s scalar.Any
-	s.Actual = gojqex.Normalize(r)
+	s.Actual = gojqx.Normalize(r)
 
 	switch s.Actual.(type) {
 	case map[string]any,
@@ -62,7 +62,7 @@ func decodeYAML(d *decode.D) any {
 }
 
 func toYAML(_ *interp.Interp, c any) any {
-	b, err := yaml.Marshal(gojqex.Normalize(c))
+	b, err := yaml.Marshal(gojqx.Normalize(c))
 	if err != nil {
 		return err
 	}

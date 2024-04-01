@@ -5,7 +5,7 @@ import (
 	"net"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/internal/bitioex"
+	"github.com/wader/fq/internal/bitiox"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
@@ -105,7 +105,7 @@ var hopByHopTypeNames = scalar.UintMapSymStr{
 
 var mapUToIPv6Sym = scalar.BitBufFn(func(s scalar.BitBuf) (scalar.BitBuf, error) {
 	b := &bytes.Buffer{}
-	if _, err := bitioex.CopyBits(b, s.Actual); err != nil {
+	if _, err := bitiox.CopyBits(b, s.Actual); err != nil {
 		return s, err
 	}
 	s.Sym = net.IP(b.Bytes()).String()

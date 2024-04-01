@@ -1,4 +1,4 @@
-package bitioex
+package bitiox
 
 import (
 	"io"
