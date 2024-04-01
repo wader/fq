@@ -12,26 +12,26 @@ import (
 )
 
 type Compound struct {
-	IsArray     bool
-	Children    []*Value
 	ByName      map[string]*Value
 	Description string
+	Children    []*Value
+	IsArray     bool
 }
 
 // TODO: Encoding, u16le, varint etc, encode?
 // TODO: Value/Compound interface? can have per type and save memory
 // TODO: Make some fields optional somehow? map/slice?
 type Value struct {
-	Parent      *Value
-	Name        string
 	V           any // scalar.S or Compound (array/struct)
-	Index       int // index in parent array/struct
-	Range       ranges.Range
 	RootReader  bitio.ReaderAtSeeker
-	IsRoot      bool    // TODO: rework?
-	Format      *Format // TODO: rework
-	Description string
 	Err         error
+	Parent      *Value
+	Format      *Format // TODO: rework
+	Name        string
+	Description string
+	Range       ranges.Range
+	Index       int  // index in parent array/struct
+	IsRoot      bool // TODO: rework?
 }
 
 type WalkFn func(v *Value, rootV *Value, depth int, rootDepth int) error
