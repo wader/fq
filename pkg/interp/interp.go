@@ -295,8 +295,9 @@ func toBytes(v any) ([]byte, error) {
 func queryErrorPosition(expr string, v error) pos.Pos {
 	var offset int
 
-	if tokIf, ok := v.(interface{ Token() (string, int) }); ok {
-		_, offset = tokIf.Token()
+	var e *gojq.ParseError
+	if errors.As(v, &e) {
+		offset = e.Offset
 	}
 	if offset >= 0 {
 		return pos.NewFromOffset(expr, offset)
@@ -398,7 +399,7 @@ func (i *Interp) Main(ctx context.Context, output Output, versionStr string) err
 
 		switch v := v.(type) {
 		case error:
-			var haltErr gojq.HaltError
+			var haltErr *gojq.HaltError
 			if errors.As(v, &haltErr) {
 				if haltErrV := haltErr.Value(); haltErrV != nil {
 					if str, ok := haltErrV.(string); ok {
