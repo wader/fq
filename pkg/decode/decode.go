@@ -9,8 +9,8 @@ import (
 	"reflect"
 	"regexp"
 
-	"github.com/wader/fq/internal/bitioex"
-	"github.com/wader/fq/internal/ioex"
+	"github.com/wader/fq/internal/bitiox"
+	"github.com/wader/fq/internal/iox"
 	"github.com/wader/fq/internal/recoverfn"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/ranges"
@@ -46,7 +46,7 @@ func Decode(ctx context.Context, br bitio.ReaderAtSeeker, group *Group, opts Opt
 }
 
 func decode(ctx context.Context, br bitio.ReaderAtSeeker, group *Group, opts Options) (*Value, any, error) {
-	brLen, err := bitioex.Len(br)
+	brLen, err := bitiox.Len(br)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -99,7 +99,7 @@ func decode(ctx context.Context, br bitio.ReaderAtSeeker, group *Group, opts Opt
 			inArgs = append(inArgs, groupArg)
 		}
 
-		cBR, err := bitioex.Range(br, decodeRange.Start, decodeRange.Len)
+		cBR, err := bitiox.Range(br, decodeRange.Start, decodeRange.Len)
 		if err != nil {
 			return nil, nil, IOError{Err: err, Op: "BitBufRange", ReadSize: decodeRange.Len, Pos: decodeRange.Start}
 		}
@@ -257,7 +257,7 @@ func (d *D) fieldDecoder(name string, bitBuf bitio.ReaderAtSeeker, v any) *D {
 func (d *D) TryCopyBits(w io.Writer, r bitio.Reader) (int64, error) {
 	// TODO: what size? now same as io.Copy
 	buf := d.SharedReadBuf(32 * 1024)
-	return bitioex.CopyBitsBuffer(w, r, buf)
+	return bitiox.CopyBitsBuffer(w, r, buf)
 }
 
 func (d *D) CopyBits(w io.Writer, r bitio.Reader) int64 {
@@ -299,7 +299,7 @@ func (d *D) NewBitBufFromReader(r io.Reader) bitio.ReaderAtSeeker {
 func (d *D) TryReadAllBits(r bitio.Reader) ([]byte, error) {
 	bb := &bytes.Buffer{}
 	buf := d.SharedReadBuf(32 * 1024)
-	if _, err := bitioex.CopyBitsBuffer(bb, r, buf); err != nil {
+	if _, err := bitiox.CopyBitsBuffer(bb, r, buf); err != nil {
 		return nil, err
 	}
 	return bb.Bytes(), nil
@@ -348,7 +348,7 @@ func (d *D) FillGaps(r ranges.Range, namePrefix string) {
 
 	gaps := ranges.Gaps(r, valueRanges)
 	for i, gap := range gaps {
-		br, err := bitioex.Range(d.bitBuf, gap.Start, gap.Len)
+		br, err := bitiox.Range(d.bitBuf, gap.Start, gap.Len)
 		if err != nil {
 			d.IOPanic(err, "FillGaps: Range")
 		}
@@ -590,11 +590,11 @@ func (d *D) BytesLen(nBytes int) []byte {
 
 // TODO: rename/remove BitBuf name?
 func (d *D) TryBitBufRange(firstBit int64, nBits int64) (bitio.ReaderAtSeeker, error) {
-	return bitioex.Range(d.bitBuf, firstBit, nBits)
+	return bitiox.Range(d.bitBuf, firstBit, nBits)
 }
 
 func (d *D) BitBufRange(firstBit int64, nBits int64) bitio.ReaderAtSeeker {
-	br, err := bitioex.Range(d.bitBuf, firstBit, nBits)
+	br, err := bitiox.Range(d.bitBuf, firstBit, nBits)
 	if err != nil {
 		panic(IOError{Err: err, Op: "BitBufRange", ReadSize: nBits, Pos: firstBit})
 	}
@@ -614,7 +614,7 @@ func (d *D) Pos() int64 {
 }
 
 func (d *D) TryLen() (int64, error) {
-	return bitioex.Len(d.bitBuf)
+	return bitiox.Len(d.bitBuf)
 }
 
 func (d *D) Len() int64 {
@@ -1139,7 +1139,7 @@ func (d *D) FieldFormatBitBuf(name string, br bitio.ReaderAtSeeker, group *Group
 // TODO: rethink these
 
 func (d *D) FieldRootBitBuf(name string, br bitio.ReaderAtSeeker, sms ...scalar.BitBufMapper) *Value {
-	brLen, err := bitioex.Len(br)
+	brLen, err := bitiox.Len(br)
 	if err != nil {
 		d.IOPanic(err, "br Len")
 	}
@@ -1276,7 +1276,7 @@ func (d *D) FieldValue(name string, fn func() *Value) *Value {
 func (d *D) RE(re *regexp.Regexp) []ranges.Range {
 	startPos := d.Pos()
 
-	rr := ioex.ByteRuneReader{RS: bitio.NewIOReadSeeker(d.bitBuf)}
+	rr := iox.ByteRuneReader{RS: bitio.NewIOReadSeeker(d.bitBuf)}
 	locs := re.FindReaderSubmatchIndex(rr)
 	if locs == nil {
 		return nil

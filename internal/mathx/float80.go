@@ -2,7 +2,7 @@
 // modified a bit to read bytes instead of hex string
 //
 // Was previously under unlicense/public domain but is under MIT license for fq
-package mathex
+package mathx
 
 import (
 	"fmt"

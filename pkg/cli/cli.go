@@ -13,7 +13,7 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/wader/fq/internal/mathex"
+	"github.com/wader/fq/internal/mathx"
 	"github.com/wader/fq/pkg/interp"
 	"golang.org/x/term"
 
@@ -92,7 +92,7 @@ type fdTerminal uintptr
 func (fd fdTerminal) Size() (int, int) {
 	w, h, _ := term.GetSize(int(fd))
 	// TODO: old version return 0 on no terminal
-	w, h = mathex.Max(0, w), mathex.Max(0, h)
+	w, h = mathx.Max(0, w), mathx.Max(0, h)
 	return w, h
 }
 func (fd fdTerminal) IsTerminal() bool {

@@ -7,7 +7,7 @@ import (
 	"math"
 	"math/big"
 
-	"github.com/wader/fq/internal/mathex"
+	"github.com/wader/fq/internal/mathx"
 	"github.com/wader/fq/pkg/bitio"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/unicode"
@@ -76,7 +76,7 @@ func (d *D) tryBigIntEndianSign(nBits int, endian Endian, sign bool) (*big.Int, 
 
 	n := new(big.Int)
 	if sign {
-		mathex.BigIntSetBytesSigned(n, buf)
+		mathx.BigIntSetBytesSigned(n, buf)
 	} else {
 		n.SetBytes(buf)
 	}
@@ -98,13 +98,13 @@ func (d *D) tryFEndian(nBits int, endian Endian) (float64, error) {
 	}
 	switch nBits {
 	case 16:
-		return float64(mathex.Float16(binary.BigEndian.Uint16(b)).Float32()), nil
+		return float64(mathx.Float16(binary.BigEndian.Uint16(b)).Float32()), nil
 	case 32:
 		return float64(math.Float32frombits(binary.BigEndian.Uint32(b))), nil
 	case 64:
 		return math.Float64frombits(binary.BigEndian.Uint64(b)), nil
 	case 80:
-		return mathex.NewFloat80FromBytes(b).Float64(), nil
+		return mathx.NewFloat80FromBytes(b).Float64(), nil
 	default:
 		return 0, fmt.Errorf("unsupported float size %d", nBits)
 	}
@@ -169,7 +169,7 @@ func (d *D) tryTextLenPrefixed(prefixLenBytes int, fixedBytes int, e encoding.En
 	if fixedBytes != -1 {
 		// TODO: error?
 		readBytes = fixedBytes - prefixLenBytes
-		lenBytes = mathex.Min(lenBytes, uint64(readBytes))
+		lenBytes = mathx.Min(lenBytes, uint64(readBytes))
 	}
 
 	bs, err := d.TryBytesLen(readBytes)

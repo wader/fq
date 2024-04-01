@@ -9,10 +9,10 @@ import (
 
 	"github.com/wader/fq/internal/ansi"
 	"github.com/wader/fq/internal/asciiwriter"
-	"github.com/wader/fq/internal/bitioex"
+	"github.com/wader/fq/internal/bitiox"
 	"github.com/wader/fq/internal/columnwriter"
 	"github.com/wader/fq/internal/hexpairwriter"
-	"github.com/wader/fq/internal/mathex"
+	"github.com/wader/fq/internal/mathx"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
@@ -185,7 +185,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 
 	if opts.Verbose && !isSynthetic {
 		cfmt(colField, " %s (%s)",
-			mathex.BitRange(innerRange).StringByteBits(opts.Addrbase), mathex.Bits(innerRange.Len).StringByteBits(opts.Sizebase))
+			mathx.BitRange(innerRange).StringByteBits(opts.Addrbase), mathx.Bits(innerRange.Len).StringByteBits(opts.Sizebase))
 	}
 
 	cprint(colField, "\n")
@@ -225,7 +225,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 		printErrs(depth, valueErr)
 	}
 
-	rootBitLen, err := bitioex.Len(rootV.RootReader)
+	rootBitLen, err := bitiox.Len(rootV.RootReader)
 	if err != nil {
 		return err
 	}
@@ -269,9 +269,9 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 	// has length and is not compound or a collapsed struct/array (max depth)
 	if willDisplayData {
 		cfmt(colAddr, "%s%s\n",
-			rootIndent, deco.DumpAddr.F(mathex.PadFormatInt(startLineByte, opts.Addrbase, true, addrWidth)))
+			rootIndent, deco.DumpAddr.F(mathx.PadFormatInt(startLineByte, opts.Addrbase, true, addrWidth)))
 
-		vBR, err := bitioex.Range(rootV.RootReader, startByte*8, displaySizeBits)
+		vBR, err := bitiox.Range(rootV.RootReader, startByte*8, displaySizeBits)
 		if err != nil {
 			return err
 		}
@@ -284,7 +284,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 		if err != nil {
 			return err
 		}
-		if _, err := bitioex.CopyBitsBuffer(
+		if _, err := bitiox.CopyBitsBuffer(
 			hexpairwriter.New(cw.Columns[colHex], opts.LineBytes, int(startLineByteOffset), hexpairFn),
 			hexBR,
 			buf); err != nil {
@@ -295,7 +295,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 		if err != nil {
 			return err
 		}
-		if _, err := bitioex.CopyBitsBuffer(
+		if _, err := bitiox.CopyBitsBuffer(
 			asciiwriter.New(cw.Columns[colASCII], opts.LineBytes, int(startLineByteOffset), asciiFn),
 			asciiBR,
 			buf); err != nil {
@@ -304,7 +304,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 
 		for i := int64(1); i < addrLines; i++ {
 			lineStartByte := startLineByte + i*int64(opts.LineBytes)
-			cfmt(colAddr, "%s%s\n", rootIndent, deco.DumpAddr.F(mathex.PadFormatInt(lineStartByte, opts.Addrbase, true, addrWidth)))
+			cfmt(colAddr, "%s%s\n", rootIndent, deco.DumpAddr.F(mathx.PadFormatInt(lineStartByte, opts.Addrbase, true, addrWidth)))
 		}
 		// TODO: correct? should rethink columnwriter api maybe?
 		lastLineStopByte := startLineByte + addrLines*int64(opts.LineBytes) - 1
@@ -324,9 +324,9 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 			cprint(colHex, "\n")
 			// TODO: truncate if display_bytes is small?
 			cfmt(colHex, "until %s%s (%s)",
-				mathex.Bits(stopBit).StringByteBits(opts.Addrbase),
+				mathx.Bits(stopBit).StringByteBits(opts.Addrbase),
 				isEnd,
-				mathex.PadFormatInt(bitio.BitsByteCount(sizeBits), opts.Sizebase, true, 0))
+				mathx.PadFormatInt(bitio.BitsByteCount(sizeBits), opts.Sizebase, true, 0))
 			// TODO: dump last line?
 		}
 	}
@@ -351,9 +351,9 @@ func dump(v *decode.Value, w io.Writer, opts *Options) error {
 	}
 
 	_ = v.WalkPreOrder(makeWalkFn(func(v *decode.Value, _ *decode.Value, _ int, rootDepth int) error {
-		maxAddrIndentWidth = mathex.Max(
+		maxAddrIndentWidth = mathx.Max(
 			maxAddrIndentWidth,
-			rootIndentWidth*rootDepth+mathex.DigitsInBase(bitio.BitsByteCount(v.InnerRange().Stop()), true, opts.Addrbase),
+			rootIndentWidth*rootDepth+mathx.DigitsInBase(bitio.BitsByteCount(v.InnerRange().Stop()), true, opts.Addrbase),
 		)
 		return nil
 	}))
@@ -390,7 +390,7 @@ func dump(v *decode.Value, w io.Writer, opts *Options) error {
 	var hexHeader string
 	var asciiHeader string
 	for i := 0; i < opts.LineBytes; i++ {
-		s := mathex.PadFormatInt(int64(i), opts.Addrbase, false, 2)
+		s := mathx.PadFormatInt(int64(i), opts.Addrbase, false, 2)
 		hexHeader += s
 		if i < opts.LineBytes-1 {
 			hexHeader += " "
@@ -412,7 +412,7 @@ func dump(v *decode.Value, w io.Writer, opts *Options) error {
 }
 
 func hexdump(w io.Writer, bv Binary, opts *Options) error {
-	br, err := bitioex.Range(bv.br, bv.r.Start, bv.r.Len)
+	br, err := bitiox.Range(bv.br, bv.r.Start, bv.r.Len)
 	if err != nil {
 		return err
 	}

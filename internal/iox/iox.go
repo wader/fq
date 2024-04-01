@@ -1,4 +1,4 @@
-package ioex
+package iox
 
 import (
 	"context"

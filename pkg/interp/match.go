@@ -5,8 +5,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/wader/fq/internal/gojqex"
-	"github.com/wader/fq/internal/ioex"
+	"github.com/wader/fq/internal/gojqx"
+	"github.com/wader/fq/internal/iox"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/ranges"
 	"github.com/wader/gojq"
@@ -50,7 +50,7 @@ func (i *Interp) _binaryMatch(c any, pattern any, flags string) gojq.Iter {
 
 	// TODO: err to string
 	// TODO: extract to regexpextra? "all" FindReaderSubmatchIndex that can iter?
-	sre, err := gojqex.CompileRegexp(re, "gimb", flags)
+	sre, err := gojqx.CompileRegexp(re, "gimb", flags)
 	if err != nil {
 		return gojq.NewIter(err)
 	}
@@ -70,9 +70,9 @@ func (i *Interp) _binaryMatch(c any, pattern any, flags string) gojq.Iter {
 	// will match the byte \0xff
 	if byteRunes {
 		// byte mode, read each byte as a rune
-		rr = ioex.ByteRuneReader{RS: bitio.NewIOReadSeeker(br)}
+		rr = iox.ByteRuneReader{RS: bitio.NewIOReadSeeker(br)}
 	} else {
-		rr = ioex.RuneReadSeeker{RS: bitio.NewIOReadSeeker(br)}
+		rr = iox.RuneReadSeeker{RS: bitio.NewIOReadSeeker(br)}
 	}
 
 	var off int64

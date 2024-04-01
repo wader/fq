@@ -1,19 +1,19 @@
 package interp
 
 import (
+	"cmp"
 	"errors"
 	"fmt"
 	"io/fs"
 	"strings"
 	"sync"
 
-	"github.com/wader/fq/internal/cmpex"
-	"github.com/wader/fq/internal/gojqex"
+	"github.com/wader/fq/internal/gojqx"
 	"github.com/wader/fq/pkg/decode"
 	"golang.org/x/exp/slices"
 )
 
-type EnvFuncFn func(env *Interp) gojqex.Function
+type EnvFuncFn func(env *Interp) gojqx.Function
 
 type Registry struct {
 	allGroup          *decode.Group
@@ -70,7 +70,7 @@ func sortFormats(g *decode.Group) {
 		if a.ProbeOrder == b.ProbeOrder {
 			return strings.Compare(a.Name, b.Name)
 		}
-		return cmpex.Compare(a.ProbeOrder, b.ProbeOrder)
+		return cmp.Compare(a.ProbeOrder, b.ProbeOrder)
 	})
 }
 
