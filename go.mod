@@ -28,7 +28,7 @@ require (
 
 	// has no tags
 	// go get -d github.com/gomarkdown/markdown@master && go mod tidy
-	github.com/gomarkdown/markdown v0.0.0-20231115200524-a660076da3fd
+	github.com/gomarkdown/markdown v0.0.0-20240328165702-4d01890c35c0
 
 	// bump: gomod-gopacket /github\.com\/gopacket\/gopacket v(.*)/ https://github.com/gopacket/gopacket.git|^1
 	// bump: gomod-gopacket command go get -d github.com/gopacket/gopacket@v$LATEST && go mod tidy
@@ -52,7 +52,7 @@ require (
 
 	// has no tags
 	// go get -d golang.org/x/exp@master && go mod tidy
-	golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa
+	golang.org/x/exp v0.0.0-20240325151524-a685a6edb6d8
 
 	// bump: gomod-golang-x-net /golang\.org\/x\/net v(.*)/ https://github.com/golang/net.git|^0
 	// bump: gomod-golang-x-net command go get -d golang.org/x/net@v$LATEST && go mod tidy
