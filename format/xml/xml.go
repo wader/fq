@@ -288,7 +288,6 @@ func decodeXML(d *decode.D) any {
 
 	bbr := d.RawLen(d.Len())
 	var r any
-	var err error
 
 	br := bitio.NewIOReadSeeker(bbr)
 
@@ -309,9 +308,6 @@ func decodeXML(d *decode.D) any {
 		r = fromXMLToArray(n)
 	} else {
 		r = fromXMLToObject(n, xi)
-	}
-	if err != nil {
-		d.Fatalf("%s", err)
 	}
 	var s scalar.Any
 	s.Actual = r

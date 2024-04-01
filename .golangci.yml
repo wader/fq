@@ -23,6 +23,8 @@ linters:
         - unconvert
         - unparam
         - wastedassign
+        - staticcheck
+        - govet
 
 linters-settings:
     revive:
@@ -41,6 +43,13 @@ linters-settings:
             - rela
             - equalisation
             - synchronisation
+    govet:
+        enable-all: true
+        disable:
+            - fieldalignment
+            - shadow
+    staticcheck:
+        checks: ["all"]
 
 run:
     timeout: 5m
