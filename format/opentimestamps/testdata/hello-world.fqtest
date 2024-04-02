@@ -4,7 +4,7 @@ $ fq dv hello-world.txt.ots
 0x0010|00 50 72 6f 6f 66 00 bf 89 e2 e8 84 e8 92 94   |.Proof......... |
 0x0010|                                             01|               .|  version: 1 0x1f-0x20 (1)
 0x0020|08                                             |.               |  digest_hash_algorithm: "sha256" (8) 0x20-0x21 (1)
-0x0020|   03 ba 20 4e 50 d1 26 e4 67 4c 00 5e 04 d8 2e| .. NP.&.gL.^...|  digest: "03ba204e50d126e4674c005e04d82e84c21366780af1f43..." (raw bits) 0x21-0x41 (32)
+0x0020|   03 ba 20 4e 50 d1 26 e4 67 4c 00 5e 04 d8 2e| .. NP.&.gL.^...|  digest: "03ba204e50d126e4674c005e04d82e84c21366780af1f43bd54a37816b6ab340" (raw bits) 0x21-0x41 (32)
 0x0030|84 c2 13 66 78 0a f1 f4 3b d5 4a 37 81 6b 6a b3|...fx...;.J7.kj.|
 0x0040|40                                             |@               |
       |                                               |                |  operations[0:319]: 0x41-0x1290 (4687)
@@ -27,7 +27,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [5]{}: operation 0x68-0x8a (34)
 0x0060|                        f1                     |        .       |      tag: "prepend" (241) 0x68-0x69 (1)
 0x0060|                           20                  |                |      argument_size: 32 0x69-0x6a (1)
-0x0060|                              ab 99 7a 3f 70 da|          ..z?p.|      argument: "ab997a3f70da834694b8ccd0c9065b9cc2e2aec0e8fb024..." (raw bits) 0x6a-0x8a (32)
+0x0060|                              ab 99 7a 3f 70 da|          ..z?p.|      argument: "ab997a3f70da834694b8ccd0c9065b9cc2e2aec0e8fb02499bba33987b442256" (raw bits) 0x6a-0x8a (32)
 0x0070|83 46 94 b8 cc d0 c9 06 5b 9c c2 e2 ae c0 e8 fb|.F......[.......|
 0x0080|02 49 9b ba 33 98 7b 44 22 56                  |.I..3.{D"V      |
       |                                               |                |    [6]{}: operation 0x8a-0x8b (1)
@@ -57,7 +57,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [12]{}: operation 0xd5-0xf7 (34)
 0x00d0|               f1                              |     .          |      tag: "prepend" (241) 0xd5-0xd6 (1)
 0x00d0|                  20                           |                |      argument_size: 32 0xd6-0xd7 (1)
-0x00d0|                     9b 12 12 31 aa 4c 66 db 0d|       ...1.Lf..|      argument: "9b121231aa4c66db0dfdfc9eabbafe1127e4751bdfcfbf8..." (raw bits) 0xd7-0xf7 (32)
+0x00d0|                     9b 12 12 31 aa 4c 66 db 0d|       ...1.Lf..|      argument: "9b121231aa4c66db0dfdfc9eabbafe1127e4751bdfcfbf8ad19b0ae4249021db" (raw bits) 0xd7-0xf7 (32)
 0x00e0|fd fc 9e ab ba fe 11 27 e4 75 1b df cf bf 8a d1|.......'.u......|
 0x00f0|9b 0a e4 24 90 21 db                           |...$.!.         |
       |                                               |                |    [13]{}: operation 0xf7-0xf8 (1)
@@ -65,7 +65,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [14]{}: operation 0xf8-0x11a (34)
 0x00f0|                        f0                     |        .       |      tag: "append" (240) 0xf8-0xf9 (1)
 0x00f0|                           20                  |                |      argument_size: 32 0xf9-0xfa (1)
-0x00f0|                              f8 d1 51 52 40 c5|          ..QR@.|      argument: "f8d1515240c54a0f010db5fbdc30115b0d05f5e5475010c..." (raw bits) 0xfa-0x11a (32)
+0x00f0|                              f8 d1 51 52 40 c5|          ..QR@.|      argument: "f8d1515240c54a0f010db5fbdc30115b0d05f5e5475010c78435bfde4aeae96a" (raw bits) 0xfa-0x11a (32)
 0x0100|4a 0f 01 0d b5 fb dc 30 11 5b 0d 05 f5 e5 47 50|J......0.[....GP|
 0x0110|10 c7 84 35 bf de 4a ea e9 6a                  |...5..J..j      |
       |                                               |                |    [15]{}: operation 0x11a-0x11b (1)
@@ -73,7 +73,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [16]{}: operation 0x11b-0x13d (34)
 0x0110|                                 f1            |           .    |      tag: "prepend" (241) 0x11b-0x11c (1)
 0x0110|                                    20         |                |      argument_size: 32 0x11c-0x11d (1)
-0x0110|                                       9d 3a 5f|             .:_|      argument: "9d3a5f7646ae14150fa2144df41a4185e4436fa2c39a156..." (raw bits) 0x11d-0x13d (32)
+0x0110|                                       9d 3a 5f|             .:_|      argument: "9d3a5f7646ae14150fa2144df41a4185e4436fa2c39a1565a777e22f2c8b4247" (raw bits) 0x11d-0x13d (32)
 0x0120|76 46 ae 14 15 0f a2 14 4d f4 1a 41 85 e4 43 6f|vF......M..A..Co|
 0x0130|a2 c3 9a 15 65 a7 77 e2 2f 2c 8b 42 47         |....e.w./,.BG   |
       |                                               |                |    [17]{}: operation 0x13d-0x13e (1)
@@ -81,14 +81,14 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [18]{}: operation 0x13e-0x160 (34)
 0x0130|                                          f0   |              . |      tag: "append" (240) 0x13e-0x13f (1)
 0x0130|                                             20|                |      argument_size: 32 0x13f-0x140 (1)
-0x0140|91 75 93 22 cc 17 7e c2 c6 f6 1e 6c 16 ed b0 86|.u."..~....l....|      argument: "91759322cc177ec2c6f61e6c16edb0868ce58b7ea06baf9..." (raw bits) 0x140-0x160 (32)
+0x0140|91 75 93 22 cc 17 7e c2 c6 f6 1e 6c 16 ed b0 86|.u."..~....l....|      argument: "91759322cc177ec2c6f61e6c16edb0868ce58b7ea06baf9bd6b1f8c74b3c4149" (raw bits) 0x140-0x160 (32)
 0x0150|8c e5 8b 7e a0 6b af 9b d6 b1 f8 c7 4b 3c 41 49|...~.k......K<AI|
       |                                               |                |    [19]{}: operation 0x160-0x161 (1)
 0x0160|08                                             |.               |      tag: "sha256" (8) 0x160-0x161 (1)
       |                                               |                |    [20]{}: operation 0x161-0x183 (34)
 0x0160|   f0                                          | .              |      tag: "append" (240) 0x161-0x162 (1)
 0x0160|      20                                       |                |      argument_size: 32 0x162-0x163 (1)
-0x0160|         61 8c 2b b5 96 da 72 3d ea 5f 77 ea da|   a.+...r=._w..|      argument: "618c2bb596da723dea5f77eada0e96aaea04e3c591e99ab..." (raw bits) 0x163-0x183 (32)
+0x0160|         61 8c 2b b5 96 da 72 3d ea 5f 77 ea da|   a.+...r=._w..|      argument: "618c2bb596da723dea5f77eada0e96aaea04e3c591e99ab4f0fbc14ce2884055" (raw bits) 0x163-0x183 (32)
 0x0170|0e 96 aa ea 04 e3 c5 91 e9 9a b4 f0 fb c1 4c e2|..............L.|
 0x0180|88 40 55                                       |.@U             |
       |                                               |                |    [21]{}: operation 0x183-0x184 (1)
@@ -96,7 +96,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [22]{}: operation 0x184-0x1a6 (34)
 0x0180|            f1                                 |    .           |      tag: "prepend" (241) 0x184-0x185 (1)
 0x0180|               20                              |                |      argument_size: 32 0x185-0x186 (1)
-0x0180|                  4f 42 07 8c ef 1a 2e ed 9a 34|      OB.......4|      argument: "4f42078cef1a2eed9a34794384fc77e438bc4bf021a992d..." (raw bits) 0x186-0x1a6 (32)
+0x0180|                  4f 42 07 8c ef 1a 2e ed 9a 34|      OB.......4|      argument: "4f42078cef1a2eed9a34794384fc77e438bc4bf021a992d790e9d2f14ae3f8aa" (raw bits) 0x186-0x1a6 (32)
 0x0190|79 43 84 fc 77 e4 38 bc 4b f0 21 a9 92 d7 90 e9|yC..w.8.K.!.....|
 0x01a0|d2 f1 4a e3 f8 aa                              |..J...          |
       |                                               |                |    [23]{}: operation 0x1a6-0x1a7 (1)
@@ -104,7 +104,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [24]{}: operation 0x1a7-0x1c9 (34)
 0x01a0|                     f0                        |       .        |      tag: "append" (240) 0x1a7-0x1a8 (1)
 0x01a0|                        20                     |                |      argument_size: 32 0x1a8-0x1a9 (1)
-0x01a0|                           7c 43 17 6c 0a f5 63|         |C.l..c|      argument: "7c43176c0af5637b442eea37f4483325809200116ceb6f3..." (raw bits) 0x1a9-0x1c9 (32)
+0x01a0|                           7c 43 17 6c 0a f5 63|         |C.l..c|      argument: "7c43176c0af5637b442eea37f4483325809200116ceb6f390a75303a5b189863" (raw bits) 0x1a9-0x1c9 (32)
 0x01b0|7b 44 2e ea 37 f4 48 33 25 80 92 00 11 6c eb 6f|{D..7.H3%....l.o|
 0x01c0|39 0a 75 30 3a 5b 18 98 63                     |9.u0:[..c       |
       |                                               |                |    [25]{}: operation 0x1c9-0x1ca (1)
@@ -112,7 +112,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [26]{}: operation 0x1ca-0x1ec (34)
 0x01c0|                              f1               |          .     |      tag: "prepend" (241) 0x1ca-0x1cb (1)
 0x01c0|                                 20            |                |      argument_size: 32 0x1cb-0x1cc (1)
-0x01c0|                                    07 1c 71 79|            ..qy|      argument: "071c717987f2be2feda571d3f6db1c01e48a4447de539bb..." (raw bits) 0x1cc-0x1ec (32)
+0x01c0|                                    07 1c 71 79|            ..qy|      argument: "071c717987f2be2feda571d3f6db1c01e48a4447de539bb702dcfde50240a76e" (raw bits) 0x1cc-0x1ec (32)
 0x01d0|87 f2 be 2f ed a5 71 d3 f6 db 1c 01 e4 8a 44 47|.../..q.......DG|
 0x01e0|de 53 9b b7 02 dc fd e5 02 40 a7 6e            |.S.......@.n    |
       |                                               |                |    [27]{}: operation 0x1ec-0x1ed (1)
@@ -120,7 +120,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [28]{}: operation 0x1ed-0x20f (34)
 0x01e0|                                       f0      |             .  |      tag: "append" (240) 0x1ed-0x1ee (1)
 0x01e0|                                          20   |                |      argument_size: 32 0x1ee-0x1ef (1)
-0x01e0|                                             db|               .|      argument: "db3539caa0865eb80b3ac18164763c593fc84d0a3a58801..." (raw bits) 0x1ef-0x20f (32)
+0x01e0|                                             db|               .|      argument: "db3539caa0865eb80b3ac18164763c593fc84d0a3a5880137491a8b889b79652" (raw bits) 0x1ef-0x20f (32)
 0x01f0|35 39 ca a0 86 5e b8 0b 3a c1 81 64 76 3c 59 3f|59...^..:..dv<Y?|
 0x0200|c8 4d 0a 3a 58 80 13 74 91 a8 b8 89 b7 96 52   |.M.:X..t......R |
       |                                               |                |    [29]{}: operation 0x20f-0x210 (1)
@@ -128,7 +128,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [30]{}: operation 0x210-0x232 (34)
 0x0210|f0                                             |.               |      tag: "append" (240) 0x210-0x211 (1)
 0x0210|   20                                          |                |      argument_size: 32 0x211-0x212 (1)
-0x0210|      02 d9 1d 7c 4b 5b 65 a8 aa 95 9a d9 2c ea|  ...|K[e.....,.|      argument: "02d91d7c4b5b65a8aa959ad92cea40428ea4bc8293dc950..." (raw bits) 0x212-0x232 (32)
+0x0210|      02 d9 1d 7c 4b 5b 65 a8 aa 95 9a d9 2c ea|  ...|K[e.....,.|      argument: "02d91d7c4b5b65a8aa959ad92cea40428ea4bc8293dc950e929f71697a371136" (raw bits) 0x212-0x232 (32)
 0x0220|40 42 8e a4 bc 82 93 dc 95 0e 92 9f 71 69 7a 37|@B..........qiz7|
 0x0230|11 36                                          |.6              |
       |                                               |                |    [31]{}: operation 0x232-0x233 (1)
@@ -136,7 +136,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [32]{}: operation 0x233-0x255 (34)
 0x0230|         f1                                    |   .            |      tag: "prepend" (241) 0x233-0x234 (1)
 0x0230|            20                                 |                |      argument_size: 32 0x234-0x235 (1)
-0x0230|               4e 0c 45 ec d4 09 f3 cd 16 45 03|     N.E......E.|      argument: "4e0c45ecd409f3cd164503c23e271a0501157e723b35fcd..." (raw bits) 0x235-0x255 (32)
+0x0230|               4e 0c 45 ec d4 09 f3 cd 16 45 03|     N.E......E.|      argument: "4e0c45ecd409f3cd164503c23e271a0501157e723b35fcd26edd26782deb1bbb" (raw bits) 0x235-0x255 (32)
 0x0240|c2 3e 27 1a 05 01 15 7e 72 3b 35 fc d2 6e dd 26|.>'....~r;5..n.&|
 0x0250|78 2d eb 1b bb                                 |x-...           |
       |                                               |                |    [33]{}: operation 0x255-0x256 (1)
@@ -144,7 +144,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [34]{}: operation 0x256-0x278 (34)
 0x0250|                  f1                           |      .         |      tag: "prepend" (241) 0x256-0x257 (1)
 0x0250|                     20                        |                |      argument_size: 32 0x257-0x258 (1)
-0x0250|                        4b 34 6d a1 9a 56 71 ef|        K4m..Vq.|      argument: "4b346da19a5671ef1c17dcad390b82c9e8a17225cca988b..." (raw bits) 0x258-0x278 (32)
+0x0250|                        4b 34 6d a1 9a 56 71 ef|        K4m..Vq.|      argument: "4b346da19a5671ef1c17dcad390b82c9e8a17225cca988bd1c625cee247328c8" (raw bits) 0x258-0x278 (32)
 0x0260|1c 17 dc ad 39 0b 82 c9 e8 a1 72 25 cc a9 88 bd|....9.....r%....|
 0x0270|1c 62 5c ee 24 73 28 c8                        |.b\.$s(.        |
       |                                               |                |    [35]{}: operation 0x278-0x279 (1)
@@ -152,7 +152,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [36]{}: operation 0x279-0x29b (34)
 0x0270|                           f1                  |         .      |      tag: "prepend" (241) 0x279-0x27a (1)
 0x0270|                              20               |                |      argument_size: 32 0x27a-0x27b (1)
-0x0270|                                 4e 5f f2 53 01|           N_.S.|      argument: "4e5ff25301ffeb7becdd7c67f8c66d5fe61b92ef61baf74..." (raw bits) 0x27b-0x29b (32)
+0x0270|                                 4e 5f f2 53 01|           N_.S.|      argument: "4e5ff25301ffeb7becdd7c67f8c66d5fe61b92ef61baf74d5fa8306d52773346" (raw bits) 0x27b-0x29b (32)
 0x0280|ff eb 7b ec dd 7c 67 f8 c6 6d 5f e6 1b 92 ef 61|..{..|g..m_....a|
 0x0290|ba f7 4d 5f a8 30 6d 52 77 33 46               |..M_.0mRw3F     |
       |                                               |                |    [37]{}: operation 0x29b-0x29c (1)
@@ -160,7 +160,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [38]{}: operation 0x29c-0x2be (34)
 0x0290|                                    f1         |            .   |      tag: "prepend" (241) 0x29c-0x29d (1)
 0x0290|                                       20      |                |      argument_size: 32 0x29d-0x29e (1)
-0x0290|                                          ff 4f|              .O|      argument: "ff4fafe3b172dadde0a874756ed84413ba7974608e26e85..." (raw bits) 0x29e-0x2be (32)
+0x0290|                                          ff 4f|              .O|      argument: "ff4fafe3b172dadde0a874756ed84413ba7974608e26e85284f2fe183d691f81" (raw bits) 0x29e-0x2be (32)
 0x02a0|af e3 b1 72 da dd e0 a8 74 75 6e d8 44 13 ba 79|...r....tun.D..y|
 0x02b0|74 60 8e 26 e8 52 84 f2 fe 18 3d 69 1f 81      |t`.&.R....=i..  |
       |                                               |                |    [39]{}: operation 0x2be-0x2bf (1)
@@ -168,7 +168,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [40]{}: operation 0x2bf-0x2e1 (34)
 0x02b0|                                             f0|               .|      tag: "append" (240) 0x2bf-0x2c0 (1)
 0x02c0|20                                             |                |      argument_size: 32 0x2c0-0x2c1 (1)
-0x02c0|   44 d2 4a 35 a3 ee 64 fa 14 0d 07 75 b0 2d d1| D.J5..d....u.-.|      argument: "44d24a35a3ee64fa140d0775b02dd16edff6c5cd8e62939..." (raw bits) 0x2c1-0x2e1 (32)
+0x02c0|   44 d2 4a 35 a3 ee 64 fa 14 0d 07 75 b0 2d d1| D.J5..d....u.-.|      argument: "44d24a35a3ee64fa140d0775b02dd16edff6c5cd8e62939e81fc2119adc4ad8d" (raw bits) 0x2c1-0x2e1 (32)
 0x02d0|6e df f6 c5 cd 8e 62 93 9e 81 fc 21 19 ad c4 ad|n.....b....!....|
 0x02e0|8d                                             |.               |
       |                                               |                |    [41]{}: operation 0x2e1-0x2e2 (1)
@@ -176,7 +176,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [42]{}: operation 0x2e2-0x33d (91)
 0x02e0|      f1                                       |  .             |      tag: "prepend" (241) 0x2e2-0x2e3 (1)
 0x02e0|         59                                    |   Y            |      argument_size: 89 0x2e3-0x2e4 (1)
-0x02e0|            01 00 00 00 01 08 60 dc 9e 55 25 52|    ......`..U%R|      argument: "01000000010860dc9e552552d8988281b08ffb6d6ff3521..." (raw bits) 0x2e4-0x33d (89)
+0x02e0|            01 00 00 00 01 08 60 dc 9e 55 25 52|    ......`..U%R|      argument: "01000000010860dc9e552552d8988281b08ffb6d6ff35216bc1957e2fff4c58028bf05af540000000000feffffff024b4e010000000000160014b0a56af11c74a65efc6ea353d0be5c0eddd3a7570000000000000000226a20" (raw bits) 0x2e4-0x33d (89)
 0x02f0|d8 98 82 81 b0 8f fb 6d 6f f3 52 16 bc 19 57 e2|.......mo.R...W.|
 *     |until 0x33c.7 (89)                             |                |
       |                                               |                |    [43]{}: operation 0x33d-0x343 (6)
@@ -191,7 +191,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [46]{}: operation 0x345-0x367 (34)
 0x0340|               f0                              |     .          |      tag: "append" (240) 0x345-0x346 (1)
 0x0340|                  20                           |                |      argument_size: 32 0x346-0x347 (1)
-0x0340|                     42 fb a7 73 0a 8e 2e 4e 8b|       B..s...N.|      argument: "42fba7730a8e2e4e8b742a7e99c40f887655ad1ab3c584c..." (raw bits) 0x347-0x367 (32)
+0x0340|                     42 fb a7 73 0a 8e 2e 4e 8b|       B..s...N.|      argument: "42fba7730a8e2e4e8b742a7e99c40f887655ad1ab3c584c758e74e22c12e5bde" (raw bits) 0x347-0x367 (32)
 0x0350|74 2a 7e 99 c4 0f 88 76 55 ad 1a b3 c5 84 c7 58|t*~....vU......X|
 0x0360|e7 4e 22 c1 2e 5b de                           |.N"..[.         |
       |                                               |                |    [47]{}: operation 0x367-0x368 (1)
@@ -201,7 +201,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [49]{}: operation 0x369-0x38b (34)
 0x0360|                           f0                  |         .      |      tag: "append" (240) 0x369-0x36a (1)
 0x0360|                              20               |                |      argument_size: 32 0x36a-0x36b (1)
-0x0360|                                 d2 02 2f 87 a7|           ../..|      argument: "d2022f87a7ecc344e0ec4153dd84c45e3c86701405e668d..." (raw bits) 0x36b-0x38b (32)
+0x0360|                                 d2 02 2f 87 a7|           ../..|      argument: "d2022f87a7ecc344e0ec4153dd84c45e3c86701405e668da8249a39f77598317" (raw bits) 0x36b-0x38b (32)
 0x0370|ec c3 44 e0 ec 41 53 dd 84 c4 5e 3c 86 70 14 05|..D..AS...^<.p..|
 0x0380|e6 68 da 82 49 a3 9f 77 59 83 17               |.h..I..wY..     |
       |                                               |                |    [50]{}: operation 0x38b-0x38c (1)
@@ -211,7 +211,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [52]{}: operation 0x38d-0x3af (34)
 0x0380|                                       f1      |             .  |      tag: "prepend" (241) 0x38d-0x38e (1)
 0x0380|                                          20   |                |      argument_size: 32 0x38e-0x38f (1)
-0x0380|                                             d4|               .|      argument: "d47b2c194cde3b2282e3ad7f88795b59ed7ca2acbd4240d..." (raw bits) 0x38f-0x3af (32)
+0x0380|                                             d4|               .|      argument: "d47b2c194cde3b2282e3ad7f88795b59ed7ca2acbd4240d5899a65d5c98891ae" (raw bits) 0x38f-0x3af (32)
 0x0390|7b 2c 19 4c de 3b 22 82 e3 ad 7f 88 79 5b 59 ed|{,.L.;".....y[Y.|
 0x03a0|7c a2 ac bd 42 40 d5 89 9a 65 d5 c9 88 91 ae   ||...B@...e..... |
       |                                               |                |    [53]{}: operation 0x3af-0x3b0 (1)
@@ -221,7 +221,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [55]{}: operation 0x3b1-0x3d3 (34)
 0x03b0|   f1                                          | .              |      tag: "prepend" (241) 0x3b1-0x3b2 (1)
 0x03b0|      20                                       |                |      argument_size: 32 0x3b2-0x3b3 (1)
-0x03b0|         4e 94 b0 90 28 5c d2 ff 1d 33 6e 14 cb|   N...(\...3n..|      argument: "4e94b090285cd2ff1d336e14cb2e7b171f2945a94dc194f..." (raw bits) 0x3b3-0x3d3 (32)
+0x03b0|         4e 94 b0 90 28 5c d2 ff 1d 33 6e 14 cb|   N...(\...3n..|      argument: "4e94b090285cd2ff1d336e14cb2e7b171f2945a94dc194f25a42d32e96181649" (raw bits) 0x3b3-0x3d3 (32)
 0x03c0|2e 7b 17 1f 29 45 a9 4d c1 94 f2 5a 42 d3 2e 96|.{..)E.M...ZB...|
 0x03d0|18 16 49                                       |..I             |
       |                                               |                |    [56]{}: operation 0x3d3-0x3d4 (1)
@@ -231,7 +231,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [58]{}: operation 0x3d5-0x3f7 (34)
 0x03d0|               f0                              |     .          |      tag: "append" (240) 0x3d5-0x3d6 (1)
 0x03d0|                  20                           |                |      argument_size: 32 0x3d6-0x3d7 (1)
-0x03d0|                     25 c1 f4 51 99 8c 9a 27 28|       %..Q...'(|      argument: "25c1f451998c9a27288b615b7dbdf750e478f5c733f6b80..." (raw bits) 0x3d7-0x3f7 (32)
+0x03d0|                     25 c1 f4 51 99 8c 9a 27 28|       %..Q...'(|      argument: "25c1f451998c9a27288b615b7dbdf750e478f5c733f6b80682e7a2ae124ee00c" (raw bits) 0x3d7-0x3f7 (32)
 0x03e0|8b 61 5b 7d bd f7 50 e4 78 f5 c7 33 f6 b8 06 82|.a[}..P.x..3....|
 0x03f0|e7 a2 ae 12 4e e0 0c                           |....N..         |
       |                                               |                |    [59]{}: operation 0x3f7-0x3f8 (1)
@@ -241,7 +241,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [61]{}: operation 0x3f9-0x41b (34)
 0x03f0|                           f1                  |         .      |      tag: "prepend" (241) 0x3f9-0x3fa (1)
 0x03f0|                              20               |                |      argument_size: 32 0x3fa-0x3fb (1)
-0x03f0|                                 cc 62 a3 69 84|           .b.i.|      argument: "cc62a3698425080a0417d1afc9055cbeab2bffa84d1ce0d..." (raw bits) 0x3fb-0x41b (32)
+0x03f0|                                 cc 62 a3 69 84|           .b.i.|      argument: "cc62a3698425080a0417d1afc9055cbeab2bffa84d1ce0d16ecb21a77a73f83c" (raw bits) 0x3fb-0x41b (32)
 0x0400|25 08 0a 04 17 d1 af c9 05 5c be ab 2b ff a8 4d|%........\..+..M|
 0x0410|1c e0 d1 6e cb 21 a7 7a 73 f8 3c               |...n.!.zs.<     |
       |                                               |                |    [62]{}: operation 0x41b-0x41c (1)
@@ -251,7 +251,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [64]{}: operation 0x41d-0x43f (34)
 0x0410|                                       f0      |             .  |      tag: "append" (240) 0x41d-0x41e (1)
 0x0410|                                          20   |                |      argument_size: 32 0x41e-0x41f (1)
-0x0410|                                             af|               .|      argument: "afeffd774d6246fedb05a072bb784322ba3bab60b2606f4..." (raw bits) 0x41f-0x43f (32)
+0x0410|                                             af|               .|      argument: "afeffd774d6246fedb05a072bb784322ba3bab60b2606f4ca6fcf118cc6decb4" (raw bits) 0x41f-0x43f (32)
 0x0420|ef fd 77 4d 62 46 fe db 05 a0 72 bb 78 43 22 ba|..wMbF....r.xC".|
 0x0430|3b ab 60 b2 60 6f 4c a6 fc f1 18 cc 6d ec b4   |;.`.`oL.....m.. |
       |                                               |                |    [65]{}: operation 0x43f-0x440 (1)
@@ -261,7 +261,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [67]{}: operation 0x441-0x463 (34)
 0x0440|   f0                                          | .              |      tag: "append" (240) 0x441-0x442 (1)
 0x0440|      20                                       |                |      argument_size: 32 0x442-0x443 (1)
-0x0440|         0f 59 88 69 fd 0e 8a ca 96 10 11 18 ab|   .Y.i.........|      argument: "0f598869fd0e8aca96101118abfb27da9546d10e800c005..." (raw bits) 0x443-0x463 (32)
+0x0440|         0f 59 88 69 fd 0e 8a ca 96 10 11 18 ab|   .Y.i.........|      argument: "0f598869fd0e8aca96101118abfb27da9546d10e800c0051ad613ae9cca67121" (raw bits) 0x443-0x463 (32)
 0x0450|fb 27 da 95 46 d1 0e 80 0c 00 51 ad 61 3a e9 cc|.'..F.....Q.a:..|
 0x0460|a6 71 21                                       |.q!             |
       |                                               |                |    [68]{}: operation 0x463-0x464 (1)
@@ -271,7 +271,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [70]{}: operation 0x465-0x487 (34)
 0x0460|               f0                              |     .          |      tag: "append" (240) 0x465-0x466 (1)
 0x0460|                  20                           |                |      argument_size: 32 0x466-0x467 (1)
-0x0460|                     a7 36 ff be 96 dd aa 48 3c|       .6.....H<|      argument: "a736ffbe96ddaa483cea90eed7298dda430ec8728513c92..." (raw bits) 0x467-0x487 (32)
+0x0460|                     a7 36 ff be 96 dd aa 48 3c|       .6.....H<|      argument: "a736ffbe96ddaa483cea90eed7298dda430ec8728513c92c9d254cd494811b83" (raw bits) 0x467-0x487 (32)
 0x0470|ea 90 ee d7 29 8d da 43 0e c8 72 85 13 c9 2c 9d|....)..C..r...,.|
 0x0480|25 4c d4 94 81 1b 83                           |%L.....         |
       |                                               |                |    [71]{}: operation 0x487-0x488 (1)
@@ -281,7 +281,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [73]{}: operation 0x489-0x4ab (34)
 0x0480|                           f0                  |         .      |      tag: "append" (240) 0x489-0x48a (1)
 0x0480|                              20               |                |      argument_size: 32 0x48a-0x48b (1)
-0x0480|                                 9d 50 78 94 32|           .Px.2|      argument: "9d507894325972cbacc75f1bec3fcb781b7eab0f430f5dd..." (raw bits) 0x48b-0x4ab (32)
+0x0480|                                 9d 50 78 94 32|           .Px.2|      argument: "9d507894325972cbacc75f1bec3fcb781b7eab0f430f5dd02fa7b2f074e7f191" (raw bits) 0x48b-0x4ab (32)
 0x0490|59 72 cb ac c7 5f 1b ec 3f cb 78 1b 7e ab 0f 43|Yr..._..?.x.~..C|
 0x04a0|0f 5d d0 2f a7 b2 f0 74 e7 f1 91               |.]./...t...     |
       |                                               |                |    [74]{}: operation 0x4ab-0x4ac (1)
@@ -291,7 +291,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [76]{}: operation 0x4ad-0x4cf (34)
 0x04a0|                                       f0      |             .  |      tag: "append" (240) 0x4ad-0x4ae (1)
 0x04a0|                                          20   |                |      argument_size: 32 0x4ae-0x4af (1)
-0x04a0|                                             f6|               .|      argument: "f692d47cd1ba1c5c94583a10055e89a6c9759d4028984ca..." (raw bits) 0x4af-0x4cf (32)
+0x04a0|                                             f6|               .|      argument: "f692d47cd1ba1c5c94583a10055e89a6c9759d4028984ca018f48ed146f88866" (raw bits) 0x4af-0x4cf (32)
 0x04b0|92 d4 7c d1 ba 1c 5c 94 58 3a 10 05 5e 89 a6 c9|..|...\.X:..^...|
 0x04c0|75 9d 40 28 98 4c a0 18 f4 8e d1 46 f8 88 66   |u.@(.L.....F..f |
       |                                               |                |    [77]{}: operation 0x4cf-0x4d0 (1)
@@ -301,7 +301,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [79]{}: operation 0x4d1-0x4f3 (34)
 0x04d0|   f0                                          | .              |      tag: "append" (240) 0x4d1-0x4d2 (1)
 0x04d0|      20                                       |                |      argument_size: 32 0x4d2-0x4d3 (1)
-0x04d0|         f7 4c 5d 2e 4b 8d f4 d5 c8 a8 2b 3a 8a|   .L].K.....+:.|      argument: "f74c5d2e4b8df4d5c8a82b3a8a621ed4d3e94977030a020..." (raw bits) 0x4d3-0x4f3 (32)
+0x04d0|         f7 4c 5d 2e 4b 8d f4 d5 c8 a8 2b 3a 8a|   .L].K.....+:.|      argument: "f74c5d2e4b8df4d5c8a82b3a8a621ed4d3e94977030a0206f1e821ac53cd7ebc" (raw bits) 0x4d3-0x4f3 (32)
 0x04e0|62 1e d4 d3 e9 49 77 03 0a 02 06 f1 e8 21 ac 53|b....Iw......!.S|
 0x04f0|cd 7e bc                                       |.~.             |
       |                                               |                |    [80]{}: operation 0x4f3-0x4f4 (1)
@@ -347,14 +347,14 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [91]{}: operation 0x55e-0x580 (34)
 0x0550|                                          f1   |              . |      tag: "prepend" (241) 0x55e-0x55f (1)
 0x0550|                                             20|                |      argument_size: 32 0x55f-0x560 (1)
-0x0560|ac 3c 3e f0 63 4d 59 cd 1d c9 52 c7 73 6a ba ec|.<>.cMY...R.sj..|      argument: "ac3c3ef0634d59cd1dc952c7736abaec37ed77e94f0cd55..." (raw bits) 0x560-0x580 (32)
+0x0560|ac 3c 3e f0 63 4d 59 cd 1d c9 52 c7 73 6a ba ec|.<>.cMY...R.sj..|      argument: "ac3c3ef0634d59cd1dc952c7736abaec37ed77e94f0cd556c1afa8c2d36ab0d9" (raw bits) 0x560-0x580 (32)
 0x0570|37 ed 77 e9 4f 0c d5 56 c1 af a8 c2 d3 6a b0 d9|7.w.O..V.....j..|
       |                                               |                |    [92]{}: operation 0x580-0x581 (1)
 0x0580|08                                             |.               |      tag: "sha256" (8) 0x580-0x581 (1)
       |                                               |                |    [93]{}: operation 0x581-0x5a3 (34)
 0x0580|   f1                                          | .              |      tag: "prepend" (241) 0x581-0x582 (1)
 0x0580|      20                                       |                |      argument_size: 32 0x582-0x583 (1)
-0x0580|         93 41 a6 13 7b e2 ec 3f 86 d3 08 15 9c|   .A..{..?.....|      argument: "9341a6137be2ec3f86d308159c2df98fbb70c79656fffe7..." (raw bits) 0x583-0x5a3 (32)
+0x0580|         93 41 a6 13 7b e2 ec 3f 86 d3 08 15 9c|   .A..{..?.....|      argument: "9341a6137be2ec3f86d308159c2df98fbb70c79656fffe74b0435d8a6bdbb3bc" (raw bits) 0x583-0x5a3 (32)
 0x0590|2d f9 8f bb 70 c7 96 56 ff fe 74 b0 43 5d 8a 6b|-...p..V..t.C].k|
 0x05a0|db b3 bc                                       |...             |
       |                                               |                |    [94]{}: operation 0x5a3-0x5a4 (1)
@@ -362,7 +362,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [95]{}: operation 0x5a4-0x5c6 (34)
 0x05a0|            f0                                 |    .           |      tag: "append" (240) 0x5a4-0x5a5 (1)
 0x05a0|               20                              |                |      argument_size: 32 0x5a5-0x5a6 (1)
-0x05a0|                  bc 19 21 3f 6e e6 25 48 6e a6|      ..!?n.%Hn.|      argument: "bc19213f6ee625486ea60fccf05d931a59f52572d3e5cdd..." (raw bits) 0x5a6-0x5c6 (32)
+0x05a0|                  bc 19 21 3f 6e e6 25 48 6e a6|      ..!?n.%Hn.|      argument: "bc19213f6ee625486ea60fccf05d931a59f52572d3e5cdd456df3e830f8b8952" (raw bits) 0x5a6-0x5c6 (32)
 0x05b0|0f cc f0 5d 93 1a 59 f5 25 72 d3 e5 cd d4 56 df|...]..Y.%r....V.|
 0x05c0|3e 83 0f 8b 89 52                              |>....R          |
       |                                               |                |    [96]{}: operation 0x5c6-0x5c7 (1)
@@ -370,7 +370,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [97]{}: operation 0x5c7-0x5e9 (34)
 0x05c0|                     f0                        |       .        |      tag: "append" (240) 0x5c7-0x5c8 (1)
 0x05c0|                        20                     |                |      argument_size: 32 0x5c8-0x5c9 (1)
-0x05c0|                           61 6f 29 73 96 93 59|         ao)s..Y|      argument: "616f2973969359de799fadeb972def7006d7c7ce819c4f5..." (raw bits) 0x5c9-0x5e9 (32)
+0x05c0|                           61 6f 29 73 96 93 59|         ao)s..Y|      argument: "616f2973969359de799fadeb972def7006d7c7ce819c4f55405024692e024f84" (raw bits) 0x5c9-0x5e9 (32)
 0x05d0|de 79 9f ad eb 97 2d ef 70 06 d7 c7 ce 81 9c 4f|.y....-.p......O|
 0x05e0|55 40 50 24 69 2e 02 4f 84                     |U@P$i..O.       |
       |                                               |                |    [98]{}: operation 0x5e9-0x5ea (1)
@@ -378,7 +378,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [99]{}: operation 0x5ea-0x60c (34)
 0x05e0|                              f0               |          .     |      tag: "append" (240) 0x5ea-0x5eb (1)
 0x05e0|                                 20            |                |      argument_size: 32 0x5eb-0x5ec (1)
-0x05e0|                                    b4 fb 90 aa|            ....|      argument: "b4fb90aa9597a6c8201a17dcc455c2bf86cbb716be0be01..." (raw bits) 0x5ec-0x60c (32)
+0x05e0|                                    b4 fb 90 aa|            ....|      argument: "b4fb90aa9597a6c8201a17dcc455c2bf86cbb716be0be010fd02e5d6e92a2ad6" (raw bits) 0x5ec-0x60c (32)
 0x05f0|95 97 a6 c8 20 1a 17 dc c4 55 c2 bf 86 cb b7 16|.... ....U......|
 0x0600|be 0b e0 10 fd 02 e5 d6 e9 2a 2a d6            |.........**.    |
       |                                               |                |    [100]{}: operation 0x60c-0x60d (1)
@@ -386,7 +386,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [101]{}: operation 0x60d-0x62f (34)
 0x0600|                                       f0      |             .  |      tag: "append" (240) 0x60d-0x60e (1)
 0x0600|                                          20   |                |      argument_size: 32 0x60e-0x60f (1)
-0x0600|                                             aa|               .|      argument: "aaabcaba1233a478649f08e2882228bb663433d4fef00d4..." (raw bits) 0x60f-0x62f (32)
+0x0600|                                             aa|               .|      argument: "aaabcaba1233a478649f08e2882228bb663433d4fef00d458302e8b387886525" (raw bits) 0x60f-0x62f (32)
 0x0610|ab ca ba 12 33 a4 78 64 9f 08 e2 88 22 28 bb 66|....3.xd...."(.f|
 0x0620|34 33 d4 fe f0 0d 45 83 02 e8 b3 87 88 65 25   |43....E......e% |
       |                                               |                |    [102]{}: operation 0x62f-0x630 (1)
@@ -394,7 +394,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [103]{}: operation 0x630-0x652 (34)
 0x0630|f1                                             |.               |      tag: "prepend" (241) 0x630-0x631 (1)
 0x0630|   20                                          |                |      argument_size: 32 0x631-0x632 (1)
-0x0630|      f8 59 0b 9f a0 45 47 eb 20 10 9f e0 a9 1d|  .Y...EG. .....|      argument: "f8590b9fa04547eb20109fe0a91d39f8f2919f3af05cbad..." (raw bits) 0x632-0x652 (32)
+0x0630|      f8 59 0b 9f a0 45 47 eb 20 10 9f e0 a9 1d|  .Y...EG. .....|      argument: "f8590b9fa04547eb20109fe0a91d39f8f2919f3af05cbad16f541feabe8184ea" (raw bits) 0x632-0x652 (32)
 0x0640|39 f8 f2 91 9f 3a f0 5c ba d1 6f 54 1f ea be 81|9....:.\..oT....|
 0x0650|84 ea                                          |..              |
       |                                               |                |    [104]{}: operation 0x652-0x653 (1)
@@ -402,7 +402,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [105]{}: operation 0x653-0x675 (34)
 0x0650|         f0                                    |   .            |      tag: "append" (240) 0x653-0x654 (1)
 0x0650|            20                                 |                |      argument_size: 32 0x654-0x655 (1)
-0x0650|               9f 4a d6 ef 57 7d 54 38 8c 97 7b|     .J..W}T8..{|      argument: "9f4ad6ef577d54388c977bc5bd5311f838b92e2a0abf6ec..." (raw bits) 0x655-0x675 (32)
+0x0650|               9f 4a d6 ef 57 7d 54 38 8c 97 7b|     .J..W}T8..{|      argument: "9f4ad6ef577d54388c977bc5bd5311f838b92e2a0abf6ec42ae1849bdfd23cfa" (raw bits) 0x655-0x675 (32)
 0x0660|c5 bd 53 11 f8 38 b9 2e 2a 0a bf 6e c4 2a e1 84|..S..8..*..n.*..|
 0x0670|9b df d2 3c fa                                 |...<.           |
       |                                               |                |    [106]{}: operation 0x675-0x676 (1)
@@ -410,7 +410,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [107]{}: operation 0x676-0x698 (34)
 0x0670|                  f0                           |      .         |      tag: "append" (240) 0x676-0x677 (1)
 0x0670|                     20                        |                |      argument_size: 32 0x677-0x678 (1)
-0x0670|                        bb c1 fb fd 54 71 a7 18|        ....Tq..|      argument: "bbc1fbfd5471a718e723df81e2af0a69aa527c0a912492b..." (raw bits) 0x678-0x698 (32)
+0x0670|                        bb c1 fb fd 54 71 a7 18|        ....Tq..|      argument: "bbc1fbfd5471a718e723df81e2af0a69aa527c0a912492b2f80ca88115a83eec" (raw bits) 0x678-0x698 (32)
 0x0680|e7 23 df 81 e2 af 0a 69 aa 52 7c 0a 91 24 92 b2|.#.....i.R|..$..|
 0x0690|f8 0c a8 81 15 a8 3e ec                        |......>.        |
       |                                               |                |    [108]{}: operation 0x698-0x699 (1)
@@ -418,7 +418,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [109]{}: operation 0x699-0x6bb (34)
 0x0690|                           f0                  |         .      |      tag: "append" (240) 0x699-0x69a (1)
 0x0690|                              20               |                |      argument_size: 32 0x69a-0x69b (1)
-0x0690|                                 40 0f 3d 5e 4e|           @.=^N|      argument: "400f3d5e4e403f2f3c82f5747c68cffef0af83215e2ea2d..." (raw bits) 0x69b-0x6bb (32)
+0x0690|                                 40 0f 3d 5e 4e|           @.=^N|      argument: "400f3d5e4e403f2f3c82f5747c68cffef0af83215e2ea2d746ce2799e286ea33" (raw bits) 0x69b-0x6bb (32)
 0x06a0|40 3f 2f 3c 82 f5 74 7c 68 cf fe f0 af 83 21 5e|@?/<..t|h.....!^|
 0x06b0|2e a2 d7 46 ce 27 99 e2 86 ea 33               |...F.'....3     |
       |                                               |                |    [110]{}: operation 0x6bb-0x6bc (1)
@@ -426,7 +426,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [111]{}: operation 0x6bc-0x6de (34)
 0x06b0|                                    f1         |            .   |      tag: "prepend" (241) 0x6bc-0x6bd (1)
 0x06b0|                                       20      |                |      argument_size: 32 0x6bd-0x6be (1)
-0x06b0|                                          42 88|              B.|      argument: "4288629d550a35fa4d36fb70c9950d96198b7f2807f83a5..." (raw bits) 0x6be-0x6de (32)
+0x06b0|                                          42 88|              B.|      argument: "4288629d550a35fa4d36fb70c9950d96198b7f2807f83a5b8994523bea4213d1" (raw bits) 0x6be-0x6de (32)
 0x06c0|62 9d 55 0a 35 fa 4d 36 fb 70 c9 95 0d 96 19 8b|b.U.5.M6.p......|
 0x06d0|7f 28 07 f8 3a 5b 89 94 52 3b ea 42 13 d1      |.(..:[..R;.B..  |
       |                                               |                |    [112]{}: operation 0x6de-0x6df (1)
@@ -434,7 +434,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [113]{}: operation 0x6df-0x701 (34)
 0x06d0|                                             f0|               .|      tag: "append" (240) 0x6df-0x6e0 (1)
 0x06e0|20                                             |                |      argument_size: 32 0x6e0-0x6e1 (1)
-0x06e0|   21 37 e9 9b 32 fb b2 93 cf 64 e0 a7 00 97 53| !7..2....d....S|      argument: "2137e99b32fbb293cf64e0a70097531fdad5fab74a30f87..." (raw bits) 0x6e1-0x701 (32)
+0x06e0|   21 37 e9 9b 32 fb b2 93 cf 64 e0 a7 00 97 53| !7..2....d....S|      argument: "2137e99b32fbb293cf64e0a70097531fdad5fab74a30f874fd71a26bf0690dc5" (raw bits) 0x6e1-0x701 (32)
 0x06f0|1f da d5 fa b7 4a 30 f8 74 fd 71 a2 6b f0 69 0d|.....J0.t.q.k.i.|
 0x0700|c5                                             |.               |
       |                                               |                |    [114]{}: operation 0x701-0x702 (1)
@@ -442,7 +442,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [115]{}: operation 0x702-0x724 (34)
 0x0700|      f1                                       |  .             |      tag: "prepend" (241) 0x702-0x703 (1)
 0x0700|         20                                    |                |      argument_size: 32 0x703-0x704 (1)
-0x0700|            53 99 af ca 44 5f bd 50 5a 0a 30 41|    S...D_.PZ.0A|      argument: "5399afca445fbd505a0a30415e75d992784aef1c0c29561..." (raw bits) 0x704-0x724 (32)
+0x0700|            53 99 af ca 44 5f bd 50 5a 0a 30 41|    S...D_.PZ.0A|      argument: "5399afca445fbd505a0a30415e75d992784aef1c0c295618dacd3bf367c492a7" (raw bits) 0x704-0x724 (32)
 0x0710|5e 75 d9 92 78 4a ef 1c 0c 29 56 18 da cd 3b f3|^u..xJ...)V...;.|
 0x0720|67 c4 92 a7                                    |g...            |
       |                                               |                |    [116]{}: operation 0x724-0x725 (1)
@@ -450,7 +450,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [117]{}: operation 0x725-0x747 (34)
 0x0720|               f0                              |     .          |      tag: "append" (240) 0x725-0x726 (1)
 0x0720|                  20                           |                |      argument_size: 32 0x726-0x727 (1)
-0x0720|                     9e 8a ef 78 97 7c b7 13 d7|       ...x.|...|      argument: "9e8aef78977cb713d70a7d8d361da3c237835dda3201d34..." (raw bits) 0x727-0x747 (32)
+0x0720|                     9e 8a ef 78 97 7c b7 13 d7|       ...x.|...|      argument: "9e8aef78977cb713d70a7d8d361da3c237835dda3201d348060cda5520a93b90" (raw bits) 0x727-0x747 (32)
 0x0730|0a 7d 8d 36 1d a3 c2 37 83 5d da 32 01 d3 48 06|.}.6...7.].2..H.|
 0x0740|0c da 55 20 a9 3b 90                           |..U .;.         |
       |                                               |                |    [118]{}: operation 0x747-0x748 (1)
@@ -458,7 +458,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [119]{}: operation 0x748-0x7a3 (91)
 0x0740|                        f1                     |        .       |      tag: "prepend" (241) 0x748-0x749 (1)
 0x0740|                           59                  |         Y      |      argument_size: 89 0x749-0x74a (1)
-0x0740|                              01 00 00 00 01 4c|          .....L|      argument: "01000000014ccd470faf0d0415c3c9f616a85e08dc0a2e7..." (raw bits) 0x74a-0x7a3 (89)
+0x0740|                              01 00 00 00 01 4c|          .....L|      argument: "01000000014ccd470faf0d0415c3c9f616a85e08dc0a2e7647ca29d46d39da3172c9ede4d40000000000feffffff0267f60300000000001600147a3487a0e2c9f25c2ec2e6ec23869d0255e8242d0000000000000000226a20" (raw bits) 0x74a-0x7a3 (89)
 0x0750|cd 47 0f af 0d 04 15 c3 c9 f6 16 a8 5e 08 dc 0a|.G..........^...|
 *     |until 0x7a2.7 (89)                             |                |
       |                                               |                |    [120]{}: operation 0x7a3-0x7a9 (6)
@@ -472,7 +472,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [123]{}: operation 0x7ab-0x7cd (34)
 0x07a0|                                 f0            |           .    |      tag: "append" (240) 0x7ab-0x7ac (1)
 0x07a0|                                    20         |                |      argument_size: 32 0x7ac-0x7ad (1)
-0x07a0|                                       07 27 f9|             .'.|      argument: "0727f973d7e3a925ee3049cb40c30244cb2cc89345e45b8..." (raw bits) 0x7ad-0x7cd (32)
+0x07a0|                                       07 27 f9|             .'.|      argument: "0727f973d7e3a925ee3049cb40c30244cb2cc89345e45b8db59fe90d0dc89c26" (raw bits) 0x7ad-0x7cd (32)
 0x07b0|73 d7 e3 a9 25 ee 30 49 cb 40 c3 02 44 cb 2c c8|s...%.0I.@..D.,.|
 0x07c0|93 45 e4 5b 8d b5 9f e9 0d 0d c8 9c 26         |.E.[........&   |
       |                                               |                |    [124]{}: operation 0x7cd-0x7ce (1)
@@ -482,7 +482,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [126]{}: operation 0x7cf-0x7f1 (34)
 0x07c0|                                             f0|               .|      tag: "append" (240) 0x7cf-0x7d0 (1)
 0x07d0|20                                             |                |      argument_size: 32 0x7d0-0x7d1 (1)
-0x07d0|   b4 7a 0f 59 af b7 7f b6 d8 2b ab d1 f8 35 20| .z.Y.....+...5 |      argument: "b47a0f59afb77fb6d82babd1f8352077617458777c04ea2..." (raw bits) 0x7d1-0x7f1 (32)
+0x07d0|   b4 7a 0f 59 af b7 7f b6 d8 2b ab d1 f8 35 20| .z.Y.....+...5 |      argument: "b47a0f59afb77fb6d82babd1f8352077617458777c04ea2a76bfaa303e7dc9bb" (raw bits) 0x7d1-0x7f1 (32)
 0x07e0|77 61 74 58 77 7c 04 ea 2a 76 bf aa 30 3e 7d c9|watXw|..*v..0>}.|
 0x07f0|bb                                             |.               |
       |                                               |                |    [127]{}: operation 0x7f1-0x7f2 (1)
@@ -492,7 +492,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [129]{}: operation 0x7f3-0x815 (34)
 0x07f0|         f0                                    |   .            |      tag: "append" (240) 0x7f3-0x7f4 (1)
 0x07f0|            20                                 |                |      argument_size: 32 0x7f4-0x7f5 (1)
-0x07f0|               b9 3e 23 51 53 9f f4 89 a6 80 03|     .>#QS......|      argument: "b93e2351539ff489a68003edab2660ad71e874017e89aeb..." (raw bits) 0x7f5-0x815 (32)
+0x07f0|               b9 3e 23 51 53 9f f4 89 a6 80 03|     .>#QS......|      argument: "b93e2351539ff489a68003edab2660ad71e874017e89aeb5e0eb146ea5425020" (raw bits) 0x7f5-0x815 (32)
 0x0800|ed ab 26 60 ad 71 e8 74 01 7e 89 ae b5 e0 eb 14|..&`.q.t.~......|
 0x0810|6e a5 42 50 20                                 |n.BP            |
       |                                               |                |    [130]{}: operation 0x815-0x816 (1)
@@ -502,7 +502,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [132]{}: operation 0x817-0x839 (34)
 0x0810|                     f1                        |       .        |      tag: "prepend" (241) 0x817-0x818 (1)
 0x0810|                        20                     |                |      argument_size: 32 0x818-0x819 (1)
-0x0810|                           3f 53 7b 88 4e d5 83|         ?S{.N..|      argument: "3f537b884ed58338cbbfb6ea129a49b3cb66eff09abda67..." (raw bits) 0x819-0x839 (32)
+0x0810|                           3f 53 7b 88 4e d5 83|         ?S{.N..|      argument: "3f537b884ed58338cbbfb6ea129a49b3cb66eff09abda671b650a5a6306d9093" (raw bits) 0x819-0x839 (32)
 0x0820|38 cb bf b6 ea 12 9a 49 b3 cb 66 ef f0 9a bd a6|8......I..f.....|
 0x0830|71 b6 50 a5 a6 30 6d 90 93                     |q.P..0m..       |
       |                                               |                |    [133]{}: operation 0x839-0x83a (1)
@@ -512,7 +512,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [135]{}: operation 0x83b-0x85d (34)
 0x0830|                                 f0            |           .    |      tag: "append" (240) 0x83b-0x83c (1)
 0x0830|                                    20         |                |      argument_size: 32 0x83c-0x83d (1)
-0x0830|                                       70 ff f3|             p..|      argument: "70fff3a2d46aa1261e7cbae610cdb751ff4faaf56d0c8a1..." (raw bits) 0x83d-0x85d (32)
+0x0830|                                       70 ff f3|             p..|      argument: "70fff3a2d46aa1261e7cbae610cdb751ff4faaf56d0c8a1f1fa1743e17e3cfc1" (raw bits) 0x83d-0x85d (32)
 0x0840|a2 d4 6a a1 26 1e 7c ba e6 10 cd b7 51 ff 4f aa|..j.&.|.....Q.O.|
 0x0850|f5 6d 0c 8a 1f 1f a1 74 3e 17 e3 cf c1         |.m.....t>....   |
       |                                               |                |    [136]{}: operation 0x85d-0x85e (1)
@@ -522,7 +522,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [138]{}: operation 0x85f-0x881 (34)
 0x0850|                                             f1|               .|      tag: "prepend" (241) 0x85f-0x860 (1)
 0x0860|20                                             |                |      argument_size: 32 0x860-0x861 (1)
-0x0860|   07 65 68 65 a4 47 a7 73 30 79 58 66 4c 7f d8| .ehe.G.s0yXfL..|      argument: "07656865a447a773307958664c7fd846f6fc86b433bd0ff..." (raw bits) 0x861-0x881 (32)
+0x0860|   07 65 68 65 a4 47 a7 73 30 79 58 66 4c 7f d8| .ehe.G.s0yXfL..|      argument: "07656865a447a773307958664c7fd846f6fc86b433bd0ff69934d4d16d748b0f" (raw bits) 0x861-0x881 (32)
 0x0870|46 f6 fc 86 b4 33 bd 0f f6 99 34 d4 d1 6d 74 8b|F....3....4..mt.|
 0x0880|0f                                             |.               |
       |                                               |                |    [139]{}: operation 0x881-0x882 (1)
@@ -532,7 +532,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [141]{}: operation 0x883-0x8a5 (34)
 0x0880|         f1                                    |   .            |      tag: "prepend" (241) 0x883-0x884 (1)
 0x0880|            20                                 |                |      argument_size: 32 0x884-0x885 (1)
-0x0880|               58 47 ee 84 14 14 73 16 5d 4d 9e|     XG....s.]M.|      argument: "5847ee84141473165d4d9e0ca212b8843b460207a10462f..." (raw bits) 0x885-0x8a5 (32)
+0x0880|               58 47 ee 84 14 14 73 16 5d 4d 9e|     XG....s.]M.|      argument: "5847ee84141473165d4d9e0ca212b8843b460207a10462f471e62022d9e69e52" (raw bits) 0x885-0x8a5 (32)
 0x0890|0c a2 12 b8 84 3b 46 02 07 a1 04 62 f4 71 e6 20|.....;F....b.q. |
 0x08a0|22 d9 e6 9e 52                                 |"...R           |
       |                                               |                |    [142]{}: operation 0x8a5-0x8a6 (1)
@@ -542,7 +542,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [144]{}: operation 0x8a7-0x8c9 (34)
 0x08a0|                     f1                        |       .        |      tag: "prepend" (241) 0x8a7-0x8a8 (1)
 0x08a0|                        20                     |                |      argument_size: 32 0x8a8-0x8a9 (1)
-0x08a0|                           5a e3 0b 3f a6 b1 da|         Z..?...|      argument: "5ae30b3fa6b1dac512e0b7e22516ffe2e9f22d9c778ba90..." (raw bits) 0x8a9-0x8c9 (32)
+0x08a0|                           5a e3 0b 3f a6 b1 da|         Z..?...|      argument: "5ae30b3fa6b1dac512e0b7e22516ffe2e9f22d9c778ba900fcf979fd03d9a09b" (raw bits) 0x8a9-0x8c9 (32)
 0x08b0|c5 12 e0 b7 e2 25 16 ff e2 e9 f2 2d 9c 77 8b a9|.....%.....-.w..|
 0x08c0|00 fc f9 79 fd 03 d9 a0 9b                     |...y.....       |
       |                                               |                |    [145]{}: operation 0x8c9-0x8ca (1)
@@ -552,7 +552,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [147]{}: operation 0x8cb-0x8ed (34)
 0x08c0|                                 f0            |           .    |      tag: "append" (240) 0x8cb-0x8cc (1)
 0x08c0|                                    20         |                |      argument_size: 32 0x8cc-0x8cd (1)
-0x08c0|                                       cd 3f 7b|             .?{|      argument: "cd3f7b3c57080c3414ed803e629c046df2572ac33e94bb4..." (raw bits) 0x8cd-0x8ed (32)
+0x08c0|                                       cd 3f 7b|             .?{|      argument: "cd3f7b3c57080c3414ed803e629c046df2572ac33e94bb403e3854917db7a5aa" (raw bits) 0x8cd-0x8ed (32)
 0x08d0|3c 57 08 0c 34 14 ed 80 3e 62 9c 04 6d f2 57 2a|<W..4...>b..m.W*|
 0x08e0|c3 3e 94 bb 40 3e 38 54 91 7d b7 a5 aa         |.>..@>8T.}...   |
       |                                               |                |    [148]{}: operation 0x8ed-0x8ee (1)
@@ -562,7 +562,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [150]{}: operation 0x8ef-0x911 (34)
 0x08e0|                                             f1|               .|      tag: "prepend" (241) 0x8ef-0x8f0 (1)
 0x08f0|20                                             |                |      argument_size: 32 0x8f0-0x8f1 (1)
-0x08f0|   a5 ff be e1 11 e1 36 f6 bd a8 41 18 4a ec a0| ......6...A.J..|      argument: "a5ffbee111e136f6bda841184aeca07c64b16e4048b29f2..." (raw bits) 0x8f1-0x911 (32)
+0x08f0|   a5 ff be e1 11 e1 36 f6 bd a8 41 18 4a ec a0| ......6...A.J..|      argument: "a5ffbee111e136f6bda841184aeca07c64b16e4048b29f2f518f1348aa6d120a" (raw bits) 0x8f1-0x911 (32)
 0x0900|7c 64 b1 6e 40 48 b2 9f 2f 51 8f 13 48 aa 6d 12||d.n@H../Q..H.m.|
 0x0910|0a                                             |.               |
       |                                               |                |    [151]{}: operation 0x911-0x912 (1)
@@ -572,7 +572,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [153]{}: operation 0x913-0x935 (34)
 0x0910|         f1                                    |   .            |      tag: "prepend" (241) 0x913-0x914 (1)
 0x0910|            20                                 |                |      argument_size: 32 0x914-0x915 (1)
-0x0910|               5d 0c 3f 85 b5 9e 77 b5 8e 8a 25|     ].?...w...%|      argument: "5d0c3f85b59e77b58e8a253f445a6194236c73a4e84abb6..." (raw bits) 0x915-0x935 (32)
+0x0910|               5d 0c 3f 85 b5 9e 77 b5 8e 8a 25|     ].?...w...%|      argument: "5d0c3f85b59e77b58e8a253f445a6194236c73a4e84abb6ddd035fa8c0362403" (raw bits) 0x915-0x935 (32)
 0x0920|3f 44 5a 61 94 23 6c 73 a4 e8 4a bb 6d dd 03 5f|?DZa.#ls..J.m.._|
 0x0930|a8 c0 36 24 03                                 |..6$.           |
       |                                               |                |    [154]{}: operation 0x935-0x936 (1)
@@ -582,7 +582,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [156]{}: operation 0x937-0x959 (34)
 0x0930|                     f1                        |       .        |      tag: "prepend" (241) 0x937-0x938 (1)
 0x0930|                        20                     |                |      argument_size: 32 0x938-0x939 (1)
-0x0930|                           27 c0 00 0f d5 4e 50|         '....NP|      argument: "27c0000fd54e5000cee38f8eddd68b17c4a05f6b55911c3..." (raw bits) 0x939-0x959 (32)
+0x0930|                           27 c0 00 0f d5 4e 50|         '....NP|      argument: "27c0000fd54e5000cee38f8eddd68b17c4a05f6b55911c31a38046e000edda99" (raw bits) 0x939-0x959 (32)
 0x0940|00 ce e3 8f 8e dd d6 8b 17 c4 a0 5f 6b 55 91 1c|..........._kU..|
 0x0950|31 a3 80 46 e0 00 ed da 99                     |1..F.....       |
       |                                               |                |    [157]{}: operation 0x959-0x95a (1)
@@ -607,7 +607,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [163]{}: operation 0x97c-0x99e (34)
 0x0970|                                    f1         |            .   |      tag: "prepend" (241) 0x97c-0x97d (1)
 0x0970|                                       20      |                |      argument_size: 32 0x97d-0x97e (1)
-0x0970|                                          51 09|              Q.|      argument: "510965a884b4e776de4db5b745c9721b3221d81bc6efde0..." (raw bits) 0x97e-0x99e (32)
+0x0970|                                          51 09|              Q.|      argument: "510965a884b4e776de4db5b745c9721b3221d81bc6efde0da39d8b9945cb4471" (raw bits) 0x97e-0x99e (32)
 0x0980|65 a8 84 b4 e7 76 de 4d b5 b7 45 c9 72 1b 32 21|e....v.M..E.r.2!|
 0x0990|d8 1b c6 ef de 0d a3 9d 8b 99 45 cb 44 71      |..........E.Dq  |
       |                                               |                |    [164]{}: operation 0x99e-0x99f (1)
@@ -635,7 +635,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [170]{}: operation 0x9e4-0xa06 (34)
 0x09e0|            f1                                 |    .           |      tag: "prepend" (241) 0x9e4-0x9e5 (1)
 0x09e0|               20                              |                |      argument_size: 32 0x9e5-0x9e6 (1)
-0x09e0|                  3c 54 8e 07 fb 0b af 6b 30 a2|      <T.....k0.|      argument: "3c548e07fb0baf6b30a25c3d86ef021b8838b487409507a..." (raw bits) 0x9e6-0xa06 (32)
+0x09e0|                  3c 54 8e 07 fb 0b af 6b 30 a2|      <T.....k0.|      argument: "3c548e07fb0baf6b30a25c3d86ef021b8838b487409507a30a13e9b241b66303" (raw bits) 0x9e6-0xa06 (32)
 0x09f0|5c 3d 86 ef 02 1b 88 38 b4 87 40 95 07 a3 0a 13|\=.....8..@.....|
 0x0a00|e9 b2 41 b6 63 03                              |..A.c.          |
       |                                               |                |    [171]{}: operation 0xa06-0xa07 (1)
@@ -643,7 +643,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [172]{}: operation 0xa07-0xa29 (34)
 0x0a00|                     f0                        |       .        |      tag: "append" (240) 0xa07-0xa08 (1)
 0x0a00|                        20                     |                |      argument_size: 32 0xa08-0xa09 (1)
-0x0a00|                           89 61 b8 9c 66 aa 01|         .a..f..|      argument: "8961b89c66aa014e741c26891bdda4b930d0a68cbab912a..." (raw bits) 0xa09-0xa29 (32)
+0x0a00|                           89 61 b8 9c 66 aa 01|         .a..f..|      argument: "8961b89c66aa014e741c26891bdda4b930d0a68cbab912aaa217585190cd204c" (raw bits) 0xa09-0xa29 (32)
 0x0a10|4e 74 1c 26 89 1b dd a4 b9 30 d0 a6 8c ba b9 12|Nt.&.....0......|
 0x0a20|aa a2 17 58 51 90 cd 20 4c                     |...XQ.. L       |
       |                                               |                |    [173]{}: operation 0xa29-0xa2a (1)
@@ -651,7 +651,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [174]{}: operation 0xa2a-0xa4c (34)
 0x0a20|                              f1               |          .     |      tag: "prepend" (241) 0xa2a-0xa2b (1)
 0x0a20|                                 20            |                |      argument_size: 32 0xa2b-0xa2c (1)
-0x0a20|                                    fd f2 77 a6|            ..w.|      argument: "fdf277a6d357bc502e093225eb7633504033f783aa18692..." (raw bits) 0xa2c-0xa4c (32)
+0x0a20|                                    fd f2 77 a6|            ..w.|      argument: "fdf277a6d357bc502e093225eb7633504033f783aa186924b1f67c0929bd6fd2" (raw bits) 0xa2c-0xa4c (32)
 0x0a30|d3 57 bc 50 2e 09 32 25 eb 76 33 50 40 33 f7 83|.W.P..2%.v3P@3..|
 0x0a40|aa 18 69 24 b1 f6 7c 09 29 bd 6f d2            |..i$..|.).o.    |
       |                                               |                |    [175]{}: operation 0xa4c-0xa4d (1)
@@ -659,7 +659,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [176]{}: operation 0xa4d-0xa6f (34)
 0x0a40|                                       f0      |             .  |      tag: "append" (240) 0xa4d-0xa4e (1)
 0x0a40|                                          20   |                |      argument_size: 32 0xa4e-0xa4f (1)
-0x0a40|                                             a0|               .|      argument: "a087e42865a5af211738db3f5b9e01b4b35cdb3b8d3c07d..." (raw bits) 0xa4f-0xa6f (32)
+0x0a40|                                             a0|               .|      argument: "a087e42865a5af211738db3f5b9e01b4b35cdb3b8d3c07dd091913d75d78eba4" (raw bits) 0xa4f-0xa6f (32)
 0x0a50|87 e4 28 65 a5 af 21 17 38 db 3f 5b 9e 01 b4 b3|..(e..!.8.?[....|
 0x0a60|5c db 3b 8d 3c 07 dd 09 19 13 d7 5d 78 eb a4   |\.;.<......]x.. |
       |                                               |                |    [177]{}: operation 0xa6f-0xa70 (1)
@@ -667,7 +667,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [178]{}: operation 0xa70-0xa92 (34)
 0x0a70|f0                                             |.               |      tag: "append" (240) 0xa70-0xa71 (1)
 0x0a70|   20                                          |                |      argument_size: 32 0xa71-0xa72 (1)
-0x0a70|      f2 10 d8 68 5b db 62 f2 2f 18 f3 e6 d6 8b|  ...h[.b./.....|      argument: "f210d8685bdb62f22f18f3e6d68b09c941aa63f71c19246..." (raw bits) 0xa72-0xa92 (32)
+0x0a70|      f2 10 d8 68 5b db 62 f2 2f 18 f3 e6 d6 8b|  ...h[.b./.....|      argument: "f210d8685bdb62f22f18f3e6d68b09c941aa63f71c19246bf243485a217ad97d" (raw bits) 0xa72-0xa92 (32)
 0x0a80|09 c9 41 aa 63 f7 1c 19 24 6b f2 43 48 5a 21 7a|..A.c...$k.CHZ!z|
 0x0a90|d9 7d                                          |.}              |
       |                                               |                |    [179]{}: operation 0xa92-0xa93 (1)
@@ -675,7 +675,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [180]{}: operation 0xa93-0xab5 (34)
 0x0a90|         f1                                    |   .            |      tag: "prepend" (241) 0xa93-0xa94 (1)
 0x0a90|            20                                 |                |      argument_size: 32 0xa94-0xa95 (1)
-0x0a90|               80 44 8e 3c 46 4a 3c c9 5a 01 99|     .D.<FJ<.Z..|      argument: "80448e3c464a3cc95a01994a6ca4fe1571abe1a4b4f9628..." (raw bits) 0xa95-0xab5 (32)
+0x0a90|               80 44 8e 3c 46 4a 3c c9 5a 01 99|     .D.<FJ<.Z..|      argument: "80448e3c464a3cc95a01994a6ca4fe1571abe1a4b4f96287cc5ea2ad7c494ec9" (raw bits) 0xa95-0xab5 (32)
 0x0aa0|4a 6c a4 fe 15 71 ab e1 a4 b4 f9 62 87 cc 5e a2|Jl...q.....b..^.|
 0x0ab0|ad 7c 49 4e c9                                 |.|IN.           |
       |                                               |                |    [181]{}: operation 0xab5-0xab6 (1)
@@ -683,7 +683,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [182]{}: operation 0xab6-0xad8 (34)
 0x0ab0|                  f0                           |      .         |      tag: "append" (240) 0xab6-0xab7 (1)
 0x0ab0|                     20                        |                |      argument_size: 32 0xab7-0xab8 (1)
-0x0ab0|                        f2 7a d1 2b c3 7a 3b 1b|        .z.+.z;.|      argument: "f27ad12bc37a3b1be8308265b5f5df9fc634c2eb3aaae98..." (raw bits) 0xab8-0xad8 (32)
+0x0ab0|                        f2 7a d1 2b c3 7a 3b 1b|        .z.+.z;.|      argument: "f27ad12bc37a3b1be8308265b5f5df9fc634c2eb3aaae98c93dee53505844705" (raw bits) 0xab8-0xad8 (32)
 0x0ac0|e8 30 82 65 b5 f5 df 9f c6 34 c2 eb 3a aa e9 8c|.0.e.....4..:...|
 0x0ad0|93 de e5 35 05 84 47 05                        |...5..G.        |
       |                                               |                |    [183]{}: operation 0xad8-0xad9 (1)
@@ -691,7 +691,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [184]{}: operation 0xad9-0xafb (34)
 0x0ad0|                           f0                  |         .      |      tag: "append" (240) 0xad9-0xada (1)
 0x0ad0|                              20               |                |      argument_size: 32 0xada-0xadb (1)
-0x0ad0|                                 56 21 68 e7 55|           V!h.U|      argument: "562168e75554ae026e698a54b67bef6e9e9ca7083310579..." (raw bits) 0xadb-0xafb (32)
+0x0ad0|                                 56 21 68 e7 55|           V!h.U|      argument: "562168e75554ae026e698a54b67bef6e9e9ca70833105796317daf322a62e753" (raw bits) 0xadb-0xafb (32)
 0x0ae0|54 ae 02 6e 69 8a 54 b6 7b ef 6e 9e 9c a7 08 33|T..ni.T.{.n....3|
 0x0af0|10 57 96 31 7d af 32 2a 62 e7 53               |.W.1}.2*b.S     |
       |                                               |                |    [185]{}: operation 0xafb-0xafc (1)
@@ -699,7 +699,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [186]{}: operation 0xafc-0xb1e (34)
 0x0af0|                                    f0         |            .   |      tag: "append" (240) 0xafc-0xafd (1)
 0x0af0|                                       20      |                |      argument_size: 32 0xafd-0xafe (1)
-0x0af0|                                          37 5c|              7\|      argument: "375c15d26717dec55bc0abfbfef6abdb268d147bd3bf74e..." (raw bits) 0xafe-0xb1e (32)
+0x0af0|                                          37 5c|              7\|      argument: "375c15d26717dec55bc0abfbfef6abdb268d147bd3bf74e9f0791a5d55290eab" (raw bits) 0xafe-0xb1e (32)
 0x0b00|15 d2 67 17 de c5 5b c0 ab fb fe f6 ab db 26 8d|..g...[.......&.|
 0x0b10|14 7b d3 bf 74 e9 f0 79 1a 5d 55 29 0e ab      |.{..t..y.]U)..  |
       |                                               |                |    [187]{}: operation 0xb1e-0xb1f (1)
@@ -707,7 +707,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [188]{}: operation 0xb1f-0xb41 (34)
 0x0b10|                                             f0|               .|      tag: "append" (240) 0xb1f-0xb20 (1)
 0x0b20|20                                             |                |      argument_size: 32 0xb20-0xb21 (1)
-0x0b20|   ab 1a 78 f5 1b ed 19 ad a7 e1 a3 40 14 f6 64| ..x........@..d|      argument: "ab1a78f51bed19ada7e1a34014f6641747d69b1e250cedf..." (raw bits) 0xb21-0xb41 (32)
+0x0b20|   ab 1a 78 f5 1b ed 19 ad a7 e1 a3 40 14 f6 64| ..x........@..d|      argument: "ab1a78f51bed19ada7e1a34014f6641747d69b1e250cedfd13832fc7188c68e8" (raw bits) 0xb21-0xb41 (32)
 0x0b30|17 47 d6 9b 1e 25 0c ed fd 13 83 2f c7 18 8c 68|.G...%...../...h|
 0x0b40|e8                                             |.               |
       |                                               |                |    [189]{}: operation 0xb41-0xb42 (1)
@@ -715,7 +715,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [190]{}: operation 0xb42-0xb64 (34)
 0x0b40|      f0                                       |  .             |      tag: "append" (240) 0xb42-0xb43 (1)
 0x0b40|         20                                    |                |      argument_size: 32 0xb43-0xb44 (1)
-0x0b40|            eb 50 c3 a7 f6 5f fd fb 2c e1 63 03|    .P..._..,.c.|      argument: "eb50c3a7f65ffdfb2ce16303f0351522f36bfdbe69b65ba..." (raw bits) 0xb44-0xb64 (32)
+0x0b40|            eb 50 c3 a7 f6 5f fd fb 2c e1 63 03|    .P..._..,.c.|      argument: "eb50c3a7f65ffdfb2ce16303f0351522f36bfdbe69b65ba236774bf131777b5e" (raw bits) 0xb44-0xb64 (32)
 0x0b50|f0 35 15 22 f3 6b fd be 69 b6 5b a2 36 77 4b f1|.5.".k..i.[.6wK.|
 0x0b60|31 77 7b 5e                                    |1w{^            |
       |                                               |                |    [191]{}: operation 0xb64-0xb65 (1)
@@ -723,7 +723,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [192]{}: operation 0xb65-0xb87 (34)
 0x0b60|               f1                              |     .          |      tag: "prepend" (241) 0xb65-0xb66 (1)
 0x0b60|                  20                           |                |      argument_size: 32 0xb66-0xb67 (1)
-0x0b60|                     0c 59 d1 62 66 da ed 29 68|       .Y.bf..)h|      argument: "0c59d16266daed29684d72b167025477d1d2366b8918d05..." (raw bits) 0xb67-0xb87 (32)
+0x0b60|                     0c 59 d1 62 66 da ed 29 68|       .Y.bf..)h|      argument: "0c59d16266daed29684d72b167025477d1d2366b8918d05037a6a395d401d329" (raw bits) 0xb67-0xb87 (32)
 0x0b70|4d 72 b1 67 02 54 77 d1 d2 36 6b 89 18 d0 50 37|Mr.g.Tw..6k...P7|
 0x0b80|a6 a3 95 d4 01 d3 29                           |......)         |
       |                                               |                |    [193]{}: operation 0xb87-0xb88 (1)
@@ -731,7 +731,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [194]{}: operation 0xb88-0xbaa (34)
 0x0b80|                        f1                     |        .       |      tag: "prepend" (241) 0xb88-0xb89 (1)
 0x0b80|                           20                  |                |      argument_size: 32 0xb89-0xb8a (1)
-0x0b80|                              9f 68 cb 53 c9 02|          .h.S..|      argument: "9f68cb53c9022c224997e9a9a0c2603a0203c09924a6ab7..." (raw bits) 0xb8a-0xbaa (32)
+0x0b80|                              9f 68 cb 53 c9 02|          .h.S..|      argument: "9f68cb53c9022c224997e9a9a0c2603a0203c09924a6ab732d0318de08f2459a" (raw bits) 0xb8a-0xbaa (32)
 0x0b90|2c 22 49 97 e9 a9 a0 c2 60 3a 02 03 c0 99 24 a6|,"I.....`:....$.|
 0x0ba0|ab 73 2d 03 18 de 08 f2 45 9a                  |.s-.....E.      |
       |                                               |                |    [195]{}: operation 0xbaa-0xbab (1)
@@ -739,7 +739,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [196]{}: operation 0xbab-0xbcd (34)
 0x0ba0|                                 f0            |           .    |      tag: "append" (240) 0xbab-0xbac (1)
 0x0ba0|                                    20         |                |      argument_size: 32 0xbac-0xbad (1)
-0x0ba0|                                       9d 09 e2|             ...|      argument: "9d09e2a89dec75b6f8831b4deeabdc3b4fbb113d31bde12..." (raw bits) 0xbad-0xbcd (32)
+0x0ba0|                                       9d 09 e2|             ...|      argument: "9d09e2a89dec75b6f8831b4deeabdc3b4fbb113d31bde1227f570669b488e19d" (raw bits) 0xbad-0xbcd (32)
 0x0bb0|a8 9d ec 75 b6 f8 83 1b 4d ee ab dc 3b 4f bb 11|...u....M...;O..|
 0x0bc0|3d 31 bd e1 22 7f 57 06 69 b4 88 e1 9d         |=1..".W.i....   |
       |                                               |                |    [197]{}: operation 0xbcd-0xbce (1)
@@ -747,14 +747,14 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [198]{}: operation 0xbce-0xbf0 (34)
 0x0bc0|                                          f1   |              . |      tag: "prepend" (241) 0xbce-0xbcf (1)
 0x0bc0|                                             20|                |      argument_size: 32 0xbcf-0xbd0 (1)
-0x0bd0|9e 54 ef ad c2 2c 57 f2 e4 d8 c3 aa b3 e2 a3 ab|.T...,W.........|      argument: "9e54efadc22c57f2e4d8c3aab3e2a3ab3afabb912dc696a..." (raw bits) 0xbd0-0xbf0 (32)
+0x0bd0|9e 54 ef ad c2 2c 57 f2 e4 d8 c3 aa b3 e2 a3 ab|.T...,W.........|      argument: "9e54efadc22c57f2e4d8c3aab3e2a3ab3afabb912dc696a34ad12e0f68bd61ca" (raw bits) 0xbd0-0xbf0 (32)
 0x0be0|3a fa bb 91 2d c6 96 a3 4a d1 2e 0f 68 bd 61 ca|:...-...J...h.a.|
       |                                               |                |    [199]{}: operation 0xbf0-0xbf1 (1)
 0x0bf0|08                                             |.               |      tag: "sha256" (8) 0xbf0-0xbf1 (1)
       |                                               |                |    [200]{}: operation 0xbf1-0xc13 (34)
 0x0bf0|   f1                                          | .              |      tag: "prepend" (241) 0xbf1-0xbf2 (1)
 0x0bf0|      20                                       |                |      argument_size: 32 0xbf2-0xbf3 (1)
-0x0bf0|         63 4f 1a 0e b3 0e 02 54 71 fc 0b e3 67|   cO.....Tq...g|      argument: "634f1a0eb30e025471fc0be3673fa45dc7648acdb524b8d..." (raw bits) 0xbf3-0xc13 (32)
+0x0bf0|         63 4f 1a 0e b3 0e 02 54 71 fc 0b e3 67|   cO.....Tq...g|      argument: "634f1a0eb30e025471fc0be3673fa45dc7648acdb524b8de72dd6d23fea4c990" (raw bits) 0xbf3-0xc13 (32)
 0x0c00|3f a4 5d c7 64 8a cd b5 24 b8 de 72 dd 6d 23 fe|?.].d...$..r.m#.|
 0x0c10|a4 c9 90                                       |...             |
       |                                               |                |    [201]{}: operation 0xc13-0xc14 (1)
@@ -762,7 +762,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [202]{}: operation 0xc14-0xc36 (34)
 0x0c10|            f0                                 |    .           |      tag: "append" (240) 0xc14-0xc15 (1)
 0x0c10|               20                              |                |      argument_size: 32 0xc15-0xc16 (1)
-0x0c10|                  e1 b9 94 03 34 c1 53 c6 e9 ed|      ....4.S...|      argument: "e1b9940334c153c6e9ed896b71c22c506f5fb292c98fe9c..." (raw bits) 0xc16-0xc36 (32)
+0x0c10|                  e1 b9 94 03 34 c1 53 c6 e9 ed|      ....4.S...|      argument: "e1b9940334c153c6e9ed896b71c22c506f5fb292c98fe9c59d7a2f2a22976ae2" (raw bits) 0xc16-0xc36 (32)
 0x0c20|89 6b 71 c2 2c 50 6f 5f b2 92 c9 8f e9 c5 9d 7a|.kq.,Po_.......z|
 0x0c30|2f 2a 22 97 6a e2                              |/*".j.          |
       |                                               |                |    [203]{}: operation 0xc36-0xc37 (1)
@@ -770,7 +770,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [204]{}: operation 0xc37-0xc92 (91)
 0x0c30|                     f1                        |       .        |      tag: "prepend" (241) 0xc37-0xc38 (1)
 0x0c30|                        59                     |        Y       |      argument_size: 89 0xc38-0xc39 (1)
-0x0c30|                           01 00 00 00 01 27 fe|         .....'.|      argument: "010000000127fe7e87c537c3c38a8595088e403ca968738..." (raw bits) 0xc39-0xc92 (89)
+0x0c30|                           01 00 00 00 01 27 fe|         .....'.|      argument: "010000000127fe7e87c537c3c38a8595088e403ca9687384c5e3a65e19cbdd258f3d260e9c0000000000fdffffff023235010000000000160014590a0d0676bf344b2e1be9f62663a979d4fb94ee0000000000000000226a20" (raw bits) 0xc39-0xc92 (89)
 0x0c40|7e 87 c5 37 c3 c3 8a 85 95 08 8e 40 3c a9 68 73|~..7.......@<.hs|
 *     |until 0xc91.7 (89)                             |                |
       |                                               |                |    [205]{}: operation 0xc92-0xc98 (6)
@@ -784,7 +784,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [208]{}: operation 0xc9a-0xcbc (34)
 0x0c90|                              f0               |          .     |      tag: "append" (240) 0xc9a-0xc9b (1)
 0x0c90|                                 20            |                |      argument_size: 32 0xc9b-0xc9c (1)
-0x0c90|                                    56 21 ea 25|            V!.%|      argument: "5621ea250eee7a9828b6fde1502c40c468cf43a1a2dd715..." (raw bits) 0xc9c-0xcbc (32)
+0x0c90|                                    56 21 ea 25|            V!.%|      argument: "5621ea250eee7a9828b6fde1502c40c468cf43a1a2dd715002c629f9deca181b" (raw bits) 0xc9c-0xcbc (32)
 0x0ca0|0e ee 7a 98 28 b6 fd e1 50 2c 40 c4 68 cf 43 a1|..z.(...P,@.h.C.|
 0x0cb0|a2 dd 71 50 02 c6 29 f9 de ca 18 1b            |..qP..).....    |
       |                                               |                |    [209]{}: operation 0xcbc-0xcbd (1)
@@ -794,7 +794,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [211]{}: operation 0xcbe-0xce0 (34)
 0x0cb0|                                          f1   |              . |      tag: "prepend" (241) 0xcbe-0xcbf (1)
 0x0cb0|                                             20|                |      argument_size: 32 0xcbf-0xcc0 (1)
-0x0cc0|4b 6f 1c 8e ff d5 b4 01 50 06 23 ed f7 d7 ce b7|Ko......P.#.....|      argument: "4b6f1c8effd5b401500623edf7d7ceb717fd52bdbdbc10f..." (raw bits) 0xcc0-0xce0 (32)
+0x0cc0|4b 6f 1c 8e ff d5 b4 01 50 06 23 ed f7 d7 ce b7|Ko......P.#.....|      argument: "4b6f1c8effd5b401500623edf7d7ceb717fd52bdbdbc10fade18fe6dc7035407" (raw bits) 0xcc0-0xce0 (32)
 0x0cd0|17 fd 52 bd bd bc 10 fa de 18 fe 6d c7 03 54 07|..R........m..T.|
       |                                               |                |    [212]{}: operation 0xce0-0xce1 (1)
 0x0ce0|08                                             |.               |      tag: "sha256" (8) 0xce0-0xce1 (1)
@@ -803,7 +803,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [214]{}: operation 0xce2-0xd04 (34)
 0x0ce0|      f0                                       |  .             |      tag: "append" (240) 0xce2-0xce3 (1)
 0x0ce0|         20                                    |                |      argument_size: 32 0xce3-0xce4 (1)
-0x0ce0|            3f 59 74 75 62 1b 7c de 5a 81 4f 30|    ?Ytub.|.Z.O0|      argument: "3f597475621b7cde5a814f30e11a70ad259e5348d4ac524..." (raw bits) 0xce4-0xd04 (32)
+0x0ce0|            3f 59 74 75 62 1b 7c de 5a 81 4f 30|    ?Ytub.|.Z.O0|      argument: "3f597475621b7cde5a814f30e11a70ad259e5348d4ac524851fa1ab613f012b0" (raw bits) 0xce4-0xd04 (32)
 0x0cf0|e1 1a 70 ad 25 9e 53 48 d4 ac 52 48 51 fa 1a b6|..p.%.SH..RHQ...|
 0x0d00|13 f0 12 b0                                    |....            |
       |                                               |                |    [215]{}: operation 0xd04-0xd05 (1)
@@ -813,7 +813,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [217]{}: operation 0xd06-0xd28 (34)
 0x0d00|                  f1                           |      .         |      tag: "prepend" (241) 0xd06-0xd07 (1)
 0x0d00|                     20                        |                |      argument_size: 32 0xd07-0xd08 (1)
-0x0d00|                        d5 32 f5 0c 13 38 2e 0c|        .2...8..|      argument: "d532f50c13382e0c47a673d4caae271f4709a89b3bba99f..." (raw bits) 0xd08-0xd28 (32)
+0x0d00|                        d5 32 f5 0c 13 38 2e 0c|        .2...8..|      argument: "d532f50c13382e0c47a673d4caae271f4709a89b3bba99f3ff36908adf1e00a8" (raw bits) 0xd08-0xd28 (32)
 0x0d10|47 a6 73 d4 ca ae 27 1f 47 09 a8 9b 3b ba 99 f3|G.s...'.G...;...|
 0x0d20|ff 36 90 8a df 1e 00 a8                        |.6......        |
       |                                               |                |    [218]{}: operation 0xd28-0xd29 (1)
@@ -823,7 +823,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [220]{}: operation 0xd2a-0xd4c (34)
 0x0d20|                              f0               |          .     |      tag: "append" (240) 0xd2a-0xd2b (1)
 0x0d20|                                 20            |                |      argument_size: 32 0xd2b-0xd2c (1)
-0x0d20|                                    50 86 fe a9|            P...|      argument: "5086fea9ede4f4e1878020247c1b96716d9644632e47c3c..." (raw bits) 0xd2c-0xd4c (32)
+0x0d20|                                    50 86 fe a9|            P...|      argument: "5086fea9ede4f4e1878020247c1b96716d9644632e47c3c80935e7cbf713912a" (raw bits) 0xd2c-0xd4c (32)
 0x0d30|ed e4 f4 e1 87 80 20 24 7c 1b 96 71 6d 96 44 63|...... $|..qm.Dc|
 0x0d40|2e 47 c3 c8 09 35 e7 cb f7 13 91 2a            |.G...5.....*    |
       |                                               |                |    [221]{}: operation 0xd4c-0xd4d (1)
@@ -833,7 +833,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [223]{}: operation 0xd4e-0xd70 (34)
 0x0d40|                                          f1   |              . |      tag: "prepend" (241) 0xd4e-0xd4f (1)
 0x0d40|                                             20|                |      argument_size: 32 0xd4f-0xd50 (1)
-0x0d50|08 d2 61 48 d4 5e 89 52 df dc ab 2d 66 8d 62 e3|..aH.^.R...-f.b.|      argument: "08d26148d45e8952dfdcab2d668d62e3fd46de21076e5bb..." (raw bits) 0xd50-0xd70 (32)
+0x0d50|08 d2 61 48 d4 5e 89 52 df dc ab 2d 66 8d 62 e3|..aH.^.R...-f.b.|      argument: "08d26148d45e8952dfdcab2d668d62e3fd46de21076e5bbbce86411119fb6871" (raw bits) 0xd50-0xd70 (32)
 0x0d60|fd 46 de 21 07 6e 5b bb ce 86 41 11 19 fb 68 71|.F.!.n[...A...hq|
       |                                               |                |    [224]{}: operation 0xd70-0xd71 (1)
 0x0d70|08                                             |.               |      tag: "sha256" (8) 0xd70-0xd71 (1)
@@ -842,7 +842,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [226]{}: operation 0xd72-0xd94 (34)
 0x0d70|      f1                                       |  .             |      tag: "prepend" (241) 0xd72-0xd73 (1)
 0x0d70|         20                                    |                |      argument_size: 32 0xd73-0xd74 (1)
-0x0d70|            4a 98 e5 68 2f b1 6b bd 79 5d f7 42|    J..h/.k.y].B|      argument: "4a98e5682fb16bbd795df742000969bcc12e5176d9ec006..." (raw bits) 0xd74-0xd94 (32)
+0x0d70|            4a 98 e5 68 2f b1 6b bd 79 5d f7 42|    J..h/.k.y].B|      argument: "4a98e5682fb16bbd795df742000969bcc12e5176d9ec0062860ee8028bb10a52" (raw bits) 0xd74-0xd94 (32)
 0x0d80|00 09 69 bc c1 2e 51 76 d9 ec 00 62 86 0e e8 02|..i...Qv...b....|
 0x0d90|8b b1 0a 52                                    |...R            |
       |                                               |                |    [227]{}: operation 0xd94-0xd95 (1)
@@ -852,7 +852,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [229]{}: operation 0xd96-0xdb8 (34)
 0x0d90|                  f0                           |      .         |      tag: "append" (240) 0xd96-0xd97 (1)
 0x0d90|                     20                        |                |      argument_size: 32 0xd97-0xd98 (1)
-0x0d90|                        be 13 4f 12 70 8b 31 e9|        ..O.p.1.|      argument: "be134f12708b31e98403531d986c262df2d2239ddf84912..." (raw bits) 0xd98-0xdb8 (32)
+0x0d90|                        be 13 4f 12 70 8b 31 e9|        ..O.p.1.|      argument: "be134f12708b31e98403531d986c262df2d2239ddf8491260bca1adca6db95f1" (raw bits) 0xd98-0xdb8 (32)
 0x0da0|84 03 53 1d 98 6c 26 2d f2 d2 23 9d df 84 91 26|..S..l&-..#....&|
 0x0db0|0b ca 1a dc a6 db 95 f1                        |........        |
       |                                               |                |    [230]{}: operation 0xdb8-0xdb9 (1)
@@ -862,7 +862,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [232]{}: operation 0xdba-0xddc (34)
 0x0db0|                              f0               |          .     |      tag: "append" (240) 0xdba-0xdbb (1)
 0x0db0|                                 20            |                |      argument_size: 32 0xdbb-0xdbc (1)
-0x0db0|                                    69 71 a9 aa|            iq..|      argument: "6971a9aab6daed4eab4ba1711332c166c1da2f7406ab9a9..." (raw bits) 0xdbc-0xddc (32)
+0x0db0|                                    69 71 a9 aa|            iq..|      argument: "6971a9aab6daed4eab4ba1711332c166c1da2f7406ab9a9addd84e4bd2983940" (raw bits) 0xdbc-0xddc (32)
 0x0dc0|b6 da ed 4e ab 4b a1 71 13 32 c1 66 c1 da 2f 74|...N.K.q.2.f../t|
 0x0dd0|06 ab 9a 9a dd d8 4e 4b d2 98 39 40            |......NK..9@    |
       |                                               |                |    [233]{}: operation 0xddc-0xddd (1)
@@ -872,7 +872,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [235]{}: operation 0xdde-0xe00 (34)
 0x0dd0|                                          f1   |              . |      tag: "prepend" (241) 0xdde-0xddf (1)
 0x0dd0|                                             20|                |      argument_size: 32 0xddf-0xde0 (1)
-0x0de0|cf df aa 54 a7 03 6e 0d b4 df 3c 18 ea 1d 3d 75|...T..n...<...=u|      argument: "cfdfaa54a7036e0db4df3c18ea1d3d75730c929a021afa6..." (raw bits) 0xde0-0xe00 (32)
+0x0de0|cf df aa 54 a7 03 6e 0d b4 df 3c 18 ea 1d 3d 75|...T..n...<...=u|      argument: "cfdfaa54a7036e0db4df3c18ea1d3d75730c929a021afa6188e8dc97c6609823" (raw bits) 0xde0-0xe00 (32)
 0x0df0|73 0c 92 9a 02 1a fa 61 88 e8 dc 97 c6 60 98 23|s......a.....`.#|
       |                                               |                |    [236]{}: operation 0xe00-0xe01 (1)
 0x0e00|08                                             |.               |      tag: "sha256" (8) 0xe00-0xe01 (1)
@@ -881,7 +881,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [238]{}: operation 0xe02-0xe24 (34)
 0x0e00|      f1                                       |  .             |      tag: "prepend" (241) 0xe02-0xe03 (1)
 0x0e00|         20                                    |                |      argument_size: 32 0xe03-0xe04 (1)
-0x0e00|            c6 10 93 e4 bd 77 4a d2 60 35 7a 4a|    .....wJ.`5zJ|      argument: "c61093e4bd774ad260357a4a137d1aca82f3eb6ad5256c3..." (raw bits) 0xe04-0xe24 (32)
+0x0e00|            c6 10 93 e4 bd 77 4a d2 60 35 7a 4a|    .....wJ.`5zJ|      argument: "c61093e4bd774ad260357a4a137d1aca82f3eb6ad5256c381dad80f4b162f548" (raw bits) 0xe04-0xe24 (32)
 0x0e10|13 7d 1a ca 82 f3 eb 6a d5 25 6c 38 1d ad 80 f4|.}.....j.%l8....|
 0x0e20|b1 62 f5 48                                    |.b.H            |
       |                                               |                |    [239]{}: operation 0xe24-0xe25 (1)
@@ -891,7 +891,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [241]{}: operation 0xe26-0xe48 (34)
 0x0e20|                  f0                           |      .         |      tag: "append" (240) 0xe26-0xe27 (1)
 0x0e20|                     20                        |                |      argument_size: 32 0xe27-0xe28 (1)
-0x0e20|                        7c 62 61 e2 6b eb 4e 3b|        |ba.k.N;|      argument: "7c6261e26beb4e3b9baa7c7c3e1a78303f73f2a1b8fb682..." (raw bits) 0xe28-0xe48 (32)
+0x0e20|                        7c 62 61 e2 6b eb 4e 3b|        |ba.k.N;|      argument: "7c6261e26beb4e3b9baa7c7c3e1a78303f73f2a1b8fb682eb54a2af0ddc18b3f" (raw bits) 0xe28-0xe48 (32)
 0x0e30|9b aa 7c 7c 3e 1a 78 30 3f 73 f2 a1 b8 fb 68 2e|..||>.x0?s....h.|
 0x0e40|b5 4a 2a f0 dd c1 8b 3f                        |.J*....?        |
       |                                               |                |    [242]{}: operation 0xe48-0xe49 (1)
@@ -935,7 +935,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [252]{}: operation 0xea9-0xecb (34)
 0x0ea0|                           f1                  |         .      |      tag: "prepend" (241) 0xea9-0xeaa (1)
 0x0ea0|                              20               |                |      argument_size: 32 0xeaa-0xeab (1)
-0x0ea0|                                 42 be d0 d6 bd|           B....|      argument: "42bed0d6bd20f534535694b7d98a259b1b139b4ffdfd633..." (raw bits) 0xeab-0xecb (32)
+0x0ea0|                                 42 be d0 d6 bd|           B....|      argument: "42bed0d6bd20f534535694b7d98a259b1b139b4ffdfd6336583963fabb046e74" (raw bits) 0xeab-0xecb (32)
 0x0eb0|20 f5 34 53 56 94 b7 d9 8a 25 9b 1b 13 9b 4f fd| .4SV....%....O.|
 0x0ec0|fd 63 36 58 39 63 fa bb 04 6e 74               |.c6X9c...nt     |
       |                                               |                |    [253]{}: operation 0xecb-0xecc (1)
@@ -943,7 +943,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [254]{}: operation 0xecc-0xeee (34)
 0x0ec0|                                    f0         |            .   |      tag: "append" (240) 0xecc-0xecd (1)
 0x0ec0|                                       20      |                |      argument_size: 32 0xecd-0xece (1)
-0x0ec0|                                          cc 9a|              ..|      argument: "cc9a6c63b2538ff02e8a4c21dde1c305226d26df6ea4ce6..." (raw bits) 0xece-0xeee (32)
+0x0ec0|                                          cc 9a|              ..|      argument: "cc9a6c63b2538ff02e8a4c21dde1c305226d26df6ea4ce6235f83c7768c52494" (raw bits) 0xece-0xeee (32)
 0x0ed0|6c 63 b2 53 8f f0 2e 8a 4c 21 dd e1 c3 05 22 6d|lc.S....L!...."m|
 0x0ee0|26 df 6e a4 ce 62 35 f8 3c 77 68 c5 24 94      |&.n..b5.<wh.$.  |
       |                                               |                |    [255]{}: operation 0xeee-0xeef (1)
@@ -951,7 +951,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [256]{}: operation 0xeef-0xf11 (34)
 0x0ee0|                                             f1|               .|      tag: "prepend" (241) 0xeef-0xef0 (1)
 0x0ef0|20                                             |                |      argument_size: 32 0xef0-0xef1 (1)
-0x0ef0|   03 44 7b 77 16 7b 08 57 17 70 fe 12 11 65 d8| .D{w.{.W.p...e.|      argument: "03447b77167b08571770fe121165d8842324e21872c01fd..." (raw bits) 0xef1-0xf11 (32)
+0x0ef0|   03 44 7b 77 16 7b 08 57 17 70 fe 12 11 65 d8| .D{w.{.W.p...e.|      argument: "03447b77167b08571770fe121165d8842324e21872c01fd1128cf27d8cdb8042" (raw bits) 0xef1-0xf11 (32)
 0x0f00|84 23 24 e2 18 72 c0 1f d1 12 8c f2 7d 8c db 80|.#$..r......}...|
 0x0f10|42                                             |B               |
       |                                               |                |    [257]{}: operation 0xf11-0xf12 (1)
@@ -959,7 +959,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [258]{}: operation 0xf12-0xf34 (34)
 0x0f10|      f1                                       |  .             |      tag: "prepend" (241) 0xf12-0xf13 (1)
 0x0f10|         20                                    |                |      argument_size: 32 0xf13-0xf14 (1)
-0x0f10|            76 7b 8b 47 46 48 52 b9 3f 5d a8 a9|    v{.GFHR.?]..|      argument: "767b8b47464852b93f5da8a92c72ed1b875eff3c279d1c0..." (raw bits) 0xf14-0xf34 (32)
+0x0f10|            76 7b 8b 47 46 48 52 b9 3f 5d a8 a9|    v{.GFHR.?]..|      argument: "767b8b47464852b93f5da8a92c72ed1b875eff3c279d1c0903097329240f70e3" (raw bits) 0xf14-0xf34 (32)
 0x0f20|2c 72 ed 1b 87 5e ff 3c 27 9d 1c 09 03 09 73 29|,r...^.<'.....s)|
 0x0f30|24 0f 70 e3                                    |$.p.            |
       |                                               |                |    [259]{}: operation 0xf34-0xf35 (1)
@@ -967,7 +967,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [260]{}: operation 0xf35-0xf57 (34)
 0x0f30|               f0                              |     .          |      tag: "append" (240) 0xf35-0xf36 (1)
 0x0f30|                  20                           |                |      argument_size: 32 0xf36-0xf37 (1)
-0x0f30|                     ce 1d e4 d9 d2 8f fe 94 65|       ........e|      argument: "ce1de4d9d28ffe9465d7cab917aebcb928027748dbfc2ec..." (raw bits) 0xf37-0xf57 (32)
+0x0f30|                     ce 1d e4 d9 d2 8f fe 94 65|       ........e|      argument: "ce1de4d9d28ffe9465d7cab917aebcb928027748dbfc2ec1217a0c471158cc33" (raw bits) 0xf37-0xf57 (32)
 0x0f40|d7 ca b9 17 ae bc b9 28 02 77 48 db fc 2e c1 21|.......(.wH....!|
 0x0f50|7a 0c 47 11 58 cc 33                           |z.G.X.3         |
       |                                               |                |    [261]{}: operation 0xf57-0xf58 (1)
@@ -975,7 +975,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [262]{}: operation 0xf58-0xf7a (34)
 0x0f50|                        f0                     |        .       |      tag: "append" (240) 0xf58-0xf59 (1)
 0x0f50|                           20                  |                |      argument_size: 32 0xf59-0xf5a (1)
-0x0f50|                              26 6c e7 de f7 79|          &l...y|      argument: "266ce7def7799cf909f4ae22bd0f12aed07f954feabb3f4..." (raw bits) 0xf5a-0xf7a (32)
+0x0f50|                              26 6c e7 de f7 79|          &l...y|      argument: "266ce7def7799cf909f4ae22bd0f12aed07f954feabb3f4e57e4e10a64b4dd48" (raw bits) 0xf5a-0xf7a (32)
 0x0f60|9c f9 09 f4 ae 22 bd 0f 12 ae d0 7f 95 4f ea bb|.....".......O..|
 0x0f70|3f 4e 57 e4 e1 0a 64 b4 dd 48                  |?NW...d..H      |
       |                                               |                |    [263]{}: operation 0xf7a-0xf7b (1)
@@ -983,7 +983,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [264]{}: operation 0xf7b-0xf9d (34)
 0x0f70|                                 f0            |           .    |      tag: "append" (240) 0xf7b-0xf7c (1)
 0x0f70|                                    20         |                |      argument_size: 32 0xf7c-0xf7d (1)
-0x0f70|                                       30 cc 92|             0..|      argument: "30cc922350bbef648863eb0f830aa20ee83db263e112a74..." (raw bits) 0xf7d-0xf9d (32)
+0x0f70|                                       30 cc 92|             0..|      argument: "30cc922350bbef648863eb0f830aa20ee83db263e112a741105f709b9bbadcdf" (raw bits) 0xf7d-0xf9d (32)
 0x0f80|23 50 bb ef 64 88 63 eb 0f 83 0a a2 0e e8 3d b2|#P..d.c.......=.|
 0x0f90|63 e1 12 a7 41 10 5f 70 9b 9b ba dc df         |c...A._p.....   |
       |                                               |                |    [265]{}: operation 0xf9d-0xf9e (1)
@@ -991,14 +991,14 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [266]{}: operation 0xf9e-0xfc0 (34)
 0x0f90|                                          f0   |              . |      tag: "append" (240) 0xf9e-0xf9f (1)
 0x0f90|                                             20|                |      argument_size: 32 0xf9f-0xfa0 (1)
-0x0fa0|3e 1d ac 85 17 b6 a3 88 03 31 64 43 96 97 04 46|>........1dC...F|      argument: "3e1dac8517b6a3880331644396970446da9726192400583..." (raw bits) 0xfa0-0xfc0 (32)
+0x0fa0|3e 1d ac 85 17 b6 a3 88 03 31 64 43 96 97 04 46|>........1dC...F|      argument: "3e1dac8517b6a3880331644396970446da97261924005830f9284d4d91f8122e" (raw bits) 0xfa0-0xfc0 (32)
 0x0fb0|da 97 26 19 24 00 58 30 f9 28 4d 4d 91 f8 12 2e|..&.$.X0.(MM....|
       |                                               |                |    [267]{}: operation 0xfc0-0xfc1 (1)
 0x0fc0|08                                             |.               |      tag: "sha256" (8) 0xfc0-0xfc1 (1)
       |                                               |                |    [268]{}: operation 0xfc1-0xfe3 (34)
 0x0fc0|   f1                                          | .              |      tag: "prepend" (241) 0xfc1-0xfc2 (1)
 0x0fc0|      20                                       |                |      argument_size: 32 0xfc2-0xfc3 (1)
-0x0fc0|         48 56 3c f6 9e 12 37 f0 0e dc 33 8c 70|   HV<...7...3.p|      argument: "48563cf69e1237f00edc338c702438419688695c4427fa4..." (raw bits) 0xfc3-0xfe3 (32)
+0x0fc0|         48 56 3c f6 9e 12 37 f0 0e dc 33 8c 70|   HV<...7...3.p|      argument: "48563cf69e1237f00edc338c702438419688695c4427fa4832f5fe4ead792977" (raw bits) 0xfc3-0xfe3 (32)
 0x0fd0|24 38 41 96 88 69 5c 44 27 fa 48 32 f5 fe 4e ad|$8A..i\D'.H2..N.|
 0x0fe0|79 29 77                                       |y)w             |
       |                                               |                |    [269]{}: operation 0xfe3-0xfe4 (1)
@@ -1006,7 +1006,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [270]{}: operation 0xfe4-0x1006 (34)
 0x0fe0|            f0                                 |    .           |      tag: "append" (240) 0xfe4-0xfe5 (1)
 0x0fe0|               20                              |                |      argument_size: 32 0xfe5-0xfe6 (1)
-0x0fe0|                  d0 be 8e 84 c3 92 a3 39 c0 d2|      .......9..|      argument: "d0be8e84c392a339c0d277a25bd2cff42120dcdd5a396b6..." (raw bits) 0xfe6-0x1006 (32)
+0x0fe0|                  d0 be 8e 84 c3 92 a3 39 c0 d2|      .......9..|      argument: "d0be8e84c392a339c0d277a25bd2cff42120dcdd5a396b6917ee3bd8f056ce8e" (raw bits) 0xfe6-0x1006 (32)
 0x0ff0|77 a2 5b d2 cf f4 21 20 dc dd 5a 39 6b 69 17 ee|w.[...! ..Z9ki..|
 0x1000|3b d8 f0 56 ce 8e                              |;..V..          |
       |                                               |                |    [271]{}: operation 0x1006-0x1007 (1)
@@ -1014,7 +1014,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [272]{}: operation 0x1007-0x1029 (34)
 0x1000|                     f1                        |       .        |      tag: "prepend" (241) 0x1007-0x1008 (1)
 0x1000|                        20                     |                |      argument_size: 32 0x1008-0x1009 (1)
-0x1000|                           06 57 a0 f2 7c b6 e9|         .W..|..|      argument: "0657a0f27cb6e95175e3d09840f20d2089ea52d52f7a36a..." (raw bits) 0x1009-0x1029 (32)
+0x1000|                           06 57 a0 f2 7c b6 e9|         .W..|..|      argument: "0657a0f27cb6e95175e3d09840f20d2089ea52d52f7a36a8a34ca9ff508852e4" (raw bits) 0x1009-0x1029 (32)
 0x1010|51 75 e3 d0 98 40 f2 0d 20 89 ea 52 d5 2f 7a 36|Qu...@.. ..R./z6|
 0x1020|a8 a3 4c a9 ff 50 88 52 e4                     |..L..P.R.       |
       |                                               |                |    [273]{}: operation 0x1029-0x102a (1)
@@ -1022,7 +1022,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [274]{}: operation 0x102a-0x104c (34)
 0x1020|                              f1               |          .     |      tag: "prepend" (241) 0x102a-0x102b (1)
 0x1020|                                 20            |                |      argument_size: 32 0x102b-0x102c (1)
-0x1020|                                    89 60 1a bb|            .`..|      argument: "89601abbe7b0a7ee51489ee1cc69041092a5bfb569321da..." (raw bits) 0x102c-0x104c (32)
+0x1020|                                    89 60 1a bb|            .`..|      argument: "89601abbe7b0a7ee51489ee1cc69041092a5bfb569321da7144c74f33939e83d" (raw bits) 0x102c-0x104c (32)
 0x1030|e7 b0 a7 ee 51 48 9e e1 cc 69 04 10 92 a5 bf b5|....QH...i......|
 0x1040|69 32 1d a7 14 4c 74 f3 39 39 e8 3d            |i2...Lt.99.=    |
       |                                               |                |    [275]{}: operation 0x104c-0x104d (1)
@@ -1030,7 +1030,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [276]{}: operation 0x104d-0x106f (34)
 0x1040|                                       f1      |             .  |      tag: "prepend" (241) 0x104d-0x104e (1)
 0x1040|                                          20   |                |      argument_size: 32 0x104e-0x104f (1)
-0x1040|                                             87|               .|      argument: "87509ee887022cbd530a2527fb96cfbbca78f3e59093706..." (raw bits) 0x104f-0x106f (32)
+0x1040|                                             87|               .|      argument: "87509ee887022cbd530a2527fb96cfbbca78f3e5909370619f386c0f1c4d3147" (raw bits) 0x104f-0x106f (32)
 0x1050|50 9e e8 87 02 2c bd 53 0a 25 27 fb 96 cf bb ca|P....,.S.%'.....|
 0x1060|78 f3 e5 90 93 70 61 9f 38 6c 0f 1c 4d 31 47   |x....pa.8l..M1G |
       |                                               |                |    [277]{}: operation 0x106f-0x1070 (1)
@@ -1038,7 +1038,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [278]{}: operation 0x1070-0x10cb (91)
 0x1070|f1                                             |.               |      tag: "prepend" (241) 0x1070-0x1071 (1)
 0x1070|   59                                          | Y              |      argument_size: 89 0x1071-0x1072 (1)
-0x1070|      01 00 00 00 01 c2 23 e2 3f ee de ba 48 ff|  ......#.?...H.|      argument: "0100000001c223e23feedeba48ffe230ef48b66662fd804..." (raw bits) 0x1072-0x10cb (89)
+0x1070|      01 00 00 00 01 c2 23 e2 3f ee de ba 48 ff|  ......#.?...H.|      argument: "0100000001c223e23feedeba48ffe230ef48b66662fd8045a0c5a05fd6ad7f5b3671c328a40000000000fdffffff02060019000000000016001494bac4b8c20c9dc50e023769c3d53599ccb882d80000000000000000226a20" (raw bits) 0x1072-0x10cb (89)
 0x1080|e2 30 ef 48 b6 66 62 fd 80 45 a0 c5 a0 5f d6 ad|.0.H.fb..E..._..|
 *     |until 0x10ca.7 (89)                            |                |
       |                                               |                |    [279]{}: operation 0x10cb-0x10d1 (6)
@@ -1053,7 +1053,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [282]{}: operation 0x10d3-0x10f5 (34)
 0x10d0|         f0                                    |   .            |      tag: "append" (240) 0x10d3-0x10d4 (1)
 0x10d0|            20                                 |                |      argument_size: 32 0x10d4-0x10d5 (1)
-0x10d0|               e4 f8 82 80 8d c7 97 7f 07 7b 91|     .........{.|      argument: "e4f882808dc7977f077b91b2a24aa418bd23fee6d01b4bd..." (raw bits) 0x10d5-0x10f5 (32)
+0x10d0|               e4 f8 82 80 8d c7 97 7f 07 7b 91|     .........{.|      argument: "e4f882808dc7977f077b91b2a24aa418bd23fee6d01b4bdab43c67b0795b9b61" (raw bits) 0x10d5-0x10f5 (32)
 0x10e0|b2 a2 4a a4 18 bd 23 fe e6 d0 1b 4b da b4 3c 67|..J...#....K..<g|
 0x10f0|b0 79 5b 9b 61                                 |.y[.a           |
       |                                               |                |    [283]{}: operation 0x10f5-0x10f6 (1)
@@ -1063,7 +1063,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [285]{}: operation 0x10f7-0x1119 (34)
 0x10f0|                     f1                        |       .        |      tag: "prepend" (241) 0x10f7-0x10f8 (1)
 0x10f0|                        20                     |                |      argument_size: 32 0x10f8-0x10f9 (1)
-0x10f0|                           29 4f 57 7a 58 1f 52|         )OWzX.R|      argument: "294f577a581f520eb891d7358a0140982ab69261054d624..." (raw bits) 0x10f9-0x1119 (32)
+0x10f0|                           29 4f 57 7a 58 1f 52|         )OWzX.R|      argument: "294f577a581f520eb891d7358a0140982ab69261054d6244abbcb81b7e04a4d8" (raw bits) 0x10f9-0x1119 (32)
 0x1100|0e b8 91 d7 35 8a 01 40 98 2a b6 92 61 05 4d 62|....5..@.*..a.Mb|
 0x1110|44 ab bc b8 1b 7e 04 a4 d8                     |D....~...       |
       |                                               |                |    [286]{}: operation 0x1119-0x111a (1)
@@ -1073,7 +1073,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [288]{}: operation 0x111b-0x113d (34)
 0x1110|                                 f0            |           .    |      tag: "append" (240) 0x111b-0x111c (1)
 0x1110|                                    20         |                |      argument_size: 32 0x111c-0x111d (1)
-0x1110|                                       f6 cd d3|             ...|      argument: "f6cdd37e80af262882b4d2b339657d49ed28412d9179754..." (raw bits) 0x111d-0x113d (32)
+0x1110|                                       f6 cd d3|             ...|      argument: "f6cdd37e80af262882b4d2b339657d49ed28412d91797547d573121a8baf5f6c" (raw bits) 0x111d-0x113d (32)
 0x1120|7e 80 af 26 28 82 b4 d2 b3 39 65 7d 49 ed 28 41|~..&(....9e}I.(A|
 0x1130|2d 91 79 75 47 d5 73 12 1a 8b af 5f 6c         |-.yuG.s...._l   |
       |                                               |                |    [289]{}: operation 0x113d-0x113e (1)
@@ -1083,7 +1083,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [291]{}: operation 0x113f-0x1161 (34)
 0x1130|                                             f0|               .|      tag: "append" (240) 0x113f-0x1140 (1)
 0x1140|20                                             |                |      argument_size: 32 0x1140-0x1141 (1)
-0x1140|   11 69 36 e8 a5 6d 14 8e 97 1a 01 4b 43 ed 75| .i6..m.....KC.u|      argument: "116936e8a56d148e971a014b43ed7576bfd794228ca9b5e..." (raw bits) 0x1141-0x1161 (32)
+0x1140|   11 69 36 e8 a5 6d 14 8e 97 1a 01 4b 43 ed 75| .i6..m.....KC.u|      argument: "116936e8a56d148e971a014b43ed7576bfd794228ca9b5e9f7fa773396d399ad" (raw bits) 0x1141-0x1161 (32)
 0x1150|76 bf d7 94 22 8c a9 b5 e9 f7 fa 77 33 96 d3 99|v..."......w3...|
 0x1160|ad                                             |.               |
       |                                               |                |    [292]{}: operation 0x1161-0x1162 (1)
@@ -1093,7 +1093,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [294]{}: operation 0x1163-0x1185 (34)
 0x1160|         f1                                    |   .            |      tag: "prepend" (241) 0x1163-0x1164 (1)
 0x1160|            20                                 |                |      argument_size: 32 0x1164-0x1165 (1)
-0x1160|               71 1f 72 1c 1e a1 a8 01 41 7f c6|     q.r.....A..|      argument: "711f721c1ea1a801417fc6c9727c28aa86593fd1e7d18e9..." (raw bits) 0x1165-0x1185 (32)
+0x1160|               71 1f 72 1c 1e a1 a8 01 41 7f c6|     q.r.....A..|      argument: "711f721c1ea1a801417fc6c9727c28aa86593fd1e7d18e921d7e13548380b5bb" (raw bits) 0x1165-0x1185 (32)
 0x1170|c9 72 7c 28 aa 86 59 3f d1 e7 d1 8e 92 1d 7e 13|.r|(..Y?......~.|
 0x1180|54 83 80 b5 bb                                 |T....           |
       |                                               |                |    [295]{}: operation 0x1185-0x1186 (1)
@@ -1103,7 +1103,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [297]{}: operation 0x1187-0x11a9 (34)
 0x1180|                     f0                        |       .        |      tag: "append" (240) 0x1187-0x1188 (1)
 0x1180|                        20                     |                |      argument_size: 32 0x1188-0x1189 (1)
-0x1180|                           38 50 97 0e f6 31 81|         8P...1.|      argument: "3850970ef63181bb9da2bb50037750bdd4b9b3645f065af..." (raw bits) 0x1189-0x11a9 (32)
+0x1180|                           38 50 97 0e f6 31 81|         8P...1.|      argument: "3850970ef63181bb9da2bb50037750bdd4b9b3645f065af9448b8bc543c5b631" (raw bits) 0x1189-0x11a9 (32)
 0x1190|bb 9d a2 bb 50 03 77 50 bd d4 b9 b3 64 5f 06 5a|....P.wP....d_.Z|
 0x11a0|f9 44 8b 8b c5 43 c5 b6 31                     |.D...C..1       |
       |                                               |                |    [298]{}: operation 0x11a9-0x11aa (1)
@@ -1113,7 +1113,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [300]{}: operation 0x11ab-0x11cd (34)
 0x11a0|                                 f0            |           .    |      tag: "append" (240) 0x11ab-0x11ac (1)
 0x11a0|                                    20         |                |      argument_size: 32 0x11ac-0x11ad (1)
-0x11a0|                                       ae d9 19|             ...|      argument: "aed919cf56b0aee5a0b82828b5f554e4eccdea4efe3067c..." (raw bits) 0x11ad-0x11cd (32)
+0x11a0|                                       ae d9 19|             ...|      argument: "aed919cf56b0aee5a0b82828b5f554e4eccdea4efe3067c74bbae899a96bb73e" (raw bits) 0x11ad-0x11cd (32)
 0x11b0|cf 56 b0 ae e5 a0 b8 28 28 b5 f5 54 e4 ec cd ea|.V.....((..T....|
 0x11c0|4e fe 30 67 c7 4b ba e8 99 a9 6b b7 3e         |N.0g.K....k.>   |
       |                                               |                |    [301]{}: operation 0x11cd-0x11ce (1)
@@ -1123,7 +1123,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [303]{}: operation 0x11cf-0x11f1 (34)
 0x11c0|                                             f0|               .|      tag: "append" (240) 0x11cf-0x11d0 (1)
 0x11d0|20                                             |                |      argument_size: 32 0x11d0-0x11d1 (1)
-0x11d0|   35 1d 88 da c1 e3 e7 83 4f 37 e9 04 f2 f6 ea| 5.......O7.....|      argument: "351d88dac1e3e7834f37e904f2f6ea66d8dc65a0729c0d2..." (raw bits) 0x11d1-0x11f1 (32)
+0x11d0|   35 1d 88 da c1 e3 e7 83 4f 37 e9 04 f2 f6 ea| 5.......O7.....|      argument: "351d88dac1e3e7834f37e904f2f6ea66d8dc65a0729c0d276b354e0f59be10e8" (raw bits) 0x11d1-0x11f1 (32)
 0x11e0|66 d8 dc 65 a0 72 9c 0d 27 6b 35 4e 0f 59 be 10|f..e.r..'k5N.Y..|
 0x11f0|e8                                             |.               |
       |                                               |                |    [304]{}: operation 0x11f1-0x11f2 (1)
@@ -1133,7 +1133,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [306]{}: operation 0x11f3-0x1215 (34)
 0x11f0|         f0                                    |   .            |      tag: "append" (240) 0x11f3-0x11f4 (1)
 0x11f0|            20                                 |                |      argument_size: 32 0x11f4-0x11f5 (1)
-0x11f0|               e4 6d 37 e5 fa 8c 6b 66 40 d6 43|     .m7...kf@.C|      argument: "e46d37e5fa8c6b6640d643eef696418eff37cd548d34d5e..." (raw bits) 0x11f5-0x1215 (32)
+0x11f0|               e4 6d 37 e5 fa 8c 6b 66 40 d6 43|     .m7...kf@.C|      argument: "e46d37e5fa8c6b6640d643eef696418eff37cd548d34d5ecf2f5ec1b018fdd25" (raw bits) 0x11f5-0x1215 (32)
 0x1200|ee f6 96 41 8e ff 37 cd 54 8d 34 d5 ec f2 f5 ec|...A..7.T.4.....|
 0x1210|1b 01 8f dd 25                                 |....%           |
       |                                               |                |    [307]{}: operation 0x1215-0x1216 (1)
@@ -1143,7 +1143,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [309]{}: operation 0x1217-0x1239 (34)
 0x1210|                     f0                        |       .        |      tag: "append" (240) 0x1217-0x1218 (1)
 0x1210|                        20                     |                |      argument_size: 32 0x1218-0x1219 (1)
-0x1210|                           4d 0c ee ab bb d8 83|         M......|      argument: "4d0ceeabbbd8836427e64758c3059cd4059ec0d4fe7b155..." (raw bits) 0x1219-0x1239 (32)
+0x1210|                           4d 0c ee ab bb d8 83|         M......|      argument: "4d0ceeabbbd8836427e64758c3059cd4059ec0d4fe7b1557175faba67e869538" (raw bits) 0x1219-0x1239 (32)
 0x1220|64 27 e6 47 58 c3 05 9c d4 05 9e c0 d4 fe 7b 15|d'.GX.........{.|
 0x1230|57 17 5f ab a6 7e 86 95 38                     |W._..~..8       |
       |                                               |                |    [310]{}: operation 0x1239-0x123a (1)
@@ -1153,7 +1153,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [312]{}: operation 0x123b-0x125d (34)
 0x1230|                                 f0            |           .    |      tag: "append" (240) 0x123b-0x123c (1)
 0x1230|                                    20         |                |      argument_size: 32 0x123c-0x123d (1)
-0x1230|                                       90 81 5a|             ..Z|      argument: "90815aa3b5d1ee9dd6ee204f8c453afc383339cc0e8398c..." (raw bits) 0x123d-0x125d (32)
+0x1230|                                       90 81 5a|             ..Z|      argument: "90815aa3b5d1ee9dd6ee204f8c453afc383339cc0e8398ce95f15fa42cb2ed9d" (raw bits) 0x123d-0x125d (32)
 0x1240|a3 b5 d1 ee 9d d6 ee 20 4f 8c 45 3a fc 38 33 39|....... O.E:.839|
 0x1250|cc 0e 83 98 ce 95 f1 5f a4 2c b2 ed 9d         |......._.,...   |
       |                                               |                |    [313]{}: operation 0x125d-0x125e (1)
@@ -1163,7 +1163,7 @@ $ fq dv hello-world.txt.ots
       |                                               |                |    [315]{}: operation 0x125f-0x1281 (34)
 0x1250|                                             f1|               .|      tag: "prepend" (241) 0x125f-0x1260 (1)
 0x1260|20                                             |                |      argument_size: 32 0x1260-0x1261 (1)
-0x1260|   6e 03 3c d2 0d 40 91 77 5d a5 75 48 2d 1c 62| n.<..@.w].uH-.b|      argument: "6e033cd20d4091775da575482d1c62d80f195f79780f260..." (raw bits) 0x1261-0x1281 (32)
+0x1260|   6e 03 3c d2 0d 40 91 77 5d a5 75 48 2d 1c 62| n.<..@.w].uH-.b|      argument: "6e033cd20d4091775da575482d1c62d80f195f79780f260911ead2504fbc1d45" (raw bits) 0x1261-0x1281 (32)
 0x1270|d8 0f 19 5f 79 78 0f 26 09 11 ea d2 50 4f bc 1d|..._yx.&....PO..|
 0x1280|45                                             |E               |
       |                                               |                |    [316]{}: operation 0x1281-0x1282 (1)

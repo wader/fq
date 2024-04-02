@@ -168,9 +168,9 @@ Here the `sync` pattern starts at `0xb79` (bit `0`) and ends at `0xb7a.3` (exclu
 
 There are also some other `display` aliases:
 - `da` is `display({array_truncate: 0})` don't truncate arrays.
-- `dd` is `display({array_truncate: 0, display_bytes: 0})` don't truncate arrays and raw bytes.
-- `dv` is `display({array_truncate: 0, verbose: true})` don't truncate arrays and display verbosely.
-- `ddv` is `display({array_truncate: 0, display_bytes: 0 verbose: true})` don't truncate arrays and raw bytes. and display verbosely.
+- `dd` is `display({array_truncate: 0, string_truncate: 0, display_bytes: 0})` don't truncate arrays and raw bytes.
+- `dv` is `display({array_truncate: 0, string_truncate: 0, verbose: true})` don't truncate arrays and display verbosely.
+- `ddv` is `display({array_truncate: 0, string_truncate: 0, display_bytes: 0 verbose: true})` don't truncate arrays and raw bytes. and display verbosely.
 
 ## Interactive REPL
 
@@ -843,6 +843,15 @@ In query
 ```jq
 tovalue({skip_gaps: true})
 ```
+
+### `-o array_truncate=<number>`
+
+By default truncate long array when displaying decode value tree. Use `dd` or `d({array_truncate: 0})` to not truncate.
+
+### `-o string_truncate=<number>`
+
+By default truncate long strings when displaying decode value tree. Use `dd` or `d({string_truncate: 0})` to not truncate.
+
 
 ## Color and unicode output
 

@@ -377,7 +377,7 @@ $ fq -d elf dv libbbb.so
 0x3800|                        04 00 00 00            |        ....    |      addralign: 4 0x3808-0x380c (4)
 0x3800|                                    10 00 00 00|            ....|      entsize: 16 0x380c-0x3810 (4)
       |                                               |                |    [3]{}: section_header 0x240-0x3838 (13816)
-0x0240|00 5f 69 6e 69 74 00 5f 66 69 6e 69 00 5f 49 54|._init._fini._IT|      string: "\x00_init\x00_fini\x00_ITM_deregisterTMCloneTable\x00_ITM_r..." 0x240-0x2ef (175)
+0x0240|00 5f 69 6e 69 74 00 5f 66 69 6e 69 00 5f 49 54|._init._fini._IT|      string: "\x00_init\x00_fini\x00_ITM_deregisterTMCloneTable\x00_ITM_registerTMCloneTable\x00__cxa_finalize\x00__deregister_frame_info_bases\x00__register_frame_info_bases\x00libbbb_bbb\x00puts\x00libc.musl-x86.so.1\x00" 0x240-0x2ef (175)
 *     |until 0x2ee.7 (175)                            |                |
 0x3810|2d 00 00 00                                    |-...            |      name: ".dynstr" (45) 0x3810-0x3814 (4)
 0x3810|            03 00 00 00                        |    ....        |      type: "strtab" (0x3) (String table) 0x3814-0x3818 (4)
@@ -1475,7 +1475,7 @@ $ fq -d elf dv libbbb.so
 0x3c10|                        04 00 00 00            |        ....    |      addralign: 4 0x3c18-0x3c1c (4)
 0x3c10|                                    10 00 00 00|            ....|      entsize: 16 0x3c1c-0x3c20 (4)
       |                                               |                |    [29]{}: section_header 0x3470-0x3c48 (2008)
-0x3470|00 63 72 74 73 74 75 66 66 2e 63 00 5f 5f 43 54|.crtstuff.c.__CT|      string: "\x00crtstuff.c\x00__CTOR_LIST__\x00__DTOR_LIST__\x00__EH_FR..." 0x3470-0x3687 (535)
+0x3470|00 63 72 74 73 74 75 66 66 2e 63 00 5f 5f 43 54|.crtstuff.c.__CT|      string: "\x00crtstuff.c\x00__CTOR_LIST__\x00__DTOR_LIST__\x00__EH_FRAME_BEGIN__\x00deregister_tm_clones\x00__do_global_dtors_aux\x00completed.2\x00dtor_idx.1\x00frame_dummy\x00object.0\x00__CTOR_END__\x00__FRAME_END__\x00__do_global_ctors_aux\x00libbbb.c\x00__x86.get_pc_thunk.di\x00_DYNAMIC\x00__TMC_END__\x00__DTOR_END__\x00__x86.get_pc_thunk.ax\x00__dso_handle\x00__x86.get_pc_thunk.dx\x00__x86.get_pc_thunk.bx\x00__GNU_EH_FRAME_HDR\x00_GLOBAL_OFFSET_TABLE_\x00puts\x00__cxa_finalize\x00_init\x00__register_frame_info_bases\x00_ITM_registerTMCloneTable\x00__deregister_frame_info_bases\x00_ITM_deregisterTMCloneTable\x00_fini\x00libbbb_bbb\x00" 0x3470-0x3687 (535)
 *     |until 0x3686.7 (535)                           |                |
 0x3c20|09 00 00 00                                    |....            |      name: ".strtab" (9) 0x3c20-0x3c24 (4)
 0x3c20|            03 00 00 00                        |    ....        |      type: "strtab" (0x3) (String table) 0x3c24-0x3c28 (4)
@@ -1502,7 +1502,7 @@ $ fq -d elf dv libbbb.so
 0x3c40|01 00 00 00                                    |....            |      addralign: 1 0x3c40-0x3c44 (4)
 0x3c40|            00 00 00 00                        |    ....        |      entsize: 0 0x3c44-0x3c48 (4)
       |                                               |                |    [30]{}: section_header 0x3687-0x3c70 (1513)
-0x3680|                     00 2e 73 79 6d 74 61 62 00|       ..symtab.|      string: "\x00.symtab\x00.strtab\x00.shstrtab\x00.gnu.hash\x00.dynsym\x00.d..." 0x3687-0x3795 (270)
+0x3680|                     00 2e 73 79 6d 74 61 62 00|       ..symtab.|      string: "\x00.symtab\x00.strtab\x00.shstrtab\x00.gnu.hash\x00.dynsym\x00.dynstr\x00.rel.dyn\x00.rel.plt\x00.init\x00.plt.got\x00.text\x00.fini\x00.rodata\x00.eh_frame_hdr\x00.eh_frame\x00.note.gnu.property\x00.ctors\x00.dtors\x00.dynamic\x00.data\x00.bss\x00.comment\x00.debug_aranges\x00.debug_info\x00.debug_abbrev\x00.debug_line\x00.debug_str\x00.debug_ranges\x00" 0x3687-0x3795 (270)
 0x3690|2e 73 74 72 74 61 62 00 2e 73 68 73 74 72 74 61|.strtab..shstrta|
 *     |until 0x3794.7 (270)                           |                |
 0x3c40|                        11 00 00 00            |        ....    |      name: ".shstrtab" (17) 0x3c48-0x3c4c (4)

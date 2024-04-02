@@ -374,7 +374,7 @@ $ fq -d elf dv a_stripped
 0x11b0|04 00 00 00                                    |....            |      addralign: 4 0x11b0-0x11b4 (4)
 0x11b0|            10 00 00 00                        |    ....        |      entsize: 16 0x11b4-0x11b8 (4)
       |                                               |                |    [4]{}: section_header 0x220-0x11e0 (4032)
-0x0220|00 70 75 74 73 00 5f 5f 63 78 61 5f 66 69 6e 61|.puts.__cxa_fina|      string: "\x00puts\x00__cxa_finalize\x00__deregister_frame_info\x00_I..." 0x220-0x2e1 (193)
+0x0220|00 70 75 74 73 00 5f 5f 63 78 61 5f 66 69 6e 61|.puts.__cxa_fina|      string: "\x00puts\x00__cxa_finalize\x00__deregister_frame_info\x00_ITM_registerTMCloneTable\x00_ITM_deregisterTMCloneTable\x00__register_frame_info\x00_init\x00_fini\x00libbbb_bbb\x00__libc_start_main\x00libbbb.so\x00libc.musl-armhf.so.1\x00" 0x220-0x2e1 (193)
 *     |until 0x2e0.7 (193)                            |                |
 0x11b0|                        25 00 00 00            |        %...    |      name: ".dynstr" (37) 0x11b8-0x11bc (4)
 0x11b0|                                    03 00 00 00|            ....|      type: "strtab" (0x3) (String table) 0x11bc-0x11c0 (4)
@@ -915,7 +915,7 @@ $ fq -d elf dv a_stripped
 0x1450|                        01 00 00 00            |        ....    |      addralign: 1 0x1458-0x145c (4)
 0x1450|                                    00 00 00 00|            ....|      entsize: 0 0x145c-0x1460 (4)
       |                                               |                |    [21]{}: section_header 0x1068-0x1488 (1056)
-0x1060|                        00 2e 73 68 73 74 72 74|        ..shstrt|      string: "\x00.shstrtab\x00.interp\x00.gnu.hash\x00.dynsym\x00.dynstr\x00.r..." 0x1068-0x1115 (173)
+0x1060|                        00 2e 73 68 73 74 72 74|        ..shstrt|      string: "\x00.shstrtab\x00.interp\x00.gnu.hash\x00.dynsym\x00.dynstr\x00.rel.dyn\x00.rel.plt\x00.init\x00.text\x00.fini\x00.rodata\x00.eh_frame\x00.init_array\x00.fini_array\x00.dynamic\x00.got\x00.data\x00.bss\x00.comment\x00.ARM.attributes\x00" 0x1068-0x1115 (173)
 0x1070|61 62 00 2e 69 6e 74 65 72 70 00 2e 67 6e 75 2e|ab..interp..gnu.|
 *     |until 0x1114.7 (173)                           |                |
 0x1460|01 00 00 00                                    |....            |      name: ".shstrtab" (1) 0x1460-0x1464 (4)

@@ -12,7 +12,7 @@ $ fq -d leveldb_table dv snappy.ldb/000005.ldb
   0x000|            6c 6f 72 65 6d 2e 64 6f 6c 6f 72   |    lorem.dolor |              user_key: "lorem.dolor" 0x4-0xf (11)
   0x000|                                             01|               .|              type: "value" (0x1) 0xf-0x10 (1)
   0x001|03 00 00 00 00 00 00                           |.......         |              sequence_number: 3 0x10-0x17 (7)
-  0x001|                     4c 6f 72 65 6d 20 69 70 73|       Lorem ips|            value: "Lorem ipsum dolor sit amet, consectetur adipisc..." 0x17-0x1d4 (445)
+  0x001|                     4c 6f 72 65 6d 20 69 70 73|       Lorem ips|            value: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." 0x17-0x1d4 (445)
   0x002|75 6d 20 64 6f 6c 6f 72 20 73 69 74 20 61 6d 65|um dolor sit ame|
   *    |until 0x1d3.7 (445)                            |                |
        |                                               |                |          [1]{}: entry 0x1d4-0x3a2 (462)
@@ -25,7 +25,7 @@ $ fq -d leveldb_table dv snappy.ldb/000005.ldb
   0x01d|                                       01      |             .  |              type: "value" (0x1) 0x1dd-0x1de (1)
   0x01d|                                          02 00|              ..|              sequence_number: 2 0x1de-0x1e5 (7)
   0x01e|00 00 00 00 00                                 |.....           |
-  0x01e|               4c 6f 72 65 6d 20 69 70 73 75 6d|     Lorem ipsum|            value: "Lorem ipsum dolor sit amet, consectetur adipisc..." 0x1e5-0x3a2 (445)
+  0x01e|               4c 6f 72 65 6d 20 69 70 73 75 6d|     Lorem ipsum|            value: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." 0x1e5-0x3a2 (445)
   0x01f|20 64 6f 6c 6f 72 20 73 69 74 20 61 6d 65 74 2c| dolor sit amet,|
   *    |until 0x3a1.7 (445)                            |                |
        |                                               |                |          [2]{}: entry 0x3a2-0x570 (462)
@@ -38,7 +38,7 @@ $ fq -d leveldb_table dv snappy.ldb/000005.ldb
   0x03a|                                 01            |           .    |              type: "value" (0x1) 0x3ab-0x3ac (1)
   0x03a|                                    01 00 00 00|            ....|              sequence_number: 1 0x3ac-0x3b3 (7)
   0x03b|00 00 00                                       |...             |
-  0x03b|         4c 6f 72 65 6d 20 69 70 73 75 6d 20 64|   Lorem ipsum d|            value: "Lorem ipsum dolor sit amet, consectetur adipisc..." 0x3b3-0x570 (445)
+  0x03b|         4c 6f 72 65 6d 20 69 70 73 75 6d 20 64|   Lorem ipsum d|            value: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." 0x3b3-0x570 (445)
   0x03c|6f 6c 6f 72 20 73 69 74 20 61 6d 65 74 2c 20 63|olor sit amet, c|
   *    |until 0x56f.7 (445)                            |                |
        |                                               |                |          [3]{}: entry 0x570-0x5f4 (132)
@@ -49,7 +49,7 @@ $ fq -d leveldb_table dv snappy.ldb/000005.ldb
   0x057|         72 6f 77                              |   row          |              user_key: "row" 0x573-0x576 (3)
   0x057|                  01                           |      .         |              type: "value" (0x1) 0x576-0x577 (1)
   0x057|                     04 00 00 00 00 00 00      |       .......  |              sequence_number: 4 0x577-0x57e (7)
-  0x057|                                          52 6f|              Ro|            value: "Row, row, row your boat\nGently down the stream...." 0x57e-0x5f4 (118)
+  0x057|                                          52 6f|              Ro|            value: "Row, row, row your boat\nGently down the stream.\nMerrily, merrily, merrily, merrily,\nLife is but a dream. 🚣\u200d♂️" 0x57e-0x5f4 (118)
   0x058|77 2c 20 72 6f 77 2c 20 72 6f 77 20 79 6f 75 72|w, row, row your|
   *    |until 0x5f3.7 (118)                            |                |
        |                                               |                |        trailer{}: 0x5f4-0x5fc (8)

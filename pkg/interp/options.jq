@@ -45,10 +45,10 @@ def _opt_build_default_fixed:
     , decode_group:       "probe"
     , decode_progress:    (env.NO_DECODE_PROGRESS == null)
     , depth:              0
-    , expr:               "."
-    , expr_given:         false
     , expr_eval_path:     "arg"
     , expr_file:          null
+    , expr_given:         false
+    , expr:               "."
     , filenames:          null
     , force:              false
     , include_path:       null
@@ -58,12 +58,13 @@ def _opt_build_default_fixed:
     , raw_output:         ($stdout.is_terminal | not)
     , raw_string:         false
     , repl:               false
-    , skip_gaps:          false
-    , sizebase:           10
     , show_formats:       false
     , show_help:          false
+    , sizebase:           10
+    , skip_gaps:          false
     , slurp:              false
     , string_input:       false
+    , string_truncate:    50
     , unicode:            ($stdout.is_terminal and env.CLIUNICODE != null)
     , value_output:       false
     , verbose:            false
@@ -86,10 +87,10 @@ def _opt_options:
   , decode_progress:    "boolean"
   , depth:              "number"
   , display_bytes:      "number"
-  , expr:               "string"
-  , expr_given:         "boolean"
   , expr_eval_path:     "string"
   , expr_file:          "string"
+  , expr_given:         "boolean"
+  , expr:               "string"
   , filenames:          "array_string"
   , force:              "boolean"
   , include_path:       "string"
@@ -106,6 +107,7 @@ def _opt_options:
   , skip_gaps:          "boolean"
   , slurp:              "boolean"
   , string_input:       "boolean"
+  , string_truncate:    "number"
   , unicode:            "boolean"
   , value_output:       "boolean"
   , verbose:            "boolean"

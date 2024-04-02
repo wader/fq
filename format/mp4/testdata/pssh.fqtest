@@ -27,7 +27,7 @@ $ fq ddv pssh.mp4
      |                                               |                |          [0]{}: record 0x4a-0x47e (1076)
 0x040|                              01 00            |          ..    |            type: "rights_management_header" (1) 0x4a-0x4c (2)
 0x040|                                    30 04      |            0.  |            len: 1072 0x4c-0x4e (2)
-0x040|                                          3c 00|              <.|            xml: "<WRMHEADER xmlns=\"http://schemas.microsoft.com/..." 0x4e-0x47e (1072)
+0x040|                                          3c 00|              <.|            xml: "<WRMHEADER xmlns=\"http://schemas.microsoft.com/DRM/2007/03/PlayReadyHeader\" version=\"4.0.0.0\"><DATA><PROTECTINFO><KEYLEN>16</KEYLEN><ALGID>AESCTR</ALGID></PROTECTINFO><KID>xIA3iIGpTEm5lJ6TeS/4pw==</KID><CHECKSUM>32NQEM0v8BU=</CHECKSUM><LA_URL>https://manifest.prod.boltdns.net/license/v1/cenc/playready/6240731308001/01af0a57-214d-4fdd-86fd-f792135ce46f/883780c4-a981-494c-b994-9e93792ff8a7?fastly_token=NjQ3MTU2YTZfYmE2ZjNjNDVlMDQ1NWE3MGMyZjAyYmQzNDVhMGQ3YWQ1ZWE0MzU4NGNjMzQ0NzhhOWVjY2ZlMTkyYjk0MTQ1MA%3D%3D</LA_URL></DATA></WRMHEADER>" 0x4e-0x47e (1072)
 0x050|57 00 52 00 4d 00 48 00 45 00 41 00 44 00 45 00|W.R.M.H.E.A.D.E.|
 0x060|52 00 20 00 78 00 6d 00 6c 00 6e 00 73 00 3d 00|R. .x.m.l.n.s.=.|
 0x070|22 00 68 00 74 00 74 00 70 00 3a 00 2f 00 2f 00|".h.t.t.p.:././.|

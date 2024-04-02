@@ -6,7 +6,7 @@ $ fq -d bitcoin_transaction dv tx_b941ddad.dat
 0x000|                  01                           |      .         |  input_count: 1 0x6-0x7 (1)
      |                                               |                |  inputs[0:1]: 0x7-0x30 (41)
      |                                               |                |    [0]{}: input 0x7-0x30 (41)
-0x000|                     05 89 f2 e6 c0 7d 7c d7 d0|       .....}|..|      txid: "1efe0f1537ddd0b2f94d93b56d14f30f570b7495cfbf6cd..." (raw bits) 0x7-0x27 (32)
+0x000|                     05 89 f2 e6 c0 7d 7c d7 d0|       .....}|..|      txid: "1efe0f1537ddd0b2f94d93b56d14f30f570b7495cfbf6cd0d77c7dc0e6f28905" (raw bits) 0x7-0x27 (32)
 0x010|6c bf cf 95 74 0b 57 0f f3 14 6d b5 93 4d f9 b2|l...t.W...m..M..|
 0x020|d0 dd 37 15 0f fe 1e                           |..7....         |
 0x020|                     00 00 00 00               |       ....     |      vout: 0 0x27-0x2b (4)

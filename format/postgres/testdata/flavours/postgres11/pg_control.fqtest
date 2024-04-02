@@ -59,7 +59,7 @@ $ fq -d pg_control -o flavour=postgres11 dv pg_control
 0x00f0|   01                                          | .              |  float8_by_val: 1 0xf1-0xf2 (1)
 0x00f0|      00 00                                    |  ..            |  hole7: 0 0xf2-0xf4 (2)
 0x00f0|            00 00 00 00                        |    ....        |  data_checksum_version: 0 0xf4-0xf8 (4)
-0x00f0|                        8f d4 c0 21 b8 8d e7 55|        ...!...U|  mock_authentication_nonce: "8fd4c021b88de7556e475cdd35b16790492bd588c0e7919..." (raw bits) 0xf8-0x118 (32)
+0x00f0|                        8f d4 c0 21 b8 8d e7 55|        ...!...U|  mock_authentication_nonce: "8fd4c021b88de7556e475cdd35b16790492bd588c0e7919063eeec9abb6cb28e" (raw bits) 0xf8-0x118 (32)
 0x0100|6e 47 5c dd 35 b1 67 90 49 2b d5 88 c0 e7 91 90|nG\.5.g.I+......|
 0x0110|63 ee ec 9a bb 6c b2 8e                        |c....l..        |
 0x0110|                        86 44 4f 1b            |        .DO.    |  crc: 458179718 0x118-0x11c (4)

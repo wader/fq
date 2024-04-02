@@ -60,7 +60,7 @@ $ fq -d pg_control -o flavour=postgres10 dv pg_control
 0x00f0|                           01                  |         .      |  float8_by_val: 1 0xf9-0xfa (1)
 0x00f0|                              00 00            |          ..    |  hole7: 0 0xfa-0xfc (2)
 0x00f0|                                    00 00 00 00|            ....|  data_checksum_version: 0 0xfc-0x100 (4)
-0x0100|77 5d d6 0b 2d eb 61 b6 bb 30 a3 a2 99 5e 05 b2|w]..-.a..0...^..|  mock_authentication_nonce: "775dd60b2deb61b6bb30a3a2995e05b2cc043982a4a42ed..." (raw bits) 0x100-0x120 (32)
+0x0100|77 5d d6 0b 2d eb 61 b6 bb 30 a3 a2 99 5e 05 b2|w]..-.a..0...^..|  mock_authentication_nonce: "775dd60b2deb61b6bb30a3a2995e05b2cc043982a4a42ed83fa6a1d06eeeea2a" (raw bits) 0x100-0x120 (32)
 0x0110|cc 04 39 82 a4 a4 2e d8 3f a6 a1 d0 6e ee ea 2a|..9.....?...n..*|
 0x0120|9e 58 13 29                                    |.X.)            |  crc: 689133726 0x120-0x124 (4)
 0x0120|            00 00 00 00                        |    ....        |  padding1: 0 0x124-0x128 (4)

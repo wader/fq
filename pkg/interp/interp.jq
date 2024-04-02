@@ -42,13 +42,13 @@ def display_implicit($opts): display($opts; false);
 
 def d($opts): display($opts);
 def d: display({});
-def da($opts): display({array_truncate: 0} + $opts);
+def da($opts): display({array_truncate: 0, string_truncate: 0} + $opts);
 def da: da({});
-def dd($opts): display({array_truncate: 0, display_bytes: 0} + $opts);
+def dd($opts): display({array_truncate: 0, string_truncate: 0, display_bytes: 0} + $opts);
 def dd: dd({});
-def dv($opts): display({array_truncate: 0, verbose: true} + $opts);
+def dv($opts): display({array_truncate: 0, string_truncate: 0, verbose: true} + $opts);
 def dv: dv({});
-def ddv($opts): display({array_truncate: 0, display_bytes: 0, verbose: true} + $opts);
+def ddv($opts): display({array_truncate: 0, string_truncate: 0, display_bytes: 0, verbose: true} + $opts);
 def ddv: ddv({});
 
 def hexdump($opts): _hexdump(options({display_bytes: 0} + $opts));

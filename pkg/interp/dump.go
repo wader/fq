@@ -150,14 +150,13 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 		sym := vv.ScalarSym()
 		df := vv.ScalarDisplayFormat()
 		if sym == nil {
-			cfmt(colField, " %s", deco.ValueColor(actual).F(previewValue(actual, df)))
+			cfmt(colField, " %s", deco.ValueColor(actual).F(previewValue(actual, df, opts)))
 		} else {
-			cfmt(colField, " %s", deco.ValueColor(sym).F(previewValue(sym, scalar.NumberDecimal)))
-			cfmt(colField, " (%s)", deco.ValueColor(actual).F(previewValue(actual, df)))
+			cfmt(colField, " %s", deco.ValueColor(sym).F(previewValue(sym, scalar.NumberDecimal, opts)))
+			cfmt(colField, " (%s)", deco.ValueColor(actual).F(previewValue(actual, df, opts)))
 		}
 		desc = vv.ScalarDescription()
 		isSynthetic = vv.ScalarFlags().IsSynthetic()
-
 	default:
 		panic(fmt.Sprintf("unreachable vv %#+v", vv))
 	}

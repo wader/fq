@@ -4,7 +4,7 @@ $ fq dv known-and-unknown-notary.ots
 0x010|00 50 72 6f 6f 66 00 bf 89 e2 e8 84 e8 92 94   |.Proof......... |
 0x010|                                             01|               .|  version: 1 0x1f-0x20 (1)
 0x020|08                                             |.               |  digest_hash_algorithm: "sha256" (8) 0x20-0x21 (1)
-0x020|   d2 88 b2 ee 21 2b 01 e3 e5 f6 d3 33 df 3a 4d| ....!+.....3.:M|  digest: "d288b2ee212b01e3e5f6d333df3a4d53f292cc3f07b0901..." (raw bits) 0x21-0x41 (32)
+0x020|   d2 88 b2 ee 21 2b 01 e3 e5 f6 d3 33 df 3a 4d| ....!+.....3.:M|  digest: "d288b2ee212b01e3e5f6d333df3a4d53f292cc3f07b09013c0b40c8e7dcb9c03" (raw bits) 0x21-0x41 (32)
 0x030|53 f2 92 cc 3f 07 b0 90 13 c0 b4 0c 8e 7d cb 9c|S...?........}..|
 0x040|03                                             |.               |
      |                                               |                |  operations[0:13]: 0x41-0x109 (200)

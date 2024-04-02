@@ -476,7 +476,7 @@ $ fq -d elf dv a_dynamic
 0x3fc0|08 00 00 00 00 00 00 00                        |........        |      addralign: 8 0x3fc0-0x3fc8 (8)
 0x3fc0|                        18 00 00 00 00 00 00 00|        ........|      entsize: 24 0x3fc8-0x3fd0 (8)
       |                                               |                |    [5]{}: section_header 0x468-0x4010 (15272)
-0x0460|                        00 70 75 74 73 00 5f 5f|        .puts.__|      string: "\x00puts\x00__cxa_finalize\x00__deregister_frame_info\x00_I..." 0x468-0x52a (194)
+0x0460|                        00 70 75 74 73 00 5f 5f|        .puts.__|      string: "\x00puts\x00__cxa_finalize\x00__deregister_frame_info\x00_ITM_registerTMCloneTable\x00_ITM_deregisterTMCloneTable\x00__register_frame_info\x00_init\x00_fini\x00libbbb_bbb\x00__libc_start_main\x00libbbb.so\x00libc.musl-x86_64.so.1\x00" 0x468-0x52a (194)
 0x0470|63 78 61 5f 66 69 6e 61 6c 69 7a 65 00 5f 5f 64|cxa_finalize.__d|
 *     |until 0x529.7 (194)                            |                |
 0x3fd0|48 00 00 00                                    |H...            |      name: ".dynstr" (72) 0x3fd0-0x3fd4 (4)
@@ -1678,7 +1678,7 @@ $ fq -d elf dv a_dynamic
 0x4680|08 00 00 00 00 00 00 00                        |........        |      addralign: 8 0x4680-0x4688 (8)
 0x4680|                        18 00 00 00 00 00 00 00|        ........|      entsize: 24 0x4688-0x4690 (8)
       |                                               |                |    [32]{}: section_header 0x3b70-0x46d0 (2912)
-0x3b70|00 53 63 72 74 31 2e 63 00 63 72 74 73 74 75 66|.Scrt1.c.crtstuf|      string: "\x00Scrt1.c\x00crtstuff.c\x00__CTOR_LIST__\x00__DTOR_LIST__..." 0x3b70-0x3d5d (493)
+0x3b70|00 53 63 72 74 31 2e 63 00 63 72 74 73 74 75 66|.Scrt1.c.crtstuf|      string: "\x00Scrt1.c\x00crtstuff.c\x00__CTOR_LIST__\x00__DTOR_LIST__\x00__EH_FRAME_BEGIN__\x00deregister_tm_clones\x00__do_global_dtors_aux\x00completed.2\x00dtor_idx.1\x00frame_dummy\x00object.0\x00__CTOR_END__\x00__FRAME_END__\x00__do_global_ctors_aux\x00a.c\x00_DYNAMIC\x00__GNU_EH_FRAME_HDR\x00_GLOBAL_OFFSET_TABLE_\x00__TMC_END__\x00__DTOR_END__\x00puts\x00__cxa_finalize\x00__dso_handle\x00aaa\x00_init\x00__deregister_frame_info\x00_ITM_registerTMCloneTable\x00_start_c\x00_ITM_deregisterTMCloneTable\x00__bss_start\x00_fini\x00_edata\x00_end\x00libbbb_bbb\x00__libc_start_main\x00__register_frame_info\x00" 0x3b70-0x3d5d (493)
 *     |until 0x3d5c.7 (493)                           |                |
 0x4690|09 00 00 00                                    |....            |      name: ".strtab" (9) 0x4690-0x4694 (4)
 0x4690|            03 00 00 00                        |    ....        |      type: "strtab" (0x3) (String table) 0x4694-0x4698 (4)
@@ -1706,7 +1706,7 @@ $ fq -d elf dv a_dynamic
 0x46c0|01 00 00 00 00 00 00 00                        |........        |      addralign: 1 0x46c0-0x46c8 (8)
 0x46c0|                        00 00 00 00 00 00 00 00|        ........|      entsize: 0 0x46c8-0x46d0 (8)
       |                                               |                |    [33]{}: section_header 0x3d5d-0x4710 (2483)
-0x3d50|                                       00 2e 73|             ..s|      string: "\x00.symtab\x00.strtab\x00.shstrtab\x00.interp\x00.note.gnu.pr..." 0x3d5d-0x3e8d (304)
+0x3d50|                                       00 2e 73|             ..s|      string: "\x00.symtab\x00.strtab\x00.shstrtab\x00.interp\x00.note.gnu.property\x00.gnu.hash\x00.dynsym\x00.dynstr\x00.rela.dyn\x00.rela.plt\x00.init\x00.plt.got\x00.text\x00.fini\x00.rodata\x00.eh_frame_hdr\x00.eh_frame\x00.ctors\x00.dtors\x00.dynamic\x00.data\x00.bss\x00.comment\x00.debug_aranges\x00.debug_info\x00.debug_abbrev\x00.debug_line\x00.debug_frame\x00.debug_str\x00.debug_loc\x00.debug_ranges\x00" 0x3d5d-0x3e8d (304)
 0x3d60|79 6d 74 61 62 00 2e 73 74 72 74 61 62 00 2e 73|ymtab..strtab..s|
 *     |until 0x3e8c.7 (304)                           |                |
 0x46d0|11 00 00 00                                    |....            |      name: ".shstrtab" (17) 0x46d0-0x46d4 (4)

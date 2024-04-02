@@ -379,7 +379,7 @@ $ fq -d elf dv libbbb.so
 0x3940|08 00 00 00 00 00 00 00                        |........        |      addralign: 8 0x3940-0x3948 (8)
 0x3940|                        18 00 00 00 00 00 00 00|        ........|      entsize: 24 0x3948-0x3950 (8)
       |                                               |                |    [3]{}: section_header 0x390-0x3990 (13824)
-0x0390|00 5f 69 6e 69 74 00 5f 66 69 6e 69 00 5f 49 54|._init._fini._IT|      string: "\x00_init\x00_fini\x00_ITM_deregisterTMCloneTable\x00_ITM_r..." 0x390-0x436 (166)
+0x0390|00 5f 69 6e 69 74 00 5f 66 69 6e 69 00 5f 49 54|._init._fini._IT|      string: "\x00_init\x00_fini\x00_ITM_deregisterTMCloneTable\x00_ITM_registerTMCloneTable\x00__cxa_finalize\x00__deregister_frame_info\x00__register_frame_info\x00libbbb_bbb\x00puts\x00libc.musl-x86_64.so.1\x00" 0x390-0x436 (166)
 *     |until 0x435.7 (166)                            |                |
 0x3950|2d 00 00 00                                    |-...            |      name: ".dynstr" (45) 0x3950-0x3954 (4)
 0x3950|            03 00 00 00                        |    ....        |      type: "strtab" (0x3) (String table) 0x3954-0x3958 (4)
@@ -1466,7 +1466,7 @@ $ fq -d elf dv libbbb.so
 0x3fc0|08 00 00 00 00 00 00 00                        |........        |      addralign: 8 0x3fc0-0x3fc8 (8)
 0x3fc0|                        18 00 00 00 00 00 00 00|        ........|      entsize: 24 0x3fc8-0x3fd0 (8)
       |                                               |                |    [29]{}: section_header 0x35c8-0x4010 (2632)
-0x35c0|                        00 63 72 74 73 74 75 66|        .crtstuf|      string: "\x00crtstuff.c\x00__CTOR_LIST__\x00__DTOR_LIST__\x00__EH_FR..." 0x35c8-0x377b (435)
+0x35c0|                        00 63 72 74 73 74 75 66|        .crtstuf|      string: "\x00crtstuff.c\x00__CTOR_LIST__\x00__DTOR_LIST__\x00__EH_FRAME_BEGIN__\x00deregister_tm_clones\x00__do_global_dtors_aux\x00completed.2\x00dtor_idx.1\x00frame_dummy\x00object.0\x00__CTOR_END__\x00__FRAME_END__\x00__do_global_ctors_aux\x00libbbb.c\x00_DYNAMIC\x00__TMC_END__\x00__DTOR_END__\x00__dso_handle\x00__GNU_EH_FRAME_HDR\x00_GLOBAL_OFFSET_TABLE_\x00puts\x00__cxa_finalize\x00_init\x00__deregister_frame_info\x00_ITM_registerTMCloneTable\x00_ITM_deregisterTMCloneTable\x00_fini\x00libbbb_bbb\x00__register_frame_info\x00" 0x35c8-0x377b (435)
 0x35d0|66 2e 63 00 5f 5f 43 54 4f 52 5f 4c 49 53 54 5f|f.c.__CTOR_LIST_|
 *     |until 0x377a.7 (435)                           |                |
 0x3fd0|09 00 00 00                                    |....            |      name: ".strtab" (9) 0x3fd0-0x3fd4 (4)
@@ -1495,7 +1495,7 @@ $ fq -d elf dv libbbb.so
 0x4000|01 00 00 00 00 00 00 00                        |........        |      addralign: 1 0x4000-0x4008 (8)
 0x4000|                        00 00 00 00 00 00 00 00|        ........|      entsize: 0 0x4008-0x4010 (8)
       |                                               |                |    [30]{}: section_header 0x377b-0x4050 (2261)
-0x3770|                                 00 2e 73 79 6d|           ..sym|      string: "\x00.symtab\x00.strtab\x00.shstrtab\x00.gnu.hash\x00.dynsym\x00.d..." 0x377b-0x388b (272)
+0x3770|                                 00 2e 73 79 6d|           ..sym|      string: "\x00.symtab\x00.strtab\x00.shstrtab\x00.gnu.hash\x00.dynsym\x00.dynstr\x00.rela.dyn\x00.rela.plt\x00.init\x00.plt.got\x00.text\x00.fini\x00.rodata\x00.eh_frame_hdr\x00.eh_frame\x00.note.gnu.property\x00.ctors\x00.dtors\x00.dynamic\x00.data\x00.bss\x00.comment\x00.debug_aranges\x00.debug_info\x00.debug_abbrev\x00.debug_line\x00.debug_str\x00.debug_ranges\x00" 0x377b-0x388b (272)
 0x3780|74 61 62 00 2e 73 74 72 74 61 62 00 2e 73 68 73|tab..strtab..shs|
 *     |until 0x388a.7 (272)                           |                |
 0x4010|11 00 00 00                                    |....            |      name: ".shstrtab" (17) 0x4010-0x4014 (4)

@@ -80,7 +80,7 @@ $ fq dv Info.plist
 0x220|            10                                 |    .           |          exponent: 0 0x224.4-0x225 (0.4)
 0x220|               37                              |     7          |          size_bigint: 55 0x225-0x226 (1)
      |                                               |                |          size: 55
-0x220|                  43 6f 70 79 72 69 67 68 74 20|      Copyright |          value: "Copyright (c) 2011-2021 Apple Inc. All rights r..." 0x226-0x25d (55)
+0x220|                  43 6f 70 79 72 69 67 68 74 20|      Copyright |          value: "Copyright (c) 2011-2021 Apple Inc. All rights reserved." 0x226-0x25d (55)
 0x230|28 63 29 20 32 30 31 31 2d 32 30 32 31 20 41 70|(c) 2011-2021 Ap|
 *    |until 0x25c.7 (55)                             |                |
      |                                               |                |      [4]{}: entry 0xf-0x264 (597)
@@ -492,7 +492,7 @@ $ fq dv Info.plist
 0x410|                              10               |          .     |                    exponent: 0 0x41a.4-0x41b (0.4)
 0x410|                                 33            |           3    |                    size_bigint: 51 0x41b-0x41c (1)
      |                                               |                |                    size: 51
-0x410|                                    63 6f 6d 2e|            com.|                    value: "com.apple.videotoolbox.videodecoder.prores.embe..." 0x41c-0x44f (51)
+0x410|                                    63 6f 6d 2e|            com.|                    value: "com.apple.videotoolbox.videodecoder.prores.embedded" 0x41c-0x44f (51)
 0x420|61 70 70 6c 65 2e 76 69 64 65 6f 74 6f 6f 6c 62|apple.videotoolb|
 *    |until 0x44e.7 (51)                             |                |
      |                                               |                |                [5]{}: entry 0x313-0x45f (332)
@@ -533,7 +533,7 @@ $ fq dv Info.plist
 0x220|            10                                 |    .           |                    exponent: 0 0x224.4-0x225 (0.4)
 0x220|               37                              |     7          |                    size_bigint: 55 0x225-0x226 (1)
      |                                               |                |                    size: 55
-0x220|                  43 6f 70 79 72 69 67 68 74 20|      Copyright |                    value: "Copyright (c) 2011-2021 Apple Inc. All rights r..." 0x226-0x25d (55)
+0x220|                  43 6f 70 79 72 69 67 68 74 20|      Copyright |                    value: "Copyright (c) 2011-2021 Apple Inc. All rights reserved." 0x226-0x25d (55)
 0x230|28 63 29 20 32 30 31 31 2d 32 30 32 31 20 41 70|(c) 2011-2021 Ap|
 *    |until 0x25c.7 (55)                             |                |
 0x310|            33                                 |    3           |                  key_index: 51 0x314-0x315 (1)
@@ -735,7 +735,7 @@ $ fq dv Info.plist
 0x540|                                             10|               .|                    exponent: 0 0x54f.4-0x550 (0.4)
 0x550|3a                                             |:               |                    size_bigint: 58 0x550-0x551 (1)
      |                                               |                |                    size: 58
-0x550|   63 6f 6d 2e 61 70 70 6c 65 2e 76 69 64 65 6f| com.apple.video|                    value: "com.apple.videotoolbox.videoencoder.prores-4444..." 0x551-0x58b (58)
+0x550|   63 6f 6d 2e 61 70 70 6c 65 2e 76 69 64 65 6f| com.apple.video|                    value: "com.apple.videotoolbox.videoencoder.prores-4444xq.embedded" 0x551-0x58b (58)
 0x560|74 6f 6f 6c 62 6f 78 2e 76 69 64 65 6f 65 6e 63|toolbox.videoenc|
 *    |until 0x58a.7 (58)                             |                |
      |                                               |                |                [5]{}: entry 0x4cc-0x54e (130)
@@ -810,7 +810,7 @@ $ fq dv Info.plist
 0x220|            10                                 |    .           |                    exponent: 0 0x224.4-0x225 (0.4)
 0x220|               37                              |     7          |                    size_bigint: 55 0x225-0x226 (1)
      |                                               |                |                    size: 55
-0x220|                  43 6f 70 79 72 69 67 68 74 20|      Copyright |                    value: "Copyright (c) 2011-2021 Apple Inc. All rights r..." 0x226-0x25d (55)
+0x220|                  43 6f 70 79 72 69 67 68 74 20|      Copyright |                    value: "Copyright (c) 2011-2021 Apple Inc. All rights reserved." 0x226-0x25d (55)
 0x230|28 63 29 20 32 30 31 31 2d 32 30 32 31 20 41 70|(c) 2011-2021 Ap|
 *    |until 0x25c.7 (55)                             |                |
      |                                               |                |                  key{}: 0x3b4-0x3c0 (12)
@@ -975,7 +975,7 @@ $ fq dv Info.plist
 0x600|   10                                          | .              |                    exponent: 0 0x601.4-0x602 (0.4)
 0x600|      38                                       |  8             |                    size_bigint: 56 0x602-0x603 (1)
      |                                               |                |                    size: 56
-0x600|         63 6f 6d 2e 61 70 70 6c 65 2e 76 69 64|   com.apple.vid|                    value: "com.apple.videotoolbox.videoencoder.prores-4444..." 0x603-0x63b (56)
+0x600|         63 6f 6d 2e 61 70 70 6c 65 2e 76 69 64|   com.apple.vid|                    value: "com.apple.videotoolbox.videoencoder.prores-4444.embedded" 0x603-0x63b (56)
 0x610|65 6f 74 6f 6f 6c 62 6f 78 2e 76 69 64 65 6f 65|eotoolbox.videoe|
 *    |until 0x63a.7 (56)                             |                |
      |                                               |                |                [5]{}: entry 0x4e9-0x600 (279)
@@ -1050,7 +1050,7 @@ $ fq dv Info.plist
 0x220|            10                                 |    .           |                    exponent: 0 0x224.4-0x225 (0.4)
 0x220|               37                              |     7          |                    size_bigint: 55 0x225-0x226 (1)
      |                                               |                |                    size: 55
-0x220|                  43 6f 70 79 72 69 67 68 74 20|      Copyright |                    value: "Copyright (c) 2011-2021 Apple Inc. All rights r..." 0x226-0x25d (55)
+0x220|                  43 6f 70 79 72 69 67 68 74 20|      Copyright |                    value: "Copyright (c) 2011-2021 Apple Inc. All rights reserved." 0x226-0x25d (55)
 0x230|28 63 29 20 32 30 31 31 2d 32 30 32 31 20 41 70|(c) 2011-2021 Ap|
 *    |until 0x25c.7 (55)                             |                |
      |                                               |                |                  key{}: 0x3b4-0x3c0 (12)
@@ -1216,7 +1216,7 @@ $ fq dv Info.plist
 0x680|                                             10|               .|                    exponent: 0 0x68f.4-0x690 (0.4)
 0x690|39                                             |9               |                    size_bigint: 57 0x690-0x691 (1)
      |                                               |                |                    size: 57
-0x690|   63 6f 6d 2e 61 70 70 6c 65 2e 76 69 64 65 6f| com.apple.video|                    value: "com.apple.videotoolbox.videoencoder.prores-422h..." 0x691-0x6ca (57)
+0x690|   63 6f 6d 2e 61 70 70 6c 65 2e 76 69 64 65 6f| com.apple.video|                    value: "com.apple.videotoolbox.videoencoder.prores-422hq.embedded" 0x691-0x6ca (57)
 0x6a0|74 6f 6f 6c 62 6f 78 2e 76 69 64 65 6f 65 6e 63|toolbox.videoenc|
 *    |until 0x6c9.7 (57)                             |                |
      |                                               |                |                [5]{}: entry 0x4e9-0x68e (421)
@@ -1291,7 +1291,7 @@ $ fq dv Info.plist
 0x220|            10                                 |    .           |                    exponent: 0 0x224.4-0x225 (0.4)
 0x220|               37                              |     7          |                    size_bigint: 55 0x225-0x226 (1)
      |                                               |                |                    size: 55
-0x220|                  43 6f 70 79 72 69 67 68 74 20|      Copyright |                    value: "Copyright (c) 2011-2021 Apple Inc. All rights r..." 0x226-0x25d (55)
+0x220|                  43 6f 70 79 72 69 67 68 74 20|      Copyright |                    value: "Copyright (c) 2011-2021 Apple Inc. All rights reserved." 0x226-0x25d (55)
 0x230|28 63 29 20 32 30 31 31 2d 32 30 32 31 20 41 70|(c) 2011-2021 Ap|
 *    |until 0x25c.7 (55)                             |                |
      |                                               |                |                  key{}: 0x3b4-0x3c0 (12)
@@ -1457,7 +1457,7 @@ $ fq dv Info.plist
 0x710|                        10                     |        .       |                    exponent: 0 0x718.4-0x719 (0.4)
 0x710|                           37                  |         7      |                    size_bigint: 55 0x719-0x71a (1)
      |                                               |                |                    size: 55
-0x710|                              63 6f 6d 2e 61 70|          com.ap|                    value: "com.apple.videotoolbox.videoencoder.prores-422...." 0x71a-0x751 (55)
+0x710|                              63 6f 6d 2e 61 70|          com.ap|                    value: "com.apple.videotoolbox.videoencoder.prores-422.embedded" 0x71a-0x751 (55)
 0x720|70 6c 65 2e 76 69 64 65 6f 74 6f 6f 6c 62 6f 78|ple.videotoolbox|
 *    |until 0x750.7 (55)                             |                |
      |                                               |                |                [5]{}: entry 0x4e9-0x717 (558)
@@ -1532,7 +1532,7 @@ $ fq dv Info.plist
 0x220|            10                                 |    .           |                    exponent: 0 0x224.4-0x225 (0.4)
 0x220|               37                              |     7          |                    size_bigint: 55 0x225-0x226 (1)
      |                                               |                |                    size: 55
-0x220|                  43 6f 70 79 72 69 67 68 74 20|      Copyright |                    value: "Copyright (c) 2011-2021 Apple Inc. All rights r..." 0x226-0x25d (55)
+0x220|                  43 6f 70 79 72 69 67 68 74 20|      Copyright |                    value: "Copyright (c) 2011-2021 Apple Inc. All rights reserved." 0x226-0x25d (55)
 0x230|28 63 29 20 32 30 31 31 2d 32 30 32 31 20 41 70|(c) 2011-2021 Ap|
 *    |until 0x25c.7 (55)                             |                |
      |                                               |                |                  key{}: 0x3b4-0x3c0 (12)
@@ -1697,7 +1697,7 @@ $ fq dv Info.plist
 0x7a0|               10                              |     .          |                    exponent: 0 0x7a5.4-0x7a6 (0.4)
 0x7a0|                  39                           |      9         |                    size_bigint: 57 0x7a6-0x7a7 (1)
      |                                               |                |                    size: 57
-0x7a0|                     63 6f 6d 2e 61 70 70 6c 65|       com.apple|                    value: "com.apple.videotoolbox.videoencoder.prores-422l..." 0x7a7-0x7e0 (57)
+0x7a0|                     63 6f 6d 2e 61 70 70 6c 65|       com.apple|                    value: "com.apple.videotoolbox.videoencoder.prores-422lt.embedded" 0x7a7-0x7e0 (57)
 0x7b0|2e 76 69 64 65 6f 74 6f 6f 6c 62 6f 78 2e 76 69|.videotoolbox.vi|
 *    |until 0x7df.7 (57)                             |                |
      |                                               |                |                [5]{}: entry 0x4e9-0x7a4 (699)
@@ -1772,7 +1772,7 @@ $ fq dv Info.plist
 0x220|            10                                 |    .           |                    exponent: 0 0x224.4-0x225 (0.4)
 0x220|               37                              |     7          |                    size_bigint: 55 0x225-0x226 (1)
      |                                               |                |                    size: 55
-0x220|                  43 6f 70 79 72 69 67 68 74 20|      Copyright |                    value: "Copyright (c) 2011-2021 Apple Inc. All rights r..." 0x226-0x25d (55)
+0x220|                  43 6f 70 79 72 69 67 68 74 20|      Copyright |                    value: "Copyright (c) 2011-2021 Apple Inc. All rights reserved." 0x226-0x25d (55)
 0x230|28 63 29 20 32 30 31 31 2d 32 30 32 31 20 41 70|(c) 2011-2021 Ap|
 *    |until 0x25c.7 (55)                             |                |
      |                                               |                |                  key{}: 0x3b4-0x3c0 (12)
@@ -1937,7 +1937,7 @@ $ fq dv Info.plist
 0x830|                              10               |          .     |                    exponent: 0 0x83a.4-0x83b (0.4)
 0x830|                                 3c            |           <    |                    size_bigint: 60 0x83b-0x83c (1)
      |                                               |                |                    size: 60
-0x830|                                    63 6f 6d 2e|            com.|                    value: "com.apple.videotoolbox.videoencoder.prores-422p..." 0x83c-0x878 (60)
+0x830|                                    63 6f 6d 2e|            com.|                    value: "com.apple.videotoolbox.videoencoder.prores-422proxy.embedded" 0x83c-0x878 (60)
 0x840|61 70 70 6c 65 2e 76 69 64 65 6f 74 6f 6f 6c 62|apple.videotoolb|
 *    |until 0x877.7 (60)                             |                |
      |                                               |                |                [5]{}: entry 0x4e9-0x839 (848)
@@ -2012,7 +2012,7 @@ $ fq dv Info.plist
 0x220|            10                                 |    .           |                    exponent: 0 0x224.4-0x225 (0.4)
 0x220|               37                              |     7          |                    size_bigint: 55 0x225-0x226 (1)
      |                                               |                |                    size: 55
-0x220|                  43 6f 70 79 72 69 67 68 74 20|      Copyright |                    value: "Copyright (c) 2011-2021 Apple Inc. All rights r..." 0x226-0x25d (55)
+0x220|                  43 6f 70 79 72 69 67 68 74 20|      Copyright |                    value: "Copyright (c) 2011-2021 Apple Inc. All rights reserved." 0x226-0x25d (55)
 0x230|28 63 29 20 32 30 31 31 2d 32 30 32 31 20 41 70|(c) 2011-2021 Ap|
 *    |until 0x25c.7 (55)                             |                |
      |                                               |                |                  key{}: 0x3b4-0x3c0 (12)
