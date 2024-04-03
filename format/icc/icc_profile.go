@@ -8,6 +8,7 @@ import (
 	"github.com/wader/fq/internal/mathx"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 func init() {
@@ -70,7 +71,7 @@ func multiLocalizedUnicodeType(tagStart int64, d *decode.D) {
 }
 
 var typeToDecode = map[string]func(tagStart int64, d *decode.D){
-	"XYZ ": xyzType,
+	"XYZ":  xyzType,
 	"text": textType,
 	"para": paraType,
 	"desc": descType,
@@ -111,13 +112,13 @@ func iccProfileDecode(d *decode.D) any {
 	d.FramedFn(int64(size)*8, func(d *decode.D) {
 		d.FieldStruct("header", func(d *decode.D) {
 			d.FieldU32("size")
-			d.FieldUTF8NullFixedLen("cmm_type_signature", 4)
+			d.FieldUTF8NullFixedLen("cmm_type_signature", 4, scalar.ActualTrimSpace)
 			d.FieldUintFn("version_major", decodeBCDU8)
 			d.FieldUintFn("version_minor", decodeBCDU8)
 			d.FieldU16("version_reserved")
-			d.FieldUTF8NullFixedLen("device_class_signature", 4)
-			d.FieldUTF8NullFixedLen("color_space", 4)
-			d.FieldUTF8NullFixedLen("connection_space", 4)
+			d.FieldUTF8NullFixedLen("device_class_signature", 4, scalar.ActualTrimSpace)
+			d.FieldUTF8NullFixedLen("color_space", 4, scalar.ActualTrimSpace)
+			d.FieldUTF8NullFixedLen("connection_space", 4, scalar.ActualTrimSpace)
 			d.FieldStruct("timestamp", func(d *decode.D) {
 				d.FieldU16("year")
 				d.FieldU16("month")
@@ -127,16 +128,16 @@ func iccProfileDecode(d *decode.D) any {
 				d.FieldU16("seconds")
 
 			})
-			d.FieldUTF8NullFixedLen("file_signature", 4)
-			d.FieldUTF8NullFixedLen("primary_platform", 4)
+			d.FieldUTF8NullFixedLen("file_signature", 4, scalar.ActualTrimSpace)
+			d.FieldUTF8NullFixedLen("primary_platform", 4, scalar.ActualTrimSpace)
 			d.FieldU32("flags")
-			d.FieldUTF8NullFixedLen("device_manufacturer", 4)
-			d.FieldUTF8NullFixedLen("device_model", 4)
-			d.FieldUTF8NullFixedLen("device_attribute", 8)
-			d.FieldUTF8NullFixedLen("render_intent", 4)
-			d.FieldUTF8NullFixedLen("xyz_illuminant", 12)
-			d.FieldUTF8NullFixedLen("profile_creator_signature", 4)
-			d.FieldUTF8NullFixedLen("profile_id", 16)
+			d.FieldUTF8NullFixedLen("device_manufacturer", 4, scalar.ActualTrimSpace)
+			d.FieldUTF8NullFixedLen("device_model", 4, scalar.ActualTrimSpace)
+			d.FieldUTF8NullFixedLen("device_attribute", 8, scalar.ActualTrimSpace)
+			d.FieldUTF8NullFixedLen("render_intent", 4, scalar.ActualTrimSpace)
+			d.FieldUTF8NullFixedLen("xyz_illuminant", 12, scalar.ActualTrimSpace)
+			d.FieldUTF8NullFixedLen("profile_creator_signature", 4, scalar.ActualTrimSpace)
+			d.FieldUTF8NullFixedLen("profile_id", 16, scalar.ActualTrimSpace)
 			d.FieldRawLen("reserved", 28*8, d.BitBufIsZero())
 		})
 
@@ -145,13 +146,13 @@ func iccProfileDecode(d *decode.D) any {
 			d.FieldArray("table", func(d *decode.D) {
 				for i := uint64(0); i < tagCount; i++ {
 					d.FieldStruct("element", func(d *decode.D) {
-						d.FieldUTF8NullFixedLen("signature", 4)
+						d.FieldUTF8NullFixedLen("signature", 4, scalar.ActualTrimSpace)
 						offset := d.FieldU32("offset")
 						size := d.FieldU32("size")
 
 						d.RangeFn(int64(offset)*8, int64(size)*8, func(d *decode.D) {
 							tagStart := d.Pos()
-							typ := d.FieldUTF8NullFixedLen("type", 4)
+							typ := d.FieldUTF8NullFixedLen("type", 4, scalar.ActualTrimSpace)
 							d.FieldU32("reserved")
 
 							if fn, ok := typeToDecode[typ]; ok {
