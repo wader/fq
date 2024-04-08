@@ -1,4 +1,4 @@
-$ fq -d bencode dv bbb.torrent
+$ fq -d bencode 'dv({string_truncate: 50})' bbb.torrent
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: bbb.torrent (bencode) 0x0-0x3796 (14230)
 0x0000|64                                             |d               |  type: "dictionary" ("d") 0x0-0x1 (1)
       |                                               |                |  pairs[0:9]: 0x1-0x3795 (14228)
@@ -181,7 +181,7 @@ $ fq -d bencode dv bbb.torrent
 0x01a0|                                          31 33|              13|              length: 13580 0x1ae-0x1b3 (5)
 0x01b0|35 38 30                                       |580             |
 0x01b0|         3a                                    |   :            |              separator: ":" (valid) 0x1b3-0x1b4 (1)
-0x01b0|            99 71 9b 2c 2e aa b6 80 df fa 1f 36|    .q.,.......6|              value: "�q�,.�����\x1f6\x0e�LS�x���)\xef..." 0x1b4-0x36c0 (13580)
+0x01b0|            99 71 9b 2c 2e aa b6 80 df fa 1f 36|    .q.,.......6|              value: "�q�,.�����\x1f6\x0e�LS�x���)�>����\x03\x19%�\x04\x04�}�\v�Ķ{\rB���wT\r�" 0x1b4-0x36c0 (13580)
 0x01c0|0e e0 4c 53 f3 78 bb 84 82 29 c8 3e 98 91 93 f9|..LS.x...).>....|
 *     |until 0x36bf.7 (13580)                         |                |
       |                                               |                |          [6]{}: pair 0x36c0-0x3701 (65)
@@ -257,7 +257,7 @@ $ fq -d bencode dv bbb.torrent
 0x3700|                                       39      |             9  |            type: "string" ("9") 0x370d-0x370e (1)
 0x3700|                                       39 30   |             90 |            length: 90 0x370d-0x370f (2)
 0x3700|                                             3a|               :|            separator: ":" (valid) 0x370f-0x3710 (1)
-0x3710|68 74 74 70 3a 2f 2f 64 69 73 74 72 69 62 75 74|http://distribut|            value: "http://distribution.bbb3d.renderfarming.net/vid..." 0x3710-0x376a (90)
+0x3710|68 74 74 70 3a 2f 2f 64 69 73 74 72 69 62 75 74|http://distribut|            value: "http://distribution.bbb3d.renderfarming.net/video/" 0x3710-0x376a (90)
 *     |until 0x3769.7 (90)                            |                |
 0x3760|                              65               |          e     |        end: "e" (valid) 0x376a-0x376b (1)
       |                                               |                |    [8]{}: pair 0x376b-0x3795 (42)

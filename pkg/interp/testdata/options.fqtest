@@ -86,6 +86,7 @@ $ fq -n options
   "skip_gaps": false,
   "slurp": false,
   "string_input": false,
+  "string_truncate": 50,
   "unicode": false,
   "value_output": false,
   "verbose": false,

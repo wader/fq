@@ -374,7 +374,7 @@ $ fq -d elf dv a_dynamic
 0x20f0|            04 00 00 00                        |    ....        |      addralign: 4 0x20f4-0x20f8 (4)
 0x20f0|                        10 00 00 00            |        ....    |      entsize: 16 0x20f8-0x20fc (4)
       |                                               |                |    [4]{}: section_header 0x220-0x2124 (7940)
-0x0220|00 70 75 74 73 00 5f 5f 63 78 61 5f 66 69 6e 61|.puts.__cxa_fina|      string: "\x00puts\x00__cxa_finalize\x00__deregister_frame_info\x00_I..." 0x220-0x2e1 (193)
+0x0220|00 70 75 74 73 00 5f 5f 63 78 61 5f 66 69 6e 61|.puts.__cxa_fina|      string: "\x00puts\x00__cxa_finalize\x00__deregister_frame_info\x00_ITM_registerTMCloneTable\x00_ITM_deregisterTMCloneTable\x00__register_frame_info\x00_init\x00_fini\x00libbbb_bbb\x00__libc_start_main\x00libbbb.so\x00libc.musl-armhf.so.1\x00" 0x220-0x2e1 (193)
 *     |until 0x2e0.7 (193)                            |                |
 0x20f0|                                    35 00 00 00|            5...|      name: ".dynstr" (53) 0x20fc-0x2100 (4)
 0x2100|03 00 00 00                                    |....            |      type: "strtab" (0x3) (String table) 0x2100-0x2104 (4)
@@ -2092,7 +2092,7 @@ $ fq -d elf dv a_dynamic
 0x2500|            04 00 00 00                        |    ....        |      addralign: 4 0x2504-0x2508 (4)
 0x2500|                        10 00 00 00            |        ....    |      entsize: 16 0x2508-0x250c (4)
       |                                               |                |    [30]{}: section_header 0x1d38-0x2534 (2044)
-0x1d30|                        00 53 63 72 74 31 2e 63|        .Scrt1.c|      string: "\x00Scrt1.c\x00$a\x00$d\x00crti.o\x00crtn.o\x00crtstuff.c\x00all_imp..." 0x1d38-0x1f36 (510)
+0x1d30|                        00 53 63 72 74 31 2e 63|        .Scrt1.c|      string: "\x00Scrt1.c\x00$a\x00$d\x00crti.o\x00crtn.o\x00crtstuff.c\x00all_implied_fbits\x00deregister_tm_clones\x00__do_global_dtors_aux\x00completed.1\x00__do_global_dtors_aux_fini_array_entry\x00frame_dummy\x00object.0\x00__frame_dummy_init_array_entry\x00a.c\x00__FRAME_END__\x00_DYNAMIC\x00_GLOBAL_OFFSET_TABLE_\x00__TMC_END__\x00puts\x00__cxa_finalize\x00__bss_start__\x00__dso_handle\x00aaa\x00_init\x00__deregister_frame_info\x00_ITM_registerTMCloneTable\x00__bss_end__\x00_start_c\x00_ITM_deregisterTMCloneTable\x00__bss_start\x00__end__\x00_fini\x00_edata\x00_end\x00libbbb_bbb\x00__libc_start_main\x00__register_frame_info\x00" 0x1d38-0x1f36 (510)
 0x1d40|00 24 61 00 24 64 00 63 72 74 69 2e 6f 00 63 72|.$a.$d.crti.o.cr|
 *     |until 0x1f35.7 (510)                           |                |
 0x2500|                                    09 00 00 00|            ....|      name: ".strtab" (9) 0x250c-0x2510 (4)
@@ -2120,7 +2120,7 @@ $ fq -d elf dv a_dynamic
 0x2520|                                    01 00 00 00|            ....|      addralign: 1 0x252c-0x2530 (4)
 0x2530|00 00 00 00                                    |....            |      entsize: 0 0x2530-0x2534 (4)
       |                                               |                |    [31]{}: section_header 0x1f36-0x255c (1574)
-0x1f30|                  00 2e 73 79 6d 74 61 62 00 2e|      ..symtab..|      string: "\x00.symtab\x00.strtab\x00.shstrtab\x00.interp\x00.gnu.hash\x00.d..." 0x1f36-0x2059 (291)
+0x1f30|                  00 2e 73 79 6d 74 61 62 00 2e|      ..symtab..|      string: "\x00.symtab\x00.strtab\x00.shstrtab\x00.interp\x00.gnu.hash\x00.dynsym\x00.dynstr\x00.rel.dyn\x00.rel.plt\x00.init\x00.text\x00.fini\x00.rodata\x00.eh_frame\x00.init_array\x00.fini_array\x00.dynamic\x00.got\x00.data\x00.bss\x00.comment\x00.ARM.attributes\x00.debug_aranges\x00.debug_info\x00.debug_abbrev\x00.debug_line\x00.debug_frame\x00.debug_str\x00.debug_loc\x00.debug_ranges\x00" 0x1f36-0x2059 (291)
 0x1f40|73 74 72 74 61 62 00 2e 73 68 73 74 72 74 61 62|strtab..shstrtab|
 *     |until 0x2058.7 (291)                           |                |
 0x2530|            11 00 00 00                        |    ....        |      name: ".shstrtab" (17) 0x2534-0x2538 (4)

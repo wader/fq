@@ -26,7 +26,7 @@ $ fq dv sha1.ots
      |                                               |                |    [5]{}: operation 0x5c-0x7e (34)
 0x050|                                    f0         |            .   |      tag: "append" (240) 0x5c-0x5d (1)
 0x050|                                       20      |                |      argument_size: 32 0x5d-0x5e (1)
-0x050|                                          16 92|              ..|      argument: "169236a03672969e9f21bc781c8b1615768714f5463d666..." (raw bits) 0x5e-0x7e (32)
+0x050|                                          16 92|              ..|      argument: "169236a03672969e9f21bc781c8b1615768714f5463d666c5f33a99a9476dc66" (raw bits) 0x5e-0x7e (32)
 0x060|36 a0 36 72 96 9e 9f 21 bc 78 1c 8b 16 15 76 87|6.6r...!.x....v.|
 0x070|14 f5 46 3d 66 6c 5f 33 a9 9a 94 76 dc 66      |..F=fl_3...v.f  |
      |                                               |                |    [6]{}: operation 0x7e-0x7f (1)
@@ -34,7 +34,7 @@ $ fq dv sha1.ots
      |                                               |                |    [7]{}: operation 0x7f-0xa1 (34)
 0x070|                                             f0|               .|      tag: "append" (240) 0x7f-0x80 (1)
 0x080|20                                             |                |      argument_size: 32 0x80-0x81 (1)
-0x080|   7c 88 ef 76 16 6c 18 47 37 d7 89 ee eb 09 2d| |..v.l.G7.....-|      argument: "7c88ef76166c184737d789eeeb092da1b92c77ef311b5dd..." (raw bits) 0x81-0xa1 (32)
+0x080|   7c 88 ef 76 16 6c 18 47 37 d7 89 ee eb 09 2d| |..v.l.G7.....-|      argument: "7c88ef76166c184737d789eeeb092da1b92c77ef311b5dd115194f751b290e60" (raw bits) 0x81-0xa1 (32)
 0x090|a1 b9 2c 77 ef 31 1b 5d d1 15 19 4f 75 1b 29 0e|..,w.1.]...Ou.).|
 0x0a0|60                                             |`               |
      |                                               |                |    [8]{}: operation 0xa1-0xa2 (1)
@@ -92,7 +92,7 @@ $ fq dv sha1.ots
      |                                               |                |    [20]{}: operation 0x157-0x179 (34)
 0x150|                     f1                        |       .        |      tag: "prepend" (241) 0x157-0x158 (1)
 0x150|                        20                     |                |      argument_size: 32 0x158-0x159 (1)
-0x150|                           c9 af 2a f9 b5 ce 18|         ..*....|      argument: "c9af2af9b5ce1884303370f73bd151b1e25e0464660ce56..." (raw bits) 0x159-0x179 (32)
+0x150|                           c9 af 2a f9 b5 ce 18|         ..*....|      argument: "c9af2af9b5ce1884303370f73bd151b1e25e0464660ce56a02d8b98fc0e8dca4" (raw bits) 0x159-0x179 (32)
 0x160|84 30 33 70 f7 3b d1 51 b1 e2 5e 04 64 66 0c e5|.03p.;.Q..^.df..|
 0x170|6a 02 d8 b9 8f c0 e8 dc a4                     |j........       |
      |                                               |                |    [21]{}: operation 0x179-0x17a (1)

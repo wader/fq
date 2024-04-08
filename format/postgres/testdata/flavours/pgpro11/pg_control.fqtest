@@ -59,7 +59,7 @@ $ fq -d pg_control -o flavour=pgpro11 dv pg_control
 0x00f0|   01                                          | .              |  float8_by_val: 1 0xf1-0xf2 (1)
 0x00f0|      00 00                                    |  ..            |  hole7: 0 0xf2-0xf4 (2)
 0x00f0|            01 00 00 00                        |    ....        |  data_checksum_version: 1 0xf4-0xf8 (4)
-0x00f0|                        f6 a2 53 c7 68 b8 81 35|        ..S.h..5|  mock_authentication_nonce: "f6a253c768b8813567e90b7670f403b446b7807d992f1c9..." (raw bits) 0xf8-0x118 (32)
+0x00f0|                        f6 a2 53 c7 68 b8 81 35|        ..S.h..5|  mock_authentication_nonce: "f6a253c768b8813567e90b7670f403b446b7807d992f1c9bcb859174a5e67551" (raw bits) 0xf8-0x118 (32)
 0x0100|67 e9 0b 76 70 f4 03 b4 46 b7 80 7d 99 2f 1c 9b|g..vp...F..}./..|
 0x0110|cb 85 91 74 a5 e6 75 51                        |...t..uQ        |
 0x0110|                        3c 03 00 00            |        <...    |  icu_version: "60.3.0.0" (828) 0x118-0x11c (4)

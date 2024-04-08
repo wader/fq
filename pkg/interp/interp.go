@@ -1027,6 +1027,7 @@ func (i *Interp) EvalFuncValues(ctx context.Context, c any, name string, args []
 type Options struct {
 	Depth          int
 	ArrayTruncate  int
+	StringTruncate int
 	Verbose        bool
 	Width          int
 	DecodeProgress bool
@@ -1057,6 +1058,7 @@ func OptionsFromValue(v any) (*Options, error) {
 	var opts Options
 	_ = mapstruct.ToStruct(v, &opts)
 	opts.ArrayTruncate = mathx.Max(0, opts.ArrayTruncate)
+	opts.StringTruncate = mathx.Max(0, opts.StringTruncate)
 	opts.Depth = mathx.Max(0, opts.Depth)
 	opts.Addrbase = mathx.Clamp(2, 36, opts.Addrbase)
 	opts.Sizebase = mathx.Clamp(2, 36, opts.Sizebase)

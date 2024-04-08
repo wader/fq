@@ -61,7 +61,7 @@ $ fq -d pg_control -o flavour=pgproee10 dv pg_control
 0x0120|   01                                          | .              |  float8_by_val: 1 0x121-0x122 (1)
 0x0120|      00 00                                    |  ..            |  hole10: 0 0x122-0x124 (2)
 0x0120|            01 00 00 00                        |    ....        |  data_checksum_version: 1 0x124-0x128 (4)
-0x0120|                        39 2f 4a cd c5 9d 4d 3b|        9/J...M;|  mock_authentication_nonce: "392f4acdc59d4d3b2c9968b782191526dbfa9ba84acd37d..." (raw bits) 0x128-0x148 (32)
+0x0120|                        39 2f 4a cd c5 9d 4d 3b|        9/J...M;|  mock_authentication_nonce: "392f4acdc59d4d3b2c9968b782191526dbfa9ba84acd37dc4f6f86e96acaf145" (raw bits) 0x128-0x148 (32)
 0x0130|2c 99 68 b7 82 19 15 26 db fa 9b a8 4a cd 37 dc|,.h....&....J.7.|
 0x0140|4f 6f 86 e9 6a ca f1 45                        |Oo..j..E        |
 0x0140|                        3c 03 00 00            |        <...    |  icu_version: "60.3.0.0" (828) 0x148-0x14c (4)

@@ -59,7 +59,7 @@ $ fq -d pg_control dv pg_control
 0x0110|                        01                     |        .       |  float8_by_val: 1 0x118-0x119 (1)
 0x0110|                           00 00 00            |         ...    |  hole9: 0 0x119-0x11c (3)
 0x0110|                                    01 00 00 00|            ....|  data_checksum_version: 1 0x11c-0x120 (4)
-0x0120|dd f2 b7 da 2f 4a 5c ac 5d ce e9 34 21 d6 a8 03|..../J\.]..4!...|  mock_authentication_nonce: "ddf2b7da2f4a5cac5dcee93421d6a803d6a08dabff41769..." (raw bits) 0x120-0x140 (32)
+0x0120|dd f2 b7 da 2f 4a 5c ac 5d ce e9 34 21 d6 a8 03|..../J\.]..4!...|  mock_authentication_nonce: "ddf2b7da2f4a5cac5dcee93421d6a803d6a08dabff417697f5d172b0db8e80cb" (raw bits) 0x120-0x140 (32)
 0x0130|d6 a0 8d ab ff 41 76 97 f5 d1 72 b0 db 8e 80 cb|.....Av...r.....|
 0x0140|43 01 00 00                                    |C...            |  icu_version: "67.1.0.0" (323) 0x140-0x144 (4)
 0x0140|            00 00 ff ff                        |    ....        |  pg_old_version: 4294901760 0x144-0x148 (4)

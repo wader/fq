@@ -391,7 +391,7 @@ $ fq -d elf dv a_dynamic
 0x2430|08 00 00 00 00 00 00 00                        |........        |      addralign: 8 0x2430-0x2438 (8)
 0x2430|                        18 00 00 00 00 00 00 00|        ........|      entsize: 24 0x2438-0x2440 (8)
       |                                               |                |    [4]{}: section_header 0x380-0x2480 (8448)
-0x0380|00 70 75 74 73 00 5f 5f 63 78 61 5f 66 69 6e 61|.puts.__cxa_fina|      string: "\x00puts\x00__cxa_finalize\x00__deregister_frame_info\x00_I..." 0x380-0x443 (195)
+0x0380|00 70 75 74 73 00 5f 5f 63 78 61 5f 66 69 6e 61|.puts.__cxa_fina|      string: "\x00puts\x00__cxa_finalize\x00__deregister_frame_info\x00_ITM_registerTMCloneTable\x00_ITM_deregisterTMCloneTable\x00__register_frame_info\x00_init\x00_fini\x00libbbb_bbb\x00__libc_start_main\x00libbbb.so\x00libc.musl-aarch64.so.1\x00" 0x380-0x443 (195)
 *     |until 0x442.7 (195)                            |                |
 0x2440|35 00 00 00                                    |5...            |      name: ".dynstr" (53) 0x2440-0x2444 (4)
 0x2440|            03 00 00 00                        |    ....        |      type: "strtab" (0x3) (String table) 0x2444-0x2448 (4)
@@ -1998,7 +1998,7 @@ $ fq -d elf dv a_dynamic
 0x2ab0|08 00 00 00 00 00 00 00                        |........        |      addralign: 8 0x2ab0-0x2ab8 (8)
 0x2ab0|                        18 00 00 00 00 00 00 00|        ........|      entsize: 24 0x2ab8-0x2ac0 (8)
       |                                               |                |    [30]{}: section_header 0x2008-0x2b00 (2808)
-0x2000|                        00 53 63 72 74 31 2e 63|        .Scrt1.c|      string: "\x00Scrt1.c\x00$x\x00crti.o\x00crtn.o\x00crtstuff.c\x00$d\x00__EH_FR..." 0x2008-0x221a (530)
+0x2000|                        00 53 63 72 74 31 2e 63|        .Scrt1.c|      string: "\x00Scrt1.c\x00$x\x00crti.o\x00crtn.o\x00crtstuff.c\x00$d\x00__EH_FRAME_BEGIN__\x00deregister_tm_clones\x00__do_global_dtors_aux\x00completed.1\x00__do_global_dtors_aux_fini_array_entry\x00frame_dummy\x00object.0\x00__frame_dummy_init_array_entry\x00a.c\x00__FRAME_END__\x00_DYNAMIC\x00__GNU_EH_FRAME_HDR\x00_GLOBAL_OFFSET_TABLE_\x00__TMC_END__\x00puts\x00__cxa_finalize\x00__bss_start__\x00__dso_handle\x00aaa\x00_init\x00__deregister_frame_info\x00_ITM_registerTMCloneTable\x00__bss_end__\x00_start_c\x00_ITM_deregisterTMCloneTable\x00__bss_start\x00__end__\x00_fini\x00_edata\x00_end\x00libbbb_bbb\x00__libc_start_main\x00__register_frame_info\x00" 0x2008-0x221a (530)
 0x2010|00 24 78 00 63 72 74 69 2e 6f 00 63 72 74 6e 2e|.$x.crti.o.crtn.|
 *     |until 0x2219.7 (530)                           |                |
 0x2ac0|09 00 00 00                                    |....            |      name: ".strtab" (9) 0x2ac0-0x2ac4 (4)
@@ -2027,7 +2027,7 @@ $ fq -d elf dv a_dynamic
 0x2af0|01 00 00 00 00 00 00 00                        |........        |      addralign: 1 0x2af0-0x2af8 (8)
 0x2af0|                        00 00 00 00 00 00 00 00|        ........|      entsize: 0 0x2af8-0x2b00 (8)
       |                                               |                |    [31]{}: section_header 0x221a-0x2b40 (2342)
-0x2210|                              00 2e 73 79 6d 74|          ..symt|      string: "\x00.symtab\x00.strtab\x00.shstrtab\x00.interp\x00.gnu.hash\x00.d..." 0x221a-0x233d (291)
+0x2210|                              00 2e 73 79 6d 74|          ..symt|      string: "\x00.symtab\x00.strtab\x00.shstrtab\x00.interp\x00.gnu.hash\x00.dynsym\x00.dynstr\x00.rela.dyn\x00.rela.plt\x00.init\x00.text\x00.fini\x00.rodata\x00.eh_frame_hdr\x00.eh_frame\x00.init_array\x00.fini_array\x00.dynamic\x00.got\x00.data\x00.bss\x00.comment\x00.debug_aranges\x00.debug_info\x00.debug_abbrev\x00.debug_line\x00.debug_frame\x00.debug_str\x00.debug_loc\x00.debug_ranges\x00" 0x221a-0x233d (291)
 0x2220|61 62 00 2e 73 74 72 74 61 62 00 2e 73 68 73 74|ab..strtab..shst|
 *     |until 0x233c.7 (291)                           |                |
 0x2b00|11 00 00 00                                    |....            |      name: ".shstrtab" (17) 0x2b00-0x2b04 (4)

@@ -20,7 +20,7 @@ $ fq -d leveldb_log dv log_only.ldb/000003.log
 0x010|               6c 6f 72 65 6d 2e 6c 6f 72 65 6d|     lorem.lorem|                  data: "lorem.lorem" 0x15-0x20 (11)
      |                                               |                |                value{}: 0x20-0x1df (447)
 0x020|bd 03                                          |..              |                  length: 445 0x20-0x22 (2)
-0x020|      4c 6f 72 65 6d 20 69 70 73 75 6d 20 64 6f|  Lorem ipsum do|                  data: "Lorem ipsum dolor sit amet, consectetur adipisc..." 0x22-0x1df (445)
+0x020|      4c 6f 72 65 6d 20 69 70 73 75 6d 20 64 6f|  Lorem ipsum do|                  data: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." 0x22-0x1df (445)
 0x030|6c 6f 72 20 73 69 74 20 61 6d 65 74 2c 20 63 6f|lor sit amet, co|
 *    |until 0x1de.7 (445)                            |                |
      |                                               |                |        [1]{}: record 0x1df-0x3be (479)
@@ -42,7 +42,7 @@ $ fq -d leveldb_log dv log_only.ldb/000003.log
      |                                               |                |                value{}: 0x1ff-0x3be (447)
 0x1f0|                                             bd|               .|                  length: 445 0x1ff-0x201 (2)
 0x200|03                                             |.               |
-0x200|   4c 6f 72 65 6d 20 69 70 73 75 6d 20 64 6f 6c| Lorem ipsum dol|                  data: "Lorem ipsum dolor sit amet, consectetur adipisc..." 0x201-0x3be (445)
+0x200|   4c 6f 72 65 6d 20 69 70 73 75 6d 20 64 6f 6c| Lorem ipsum dol|                  data: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." 0x201-0x3be (445)
 0x210|6f 72 20 73 69 74 20 61 6d 65 74 2c 20 63 6f 6e|or sit amet, con|
 *    |until 0x3bd.7 (445)                            |                |
      |                                               |                |        [2]{}: record 0x3be-0x59d (479)
@@ -63,7 +63,7 @@ $ fq -d leveldb_log dv log_only.ldb/000003.log
 0x3d0|         6c 6f 72 65 6d 2e 64 6f 6c 6f 72      |   lorem.dolor  |                  data: "lorem.dolor" 0x3d3-0x3de (11)
      |                                               |                |                value{}: 0x3de-0x59d (447)
 0x3d0|                                          bd 03|              ..|                  length: 445 0x3de-0x3e0 (2)
-0x3e0|4c 6f 72 65 6d 20 69 70 73 75 6d 20 64 6f 6c 6f|Lorem ipsum dolo|                  data: "Lorem ipsum dolor sit amet, consectetur adipisc..." 0x3e0-0x59d (445)
+0x3e0|4c 6f 72 65 6d 20 69 70 73 75 6d 20 64 6f 6c 6f|Lorem ipsum dolo|                  data: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." 0x3e0-0x59d (445)
 *    |until 0x59c.7 (445)                            |                |
      |                                               |                |        [3]{}: record 0x59d-0x62c (143)
      |                                               |                |          header{}: 0x59d-0x5a4 (7)
@@ -82,6 +82,6 @@ $ fq -d leveldb_log dv log_only.ldb/000003.log
 0x5b0|      72 6f 77                                 |  row           |                  data: "row" 0x5b2-0x5b5 (3)
      |                                               |                |                value{}: 0x5b5-0x62c (119)
 0x5b0|               76                              |     v          |                  length: 118 0x5b5-0x5b6 (1)
-0x5b0|                  52 6f 77 2c 20 72 6f 77 2c 20|      Row, row, |                  data: "Row, row, row your boat\nGently down the stream...." 0x5b6-0x62c (118)
+0x5b0|                  52 6f 77 2c 20 72 6f 77 2c 20|      Row, row, |                  data: "Row, row, row your boat\nGently down the stream.\nMerrily, merrily, merrily, merrily,\nLife is but a dream. 🚣\u200d♂️" 0x5b6-0x62c (118)
 0x5c0|72 6f 77 20 79 6f 75 72 20 62 6f 61 74 0a 47 65|row your boat.Ge|
 *    |until 0x62b.7 (end) (118)                      |                |

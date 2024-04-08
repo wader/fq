@@ -6,7 +6,7 @@ $ fq -o force=true -d mp4 dv emsg.mp4
 0x000|            65 6d 73 67                        |    emsg        |      type: "emsg" (Event message) 0x4-0x8 (4)
 0x000|                        00                     |        .       |      version: 0 0x8-0x9 (1)
 0x000|                           00 00 00            |         ...    |      flags: 0 0x9-0xc (3)
-0x000|                                    68 74 74 70|            http|      scheme_id_uri: "http://youtube.com/streaming/metadata/segment/1..." 0xc-0x41 (53)
+0x000|                                    68 74 74 70|            http|      scheme_id_uri: "http://youtube.com/streaming/metadata/segment/102015" 0xc-0x41 (53)
 0x010|3a 2f 2f 79 6f 75 74 75 62 65 2e 63 6f 6d 2f 73|://youtube.com/s|
 *    |until 0x40.7 (53)                              |                |
 0x040|   00                                          | .              |      value: "" 0x41-0x42 (1)

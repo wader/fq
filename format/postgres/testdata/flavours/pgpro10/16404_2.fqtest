@@ -44,7 +44,7 @@ $ fq -d pg_heap -o flavour=pgpro10 ".[0].tuples[0,-1] | dv" 16404
       |                                               |                |      heap_moved: false
 0x1fe0|                  18                           |      .         |    t_hoff: 24 0x1fe6-0x1fe7 (1)
 0x1fe0|                     1f                        |       .        |    padding0: 31 0x1fe7-0x1fe8 (1)
-0x1fe0|                        05 00 00 00 01 00 00 00|        ........|  data: "0500000001000000033f01005bf5ffff96f592a7438d020..." (raw bits) 0x1fe8-0x2000 (24)
+0x1fe0|                        05 00 00 00 01 00 00 00|        ........|  data: "0500000001000000033f01005bf5ffff96f592a7438d0200" (raw bits) 0x1fe8-0x2000 (24)
 0x1ff0|03 3f 01 00 5b f5 ff ff 96 f5 92 a7 43 8d 02 00|.?..[.......C...|
      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0].tuples[99]{}: tuple 0xd40-0xd70 (48)
      |                                               |                |  header{}: 0xd40-0xd58 (24)
@@ -91,5 +91,5 @@ $ fq -d pg_heap -o flavour=pgpro10 ".[0].tuples[0,-1] | dv" 16404
      |                                               |                |      heap_moved: false
 0xd50|                  18                           |      .         |    t_hoff: 24 0xd56-0xd57 (1)
 0xd50|                     1f                        |       .        |    padding0: 31 0xd57-0xd58 (1)
-0xd50|                        02 00 00 00 01 00 00 00|        ........|  data: "0200000001000000eeda0000ccf7ffff9c2097a7438d020..." (raw bits) 0xd58-0xd70 (24)
+0xd50|                        02 00 00 00 01 00 00 00|        ........|  data: "0200000001000000eeda0000ccf7ffff9c2097a7438d0200" (raw bits) 0xd58-0xd70 (24)
 0xd60|ee da 00 00 cc f7 ff ff 9c 20 97 a7 43 8d 02 00|......... ..C...|

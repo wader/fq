@@ -470,7 +470,7 @@ $ fq -d elf dv a_stripped
 0x31b0|04 00 00 00                                    |....            |      addralign: 4 0x31b0-0x31b4 (4)
 0x31b0|            10 00 00 00                        |    ....        |      entsize: 16 0x31b4-0x31b8 (4)
       |                                               |                |    [5]{}: section_header 0x2c8-0x31e0 (12056)
-0x02c0|                        00 70 75 74 73 00 5f 5f|        .puts.__|      string: "\x00puts\x00__cxa_finalize\x00__register_frame_info_base..." 0x2c8-0x393 (203)
+0x02c0|                        00 70 75 74 73 00 5f 5f|        .puts.__|      string: "\x00puts\x00__cxa_finalize\x00__register_frame_info_bases\x00_ITM_registerTMCloneTable\x00__deregister_frame_info_bases\x00_ITM_deregisterTMCloneTable\x00_init\x00_fini\x00libbbb_bbb\x00__libc_start_main\x00libbbb.so\x00libc.musl-x86.so.1\x00" 0x2c8-0x393 (203)
 0x02d0|63 78 61 5f 66 69 6e 61 6c 69 7a 65 00 5f 5f 72|cxa_finalize.__r|
 *     |until 0x392.7 (203)                            |                |
 0x31b0|                        38 00 00 00            |        8...    |      name: ".dynstr" (56) 0x31b8-0x31bc (4)
@@ -1024,7 +1024,7 @@ $ fq -d elf dv a_stripped
 0x3480|01 00 00 00                                    |....            |      addralign: 1 0x3480-0x3484 (4)
 0x3480|            01 00 00 00                        |    ....        |      entsize: 1 0x3484-0x3488 (4)
       |                                               |                |    [23]{}: section_header 0x3035-0x34b0 (1147)
-0x3030|               00 2e 73 68 73 74 72 74 61 62 00|     ..shstrtab.|      string: "\x00.shstrtab\x00.interp\x00.note.gnu.property\x00.gnu.hash..." 0x3035-0x30ed (184)
+0x3030|               00 2e 73 68 73 74 72 74 61 62 00|     ..shstrtab.|      string: "\x00.shstrtab\x00.interp\x00.note.gnu.property\x00.gnu.hash\x00.dynsym\x00.dynstr\x00.rel.dyn\x00.rel.plt\x00.init\x00.plt.got\x00.text\x00.fini\x00.rodata\x00.eh_frame_hdr\x00.eh_frame\x00.ctors\x00.dtors\x00.dynamic\x00.data\x00.bss\x00.comment\x00" 0x3035-0x30ed (184)
 0x3040|2e 69 6e 74 65 72 70 00 2e 6e 6f 74 65 2e 67 6e|.interp..note.gn|
 *     |until 0x30ec.7 (184)                           |                |
 0x3480|                        01 00 00 00            |        ....    |      name: ".shstrtab" (1) 0x3488-0x348c (4)
