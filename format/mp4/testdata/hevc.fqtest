@@ -182,7 +182,7 @@ $ fq -d mp4 dv hevc.mp4
       |                                               |                |                          boxes[0:1]: 0xa06-0xa12 (12)
       |                                               |                |                            [0]{}: box 0xa06-0xa12 (12)
 0x0a00|                  00 00 00 0c                  |      ....      |                              size: 12 0xa06-0xa0a (4)
-0x0a00|                              75 72 6c 20      |          url   |                              type: "url " 0xa0a-0xa0e (4)
+0x0a00|                              75 72 6c 20      |          url   |                              type: "url" 0xa0a-0xa0e (4)
 0x0a00|                                          00   |              . |                              version: 0 0xa0e-0xa0f (1)
 0x0a00|                                             00|               .|                              flags: 1 0xa0f-0xa12 (3)
 0x0a10|00 01                                          |..              |

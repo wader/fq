@@ -170,7 +170,7 @@ $ fq dv in24.mp4
      |                                               |                |                          boxes[0:1]: 0x2d9-0x2e5 (12)
      |                                               |                |                            [0]{}: box 0x2d9-0x2e5 (12)
 0x2d0|                           00 00 00 0c         |         ....   |                              size: 12 0x2d9-0x2dd (4)
-0x2d0|                                       75 72 6c|             url|                              type: "url " 0x2dd-0x2e1 (4)
+0x2d0|                                       75 72 6c|             url|                              type: "url" 0x2dd-0x2e1 (4)
 0x2e0|20                                             |                |
 0x2e0|   00                                          | .              |                              version: 0 0x2e1-0x2e2 (1)
 0x2e0|      00 00 01                                 |  ...           |                              flags: 1 0x2e2-0x2e5 (3)

@@ -174,7 +174,7 @@ $ fq -d mp4 'dv' stz2.mp4
      |                                               |                |                          boxes[0:1]: 0x1aa-0x1b6 (12)
      |                                               |                |                            [0]{}: box 0x1aa-0x1b6 (12)
 0x1a0|                              00 00 00 0c      |          ....  |                              size: 12 0x1aa-0x1ae (4)
-0x1a0|                                          75 72|              ur|                              type: "url " 0x1ae-0x1b2 (4)
+0x1a0|                                          75 72|              ur|                              type: "url" 0x1ae-0x1b2 (4)
 0x1b0|6c 20                                          |l               |
 0x1b0|      00                                       |  .             |                              version: 0 0x1b2-0x1b3 (1)
 0x1b0|         00 00 01                              |   ...          |                              flags: 1 0x1b3-0x1b6 (3)

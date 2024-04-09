@@ -59,7 +59,7 @@ var aviListTypeDescriptions = scalar.StrMapDescription{
 	"hdrl": "AVI main list",
 	"strl": "Stream list",
 	"movi": "Stream Data",
-	"rec ": "Chunk group",
+	"rec":  "Chunk group",
 }
 
 const (
@@ -245,7 +245,7 @@ func aviDecodeEx(d *decode.D, ai format.AVI_In, extendedChunk bool) {
 				return true, nil
 
 			case "LIST":
-				typ := d.FieldUTF8("type", 4, aviListTypeDescriptions)
+				typ := d.FieldUTF8("type", 4, scalar.ActualTrimSpace, aviListTypeDescriptions)
 				switch typ {
 				case "strl":
 					return true, &aviStream{}

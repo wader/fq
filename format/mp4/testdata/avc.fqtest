@@ -182,7 +182,7 @@ $ fq -d mp4 dv avc.mp4
        |                                               |                |                          boxes[0:1]: 0xf06-0xf12 (12)
        |                                               |                |                            [0]{}: box 0xf06-0xf12 (12)
 0x00f00|                  00 00 00 0c                  |      ....      |                              size: 12 0xf06-0xf0a (4)
-0x00f00|                              75 72 6c 20      |          url   |                              type: "url " 0xf0a-0xf0e (4)
+0x00f00|                              75 72 6c 20      |          url   |                              type: "url" 0xf0a-0xf0e (4)
 0x00f00|                                          00   |              . |                              version: 0 0xf0e-0xf0f (1)
 0x00f00|                                             00|               .|                              flags: 1 0xf0f-0xf12 (3)
 0x00f10|00 01                                          |..              |
