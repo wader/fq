@@ -1798,6 +1798,27 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		default:
 			d.FieldRawLen("message_data", d.BitsLeft())
 		}
+	case "jp2h":
+		decodeBoxes(ctx, d)
+	case "ihdr":
+		d.FieldU32("width")
+		d.FieldU32("height")
+		d.FieldU16("nc")
+		d.FieldU8("bpc", scalar.UintActualAdd(1))
+		d.FieldU8("c", scalar.UintMapSymStr{
+			0: "uncompressed",
+			1: "modified_huffman",
+			2: "modified_read",
+			3: "modified_modified_read",
+			4: "jbig_bi_level",
+			5: "jpeg",
+			6: "jpeg_ls",
+			7: "jpeg_2000",
+			8: "jbig2",
+			9: "jbig",
+		})
+		d.FieldU8("unk_c")
+		d.FieldU8("ipr")
 
 	default:
 		// there are at least 4 ways to encode udta metadata in mov/mp4 files.
