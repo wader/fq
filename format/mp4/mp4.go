@@ -43,6 +43,7 @@ var hevcCDCRGroup decode.Group
 var iccProfileGroup decode.Group
 var id3v2Group decode.Group
 var imageGroup decode.Group
+var jp2cGroup decode.Group
 var jpegGroup decode.Group
 var mp3FrameGroup decode.Group
 var mpegESGroup decode.Group
@@ -83,6 +84,7 @@ func init() {
 				{Groups: []*decode.Group{format.ICC_Profile}, Out: &iccProfileGroup},
 				{Groups: []*decode.Group{format.ID3v2}, Out: &id3v2Group},
 				{Groups: []*decode.Group{format.Image}, Out: &imageGroup},
+				{Groups: []*decode.Group{format.JP2C}, Out: &jp2cGroup},
 				{Groups: []*decode.Group{format.JPEG}, Out: &jpegGroup},
 				{Groups: []*decode.Group{format.MP3_Frame}, Out: &mp3FrameGroup},
 				{Groups: []*decode.Group{format.MPEG_ES}, Out: &mpegESGroup},

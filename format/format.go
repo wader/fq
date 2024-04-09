@@ -122,6 +122,7 @@ var (
 	ID3v2               = &decode.Group{Name: "id3v2"}
 	IPv4Packet          = &decode.Group{Name: "ipv4_packet"}
 	IPv6Packet          = &decode.Group{Name: "ipv6_packet"}
+	JP2C                = &decode.Group{Name: "jp2c"}
 	JPEG                = &decode.Group{Name: "jpeg"}
 	JSON                = &decode.Group{Name: "json"}
 	JSONL               = &decode.Group{Name: "jsonl"}

@@ -1819,6 +1819,8 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		})
 		d.FieldU8("unk_c")
 		d.FieldU8("ipr")
+	case "jp2c":
+		d.FieldFormat("segments", &jp2cGroup, nil)
 
 	default:
 		// there are at least 4 ways to encode udta metadata in mov/mp4 files.
