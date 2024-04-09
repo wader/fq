@@ -4,7 +4,7 @@ $ fq dv test.jp2
     |                                               |                |  boxes[0:4]: 0x0-0xf9 (249)
     |                                               |                |    [0]{}: box 0x0-0xc (12)
 0x00|00 00 00 0c                                    |....            |      size: 12 0x0-0x4 (4)
-0x00|            6a 50 20 20                        |    jP          |      type: "jP  " (JPEG 2000 Signature) 0x4-0x8 (4)
+0x00|            6a 50 20 20                        |    jP          |      type: "jP" (JPEG 2000 Signature) 0x4-0x8 (4)
 0x00|                        0d 0a 87 0a            |        ....    |      data: raw bits 0x8-0xc (4)
     |                                               |                |    [1]{}: box 0xc-0x20 (20)
 0x00|                                    00 00 00 14|            ....|      size: 20 0xc-0x10 (4)
