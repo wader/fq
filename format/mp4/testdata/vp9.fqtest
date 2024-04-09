@@ -163,7 +163,7 @@ $ fq -d mp4 dv vp9.mp4
       |                                               |                |                          boxes[0:1]: 0x16e9-0x16f5 (12)
       |                                               |                |                            [0]{}: box 0x16e9-0x16f5 (12)
 0x16e0|                           00 00 00 0c         |         ....   |                              size: 12 0x16e9-0x16ed (4)
-0x16e0|                                       75 72 6c|             url|                              type: "url " 0x16ed-0x16f1 (4)
+0x16e0|                                       75 72 6c|             url|                              type: "url" 0x16ed-0x16f1 (4)
 0x16f0|20                                             |                |
 0x16f0|   00                                          | .              |                              version: 0 0x16f1-0x16f2 (1)
 0x16f0|      00 00 01                                 |  ...           |                              flags: 1 0x16f2-0x16f5 (3)

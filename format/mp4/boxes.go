@@ -53,7 +53,7 @@ var subTypeNames = scalar.StrMapDescription{
 	"subp": "Subpicture",
 	"text": "Text",
 	"tmcd": "Time Code",
-	"url ": "URL",
+	"url":  "URL",
 	"vide": "Video Track",
 }
 
@@ -101,7 +101,7 @@ var dataFormatNames = scalar.StrMapDescription{
 	"encs": "Encrypted Systems stream",
 	"enct": "Encrypted Text",
 	"encv": "Encrypted/protected video",
-	"fdp ": "File delivery hints",
+	"fdp":  "File delivery hints",
 	"fLaC": "Fres Lossless Audio Codec",
 	"g719": "ITU-T Recommendation G.719 (2008)",
 	"g726": "ITU-T Recommendation G.726 (1990)",
@@ -138,13 +138,13 @@ var dataFormatNames = scalar.StrMapDescription{
 	"Opus": "Opus audio coding",
 	"pm2t": "Protected MPEG-2 Transport",
 	"prtp": "Protected RTP Reception",
-	"raw ": "Uncompressed audio",
+	"raw":  "Uncompressed audio",
 	"resv": "Restricted Video",
 	"rm2t": "MPEG-2 Transport Reception",
 	"rrtp": "RTP reception",
 	"rsrp": "SRTP Reception",
 	"rtmd": "Real Time Metadata Sample Entry(XAVC Format)",
-	"rtp ": "RTP Hints",
+	"rtp":  "RTP Hints",
 	"s263": "ITU H.263 video (3GPP format)",
 	"samr": "Narrowband AMR voice",
 	"sawb": "Wideband AMR voice",
@@ -248,7 +248,7 @@ func decodeSampleFlags(d *decode.D) {
 
 func decodeBoxWithParentData(ctx *decodeContext, d *decode.D, parentData any, extraTypeMappers ...scalar.StrMapper) {
 	var dataSize uint64
-	typeMappers := []scalar.StrMapper{boxDescriptions}
+	typeMappers := []scalar.StrMapper{scalar.ActualTrimSpace, boxDescriptions}
 	if len(extraTypeMappers) > 0 {
 		typeMappers = append(typeMappers, extraTypeMappers...)
 	}
@@ -519,7 +519,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		d.FieldU8("version")
 		d.FieldU24("flags")
 		d.FieldUTF8NullFixedLen("component_type", 4)
-		subType := d.FieldUTF8("component_subtype", 4, subTypeNames, scalar.ActualTrimSpace)
+		subType := d.FieldUTF8("component_subtype", 4, scalar.ActualTrimSpace, subTypeNames)
 		d.FieldUTF8NullFixedLen("component_manufacturer", 4)
 		d.FieldU32("component_flags")
 		d.FieldU32("component_flags_mask")
@@ -559,12 +559,12 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		var drefURL string
 		d.FieldStructArrayLoop("boxes", "box", func() bool { return i < entryCount }, func(d *decode.D) {
 			size := d.FieldU32("size")
-			typ := d.FieldUTF8("type", 4)
+			typ := d.FieldUTF8("type", 4, scalar.ActualTrimSpace)
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			dataSize := size - 12
 			switch typ {
-			case "url ":
+			case "url":
 				drefURL = d.FieldUTF8("data", int(dataSize))
 			default:
 				d.FieldRawLen("data", int64(dataSize*8))
@@ -589,7 +589,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		d.FieldArrayLoop("boxes", func() bool { return i < entryCount }, func(d *decode.D) {
 			d.FieldStruct("box", func(d *decode.D) {
 				size := d.FieldU32("size")
-				dataFormat := d.FieldUTF8("type", 4, dataFormatNames)
+				dataFormat := d.FieldUTF8("type", 4, dataFormatNames, scalar.ActualTrimSpace)
 				subType := ""
 				if t := ctx.currentTrack(); t != nil {
 					t.sampleDescriptions = append(t.sampleDescriptions, sampleDescription{
@@ -1242,7 +1242,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 				if !d.End() {
 					d.FieldUTF8Null("content_encoding")
 				}
-			case "uri ":
+			case "uri":
 				d.FieldUTF8Null("item_uri_type")
 			}
 		}

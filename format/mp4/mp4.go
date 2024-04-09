@@ -19,6 +19,7 @@ import (
 	"cmp"
 	"embed"
 	"fmt"
+	"strings"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/pkg/decode"
@@ -465,14 +466,14 @@ func mp4Decode(d *decode.D) any {
 	if size < 8 {
 		d.Fatalf("first box size too small < 8")
 	}
-	firstType := d.UTF8(4)
+	firstType := strings.TrimSpace(d.UTF8(4))
 	switch firstType {
 	case "styp", // mp4 segment
 		"ftyp", // mp4 file
 		"free", // seems to happen
 		"moov", // seems to happen
 		"pnot", // video preview file
-		"jP  ": // JPEG 2000
+		"jP":   // JPEG 2000
 	default:
 		d.Errorf("no styp, ftyp, free or moov box found")
 	}
