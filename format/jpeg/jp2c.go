@@ -71,6 +71,10 @@ var jp2Markers = scalar.UintMap{
 }
 
 func jp2cDecode(d *decode.D) any {
+	if d.PeekUintBits(16) != JP2_SOC {
+		d.Fatalf("no SOC marker")
+	}
+
 	seenSOC := false
 	seenSIZ := false
 	seenEOC := false
