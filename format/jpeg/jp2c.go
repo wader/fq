@@ -12,6 +12,7 @@ func init() {
 		format.JP2C,
 		&decode.Format{
 			Description: "JPEG 2000 codestream",
+			Groups:      []*decode.Group{format.Probe, format.Image},
 			DecodeFn:    jp2cDecode,
 			RootName:    "segments",
 			RootArray:   true,
@@ -70,13 +71,17 @@ var jp2Markers = scalar.UintMap{
 }
 
 func jp2cDecode(d *decode.D) any {
+	seenSOC := false
+	seenSIZ := false
 	seenEOC := false
+
 	for !seenEOC && !d.End() {
 		d.FieldStruct("segment", func(d *decode.D) {
 			marker := d.FieldU16("marker", jp2Markers, scalar.UintHex)
 			switch marker {
 			case JP2_SOC:
 				// zero length
+				seenSOC = true
 				return
 			case JP2_SOD:
 				l, _ := d.PeekFind(16, 8, d.BitsLeft(), func(v uint64) bool {
@@ -90,6 +95,7 @@ func jp2cDecode(d *decode.D) any {
 				d.FieldU8("tp_sot")
 				d.FieldU8("tn_sot")
 			case JP2_SIZ:
+				seenSIZ = true
 				d.FieldU16("l_siz")
 				d.FieldU16("r_siz")
 				d.FieldU32("x_siz")
@@ -124,6 +130,10 @@ func jp2cDecode(d *decode.D) any {
 				d.FieldRawLen("data", int64(length-2)*8)
 			}
 		})
+	}
+
+	if !(seenSOC && seenSIZ && seenEOC) {
+		d.Fatalf("SOC, SIZ or EOC marker not found")
 	}
 
 	return nil

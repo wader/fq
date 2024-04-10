@@ -14,6 +14,7 @@ $ fq -n _registry.groups.probe
   "flac",
   "gif",
   "gzip",
+  "jp2c",
   "jpeg",
   "leveldb_table",
   "luajit",
