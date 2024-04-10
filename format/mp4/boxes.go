@@ -1823,6 +1823,15 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		d.FieldRawLen("signature", 4*8, d.AssertBitBuf([]byte{0x0d, 0x0a, 0x87, 0x0a}))
 	case "jp2c":
 		d.FieldFormat("segments", &jp2cGroup, nil)
+	case "uinf":
+		decodeBoxes(ctx, d)
+	case "ulst":
+		nu := d.FieldU16("nu")
+		d.FieldArray("uids", func(d *decode.D) {
+			for i := 0; i < int(nu); i++ {
+				d.FieldRawLen("uid", 128)
+			}
+		})
 
 	default:
 		// there are at least 4 ways to encode udta metadata in mov/mp4 files.

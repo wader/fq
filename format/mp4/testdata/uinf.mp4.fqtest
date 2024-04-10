@@ -1,0 +1,22 @@
+$ fq -d mp4 -o force=true dv uinf.mp4
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: uinf.mp4 (mp4) 0x0-0x64 (100)
+    |                                               |                |  boxes[0:1]: 0x0-0x64 (100)
+    |                                               |                |    [0]{}: box 0x0-0x64 (100)
+0x00|00 00 00 64                                    |...d            |      size: 100 0x0-0x4 (4)
+0x00|            75 69 6e 66                        |    uinf        |      type: "uinf" (A tool by which a vendor may provide access to additional information associated with a UUID) 0x4-0x8 (4)
+    |                                               |                |      boxes[0:2]: 0x8-0x64 (92)
+    |                                               |                |        [0]{}: box 0x8-0x32 (42)
+0x00|                        00 00 00 2a            |        ...*    |          size: 42 0x8-0xc (4)
+0x00|                                    75 6c 73 74|            ulst|          type: "ulst" (A list of UUID’s) 0xc-0x10 (4)
+0x10|00 02                                          |..              |          nu: 2 0x10-0x12 (2)
+    |                                               |                |          uids[0:2]: 0x12-0x32 (32)
+0x10|      6a 70 6a 70 6a 70 6a 70 6a 70 6a 70 6a 70|  jpjpjpjpjpjpjp|            [0]: raw bits uid 0x12-0x22 (16)
+0x20|6a 70                                          |jp              |
+0x20|      61 62 61 62 61 62 61 62 61 62 61 62 61 62|  ababababababab|            [1]: raw bits uid 0x22-0x32 (16)
+0x30|61 62                                          |ab              |
+    |                                               |                |        [1]{}: box 0x32-0x64 (50)
+0x30|      00 00 00 32                              |  ...2          |          size: 50 0x32-0x36 (4)
+0x30|                  75 72 6c 20                  |      url       |          type: "url" (A URL) 0x36-0x3a (4)
+0x30|                              00 00 00 00 68 74|          ....ht|          data: raw bits 0x3a-0x64 (42)
+0x40|74 70 3a 2f 2f 77 77 77 2e 6f 70 65 6e 70 6c 61|tp://www.openpla|
+*   |until 0x63.7 (end) (42)                        |                |
