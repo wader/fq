@@ -1819,6 +1819,8 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		})
 		d.FieldU8("unk_c")
 		d.FieldU8("ipr")
+	case "jP":
+		d.FieldRawLen("signature", 4*8, d.AssertBitBuf([]byte{0x0d, 0x0a, 0x87, 0x0a}))
 	case "jp2c":
 		d.FieldFormat("segments", &jp2cGroup, nil)
 

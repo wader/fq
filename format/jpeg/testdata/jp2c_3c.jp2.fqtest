@@ -6,7 +6,7 @@ $ fq dv jp2c_3c.jp2
      |                                               |                |    [0]{}: box 0x0-0xc (12)
 0x000|00 00 00 0c                                    |....            |      size: 12 0x0-0x4 (4)
 0x000|            6a 50 20 20                        |    jP          |      type: "jP" (JPEG 2000 Signature) 0x4-0x8 (4)
-0x000|                        0d 0a 87 0a            |        ....    |      data: raw bits 0x8-0xc (4)
+0x000|                        0d 0a 87 0a            |        ....    |      signature: raw bits (valid) 0x8-0xc (4)
      |                                               |                |    [1]{}: box 0xc-0x20 (20)
 0x000|                                    00 00 00 14|            ....|      size: 20 0xc-0x10 (4)
 0x010|66 74 79 70                                    |ftyp            |      type: "ftyp" (File type and compatibility) 0x10-0x14 (4)
