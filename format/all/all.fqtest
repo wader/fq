@@ -112,6 +112,7 @@ id3v11               ID3v1.1 metadata
 id3v2                ID3v2 metadata
 ipv4_packet          Internet protocol v4 packet
 ipv6_packet          Internet protocol v6 packet
+jp2c                 JPEG 2000 codestream
 jpeg                 Joint Photographic Experts Group file
 json                 JavaScript Object Notation
 jsonl                JavaScript Object Notation Lines
