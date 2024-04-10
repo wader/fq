@@ -47,7 +47,7 @@ func utf8Bytes(b byte) int {
 	}
 }
 
-// RuneReadSeeker reads rune from a io.ReadSeeker
+// ReadRune reads rune from a io.ReadSeeker
 func (brr RuneReadSeeker) ReadRune() (r rune, size int, err error) {
 	var b [utf8.UTFMax]byte
 
