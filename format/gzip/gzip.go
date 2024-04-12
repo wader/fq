@@ -114,7 +114,7 @@ func gzipDecodeMember(d *decode.D) bitio.ReaderAtSeeker {
 		readCompressedSize, uncompressedBR, err =
 			d.FieldReaderRange("uncompressed", d.Pos(), d.BitsLeft(), rFn)
 		if err != nil {
-			d.IOPanic(err, "TryFieldReaderRange")
+			d.IOPanic(err, "uncompressed", "FieldReaderRange")
 		}
 		d.FieldRawLen("compressed", readCompressedSize)
 		crc32W := crc32.NewIEEE()
@@ -149,7 +149,7 @@ func gzipDecode(d *decode.D) any {
 
 	cbr, err := bitio.NewMultiReader(brs...)
 	if err != nil {
-		d.IOPanic(err, "NewMultiReader")
+		d.IOPanic(err, "members", "NewMultiReader")
 	}
 	dv, _, _ := d.TryFieldFormatBitBuf("uncompressed", cbr, &probeGroup, format.Probe_In{})
 	if dv == nil {

@@ -281,7 +281,7 @@ func decodeASN1BERValue(d *decode.D, bib *bitio.Buffer, sb *strings.Builder, par
 			if bib != nil {
 				// TODO: helper?
 				if _, err := bitio.Copy(bib, br); err != nil {
-					d.IOPanic(err, "bitio.Copy")
+					d.IOPanic(err, "value", "bitio.Copy")
 				}
 			}
 			if unusedBitsCount > 0 {
@@ -292,7 +292,7 @@ func decodeASN1BERValue(d *decode.D, bib *bitio.Buffer, sb *strings.Builder, par
 			if bib != nil {
 				// TODO: helper?
 				if _, err := bitio.Copy(bib, br); err != nil {
-					d.IOPanic(err, "bitio.Copy")
+					d.IOPanic(err, "value", "bitio.Copy")
 				}
 			}
 		case class == classUniversal && tag == universalTypeNull:

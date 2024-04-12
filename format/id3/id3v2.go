@@ -302,7 +302,7 @@ func textNullLenFn(encoding int, notFoundFixedBytes int) func(d *decode.D) strin
 			func(v uint64) bool { return v == 0 },
 		)
 		if err != nil {
-			d.IOPanic(err, "textNullLenFn")
+			d.IOPanic(err, "", "textNullLenFn")
 		}
 		if offset < 0 {
 			if notFoundFixedBytes < 0 {
