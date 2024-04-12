@@ -26,7 +26,7 @@ import (
 	func (d *D) Field{{$name}}ScalarFn(name string, fn func(d *D) scalar.{{$name}}, sms ...scalar.{{$name}}Mapper) {{$t.go_type}} {
 		v, err := d.TryFieldScalar{{$name}}Fn(name, func(d *D) (scalar.{{$name}}, error) { return fn(d), nil }, sms...)
 		if err != nil {
-			panic(IOError{Err: err, Name: name, Op: "{{$name}}", Pos: d.Pos()})
+			d.IOPanic(err, name, "{{$name}}")
 		}
 		return v.Actual
 	}
@@ -48,7 +48,7 @@ import (
 	func (d *D) FieldScalar{{$name}}Fn(name string, fn func(d *D) scalar.{{$name}}, sms ...scalar.{{$name}}Mapper) *scalar.{{$name}} {
 		v, err := d.TryFieldScalar{{$name}}Fn(name, func(d *D) (scalar.{{$name}}, error) { return fn(d), nil }, sms...)
 		if err != nil {
-			panic(IOError{Err: err, Name: name, Op: "{{$name}}", Pos: d.Pos()})
+			d.IOPanic(err, name, "{{$name}}")
 		}
 		return v
 	}
@@ -181,7 +181,7 @@ import (
 			func (d *D) {{$r.name}}{{replace $v.name "$n" $n}}({{$v.params}}) {{$t.go_type}} {
 				v, err := {{replace $v.call "$n" $n}}
 				if err != nil {
-					panic(IOError{Err: err, Op: "{{$r.name}}{{replace $v.name "$n" $n}}", Pos: d.Pos()})
+					d.IOPanic(err, "", "{{$r.name}}{{replace $v.name "$n" $n}}")
 				}
 				return v
 			}
@@ -202,7 +202,7 @@ import (
 			func (d *D) FieldScalar{{$r.name}}{{replace $v.name "$n" $n}}(name string{{if $v.params}}, {{$v.params}}{{end}}, sms ...scalar.{{$r.type}}Mapper) *scalar.{{$r.type}} {
 				s, err := d.TryFieldScalar{{$r.name}}{{replace $v.name "$n" $n}}(name{{if $v.args}}, {{$v.args}}{{end}}, sms...)
 				if err != nil {
-					panic(IOError{Err: err, Name: name, Op: "{{$r.name}}{{replace $v.name "$n" $n}}", Pos: d.Pos()})
+					d.IOPanic(err, name, "{{$r.name}}{{replace $v.name "$n" $n}}")
 				}
 				return s
 			}

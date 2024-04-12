@@ -25,7 +25,7 @@ func (d *D) TryFieldAnyScalarFn(name string, fn func(d *D) (scalar.Any, error), 
 func (d *D) FieldAnyScalarFn(name string, fn func(d *D) scalar.Any, sms ...scalar.AnyMapper) any {
 	v, err := d.TryFieldScalarAnyFn(name, func(d *D) (scalar.Any, error) { return fn(d), nil }, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "Any", Pos: d.Pos()})
+		d.IOPanic(err, name, "Any")
 	}
 	return v.Actual
 }
@@ -47,7 +47,7 @@ func (d *D) TryFieldAnyFn(name string, fn func(d *D) (any, error), sms ...scalar
 func (d *D) FieldScalarAnyFn(name string, fn func(d *D) scalar.Any, sms ...scalar.AnyMapper) *scalar.Any {
 	v, err := d.TryFieldScalarAnyFn(name, func(d *D) (scalar.Any, error) { return fn(d), nil }, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "Any", Pos: d.Pos()})
+		d.IOPanic(err, name, "Any")
 	}
 	return v
 }
@@ -96,7 +96,7 @@ func (d *D) TryFieldBigIntScalarFn(name string, fn func(d *D) (scalar.BigInt, er
 func (d *D) FieldBigIntScalarFn(name string, fn func(d *D) scalar.BigInt, sms ...scalar.BigIntMapper) *big.Int {
 	v, err := d.TryFieldScalarBigIntFn(name, func(d *D) (scalar.BigInt, error) { return fn(d), nil }, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "BigInt", Pos: d.Pos()})
+		d.IOPanic(err, name, "BigInt")
 	}
 	return v.Actual
 }
@@ -118,7 +118,7 @@ func (d *D) TryFieldBigIntFn(name string, fn func(d *D) (*big.Int, error), sms .
 func (d *D) FieldScalarBigIntFn(name string, fn func(d *D) scalar.BigInt, sms ...scalar.BigIntMapper) *scalar.BigInt {
 	v, err := d.TryFieldScalarBigIntFn(name, func(d *D) (scalar.BigInt, error) { return fn(d), nil }, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "BigInt", Pos: d.Pos()})
+		d.IOPanic(err, name, "BigInt")
 	}
 	return v
 }
@@ -167,7 +167,7 @@ func (d *D) TryFieldBitBufScalarFn(name string, fn func(d *D) (scalar.BitBuf, er
 func (d *D) FieldBitBufScalarFn(name string, fn func(d *D) scalar.BitBuf, sms ...scalar.BitBufMapper) bitio.ReaderAtSeeker {
 	v, err := d.TryFieldScalarBitBufFn(name, func(d *D) (scalar.BitBuf, error) { return fn(d), nil }, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "BitBuf", Pos: d.Pos()})
+		d.IOPanic(err, name, "BitBuf")
 	}
 	return v.Actual
 }
@@ -189,7 +189,7 @@ func (d *D) TryFieldBitBufFn(name string, fn func(d *D) (bitio.ReaderAtSeeker, e
 func (d *D) FieldScalarBitBufFn(name string, fn func(d *D) scalar.BitBuf, sms ...scalar.BitBufMapper) *scalar.BitBuf {
 	v, err := d.TryFieldScalarBitBufFn(name, func(d *D) (scalar.BitBuf, error) { return fn(d), nil }, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "BitBuf", Pos: d.Pos()})
+		d.IOPanic(err, name, "BitBuf")
 	}
 	return v
 }
@@ -238,7 +238,7 @@ func (d *D) TryFieldBoolScalarFn(name string, fn func(d *D) (scalar.Bool, error)
 func (d *D) FieldBoolScalarFn(name string, fn func(d *D) scalar.Bool, sms ...scalar.BoolMapper) bool {
 	v, err := d.TryFieldScalarBoolFn(name, func(d *D) (scalar.Bool, error) { return fn(d), nil }, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "Bool", Pos: d.Pos()})
+		d.IOPanic(err, name, "Bool")
 	}
 	return v.Actual
 }
@@ -260,7 +260,7 @@ func (d *D) TryFieldBoolFn(name string, fn func(d *D) (bool, error), sms ...scal
 func (d *D) FieldScalarBoolFn(name string, fn func(d *D) scalar.Bool, sms ...scalar.BoolMapper) *scalar.Bool {
 	v, err := d.TryFieldScalarBoolFn(name, func(d *D) (scalar.Bool, error) { return fn(d), nil }, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "Bool", Pos: d.Pos()})
+		d.IOPanic(err, name, "Bool")
 	}
 	return v
 }
@@ -309,7 +309,7 @@ func (d *D) TryFieldFltScalarFn(name string, fn func(d *D) (scalar.Flt, error), 
 func (d *D) FieldFltScalarFn(name string, fn func(d *D) scalar.Flt, sms ...scalar.FltMapper) float64 {
 	v, err := d.TryFieldScalarFltFn(name, func(d *D) (scalar.Flt, error) { return fn(d), nil }, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "Flt", Pos: d.Pos()})
+		d.IOPanic(err, name, "Flt")
 	}
 	return v.Actual
 }
@@ -331,7 +331,7 @@ func (d *D) TryFieldFltFn(name string, fn func(d *D) (float64, error), sms ...sc
 func (d *D) FieldScalarFltFn(name string, fn func(d *D) scalar.Flt, sms ...scalar.FltMapper) *scalar.Flt {
 	v, err := d.TryFieldScalarFltFn(name, func(d *D) (scalar.Flt, error) { return fn(d), nil }, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "Flt", Pos: d.Pos()})
+		d.IOPanic(err, name, "Flt")
 	}
 	return v
 }
@@ -380,7 +380,7 @@ func (d *D) TryFieldSintScalarFn(name string, fn func(d *D) (scalar.Sint, error)
 func (d *D) FieldSintScalarFn(name string, fn func(d *D) scalar.Sint, sms ...scalar.SintMapper) int64 {
 	v, err := d.TryFieldScalarSintFn(name, func(d *D) (scalar.Sint, error) { return fn(d), nil }, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "Sint", Pos: d.Pos()})
+		d.IOPanic(err, name, "Sint")
 	}
 	return v.Actual
 }
@@ -402,7 +402,7 @@ func (d *D) TryFieldSintFn(name string, fn func(d *D) (int64, error), sms ...sca
 func (d *D) FieldScalarSintFn(name string, fn func(d *D) scalar.Sint, sms ...scalar.SintMapper) *scalar.Sint {
 	v, err := d.TryFieldScalarSintFn(name, func(d *D) (scalar.Sint, error) { return fn(d), nil }, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "Sint", Pos: d.Pos()})
+		d.IOPanic(err, name, "Sint")
 	}
 	return v
 }
@@ -451,7 +451,7 @@ func (d *D) TryFieldStrScalarFn(name string, fn func(d *D) (scalar.Str, error), 
 func (d *D) FieldStrScalarFn(name string, fn func(d *D) scalar.Str, sms ...scalar.StrMapper) string {
 	v, err := d.TryFieldScalarStrFn(name, func(d *D) (scalar.Str, error) { return fn(d), nil }, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "Str", Pos: d.Pos()})
+		d.IOPanic(err, name, "Str")
 	}
 	return v.Actual
 }
@@ -473,7 +473,7 @@ func (d *D) TryFieldStrFn(name string, fn func(d *D) (string, error), sms ...sca
 func (d *D) FieldScalarStrFn(name string, fn func(d *D) scalar.Str, sms ...scalar.StrMapper) *scalar.Str {
 	v, err := d.TryFieldScalarStrFn(name, func(d *D) (scalar.Str, error) { return fn(d), nil }, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "Str", Pos: d.Pos()})
+		d.IOPanic(err, name, "Str")
 	}
 	return v
 }
@@ -522,7 +522,7 @@ func (d *D) TryFieldUintScalarFn(name string, fn func(d *D) (scalar.Uint, error)
 func (d *D) FieldUintScalarFn(name string, fn func(d *D) scalar.Uint, sms ...scalar.UintMapper) uint64 {
 	v, err := d.TryFieldScalarUintFn(name, func(d *D) (scalar.Uint, error) { return fn(d), nil }, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "Uint", Pos: d.Pos()})
+		d.IOPanic(err, name, "Uint")
 	}
 	return v.Actual
 }
@@ -544,7 +544,7 @@ func (d *D) TryFieldUintFn(name string, fn func(d *D) (uint64, error), sms ...sc
 func (d *D) FieldScalarUintFn(name string, fn func(d *D) scalar.Uint, sms ...scalar.UintMapper) *scalar.Uint {
 	v, err := d.TryFieldScalarUintFn(name, func(d *D) (scalar.Uint, error) { return fn(d), nil }, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "Uint", Pos: d.Pos()})
+		d.IOPanic(err, name, "Uint")
 	}
 	return v
 }
@@ -1003,7 +1003,7 @@ func (d *D) TryRawLen(nBits int64) (bitio.ReaderAtSeeker, error) { return d.tryB
 func (d *D) RawLen(nBits int64) bitio.ReaderAtSeeker {
 	v, err := d.tryBitBuf(nBits)
 	if err != nil {
-		panic(IOError{Err: err, Op: "RawLen", Pos: d.Pos()})
+		d.IOPanic(err, "", "RawLen")
 	}
 	return v
 }
@@ -1024,7 +1024,7 @@ func (d *D) TryFieldScalarRawLen(name string, nBits int64, sms ...scalar.BitBufM
 func (d *D) FieldScalarRawLen(name string, nBits int64, sms ...scalar.BitBufMapper) *scalar.BitBuf {
 	s, err := d.TryFieldScalarRawLen(name, nBits, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "RawLen", Pos: d.Pos()})
+		d.IOPanic(err, name, "RawLen")
 	}
 	return s
 }
@@ -1049,7 +1049,7 @@ func (d *D) TryBool() (bool, error) { return d.tryBool() }
 func (d *D) Bool() bool {
 	v, err := d.tryBool()
 	if err != nil {
-		panic(IOError{Err: err, Op: "Bool", Pos: d.Pos()})
+		d.IOPanic(err, "", "Bool")
 	}
 	return v
 }
@@ -1070,7 +1070,7 @@ func (d *D) TryFieldScalarBool(name string, sms ...scalar.BoolMapper) (*scalar.B
 func (d *D) FieldScalarBool(name string, sms ...scalar.BoolMapper) *scalar.Bool {
 	s, err := d.TryFieldScalarBool(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "Bool", Pos: d.Pos()})
+		d.IOPanic(err, name, "Bool")
 	}
 	return s
 }
@@ -1095,7 +1095,7 @@ func (d *D) TryU(nBits int) (uint64, error) { return d.tryUEndian(nBits, d.Endia
 func (d *D) U(nBits int) uint64 {
 	v, err := d.tryUEndian(nBits, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U", Pos: d.Pos()})
+		d.IOPanic(err, "", "U")
 	}
 	return v
 }
@@ -1116,7 +1116,7 @@ func (d *D) TryFieldScalarU(name string, nBits int, sms ...scalar.UintMapper) (*
 func (d *D) FieldScalarU(name string, nBits int, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU(name, nBits, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U", Pos: d.Pos()})
+		d.IOPanic(err, name, "U")
 	}
 	return s
 }
@@ -1141,7 +1141,7 @@ func (d *D) TryUE(nBits int, endian Endian) (uint64, error) { return d.tryUEndia
 func (d *D) UE(nBits int, endian Endian) uint64 {
 	v, err := d.tryUEndian(nBits, endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "UE", Pos: d.Pos()})
+		d.IOPanic(err, "", "UE")
 	}
 	return v
 }
@@ -1162,7 +1162,7 @@ func (d *D) TryFieldScalarUE(name string, nBits int, endian Endian, sms ...scala
 func (d *D) FieldScalarUE(name string, nBits int, endian Endian, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarUE(name, nBits, endian, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "UE", Pos: d.Pos()})
+		d.IOPanic(err, name, "UE")
 	}
 	return s
 }
@@ -1187,7 +1187,7 @@ func (d *D) TryU1() (uint64, error) { return d.tryUEndian(1, d.Endian) }
 func (d *D) U1() uint64 {
 	v, err := d.tryUEndian(1, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U1", Pos: d.Pos()})
+		d.IOPanic(err, "", "U1")
 	}
 	return v
 }
@@ -1208,7 +1208,7 @@ func (d *D) TryFieldScalarU1(name string, sms ...scalar.UintMapper) (*scalar.Uin
 func (d *D) FieldScalarU1(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU1(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U1", Pos: d.Pos()})
+		d.IOPanic(err, name, "U1")
 	}
 	return s
 }
@@ -1233,7 +1233,7 @@ func (d *D) TryU2() (uint64, error) { return d.tryUEndian(2, d.Endian) }
 func (d *D) U2() uint64 {
 	v, err := d.tryUEndian(2, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U2", Pos: d.Pos()})
+		d.IOPanic(err, "", "U2")
 	}
 	return v
 }
@@ -1254,7 +1254,7 @@ func (d *D) TryFieldScalarU2(name string, sms ...scalar.UintMapper) (*scalar.Uin
 func (d *D) FieldScalarU2(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU2(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U2", Pos: d.Pos()})
+		d.IOPanic(err, name, "U2")
 	}
 	return s
 }
@@ -1279,7 +1279,7 @@ func (d *D) TryU3() (uint64, error) { return d.tryUEndian(3, d.Endian) }
 func (d *D) U3() uint64 {
 	v, err := d.tryUEndian(3, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U3", Pos: d.Pos()})
+		d.IOPanic(err, "", "U3")
 	}
 	return v
 }
@@ -1300,7 +1300,7 @@ func (d *D) TryFieldScalarU3(name string, sms ...scalar.UintMapper) (*scalar.Uin
 func (d *D) FieldScalarU3(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU3(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U3", Pos: d.Pos()})
+		d.IOPanic(err, name, "U3")
 	}
 	return s
 }
@@ -1325,7 +1325,7 @@ func (d *D) TryU4() (uint64, error) { return d.tryUEndian(4, d.Endian) }
 func (d *D) U4() uint64 {
 	v, err := d.tryUEndian(4, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U4", Pos: d.Pos()})
+		d.IOPanic(err, "", "U4")
 	}
 	return v
 }
@@ -1346,7 +1346,7 @@ func (d *D) TryFieldScalarU4(name string, sms ...scalar.UintMapper) (*scalar.Uin
 func (d *D) FieldScalarU4(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU4(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U4", Pos: d.Pos()})
+		d.IOPanic(err, name, "U4")
 	}
 	return s
 }
@@ -1371,7 +1371,7 @@ func (d *D) TryU5() (uint64, error) { return d.tryUEndian(5, d.Endian) }
 func (d *D) U5() uint64 {
 	v, err := d.tryUEndian(5, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U5", Pos: d.Pos()})
+		d.IOPanic(err, "", "U5")
 	}
 	return v
 }
@@ -1392,7 +1392,7 @@ func (d *D) TryFieldScalarU5(name string, sms ...scalar.UintMapper) (*scalar.Uin
 func (d *D) FieldScalarU5(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU5(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U5", Pos: d.Pos()})
+		d.IOPanic(err, name, "U5")
 	}
 	return s
 }
@@ -1417,7 +1417,7 @@ func (d *D) TryU6() (uint64, error) { return d.tryUEndian(6, d.Endian) }
 func (d *D) U6() uint64 {
 	v, err := d.tryUEndian(6, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U6", Pos: d.Pos()})
+		d.IOPanic(err, "", "U6")
 	}
 	return v
 }
@@ -1438,7 +1438,7 @@ func (d *D) TryFieldScalarU6(name string, sms ...scalar.UintMapper) (*scalar.Uin
 func (d *D) FieldScalarU6(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU6(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U6", Pos: d.Pos()})
+		d.IOPanic(err, name, "U6")
 	}
 	return s
 }
@@ -1463,7 +1463,7 @@ func (d *D) TryU7() (uint64, error) { return d.tryUEndian(7, d.Endian) }
 func (d *D) U7() uint64 {
 	v, err := d.tryUEndian(7, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U7", Pos: d.Pos()})
+		d.IOPanic(err, "", "U7")
 	}
 	return v
 }
@@ -1484,7 +1484,7 @@ func (d *D) TryFieldScalarU7(name string, sms ...scalar.UintMapper) (*scalar.Uin
 func (d *D) FieldScalarU7(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU7(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U7", Pos: d.Pos()})
+		d.IOPanic(err, name, "U7")
 	}
 	return s
 }
@@ -1509,7 +1509,7 @@ func (d *D) TryU8() (uint64, error) { return d.tryUEndian(8, d.Endian) }
 func (d *D) U8() uint64 {
 	v, err := d.tryUEndian(8, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U8", Pos: d.Pos()})
+		d.IOPanic(err, "", "U8")
 	}
 	return v
 }
@@ -1530,7 +1530,7 @@ func (d *D) TryFieldScalarU8(name string, sms ...scalar.UintMapper) (*scalar.Uin
 func (d *D) FieldScalarU8(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU8(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U8", Pos: d.Pos()})
+		d.IOPanic(err, name, "U8")
 	}
 	return s
 }
@@ -1555,7 +1555,7 @@ func (d *D) TryU9() (uint64, error) { return d.tryUEndian(9, d.Endian) }
 func (d *D) U9() uint64 {
 	v, err := d.tryUEndian(9, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U9", Pos: d.Pos()})
+		d.IOPanic(err, "", "U9")
 	}
 	return v
 }
@@ -1576,7 +1576,7 @@ func (d *D) TryFieldScalarU9(name string, sms ...scalar.UintMapper) (*scalar.Uin
 func (d *D) FieldScalarU9(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU9(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U9", Pos: d.Pos()})
+		d.IOPanic(err, name, "U9")
 	}
 	return s
 }
@@ -1601,7 +1601,7 @@ func (d *D) TryU10() (uint64, error) { return d.tryUEndian(10, d.Endian) }
 func (d *D) U10() uint64 {
 	v, err := d.tryUEndian(10, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U10", Pos: d.Pos()})
+		d.IOPanic(err, "", "U10")
 	}
 	return v
 }
@@ -1622,7 +1622,7 @@ func (d *D) TryFieldScalarU10(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU10(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU10(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U10", Pos: d.Pos()})
+		d.IOPanic(err, name, "U10")
 	}
 	return s
 }
@@ -1647,7 +1647,7 @@ func (d *D) TryU11() (uint64, error) { return d.tryUEndian(11, d.Endian) }
 func (d *D) U11() uint64 {
 	v, err := d.tryUEndian(11, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U11", Pos: d.Pos()})
+		d.IOPanic(err, "", "U11")
 	}
 	return v
 }
@@ -1668,7 +1668,7 @@ func (d *D) TryFieldScalarU11(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU11(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU11(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U11", Pos: d.Pos()})
+		d.IOPanic(err, name, "U11")
 	}
 	return s
 }
@@ -1693,7 +1693,7 @@ func (d *D) TryU12() (uint64, error) { return d.tryUEndian(12, d.Endian) }
 func (d *D) U12() uint64 {
 	v, err := d.tryUEndian(12, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U12", Pos: d.Pos()})
+		d.IOPanic(err, "", "U12")
 	}
 	return v
 }
@@ -1714,7 +1714,7 @@ func (d *D) TryFieldScalarU12(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU12(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU12(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U12", Pos: d.Pos()})
+		d.IOPanic(err, name, "U12")
 	}
 	return s
 }
@@ -1739,7 +1739,7 @@ func (d *D) TryU13() (uint64, error) { return d.tryUEndian(13, d.Endian) }
 func (d *D) U13() uint64 {
 	v, err := d.tryUEndian(13, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U13", Pos: d.Pos()})
+		d.IOPanic(err, "", "U13")
 	}
 	return v
 }
@@ -1760,7 +1760,7 @@ func (d *D) TryFieldScalarU13(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU13(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU13(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U13", Pos: d.Pos()})
+		d.IOPanic(err, name, "U13")
 	}
 	return s
 }
@@ -1785,7 +1785,7 @@ func (d *D) TryU14() (uint64, error) { return d.tryUEndian(14, d.Endian) }
 func (d *D) U14() uint64 {
 	v, err := d.tryUEndian(14, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U14", Pos: d.Pos()})
+		d.IOPanic(err, "", "U14")
 	}
 	return v
 }
@@ -1806,7 +1806,7 @@ func (d *D) TryFieldScalarU14(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU14(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU14(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U14", Pos: d.Pos()})
+		d.IOPanic(err, name, "U14")
 	}
 	return s
 }
@@ -1831,7 +1831,7 @@ func (d *D) TryU15() (uint64, error) { return d.tryUEndian(15, d.Endian) }
 func (d *D) U15() uint64 {
 	v, err := d.tryUEndian(15, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U15", Pos: d.Pos()})
+		d.IOPanic(err, "", "U15")
 	}
 	return v
 }
@@ -1852,7 +1852,7 @@ func (d *D) TryFieldScalarU15(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU15(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU15(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U15", Pos: d.Pos()})
+		d.IOPanic(err, name, "U15")
 	}
 	return s
 }
@@ -1877,7 +1877,7 @@ func (d *D) TryU16() (uint64, error) { return d.tryUEndian(16, d.Endian) }
 func (d *D) U16() uint64 {
 	v, err := d.tryUEndian(16, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U16", Pos: d.Pos()})
+		d.IOPanic(err, "", "U16")
 	}
 	return v
 }
@@ -1898,7 +1898,7 @@ func (d *D) TryFieldScalarU16(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU16(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU16(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U16", Pos: d.Pos()})
+		d.IOPanic(err, name, "U16")
 	}
 	return s
 }
@@ -1923,7 +1923,7 @@ func (d *D) TryU17() (uint64, error) { return d.tryUEndian(17, d.Endian) }
 func (d *D) U17() uint64 {
 	v, err := d.tryUEndian(17, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U17", Pos: d.Pos()})
+		d.IOPanic(err, "", "U17")
 	}
 	return v
 }
@@ -1944,7 +1944,7 @@ func (d *D) TryFieldScalarU17(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU17(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU17(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U17", Pos: d.Pos()})
+		d.IOPanic(err, name, "U17")
 	}
 	return s
 }
@@ -1969,7 +1969,7 @@ func (d *D) TryU18() (uint64, error) { return d.tryUEndian(18, d.Endian) }
 func (d *D) U18() uint64 {
 	v, err := d.tryUEndian(18, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U18", Pos: d.Pos()})
+		d.IOPanic(err, "", "U18")
 	}
 	return v
 }
@@ -1990,7 +1990,7 @@ func (d *D) TryFieldScalarU18(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU18(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU18(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U18", Pos: d.Pos()})
+		d.IOPanic(err, name, "U18")
 	}
 	return s
 }
@@ -2015,7 +2015,7 @@ func (d *D) TryU19() (uint64, error) { return d.tryUEndian(19, d.Endian) }
 func (d *D) U19() uint64 {
 	v, err := d.tryUEndian(19, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U19", Pos: d.Pos()})
+		d.IOPanic(err, "", "U19")
 	}
 	return v
 }
@@ -2036,7 +2036,7 @@ func (d *D) TryFieldScalarU19(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU19(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU19(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U19", Pos: d.Pos()})
+		d.IOPanic(err, name, "U19")
 	}
 	return s
 }
@@ -2061,7 +2061,7 @@ func (d *D) TryU20() (uint64, error) { return d.tryUEndian(20, d.Endian) }
 func (d *D) U20() uint64 {
 	v, err := d.tryUEndian(20, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U20", Pos: d.Pos()})
+		d.IOPanic(err, "", "U20")
 	}
 	return v
 }
@@ -2082,7 +2082,7 @@ func (d *D) TryFieldScalarU20(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU20(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU20(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U20", Pos: d.Pos()})
+		d.IOPanic(err, name, "U20")
 	}
 	return s
 }
@@ -2107,7 +2107,7 @@ func (d *D) TryU21() (uint64, error) { return d.tryUEndian(21, d.Endian) }
 func (d *D) U21() uint64 {
 	v, err := d.tryUEndian(21, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U21", Pos: d.Pos()})
+		d.IOPanic(err, "", "U21")
 	}
 	return v
 }
@@ -2128,7 +2128,7 @@ func (d *D) TryFieldScalarU21(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU21(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU21(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U21", Pos: d.Pos()})
+		d.IOPanic(err, name, "U21")
 	}
 	return s
 }
@@ -2153,7 +2153,7 @@ func (d *D) TryU22() (uint64, error) { return d.tryUEndian(22, d.Endian) }
 func (d *D) U22() uint64 {
 	v, err := d.tryUEndian(22, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U22", Pos: d.Pos()})
+		d.IOPanic(err, "", "U22")
 	}
 	return v
 }
@@ -2174,7 +2174,7 @@ func (d *D) TryFieldScalarU22(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU22(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU22(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U22", Pos: d.Pos()})
+		d.IOPanic(err, name, "U22")
 	}
 	return s
 }
@@ -2199,7 +2199,7 @@ func (d *D) TryU23() (uint64, error) { return d.tryUEndian(23, d.Endian) }
 func (d *D) U23() uint64 {
 	v, err := d.tryUEndian(23, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U23", Pos: d.Pos()})
+		d.IOPanic(err, "", "U23")
 	}
 	return v
 }
@@ -2220,7 +2220,7 @@ func (d *D) TryFieldScalarU23(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU23(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU23(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U23", Pos: d.Pos()})
+		d.IOPanic(err, name, "U23")
 	}
 	return s
 }
@@ -2245,7 +2245,7 @@ func (d *D) TryU24() (uint64, error) { return d.tryUEndian(24, d.Endian) }
 func (d *D) U24() uint64 {
 	v, err := d.tryUEndian(24, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U24", Pos: d.Pos()})
+		d.IOPanic(err, "", "U24")
 	}
 	return v
 }
@@ -2266,7 +2266,7 @@ func (d *D) TryFieldScalarU24(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU24(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU24(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U24", Pos: d.Pos()})
+		d.IOPanic(err, name, "U24")
 	}
 	return s
 }
@@ -2291,7 +2291,7 @@ func (d *D) TryU25() (uint64, error) { return d.tryUEndian(25, d.Endian) }
 func (d *D) U25() uint64 {
 	v, err := d.tryUEndian(25, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U25", Pos: d.Pos()})
+		d.IOPanic(err, "", "U25")
 	}
 	return v
 }
@@ -2312,7 +2312,7 @@ func (d *D) TryFieldScalarU25(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU25(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU25(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U25", Pos: d.Pos()})
+		d.IOPanic(err, name, "U25")
 	}
 	return s
 }
@@ -2337,7 +2337,7 @@ func (d *D) TryU26() (uint64, error) { return d.tryUEndian(26, d.Endian) }
 func (d *D) U26() uint64 {
 	v, err := d.tryUEndian(26, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U26", Pos: d.Pos()})
+		d.IOPanic(err, "", "U26")
 	}
 	return v
 }
@@ -2358,7 +2358,7 @@ func (d *D) TryFieldScalarU26(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU26(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU26(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U26", Pos: d.Pos()})
+		d.IOPanic(err, name, "U26")
 	}
 	return s
 }
@@ -2383,7 +2383,7 @@ func (d *D) TryU27() (uint64, error) { return d.tryUEndian(27, d.Endian) }
 func (d *D) U27() uint64 {
 	v, err := d.tryUEndian(27, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U27", Pos: d.Pos()})
+		d.IOPanic(err, "", "U27")
 	}
 	return v
 }
@@ -2404,7 +2404,7 @@ func (d *D) TryFieldScalarU27(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU27(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU27(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U27", Pos: d.Pos()})
+		d.IOPanic(err, name, "U27")
 	}
 	return s
 }
@@ -2429,7 +2429,7 @@ func (d *D) TryU28() (uint64, error) { return d.tryUEndian(28, d.Endian) }
 func (d *D) U28() uint64 {
 	v, err := d.tryUEndian(28, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U28", Pos: d.Pos()})
+		d.IOPanic(err, "", "U28")
 	}
 	return v
 }
@@ -2450,7 +2450,7 @@ func (d *D) TryFieldScalarU28(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU28(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU28(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U28", Pos: d.Pos()})
+		d.IOPanic(err, name, "U28")
 	}
 	return s
 }
@@ -2475,7 +2475,7 @@ func (d *D) TryU29() (uint64, error) { return d.tryUEndian(29, d.Endian) }
 func (d *D) U29() uint64 {
 	v, err := d.tryUEndian(29, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U29", Pos: d.Pos()})
+		d.IOPanic(err, "", "U29")
 	}
 	return v
 }
@@ -2496,7 +2496,7 @@ func (d *D) TryFieldScalarU29(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU29(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU29(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U29", Pos: d.Pos()})
+		d.IOPanic(err, name, "U29")
 	}
 	return s
 }
@@ -2521,7 +2521,7 @@ func (d *D) TryU30() (uint64, error) { return d.tryUEndian(30, d.Endian) }
 func (d *D) U30() uint64 {
 	v, err := d.tryUEndian(30, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U30", Pos: d.Pos()})
+		d.IOPanic(err, "", "U30")
 	}
 	return v
 }
@@ -2542,7 +2542,7 @@ func (d *D) TryFieldScalarU30(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU30(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU30(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U30", Pos: d.Pos()})
+		d.IOPanic(err, name, "U30")
 	}
 	return s
 }
@@ -2567,7 +2567,7 @@ func (d *D) TryU31() (uint64, error) { return d.tryUEndian(31, d.Endian) }
 func (d *D) U31() uint64 {
 	v, err := d.tryUEndian(31, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U31", Pos: d.Pos()})
+		d.IOPanic(err, "", "U31")
 	}
 	return v
 }
@@ -2588,7 +2588,7 @@ func (d *D) TryFieldScalarU31(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU31(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU31(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U31", Pos: d.Pos()})
+		d.IOPanic(err, name, "U31")
 	}
 	return s
 }
@@ -2613,7 +2613,7 @@ func (d *D) TryU32() (uint64, error) { return d.tryUEndian(32, d.Endian) }
 func (d *D) U32() uint64 {
 	v, err := d.tryUEndian(32, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U32", Pos: d.Pos()})
+		d.IOPanic(err, "", "U32")
 	}
 	return v
 }
@@ -2634,7 +2634,7 @@ func (d *D) TryFieldScalarU32(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU32(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU32(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U32", Pos: d.Pos()})
+		d.IOPanic(err, name, "U32")
 	}
 	return s
 }
@@ -2659,7 +2659,7 @@ func (d *D) TryU33() (uint64, error) { return d.tryUEndian(33, d.Endian) }
 func (d *D) U33() uint64 {
 	v, err := d.tryUEndian(33, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U33", Pos: d.Pos()})
+		d.IOPanic(err, "", "U33")
 	}
 	return v
 }
@@ -2680,7 +2680,7 @@ func (d *D) TryFieldScalarU33(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU33(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU33(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U33", Pos: d.Pos()})
+		d.IOPanic(err, name, "U33")
 	}
 	return s
 }
@@ -2705,7 +2705,7 @@ func (d *D) TryU34() (uint64, error) { return d.tryUEndian(34, d.Endian) }
 func (d *D) U34() uint64 {
 	v, err := d.tryUEndian(34, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U34", Pos: d.Pos()})
+		d.IOPanic(err, "", "U34")
 	}
 	return v
 }
@@ -2726,7 +2726,7 @@ func (d *D) TryFieldScalarU34(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU34(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU34(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U34", Pos: d.Pos()})
+		d.IOPanic(err, name, "U34")
 	}
 	return s
 }
@@ -2751,7 +2751,7 @@ func (d *D) TryU35() (uint64, error) { return d.tryUEndian(35, d.Endian) }
 func (d *D) U35() uint64 {
 	v, err := d.tryUEndian(35, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U35", Pos: d.Pos()})
+		d.IOPanic(err, "", "U35")
 	}
 	return v
 }
@@ -2772,7 +2772,7 @@ func (d *D) TryFieldScalarU35(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU35(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU35(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U35", Pos: d.Pos()})
+		d.IOPanic(err, name, "U35")
 	}
 	return s
 }
@@ -2797,7 +2797,7 @@ func (d *D) TryU36() (uint64, error) { return d.tryUEndian(36, d.Endian) }
 func (d *D) U36() uint64 {
 	v, err := d.tryUEndian(36, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U36", Pos: d.Pos()})
+		d.IOPanic(err, "", "U36")
 	}
 	return v
 }
@@ -2818,7 +2818,7 @@ func (d *D) TryFieldScalarU36(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU36(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU36(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U36", Pos: d.Pos()})
+		d.IOPanic(err, name, "U36")
 	}
 	return s
 }
@@ -2843,7 +2843,7 @@ func (d *D) TryU37() (uint64, error) { return d.tryUEndian(37, d.Endian) }
 func (d *D) U37() uint64 {
 	v, err := d.tryUEndian(37, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U37", Pos: d.Pos()})
+		d.IOPanic(err, "", "U37")
 	}
 	return v
 }
@@ -2864,7 +2864,7 @@ func (d *D) TryFieldScalarU37(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU37(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU37(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U37", Pos: d.Pos()})
+		d.IOPanic(err, name, "U37")
 	}
 	return s
 }
@@ -2889,7 +2889,7 @@ func (d *D) TryU38() (uint64, error) { return d.tryUEndian(38, d.Endian) }
 func (d *D) U38() uint64 {
 	v, err := d.tryUEndian(38, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U38", Pos: d.Pos()})
+		d.IOPanic(err, "", "U38")
 	}
 	return v
 }
@@ -2910,7 +2910,7 @@ func (d *D) TryFieldScalarU38(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU38(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU38(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U38", Pos: d.Pos()})
+		d.IOPanic(err, name, "U38")
 	}
 	return s
 }
@@ -2935,7 +2935,7 @@ func (d *D) TryU39() (uint64, error) { return d.tryUEndian(39, d.Endian) }
 func (d *D) U39() uint64 {
 	v, err := d.tryUEndian(39, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U39", Pos: d.Pos()})
+		d.IOPanic(err, "", "U39")
 	}
 	return v
 }
@@ -2956,7 +2956,7 @@ func (d *D) TryFieldScalarU39(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU39(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU39(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U39", Pos: d.Pos()})
+		d.IOPanic(err, name, "U39")
 	}
 	return s
 }
@@ -2981,7 +2981,7 @@ func (d *D) TryU40() (uint64, error) { return d.tryUEndian(40, d.Endian) }
 func (d *D) U40() uint64 {
 	v, err := d.tryUEndian(40, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U40", Pos: d.Pos()})
+		d.IOPanic(err, "", "U40")
 	}
 	return v
 }
@@ -3002,7 +3002,7 @@ func (d *D) TryFieldScalarU40(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU40(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU40(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U40", Pos: d.Pos()})
+		d.IOPanic(err, name, "U40")
 	}
 	return s
 }
@@ -3027,7 +3027,7 @@ func (d *D) TryU41() (uint64, error) { return d.tryUEndian(41, d.Endian) }
 func (d *D) U41() uint64 {
 	v, err := d.tryUEndian(41, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U41", Pos: d.Pos()})
+		d.IOPanic(err, "", "U41")
 	}
 	return v
 }
@@ -3048,7 +3048,7 @@ func (d *D) TryFieldScalarU41(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU41(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU41(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U41", Pos: d.Pos()})
+		d.IOPanic(err, name, "U41")
 	}
 	return s
 }
@@ -3073,7 +3073,7 @@ func (d *D) TryU42() (uint64, error) { return d.tryUEndian(42, d.Endian) }
 func (d *D) U42() uint64 {
 	v, err := d.tryUEndian(42, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U42", Pos: d.Pos()})
+		d.IOPanic(err, "", "U42")
 	}
 	return v
 }
@@ -3094,7 +3094,7 @@ func (d *D) TryFieldScalarU42(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU42(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU42(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U42", Pos: d.Pos()})
+		d.IOPanic(err, name, "U42")
 	}
 	return s
 }
@@ -3119,7 +3119,7 @@ func (d *D) TryU43() (uint64, error) { return d.tryUEndian(43, d.Endian) }
 func (d *D) U43() uint64 {
 	v, err := d.tryUEndian(43, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U43", Pos: d.Pos()})
+		d.IOPanic(err, "", "U43")
 	}
 	return v
 }
@@ -3140,7 +3140,7 @@ func (d *D) TryFieldScalarU43(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU43(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU43(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U43", Pos: d.Pos()})
+		d.IOPanic(err, name, "U43")
 	}
 	return s
 }
@@ -3165,7 +3165,7 @@ func (d *D) TryU44() (uint64, error) { return d.tryUEndian(44, d.Endian) }
 func (d *D) U44() uint64 {
 	v, err := d.tryUEndian(44, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U44", Pos: d.Pos()})
+		d.IOPanic(err, "", "U44")
 	}
 	return v
 }
@@ -3186,7 +3186,7 @@ func (d *D) TryFieldScalarU44(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU44(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU44(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U44", Pos: d.Pos()})
+		d.IOPanic(err, name, "U44")
 	}
 	return s
 }
@@ -3211,7 +3211,7 @@ func (d *D) TryU45() (uint64, error) { return d.tryUEndian(45, d.Endian) }
 func (d *D) U45() uint64 {
 	v, err := d.tryUEndian(45, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U45", Pos: d.Pos()})
+		d.IOPanic(err, "", "U45")
 	}
 	return v
 }
@@ -3232,7 +3232,7 @@ func (d *D) TryFieldScalarU45(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU45(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU45(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U45", Pos: d.Pos()})
+		d.IOPanic(err, name, "U45")
 	}
 	return s
 }
@@ -3257,7 +3257,7 @@ func (d *D) TryU46() (uint64, error) { return d.tryUEndian(46, d.Endian) }
 func (d *D) U46() uint64 {
 	v, err := d.tryUEndian(46, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U46", Pos: d.Pos()})
+		d.IOPanic(err, "", "U46")
 	}
 	return v
 }
@@ -3278,7 +3278,7 @@ func (d *D) TryFieldScalarU46(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU46(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU46(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U46", Pos: d.Pos()})
+		d.IOPanic(err, name, "U46")
 	}
 	return s
 }
@@ -3303,7 +3303,7 @@ func (d *D) TryU47() (uint64, error) { return d.tryUEndian(47, d.Endian) }
 func (d *D) U47() uint64 {
 	v, err := d.tryUEndian(47, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U47", Pos: d.Pos()})
+		d.IOPanic(err, "", "U47")
 	}
 	return v
 }
@@ -3324,7 +3324,7 @@ func (d *D) TryFieldScalarU47(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU47(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU47(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U47", Pos: d.Pos()})
+		d.IOPanic(err, name, "U47")
 	}
 	return s
 }
@@ -3349,7 +3349,7 @@ func (d *D) TryU48() (uint64, error) { return d.tryUEndian(48, d.Endian) }
 func (d *D) U48() uint64 {
 	v, err := d.tryUEndian(48, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U48", Pos: d.Pos()})
+		d.IOPanic(err, "", "U48")
 	}
 	return v
 }
@@ -3370,7 +3370,7 @@ func (d *D) TryFieldScalarU48(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU48(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU48(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U48", Pos: d.Pos()})
+		d.IOPanic(err, name, "U48")
 	}
 	return s
 }
@@ -3395,7 +3395,7 @@ func (d *D) TryU49() (uint64, error) { return d.tryUEndian(49, d.Endian) }
 func (d *D) U49() uint64 {
 	v, err := d.tryUEndian(49, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U49", Pos: d.Pos()})
+		d.IOPanic(err, "", "U49")
 	}
 	return v
 }
@@ -3416,7 +3416,7 @@ func (d *D) TryFieldScalarU49(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU49(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU49(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U49", Pos: d.Pos()})
+		d.IOPanic(err, name, "U49")
 	}
 	return s
 }
@@ -3441,7 +3441,7 @@ func (d *D) TryU50() (uint64, error) { return d.tryUEndian(50, d.Endian) }
 func (d *D) U50() uint64 {
 	v, err := d.tryUEndian(50, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U50", Pos: d.Pos()})
+		d.IOPanic(err, "", "U50")
 	}
 	return v
 }
@@ -3462,7 +3462,7 @@ func (d *D) TryFieldScalarU50(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU50(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU50(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U50", Pos: d.Pos()})
+		d.IOPanic(err, name, "U50")
 	}
 	return s
 }
@@ -3487,7 +3487,7 @@ func (d *D) TryU51() (uint64, error) { return d.tryUEndian(51, d.Endian) }
 func (d *D) U51() uint64 {
 	v, err := d.tryUEndian(51, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U51", Pos: d.Pos()})
+		d.IOPanic(err, "", "U51")
 	}
 	return v
 }
@@ -3508,7 +3508,7 @@ func (d *D) TryFieldScalarU51(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU51(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU51(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U51", Pos: d.Pos()})
+		d.IOPanic(err, name, "U51")
 	}
 	return s
 }
@@ -3533,7 +3533,7 @@ func (d *D) TryU52() (uint64, error) { return d.tryUEndian(52, d.Endian) }
 func (d *D) U52() uint64 {
 	v, err := d.tryUEndian(52, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U52", Pos: d.Pos()})
+		d.IOPanic(err, "", "U52")
 	}
 	return v
 }
@@ -3554,7 +3554,7 @@ func (d *D) TryFieldScalarU52(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU52(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU52(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U52", Pos: d.Pos()})
+		d.IOPanic(err, name, "U52")
 	}
 	return s
 }
@@ -3579,7 +3579,7 @@ func (d *D) TryU53() (uint64, error) { return d.tryUEndian(53, d.Endian) }
 func (d *D) U53() uint64 {
 	v, err := d.tryUEndian(53, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U53", Pos: d.Pos()})
+		d.IOPanic(err, "", "U53")
 	}
 	return v
 }
@@ -3600,7 +3600,7 @@ func (d *D) TryFieldScalarU53(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU53(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU53(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U53", Pos: d.Pos()})
+		d.IOPanic(err, name, "U53")
 	}
 	return s
 }
@@ -3625,7 +3625,7 @@ func (d *D) TryU54() (uint64, error) { return d.tryUEndian(54, d.Endian) }
 func (d *D) U54() uint64 {
 	v, err := d.tryUEndian(54, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U54", Pos: d.Pos()})
+		d.IOPanic(err, "", "U54")
 	}
 	return v
 }
@@ -3646,7 +3646,7 @@ func (d *D) TryFieldScalarU54(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU54(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU54(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U54", Pos: d.Pos()})
+		d.IOPanic(err, name, "U54")
 	}
 	return s
 }
@@ -3671,7 +3671,7 @@ func (d *D) TryU55() (uint64, error) { return d.tryUEndian(55, d.Endian) }
 func (d *D) U55() uint64 {
 	v, err := d.tryUEndian(55, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U55", Pos: d.Pos()})
+		d.IOPanic(err, "", "U55")
 	}
 	return v
 }
@@ -3692,7 +3692,7 @@ func (d *D) TryFieldScalarU55(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU55(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU55(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U55", Pos: d.Pos()})
+		d.IOPanic(err, name, "U55")
 	}
 	return s
 }
@@ -3717,7 +3717,7 @@ func (d *D) TryU56() (uint64, error) { return d.tryUEndian(56, d.Endian) }
 func (d *D) U56() uint64 {
 	v, err := d.tryUEndian(56, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U56", Pos: d.Pos()})
+		d.IOPanic(err, "", "U56")
 	}
 	return v
 }
@@ -3738,7 +3738,7 @@ func (d *D) TryFieldScalarU56(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU56(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU56(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U56", Pos: d.Pos()})
+		d.IOPanic(err, name, "U56")
 	}
 	return s
 }
@@ -3763,7 +3763,7 @@ func (d *D) TryU57() (uint64, error) { return d.tryUEndian(57, d.Endian) }
 func (d *D) U57() uint64 {
 	v, err := d.tryUEndian(57, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U57", Pos: d.Pos()})
+		d.IOPanic(err, "", "U57")
 	}
 	return v
 }
@@ -3784,7 +3784,7 @@ func (d *D) TryFieldScalarU57(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU57(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU57(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U57", Pos: d.Pos()})
+		d.IOPanic(err, name, "U57")
 	}
 	return s
 }
@@ -3809,7 +3809,7 @@ func (d *D) TryU58() (uint64, error) { return d.tryUEndian(58, d.Endian) }
 func (d *D) U58() uint64 {
 	v, err := d.tryUEndian(58, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U58", Pos: d.Pos()})
+		d.IOPanic(err, "", "U58")
 	}
 	return v
 }
@@ -3830,7 +3830,7 @@ func (d *D) TryFieldScalarU58(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU58(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU58(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U58", Pos: d.Pos()})
+		d.IOPanic(err, name, "U58")
 	}
 	return s
 }
@@ -3855,7 +3855,7 @@ func (d *D) TryU59() (uint64, error) { return d.tryUEndian(59, d.Endian) }
 func (d *D) U59() uint64 {
 	v, err := d.tryUEndian(59, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U59", Pos: d.Pos()})
+		d.IOPanic(err, "", "U59")
 	}
 	return v
 }
@@ -3876,7 +3876,7 @@ func (d *D) TryFieldScalarU59(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU59(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU59(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U59", Pos: d.Pos()})
+		d.IOPanic(err, name, "U59")
 	}
 	return s
 }
@@ -3901,7 +3901,7 @@ func (d *D) TryU60() (uint64, error) { return d.tryUEndian(60, d.Endian) }
 func (d *D) U60() uint64 {
 	v, err := d.tryUEndian(60, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U60", Pos: d.Pos()})
+		d.IOPanic(err, "", "U60")
 	}
 	return v
 }
@@ -3922,7 +3922,7 @@ func (d *D) TryFieldScalarU60(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU60(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU60(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U60", Pos: d.Pos()})
+		d.IOPanic(err, name, "U60")
 	}
 	return s
 }
@@ -3947,7 +3947,7 @@ func (d *D) TryU61() (uint64, error) { return d.tryUEndian(61, d.Endian) }
 func (d *D) U61() uint64 {
 	v, err := d.tryUEndian(61, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U61", Pos: d.Pos()})
+		d.IOPanic(err, "", "U61")
 	}
 	return v
 }
@@ -3968,7 +3968,7 @@ func (d *D) TryFieldScalarU61(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU61(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU61(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U61", Pos: d.Pos()})
+		d.IOPanic(err, name, "U61")
 	}
 	return s
 }
@@ -3993,7 +3993,7 @@ func (d *D) TryU62() (uint64, error) { return d.tryUEndian(62, d.Endian) }
 func (d *D) U62() uint64 {
 	v, err := d.tryUEndian(62, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U62", Pos: d.Pos()})
+		d.IOPanic(err, "", "U62")
 	}
 	return v
 }
@@ -4014,7 +4014,7 @@ func (d *D) TryFieldScalarU62(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU62(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU62(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U62", Pos: d.Pos()})
+		d.IOPanic(err, name, "U62")
 	}
 	return s
 }
@@ -4039,7 +4039,7 @@ func (d *D) TryU63() (uint64, error) { return d.tryUEndian(63, d.Endian) }
 func (d *D) U63() uint64 {
 	v, err := d.tryUEndian(63, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U63", Pos: d.Pos()})
+		d.IOPanic(err, "", "U63")
 	}
 	return v
 }
@@ -4060,7 +4060,7 @@ func (d *D) TryFieldScalarU63(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU63(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU63(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U63", Pos: d.Pos()})
+		d.IOPanic(err, name, "U63")
 	}
 	return s
 }
@@ -4085,7 +4085,7 @@ func (d *D) TryU64() (uint64, error) { return d.tryUEndian(64, d.Endian) }
 func (d *D) U64() uint64 {
 	v, err := d.tryUEndian(64, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U64", Pos: d.Pos()})
+		d.IOPanic(err, "", "U64")
 	}
 	return v
 }
@@ -4106,7 +4106,7 @@ func (d *D) TryFieldScalarU64(name string, sms ...scalar.UintMapper) (*scalar.Ui
 func (d *D) FieldScalarU64(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU64(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U64", Pos: d.Pos()})
+		d.IOPanic(err, name, "U64")
 	}
 	return s
 }
@@ -4131,7 +4131,7 @@ func (d *D) TryU8LE() (uint64, error) { return d.tryUEndian(8, LittleEndian) }
 func (d *D) U8LE() uint64 {
 	v, err := d.tryUEndian(8, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U8LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U8LE")
 	}
 	return v
 }
@@ -4152,7 +4152,7 @@ func (d *D) TryFieldScalarU8LE(name string, sms ...scalar.UintMapper) (*scalar.U
 func (d *D) FieldScalarU8LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU8LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U8LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U8LE")
 	}
 	return s
 }
@@ -4177,7 +4177,7 @@ func (d *D) TryU9LE() (uint64, error) { return d.tryUEndian(9, LittleEndian) }
 func (d *D) U9LE() uint64 {
 	v, err := d.tryUEndian(9, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U9LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U9LE")
 	}
 	return v
 }
@@ -4198,7 +4198,7 @@ func (d *D) TryFieldScalarU9LE(name string, sms ...scalar.UintMapper) (*scalar.U
 func (d *D) FieldScalarU9LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU9LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U9LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U9LE")
 	}
 	return s
 }
@@ -4223,7 +4223,7 @@ func (d *D) TryU10LE() (uint64, error) { return d.tryUEndian(10, LittleEndian) }
 func (d *D) U10LE() uint64 {
 	v, err := d.tryUEndian(10, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U10LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U10LE")
 	}
 	return v
 }
@@ -4244,7 +4244,7 @@ func (d *D) TryFieldScalarU10LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU10LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU10LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U10LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U10LE")
 	}
 	return s
 }
@@ -4269,7 +4269,7 @@ func (d *D) TryU11LE() (uint64, error) { return d.tryUEndian(11, LittleEndian) }
 func (d *D) U11LE() uint64 {
 	v, err := d.tryUEndian(11, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U11LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U11LE")
 	}
 	return v
 }
@@ -4290,7 +4290,7 @@ func (d *D) TryFieldScalarU11LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU11LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU11LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U11LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U11LE")
 	}
 	return s
 }
@@ -4315,7 +4315,7 @@ func (d *D) TryU12LE() (uint64, error) { return d.tryUEndian(12, LittleEndian) }
 func (d *D) U12LE() uint64 {
 	v, err := d.tryUEndian(12, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U12LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U12LE")
 	}
 	return v
 }
@@ -4336,7 +4336,7 @@ func (d *D) TryFieldScalarU12LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU12LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU12LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U12LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U12LE")
 	}
 	return s
 }
@@ -4361,7 +4361,7 @@ func (d *D) TryU13LE() (uint64, error) { return d.tryUEndian(13, LittleEndian) }
 func (d *D) U13LE() uint64 {
 	v, err := d.tryUEndian(13, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U13LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U13LE")
 	}
 	return v
 }
@@ -4382,7 +4382,7 @@ func (d *D) TryFieldScalarU13LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU13LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU13LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U13LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U13LE")
 	}
 	return s
 }
@@ -4407,7 +4407,7 @@ func (d *D) TryU14LE() (uint64, error) { return d.tryUEndian(14, LittleEndian) }
 func (d *D) U14LE() uint64 {
 	v, err := d.tryUEndian(14, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U14LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U14LE")
 	}
 	return v
 }
@@ -4428,7 +4428,7 @@ func (d *D) TryFieldScalarU14LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU14LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU14LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U14LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U14LE")
 	}
 	return s
 }
@@ -4453,7 +4453,7 @@ func (d *D) TryU15LE() (uint64, error) { return d.tryUEndian(15, LittleEndian) }
 func (d *D) U15LE() uint64 {
 	v, err := d.tryUEndian(15, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U15LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U15LE")
 	}
 	return v
 }
@@ -4474,7 +4474,7 @@ func (d *D) TryFieldScalarU15LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU15LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU15LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U15LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U15LE")
 	}
 	return s
 }
@@ -4499,7 +4499,7 @@ func (d *D) TryU16LE() (uint64, error) { return d.tryUEndian(16, LittleEndian) }
 func (d *D) U16LE() uint64 {
 	v, err := d.tryUEndian(16, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U16LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U16LE")
 	}
 	return v
 }
@@ -4520,7 +4520,7 @@ func (d *D) TryFieldScalarU16LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU16LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU16LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U16LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U16LE")
 	}
 	return s
 }
@@ -4545,7 +4545,7 @@ func (d *D) TryU17LE() (uint64, error) { return d.tryUEndian(17, LittleEndian) }
 func (d *D) U17LE() uint64 {
 	v, err := d.tryUEndian(17, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U17LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U17LE")
 	}
 	return v
 }
@@ -4566,7 +4566,7 @@ func (d *D) TryFieldScalarU17LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU17LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU17LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U17LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U17LE")
 	}
 	return s
 }
@@ -4591,7 +4591,7 @@ func (d *D) TryU18LE() (uint64, error) { return d.tryUEndian(18, LittleEndian) }
 func (d *D) U18LE() uint64 {
 	v, err := d.tryUEndian(18, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U18LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U18LE")
 	}
 	return v
 }
@@ -4612,7 +4612,7 @@ func (d *D) TryFieldScalarU18LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU18LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU18LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U18LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U18LE")
 	}
 	return s
 }
@@ -4637,7 +4637,7 @@ func (d *D) TryU19LE() (uint64, error) { return d.tryUEndian(19, LittleEndian) }
 func (d *D) U19LE() uint64 {
 	v, err := d.tryUEndian(19, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U19LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U19LE")
 	}
 	return v
 }
@@ -4658,7 +4658,7 @@ func (d *D) TryFieldScalarU19LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU19LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU19LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U19LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U19LE")
 	}
 	return s
 }
@@ -4683,7 +4683,7 @@ func (d *D) TryU20LE() (uint64, error) { return d.tryUEndian(20, LittleEndian) }
 func (d *D) U20LE() uint64 {
 	v, err := d.tryUEndian(20, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U20LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U20LE")
 	}
 	return v
 }
@@ -4704,7 +4704,7 @@ func (d *D) TryFieldScalarU20LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU20LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU20LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U20LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U20LE")
 	}
 	return s
 }
@@ -4729,7 +4729,7 @@ func (d *D) TryU21LE() (uint64, error) { return d.tryUEndian(21, LittleEndian) }
 func (d *D) U21LE() uint64 {
 	v, err := d.tryUEndian(21, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U21LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U21LE")
 	}
 	return v
 }
@@ -4750,7 +4750,7 @@ func (d *D) TryFieldScalarU21LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU21LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU21LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U21LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U21LE")
 	}
 	return s
 }
@@ -4775,7 +4775,7 @@ func (d *D) TryU22LE() (uint64, error) { return d.tryUEndian(22, LittleEndian) }
 func (d *D) U22LE() uint64 {
 	v, err := d.tryUEndian(22, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U22LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U22LE")
 	}
 	return v
 }
@@ -4796,7 +4796,7 @@ func (d *D) TryFieldScalarU22LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU22LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU22LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U22LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U22LE")
 	}
 	return s
 }
@@ -4821,7 +4821,7 @@ func (d *D) TryU23LE() (uint64, error) { return d.tryUEndian(23, LittleEndian) }
 func (d *D) U23LE() uint64 {
 	v, err := d.tryUEndian(23, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U23LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U23LE")
 	}
 	return v
 }
@@ -4842,7 +4842,7 @@ func (d *D) TryFieldScalarU23LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU23LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU23LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U23LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U23LE")
 	}
 	return s
 }
@@ -4867,7 +4867,7 @@ func (d *D) TryU24LE() (uint64, error) { return d.tryUEndian(24, LittleEndian) }
 func (d *D) U24LE() uint64 {
 	v, err := d.tryUEndian(24, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U24LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U24LE")
 	}
 	return v
 }
@@ -4888,7 +4888,7 @@ func (d *D) TryFieldScalarU24LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU24LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU24LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U24LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U24LE")
 	}
 	return s
 }
@@ -4913,7 +4913,7 @@ func (d *D) TryU25LE() (uint64, error) { return d.tryUEndian(25, LittleEndian) }
 func (d *D) U25LE() uint64 {
 	v, err := d.tryUEndian(25, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U25LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U25LE")
 	}
 	return v
 }
@@ -4934,7 +4934,7 @@ func (d *D) TryFieldScalarU25LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU25LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU25LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U25LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U25LE")
 	}
 	return s
 }
@@ -4959,7 +4959,7 @@ func (d *D) TryU26LE() (uint64, error) { return d.tryUEndian(26, LittleEndian) }
 func (d *D) U26LE() uint64 {
 	v, err := d.tryUEndian(26, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U26LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U26LE")
 	}
 	return v
 }
@@ -4980,7 +4980,7 @@ func (d *D) TryFieldScalarU26LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU26LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU26LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U26LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U26LE")
 	}
 	return s
 }
@@ -5005,7 +5005,7 @@ func (d *D) TryU27LE() (uint64, error) { return d.tryUEndian(27, LittleEndian) }
 func (d *D) U27LE() uint64 {
 	v, err := d.tryUEndian(27, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U27LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U27LE")
 	}
 	return v
 }
@@ -5026,7 +5026,7 @@ func (d *D) TryFieldScalarU27LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU27LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU27LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U27LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U27LE")
 	}
 	return s
 }
@@ -5051,7 +5051,7 @@ func (d *D) TryU28LE() (uint64, error) { return d.tryUEndian(28, LittleEndian) }
 func (d *D) U28LE() uint64 {
 	v, err := d.tryUEndian(28, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U28LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U28LE")
 	}
 	return v
 }
@@ -5072,7 +5072,7 @@ func (d *D) TryFieldScalarU28LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU28LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU28LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U28LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U28LE")
 	}
 	return s
 }
@@ -5097,7 +5097,7 @@ func (d *D) TryU29LE() (uint64, error) { return d.tryUEndian(29, LittleEndian) }
 func (d *D) U29LE() uint64 {
 	v, err := d.tryUEndian(29, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U29LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U29LE")
 	}
 	return v
 }
@@ -5118,7 +5118,7 @@ func (d *D) TryFieldScalarU29LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU29LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU29LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U29LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U29LE")
 	}
 	return s
 }
@@ -5143,7 +5143,7 @@ func (d *D) TryU30LE() (uint64, error) { return d.tryUEndian(30, LittleEndian) }
 func (d *D) U30LE() uint64 {
 	v, err := d.tryUEndian(30, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U30LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U30LE")
 	}
 	return v
 }
@@ -5164,7 +5164,7 @@ func (d *D) TryFieldScalarU30LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU30LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU30LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U30LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U30LE")
 	}
 	return s
 }
@@ -5189,7 +5189,7 @@ func (d *D) TryU31LE() (uint64, error) { return d.tryUEndian(31, LittleEndian) }
 func (d *D) U31LE() uint64 {
 	v, err := d.tryUEndian(31, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U31LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U31LE")
 	}
 	return v
 }
@@ -5210,7 +5210,7 @@ func (d *D) TryFieldScalarU31LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU31LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU31LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U31LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U31LE")
 	}
 	return s
 }
@@ -5235,7 +5235,7 @@ func (d *D) TryU32LE() (uint64, error) { return d.tryUEndian(32, LittleEndian) }
 func (d *D) U32LE() uint64 {
 	v, err := d.tryUEndian(32, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U32LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U32LE")
 	}
 	return v
 }
@@ -5256,7 +5256,7 @@ func (d *D) TryFieldScalarU32LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU32LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU32LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U32LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U32LE")
 	}
 	return s
 }
@@ -5281,7 +5281,7 @@ func (d *D) TryU33LE() (uint64, error) { return d.tryUEndian(33, LittleEndian) }
 func (d *D) U33LE() uint64 {
 	v, err := d.tryUEndian(33, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U33LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U33LE")
 	}
 	return v
 }
@@ -5302,7 +5302,7 @@ func (d *D) TryFieldScalarU33LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU33LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU33LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U33LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U33LE")
 	}
 	return s
 }
@@ -5327,7 +5327,7 @@ func (d *D) TryU34LE() (uint64, error) { return d.tryUEndian(34, LittleEndian) }
 func (d *D) U34LE() uint64 {
 	v, err := d.tryUEndian(34, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U34LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U34LE")
 	}
 	return v
 }
@@ -5348,7 +5348,7 @@ func (d *D) TryFieldScalarU34LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU34LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU34LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U34LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U34LE")
 	}
 	return s
 }
@@ -5373,7 +5373,7 @@ func (d *D) TryU35LE() (uint64, error) { return d.tryUEndian(35, LittleEndian) }
 func (d *D) U35LE() uint64 {
 	v, err := d.tryUEndian(35, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U35LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U35LE")
 	}
 	return v
 }
@@ -5394,7 +5394,7 @@ func (d *D) TryFieldScalarU35LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU35LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU35LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U35LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U35LE")
 	}
 	return s
 }
@@ -5419,7 +5419,7 @@ func (d *D) TryU36LE() (uint64, error) { return d.tryUEndian(36, LittleEndian) }
 func (d *D) U36LE() uint64 {
 	v, err := d.tryUEndian(36, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U36LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U36LE")
 	}
 	return v
 }
@@ -5440,7 +5440,7 @@ func (d *D) TryFieldScalarU36LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU36LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU36LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U36LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U36LE")
 	}
 	return s
 }
@@ -5465,7 +5465,7 @@ func (d *D) TryU37LE() (uint64, error) { return d.tryUEndian(37, LittleEndian) }
 func (d *D) U37LE() uint64 {
 	v, err := d.tryUEndian(37, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U37LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U37LE")
 	}
 	return v
 }
@@ -5486,7 +5486,7 @@ func (d *D) TryFieldScalarU37LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU37LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU37LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U37LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U37LE")
 	}
 	return s
 }
@@ -5511,7 +5511,7 @@ func (d *D) TryU38LE() (uint64, error) { return d.tryUEndian(38, LittleEndian) }
 func (d *D) U38LE() uint64 {
 	v, err := d.tryUEndian(38, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U38LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U38LE")
 	}
 	return v
 }
@@ -5532,7 +5532,7 @@ func (d *D) TryFieldScalarU38LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU38LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU38LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U38LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U38LE")
 	}
 	return s
 }
@@ -5557,7 +5557,7 @@ func (d *D) TryU39LE() (uint64, error) { return d.tryUEndian(39, LittleEndian) }
 func (d *D) U39LE() uint64 {
 	v, err := d.tryUEndian(39, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U39LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U39LE")
 	}
 	return v
 }
@@ -5578,7 +5578,7 @@ func (d *D) TryFieldScalarU39LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU39LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU39LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U39LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U39LE")
 	}
 	return s
 }
@@ -5603,7 +5603,7 @@ func (d *D) TryU40LE() (uint64, error) { return d.tryUEndian(40, LittleEndian) }
 func (d *D) U40LE() uint64 {
 	v, err := d.tryUEndian(40, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U40LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U40LE")
 	}
 	return v
 }
@@ -5624,7 +5624,7 @@ func (d *D) TryFieldScalarU40LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU40LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU40LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U40LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U40LE")
 	}
 	return s
 }
@@ -5649,7 +5649,7 @@ func (d *D) TryU41LE() (uint64, error) { return d.tryUEndian(41, LittleEndian) }
 func (d *D) U41LE() uint64 {
 	v, err := d.tryUEndian(41, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U41LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U41LE")
 	}
 	return v
 }
@@ -5670,7 +5670,7 @@ func (d *D) TryFieldScalarU41LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU41LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU41LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U41LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U41LE")
 	}
 	return s
 }
@@ -5695,7 +5695,7 @@ func (d *D) TryU42LE() (uint64, error) { return d.tryUEndian(42, LittleEndian) }
 func (d *D) U42LE() uint64 {
 	v, err := d.tryUEndian(42, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U42LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U42LE")
 	}
 	return v
 }
@@ -5716,7 +5716,7 @@ func (d *D) TryFieldScalarU42LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU42LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU42LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U42LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U42LE")
 	}
 	return s
 }
@@ -5741,7 +5741,7 @@ func (d *D) TryU43LE() (uint64, error) { return d.tryUEndian(43, LittleEndian) }
 func (d *D) U43LE() uint64 {
 	v, err := d.tryUEndian(43, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U43LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U43LE")
 	}
 	return v
 }
@@ -5762,7 +5762,7 @@ func (d *D) TryFieldScalarU43LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU43LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU43LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U43LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U43LE")
 	}
 	return s
 }
@@ -5787,7 +5787,7 @@ func (d *D) TryU44LE() (uint64, error) { return d.tryUEndian(44, LittleEndian) }
 func (d *D) U44LE() uint64 {
 	v, err := d.tryUEndian(44, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U44LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U44LE")
 	}
 	return v
 }
@@ -5808,7 +5808,7 @@ func (d *D) TryFieldScalarU44LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU44LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU44LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U44LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U44LE")
 	}
 	return s
 }
@@ -5833,7 +5833,7 @@ func (d *D) TryU45LE() (uint64, error) { return d.tryUEndian(45, LittleEndian) }
 func (d *D) U45LE() uint64 {
 	v, err := d.tryUEndian(45, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U45LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U45LE")
 	}
 	return v
 }
@@ -5854,7 +5854,7 @@ func (d *D) TryFieldScalarU45LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU45LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU45LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U45LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U45LE")
 	}
 	return s
 }
@@ -5879,7 +5879,7 @@ func (d *D) TryU46LE() (uint64, error) { return d.tryUEndian(46, LittleEndian) }
 func (d *D) U46LE() uint64 {
 	v, err := d.tryUEndian(46, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U46LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U46LE")
 	}
 	return v
 }
@@ -5900,7 +5900,7 @@ func (d *D) TryFieldScalarU46LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU46LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU46LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U46LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U46LE")
 	}
 	return s
 }
@@ -5925,7 +5925,7 @@ func (d *D) TryU47LE() (uint64, error) { return d.tryUEndian(47, LittleEndian) }
 func (d *D) U47LE() uint64 {
 	v, err := d.tryUEndian(47, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U47LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U47LE")
 	}
 	return v
 }
@@ -5946,7 +5946,7 @@ func (d *D) TryFieldScalarU47LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU47LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU47LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U47LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U47LE")
 	}
 	return s
 }
@@ -5971,7 +5971,7 @@ func (d *D) TryU48LE() (uint64, error) { return d.tryUEndian(48, LittleEndian) }
 func (d *D) U48LE() uint64 {
 	v, err := d.tryUEndian(48, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U48LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U48LE")
 	}
 	return v
 }
@@ -5992,7 +5992,7 @@ func (d *D) TryFieldScalarU48LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU48LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU48LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U48LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U48LE")
 	}
 	return s
 }
@@ -6017,7 +6017,7 @@ func (d *D) TryU49LE() (uint64, error) { return d.tryUEndian(49, LittleEndian) }
 func (d *D) U49LE() uint64 {
 	v, err := d.tryUEndian(49, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U49LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U49LE")
 	}
 	return v
 }
@@ -6038,7 +6038,7 @@ func (d *D) TryFieldScalarU49LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU49LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU49LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U49LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U49LE")
 	}
 	return s
 }
@@ -6063,7 +6063,7 @@ func (d *D) TryU50LE() (uint64, error) { return d.tryUEndian(50, LittleEndian) }
 func (d *D) U50LE() uint64 {
 	v, err := d.tryUEndian(50, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U50LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U50LE")
 	}
 	return v
 }
@@ -6084,7 +6084,7 @@ func (d *D) TryFieldScalarU50LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU50LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU50LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U50LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U50LE")
 	}
 	return s
 }
@@ -6109,7 +6109,7 @@ func (d *D) TryU51LE() (uint64, error) { return d.tryUEndian(51, LittleEndian) }
 func (d *D) U51LE() uint64 {
 	v, err := d.tryUEndian(51, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U51LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U51LE")
 	}
 	return v
 }
@@ -6130,7 +6130,7 @@ func (d *D) TryFieldScalarU51LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU51LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU51LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U51LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U51LE")
 	}
 	return s
 }
@@ -6155,7 +6155,7 @@ func (d *D) TryU52LE() (uint64, error) { return d.tryUEndian(52, LittleEndian) }
 func (d *D) U52LE() uint64 {
 	v, err := d.tryUEndian(52, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U52LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U52LE")
 	}
 	return v
 }
@@ -6176,7 +6176,7 @@ func (d *D) TryFieldScalarU52LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU52LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU52LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U52LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U52LE")
 	}
 	return s
 }
@@ -6201,7 +6201,7 @@ func (d *D) TryU53LE() (uint64, error) { return d.tryUEndian(53, LittleEndian) }
 func (d *D) U53LE() uint64 {
 	v, err := d.tryUEndian(53, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U53LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U53LE")
 	}
 	return v
 }
@@ -6222,7 +6222,7 @@ func (d *D) TryFieldScalarU53LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU53LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU53LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U53LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U53LE")
 	}
 	return s
 }
@@ -6247,7 +6247,7 @@ func (d *D) TryU54LE() (uint64, error) { return d.tryUEndian(54, LittleEndian) }
 func (d *D) U54LE() uint64 {
 	v, err := d.tryUEndian(54, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U54LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U54LE")
 	}
 	return v
 }
@@ -6268,7 +6268,7 @@ func (d *D) TryFieldScalarU54LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU54LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU54LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U54LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U54LE")
 	}
 	return s
 }
@@ -6293,7 +6293,7 @@ func (d *D) TryU55LE() (uint64, error) { return d.tryUEndian(55, LittleEndian) }
 func (d *D) U55LE() uint64 {
 	v, err := d.tryUEndian(55, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U55LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U55LE")
 	}
 	return v
 }
@@ -6314,7 +6314,7 @@ func (d *D) TryFieldScalarU55LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU55LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU55LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U55LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U55LE")
 	}
 	return s
 }
@@ -6339,7 +6339,7 @@ func (d *D) TryU56LE() (uint64, error) { return d.tryUEndian(56, LittleEndian) }
 func (d *D) U56LE() uint64 {
 	v, err := d.tryUEndian(56, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U56LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U56LE")
 	}
 	return v
 }
@@ -6360,7 +6360,7 @@ func (d *D) TryFieldScalarU56LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU56LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU56LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U56LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U56LE")
 	}
 	return s
 }
@@ -6385,7 +6385,7 @@ func (d *D) TryU57LE() (uint64, error) { return d.tryUEndian(57, LittleEndian) }
 func (d *D) U57LE() uint64 {
 	v, err := d.tryUEndian(57, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U57LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U57LE")
 	}
 	return v
 }
@@ -6406,7 +6406,7 @@ func (d *D) TryFieldScalarU57LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU57LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU57LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U57LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U57LE")
 	}
 	return s
 }
@@ -6431,7 +6431,7 @@ func (d *D) TryU58LE() (uint64, error) { return d.tryUEndian(58, LittleEndian) }
 func (d *D) U58LE() uint64 {
 	v, err := d.tryUEndian(58, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U58LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U58LE")
 	}
 	return v
 }
@@ -6452,7 +6452,7 @@ func (d *D) TryFieldScalarU58LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU58LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU58LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U58LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U58LE")
 	}
 	return s
 }
@@ -6477,7 +6477,7 @@ func (d *D) TryU59LE() (uint64, error) { return d.tryUEndian(59, LittleEndian) }
 func (d *D) U59LE() uint64 {
 	v, err := d.tryUEndian(59, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U59LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U59LE")
 	}
 	return v
 }
@@ -6498,7 +6498,7 @@ func (d *D) TryFieldScalarU59LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU59LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU59LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U59LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U59LE")
 	}
 	return s
 }
@@ -6523,7 +6523,7 @@ func (d *D) TryU60LE() (uint64, error) { return d.tryUEndian(60, LittleEndian) }
 func (d *D) U60LE() uint64 {
 	v, err := d.tryUEndian(60, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U60LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U60LE")
 	}
 	return v
 }
@@ -6544,7 +6544,7 @@ func (d *D) TryFieldScalarU60LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU60LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU60LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U60LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U60LE")
 	}
 	return s
 }
@@ -6569,7 +6569,7 @@ func (d *D) TryU61LE() (uint64, error) { return d.tryUEndian(61, LittleEndian) }
 func (d *D) U61LE() uint64 {
 	v, err := d.tryUEndian(61, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U61LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U61LE")
 	}
 	return v
 }
@@ -6590,7 +6590,7 @@ func (d *D) TryFieldScalarU61LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU61LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU61LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U61LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U61LE")
 	}
 	return s
 }
@@ -6615,7 +6615,7 @@ func (d *D) TryU62LE() (uint64, error) { return d.tryUEndian(62, LittleEndian) }
 func (d *D) U62LE() uint64 {
 	v, err := d.tryUEndian(62, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U62LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U62LE")
 	}
 	return v
 }
@@ -6636,7 +6636,7 @@ func (d *D) TryFieldScalarU62LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU62LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU62LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U62LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U62LE")
 	}
 	return s
 }
@@ -6661,7 +6661,7 @@ func (d *D) TryU63LE() (uint64, error) { return d.tryUEndian(63, LittleEndian) }
 func (d *D) U63LE() uint64 {
 	v, err := d.tryUEndian(63, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U63LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U63LE")
 	}
 	return v
 }
@@ -6682,7 +6682,7 @@ func (d *D) TryFieldScalarU63LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU63LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU63LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U63LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U63LE")
 	}
 	return s
 }
@@ -6707,7 +6707,7 @@ func (d *D) TryU64LE() (uint64, error) { return d.tryUEndian(64, LittleEndian) }
 func (d *D) U64LE() uint64 {
 	v, err := d.tryUEndian(64, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U64LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U64LE")
 	}
 	return v
 }
@@ -6728,7 +6728,7 @@ func (d *D) TryFieldScalarU64LE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU64LE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU64LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U64LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U64LE")
 	}
 	return s
 }
@@ -6753,7 +6753,7 @@ func (d *D) TryU8BE() (uint64, error) { return d.tryUEndian(8, BigEndian) }
 func (d *D) U8BE() uint64 {
 	v, err := d.tryUEndian(8, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U8BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U8BE")
 	}
 	return v
 }
@@ -6774,7 +6774,7 @@ func (d *D) TryFieldScalarU8BE(name string, sms ...scalar.UintMapper) (*scalar.U
 func (d *D) FieldScalarU8BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU8BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U8BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U8BE")
 	}
 	return s
 }
@@ -6799,7 +6799,7 @@ func (d *D) TryU9BE() (uint64, error) { return d.tryUEndian(9, BigEndian) }
 func (d *D) U9BE() uint64 {
 	v, err := d.tryUEndian(9, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U9BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U9BE")
 	}
 	return v
 }
@@ -6820,7 +6820,7 @@ func (d *D) TryFieldScalarU9BE(name string, sms ...scalar.UintMapper) (*scalar.U
 func (d *D) FieldScalarU9BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU9BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U9BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U9BE")
 	}
 	return s
 }
@@ -6845,7 +6845,7 @@ func (d *D) TryU10BE() (uint64, error) { return d.tryUEndian(10, BigEndian) }
 func (d *D) U10BE() uint64 {
 	v, err := d.tryUEndian(10, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U10BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U10BE")
 	}
 	return v
 }
@@ -6866,7 +6866,7 @@ func (d *D) TryFieldScalarU10BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU10BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU10BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U10BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U10BE")
 	}
 	return s
 }
@@ -6891,7 +6891,7 @@ func (d *D) TryU11BE() (uint64, error) { return d.tryUEndian(11, BigEndian) }
 func (d *D) U11BE() uint64 {
 	v, err := d.tryUEndian(11, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U11BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U11BE")
 	}
 	return v
 }
@@ -6912,7 +6912,7 @@ func (d *D) TryFieldScalarU11BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU11BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU11BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U11BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U11BE")
 	}
 	return s
 }
@@ -6937,7 +6937,7 @@ func (d *D) TryU12BE() (uint64, error) { return d.tryUEndian(12, BigEndian) }
 func (d *D) U12BE() uint64 {
 	v, err := d.tryUEndian(12, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U12BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U12BE")
 	}
 	return v
 }
@@ -6958,7 +6958,7 @@ func (d *D) TryFieldScalarU12BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU12BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU12BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U12BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U12BE")
 	}
 	return s
 }
@@ -6983,7 +6983,7 @@ func (d *D) TryU13BE() (uint64, error) { return d.tryUEndian(13, BigEndian) }
 func (d *D) U13BE() uint64 {
 	v, err := d.tryUEndian(13, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U13BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U13BE")
 	}
 	return v
 }
@@ -7004,7 +7004,7 @@ func (d *D) TryFieldScalarU13BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU13BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU13BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U13BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U13BE")
 	}
 	return s
 }
@@ -7029,7 +7029,7 @@ func (d *D) TryU14BE() (uint64, error) { return d.tryUEndian(14, BigEndian) }
 func (d *D) U14BE() uint64 {
 	v, err := d.tryUEndian(14, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U14BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U14BE")
 	}
 	return v
 }
@@ -7050,7 +7050,7 @@ func (d *D) TryFieldScalarU14BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU14BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU14BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U14BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U14BE")
 	}
 	return s
 }
@@ -7075,7 +7075,7 @@ func (d *D) TryU15BE() (uint64, error) { return d.tryUEndian(15, BigEndian) }
 func (d *D) U15BE() uint64 {
 	v, err := d.tryUEndian(15, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U15BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U15BE")
 	}
 	return v
 }
@@ -7096,7 +7096,7 @@ func (d *D) TryFieldScalarU15BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU15BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU15BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U15BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U15BE")
 	}
 	return s
 }
@@ -7121,7 +7121,7 @@ func (d *D) TryU16BE() (uint64, error) { return d.tryUEndian(16, BigEndian) }
 func (d *D) U16BE() uint64 {
 	v, err := d.tryUEndian(16, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U16BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U16BE")
 	}
 	return v
 }
@@ -7142,7 +7142,7 @@ func (d *D) TryFieldScalarU16BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU16BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU16BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U16BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U16BE")
 	}
 	return s
 }
@@ -7167,7 +7167,7 @@ func (d *D) TryU17BE() (uint64, error) { return d.tryUEndian(17, BigEndian) }
 func (d *D) U17BE() uint64 {
 	v, err := d.tryUEndian(17, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U17BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U17BE")
 	}
 	return v
 }
@@ -7188,7 +7188,7 @@ func (d *D) TryFieldScalarU17BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU17BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU17BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U17BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U17BE")
 	}
 	return s
 }
@@ -7213,7 +7213,7 @@ func (d *D) TryU18BE() (uint64, error) { return d.tryUEndian(18, BigEndian) }
 func (d *D) U18BE() uint64 {
 	v, err := d.tryUEndian(18, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U18BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U18BE")
 	}
 	return v
 }
@@ -7234,7 +7234,7 @@ func (d *D) TryFieldScalarU18BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU18BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU18BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U18BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U18BE")
 	}
 	return s
 }
@@ -7259,7 +7259,7 @@ func (d *D) TryU19BE() (uint64, error) { return d.tryUEndian(19, BigEndian) }
 func (d *D) U19BE() uint64 {
 	v, err := d.tryUEndian(19, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U19BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U19BE")
 	}
 	return v
 }
@@ -7280,7 +7280,7 @@ func (d *D) TryFieldScalarU19BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU19BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU19BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U19BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U19BE")
 	}
 	return s
 }
@@ -7305,7 +7305,7 @@ func (d *D) TryU20BE() (uint64, error) { return d.tryUEndian(20, BigEndian) }
 func (d *D) U20BE() uint64 {
 	v, err := d.tryUEndian(20, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U20BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U20BE")
 	}
 	return v
 }
@@ -7326,7 +7326,7 @@ func (d *D) TryFieldScalarU20BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU20BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU20BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U20BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U20BE")
 	}
 	return s
 }
@@ -7351,7 +7351,7 @@ func (d *D) TryU21BE() (uint64, error) { return d.tryUEndian(21, BigEndian) }
 func (d *D) U21BE() uint64 {
 	v, err := d.tryUEndian(21, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U21BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U21BE")
 	}
 	return v
 }
@@ -7372,7 +7372,7 @@ func (d *D) TryFieldScalarU21BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU21BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU21BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U21BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U21BE")
 	}
 	return s
 }
@@ -7397,7 +7397,7 @@ func (d *D) TryU22BE() (uint64, error) { return d.tryUEndian(22, BigEndian) }
 func (d *D) U22BE() uint64 {
 	v, err := d.tryUEndian(22, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U22BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U22BE")
 	}
 	return v
 }
@@ -7418,7 +7418,7 @@ func (d *D) TryFieldScalarU22BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU22BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU22BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U22BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U22BE")
 	}
 	return s
 }
@@ -7443,7 +7443,7 @@ func (d *D) TryU23BE() (uint64, error) { return d.tryUEndian(23, BigEndian) }
 func (d *D) U23BE() uint64 {
 	v, err := d.tryUEndian(23, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U23BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U23BE")
 	}
 	return v
 }
@@ -7464,7 +7464,7 @@ func (d *D) TryFieldScalarU23BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU23BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU23BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U23BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U23BE")
 	}
 	return s
 }
@@ -7489,7 +7489,7 @@ func (d *D) TryU24BE() (uint64, error) { return d.tryUEndian(24, BigEndian) }
 func (d *D) U24BE() uint64 {
 	v, err := d.tryUEndian(24, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U24BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U24BE")
 	}
 	return v
 }
@@ -7510,7 +7510,7 @@ func (d *D) TryFieldScalarU24BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU24BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU24BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U24BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U24BE")
 	}
 	return s
 }
@@ -7535,7 +7535,7 @@ func (d *D) TryU25BE() (uint64, error) { return d.tryUEndian(25, BigEndian) }
 func (d *D) U25BE() uint64 {
 	v, err := d.tryUEndian(25, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U25BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U25BE")
 	}
 	return v
 }
@@ -7556,7 +7556,7 @@ func (d *D) TryFieldScalarU25BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU25BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU25BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U25BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U25BE")
 	}
 	return s
 }
@@ -7581,7 +7581,7 @@ func (d *D) TryU26BE() (uint64, error) { return d.tryUEndian(26, BigEndian) }
 func (d *D) U26BE() uint64 {
 	v, err := d.tryUEndian(26, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U26BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U26BE")
 	}
 	return v
 }
@@ -7602,7 +7602,7 @@ func (d *D) TryFieldScalarU26BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU26BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU26BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U26BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U26BE")
 	}
 	return s
 }
@@ -7627,7 +7627,7 @@ func (d *D) TryU27BE() (uint64, error) { return d.tryUEndian(27, BigEndian) }
 func (d *D) U27BE() uint64 {
 	v, err := d.tryUEndian(27, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U27BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U27BE")
 	}
 	return v
 }
@@ -7648,7 +7648,7 @@ func (d *D) TryFieldScalarU27BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU27BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU27BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U27BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U27BE")
 	}
 	return s
 }
@@ -7673,7 +7673,7 @@ func (d *D) TryU28BE() (uint64, error) { return d.tryUEndian(28, BigEndian) }
 func (d *D) U28BE() uint64 {
 	v, err := d.tryUEndian(28, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U28BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U28BE")
 	}
 	return v
 }
@@ -7694,7 +7694,7 @@ func (d *D) TryFieldScalarU28BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU28BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU28BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U28BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U28BE")
 	}
 	return s
 }
@@ -7719,7 +7719,7 @@ func (d *D) TryU29BE() (uint64, error) { return d.tryUEndian(29, BigEndian) }
 func (d *D) U29BE() uint64 {
 	v, err := d.tryUEndian(29, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U29BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U29BE")
 	}
 	return v
 }
@@ -7740,7 +7740,7 @@ func (d *D) TryFieldScalarU29BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU29BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU29BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U29BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U29BE")
 	}
 	return s
 }
@@ -7765,7 +7765,7 @@ func (d *D) TryU30BE() (uint64, error) { return d.tryUEndian(30, BigEndian) }
 func (d *D) U30BE() uint64 {
 	v, err := d.tryUEndian(30, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U30BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U30BE")
 	}
 	return v
 }
@@ -7786,7 +7786,7 @@ func (d *D) TryFieldScalarU30BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU30BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU30BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U30BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U30BE")
 	}
 	return s
 }
@@ -7811,7 +7811,7 @@ func (d *D) TryU31BE() (uint64, error) { return d.tryUEndian(31, BigEndian) }
 func (d *D) U31BE() uint64 {
 	v, err := d.tryUEndian(31, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U31BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U31BE")
 	}
 	return v
 }
@@ -7832,7 +7832,7 @@ func (d *D) TryFieldScalarU31BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU31BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU31BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U31BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U31BE")
 	}
 	return s
 }
@@ -7857,7 +7857,7 @@ func (d *D) TryU32BE() (uint64, error) { return d.tryUEndian(32, BigEndian) }
 func (d *D) U32BE() uint64 {
 	v, err := d.tryUEndian(32, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U32BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U32BE")
 	}
 	return v
 }
@@ -7878,7 +7878,7 @@ func (d *D) TryFieldScalarU32BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU32BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU32BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U32BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U32BE")
 	}
 	return s
 }
@@ -7903,7 +7903,7 @@ func (d *D) TryU33BE() (uint64, error) { return d.tryUEndian(33, BigEndian) }
 func (d *D) U33BE() uint64 {
 	v, err := d.tryUEndian(33, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U33BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U33BE")
 	}
 	return v
 }
@@ -7924,7 +7924,7 @@ func (d *D) TryFieldScalarU33BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU33BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU33BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U33BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U33BE")
 	}
 	return s
 }
@@ -7949,7 +7949,7 @@ func (d *D) TryU34BE() (uint64, error) { return d.tryUEndian(34, BigEndian) }
 func (d *D) U34BE() uint64 {
 	v, err := d.tryUEndian(34, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U34BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U34BE")
 	}
 	return v
 }
@@ -7970,7 +7970,7 @@ func (d *D) TryFieldScalarU34BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU34BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU34BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U34BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U34BE")
 	}
 	return s
 }
@@ -7995,7 +7995,7 @@ func (d *D) TryU35BE() (uint64, error) { return d.tryUEndian(35, BigEndian) }
 func (d *D) U35BE() uint64 {
 	v, err := d.tryUEndian(35, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U35BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U35BE")
 	}
 	return v
 }
@@ -8016,7 +8016,7 @@ func (d *D) TryFieldScalarU35BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU35BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU35BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U35BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U35BE")
 	}
 	return s
 }
@@ -8041,7 +8041,7 @@ func (d *D) TryU36BE() (uint64, error) { return d.tryUEndian(36, BigEndian) }
 func (d *D) U36BE() uint64 {
 	v, err := d.tryUEndian(36, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U36BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U36BE")
 	}
 	return v
 }
@@ -8062,7 +8062,7 @@ func (d *D) TryFieldScalarU36BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU36BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU36BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U36BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U36BE")
 	}
 	return s
 }
@@ -8087,7 +8087,7 @@ func (d *D) TryU37BE() (uint64, error) { return d.tryUEndian(37, BigEndian) }
 func (d *D) U37BE() uint64 {
 	v, err := d.tryUEndian(37, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U37BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U37BE")
 	}
 	return v
 }
@@ -8108,7 +8108,7 @@ func (d *D) TryFieldScalarU37BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU37BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU37BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U37BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U37BE")
 	}
 	return s
 }
@@ -8133,7 +8133,7 @@ func (d *D) TryU38BE() (uint64, error) { return d.tryUEndian(38, BigEndian) }
 func (d *D) U38BE() uint64 {
 	v, err := d.tryUEndian(38, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U38BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U38BE")
 	}
 	return v
 }
@@ -8154,7 +8154,7 @@ func (d *D) TryFieldScalarU38BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU38BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU38BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U38BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U38BE")
 	}
 	return s
 }
@@ -8179,7 +8179,7 @@ func (d *D) TryU39BE() (uint64, error) { return d.tryUEndian(39, BigEndian) }
 func (d *D) U39BE() uint64 {
 	v, err := d.tryUEndian(39, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U39BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U39BE")
 	}
 	return v
 }
@@ -8200,7 +8200,7 @@ func (d *D) TryFieldScalarU39BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU39BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU39BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U39BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U39BE")
 	}
 	return s
 }
@@ -8225,7 +8225,7 @@ func (d *D) TryU40BE() (uint64, error) { return d.tryUEndian(40, BigEndian) }
 func (d *D) U40BE() uint64 {
 	v, err := d.tryUEndian(40, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U40BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U40BE")
 	}
 	return v
 }
@@ -8246,7 +8246,7 @@ func (d *D) TryFieldScalarU40BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU40BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU40BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U40BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U40BE")
 	}
 	return s
 }
@@ -8271,7 +8271,7 @@ func (d *D) TryU41BE() (uint64, error) { return d.tryUEndian(41, BigEndian) }
 func (d *D) U41BE() uint64 {
 	v, err := d.tryUEndian(41, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U41BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U41BE")
 	}
 	return v
 }
@@ -8292,7 +8292,7 @@ func (d *D) TryFieldScalarU41BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU41BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU41BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U41BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U41BE")
 	}
 	return s
 }
@@ -8317,7 +8317,7 @@ func (d *D) TryU42BE() (uint64, error) { return d.tryUEndian(42, BigEndian) }
 func (d *D) U42BE() uint64 {
 	v, err := d.tryUEndian(42, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U42BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U42BE")
 	}
 	return v
 }
@@ -8338,7 +8338,7 @@ func (d *D) TryFieldScalarU42BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU42BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU42BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U42BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U42BE")
 	}
 	return s
 }
@@ -8363,7 +8363,7 @@ func (d *D) TryU43BE() (uint64, error) { return d.tryUEndian(43, BigEndian) }
 func (d *D) U43BE() uint64 {
 	v, err := d.tryUEndian(43, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U43BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U43BE")
 	}
 	return v
 }
@@ -8384,7 +8384,7 @@ func (d *D) TryFieldScalarU43BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU43BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU43BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U43BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U43BE")
 	}
 	return s
 }
@@ -8409,7 +8409,7 @@ func (d *D) TryU44BE() (uint64, error) { return d.tryUEndian(44, BigEndian) }
 func (d *D) U44BE() uint64 {
 	v, err := d.tryUEndian(44, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U44BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U44BE")
 	}
 	return v
 }
@@ -8430,7 +8430,7 @@ func (d *D) TryFieldScalarU44BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU44BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU44BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U44BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U44BE")
 	}
 	return s
 }
@@ -8455,7 +8455,7 @@ func (d *D) TryU45BE() (uint64, error) { return d.tryUEndian(45, BigEndian) }
 func (d *D) U45BE() uint64 {
 	v, err := d.tryUEndian(45, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U45BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U45BE")
 	}
 	return v
 }
@@ -8476,7 +8476,7 @@ func (d *D) TryFieldScalarU45BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU45BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU45BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U45BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U45BE")
 	}
 	return s
 }
@@ -8501,7 +8501,7 @@ func (d *D) TryU46BE() (uint64, error) { return d.tryUEndian(46, BigEndian) }
 func (d *D) U46BE() uint64 {
 	v, err := d.tryUEndian(46, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U46BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U46BE")
 	}
 	return v
 }
@@ -8522,7 +8522,7 @@ func (d *D) TryFieldScalarU46BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU46BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU46BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U46BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U46BE")
 	}
 	return s
 }
@@ -8547,7 +8547,7 @@ func (d *D) TryU47BE() (uint64, error) { return d.tryUEndian(47, BigEndian) }
 func (d *D) U47BE() uint64 {
 	v, err := d.tryUEndian(47, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U47BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U47BE")
 	}
 	return v
 }
@@ -8568,7 +8568,7 @@ func (d *D) TryFieldScalarU47BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU47BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU47BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U47BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U47BE")
 	}
 	return s
 }
@@ -8593,7 +8593,7 @@ func (d *D) TryU48BE() (uint64, error) { return d.tryUEndian(48, BigEndian) }
 func (d *D) U48BE() uint64 {
 	v, err := d.tryUEndian(48, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U48BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U48BE")
 	}
 	return v
 }
@@ -8614,7 +8614,7 @@ func (d *D) TryFieldScalarU48BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU48BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU48BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U48BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U48BE")
 	}
 	return s
 }
@@ -8639,7 +8639,7 @@ func (d *D) TryU49BE() (uint64, error) { return d.tryUEndian(49, BigEndian) }
 func (d *D) U49BE() uint64 {
 	v, err := d.tryUEndian(49, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U49BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U49BE")
 	}
 	return v
 }
@@ -8660,7 +8660,7 @@ func (d *D) TryFieldScalarU49BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU49BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU49BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U49BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U49BE")
 	}
 	return s
 }
@@ -8685,7 +8685,7 @@ func (d *D) TryU50BE() (uint64, error) { return d.tryUEndian(50, BigEndian) }
 func (d *D) U50BE() uint64 {
 	v, err := d.tryUEndian(50, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U50BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U50BE")
 	}
 	return v
 }
@@ -8706,7 +8706,7 @@ func (d *D) TryFieldScalarU50BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU50BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU50BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U50BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U50BE")
 	}
 	return s
 }
@@ -8731,7 +8731,7 @@ func (d *D) TryU51BE() (uint64, error) { return d.tryUEndian(51, BigEndian) }
 func (d *D) U51BE() uint64 {
 	v, err := d.tryUEndian(51, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U51BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U51BE")
 	}
 	return v
 }
@@ -8752,7 +8752,7 @@ func (d *D) TryFieldScalarU51BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU51BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU51BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U51BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U51BE")
 	}
 	return s
 }
@@ -8777,7 +8777,7 @@ func (d *D) TryU52BE() (uint64, error) { return d.tryUEndian(52, BigEndian) }
 func (d *D) U52BE() uint64 {
 	v, err := d.tryUEndian(52, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U52BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U52BE")
 	}
 	return v
 }
@@ -8798,7 +8798,7 @@ func (d *D) TryFieldScalarU52BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU52BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU52BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U52BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U52BE")
 	}
 	return s
 }
@@ -8823,7 +8823,7 @@ func (d *D) TryU53BE() (uint64, error) { return d.tryUEndian(53, BigEndian) }
 func (d *D) U53BE() uint64 {
 	v, err := d.tryUEndian(53, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U53BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U53BE")
 	}
 	return v
 }
@@ -8844,7 +8844,7 @@ func (d *D) TryFieldScalarU53BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU53BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU53BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U53BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U53BE")
 	}
 	return s
 }
@@ -8869,7 +8869,7 @@ func (d *D) TryU54BE() (uint64, error) { return d.tryUEndian(54, BigEndian) }
 func (d *D) U54BE() uint64 {
 	v, err := d.tryUEndian(54, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U54BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U54BE")
 	}
 	return v
 }
@@ -8890,7 +8890,7 @@ func (d *D) TryFieldScalarU54BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU54BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU54BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U54BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U54BE")
 	}
 	return s
 }
@@ -8915,7 +8915,7 @@ func (d *D) TryU55BE() (uint64, error) { return d.tryUEndian(55, BigEndian) }
 func (d *D) U55BE() uint64 {
 	v, err := d.tryUEndian(55, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U55BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U55BE")
 	}
 	return v
 }
@@ -8936,7 +8936,7 @@ func (d *D) TryFieldScalarU55BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU55BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU55BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U55BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U55BE")
 	}
 	return s
 }
@@ -8961,7 +8961,7 @@ func (d *D) TryU56BE() (uint64, error) { return d.tryUEndian(56, BigEndian) }
 func (d *D) U56BE() uint64 {
 	v, err := d.tryUEndian(56, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U56BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U56BE")
 	}
 	return v
 }
@@ -8982,7 +8982,7 @@ func (d *D) TryFieldScalarU56BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU56BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU56BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U56BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U56BE")
 	}
 	return s
 }
@@ -9007,7 +9007,7 @@ func (d *D) TryU57BE() (uint64, error) { return d.tryUEndian(57, BigEndian) }
 func (d *D) U57BE() uint64 {
 	v, err := d.tryUEndian(57, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U57BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U57BE")
 	}
 	return v
 }
@@ -9028,7 +9028,7 @@ func (d *D) TryFieldScalarU57BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU57BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU57BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U57BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U57BE")
 	}
 	return s
 }
@@ -9053,7 +9053,7 @@ func (d *D) TryU58BE() (uint64, error) { return d.tryUEndian(58, BigEndian) }
 func (d *D) U58BE() uint64 {
 	v, err := d.tryUEndian(58, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U58BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U58BE")
 	}
 	return v
 }
@@ -9074,7 +9074,7 @@ func (d *D) TryFieldScalarU58BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU58BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU58BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U58BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U58BE")
 	}
 	return s
 }
@@ -9099,7 +9099,7 @@ func (d *D) TryU59BE() (uint64, error) { return d.tryUEndian(59, BigEndian) }
 func (d *D) U59BE() uint64 {
 	v, err := d.tryUEndian(59, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U59BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U59BE")
 	}
 	return v
 }
@@ -9120,7 +9120,7 @@ func (d *D) TryFieldScalarU59BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU59BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU59BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U59BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U59BE")
 	}
 	return s
 }
@@ -9145,7 +9145,7 @@ func (d *D) TryU60BE() (uint64, error) { return d.tryUEndian(60, BigEndian) }
 func (d *D) U60BE() uint64 {
 	v, err := d.tryUEndian(60, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U60BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U60BE")
 	}
 	return v
 }
@@ -9166,7 +9166,7 @@ func (d *D) TryFieldScalarU60BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU60BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU60BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U60BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U60BE")
 	}
 	return s
 }
@@ -9191,7 +9191,7 @@ func (d *D) TryU61BE() (uint64, error) { return d.tryUEndian(61, BigEndian) }
 func (d *D) U61BE() uint64 {
 	v, err := d.tryUEndian(61, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U61BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U61BE")
 	}
 	return v
 }
@@ -9212,7 +9212,7 @@ func (d *D) TryFieldScalarU61BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU61BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU61BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U61BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U61BE")
 	}
 	return s
 }
@@ -9237,7 +9237,7 @@ func (d *D) TryU62BE() (uint64, error) { return d.tryUEndian(62, BigEndian) }
 func (d *D) U62BE() uint64 {
 	v, err := d.tryUEndian(62, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U62BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U62BE")
 	}
 	return v
 }
@@ -9258,7 +9258,7 @@ func (d *D) TryFieldScalarU62BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU62BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU62BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U62BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U62BE")
 	}
 	return s
 }
@@ -9283,7 +9283,7 @@ func (d *D) TryU63BE() (uint64, error) { return d.tryUEndian(63, BigEndian) }
 func (d *D) U63BE() uint64 {
 	v, err := d.tryUEndian(63, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U63BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U63BE")
 	}
 	return v
 }
@@ -9304,7 +9304,7 @@ func (d *D) TryFieldScalarU63BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU63BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU63BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U63BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U63BE")
 	}
 	return s
 }
@@ -9329,7 +9329,7 @@ func (d *D) TryU64BE() (uint64, error) { return d.tryUEndian(64, BigEndian) }
 func (d *D) U64BE() uint64 {
 	v, err := d.tryUEndian(64, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "U64BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "U64BE")
 	}
 	return v
 }
@@ -9350,7 +9350,7 @@ func (d *D) TryFieldScalarU64BE(name string, sms ...scalar.UintMapper) (*scalar.
 func (d *D) FieldScalarU64BE(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarU64BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "U64BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "U64BE")
 	}
 	return s
 }
@@ -9375,7 +9375,7 @@ func (d *D) TryS(nBits int) (int64, error) { return d.trySEndian(nBits, d.Endian
 func (d *D) S(nBits int) int64 {
 	v, err := d.trySEndian(nBits, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S", Pos: d.Pos()})
+		d.IOPanic(err, "", "S")
 	}
 	return v
 }
@@ -9396,7 +9396,7 @@ func (d *D) TryFieldScalarS(name string, nBits int, sms ...scalar.SintMapper) (*
 func (d *D) FieldScalarS(name string, nBits int, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS(name, nBits, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S", Pos: d.Pos()})
+		d.IOPanic(err, name, "S")
 	}
 	return s
 }
@@ -9421,7 +9421,7 @@ func (d *D) TrySE(nBits int, endian Endian) (int64, error) { return d.trySEndian
 func (d *D) SE(nBits int, endian Endian) int64 {
 	v, err := d.trySEndian(nBits, endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "SE", Pos: d.Pos()})
+		d.IOPanic(err, "", "SE")
 	}
 	return v
 }
@@ -9442,7 +9442,7 @@ func (d *D) TryFieldScalarSE(name string, nBits int, endian Endian, sms ...scala
 func (d *D) FieldScalarSE(name string, nBits int, endian Endian, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarSE(name, nBits, endian, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "SE", Pos: d.Pos()})
+		d.IOPanic(err, name, "SE")
 	}
 	return s
 }
@@ -9467,7 +9467,7 @@ func (d *D) TryS1() (int64, error) { return d.trySEndian(1, d.Endian) }
 func (d *D) S1() int64 {
 	v, err := d.trySEndian(1, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S1", Pos: d.Pos()})
+		d.IOPanic(err, "", "S1")
 	}
 	return v
 }
@@ -9488,7 +9488,7 @@ func (d *D) TryFieldScalarS1(name string, sms ...scalar.SintMapper) (*scalar.Sin
 func (d *D) FieldScalarS1(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS1(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S1", Pos: d.Pos()})
+		d.IOPanic(err, name, "S1")
 	}
 	return s
 }
@@ -9513,7 +9513,7 @@ func (d *D) TryS2() (int64, error) { return d.trySEndian(2, d.Endian) }
 func (d *D) S2() int64 {
 	v, err := d.trySEndian(2, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S2", Pos: d.Pos()})
+		d.IOPanic(err, "", "S2")
 	}
 	return v
 }
@@ -9534,7 +9534,7 @@ func (d *D) TryFieldScalarS2(name string, sms ...scalar.SintMapper) (*scalar.Sin
 func (d *D) FieldScalarS2(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS2(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S2", Pos: d.Pos()})
+		d.IOPanic(err, name, "S2")
 	}
 	return s
 }
@@ -9559,7 +9559,7 @@ func (d *D) TryS3() (int64, error) { return d.trySEndian(3, d.Endian) }
 func (d *D) S3() int64 {
 	v, err := d.trySEndian(3, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S3", Pos: d.Pos()})
+		d.IOPanic(err, "", "S3")
 	}
 	return v
 }
@@ -9580,7 +9580,7 @@ func (d *D) TryFieldScalarS3(name string, sms ...scalar.SintMapper) (*scalar.Sin
 func (d *D) FieldScalarS3(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS3(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S3", Pos: d.Pos()})
+		d.IOPanic(err, name, "S3")
 	}
 	return s
 }
@@ -9605,7 +9605,7 @@ func (d *D) TryS4() (int64, error) { return d.trySEndian(4, d.Endian) }
 func (d *D) S4() int64 {
 	v, err := d.trySEndian(4, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S4", Pos: d.Pos()})
+		d.IOPanic(err, "", "S4")
 	}
 	return v
 }
@@ -9626,7 +9626,7 @@ func (d *D) TryFieldScalarS4(name string, sms ...scalar.SintMapper) (*scalar.Sin
 func (d *D) FieldScalarS4(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS4(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S4", Pos: d.Pos()})
+		d.IOPanic(err, name, "S4")
 	}
 	return s
 }
@@ -9651,7 +9651,7 @@ func (d *D) TryS5() (int64, error) { return d.trySEndian(5, d.Endian) }
 func (d *D) S5() int64 {
 	v, err := d.trySEndian(5, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S5", Pos: d.Pos()})
+		d.IOPanic(err, "", "S5")
 	}
 	return v
 }
@@ -9672,7 +9672,7 @@ func (d *D) TryFieldScalarS5(name string, sms ...scalar.SintMapper) (*scalar.Sin
 func (d *D) FieldScalarS5(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS5(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S5", Pos: d.Pos()})
+		d.IOPanic(err, name, "S5")
 	}
 	return s
 }
@@ -9697,7 +9697,7 @@ func (d *D) TryS6() (int64, error) { return d.trySEndian(6, d.Endian) }
 func (d *D) S6() int64 {
 	v, err := d.trySEndian(6, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S6", Pos: d.Pos()})
+		d.IOPanic(err, "", "S6")
 	}
 	return v
 }
@@ -9718,7 +9718,7 @@ func (d *D) TryFieldScalarS6(name string, sms ...scalar.SintMapper) (*scalar.Sin
 func (d *D) FieldScalarS6(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS6(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S6", Pos: d.Pos()})
+		d.IOPanic(err, name, "S6")
 	}
 	return s
 }
@@ -9743,7 +9743,7 @@ func (d *D) TryS7() (int64, error) { return d.trySEndian(7, d.Endian) }
 func (d *D) S7() int64 {
 	v, err := d.trySEndian(7, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S7", Pos: d.Pos()})
+		d.IOPanic(err, "", "S7")
 	}
 	return v
 }
@@ -9764,7 +9764,7 @@ func (d *D) TryFieldScalarS7(name string, sms ...scalar.SintMapper) (*scalar.Sin
 func (d *D) FieldScalarS7(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS7(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S7", Pos: d.Pos()})
+		d.IOPanic(err, name, "S7")
 	}
 	return s
 }
@@ -9789,7 +9789,7 @@ func (d *D) TryS8() (int64, error) { return d.trySEndian(8, d.Endian) }
 func (d *D) S8() int64 {
 	v, err := d.trySEndian(8, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S8", Pos: d.Pos()})
+		d.IOPanic(err, "", "S8")
 	}
 	return v
 }
@@ -9810,7 +9810,7 @@ func (d *D) TryFieldScalarS8(name string, sms ...scalar.SintMapper) (*scalar.Sin
 func (d *D) FieldScalarS8(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS8(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S8", Pos: d.Pos()})
+		d.IOPanic(err, name, "S8")
 	}
 	return s
 }
@@ -9835,7 +9835,7 @@ func (d *D) TryS9() (int64, error) { return d.trySEndian(9, d.Endian) }
 func (d *D) S9() int64 {
 	v, err := d.trySEndian(9, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S9", Pos: d.Pos()})
+		d.IOPanic(err, "", "S9")
 	}
 	return v
 }
@@ -9856,7 +9856,7 @@ func (d *D) TryFieldScalarS9(name string, sms ...scalar.SintMapper) (*scalar.Sin
 func (d *D) FieldScalarS9(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS9(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S9", Pos: d.Pos()})
+		d.IOPanic(err, name, "S9")
 	}
 	return s
 }
@@ -9881,7 +9881,7 @@ func (d *D) TryS10() (int64, error) { return d.trySEndian(10, d.Endian) }
 func (d *D) S10() int64 {
 	v, err := d.trySEndian(10, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S10", Pos: d.Pos()})
+		d.IOPanic(err, "", "S10")
 	}
 	return v
 }
@@ -9902,7 +9902,7 @@ func (d *D) TryFieldScalarS10(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS10(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS10(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S10", Pos: d.Pos()})
+		d.IOPanic(err, name, "S10")
 	}
 	return s
 }
@@ -9927,7 +9927,7 @@ func (d *D) TryS11() (int64, error) { return d.trySEndian(11, d.Endian) }
 func (d *D) S11() int64 {
 	v, err := d.trySEndian(11, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S11", Pos: d.Pos()})
+		d.IOPanic(err, "", "S11")
 	}
 	return v
 }
@@ -9948,7 +9948,7 @@ func (d *D) TryFieldScalarS11(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS11(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS11(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S11", Pos: d.Pos()})
+		d.IOPanic(err, name, "S11")
 	}
 	return s
 }
@@ -9973,7 +9973,7 @@ func (d *D) TryS12() (int64, error) { return d.trySEndian(12, d.Endian) }
 func (d *D) S12() int64 {
 	v, err := d.trySEndian(12, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S12", Pos: d.Pos()})
+		d.IOPanic(err, "", "S12")
 	}
 	return v
 }
@@ -9994,7 +9994,7 @@ func (d *D) TryFieldScalarS12(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS12(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS12(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S12", Pos: d.Pos()})
+		d.IOPanic(err, name, "S12")
 	}
 	return s
 }
@@ -10019,7 +10019,7 @@ func (d *D) TryS13() (int64, error) { return d.trySEndian(13, d.Endian) }
 func (d *D) S13() int64 {
 	v, err := d.trySEndian(13, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S13", Pos: d.Pos()})
+		d.IOPanic(err, "", "S13")
 	}
 	return v
 }
@@ -10040,7 +10040,7 @@ func (d *D) TryFieldScalarS13(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS13(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS13(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S13", Pos: d.Pos()})
+		d.IOPanic(err, name, "S13")
 	}
 	return s
 }
@@ -10065,7 +10065,7 @@ func (d *D) TryS14() (int64, error) { return d.trySEndian(14, d.Endian) }
 func (d *D) S14() int64 {
 	v, err := d.trySEndian(14, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S14", Pos: d.Pos()})
+		d.IOPanic(err, "", "S14")
 	}
 	return v
 }
@@ -10086,7 +10086,7 @@ func (d *D) TryFieldScalarS14(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS14(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS14(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S14", Pos: d.Pos()})
+		d.IOPanic(err, name, "S14")
 	}
 	return s
 }
@@ -10111,7 +10111,7 @@ func (d *D) TryS15() (int64, error) { return d.trySEndian(15, d.Endian) }
 func (d *D) S15() int64 {
 	v, err := d.trySEndian(15, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S15", Pos: d.Pos()})
+		d.IOPanic(err, "", "S15")
 	}
 	return v
 }
@@ -10132,7 +10132,7 @@ func (d *D) TryFieldScalarS15(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS15(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS15(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S15", Pos: d.Pos()})
+		d.IOPanic(err, name, "S15")
 	}
 	return s
 }
@@ -10157,7 +10157,7 @@ func (d *D) TryS16() (int64, error) { return d.trySEndian(16, d.Endian) }
 func (d *D) S16() int64 {
 	v, err := d.trySEndian(16, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S16", Pos: d.Pos()})
+		d.IOPanic(err, "", "S16")
 	}
 	return v
 }
@@ -10178,7 +10178,7 @@ func (d *D) TryFieldScalarS16(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS16(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS16(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S16", Pos: d.Pos()})
+		d.IOPanic(err, name, "S16")
 	}
 	return s
 }
@@ -10203,7 +10203,7 @@ func (d *D) TryS17() (int64, error) { return d.trySEndian(17, d.Endian) }
 func (d *D) S17() int64 {
 	v, err := d.trySEndian(17, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S17", Pos: d.Pos()})
+		d.IOPanic(err, "", "S17")
 	}
 	return v
 }
@@ -10224,7 +10224,7 @@ func (d *D) TryFieldScalarS17(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS17(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS17(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S17", Pos: d.Pos()})
+		d.IOPanic(err, name, "S17")
 	}
 	return s
 }
@@ -10249,7 +10249,7 @@ func (d *D) TryS18() (int64, error) { return d.trySEndian(18, d.Endian) }
 func (d *D) S18() int64 {
 	v, err := d.trySEndian(18, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S18", Pos: d.Pos()})
+		d.IOPanic(err, "", "S18")
 	}
 	return v
 }
@@ -10270,7 +10270,7 @@ func (d *D) TryFieldScalarS18(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS18(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS18(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S18", Pos: d.Pos()})
+		d.IOPanic(err, name, "S18")
 	}
 	return s
 }
@@ -10295,7 +10295,7 @@ func (d *D) TryS19() (int64, error) { return d.trySEndian(19, d.Endian) }
 func (d *D) S19() int64 {
 	v, err := d.trySEndian(19, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S19", Pos: d.Pos()})
+		d.IOPanic(err, "", "S19")
 	}
 	return v
 }
@@ -10316,7 +10316,7 @@ func (d *D) TryFieldScalarS19(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS19(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS19(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S19", Pos: d.Pos()})
+		d.IOPanic(err, name, "S19")
 	}
 	return s
 }
@@ -10341,7 +10341,7 @@ func (d *D) TryS20() (int64, error) { return d.trySEndian(20, d.Endian) }
 func (d *D) S20() int64 {
 	v, err := d.trySEndian(20, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S20", Pos: d.Pos()})
+		d.IOPanic(err, "", "S20")
 	}
 	return v
 }
@@ -10362,7 +10362,7 @@ func (d *D) TryFieldScalarS20(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS20(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS20(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S20", Pos: d.Pos()})
+		d.IOPanic(err, name, "S20")
 	}
 	return s
 }
@@ -10387,7 +10387,7 @@ func (d *D) TryS21() (int64, error) { return d.trySEndian(21, d.Endian) }
 func (d *D) S21() int64 {
 	v, err := d.trySEndian(21, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S21", Pos: d.Pos()})
+		d.IOPanic(err, "", "S21")
 	}
 	return v
 }
@@ -10408,7 +10408,7 @@ func (d *D) TryFieldScalarS21(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS21(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS21(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S21", Pos: d.Pos()})
+		d.IOPanic(err, name, "S21")
 	}
 	return s
 }
@@ -10433,7 +10433,7 @@ func (d *D) TryS22() (int64, error) { return d.trySEndian(22, d.Endian) }
 func (d *D) S22() int64 {
 	v, err := d.trySEndian(22, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S22", Pos: d.Pos()})
+		d.IOPanic(err, "", "S22")
 	}
 	return v
 }
@@ -10454,7 +10454,7 @@ func (d *D) TryFieldScalarS22(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS22(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS22(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S22", Pos: d.Pos()})
+		d.IOPanic(err, name, "S22")
 	}
 	return s
 }
@@ -10479,7 +10479,7 @@ func (d *D) TryS23() (int64, error) { return d.trySEndian(23, d.Endian) }
 func (d *D) S23() int64 {
 	v, err := d.trySEndian(23, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S23", Pos: d.Pos()})
+		d.IOPanic(err, "", "S23")
 	}
 	return v
 }
@@ -10500,7 +10500,7 @@ func (d *D) TryFieldScalarS23(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS23(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS23(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S23", Pos: d.Pos()})
+		d.IOPanic(err, name, "S23")
 	}
 	return s
 }
@@ -10525,7 +10525,7 @@ func (d *D) TryS24() (int64, error) { return d.trySEndian(24, d.Endian) }
 func (d *D) S24() int64 {
 	v, err := d.trySEndian(24, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S24", Pos: d.Pos()})
+		d.IOPanic(err, "", "S24")
 	}
 	return v
 }
@@ -10546,7 +10546,7 @@ func (d *D) TryFieldScalarS24(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS24(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS24(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S24", Pos: d.Pos()})
+		d.IOPanic(err, name, "S24")
 	}
 	return s
 }
@@ -10571,7 +10571,7 @@ func (d *D) TryS25() (int64, error) { return d.trySEndian(25, d.Endian) }
 func (d *D) S25() int64 {
 	v, err := d.trySEndian(25, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S25", Pos: d.Pos()})
+		d.IOPanic(err, "", "S25")
 	}
 	return v
 }
@@ -10592,7 +10592,7 @@ func (d *D) TryFieldScalarS25(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS25(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS25(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S25", Pos: d.Pos()})
+		d.IOPanic(err, name, "S25")
 	}
 	return s
 }
@@ -10617,7 +10617,7 @@ func (d *D) TryS26() (int64, error) { return d.trySEndian(26, d.Endian) }
 func (d *D) S26() int64 {
 	v, err := d.trySEndian(26, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S26", Pos: d.Pos()})
+		d.IOPanic(err, "", "S26")
 	}
 	return v
 }
@@ -10638,7 +10638,7 @@ func (d *D) TryFieldScalarS26(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS26(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS26(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S26", Pos: d.Pos()})
+		d.IOPanic(err, name, "S26")
 	}
 	return s
 }
@@ -10663,7 +10663,7 @@ func (d *D) TryS27() (int64, error) { return d.trySEndian(27, d.Endian) }
 func (d *D) S27() int64 {
 	v, err := d.trySEndian(27, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S27", Pos: d.Pos()})
+		d.IOPanic(err, "", "S27")
 	}
 	return v
 }
@@ -10684,7 +10684,7 @@ func (d *D) TryFieldScalarS27(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS27(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS27(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S27", Pos: d.Pos()})
+		d.IOPanic(err, name, "S27")
 	}
 	return s
 }
@@ -10709,7 +10709,7 @@ func (d *D) TryS28() (int64, error) { return d.trySEndian(28, d.Endian) }
 func (d *D) S28() int64 {
 	v, err := d.trySEndian(28, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S28", Pos: d.Pos()})
+		d.IOPanic(err, "", "S28")
 	}
 	return v
 }
@@ -10730,7 +10730,7 @@ func (d *D) TryFieldScalarS28(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS28(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS28(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S28", Pos: d.Pos()})
+		d.IOPanic(err, name, "S28")
 	}
 	return s
 }
@@ -10755,7 +10755,7 @@ func (d *D) TryS29() (int64, error) { return d.trySEndian(29, d.Endian) }
 func (d *D) S29() int64 {
 	v, err := d.trySEndian(29, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S29", Pos: d.Pos()})
+		d.IOPanic(err, "", "S29")
 	}
 	return v
 }
@@ -10776,7 +10776,7 @@ func (d *D) TryFieldScalarS29(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS29(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS29(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S29", Pos: d.Pos()})
+		d.IOPanic(err, name, "S29")
 	}
 	return s
 }
@@ -10801,7 +10801,7 @@ func (d *D) TryS30() (int64, error) { return d.trySEndian(30, d.Endian) }
 func (d *D) S30() int64 {
 	v, err := d.trySEndian(30, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S30", Pos: d.Pos()})
+		d.IOPanic(err, "", "S30")
 	}
 	return v
 }
@@ -10822,7 +10822,7 @@ func (d *D) TryFieldScalarS30(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS30(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS30(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S30", Pos: d.Pos()})
+		d.IOPanic(err, name, "S30")
 	}
 	return s
 }
@@ -10847,7 +10847,7 @@ func (d *D) TryS31() (int64, error) { return d.trySEndian(31, d.Endian) }
 func (d *D) S31() int64 {
 	v, err := d.trySEndian(31, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S31", Pos: d.Pos()})
+		d.IOPanic(err, "", "S31")
 	}
 	return v
 }
@@ -10868,7 +10868,7 @@ func (d *D) TryFieldScalarS31(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS31(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS31(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S31", Pos: d.Pos()})
+		d.IOPanic(err, name, "S31")
 	}
 	return s
 }
@@ -10893,7 +10893,7 @@ func (d *D) TryS32() (int64, error) { return d.trySEndian(32, d.Endian) }
 func (d *D) S32() int64 {
 	v, err := d.trySEndian(32, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S32", Pos: d.Pos()})
+		d.IOPanic(err, "", "S32")
 	}
 	return v
 }
@@ -10914,7 +10914,7 @@ func (d *D) TryFieldScalarS32(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS32(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS32(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S32", Pos: d.Pos()})
+		d.IOPanic(err, name, "S32")
 	}
 	return s
 }
@@ -10939,7 +10939,7 @@ func (d *D) TryS33() (int64, error) { return d.trySEndian(33, d.Endian) }
 func (d *D) S33() int64 {
 	v, err := d.trySEndian(33, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S33", Pos: d.Pos()})
+		d.IOPanic(err, "", "S33")
 	}
 	return v
 }
@@ -10960,7 +10960,7 @@ func (d *D) TryFieldScalarS33(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS33(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS33(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S33", Pos: d.Pos()})
+		d.IOPanic(err, name, "S33")
 	}
 	return s
 }
@@ -10985,7 +10985,7 @@ func (d *D) TryS34() (int64, error) { return d.trySEndian(34, d.Endian) }
 func (d *D) S34() int64 {
 	v, err := d.trySEndian(34, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S34", Pos: d.Pos()})
+		d.IOPanic(err, "", "S34")
 	}
 	return v
 }
@@ -11006,7 +11006,7 @@ func (d *D) TryFieldScalarS34(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS34(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS34(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S34", Pos: d.Pos()})
+		d.IOPanic(err, name, "S34")
 	}
 	return s
 }
@@ -11031,7 +11031,7 @@ func (d *D) TryS35() (int64, error) { return d.trySEndian(35, d.Endian) }
 func (d *D) S35() int64 {
 	v, err := d.trySEndian(35, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S35", Pos: d.Pos()})
+		d.IOPanic(err, "", "S35")
 	}
 	return v
 }
@@ -11052,7 +11052,7 @@ func (d *D) TryFieldScalarS35(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS35(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS35(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S35", Pos: d.Pos()})
+		d.IOPanic(err, name, "S35")
 	}
 	return s
 }
@@ -11077,7 +11077,7 @@ func (d *D) TryS36() (int64, error) { return d.trySEndian(36, d.Endian) }
 func (d *D) S36() int64 {
 	v, err := d.trySEndian(36, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S36", Pos: d.Pos()})
+		d.IOPanic(err, "", "S36")
 	}
 	return v
 }
@@ -11098,7 +11098,7 @@ func (d *D) TryFieldScalarS36(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS36(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS36(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S36", Pos: d.Pos()})
+		d.IOPanic(err, name, "S36")
 	}
 	return s
 }
@@ -11123,7 +11123,7 @@ func (d *D) TryS37() (int64, error) { return d.trySEndian(37, d.Endian) }
 func (d *D) S37() int64 {
 	v, err := d.trySEndian(37, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S37", Pos: d.Pos()})
+		d.IOPanic(err, "", "S37")
 	}
 	return v
 }
@@ -11144,7 +11144,7 @@ func (d *D) TryFieldScalarS37(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS37(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS37(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S37", Pos: d.Pos()})
+		d.IOPanic(err, name, "S37")
 	}
 	return s
 }
@@ -11169,7 +11169,7 @@ func (d *D) TryS38() (int64, error) { return d.trySEndian(38, d.Endian) }
 func (d *D) S38() int64 {
 	v, err := d.trySEndian(38, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S38", Pos: d.Pos()})
+		d.IOPanic(err, "", "S38")
 	}
 	return v
 }
@@ -11190,7 +11190,7 @@ func (d *D) TryFieldScalarS38(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS38(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS38(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S38", Pos: d.Pos()})
+		d.IOPanic(err, name, "S38")
 	}
 	return s
 }
@@ -11215,7 +11215,7 @@ func (d *D) TryS39() (int64, error) { return d.trySEndian(39, d.Endian) }
 func (d *D) S39() int64 {
 	v, err := d.trySEndian(39, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S39", Pos: d.Pos()})
+		d.IOPanic(err, "", "S39")
 	}
 	return v
 }
@@ -11236,7 +11236,7 @@ func (d *D) TryFieldScalarS39(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS39(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS39(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S39", Pos: d.Pos()})
+		d.IOPanic(err, name, "S39")
 	}
 	return s
 }
@@ -11261,7 +11261,7 @@ func (d *D) TryS40() (int64, error) { return d.trySEndian(40, d.Endian) }
 func (d *D) S40() int64 {
 	v, err := d.trySEndian(40, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S40", Pos: d.Pos()})
+		d.IOPanic(err, "", "S40")
 	}
 	return v
 }
@@ -11282,7 +11282,7 @@ func (d *D) TryFieldScalarS40(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS40(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS40(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S40", Pos: d.Pos()})
+		d.IOPanic(err, name, "S40")
 	}
 	return s
 }
@@ -11307,7 +11307,7 @@ func (d *D) TryS41() (int64, error) { return d.trySEndian(41, d.Endian) }
 func (d *D) S41() int64 {
 	v, err := d.trySEndian(41, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S41", Pos: d.Pos()})
+		d.IOPanic(err, "", "S41")
 	}
 	return v
 }
@@ -11328,7 +11328,7 @@ func (d *D) TryFieldScalarS41(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS41(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS41(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S41", Pos: d.Pos()})
+		d.IOPanic(err, name, "S41")
 	}
 	return s
 }
@@ -11353,7 +11353,7 @@ func (d *D) TryS42() (int64, error) { return d.trySEndian(42, d.Endian) }
 func (d *D) S42() int64 {
 	v, err := d.trySEndian(42, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S42", Pos: d.Pos()})
+		d.IOPanic(err, "", "S42")
 	}
 	return v
 }
@@ -11374,7 +11374,7 @@ func (d *D) TryFieldScalarS42(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS42(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS42(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S42", Pos: d.Pos()})
+		d.IOPanic(err, name, "S42")
 	}
 	return s
 }
@@ -11399,7 +11399,7 @@ func (d *D) TryS43() (int64, error) { return d.trySEndian(43, d.Endian) }
 func (d *D) S43() int64 {
 	v, err := d.trySEndian(43, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S43", Pos: d.Pos()})
+		d.IOPanic(err, "", "S43")
 	}
 	return v
 }
@@ -11420,7 +11420,7 @@ func (d *D) TryFieldScalarS43(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS43(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS43(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S43", Pos: d.Pos()})
+		d.IOPanic(err, name, "S43")
 	}
 	return s
 }
@@ -11445,7 +11445,7 @@ func (d *D) TryS44() (int64, error) { return d.trySEndian(44, d.Endian) }
 func (d *D) S44() int64 {
 	v, err := d.trySEndian(44, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S44", Pos: d.Pos()})
+		d.IOPanic(err, "", "S44")
 	}
 	return v
 }
@@ -11466,7 +11466,7 @@ func (d *D) TryFieldScalarS44(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS44(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS44(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S44", Pos: d.Pos()})
+		d.IOPanic(err, name, "S44")
 	}
 	return s
 }
@@ -11491,7 +11491,7 @@ func (d *D) TryS45() (int64, error) { return d.trySEndian(45, d.Endian) }
 func (d *D) S45() int64 {
 	v, err := d.trySEndian(45, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S45", Pos: d.Pos()})
+		d.IOPanic(err, "", "S45")
 	}
 	return v
 }
@@ -11512,7 +11512,7 @@ func (d *D) TryFieldScalarS45(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS45(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS45(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S45", Pos: d.Pos()})
+		d.IOPanic(err, name, "S45")
 	}
 	return s
 }
@@ -11537,7 +11537,7 @@ func (d *D) TryS46() (int64, error) { return d.trySEndian(46, d.Endian) }
 func (d *D) S46() int64 {
 	v, err := d.trySEndian(46, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S46", Pos: d.Pos()})
+		d.IOPanic(err, "", "S46")
 	}
 	return v
 }
@@ -11558,7 +11558,7 @@ func (d *D) TryFieldScalarS46(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS46(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS46(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S46", Pos: d.Pos()})
+		d.IOPanic(err, name, "S46")
 	}
 	return s
 }
@@ -11583,7 +11583,7 @@ func (d *D) TryS47() (int64, error) { return d.trySEndian(47, d.Endian) }
 func (d *D) S47() int64 {
 	v, err := d.trySEndian(47, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S47", Pos: d.Pos()})
+		d.IOPanic(err, "", "S47")
 	}
 	return v
 }
@@ -11604,7 +11604,7 @@ func (d *D) TryFieldScalarS47(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS47(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS47(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S47", Pos: d.Pos()})
+		d.IOPanic(err, name, "S47")
 	}
 	return s
 }
@@ -11629,7 +11629,7 @@ func (d *D) TryS48() (int64, error) { return d.trySEndian(48, d.Endian) }
 func (d *D) S48() int64 {
 	v, err := d.trySEndian(48, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S48", Pos: d.Pos()})
+		d.IOPanic(err, "", "S48")
 	}
 	return v
 }
@@ -11650,7 +11650,7 @@ func (d *D) TryFieldScalarS48(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS48(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS48(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S48", Pos: d.Pos()})
+		d.IOPanic(err, name, "S48")
 	}
 	return s
 }
@@ -11675,7 +11675,7 @@ func (d *D) TryS49() (int64, error) { return d.trySEndian(49, d.Endian) }
 func (d *D) S49() int64 {
 	v, err := d.trySEndian(49, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S49", Pos: d.Pos()})
+		d.IOPanic(err, "", "S49")
 	}
 	return v
 }
@@ -11696,7 +11696,7 @@ func (d *D) TryFieldScalarS49(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS49(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS49(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S49", Pos: d.Pos()})
+		d.IOPanic(err, name, "S49")
 	}
 	return s
 }
@@ -11721,7 +11721,7 @@ func (d *D) TryS50() (int64, error) { return d.trySEndian(50, d.Endian) }
 func (d *D) S50() int64 {
 	v, err := d.trySEndian(50, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S50", Pos: d.Pos()})
+		d.IOPanic(err, "", "S50")
 	}
 	return v
 }
@@ -11742,7 +11742,7 @@ func (d *D) TryFieldScalarS50(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS50(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS50(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S50", Pos: d.Pos()})
+		d.IOPanic(err, name, "S50")
 	}
 	return s
 }
@@ -11767,7 +11767,7 @@ func (d *D) TryS51() (int64, error) { return d.trySEndian(51, d.Endian) }
 func (d *D) S51() int64 {
 	v, err := d.trySEndian(51, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S51", Pos: d.Pos()})
+		d.IOPanic(err, "", "S51")
 	}
 	return v
 }
@@ -11788,7 +11788,7 @@ func (d *D) TryFieldScalarS51(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS51(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS51(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S51", Pos: d.Pos()})
+		d.IOPanic(err, name, "S51")
 	}
 	return s
 }
@@ -11813,7 +11813,7 @@ func (d *D) TryS52() (int64, error) { return d.trySEndian(52, d.Endian) }
 func (d *D) S52() int64 {
 	v, err := d.trySEndian(52, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S52", Pos: d.Pos()})
+		d.IOPanic(err, "", "S52")
 	}
 	return v
 }
@@ -11834,7 +11834,7 @@ func (d *D) TryFieldScalarS52(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS52(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS52(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S52", Pos: d.Pos()})
+		d.IOPanic(err, name, "S52")
 	}
 	return s
 }
@@ -11859,7 +11859,7 @@ func (d *D) TryS53() (int64, error) { return d.trySEndian(53, d.Endian) }
 func (d *D) S53() int64 {
 	v, err := d.trySEndian(53, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S53", Pos: d.Pos()})
+		d.IOPanic(err, "", "S53")
 	}
 	return v
 }
@@ -11880,7 +11880,7 @@ func (d *D) TryFieldScalarS53(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS53(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS53(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S53", Pos: d.Pos()})
+		d.IOPanic(err, name, "S53")
 	}
 	return s
 }
@@ -11905,7 +11905,7 @@ func (d *D) TryS54() (int64, error) { return d.trySEndian(54, d.Endian) }
 func (d *D) S54() int64 {
 	v, err := d.trySEndian(54, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S54", Pos: d.Pos()})
+		d.IOPanic(err, "", "S54")
 	}
 	return v
 }
@@ -11926,7 +11926,7 @@ func (d *D) TryFieldScalarS54(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS54(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS54(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S54", Pos: d.Pos()})
+		d.IOPanic(err, name, "S54")
 	}
 	return s
 }
@@ -11951,7 +11951,7 @@ func (d *D) TryS55() (int64, error) { return d.trySEndian(55, d.Endian) }
 func (d *D) S55() int64 {
 	v, err := d.trySEndian(55, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S55", Pos: d.Pos()})
+		d.IOPanic(err, "", "S55")
 	}
 	return v
 }
@@ -11972,7 +11972,7 @@ func (d *D) TryFieldScalarS55(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS55(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS55(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S55", Pos: d.Pos()})
+		d.IOPanic(err, name, "S55")
 	}
 	return s
 }
@@ -11997,7 +11997,7 @@ func (d *D) TryS56() (int64, error) { return d.trySEndian(56, d.Endian) }
 func (d *D) S56() int64 {
 	v, err := d.trySEndian(56, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S56", Pos: d.Pos()})
+		d.IOPanic(err, "", "S56")
 	}
 	return v
 }
@@ -12018,7 +12018,7 @@ func (d *D) TryFieldScalarS56(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS56(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS56(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S56", Pos: d.Pos()})
+		d.IOPanic(err, name, "S56")
 	}
 	return s
 }
@@ -12043,7 +12043,7 @@ func (d *D) TryS57() (int64, error) { return d.trySEndian(57, d.Endian) }
 func (d *D) S57() int64 {
 	v, err := d.trySEndian(57, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S57", Pos: d.Pos()})
+		d.IOPanic(err, "", "S57")
 	}
 	return v
 }
@@ -12064,7 +12064,7 @@ func (d *D) TryFieldScalarS57(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS57(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS57(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S57", Pos: d.Pos()})
+		d.IOPanic(err, name, "S57")
 	}
 	return s
 }
@@ -12089,7 +12089,7 @@ func (d *D) TryS58() (int64, error) { return d.trySEndian(58, d.Endian) }
 func (d *D) S58() int64 {
 	v, err := d.trySEndian(58, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S58", Pos: d.Pos()})
+		d.IOPanic(err, "", "S58")
 	}
 	return v
 }
@@ -12110,7 +12110,7 @@ func (d *D) TryFieldScalarS58(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS58(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS58(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S58", Pos: d.Pos()})
+		d.IOPanic(err, name, "S58")
 	}
 	return s
 }
@@ -12135,7 +12135,7 @@ func (d *D) TryS59() (int64, error) { return d.trySEndian(59, d.Endian) }
 func (d *D) S59() int64 {
 	v, err := d.trySEndian(59, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S59", Pos: d.Pos()})
+		d.IOPanic(err, "", "S59")
 	}
 	return v
 }
@@ -12156,7 +12156,7 @@ func (d *D) TryFieldScalarS59(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS59(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS59(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S59", Pos: d.Pos()})
+		d.IOPanic(err, name, "S59")
 	}
 	return s
 }
@@ -12181,7 +12181,7 @@ func (d *D) TryS60() (int64, error) { return d.trySEndian(60, d.Endian) }
 func (d *D) S60() int64 {
 	v, err := d.trySEndian(60, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S60", Pos: d.Pos()})
+		d.IOPanic(err, "", "S60")
 	}
 	return v
 }
@@ -12202,7 +12202,7 @@ func (d *D) TryFieldScalarS60(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS60(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS60(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S60", Pos: d.Pos()})
+		d.IOPanic(err, name, "S60")
 	}
 	return s
 }
@@ -12227,7 +12227,7 @@ func (d *D) TryS61() (int64, error) { return d.trySEndian(61, d.Endian) }
 func (d *D) S61() int64 {
 	v, err := d.trySEndian(61, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S61", Pos: d.Pos()})
+		d.IOPanic(err, "", "S61")
 	}
 	return v
 }
@@ -12248,7 +12248,7 @@ func (d *D) TryFieldScalarS61(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS61(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS61(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S61", Pos: d.Pos()})
+		d.IOPanic(err, name, "S61")
 	}
 	return s
 }
@@ -12273,7 +12273,7 @@ func (d *D) TryS62() (int64, error) { return d.trySEndian(62, d.Endian) }
 func (d *D) S62() int64 {
 	v, err := d.trySEndian(62, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S62", Pos: d.Pos()})
+		d.IOPanic(err, "", "S62")
 	}
 	return v
 }
@@ -12294,7 +12294,7 @@ func (d *D) TryFieldScalarS62(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS62(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS62(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S62", Pos: d.Pos()})
+		d.IOPanic(err, name, "S62")
 	}
 	return s
 }
@@ -12319,7 +12319,7 @@ func (d *D) TryS63() (int64, error) { return d.trySEndian(63, d.Endian) }
 func (d *D) S63() int64 {
 	v, err := d.trySEndian(63, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S63", Pos: d.Pos()})
+		d.IOPanic(err, "", "S63")
 	}
 	return v
 }
@@ -12340,7 +12340,7 @@ func (d *D) TryFieldScalarS63(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS63(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS63(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S63", Pos: d.Pos()})
+		d.IOPanic(err, name, "S63")
 	}
 	return s
 }
@@ -12365,7 +12365,7 @@ func (d *D) TryS64() (int64, error) { return d.trySEndian(64, d.Endian) }
 func (d *D) S64() int64 {
 	v, err := d.trySEndian(64, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S64", Pos: d.Pos()})
+		d.IOPanic(err, "", "S64")
 	}
 	return v
 }
@@ -12386,7 +12386,7 @@ func (d *D) TryFieldScalarS64(name string, sms ...scalar.SintMapper) (*scalar.Si
 func (d *D) FieldScalarS64(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS64(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S64", Pos: d.Pos()})
+		d.IOPanic(err, name, "S64")
 	}
 	return s
 }
@@ -12411,7 +12411,7 @@ func (d *D) TryS8LE() (int64, error) { return d.trySEndian(8, LittleEndian) }
 func (d *D) S8LE() int64 {
 	v, err := d.trySEndian(8, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S8LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S8LE")
 	}
 	return v
 }
@@ -12432,7 +12432,7 @@ func (d *D) TryFieldScalarS8LE(name string, sms ...scalar.SintMapper) (*scalar.S
 func (d *D) FieldScalarS8LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS8LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S8LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S8LE")
 	}
 	return s
 }
@@ -12457,7 +12457,7 @@ func (d *D) TryS9LE() (int64, error) { return d.trySEndian(9, LittleEndian) }
 func (d *D) S9LE() int64 {
 	v, err := d.trySEndian(9, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S9LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S9LE")
 	}
 	return v
 }
@@ -12478,7 +12478,7 @@ func (d *D) TryFieldScalarS9LE(name string, sms ...scalar.SintMapper) (*scalar.S
 func (d *D) FieldScalarS9LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS9LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S9LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S9LE")
 	}
 	return s
 }
@@ -12503,7 +12503,7 @@ func (d *D) TryS10LE() (int64, error) { return d.trySEndian(10, LittleEndian) }
 func (d *D) S10LE() int64 {
 	v, err := d.trySEndian(10, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S10LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S10LE")
 	}
 	return v
 }
@@ -12524,7 +12524,7 @@ func (d *D) TryFieldScalarS10LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS10LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS10LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S10LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S10LE")
 	}
 	return s
 }
@@ -12549,7 +12549,7 @@ func (d *D) TryS11LE() (int64, error) { return d.trySEndian(11, LittleEndian) }
 func (d *D) S11LE() int64 {
 	v, err := d.trySEndian(11, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S11LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S11LE")
 	}
 	return v
 }
@@ -12570,7 +12570,7 @@ func (d *D) TryFieldScalarS11LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS11LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS11LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S11LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S11LE")
 	}
 	return s
 }
@@ -12595,7 +12595,7 @@ func (d *D) TryS12LE() (int64, error) { return d.trySEndian(12, LittleEndian) }
 func (d *D) S12LE() int64 {
 	v, err := d.trySEndian(12, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S12LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S12LE")
 	}
 	return v
 }
@@ -12616,7 +12616,7 @@ func (d *D) TryFieldScalarS12LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS12LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS12LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S12LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S12LE")
 	}
 	return s
 }
@@ -12641,7 +12641,7 @@ func (d *D) TryS13LE() (int64, error) { return d.trySEndian(13, LittleEndian) }
 func (d *D) S13LE() int64 {
 	v, err := d.trySEndian(13, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S13LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S13LE")
 	}
 	return v
 }
@@ -12662,7 +12662,7 @@ func (d *D) TryFieldScalarS13LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS13LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS13LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S13LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S13LE")
 	}
 	return s
 }
@@ -12687,7 +12687,7 @@ func (d *D) TryS14LE() (int64, error) { return d.trySEndian(14, LittleEndian) }
 func (d *D) S14LE() int64 {
 	v, err := d.trySEndian(14, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S14LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S14LE")
 	}
 	return v
 }
@@ -12708,7 +12708,7 @@ func (d *D) TryFieldScalarS14LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS14LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS14LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S14LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S14LE")
 	}
 	return s
 }
@@ -12733,7 +12733,7 @@ func (d *D) TryS15LE() (int64, error) { return d.trySEndian(15, LittleEndian) }
 func (d *D) S15LE() int64 {
 	v, err := d.trySEndian(15, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S15LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S15LE")
 	}
 	return v
 }
@@ -12754,7 +12754,7 @@ func (d *D) TryFieldScalarS15LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS15LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS15LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S15LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S15LE")
 	}
 	return s
 }
@@ -12779,7 +12779,7 @@ func (d *D) TryS16LE() (int64, error) { return d.trySEndian(16, LittleEndian) }
 func (d *D) S16LE() int64 {
 	v, err := d.trySEndian(16, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S16LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S16LE")
 	}
 	return v
 }
@@ -12800,7 +12800,7 @@ func (d *D) TryFieldScalarS16LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS16LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS16LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S16LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S16LE")
 	}
 	return s
 }
@@ -12825,7 +12825,7 @@ func (d *D) TryS17LE() (int64, error) { return d.trySEndian(17, LittleEndian) }
 func (d *D) S17LE() int64 {
 	v, err := d.trySEndian(17, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S17LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S17LE")
 	}
 	return v
 }
@@ -12846,7 +12846,7 @@ func (d *D) TryFieldScalarS17LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS17LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS17LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S17LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S17LE")
 	}
 	return s
 }
@@ -12871,7 +12871,7 @@ func (d *D) TryS18LE() (int64, error) { return d.trySEndian(18, LittleEndian) }
 func (d *D) S18LE() int64 {
 	v, err := d.trySEndian(18, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S18LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S18LE")
 	}
 	return v
 }
@@ -12892,7 +12892,7 @@ func (d *D) TryFieldScalarS18LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS18LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS18LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S18LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S18LE")
 	}
 	return s
 }
@@ -12917,7 +12917,7 @@ func (d *D) TryS19LE() (int64, error) { return d.trySEndian(19, LittleEndian) }
 func (d *D) S19LE() int64 {
 	v, err := d.trySEndian(19, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S19LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S19LE")
 	}
 	return v
 }
@@ -12938,7 +12938,7 @@ func (d *D) TryFieldScalarS19LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS19LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS19LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S19LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S19LE")
 	}
 	return s
 }
@@ -12963,7 +12963,7 @@ func (d *D) TryS20LE() (int64, error) { return d.trySEndian(20, LittleEndian) }
 func (d *D) S20LE() int64 {
 	v, err := d.trySEndian(20, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S20LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S20LE")
 	}
 	return v
 }
@@ -12984,7 +12984,7 @@ func (d *D) TryFieldScalarS20LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS20LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS20LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S20LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S20LE")
 	}
 	return s
 }
@@ -13009,7 +13009,7 @@ func (d *D) TryS21LE() (int64, error) { return d.trySEndian(21, LittleEndian) }
 func (d *D) S21LE() int64 {
 	v, err := d.trySEndian(21, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S21LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S21LE")
 	}
 	return v
 }
@@ -13030,7 +13030,7 @@ func (d *D) TryFieldScalarS21LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS21LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS21LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S21LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S21LE")
 	}
 	return s
 }
@@ -13055,7 +13055,7 @@ func (d *D) TryS22LE() (int64, error) { return d.trySEndian(22, LittleEndian) }
 func (d *D) S22LE() int64 {
 	v, err := d.trySEndian(22, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S22LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S22LE")
 	}
 	return v
 }
@@ -13076,7 +13076,7 @@ func (d *D) TryFieldScalarS22LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS22LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS22LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S22LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S22LE")
 	}
 	return s
 }
@@ -13101,7 +13101,7 @@ func (d *D) TryS23LE() (int64, error) { return d.trySEndian(23, LittleEndian) }
 func (d *D) S23LE() int64 {
 	v, err := d.trySEndian(23, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S23LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S23LE")
 	}
 	return v
 }
@@ -13122,7 +13122,7 @@ func (d *D) TryFieldScalarS23LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS23LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS23LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S23LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S23LE")
 	}
 	return s
 }
@@ -13147,7 +13147,7 @@ func (d *D) TryS24LE() (int64, error) { return d.trySEndian(24, LittleEndian) }
 func (d *D) S24LE() int64 {
 	v, err := d.trySEndian(24, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S24LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S24LE")
 	}
 	return v
 }
@@ -13168,7 +13168,7 @@ func (d *D) TryFieldScalarS24LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS24LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS24LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S24LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S24LE")
 	}
 	return s
 }
@@ -13193,7 +13193,7 @@ func (d *D) TryS25LE() (int64, error) { return d.trySEndian(25, LittleEndian) }
 func (d *D) S25LE() int64 {
 	v, err := d.trySEndian(25, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S25LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S25LE")
 	}
 	return v
 }
@@ -13214,7 +13214,7 @@ func (d *D) TryFieldScalarS25LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS25LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS25LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S25LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S25LE")
 	}
 	return s
 }
@@ -13239,7 +13239,7 @@ func (d *D) TryS26LE() (int64, error) { return d.trySEndian(26, LittleEndian) }
 func (d *D) S26LE() int64 {
 	v, err := d.trySEndian(26, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S26LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S26LE")
 	}
 	return v
 }
@@ -13260,7 +13260,7 @@ func (d *D) TryFieldScalarS26LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS26LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS26LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S26LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S26LE")
 	}
 	return s
 }
@@ -13285,7 +13285,7 @@ func (d *D) TryS27LE() (int64, error) { return d.trySEndian(27, LittleEndian) }
 func (d *D) S27LE() int64 {
 	v, err := d.trySEndian(27, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S27LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S27LE")
 	}
 	return v
 }
@@ -13306,7 +13306,7 @@ func (d *D) TryFieldScalarS27LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS27LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS27LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S27LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S27LE")
 	}
 	return s
 }
@@ -13331,7 +13331,7 @@ func (d *D) TryS28LE() (int64, error) { return d.trySEndian(28, LittleEndian) }
 func (d *D) S28LE() int64 {
 	v, err := d.trySEndian(28, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S28LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S28LE")
 	}
 	return v
 }
@@ -13352,7 +13352,7 @@ func (d *D) TryFieldScalarS28LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS28LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS28LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S28LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S28LE")
 	}
 	return s
 }
@@ -13377,7 +13377,7 @@ func (d *D) TryS29LE() (int64, error) { return d.trySEndian(29, LittleEndian) }
 func (d *D) S29LE() int64 {
 	v, err := d.trySEndian(29, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S29LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S29LE")
 	}
 	return v
 }
@@ -13398,7 +13398,7 @@ func (d *D) TryFieldScalarS29LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS29LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS29LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S29LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S29LE")
 	}
 	return s
 }
@@ -13423,7 +13423,7 @@ func (d *D) TryS30LE() (int64, error) { return d.trySEndian(30, LittleEndian) }
 func (d *D) S30LE() int64 {
 	v, err := d.trySEndian(30, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S30LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S30LE")
 	}
 	return v
 }
@@ -13444,7 +13444,7 @@ func (d *D) TryFieldScalarS30LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS30LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS30LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S30LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S30LE")
 	}
 	return s
 }
@@ -13469,7 +13469,7 @@ func (d *D) TryS31LE() (int64, error) { return d.trySEndian(31, LittleEndian) }
 func (d *D) S31LE() int64 {
 	v, err := d.trySEndian(31, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S31LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S31LE")
 	}
 	return v
 }
@@ -13490,7 +13490,7 @@ func (d *D) TryFieldScalarS31LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS31LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS31LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S31LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S31LE")
 	}
 	return s
 }
@@ -13515,7 +13515,7 @@ func (d *D) TryS32LE() (int64, error) { return d.trySEndian(32, LittleEndian) }
 func (d *D) S32LE() int64 {
 	v, err := d.trySEndian(32, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S32LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S32LE")
 	}
 	return v
 }
@@ -13536,7 +13536,7 @@ func (d *D) TryFieldScalarS32LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS32LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS32LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S32LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S32LE")
 	}
 	return s
 }
@@ -13561,7 +13561,7 @@ func (d *D) TryS33LE() (int64, error) { return d.trySEndian(33, LittleEndian) }
 func (d *D) S33LE() int64 {
 	v, err := d.trySEndian(33, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S33LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S33LE")
 	}
 	return v
 }
@@ -13582,7 +13582,7 @@ func (d *D) TryFieldScalarS33LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS33LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS33LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S33LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S33LE")
 	}
 	return s
 }
@@ -13607,7 +13607,7 @@ func (d *D) TryS34LE() (int64, error) { return d.trySEndian(34, LittleEndian) }
 func (d *D) S34LE() int64 {
 	v, err := d.trySEndian(34, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S34LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S34LE")
 	}
 	return v
 }
@@ -13628,7 +13628,7 @@ func (d *D) TryFieldScalarS34LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS34LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS34LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S34LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S34LE")
 	}
 	return s
 }
@@ -13653,7 +13653,7 @@ func (d *D) TryS35LE() (int64, error) { return d.trySEndian(35, LittleEndian) }
 func (d *D) S35LE() int64 {
 	v, err := d.trySEndian(35, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S35LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S35LE")
 	}
 	return v
 }
@@ -13674,7 +13674,7 @@ func (d *D) TryFieldScalarS35LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS35LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS35LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S35LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S35LE")
 	}
 	return s
 }
@@ -13699,7 +13699,7 @@ func (d *D) TryS36LE() (int64, error) { return d.trySEndian(36, LittleEndian) }
 func (d *D) S36LE() int64 {
 	v, err := d.trySEndian(36, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S36LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S36LE")
 	}
 	return v
 }
@@ -13720,7 +13720,7 @@ func (d *D) TryFieldScalarS36LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS36LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS36LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S36LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S36LE")
 	}
 	return s
 }
@@ -13745,7 +13745,7 @@ func (d *D) TryS37LE() (int64, error) { return d.trySEndian(37, LittleEndian) }
 func (d *D) S37LE() int64 {
 	v, err := d.trySEndian(37, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S37LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S37LE")
 	}
 	return v
 }
@@ -13766,7 +13766,7 @@ func (d *D) TryFieldScalarS37LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS37LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS37LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S37LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S37LE")
 	}
 	return s
 }
@@ -13791,7 +13791,7 @@ func (d *D) TryS38LE() (int64, error) { return d.trySEndian(38, LittleEndian) }
 func (d *D) S38LE() int64 {
 	v, err := d.trySEndian(38, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S38LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S38LE")
 	}
 	return v
 }
@@ -13812,7 +13812,7 @@ func (d *D) TryFieldScalarS38LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS38LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS38LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S38LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S38LE")
 	}
 	return s
 }
@@ -13837,7 +13837,7 @@ func (d *D) TryS39LE() (int64, error) { return d.trySEndian(39, LittleEndian) }
 func (d *D) S39LE() int64 {
 	v, err := d.trySEndian(39, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S39LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S39LE")
 	}
 	return v
 }
@@ -13858,7 +13858,7 @@ func (d *D) TryFieldScalarS39LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS39LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS39LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S39LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S39LE")
 	}
 	return s
 }
@@ -13883,7 +13883,7 @@ func (d *D) TryS40LE() (int64, error) { return d.trySEndian(40, LittleEndian) }
 func (d *D) S40LE() int64 {
 	v, err := d.trySEndian(40, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S40LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S40LE")
 	}
 	return v
 }
@@ -13904,7 +13904,7 @@ func (d *D) TryFieldScalarS40LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS40LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS40LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S40LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S40LE")
 	}
 	return s
 }
@@ -13929,7 +13929,7 @@ func (d *D) TryS41LE() (int64, error) { return d.trySEndian(41, LittleEndian) }
 func (d *D) S41LE() int64 {
 	v, err := d.trySEndian(41, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S41LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S41LE")
 	}
 	return v
 }
@@ -13950,7 +13950,7 @@ func (d *D) TryFieldScalarS41LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS41LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS41LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S41LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S41LE")
 	}
 	return s
 }
@@ -13975,7 +13975,7 @@ func (d *D) TryS42LE() (int64, error) { return d.trySEndian(42, LittleEndian) }
 func (d *D) S42LE() int64 {
 	v, err := d.trySEndian(42, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S42LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S42LE")
 	}
 	return v
 }
@@ -13996,7 +13996,7 @@ func (d *D) TryFieldScalarS42LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS42LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS42LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S42LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S42LE")
 	}
 	return s
 }
@@ -14021,7 +14021,7 @@ func (d *D) TryS43LE() (int64, error) { return d.trySEndian(43, LittleEndian) }
 func (d *D) S43LE() int64 {
 	v, err := d.trySEndian(43, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S43LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S43LE")
 	}
 	return v
 }
@@ -14042,7 +14042,7 @@ func (d *D) TryFieldScalarS43LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS43LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS43LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S43LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S43LE")
 	}
 	return s
 }
@@ -14067,7 +14067,7 @@ func (d *D) TryS44LE() (int64, error) { return d.trySEndian(44, LittleEndian) }
 func (d *D) S44LE() int64 {
 	v, err := d.trySEndian(44, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S44LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S44LE")
 	}
 	return v
 }
@@ -14088,7 +14088,7 @@ func (d *D) TryFieldScalarS44LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS44LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS44LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S44LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S44LE")
 	}
 	return s
 }
@@ -14113,7 +14113,7 @@ func (d *D) TryS45LE() (int64, error) { return d.trySEndian(45, LittleEndian) }
 func (d *D) S45LE() int64 {
 	v, err := d.trySEndian(45, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S45LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S45LE")
 	}
 	return v
 }
@@ -14134,7 +14134,7 @@ func (d *D) TryFieldScalarS45LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS45LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS45LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S45LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S45LE")
 	}
 	return s
 }
@@ -14159,7 +14159,7 @@ func (d *D) TryS46LE() (int64, error) { return d.trySEndian(46, LittleEndian) }
 func (d *D) S46LE() int64 {
 	v, err := d.trySEndian(46, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S46LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S46LE")
 	}
 	return v
 }
@@ -14180,7 +14180,7 @@ func (d *D) TryFieldScalarS46LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS46LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS46LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S46LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S46LE")
 	}
 	return s
 }
@@ -14205,7 +14205,7 @@ func (d *D) TryS47LE() (int64, error) { return d.trySEndian(47, LittleEndian) }
 func (d *D) S47LE() int64 {
 	v, err := d.trySEndian(47, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S47LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S47LE")
 	}
 	return v
 }
@@ -14226,7 +14226,7 @@ func (d *D) TryFieldScalarS47LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS47LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS47LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S47LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S47LE")
 	}
 	return s
 }
@@ -14251,7 +14251,7 @@ func (d *D) TryS48LE() (int64, error) { return d.trySEndian(48, LittleEndian) }
 func (d *D) S48LE() int64 {
 	v, err := d.trySEndian(48, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S48LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S48LE")
 	}
 	return v
 }
@@ -14272,7 +14272,7 @@ func (d *D) TryFieldScalarS48LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS48LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS48LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S48LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S48LE")
 	}
 	return s
 }
@@ -14297,7 +14297,7 @@ func (d *D) TryS49LE() (int64, error) { return d.trySEndian(49, LittleEndian) }
 func (d *D) S49LE() int64 {
 	v, err := d.trySEndian(49, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S49LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S49LE")
 	}
 	return v
 }
@@ -14318,7 +14318,7 @@ func (d *D) TryFieldScalarS49LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS49LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS49LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S49LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S49LE")
 	}
 	return s
 }
@@ -14343,7 +14343,7 @@ func (d *D) TryS50LE() (int64, error) { return d.trySEndian(50, LittleEndian) }
 func (d *D) S50LE() int64 {
 	v, err := d.trySEndian(50, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S50LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S50LE")
 	}
 	return v
 }
@@ -14364,7 +14364,7 @@ func (d *D) TryFieldScalarS50LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS50LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS50LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S50LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S50LE")
 	}
 	return s
 }
@@ -14389,7 +14389,7 @@ func (d *D) TryS51LE() (int64, error) { return d.trySEndian(51, LittleEndian) }
 func (d *D) S51LE() int64 {
 	v, err := d.trySEndian(51, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S51LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S51LE")
 	}
 	return v
 }
@@ -14410,7 +14410,7 @@ func (d *D) TryFieldScalarS51LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS51LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS51LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S51LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S51LE")
 	}
 	return s
 }
@@ -14435,7 +14435,7 @@ func (d *D) TryS52LE() (int64, error) { return d.trySEndian(52, LittleEndian) }
 func (d *D) S52LE() int64 {
 	v, err := d.trySEndian(52, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S52LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S52LE")
 	}
 	return v
 }
@@ -14456,7 +14456,7 @@ func (d *D) TryFieldScalarS52LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS52LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS52LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S52LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S52LE")
 	}
 	return s
 }
@@ -14481,7 +14481,7 @@ func (d *D) TryS53LE() (int64, error) { return d.trySEndian(53, LittleEndian) }
 func (d *D) S53LE() int64 {
 	v, err := d.trySEndian(53, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S53LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S53LE")
 	}
 	return v
 }
@@ -14502,7 +14502,7 @@ func (d *D) TryFieldScalarS53LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS53LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS53LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S53LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S53LE")
 	}
 	return s
 }
@@ -14527,7 +14527,7 @@ func (d *D) TryS54LE() (int64, error) { return d.trySEndian(54, LittleEndian) }
 func (d *D) S54LE() int64 {
 	v, err := d.trySEndian(54, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S54LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S54LE")
 	}
 	return v
 }
@@ -14548,7 +14548,7 @@ func (d *D) TryFieldScalarS54LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS54LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS54LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S54LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S54LE")
 	}
 	return s
 }
@@ -14573,7 +14573,7 @@ func (d *D) TryS55LE() (int64, error) { return d.trySEndian(55, LittleEndian) }
 func (d *D) S55LE() int64 {
 	v, err := d.trySEndian(55, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S55LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S55LE")
 	}
 	return v
 }
@@ -14594,7 +14594,7 @@ func (d *D) TryFieldScalarS55LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS55LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS55LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S55LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S55LE")
 	}
 	return s
 }
@@ -14619,7 +14619,7 @@ func (d *D) TryS56LE() (int64, error) { return d.trySEndian(56, LittleEndian) }
 func (d *D) S56LE() int64 {
 	v, err := d.trySEndian(56, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S56LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S56LE")
 	}
 	return v
 }
@@ -14640,7 +14640,7 @@ func (d *D) TryFieldScalarS56LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS56LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS56LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S56LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S56LE")
 	}
 	return s
 }
@@ -14665,7 +14665,7 @@ func (d *D) TryS57LE() (int64, error) { return d.trySEndian(57, LittleEndian) }
 func (d *D) S57LE() int64 {
 	v, err := d.trySEndian(57, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S57LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S57LE")
 	}
 	return v
 }
@@ -14686,7 +14686,7 @@ func (d *D) TryFieldScalarS57LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS57LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS57LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S57LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S57LE")
 	}
 	return s
 }
@@ -14711,7 +14711,7 @@ func (d *D) TryS58LE() (int64, error) { return d.trySEndian(58, LittleEndian) }
 func (d *D) S58LE() int64 {
 	v, err := d.trySEndian(58, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S58LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S58LE")
 	}
 	return v
 }
@@ -14732,7 +14732,7 @@ func (d *D) TryFieldScalarS58LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS58LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS58LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S58LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S58LE")
 	}
 	return s
 }
@@ -14757,7 +14757,7 @@ func (d *D) TryS59LE() (int64, error) { return d.trySEndian(59, LittleEndian) }
 func (d *D) S59LE() int64 {
 	v, err := d.trySEndian(59, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S59LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S59LE")
 	}
 	return v
 }
@@ -14778,7 +14778,7 @@ func (d *D) TryFieldScalarS59LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS59LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS59LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S59LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S59LE")
 	}
 	return s
 }
@@ -14803,7 +14803,7 @@ func (d *D) TryS60LE() (int64, error) { return d.trySEndian(60, LittleEndian) }
 func (d *D) S60LE() int64 {
 	v, err := d.trySEndian(60, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S60LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S60LE")
 	}
 	return v
 }
@@ -14824,7 +14824,7 @@ func (d *D) TryFieldScalarS60LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS60LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS60LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S60LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S60LE")
 	}
 	return s
 }
@@ -14849,7 +14849,7 @@ func (d *D) TryS61LE() (int64, error) { return d.trySEndian(61, LittleEndian) }
 func (d *D) S61LE() int64 {
 	v, err := d.trySEndian(61, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S61LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S61LE")
 	}
 	return v
 }
@@ -14870,7 +14870,7 @@ func (d *D) TryFieldScalarS61LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS61LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS61LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S61LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S61LE")
 	}
 	return s
 }
@@ -14895,7 +14895,7 @@ func (d *D) TryS62LE() (int64, error) { return d.trySEndian(62, LittleEndian) }
 func (d *D) S62LE() int64 {
 	v, err := d.trySEndian(62, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S62LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S62LE")
 	}
 	return v
 }
@@ -14916,7 +14916,7 @@ func (d *D) TryFieldScalarS62LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS62LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS62LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S62LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S62LE")
 	}
 	return s
 }
@@ -14941,7 +14941,7 @@ func (d *D) TryS63LE() (int64, error) { return d.trySEndian(63, LittleEndian) }
 func (d *D) S63LE() int64 {
 	v, err := d.trySEndian(63, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S63LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S63LE")
 	}
 	return v
 }
@@ -14962,7 +14962,7 @@ func (d *D) TryFieldScalarS63LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS63LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS63LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S63LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S63LE")
 	}
 	return s
 }
@@ -14987,7 +14987,7 @@ func (d *D) TryS64LE() (int64, error) { return d.trySEndian(64, LittleEndian) }
 func (d *D) S64LE() int64 {
 	v, err := d.trySEndian(64, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S64LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S64LE")
 	}
 	return v
 }
@@ -15008,7 +15008,7 @@ func (d *D) TryFieldScalarS64LE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS64LE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS64LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S64LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S64LE")
 	}
 	return s
 }
@@ -15033,7 +15033,7 @@ func (d *D) TryS8BE() (int64, error) { return d.trySEndian(8, BigEndian) }
 func (d *D) S8BE() int64 {
 	v, err := d.trySEndian(8, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S8BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S8BE")
 	}
 	return v
 }
@@ -15054,7 +15054,7 @@ func (d *D) TryFieldScalarS8BE(name string, sms ...scalar.SintMapper) (*scalar.S
 func (d *D) FieldScalarS8BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS8BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S8BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S8BE")
 	}
 	return s
 }
@@ -15079,7 +15079,7 @@ func (d *D) TryS9BE() (int64, error) { return d.trySEndian(9, BigEndian) }
 func (d *D) S9BE() int64 {
 	v, err := d.trySEndian(9, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S9BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S9BE")
 	}
 	return v
 }
@@ -15100,7 +15100,7 @@ func (d *D) TryFieldScalarS9BE(name string, sms ...scalar.SintMapper) (*scalar.S
 func (d *D) FieldScalarS9BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS9BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S9BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S9BE")
 	}
 	return s
 }
@@ -15125,7 +15125,7 @@ func (d *D) TryS10BE() (int64, error) { return d.trySEndian(10, BigEndian) }
 func (d *D) S10BE() int64 {
 	v, err := d.trySEndian(10, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S10BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S10BE")
 	}
 	return v
 }
@@ -15146,7 +15146,7 @@ func (d *D) TryFieldScalarS10BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS10BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS10BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S10BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S10BE")
 	}
 	return s
 }
@@ -15171,7 +15171,7 @@ func (d *D) TryS11BE() (int64, error) { return d.trySEndian(11, BigEndian) }
 func (d *D) S11BE() int64 {
 	v, err := d.trySEndian(11, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S11BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S11BE")
 	}
 	return v
 }
@@ -15192,7 +15192,7 @@ func (d *D) TryFieldScalarS11BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS11BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS11BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S11BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S11BE")
 	}
 	return s
 }
@@ -15217,7 +15217,7 @@ func (d *D) TryS12BE() (int64, error) { return d.trySEndian(12, BigEndian) }
 func (d *D) S12BE() int64 {
 	v, err := d.trySEndian(12, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S12BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S12BE")
 	}
 	return v
 }
@@ -15238,7 +15238,7 @@ func (d *D) TryFieldScalarS12BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS12BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS12BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S12BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S12BE")
 	}
 	return s
 }
@@ -15263,7 +15263,7 @@ func (d *D) TryS13BE() (int64, error) { return d.trySEndian(13, BigEndian) }
 func (d *D) S13BE() int64 {
 	v, err := d.trySEndian(13, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S13BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S13BE")
 	}
 	return v
 }
@@ -15284,7 +15284,7 @@ func (d *D) TryFieldScalarS13BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS13BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS13BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S13BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S13BE")
 	}
 	return s
 }
@@ -15309,7 +15309,7 @@ func (d *D) TryS14BE() (int64, error) { return d.trySEndian(14, BigEndian) }
 func (d *D) S14BE() int64 {
 	v, err := d.trySEndian(14, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S14BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S14BE")
 	}
 	return v
 }
@@ -15330,7 +15330,7 @@ func (d *D) TryFieldScalarS14BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS14BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS14BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S14BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S14BE")
 	}
 	return s
 }
@@ -15355,7 +15355,7 @@ func (d *D) TryS15BE() (int64, error) { return d.trySEndian(15, BigEndian) }
 func (d *D) S15BE() int64 {
 	v, err := d.trySEndian(15, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S15BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S15BE")
 	}
 	return v
 }
@@ -15376,7 +15376,7 @@ func (d *D) TryFieldScalarS15BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS15BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS15BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S15BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S15BE")
 	}
 	return s
 }
@@ -15401,7 +15401,7 @@ func (d *D) TryS16BE() (int64, error) { return d.trySEndian(16, BigEndian) }
 func (d *D) S16BE() int64 {
 	v, err := d.trySEndian(16, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S16BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S16BE")
 	}
 	return v
 }
@@ -15422,7 +15422,7 @@ func (d *D) TryFieldScalarS16BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS16BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS16BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S16BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S16BE")
 	}
 	return s
 }
@@ -15447,7 +15447,7 @@ func (d *D) TryS17BE() (int64, error) { return d.trySEndian(17, BigEndian) }
 func (d *D) S17BE() int64 {
 	v, err := d.trySEndian(17, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S17BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S17BE")
 	}
 	return v
 }
@@ -15468,7 +15468,7 @@ func (d *D) TryFieldScalarS17BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS17BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS17BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S17BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S17BE")
 	}
 	return s
 }
@@ -15493,7 +15493,7 @@ func (d *D) TryS18BE() (int64, error) { return d.trySEndian(18, BigEndian) }
 func (d *D) S18BE() int64 {
 	v, err := d.trySEndian(18, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S18BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S18BE")
 	}
 	return v
 }
@@ -15514,7 +15514,7 @@ func (d *D) TryFieldScalarS18BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS18BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS18BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S18BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S18BE")
 	}
 	return s
 }
@@ -15539,7 +15539,7 @@ func (d *D) TryS19BE() (int64, error) { return d.trySEndian(19, BigEndian) }
 func (d *D) S19BE() int64 {
 	v, err := d.trySEndian(19, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S19BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S19BE")
 	}
 	return v
 }
@@ -15560,7 +15560,7 @@ func (d *D) TryFieldScalarS19BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS19BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS19BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S19BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S19BE")
 	}
 	return s
 }
@@ -15585,7 +15585,7 @@ func (d *D) TryS20BE() (int64, error) { return d.trySEndian(20, BigEndian) }
 func (d *D) S20BE() int64 {
 	v, err := d.trySEndian(20, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S20BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S20BE")
 	}
 	return v
 }
@@ -15606,7 +15606,7 @@ func (d *D) TryFieldScalarS20BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS20BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS20BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S20BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S20BE")
 	}
 	return s
 }
@@ -15631,7 +15631,7 @@ func (d *D) TryS21BE() (int64, error) { return d.trySEndian(21, BigEndian) }
 func (d *D) S21BE() int64 {
 	v, err := d.trySEndian(21, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S21BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S21BE")
 	}
 	return v
 }
@@ -15652,7 +15652,7 @@ func (d *D) TryFieldScalarS21BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS21BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS21BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S21BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S21BE")
 	}
 	return s
 }
@@ -15677,7 +15677,7 @@ func (d *D) TryS22BE() (int64, error) { return d.trySEndian(22, BigEndian) }
 func (d *D) S22BE() int64 {
 	v, err := d.trySEndian(22, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S22BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S22BE")
 	}
 	return v
 }
@@ -15698,7 +15698,7 @@ func (d *D) TryFieldScalarS22BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS22BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS22BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S22BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S22BE")
 	}
 	return s
 }
@@ -15723,7 +15723,7 @@ func (d *D) TryS23BE() (int64, error) { return d.trySEndian(23, BigEndian) }
 func (d *D) S23BE() int64 {
 	v, err := d.trySEndian(23, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S23BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S23BE")
 	}
 	return v
 }
@@ -15744,7 +15744,7 @@ func (d *D) TryFieldScalarS23BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS23BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS23BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S23BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S23BE")
 	}
 	return s
 }
@@ -15769,7 +15769,7 @@ func (d *D) TryS24BE() (int64, error) { return d.trySEndian(24, BigEndian) }
 func (d *D) S24BE() int64 {
 	v, err := d.trySEndian(24, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S24BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S24BE")
 	}
 	return v
 }
@@ -15790,7 +15790,7 @@ func (d *D) TryFieldScalarS24BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS24BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS24BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S24BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S24BE")
 	}
 	return s
 }
@@ -15815,7 +15815,7 @@ func (d *D) TryS25BE() (int64, error) { return d.trySEndian(25, BigEndian) }
 func (d *D) S25BE() int64 {
 	v, err := d.trySEndian(25, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S25BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S25BE")
 	}
 	return v
 }
@@ -15836,7 +15836,7 @@ func (d *D) TryFieldScalarS25BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS25BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS25BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S25BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S25BE")
 	}
 	return s
 }
@@ -15861,7 +15861,7 @@ func (d *D) TryS26BE() (int64, error) { return d.trySEndian(26, BigEndian) }
 func (d *D) S26BE() int64 {
 	v, err := d.trySEndian(26, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S26BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S26BE")
 	}
 	return v
 }
@@ -15882,7 +15882,7 @@ func (d *D) TryFieldScalarS26BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS26BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS26BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S26BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S26BE")
 	}
 	return s
 }
@@ -15907,7 +15907,7 @@ func (d *D) TryS27BE() (int64, error) { return d.trySEndian(27, BigEndian) }
 func (d *D) S27BE() int64 {
 	v, err := d.trySEndian(27, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S27BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S27BE")
 	}
 	return v
 }
@@ -15928,7 +15928,7 @@ func (d *D) TryFieldScalarS27BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS27BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS27BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S27BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S27BE")
 	}
 	return s
 }
@@ -15953,7 +15953,7 @@ func (d *D) TryS28BE() (int64, error) { return d.trySEndian(28, BigEndian) }
 func (d *D) S28BE() int64 {
 	v, err := d.trySEndian(28, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S28BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S28BE")
 	}
 	return v
 }
@@ -15974,7 +15974,7 @@ func (d *D) TryFieldScalarS28BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS28BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS28BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S28BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S28BE")
 	}
 	return s
 }
@@ -15999,7 +15999,7 @@ func (d *D) TryS29BE() (int64, error) { return d.trySEndian(29, BigEndian) }
 func (d *D) S29BE() int64 {
 	v, err := d.trySEndian(29, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S29BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S29BE")
 	}
 	return v
 }
@@ -16020,7 +16020,7 @@ func (d *D) TryFieldScalarS29BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS29BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS29BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S29BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S29BE")
 	}
 	return s
 }
@@ -16045,7 +16045,7 @@ func (d *D) TryS30BE() (int64, error) { return d.trySEndian(30, BigEndian) }
 func (d *D) S30BE() int64 {
 	v, err := d.trySEndian(30, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S30BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S30BE")
 	}
 	return v
 }
@@ -16066,7 +16066,7 @@ func (d *D) TryFieldScalarS30BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS30BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS30BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S30BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S30BE")
 	}
 	return s
 }
@@ -16091,7 +16091,7 @@ func (d *D) TryS31BE() (int64, error) { return d.trySEndian(31, BigEndian) }
 func (d *D) S31BE() int64 {
 	v, err := d.trySEndian(31, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S31BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S31BE")
 	}
 	return v
 }
@@ -16112,7 +16112,7 @@ func (d *D) TryFieldScalarS31BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS31BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS31BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S31BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S31BE")
 	}
 	return s
 }
@@ -16137,7 +16137,7 @@ func (d *D) TryS32BE() (int64, error) { return d.trySEndian(32, BigEndian) }
 func (d *D) S32BE() int64 {
 	v, err := d.trySEndian(32, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S32BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S32BE")
 	}
 	return v
 }
@@ -16158,7 +16158,7 @@ func (d *D) TryFieldScalarS32BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS32BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS32BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S32BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S32BE")
 	}
 	return s
 }
@@ -16183,7 +16183,7 @@ func (d *D) TryS33BE() (int64, error) { return d.trySEndian(33, BigEndian) }
 func (d *D) S33BE() int64 {
 	v, err := d.trySEndian(33, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S33BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S33BE")
 	}
 	return v
 }
@@ -16204,7 +16204,7 @@ func (d *D) TryFieldScalarS33BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS33BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS33BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S33BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S33BE")
 	}
 	return s
 }
@@ -16229,7 +16229,7 @@ func (d *D) TryS34BE() (int64, error) { return d.trySEndian(34, BigEndian) }
 func (d *D) S34BE() int64 {
 	v, err := d.trySEndian(34, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S34BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S34BE")
 	}
 	return v
 }
@@ -16250,7 +16250,7 @@ func (d *D) TryFieldScalarS34BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS34BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS34BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S34BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S34BE")
 	}
 	return s
 }
@@ -16275,7 +16275,7 @@ func (d *D) TryS35BE() (int64, error) { return d.trySEndian(35, BigEndian) }
 func (d *D) S35BE() int64 {
 	v, err := d.trySEndian(35, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S35BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S35BE")
 	}
 	return v
 }
@@ -16296,7 +16296,7 @@ func (d *D) TryFieldScalarS35BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS35BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS35BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S35BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S35BE")
 	}
 	return s
 }
@@ -16321,7 +16321,7 @@ func (d *D) TryS36BE() (int64, error) { return d.trySEndian(36, BigEndian) }
 func (d *D) S36BE() int64 {
 	v, err := d.trySEndian(36, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S36BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S36BE")
 	}
 	return v
 }
@@ -16342,7 +16342,7 @@ func (d *D) TryFieldScalarS36BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS36BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS36BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S36BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S36BE")
 	}
 	return s
 }
@@ -16367,7 +16367,7 @@ func (d *D) TryS37BE() (int64, error) { return d.trySEndian(37, BigEndian) }
 func (d *D) S37BE() int64 {
 	v, err := d.trySEndian(37, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S37BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S37BE")
 	}
 	return v
 }
@@ -16388,7 +16388,7 @@ func (d *D) TryFieldScalarS37BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS37BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS37BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S37BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S37BE")
 	}
 	return s
 }
@@ -16413,7 +16413,7 @@ func (d *D) TryS38BE() (int64, error) { return d.trySEndian(38, BigEndian) }
 func (d *D) S38BE() int64 {
 	v, err := d.trySEndian(38, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S38BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S38BE")
 	}
 	return v
 }
@@ -16434,7 +16434,7 @@ func (d *D) TryFieldScalarS38BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS38BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS38BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S38BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S38BE")
 	}
 	return s
 }
@@ -16459,7 +16459,7 @@ func (d *D) TryS39BE() (int64, error) { return d.trySEndian(39, BigEndian) }
 func (d *D) S39BE() int64 {
 	v, err := d.trySEndian(39, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S39BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S39BE")
 	}
 	return v
 }
@@ -16480,7 +16480,7 @@ func (d *D) TryFieldScalarS39BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS39BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS39BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S39BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S39BE")
 	}
 	return s
 }
@@ -16505,7 +16505,7 @@ func (d *D) TryS40BE() (int64, error) { return d.trySEndian(40, BigEndian) }
 func (d *D) S40BE() int64 {
 	v, err := d.trySEndian(40, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S40BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S40BE")
 	}
 	return v
 }
@@ -16526,7 +16526,7 @@ func (d *D) TryFieldScalarS40BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS40BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS40BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S40BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S40BE")
 	}
 	return s
 }
@@ -16551,7 +16551,7 @@ func (d *D) TryS41BE() (int64, error) { return d.trySEndian(41, BigEndian) }
 func (d *D) S41BE() int64 {
 	v, err := d.trySEndian(41, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S41BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S41BE")
 	}
 	return v
 }
@@ -16572,7 +16572,7 @@ func (d *D) TryFieldScalarS41BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS41BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS41BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S41BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S41BE")
 	}
 	return s
 }
@@ -16597,7 +16597,7 @@ func (d *D) TryS42BE() (int64, error) { return d.trySEndian(42, BigEndian) }
 func (d *D) S42BE() int64 {
 	v, err := d.trySEndian(42, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S42BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S42BE")
 	}
 	return v
 }
@@ -16618,7 +16618,7 @@ func (d *D) TryFieldScalarS42BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS42BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS42BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S42BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S42BE")
 	}
 	return s
 }
@@ -16643,7 +16643,7 @@ func (d *D) TryS43BE() (int64, error) { return d.trySEndian(43, BigEndian) }
 func (d *D) S43BE() int64 {
 	v, err := d.trySEndian(43, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S43BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S43BE")
 	}
 	return v
 }
@@ -16664,7 +16664,7 @@ func (d *D) TryFieldScalarS43BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS43BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS43BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S43BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S43BE")
 	}
 	return s
 }
@@ -16689,7 +16689,7 @@ func (d *D) TryS44BE() (int64, error) { return d.trySEndian(44, BigEndian) }
 func (d *D) S44BE() int64 {
 	v, err := d.trySEndian(44, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S44BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S44BE")
 	}
 	return v
 }
@@ -16710,7 +16710,7 @@ func (d *D) TryFieldScalarS44BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS44BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS44BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S44BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S44BE")
 	}
 	return s
 }
@@ -16735,7 +16735,7 @@ func (d *D) TryS45BE() (int64, error) { return d.trySEndian(45, BigEndian) }
 func (d *D) S45BE() int64 {
 	v, err := d.trySEndian(45, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S45BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S45BE")
 	}
 	return v
 }
@@ -16756,7 +16756,7 @@ func (d *D) TryFieldScalarS45BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS45BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS45BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S45BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S45BE")
 	}
 	return s
 }
@@ -16781,7 +16781,7 @@ func (d *D) TryS46BE() (int64, error) { return d.trySEndian(46, BigEndian) }
 func (d *D) S46BE() int64 {
 	v, err := d.trySEndian(46, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S46BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S46BE")
 	}
 	return v
 }
@@ -16802,7 +16802,7 @@ func (d *D) TryFieldScalarS46BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS46BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS46BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S46BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S46BE")
 	}
 	return s
 }
@@ -16827,7 +16827,7 @@ func (d *D) TryS47BE() (int64, error) { return d.trySEndian(47, BigEndian) }
 func (d *D) S47BE() int64 {
 	v, err := d.trySEndian(47, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S47BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S47BE")
 	}
 	return v
 }
@@ -16848,7 +16848,7 @@ func (d *D) TryFieldScalarS47BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS47BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS47BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S47BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S47BE")
 	}
 	return s
 }
@@ -16873,7 +16873,7 @@ func (d *D) TryS48BE() (int64, error) { return d.trySEndian(48, BigEndian) }
 func (d *D) S48BE() int64 {
 	v, err := d.trySEndian(48, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S48BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S48BE")
 	}
 	return v
 }
@@ -16894,7 +16894,7 @@ func (d *D) TryFieldScalarS48BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS48BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS48BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S48BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S48BE")
 	}
 	return s
 }
@@ -16919,7 +16919,7 @@ func (d *D) TryS49BE() (int64, error) { return d.trySEndian(49, BigEndian) }
 func (d *D) S49BE() int64 {
 	v, err := d.trySEndian(49, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S49BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S49BE")
 	}
 	return v
 }
@@ -16940,7 +16940,7 @@ func (d *D) TryFieldScalarS49BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS49BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS49BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S49BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S49BE")
 	}
 	return s
 }
@@ -16965,7 +16965,7 @@ func (d *D) TryS50BE() (int64, error) { return d.trySEndian(50, BigEndian) }
 func (d *D) S50BE() int64 {
 	v, err := d.trySEndian(50, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S50BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S50BE")
 	}
 	return v
 }
@@ -16986,7 +16986,7 @@ func (d *D) TryFieldScalarS50BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS50BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS50BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S50BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S50BE")
 	}
 	return s
 }
@@ -17011,7 +17011,7 @@ func (d *D) TryS51BE() (int64, error) { return d.trySEndian(51, BigEndian) }
 func (d *D) S51BE() int64 {
 	v, err := d.trySEndian(51, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S51BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S51BE")
 	}
 	return v
 }
@@ -17032,7 +17032,7 @@ func (d *D) TryFieldScalarS51BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS51BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS51BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S51BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S51BE")
 	}
 	return s
 }
@@ -17057,7 +17057,7 @@ func (d *D) TryS52BE() (int64, error) { return d.trySEndian(52, BigEndian) }
 func (d *D) S52BE() int64 {
 	v, err := d.trySEndian(52, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S52BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S52BE")
 	}
 	return v
 }
@@ -17078,7 +17078,7 @@ func (d *D) TryFieldScalarS52BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS52BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS52BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S52BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S52BE")
 	}
 	return s
 }
@@ -17103,7 +17103,7 @@ func (d *D) TryS53BE() (int64, error) { return d.trySEndian(53, BigEndian) }
 func (d *D) S53BE() int64 {
 	v, err := d.trySEndian(53, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S53BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S53BE")
 	}
 	return v
 }
@@ -17124,7 +17124,7 @@ func (d *D) TryFieldScalarS53BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS53BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS53BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S53BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S53BE")
 	}
 	return s
 }
@@ -17149,7 +17149,7 @@ func (d *D) TryS54BE() (int64, error) { return d.trySEndian(54, BigEndian) }
 func (d *D) S54BE() int64 {
 	v, err := d.trySEndian(54, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S54BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S54BE")
 	}
 	return v
 }
@@ -17170,7 +17170,7 @@ func (d *D) TryFieldScalarS54BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS54BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS54BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S54BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S54BE")
 	}
 	return s
 }
@@ -17195,7 +17195,7 @@ func (d *D) TryS55BE() (int64, error) { return d.trySEndian(55, BigEndian) }
 func (d *D) S55BE() int64 {
 	v, err := d.trySEndian(55, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S55BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S55BE")
 	}
 	return v
 }
@@ -17216,7 +17216,7 @@ func (d *D) TryFieldScalarS55BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS55BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS55BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S55BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S55BE")
 	}
 	return s
 }
@@ -17241,7 +17241,7 @@ func (d *D) TryS56BE() (int64, error) { return d.trySEndian(56, BigEndian) }
 func (d *D) S56BE() int64 {
 	v, err := d.trySEndian(56, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S56BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S56BE")
 	}
 	return v
 }
@@ -17262,7 +17262,7 @@ func (d *D) TryFieldScalarS56BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS56BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS56BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S56BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S56BE")
 	}
 	return s
 }
@@ -17287,7 +17287,7 @@ func (d *D) TryS57BE() (int64, error) { return d.trySEndian(57, BigEndian) }
 func (d *D) S57BE() int64 {
 	v, err := d.trySEndian(57, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S57BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S57BE")
 	}
 	return v
 }
@@ -17308,7 +17308,7 @@ func (d *D) TryFieldScalarS57BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS57BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS57BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S57BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S57BE")
 	}
 	return s
 }
@@ -17333,7 +17333,7 @@ func (d *D) TryS58BE() (int64, error) { return d.trySEndian(58, BigEndian) }
 func (d *D) S58BE() int64 {
 	v, err := d.trySEndian(58, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S58BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S58BE")
 	}
 	return v
 }
@@ -17354,7 +17354,7 @@ func (d *D) TryFieldScalarS58BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS58BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS58BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S58BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S58BE")
 	}
 	return s
 }
@@ -17379,7 +17379,7 @@ func (d *D) TryS59BE() (int64, error) { return d.trySEndian(59, BigEndian) }
 func (d *D) S59BE() int64 {
 	v, err := d.trySEndian(59, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S59BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S59BE")
 	}
 	return v
 }
@@ -17400,7 +17400,7 @@ func (d *D) TryFieldScalarS59BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS59BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS59BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S59BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S59BE")
 	}
 	return s
 }
@@ -17425,7 +17425,7 @@ func (d *D) TryS60BE() (int64, error) { return d.trySEndian(60, BigEndian) }
 func (d *D) S60BE() int64 {
 	v, err := d.trySEndian(60, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S60BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S60BE")
 	}
 	return v
 }
@@ -17446,7 +17446,7 @@ func (d *D) TryFieldScalarS60BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS60BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS60BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S60BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S60BE")
 	}
 	return s
 }
@@ -17471,7 +17471,7 @@ func (d *D) TryS61BE() (int64, error) { return d.trySEndian(61, BigEndian) }
 func (d *D) S61BE() int64 {
 	v, err := d.trySEndian(61, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S61BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S61BE")
 	}
 	return v
 }
@@ -17492,7 +17492,7 @@ func (d *D) TryFieldScalarS61BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS61BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS61BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S61BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S61BE")
 	}
 	return s
 }
@@ -17517,7 +17517,7 @@ func (d *D) TryS62BE() (int64, error) { return d.trySEndian(62, BigEndian) }
 func (d *D) S62BE() int64 {
 	v, err := d.trySEndian(62, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S62BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S62BE")
 	}
 	return v
 }
@@ -17538,7 +17538,7 @@ func (d *D) TryFieldScalarS62BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS62BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS62BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S62BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S62BE")
 	}
 	return s
 }
@@ -17563,7 +17563,7 @@ func (d *D) TryS63BE() (int64, error) { return d.trySEndian(63, BigEndian) }
 func (d *D) S63BE() int64 {
 	v, err := d.trySEndian(63, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S63BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S63BE")
 	}
 	return v
 }
@@ -17584,7 +17584,7 @@ func (d *D) TryFieldScalarS63BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS63BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS63BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S63BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S63BE")
 	}
 	return s
 }
@@ -17609,7 +17609,7 @@ func (d *D) TryS64BE() (int64, error) { return d.trySEndian(64, BigEndian) }
 func (d *D) S64BE() int64 {
 	v, err := d.trySEndian(64, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "S64BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "S64BE")
 	}
 	return v
 }
@@ -17630,7 +17630,7 @@ func (d *D) TryFieldScalarS64BE(name string, sms ...scalar.SintMapper) (*scalar.
 func (d *D) FieldScalarS64BE(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarS64BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "S64BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "S64BE")
 	}
 	return s
 }
@@ -17657,7 +17657,7 @@ func (d *D) TryUBigInt(nBits int) (*big.Int, error) {
 func (d *D) UBigInt(nBits int) *big.Int {
 	v, err := d.tryBigIntEndianSign(nBits, d.Endian, false)
 	if err != nil {
-		panic(IOError{Err: err, Op: "UBigInt", Pos: d.Pos()})
+		d.IOPanic(err, "", "UBigInt")
 	}
 	return v
 }
@@ -17678,7 +17678,7 @@ func (d *D) TryFieldScalarUBigInt(name string, nBits int, sms ...scalar.BigIntMa
 func (d *D) FieldScalarUBigInt(name string, nBits int, sms ...scalar.BigIntMapper) *scalar.BigInt {
 	s, err := d.TryFieldScalarUBigInt(name, nBits, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "UBigInt", Pos: d.Pos()})
+		d.IOPanic(err, name, "UBigInt")
 	}
 	return s
 }
@@ -17705,7 +17705,7 @@ func (d *D) TryUBigIntE(nBits int, endian Endian) (*big.Int, error) {
 func (d *D) UBigIntE(nBits int, endian Endian) *big.Int {
 	v, err := d.tryBigIntEndianSign(nBits, endian, false)
 	if err != nil {
-		panic(IOError{Err: err, Op: "UBigIntE", Pos: d.Pos()})
+		d.IOPanic(err, "", "UBigIntE")
 	}
 	return v
 }
@@ -17726,7 +17726,7 @@ func (d *D) TryFieldScalarUBigIntE(name string, nBits int, endian Endian, sms ..
 func (d *D) FieldScalarUBigIntE(name string, nBits int, endian Endian, sms ...scalar.BigIntMapper) *scalar.BigInt {
 	s, err := d.TryFieldScalarUBigIntE(name, nBits, endian, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "UBigIntE", Pos: d.Pos()})
+		d.IOPanic(err, name, "UBigIntE")
 	}
 	return s
 }
@@ -17753,7 +17753,7 @@ func (d *D) TryUBigIntLE(nBits int) (*big.Int, error) {
 func (d *D) UBigIntLE(nBits int) *big.Int {
 	v, err := d.tryBigIntEndianSign(nBits, LittleEndian, false)
 	if err != nil {
-		panic(IOError{Err: err, Op: "UBigIntLE", Pos: d.Pos()})
+		d.IOPanic(err, "", "UBigIntLE")
 	}
 	return v
 }
@@ -17774,7 +17774,7 @@ func (d *D) TryFieldScalarUBigIntLE(name string, nBits int, sms ...scalar.BigInt
 func (d *D) FieldScalarUBigIntLE(name string, nBits int, sms ...scalar.BigIntMapper) *scalar.BigInt {
 	s, err := d.TryFieldScalarUBigIntLE(name, nBits, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "UBigIntLE", Pos: d.Pos()})
+		d.IOPanic(err, name, "UBigIntLE")
 	}
 	return s
 }
@@ -17801,7 +17801,7 @@ func (d *D) TryUBigIntBE(nBits int) (*big.Int, error) {
 func (d *D) UBigIntBE(nBits int) *big.Int {
 	v, err := d.tryBigIntEndianSign(nBits, BigEndian, false)
 	if err != nil {
-		panic(IOError{Err: err, Op: "UBigIntBE", Pos: d.Pos()})
+		d.IOPanic(err, "", "UBigIntBE")
 	}
 	return v
 }
@@ -17822,7 +17822,7 @@ func (d *D) TryFieldScalarUBigIntBE(name string, nBits int, sms ...scalar.BigInt
 func (d *D) FieldScalarUBigIntBE(name string, nBits int, sms ...scalar.BigIntMapper) *scalar.BigInt {
 	s, err := d.TryFieldScalarUBigIntBE(name, nBits, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "UBigIntBE", Pos: d.Pos()})
+		d.IOPanic(err, name, "UBigIntBE")
 	}
 	return s
 }
@@ -17849,7 +17849,7 @@ func (d *D) TrySBigInt(nBits int) (*big.Int, error) {
 func (d *D) SBigInt(nBits int) *big.Int {
 	v, err := d.tryBigIntEndianSign(nBits, d.Endian, true)
 	if err != nil {
-		panic(IOError{Err: err, Op: "SBigInt", Pos: d.Pos()})
+		d.IOPanic(err, "", "SBigInt")
 	}
 	return v
 }
@@ -17870,7 +17870,7 @@ func (d *D) TryFieldScalarSBigInt(name string, nBits int, sms ...scalar.BigIntMa
 func (d *D) FieldScalarSBigInt(name string, nBits int, sms ...scalar.BigIntMapper) *scalar.BigInt {
 	s, err := d.TryFieldScalarSBigInt(name, nBits, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "SBigInt", Pos: d.Pos()})
+		d.IOPanic(err, name, "SBigInt")
 	}
 	return s
 }
@@ -17897,7 +17897,7 @@ func (d *D) TrySBigIntE(nBits int, endian Endian) (*big.Int, error) {
 func (d *D) SBigIntE(nBits int, endian Endian) *big.Int {
 	v, err := d.tryBigIntEndianSign(nBits, endian, true)
 	if err != nil {
-		panic(IOError{Err: err, Op: "SBigIntE", Pos: d.Pos()})
+		d.IOPanic(err, "", "SBigIntE")
 	}
 	return v
 }
@@ -17918,7 +17918,7 @@ func (d *D) TryFieldScalarSBigIntE(name string, nBits int, endian Endian, sms ..
 func (d *D) FieldScalarSBigIntE(name string, nBits int, endian Endian, sms ...scalar.BigIntMapper) *scalar.BigInt {
 	s, err := d.TryFieldScalarSBigIntE(name, nBits, endian, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "SBigIntE", Pos: d.Pos()})
+		d.IOPanic(err, name, "SBigIntE")
 	}
 	return s
 }
@@ -17945,7 +17945,7 @@ func (d *D) TrySBigIntLE(nBits int) (*big.Int, error) {
 func (d *D) SBigIntLE(nBits int) *big.Int {
 	v, err := d.tryBigIntEndianSign(nBits, LittleEndian, true)
 	if err != nil {
-		panic(IOError{Err: err, Op: "SBigIntLE", Pos: d.Pos()})
+		d.IOPanic(err, "", "SBigIntLE")
 	}
 	return v
 }
@@ -17966,7 +17966,7 @@ func (d *D) TryFieldScalarSBigIntLE(name string, nBits int, sms ...scalar.BigInt
 func (d *D) FieldScalarSBigIntLE(name string, nBits int, sms ...scalar.BigIntMapper) *scalar.BigInt {
 	s, err := d.TryFieldScalarSBigIntLE(name, nBits, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "SBigIntLE", Pos: d.Pos()})
+		d.IOPanic(err, name, "SBigIntLE")
 	}
 	return s
 }
@@ -17993,7 +17993,7 @@ func (d *D) TrySBigIntBE(nBits int) (*big.Int, error) {
 func (d *D) SBigIntBE(nBits int) *big.Int {
 	v, err := d.tryBigIntEndianSign(nBits, BigEndian, true)
 	if err != nil {
-		panic(IOError{Err: err, Op: "SBigIntBE", Pos: d.Pos()})
+		d.IOPanic(err, "", "SBigIntBE")
 	}
 	return v
 }
@@ -18014,7 +18014,7 @@ func (d *D) TryFieldScalarSBigIntBE(name string, nBits int, sms ...scalar.BigInt
 func (d *D) FieldScalarSBigIntBE(name string, nBits int, sms ...scalar.BigIntMapper) *scalar.BigInt {
 	s, err := d.TryFieldScalarSBigIntBE(name, nBits, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "SBigIntBE", Pos: d.Pos()})
+		d.IOPanic(err, name, "SBigIntBE")
 	}
 	return s
 }
@@ -18039,7 +18039,7 @@ func (d *D) TryF(nBits int) (float64, error) { return d.tryFEndian(nBits, d.Endi
 func (d *D) F(nBits int) float64 {
 	v, err := d.tryFEndian(nBits, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "F", Pos: d.Pos()})
+		d.IOPanic(err, "", "F")
 	}
 	return v
 }
@@ -18060,7 +18060,7 @@ func (d *D) TryFieldScalarF(name string, nBits int, sms ...scalar.FltMapper) (*s
 func (d *D) FieldScalarF(name string, nBits int, sms ...scalar.FltMapper) *scalar.Flt {
 	s, err := d.TryFieldScalarF(name, nBits, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "F", Pos: d.Pos()})
+		d.IOPanic(err, name, "F")
 	}
 	return s
 }
@@ -18085,7 +18085,7 @@ func (d *D) TryFE(nBits int, endian Endian) (float64, error) { return d.tryFEndi
 func (d *D) FE(nBits int, endian Endian) float64 {
 	v, err := d.tryFEndian(nBits, endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "FE", Pos: d.Pos()})
+		d.IOPanic(err, "", "FE")
 	}
 	return v
 }
@@ -18106,7 +18106,7 @@ func (d *D) TryFieldScalarFE(name string, nBits int, endian Endian, sms ...scala
 func (d *D) FieldScalarFE(name string, nBits int, endian Endian, sms ...scalar.FltMapper) *scalar.Flt {
 	s, err := d.TryFieldScalarFE(name, nBits, endian, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "FE", Pos: d.Pos()})
+		d.IOPanic(err, name, "FE")
 	}
 	return s
 }
@@ -18131,7 +18131,7 @@ func (d *D) TryF16() (float64, error) { return d.tryFEndian(16, d.Endian) }
 func (d *D) F16() float64 {
 	v, err := d.tryFEndian(16, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "F16", Pos: d.Pos()})
+		d.IOPanic(err, "", "F16")
 	}
 	return v
 }
@@ -18152,7 +18152,7 @@ func (d *D) TryFieldScalarF16(name string, sms ...scalar.FltMapper) (*scalar.Flt
 func (d *D) FieldScalarF16(name string, sms ...scalar.FltMapper) *scalar.Flt {
 	s, err := d.TryFieldScalarF16(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "F16", Pos: d.Pos()})
+		d.IOPanic(err, name, "F16")
 	}
 	return s
 }
@@ -18177,7 +18177,7 @@ func (d *D) TryF32() (float64, error) { return d.tryFEndian(32, d.Endian) }
 func (d *D) F32() float64 {
 	v, err := d.tryFEndian(32, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "F32", Pos: d.Pos()})
+		d.IOPanic(err, "", "F32")
 	}
 	return v
 }
@@ -18198,7 +18198,7 @@ func (d *D) TryFieldScalarF32(name string, sms ...scalar.FltMapper) (*scalar.Flt
 func (d *D) FieldScalarF32(name string, sms ...scalar.FltMapper) *scalar.Flt {
 	s, err := d.TryFieldScalarF32(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "F32", Pos: d.Pos()})
+		d.IOPanic(err, name, "F32")
 	}
 	return s
 }
@@ -18223,7 +18223,7 @@ func (d *D) TryF64() (float64, error) { return d.tryFEndian(64, d.Endian) }
 func (d *D) F64() float64 {
 	v, err := d.tryFEndian(64, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "F64", Pos: d.Pos()})
+		d.IOPanic(err, "", "F64")
 	}
 	return v
 }
@@ -18244,7 +18244,7 @@ func (d *D) TryFieldScalarF64(name string, sms ...scalar.FltMapper) (*scalar.Flt
 func (d *D) FieldScalarF64(name string, sms ...scalar.FltMapper) *scalar.Flt {
 	s, err := d.TryFieldScalarF64(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "F64", Pos: d.Pos()})
+		d.IOPanic(err, name, "F64")
 	}
 	return s
 }
@@ -18269,7 +18269,7 @@ func (d *D) TryF80() (float64, error) { return d.tryFEndian(80, d.Endian) }
 func (d *D) F80() float64 {
 	v, err := d.tryFEndian(80, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "F80", Pos: d.Pos()})
+		d.IOPanic(err, "", "F80")
 	}
 	return v
 }
@@ -18290,7 +18290,7 @@ func (d *D) TryFieldScalarF80(name string, sms ...scalar.FltMapper) (*scalar.Flt
 func (d *D) FieldScalarF80(name string, sms ...scalar.FltMapper) *scalar.Flt {
 	s, err := d.TryFieldScalarF80(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "F80", Pos: d.Pos()})
+		d.IOPanic(err, name, "F80")
 	}
 	return s
 }
@@ -18315,7 +18315,7 @@ func (d *D) TryF16LE() (float64, error) { return d.tryFEndian(16, LittleEndian) 
 func (d *D) F16LE() float64 {
 	v, err := d.tryFEndian(16, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "F16LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "F16LE")
 	}
 	return v
 }
@@ -18336,7 +18336,7 @@ func (d *D) TryFieldScalarF16LE(name string, sms ...scalar.FltMapper) (*scalar.F
 func (d *D) FieldScalarF16LE(name string, sms ...scalar.FltMapper) *scalar.Flt {
 	s, err := d.TryFieldScalarF16LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "F16LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "F16LE")
 	}
 	return s
 }
@@ -18361,7 +18361,7 @@ func (d *D) TryF32LE() (float64, error) { return d.tryFEndian(32, LittleEndian) 
 func (d *D) F32LE() float64 {
 	v, err := d.tryFEndian(32, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "F32LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "F32LE")
 	}
 	return v
 }
@@ -18382,7 +18382,7 @@ func (d *D) TryFieldScalarF32LE(name string, sms ...scalar.FltMapper) (*scalar.F
 func (d *D) FieldScalarF32LE(name string, sms ...scalar.FltMapper) *scalar.Flt {
 	s, err := d.TryFieldScalarF32LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "F32LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "F32LE")
 	}
 	return s
 }
@@ -18407,7 +18407,7 @@ func (d *D) TryF64LE() (float64, error) { return d.tryFEndian(64, LittleEndian) 
 func (d *D) F64LE() float64 {
 	v, err := d.tryFEndian(64, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "F64LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "F64LE")
 	}
 	return v
 }
@@ -18428,7 +18428,7 @@ func (d *D) TryFieldScalarF64LE(name string, sms ...scalar.FltMapper) (*scalar.F
 func (d *D) FieldScalarF64LE(name string, sms ...scalar.FltMapper) *scalar.Flt {
 	s, err := d.TryFieldScalarF64LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "F64LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "F64LE")
 	}
 	return s
 }
@@ -18453,7 +18453,7 @@ func (d *D) TryF80LE() (float64, error) { return d.tryFEndian(80, LittleEndian) 
 func (d *D) F80LE() float64 {
 	v, err := d.tryFEndian(80, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "F80LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "F80LE")
 	}
 	return v
 }
@@ -18474,7 +18474,7 @@ func (d *D) TryFieldScalarF80LE(name string, sms ...scalar.FltMapper) (*scalar.F
 func (d *D) FieldScalarF80LE(name string, sms ...scalar.FltMapper) *scalar.Flt {
 	s, err := d.TryFieldScalarF80LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "F80LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "F80LE")
 	}
 	return s
 }
@@ -18499,7 +18499,7 @@ func (d *D) TryF16BE() (float64, error) { return d.tryFEndian(16, BigEndian) }
 func (d *D) F16BE() float64 {
 	v, err := d.tryFEndian(16, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "F16BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "F16BE")
 	}
 	return v
 }
@@ -18520,7 +18520,7 @@ func (d *D) TryFieldScalarF16BE(name string, sms ...scalar.FltMapper) (*scalar.F
 func (d *D) FieldScalarF16BE(name string, sms ...scalar.FltMapper) *scalar.Flt {
 	s, err := d.TryFieldScalarF16BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "F16BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "F16BE")
 	}
 	return s
 }
@@ -18545,7 +18545,7 @@ func (d *D) TryF32BE() (float64, error) { return d.tryFEndian(32, BigEndian) }
 func (d *D) F32BE() float64 {
 	v, err := d.tryFEndian(32, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "F32BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "F32BE")
 	}
 	return v
 }
@@ -18566,7 +18566,7 @@ func (d *D) TryFieldScalarF32BE(name string, sms ...scalar.FltMapper) (*scalar.F
 func (d *D) FieldScalarF32BE(name string, sms ...scalar.FltMapper) *scalar.Flt {
 	s, err := d.TryFieldScalarF32BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "F32BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "F32BE")
 	}
 	return s
 }
@@ -18591,7 +18591,7 @@ func (d *D) TryF64BE() (float64, error) { return d.tryFEndian(64, BigEndian) }
 func (d *D) F64BE() float64 {
 	v, err := d.tryFEndian(64, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "F64BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "F64BE")
 	}
 	return v
 }
@@ -18612,7 +18612,7 @@ func (d *D) TryFieldScalarF64BE(name string, sms ...scalar.FltMapper) (*scalar.F
 func (d *D) FieldScalarF64BE(name string, sms ...scalar.FltMapper) *scalar.Flt {
 	s, err := d.TryFieldScalarF64BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "F64BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "F64BE")
 	}
 	return s
 }
@@ -18637,7 +18637,7 @@ func (d *D) TryF80BE() (float64, error) { return d.tryFEndian(80, BigEndian) }
 func (d *D) F80BE() float64 {
 	v, err := d.tryFEndian(80, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "F80BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "F80BE")
 	}
 	return v
 }
@@ -18658,7 +18658,7 @@ func (d *D) TryFieldScalarF80BE(name string, sms ...scalar.FltMapper) (*scalar.F
 func (d *D) FieldScalarF80BE(name string, sms ...scalar.FltMapper) *scalar.Flt {
 	s, err := d.TryFieldScalarF80BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "F80BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "F80BE")
 	}
 	return s
 }
@@ -18685,7 +18685,7 @@ func (d *D) TryFP(nBits int, fBits int) (float64, error) {
 func (d *D) FP(nBits int, fBits int) float64 {
 	v, err := d.tryFPEndian(nBits, fBits, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "FP", Pos: d.Pos()})
+		d.IOPanic(err, "", "FP")
 	}
 	return v
 }
@@ -18706,7 +18706,7 @@ func (d *D) TryFieldScalarFP(name string, nBits int, fBits int, sms ...scalar.Fl
 func (d *D) FieldScalarFP(name string, nBits int, fBits int, sms ...scalar.FltMapper) *scalar.Flt {
 	s, err := d.TryFieldScalarFP(name, nBits, fBits, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "FP", Pos: d.Pos()})
+		d.IOPanic(err, name, "FP")
 	}
 	return s
 }
@@ -18733,7 +18733,7 @@ func (d *D) TryFPE(nBits int, fBits int, endian Endian) (float64, error) {
 func (d *D) FPE(nBits int, fBits int, endian Endian) float64 {
 	v, err := d.tryFPEndian(nBits, fBits, endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "FPE", Pos: d.Pos()})
+		d.IOPanic(err, "", "FPE")
 	}
 	return v
 }
@@ -18754,7 +18754,7 @@ func (d *D) TryFieldScalarFPE(name string, nBits int, fBits int, endian Endian, 
 func (d *D) FieldScalarFPE(name string, nBits int, fBits int, endian Endian, sms ...scalar.FltMapper) *scalar.Flt {
 	s, err := d.TryFieldScalarFPE(name, nBits, fBits, endian, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "FPE", Pos: d.Pos()})
+		d.IOPanic(err, name, "FPE")
 	}
 	return s
 }
@@ -18779,7 +18779,7 @@ func (d *D) TryFP16() (float64, error) { return d.tryFPEndian(16, 8, d.Endian) }
 func (d *D) FP16() float64 {
 	v, err := d.tryFPEndian(16, 8, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "FP16", Pos: d.Pos()})
+		d.IOPanic(err, "", "FP16")
 	}
 	return v
 }
@@ -18800,7 +18800,7 @@ func (d *D) TryFieldScalarFP16(name string, sms ...scalar.FltMapper) (*scalar.Fl
 func (d *D) FieldScalarFP16(name string, sms ...scalar.FltMapper) *scalar.Flt {
 	s, err := d.TryFieldScalarFP16(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "FP16", Pos: d.Pos()})
+		d.IOPanic(err, name, "FP16")
 	}
 	return s
 }
@@ -18825,7 +18825,7 @@ func (d *D) TryFP32() (float64, error) { return d.tryFPEndian(32, 16, d.Endian) 
 func (d *D) FP32() float64 {
 	v, err := d.tryFPEndian(32, 16, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "FP32", Pos: d.Pos()})
+		d.IOPanic(err, "", "FP32")
 	}
 	return v
 }
@@ -18846,7 +18846,7 @@ func (d *D) TryFieldScalarFP32(name string, sms ...scalar.FltMapper) (*scalar.Fl
 func (d *D) FieldScalarFP32(name string, sms ...scalar.FltMapper) *scalar.Flt {
 	s, err := d.TryFieldScalarFP32(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "FP32", Pos: d.Pos()})
+		d.IOPanic(err, name, "FP32")
 	}
 	return s
 }
@@ -18871,7 +18871,7 @@ func (d *D) TryFP64() (float64, error) { return d.tryFPEndian(64, 32, d.Endian) 
 func (d *D) FP64() float64 {
 	v, err := d.tryFPEndian(64, 32, d.Endian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "FP64", Pos: d.Pos()})
+		d.IOPanic(err, "", "FP64")
 	}
 	return v
 }
@@ -18892,7 +18892,7 @@ func (d *D) TryFieldScalarFP64(name string, sms ...scalar.FltMapper) (*scalar.Fl
 func (d *D) FieldScalarFP64(name string, sms ...scalar.FltMapper) *scalar.Flt {
 	s, err := d.TryFieldScalarFP64(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "FP64", Pos: d.Pos()})
+		d.IOPanic(err, name, "FP64")
 	}
 	return s
 }
@@ -18917,7 +18917,7 @@ func (d *D) TryFP16LE() (float64, error) { return d.tryFPEndian(16, 8, LittleEnd
 func (d *D) FP16LE() float64 {
 	v, err := d.tryFPEndian(16, 8, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "FP16LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "FP16LE")
 	}
 	return v
 }
@@ -18938,7 +18938,7 @@ func (d *D) TryFieldScalarFP16LE(name string, sms ...scalar.FltMapper) (*scalar.
 func (d *D) FieldScalarFP16LE(name string, sms ...scalar.FltMapper) *scalar.Flt {
 	s, err := d.TryFieldScalarFP16LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "FP16LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "FP16LE")
 	}
 	return s
 }
@@ -18963,7 +18963,7 @@ func (d *D) TryFP32LE() (float64, error) { return d.tryFPEndian(32, 16, LittleEn
 func (d *D) FP32LE() float64 {
 	v, err := d.tryFPEndian(32, 16, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "FP32LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "FP32LE")
 	}
 	return v
 }
@@ -18984,7 +18984,7 @@ func (d *D) TryFieldScalarFP32LE(name string, sms ...scalar.FltMapper) (*scalar.
 func (d *D) FieldScalarFP32LE(name string, sms ...scalar.FltMapper) *scalar.Flt {
 	s, err := d.TryFieldScalarFP32LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "FP32LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "FP32LE")
 	}
 	return s
 }
@@ -19009,7 +19009,7 @@ func (d *D) TryFP64LE() (float64, error) { return d.tryFPEndian(64, 32, LittleEn
 func (d *D) FP64LE() float64 {
 	v, err := d.tryFPEndian(64, 32, LittleEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "FP64LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "FP64LE")
 	}
 	return v
 }
@@ -19030,7 +19030,7 @@ func (d *D) TryFieldScalarFP64LE(name string, sms ...scalar.FltMapper) (*scalar.
 func (d *D) FieldScalarFP64LE(name string, sms ...scalar.FltMapper) *scalar.Flt {
 	s, err := d.TryFieldScalarFP64LE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "FP64LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "FP64LE")
 	}
 	return s
 }
@@ -19055,7 +19055,7 @@ func (d *D) TryFP16BE() (float64, error) { return d.tryFPEndian(16, 8, BigEndian
 func (d *D) FP16BE() float64 {
 	v, err := d.tryFPEndian(16, 8, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "FP16BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "FP16BE")
 	}
 	return v
 }
@@ -19076,7 +19076,7 @@ func (d *D) TryFieldScalarFP16BE(name string, sms ...scalar.FltMapper) (*scalar.
 func (d *D) FieldScalarFP16BE(name string, sms ...scalar.FltMapper) *scalar.Flt {
 	s, err := d.TryFieldScalarFP16BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "FP16BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "FP16BE")
 	}
 	return s
 }
@@ -19101,7 +19101,7 @@ func (d *D) TryFP32BE() (float64, error) { return d.tryFPEndian(32, 16, BigEndia
 func (d *D) FP32BE() float64 {
 	v, err := d.tryFPEndian(32, 16, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "FP32BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "FP32BE")
 	}
 	return v
 }
@@ -19122,7 +19122,7 @@ func (d *D) TryFieldScalarFP32BE(name string, sms ...scalar.FltMapper) (*scalar.
 func (d *D) FieldScalarFP32BE(name string, sms ...scalar.FltMapper) *scalar.Flt {
 	s, err := d.TryFieldScalarFP32BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "FP32BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "FP32BE")
 	}
 	return s
 }
@@ -19147,7 +19147,7 @@ func (d *D) TryFP64BE() (float64, error) { return d.tryFPEndian(64, 32, BigEndia
 func (d *D) FP64BE() float64 {
 	v, err := d.tryFPEndian(64, 32, BigEndian)
 	if err != nil {
-		panic(IOError{Err: err, Op: "FP64BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "FP64BE")
 	}
 	return v
 }
@@ -19168,7 +19168,7 @@ func (d *D) TryFieldScalarFP64BE(name string, sms ...scalar.FltMapper) (*scalar.
 func (d *D) FieldScalarFP64BE(name string, sms ...scalar.FltMapper) *scalar.Flt {
 	s, err := d.TryFieldScalarFP64BE(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "FP64BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "FP64BE")
 	}
 	return s
 }
@@ -19193,7 +19193,7 @@ func (d *D) TryUnary(ov uint64) (uint64, error) { return d.tryUnary(ov) }
 func (d *D) Unary(ov uint64) uint64 {
 	v, err := d.tryUnary(ov)
 	if err != nil {
-		panic(IOError{Err: err, Op: "Unary", Pos: d.Pos()})
+		d.IOPanic(err, "", "Unary")
 	}
 	return v
 }
@@ -19214,7 +19214,7 @@ func (d *D) TryFieldScalarUnary(name string, ov uint64, sms ...scalar.UintMapper
 func (d *D) FieldScalarUnary(name string, ov uint64, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarUnary(name, ov, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "Unary", Pos: d.Pos()})
+		d.IOPanic(err, name, "Unary")
 	}
 	return s
 }
@@ -19239,7 +19239,7 @@ func (d *D) TryULEB128() (uint64, error) { return d.tryULEB128() }
 func (d *D) ULEB128() uint64 {
 	v, err := d.tryULEB128()
 	if err != nil {
-		panic(IOError{Err: err, Op: "ULEB128", Pos: d.Pos()})
+		d.IOPanic(err, "", "ULEB128")
 	}
 	return v
 }
@@ -19260,7 +19260,7 @@ func (d *D) TryFieldScalarULEB128(name string, sms ...scalar.UintMapper) (*scala
 func (d *D) FieldScalarULEB128(name string, sms ...scalar.UintMapper) *scalar.Uint {
 	s, err := d.TryFieldScalarULEB128(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "ULEB128", Pos: d.Pos()})
+		d.IOPanic(err, name, "ULEB128")
 	}
 	return s
 }
@@ -19285,7 +19285,7 @@ func (d *D) TrySLEB128() (int64, error) { return d.trySLEB128() }
 func (d *D) SLEB128() int64 {
 	v, err := d.trySLEB128()
 	if err != nil {
-		panic(IOError{Err: err, Op: "SLEB128", Pos: d.Pos()})
+		d.IOPanic(err, "", "SLEB128")
 	}
 	return v
 }
@@ -19306,7 +19306,7 @@ func (d *D) TryFieldScalarSLEB128(name string, sms ...scalar.SintMapper) (*scala
 func (d *D) FieldScalarSLEB128(name string, sms ...scalar.SintMapper) *scalar.Sint {
 	s, err := d.TryFieldScalarSLEB128(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "SLEB128", Pos: d.Pos()})
+		d.IOPanic(err, name, "SLEB128")
 	}
 	return s
 }
@@ -19331,7 +19331,7 @@ func (d *D) TryUTF8(nBytes int) (string, error) { return d.tryText(nBytes, UTF8B
 func (d *D) UTF8(nBytes int) string {
 	v, err := d.tryText(nBytes, UTF8BOM)
 	if err != nil {
-		panic(IOError{Err: err, Op: "UTF8", Pos: d.Pos()})
+		d.IOPanic(err, "", "UTF8")
 	}
 	return v
 }
@@ -19352,7 +19352,7 @@ func (d *D) TryFieldScalarUTF8(name string, nBytes int, sms ...scalar.StrMapper)
 func (d *D) FieldScalarUTF8(name string, nBytes int, sms ...scalar.StrMapper) *scalar.Str {
 	s, err := d.TryFieldScalarUTF8(name, nBytes, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "UTF8", Pos: d.Pos()})
+		d.IOPanic(err, name, "UTF8")
 	}
 	return s
 }
@@ -19377,7 +19377,7 @@ func (d *D) TryUTF16(nBytes int) (string, error) { return d.tryText(nBytes, UTF1
 func (d *D) UTF16(nBytes int) string {
 	v, err := d.tryText(nBytes, UTF16BOM)
 	if err != nil {
-		panic(IOError{Err: err, Op: "UTF16", Pos: d.Pos()})
+		d.IOPanic(err, "", "UTF16")
 	}
 	return v
 }
@@ -19398,7 +19398,7 @@ func (d *D) TryFieldScalarUTF16(name string, nBytes int, sms ...scalar.StrMapper
 func (d *D) FieldScalarUTF16(name string, nBytes int, sms ...scalar.StrMapper) *scalar.Str {
 	s, err := d.TryFieldScalarUTF16(name, nBytes, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "UTF16", Pos: d.Pos()})
+		d.IOPanic(err, name, "UTF16")
 	}
 	return s
 }
@@ -19423,7 +19423,7 @@ func (d *D) TryUTF16LE(nBytes int) (string, error) { return d.tryText(nBytes, UT
 func (d *D) UTF16LE(nBytes int) string {
 	v, err := d.tryText(nBytes, UTF16LE)
 	if err != nil {
-		panic(IOError{Err: err, Op: "UTF16LE", Pos: d.Pos()})
+		d.IOPanic(err, "", "UTF16LE")
 	}
 	return v
 }
@@ -19444,7 +19444,7 @@ func (d *D) TryFieldScalarUTF16LE(name string, nBytes int, sms ...scalar.StrMapp
 func (d *D) FieldScalarUTF16LE(name string, nBytes int, sms ...scalar.StrMapper) *scalar.Str {
 	s, err := d.TryFieldScalarUTF16LE(name, nBytes, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "UTF16LE", Pos: d.Pos()})
+		d.IOPanic(err, name, "UTF16LE")
 	}
 	return s
 }
@@ -19469,7 +19469,7 @@ func (d *D) TryUTF16BE(nBytes int) (string, error) { return d.tryText(nBytes, UT
 func (d *D) UTF16BE(nBytes int) string {
 	v, err := d.tryText(nBytes, UTF16BE)
 	if err != nil {
-		panic(IOError{Err: err, Op: "UTF16BE", Pos: d.Pos()})
+		d.IOPanic(err, "", "UTF16BE")
 	}
 	return v
 }
@@ -19490,7 +19490,7 @@ func (d *D) TryFieldScalarUTF16BE(name string, nBytes int, sms ...scalar.StrMapp
 func (d *D) FieldScalarUTF16BE(name string, nBytes int, sms ...scalar.StrMapper) *scalar.Str {
 	s, err := d.TryFieldScalarUTF16BE(name, nBytes, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "UTF16BE", Pos: d.Pos()})
+		d.IOPanic(err, name, "UTF16BE")
 	}
 	return s
 }
@@ -19515,7 +19515,7 @@ func (d *D) TryUTF8ShortString() (string, error) { return d.tryTextLenPrefixed(1
 func (d *D) UTF8ShortString() string {
 	v, err := d.tryTextLenPrefixed(1, -1, UTF8BOM)
 	if err != nil {
-		panic(IOError{Err: err, Op: "UTF8ShortString", Pos: d.Pos()})
+		d.IOPanic(err, "", "UTF8ShortString")
 	}
 	return v
 }
@@ -19536,7 +19536,7 @@ func (d *D) TryFieldScalarUTF8ShortString(name string, sms ...scalar.StrMapper) 
 func (d *D) FieldScalarUTF8ShortString(name string, sms ...scalar.StrMapper) *scalar.Str {
 	s, err := d.TryFieldScalarUTF8ShortString(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "UTF8ShortString", Pos: d.Pos()})
+		d.IOPanic(err, name, "UTF8ShortString")
 	}
 	return s
 }
@@ -19563,7 +19563,7 @@ func (d *D) TryUTF8ShortStringFixedLen(fixedBytes int) (string, error) {
 func (d *D) UTF8ShortStringFixedLen(fixedBytes int) string {
 	v, err := d.tryTextLenPrefixed(1, fixedBytes, UTF8BOM)
 	if err != nil {
-		panic(IOError{Err: err, Op: "UTF8ShortStringFixedLen", Pos: d.Pos()})
+		d.IOPanic(err, "", "UTF8ShortStringFixedLen")
 	}
 	return v
 }
@@ -19584,7 +19584,7 @@ func (d *D) TryFieldScalarUTF8ShortStringFixedLen(name string, fixedBytes int, s
 func (d *D) FieldScalarUTF8ShortStringFixedLen(name string, fixedBytes int, sms ...scalar.StrMapper) *scalar.Str {
 	s, err := d.TryFieldScalarUTF8ShortStringFixedLen(name, fixedBytes, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "UTF8ShortStringFixedLen", Pos: d.Pos()})
+		d.IOPanic(err, name, "UTF8ShortStringFixedLen")
 	}
 	return s
 }
@@ -19609,7 +19609,7 @@ func (d *D) TryUTF8Null() (string, error) { return d.tryTextNull(1, UTF8BOM) }
 func (d *D) UTF8Null() string {
 	v, err := d.tryTextNull(1, UTF8BOM)
 	if err != nil {
-		panic(IOError{Err: err, Op: "UTF8Null", Pos: d.Pos()})
+		d.IOPanic(err, "", "UTF8Null")
 	}
 	return v
 }
@@ -19630,7 +19630,7 @@ func (d *D) TryFieldScalarUTF8Null(name string, sms ...scalar.StrMapper) (*scala
 func (d *D) FieldScalarUTF8Null(name string, sms ...scalar.StrMapper) *scalar.Str {
 	s, err := d.TryFieldScalarUTF8Null(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "UTF8Null", Pos: d.Pos()})
+		d.IOPanic(err, name, "UTF8Null")
 	}
 	return s
 }
@@ -19655,7 +19655,7 @@ func (d *D) TryUTF16Null() (string, error) { return d.tryTextNull(2, UTF16BOM) }
 func (d *D) UTF16Null() string {
 	v, err := d.tryTextNull(2, UTF16BOM)
 	if err != nil {
-		panic(IOError{Err: err, Op: "UTF16Null", Pos: d.Pos()})
+		d.IOPanic(err, "", "UTF16Null")
 	}
 	return v
 }
@@ -19676,7 +19676,7 @@ func (d *D) TryFieldScalarUTF16Null(name string, sms ...scalar.StrMapper) (*scal
 func (d *D) FieldScalarUTF16Null(name string, sms ...scalar.StrMapper) *scalar.Str {
 	s, err := d.TryFieldScalarUTF16Null(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "UTF16Null", Pos: d.Pos()})
+		d.IOPanic(err, name, "UTF16Null")
 	}
 	return s
 }
@@ -19701,7 +19701,7 @@ func (d *D) TryUTF16LENull() (string, error) { return d.tryTextNull(2, UTF16LE) 
 func (d *D) UTF16LENull() string {
 	v, err := d.tryTextNull(2, UTF16LE)
 	if err != nil {
-		panic(IOError{Err: err, Op: "UTF16LENull", Pos: d.Pos()})
+		d.IOPanic(err, "", "UTF16LENull")
 	}
 	return v
 }
@@ -19722,7 +19722,7 @@ func (d *D) TryFieldScalarUTF16LENull(name string, sms ...scalar.StrMapper) (*sc
 func (d *D) FieldScalarUTF16LENull(name string, sms ...scalar.StrMapper) *scalar.Str {
 	s, err := d.TryFieldScalarUTF16LENull(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "UTF16LENull", Pos: d.Pos()})
+		d.IOPanic(err, name, "UTF16LENull")
 	}
 	return s
 }
@@ -19747,7 +19747,7 @@ func (d *D) TryUTF16BENull() (string, error) { return d.tryTextNull(2, UTF16BE) 
 func (d *D) UTF16BENull() string {
 	v, err := d.tryTextNull(2, UTF16BE)
 	if err != nil {
-		panic(IOError{Err: err, Op: "UTF16BENull", Pos: d.Pos()})
+		d.IOPanic(err, "", "UTF16BENull")
 	}
 	return v
 }
@@ -19768,7 +19768,7 @@ func (d *D) TryFieldScalarUTF16BENull(name string, sms ...scalar.StrMapper) (*sc
 func (d *D) FieldScalarUTF16BENull(name string, sms ...scalar.StrMapper) *scalar.Str {
 	s, err := d.TryFieldScalarUTF16BENull(name, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "UTF16BENull", Pos: d.Pos()})
+		d.IOPanic(err, name, "UTF16BENull")
 	}
 	return s
 }
@@ -19795,7 +19795,7 @@ func (d *D) TryUTF8NullFixedLen(fixedBytes int) (string, error) {
 func (d *D) UTF8NullFixedLen(fixedBytes int) string {
 	v, err := d.tryTextNullLen(fixedBytes, UTF8BOM)
 	if err != nil {
-		panic(IOError{Err: err, Op: "UTF8NullFixedLen", Pos: d.Pos()})
+		d.IOPanic(err, "", "UTF8NullFixedLen")
 	}
 	return v
 }
@@ -19816,7 +19816,7 @@ func (d *D) TryFieldScalarUTF8NullFixedLen(name string, fixedBytes int, sms ...s
 func (d *D) FieldScalarUTF8NullFixedLen(name string, fixedBytes int, sms ...scalar.StrMapper) *scalar.Str {
 	s, err := d.TryFieldScalarUTF8NullFixedLen(name, fixedBytes, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "UTF8NullFixedLen", Pos: d.Pos()})
+		d.IOPanic(err, name, "UTF8NullFixedLen")
 	}
 	return s
 }
@@ -19841,7 +19841,7 @@ func (d *D) TryStr(nBytes int, e encoding.Encoding) (string, error) { return d.t
 func (d *D) Str(nBytes int, e encoding.Encoding) string {
 	v, err := d.tryText(nBytes, e)
 	if err != nil {
-		panic(IOError{Err: err, Op: "Str", Pos: d.Pos()})
+		d.IOPanic(err, "", "Str")
 	}
 	return v
 }
@@ -19862,7 +19862,7 @@ func (d *D) TryFieldScalarStr(name string, nBytes int, e encoding.Encoding, sms 
 func (d *D) FieldScalarStr(name string, nBytes int, e encoding.Encoding, sms ...scalar.StrMapper) *scalar.Str {
 	s, err := d.TryFieldScalarStr(name, nBytes, e, sms...)
 	if err != nil {
-		panic(IOError{Err: err, Name: name, Op: "Str", Pos: d.Pos()})
+		d.IOPanic(err, name, "Str")
 	}
 	return s
 }
