@@ -1,3 +1,88 @@
+# 0.11.0
+
+New iNES/NES 2.0 ROM decoder (thanks @mlofjard) and basic JPEG 2000 format support. jq language improvements and fixes from gojq. And as always various decoder improvements and fixes.
+
+## Changes
+
+- Add `string_truncate` option to configure how to truncate long strings when displaying a decode value tree. `dd`, `dv` etc set truncate length to zero to not truncate. #919
+- gojq updates from upstream:
+  - Implement `ltrim`, `rtrim`, and `trim` functions
+  - Fix object construction with duplicate keys (`{x:0,y:1} | {a:.x,a:.y}`)
+  - Fix `halt` and `halt_error` functions to stop the command execution immediately
+  - Fix variable scope of binding syntax (`"a" as $v | def f: $v; "b" as $v | f`)
+  - Fix `ltrimstr` and `rtrimstr` functions to emit error on non-string input
+  - Fix `nearbyint` and `rint` functions to round ties to even
+  - Improve parser to allow `reduce`, `foreach`, `if`, `try`-`catch` syntax as object values
+  - Remove `pow10` in favor of `exp10`, define `scalbn` and `scalbln` by `ldexp`
+- Fix issue using decode value with `ltrimstr`/`rtrimstr`.
+
+## Format changes
+
+- `fit`
+  - Skip array fields on pre read messages. #878
+  - Fixed subfield referencing fields below self in message. #877
+- `jp2c` New JPEG 2000 codestream decoder. #928
+- `icc_profile` Strip whitespace in header and tag strings. #912
+- `mp4`
+  - Add `jp2c`, `jp2h`, `ihdr` `jP` JPEG 2000 related boxes support. #928
+  - Add `thmb` box support. #897
+  - Turns out for qt brand `hdlr` component name might be zero bytes. #896
+- `nes` New iNES/NES 2.0 ROM decoder (thanks @mlofjard). #893
+
+## Changelog
+
+* f7b067b6 Fixed subfield referencing fields below self in message
+* 9aa99b47 Update docker-golang to 1.22.1 from 1.22.0
+* 0afb5b59 Update docker-golang to 1.22.2 from 1.22.1
+* 2657988d Update github-go-version to 1.22.1 from 1.22.0
+* 33c93918 Update github-go-version to 1.22.2 from 1.22.1
+* a577c398 Update github-golangci-lint to 1.56.2 from 1.56.1
+* 82d96cf9 Update github-golangci-lint to 1.57.0 from 1.56.2
+* 72b4569b Update github-golangci-lint to 1.57.1 from 1.57.0
+* 14aeab0b Update github-golangci-lint to 1.57.2 from 1.57.1
+* 735256b9 Update gomod-golang-x-crypto to 0.20.0 from 0.19.0
+* 043f067f Update gomod-golang-x-crypto to 0.21.0 from 0.20.0
+* 15a7060b Update gomod-golang-x-crypto to 0.22.0 from 0.21.0
+* 85f60df2 Update gomod-golang-x-net to 0.22.0 from 0.21.0
+* 77c000e6 Update gomod-golang-x-net to 0.23.0 from 0.22.0
+* daba6b54 Update gomod-golang-x-net to 0.24.0 from 0.23.0
+* ba9ecb54 Update gomod-golang-x-term to 0.18.0 from 0.17.0
+* b2aa59f7 Update gomod-golang-x-term to 0.19.0 from 0.18.0
+* 1c24f64d Update make-golangci-lint to 1.56.2 from 1.56.1
+* 94e80864 Update make-golangci-lint to 1.57.0 from 1.56.2
+* 4f55b6af Update make-golangci-lint to 1.57.1 from 1.57.0
+* a3b63b10 Update make-golangci-lint to 1.57.2 from 1.57.1
+* 208b3e6b chore: fix function name in comment
+* 621d7f2c decode: Align some heavily used structs to save space
+* ee2ee24d decode: Cleanup io panic a bit
+* e741ca78 doc: Add ImHex to related tools
+* 36e8287c doc: Regenerate after nes and new ansisvg
+* 225fd507 fit: Skip array fields on pre read messages
+* 7500a8b7 fq: Sort formats
+* bf7fa07c fq: Use go 1.20 and cleanup
+* e2670404 gojq: Update fq fork
+* f5fd5873 gojq: Update fq fork
+* ed685116 icc_profile: Strip whitespace in header and tag strings
+* c8f9cdc9 interp: Add string_truncate option
+* 0db671f6 interp: Add todo test for eval error in path
+* ebffb3be jp2c: Add jpeg2000 codestream format
+* 79992b34 jp2c: Fail probe faster
+* 63f7d79c jp2c: Support probe
+* b542ff1d lint: More linters and some fixes
+* c6165c0c mod: go get non-bump tracked modules
+* 1784c438 mp4,avi: Trim spaces for type
+* 2ea70c42 mp4: Add thmb box support
+* 4f90a2ea mp4: Decode jP box
+* 70b1b0d6 mp4: Decode uinf box
+* 87b6c4dd mp4: Fix jp2 test
+* 8009b6f6 mp4: JPEG200 boxes jp2h and ihdr
+* ed3a126f mp4: Turns out for qt brand hdlr component name might be zero bytes
+* f3b54042 nes: Add support for iNES/NES 2.0 ROM files
+* 80bccc91 opus,vorbis: More sym snake_case
+* 08df7f45 pkg/cli/test_exp.sh: use command -v
+* 87052733 pssh_playready: Use snake_case sym values
+* aaa43dfb test: Replace pmezard/go-difflib with go's internal diff
+
 # 0.10.0
 
 Adds support for various LevelDB formats (thanks @mikez) and Garmin Flexible and Interoperable Data Transfer format (FIT) (thanks @mlofjard).
@@ -42,7 +127,6 @@ And as usual some small fixes and dependency updates.
   # to_kml calls to_kml function
   $ fq -L . -r 'include "to_kml"; to_kml' file.fit > file.kml
   ```
-
 
 - `hevc_sps` Fix some incorrect profile_tier_level decoding. #829
 - `html` Fix issue parsing elements including SOLIDUS "/". #870
