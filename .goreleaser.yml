@@ -59,7 +59,7 @@ brews:
     repository:
       owner: wader
       name: homebrew-tap
-    folder: Formula
+    directory: Formula
     homepage: https://github.com/wader/fq
     description: jq for binary formats
     license: MIT
