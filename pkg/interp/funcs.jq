@@ -5,8 +5,6 @@ include "decode";
 
 def intdiv(a; b): _intdiv(a; b);
 
-def trim: capture("^\\s*(?<str>.*?)\\s*$"; "m").str;
-
 # does +1 and [:1] as " "*0 is null
 def rpad($s; $w): . + ($s * ($w+1-length))[1:];
 
