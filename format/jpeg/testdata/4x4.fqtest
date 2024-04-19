@@ -135,4 +135,4 @@ $ fq -d jpeg dv 4x4.jpg
 0x90|                                    3f bf      |            ?.  |    [7]: raw bits entropy_coded_data 0x9c-0x9e (2)
     |                                               |                |    [8]{}: marker 0x9e-0xa0 (2)
 0x90|                                          ff   |              . |      prefix: raw bits (valid) 0x9e-0x9f (1)
-0x90|                                             d9|               .|      code: "eoi" (217) (End of image true) 0x9f-0xa0 (1)
+0x90|                                             d9|               .|      code: "eoi" (217) (End of image) 0x9f-0xa0 (1)
