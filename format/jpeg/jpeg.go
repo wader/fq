@@ -124,7 +124,7 @@ var markers = scalar.UintMap{
 	RST6:  {Sym: "rst6", Description: "Restart with modulo 8 count 6"},
 	RST7:  {Sym: "rst7", Description: "Restart with modulo 8 count 7"},
 	SOI:   {Sym: "soi", Description: "Start of image"},
-	EOI:   {Sym: "eoi", Description: "End of image true"},
+	EOI:   {Sym: "eoi", Description: "End of image"},
 	SOS:   {Sym: "sos", Description: "Start of scan"},
 	DQT:   {Sym: "dqt", Description: "Define quantization table(s)"},
 	DNL:   {Sym: "dnl", Description: "Define number of lines"},
