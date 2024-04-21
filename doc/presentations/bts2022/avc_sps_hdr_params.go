@@ -1,3 +1,9 @@
+//go:build exclude
+
+package bts2022
+
+import "github.com/wader/fq/pkg/decode"
+
 func avcHdrParameters(d *decode.D) {
 	cpbCnt := d.FieldUintFn("cpb_cnt", uEV, scalar.UAdd(1))
 	d.FieldU4("bit_rate_scale")

@@ -1,3 +1,5 @@
+//go:build exclude
+
 // tool to convert go fuzz input files to bytes
 // Usage: cat format/testdata/fuzz/FuzzFormats/144bde49b40c90fd05d302ec90b6ddb2b6d6aea553bad520a8b954797e40fe72 | go run dev/fuzzbytes.go | go run .
 package main
