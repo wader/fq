@@ -1,3 +1,7 @@
+//go:build exclude
+
+package bts2022
+
 func decode(d *decode.D) any {
 	d.FieldArray("headers", func(d *decode.D) {
 		for !d.End() {
