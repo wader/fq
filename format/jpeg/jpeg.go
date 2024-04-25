@@ -262,6 +262,29 @@ func jpegDecode(d *decode.D) any {
 								}
 							})
 						})
+					case DHT:
+						lH := int64(d.FieldU16("lh"))
+						d.FramedFn(lH*8-16, func(d *decode.D) {
+							d.FieldArray("hs", func(d *decode.D) {
+								for d.NotEnd() {
+									d.FieldStruct("h", func(d *decode.D) {
+										d.FieldU4("tc")
+										d.FieldU4("th")
+										hK := uint64(0)
+										hV := uint64(0)
+										d.FieldArrayLoop("l", func() bool { return hK < 16 }, func(d *decode.D) {
+											hV += d.FieldU8("l")
+											hK++
+										})
+										hK = 0
+										d.FieldArrayLoop("v", func() bool { return hK < hV }, func(d *decode.D) {
+											d.FieldU8("v")
+											hK++
+										})
+									})
+								}
+							})
+						})
 					case RST0, RST1, RST2, RST3, RST4, RST5, RST6, RST7:
 						inECD = true
 					case TEM:
