@@ -1,6 +1,6 @@
 $ fq -ni
 null> help
-Type expression to evaluate
+Type jq expression to evaluate
 help(...)   Help for topic. Ex: help(mp4), help("mp4")
 \t          Completion
 Up/Down     History
