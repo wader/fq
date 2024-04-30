@@ -2,25 +2,23 @@
 
 Tool, language and decoders for working with binary data.
 
+TLDR: it aims to be jq, hexdump, dd and gdb for files combined into one.
+
 ![fq demo](doc/demo.svg)
 
-Basic usage is `fq . file` or `fq d file`.
+Basic usage is `fq . file`, `fq d file` or `fq 'some query' file ...`.
 
 For details see [usage.md](doc/usage.md).
 
 ### Background
 
-fq is inspired by the well known jq tool and language that allows you to work with binary formats the same way you would using jq. In addition it can present data like a hex viewer, transform, slice and concatenate binary data. It also supports nested formats and has an interactive REPL with auto-completion.
+fq is inspired by the [jq](https://jqlang.github.io/jq/) tool and language and allows you to work with binary formats in the same way. In addition to using jq expressions it can also present decoded tree structures, transform, slice and concatenate binary data. It also supports nested formats and features an interactive REPL with auto-completion of functions and names.
 
-It was originally designed to query, inspect and debug media codecs and containers like mp4, flac, mp3, jpeg. But since then it has been extended to support a variety of formats like executables, packet captures (with TCP reassembly) and serialization formats like JSON, YAML, XML, ASN1 BER, Avro, CBOR, protobuf. In addition it also has functions to work with URLs, convert to/from hex, number bases, search for things etc.
-
-In summary it aims to be jq, hexdump, dd and gdb for files combined into one.
-
-**NOTE:** fq is still early in development so things might change, be broken or do not make sense. That also means that there is a great opportunity to help out!
+It was originally designed to query, inspect and debug media codecs and containers like MP4, FLAC and JPEG but has since been extended to support a variety of formats like executables, packet captures (with TCP reassembly) and serialization formats like JSON, YAML, XML, CBOR, protobuf. In addition it also has functions to work with URLs, convert to/from hex, number bases, search for patterns etc.
 
 ### Goals
 
-- Make binaries accessible, queryable and sliceable.
+- Make binaries more accessible, queryable and sliceable.
 - Nested formats and bit-oriented decoding.
 - Quick and comfortable CLI tool.
 - Bits and bytes transformations.
@@ -243,7 +241,7 @@ apk add -X http://dl-cdn.alpinelinux.org/alpine/edge/testing fq
 
 Make sure you have [go](https://go.dev) 1.20 or later installed.
 
-To install directly from git repository (no clone needed):
+To install directly from git repository (no git clone needed):
 ```sh
 # build and install latest release
 go install github.com/wader/fq@latest
@@ -266,10 +264,6 @@ go build -o fq .
 # run all tests and build binary
 make test fq
 ```
-
-## TODO and ideas
-
-See [TODO.md](doc/TODO.md)
 
 ## Development and adding a new decoder
 
@@ -305,6 +299,10 @@ for inventing the [jq](https://github.com/stedolan/jq) language.
 - [PRONOM](https://www.nationalarchives.gov.uk/PRONOM/) file format registry.
 - [Sustainability of Digital Formats](https://www.loc.gov/preservation/digital/formats/) at Library of Congress.
 - [Data Format Description Language (DFDL)](https://en.wikipedia.org/wiki/Data_Format_Description_Language).
+
+## TODO and ideas
+
+See [TODO.md](doc/TODO.md)
 
 ## License
 

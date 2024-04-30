@@ -54,9 +54,6 @@ Same as recurse without argument.
       }
   };
 
-def help($_): error("help must be alone or last in pipeline. ex: help(length) or ... | help");
-def help: help(null);
-
 def _help_format_enrich($arg0; $f; $include_basic):
   ( if $include_basic then
       .examples +=
@@ -76,6 +73,9 @@ def _help_format_enrich($arg0; $f; $include_basic):
     end
   );
 
+# trailing help gets rewritten to _help_slurp, these are here to catch other variants
+def help($_): error("help must be alone or last in pipeline. ex: help(length) or ... | help");
+def help: help(null);
 def _help($arg0; $topic):
   ( $topic
   | if  . == "usage" then
@@ -236,7 +236,7 @@ def _help($arg0; $topic):
     | ($args | length) as $argc
     | if $args == null then
         # help
-        ( "Type expression to evaluate"
+        ( "Type jq expression to evaluate"
         , "help(...)   Help for topic. Ex: help(mp4), help(\"mp4\")"
         , "\\t          Completion"
         , "Up/Down     History"

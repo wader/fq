@@ -236,8 +236,8 @@ make test
 go test ./...
 # run all tests for one format
 go test -run TestFormats/mp4 ./format/
-# update all actual outputs in tests
-go test ./... -update
+# update all expected outputs for tests
+go test ./pkg/interp ./format -update
 # update actual output for specific tests
 go run ./format -run TestFormats/elf -update
 # color diff
