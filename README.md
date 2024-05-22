@@ -169,6 +169,7 @@ For details see [formats.md](doc/formats.md) and [usage.md](doc/usage.md).
 
 ## Presentations
 
+- [Kodsnack 585 - Polymorfisk JSON](https://kodsnack.se/585/) - Swedish podcast episode about jq and fq
 - "fq - jq for binary formats" at [FOSDEM 2023](https://fosdem.org/2023/) - [video & slides](https://fosdem.org/2023/schedule/event/bintools_fq/)
 - "fq - jq for binary formats" at [No time to wait 6](https://mediaarea.net/NoTimeToWait6) - [video](https://www.youtube.com/watch?v=-Pwt5KL-xRs&t=1450s) - [slides](doc/presentations/nttw6/fq-nttw6-slides.pdf)
 - "fq - jq for binary formats" at [Binary Tools Summit 2022](https://binary-tools.net/summit.html) - [video](https://www.youtube.com/watch?v=GJOq_b0eb-s&list=PLTj8twuHdQz-JcX7k6eOwyVPDB8CyfZc8&index=1) - [slides](doc/presentations/bts2022/fq-bts2022-v1.pdf)
