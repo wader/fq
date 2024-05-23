@@ -406,8 +406,6 @@ There is also `tobitsrange` and `tobytesrange` which does the same thing but wil
 
 Both `.[index]` and `.[start:end]` support negative indices to index from end.
 
-TODO: tobytesrange, padding
-
 #### Binary array
 
 Is an array of numbers, strings, binaries or other nested binary arrays. When used as input to `tobits`/`tobytes` the following rules are used:
@@ -428,92 +426,175 @@ Some examples:
 
 `[(.a | tobytes[-10:]), 255, (.b | tobits[:10])] | tobytes` the concatenation of the last 10 bytes of `.a`, a byte with value 255 and the first 10 bits of `.b`.
 
-The difference between `tobits` and `tobytes` is
-
-TODO: padding and alignment
-
 ## Functions
 
-All decode functions are available in two forms, just `<format>` (like `mp3`) that returns a decode value on error and `from_<format>` which throws error on decode error.
+fq has all the same standard library jq functions and in addition some new ones.
+
+### Additional generic functions
+
+#### `grep_by(f)`
+Recursively select using a filter. Ex: `grep_by(. > 180 and . < 200)`, `first(grep_by(format == "id3v2"))`.
+
+#### `group`
+Group values, same as `group_by(.)`.
+
+#### `streaks`, `streaks_by(f)`
+Like `group` but groups streaks based on condition.
+
+#### `count`, `count_by(f)`
+Like `group` but counts groups lengths based on condition.
+
+#### `delta`, `delta_by(f)`
+Array with difference between consecutive. `delta` is same as `delta_by(.b - .a)`.
+
+#### `chunk($size)`
+Split array or string into `$size` length chunks. Last chunk might be shorter.
+
+#### `path_to_expr`
+Converts a path value `["key", 1]` to a string `".key[1]"`.
+
+#### `expr_to_path`
+Converts from a string `".key[1]"` to path value `["key", 1]`.
+
+#### `diff($a; $b)`
+Produce a diff between `$a` and `$b`. Differences are represented as a object `{a: <value from a>, b: <value from b>}`.
+
+#### `band`, `bor`, `bxor`, `bsl`, `bsr`, `bnot`.
+Bitwise functions. Works the same as jq math functions. Functions with no arguments like `1 | bnot` uses only input, functions with more than one argument ignores input, `bsl(1; 3)`.
+
+### `repl`/`repl($opts)`
+Nested REPL. Must be last in a pipeline. `1 | repl`, can "slurp" outputs. Ex: `1, 2, 3 | repl`, `[1,2,3] | repl({compact: true})`.
+
+### `slurp("<name>")`
+Slurp outputs and save them to `$name`. Must be last in the pipeline. Will be available as a global array `$name`. Ex `1,2,3 | slurp("a")`, `$a[]` same as `spew("a")`.
+
+### `spew`/`spew("<name>")`
+Output previously slurped values.
+
+### `spew`
+Outputs all slurps as an object. `spew("<name>")` outputs one slurp. Ex: `spew("a")`.
+
+### `paste`
+Read string from stdin until ^D. Useful for pasting text. Ex: `paste | from_pem | asn1_ber | repl` read from stdin then decode and start a new sub-REPL with result.
+
+### Format decode functions
+
+Format decode functions are available in two forms, just `mp3` or `mp3($opts)` that returns a decode value even on error and `from_mp3` or `from_mp3($opts)` which throws error on decode error.
+
+The the only general format option currently is `force` to ignore decoder asserts.
+For example to decode as mp3 and ignore assets do `mp3({force: true})` or `decode("mp3"; {force: true})`. From command line you can either do `fq -d mp3 -o force=true . file.mp3` or `fq -d bytes 'mp3({force: true})' file.mp3`.
+
+Some formats has own options that can be specificed as part of `$opts` or as `-o name=value`. Too see options for a format do `fq -h mp3` or `help(mp3)` in a REPL. From command line you can either do `fq -d mp3 -o max_sync_seek=100 . file.mp3` or `fq -d bytes 'mp3({max_sync_seek: 100})' file.mp3`.
+
+#### `decode`, `decode("<format>")`, `decode("<format>"; $opts)`
+Decode format.
+
+#### `probe`, `probe($opts)`
+Probe and decode format.
+
+#### `<format>`, `<format>($opts)`
+Same as `decode("<format>")` and `decode("<format>"; $opts)`. Decode as format and return decode value even on decode error.
+
+#### `from_<format>`, `from_<format>($opts)`
+Same as `decode("<format>")` and `decode("<format>"; $opts)` decode as format but throw error on decode error.
 
 Note that jq sometimes uses the notation `name/0`, `name/1` etc in error messages and documentation which means `<function-name>/<arity>`. Same function names with different arity are treated as separate functions, but are usually related in some way in practice.
 
-### Function added in fq
+#### `print`, `println`, `printerr`, `printerrln`
+Print string or if not a string compact JSON value to stdout or stderr.
 
-- All standard library functions from jq
-- Adds a few new general functions:
-  - `print`, `println`, `printerr`, `printerrln` prints to stdout and stderr.
-  - `group` group values, same as `group_by(.)`.
-  - `streaks`, `streaks_by(f)` like `group` but groups streaks based on condition.
-  - `count`, `count_by(f)` like `group` but counts groups lengths.
-  - `debug(f)` like `debug` but uses arg to produce a debug message. `{a: 123} | debug({a}) | ...`.
-  - `path_to_expr` from `["key", 1]` to `".key[1]"`.
-  - `expr_to_path` from `".key[1]"` to `["key", 1]`.
-  - `diff($a; $b)` produce diff object between two values.
-  - `delta`, `delta_by(f)`, array with difference between all consecutive pairs.
-  - `chunk(f)`, split array or string into even chunks
-- Bitwise functions `band`, `bor`, `bxor`, `bsl`, `bsr` and `bnot`. Works the same as jq math functions,
-unary uses input and if more than one argument all as arguments ignoring the input. Ex: `1 | bnot` `bsl(1; 3)`
-- Adds some decode value specific functions:
-  - `root` tree root for value
-  - `buffer_root` root value of buffer for value
-  - `format_root` root value of format for value
-  - `parent` parent value
-  - `parents` output parents of value
-  - `topath` path of value. Use `path_to_expr` to get a string representation.
-  - `tovalue`, `tovalue($opts)` symbolic value if available otherwise actual value
-  - `toactual`, `toactual($opts)` actual value (usually the decoded value)
-  - `tosym`, `tosym($opts)` symbolic value (mapped etc)
-  - `todescription` description of value
-  - `torepr` converts decode value into what it represents. For example convert msgpack decode value
-  into a value representing its JSON representation.
-  - All regexp functions work with binary as input and pattern argument with these differences
-  compared to when using string input:
-    - All offset and length will be in bytes.
-    - For `capture` the `.string` value is a binary.
-    - If pattern is a binary it will be matched literally and not as a regexp.
-    - If pattern is a binary or flags include "b" each input byte will be read as separate code points
-  - String functions are not overloaded to support binary for now as some of them might have behaviors that might be confusing.
-  - `explode` is overloaded to work with binary. Will explode into array of the unit of the binary.
-  end of binary.
-  instead of possibly multi-byte UTF-8 codepoints. This allows to match raw bytes. Ex: `match("\u00ff"; "b")`
-  will match the byte `0xff` and not the UTF-8 encoded codepoint for 255, `match("[^\u00ff]"; "b")` will match
-  all non-`0xff` bytes.
-  - `grep` functions take 1 or 2 arguments. First is a scalar to match, where a string is
-  treated as a regexp. A binary will match exact bytes. Second argument are regexp
-  flags with addition that "b" will treat each byte in the input binary as a code point, this
-  makes it possible to match exact bytes.
-    - `grep($v)`, `grep($v; $flags)` recursively match value and binary
-    - `vgrep($v)`, `vgrep($v; $flags)` recursively match value
-    - `bgrep($v)`, `bgrep($v; $flags)` recursively match binary
-    - `fgrep($v)`, `fgrep($v; $flags)` recursively match field name
-  - `grep_by(f)` recursively match using a filter. Ex: `grep_by(. > 180 and . < 200)`, `first(grep_by(format == "id3v2"))`.
-  - Binary:
-    - `tobits` - Transform input to binary with bit as unit, does not preserve source range, will start at zero.
-    - `tobitsrange` - Transform input to binary with bit as unit, preserves source range if possible.
-    - `tobytes` - Transform input to binary with byte as unit, does not preserve source range, will start at zero.
-    - `tobytesrange` - Transform input binary with byte as unit, preserves source range if possible.
-    - `.[start:end]`, `.[:end]`, `.[start:]` - Slice binary from start to end preserve source range.
-- `open` open file for reading
-- All decode functions take an optional option argument. The only option currently is `force` to ignore decoder asserts.
-For example to decode as mp3 and ignore assets do `mp3({force: true})` or `decode("mp3"; {force: true})`, from command line
-you currently have to do `fq -d bytes 'mp3({force: true})' file`.
-- `decode`, `decode("<format>")`, `decode("<format>"; $opts)` decode format
-- `probe`, `probe($opts)` probe and decode format
-- `mp3`, `mp3($opts)`, ..., `<format>`, `<format>($opts)` same as `decode("<format>")`, `decode("<format>"; $opts)` decode as format and return decode value even on decode error.
-- `from_mp3`, `from_mp3($opts)`, ..., `from_<format>`, `from_<format>($opts)` same as `decode("<format>")`, `decode("<format>"; $opts)` decode as format but throw error on decode error.
-- Display shows hexdump/ASCII/tree for decode values and jq value for other types.
-  - `d`/`d($opts)` display value and truncate long arrays and binaries
-  - `da`/`da($opts)` display value and don't truncate arrays
-  - `dd`/`dd($opts)` display value and don't truncate arrays or binaries
-  - `dv`/`dv($opts)` verbosely display value and don't truncate arrays but truncate binaries
-  - `ddv`/`ddv($opts)` verbosely display value and don't truncate arrays or binaries
-- `hd`/`hexdump` hexdump value
-- `repl`/`repl($opts)` nested REPL, must be last in a pipeline. `1 | repl`, can "slurp" outputs. Ex: `1, 2, 3 | repl`, `[1,2,3] | repl({compact: true})`.
-- `slurp("<name>")` slurp outputs and save them to `$name`, must be last in the pipeline. Will be available as a global array `$name`. Ex `1,2,3 | slurp("a")`, `$a[]` same as `spew("a")`.
-- `spew`/`spew("<name>")` output previously slurped values. `spew` outputs all slurps as an object, `spew("<name>")` outputs one slurp. Ex: `spew("a")`.
-- `paste` read string from stdin until ^D. Useful for pasting text.
-    - Ex: `paste | from_pem | asn1_ber | repl` read from stdin then decode and start a new sub-REPL with result.
+#### `root`
+Root decode value for decode value.
+
+#### `buffer_root`
+Root decode value of buffer for decode value.
+
+#### `format_root`
+Root decode value of format for decode value.
+
+#### `parent`
+Parent decode value for decode value.
+
+#### `parents`
+Outputs all parent decode values from decode value.
+
+#### `topath`
+Path for decode value. Use `path_to_expr` to get a string representation.
+
+#### `tovalue`, `tovalue($opts)`
+Symbolic, if available, or actual value for decode value.
+
+#### `toactual`, `toactual($opts)`
+Actual value for decode value.
+
+#### `tosym`, `tosym($opts)`
+Symbolic value for decode value.
+
+#### `todescription`
+Description for decode value.
+
+#### `torepr`
+Converts decode value into what it represents. For example converts msgpack decode value into a value representing its JSON representation.
+
+### Display functions
+
+Display shows hexdump, ASCII and tree column dump for decode values and jq value for other types.
+
+#### `d`/`d($opts)`
+display value and truncate long arrays and binaries.
+
+#### `da`/`da($opts)`
+Display value and don't truncate arrays.
+
+#### `dd`/`dd($opts)`
+Display value and don't truncate arrays or binaries.
+
+#### `dv`/`dv($opts)`
+Verbosely display value and don't truncate arrays but truncate binaries.
+
+#### `ddv`/`ddv($opts)`
+Verbosely display value and don't truncate arrays or binaries.
+
+#### `hd`/`hexdump`
+Hexdump value.
+
+### Binary values
+
+Binary values represents raw bits or bytes. When used in standard jq expressions they will behave as strings (UTF-8) with some exceptions listed below.
+
+- All regexp functions work with binary as input and pattern argument with these differences
+compared to when using string input:
+  - All offset and length will be in bytes.
+  - For `capture` the `.string` value is a binary.
+  - If pattern is a binary it will be matched literally and not as a regexp.
+  - If pattern is a binary or flags include "b" each input byte will be read as separate code points
+- `explode` is overloaded to work with binary. Will explode into array of the unit of the binary.
+- `.[start:end]`, `.[:end]`, `.[start:]` - Slice binary from start to end preserve source range.
+
+#### `grep($v)`, `grep($v; $flags)`, `vgrep($v)`, `vgrep($v; $flags)`, `bgrep($v)`, `bgrep($v; $flags)`
+Recursively match `$v`.
+
+`$v` is a scalar to match, where a string is treated as a regexp. A binary will match exact bytes.
+`$flags` argument are regexp flags with additional flag "b" that will treat each byte in the input binary
+as a code point. This makes it possible to match exact bytes.
+
+#### `fgrep($v)`, `fgrep($v; $flags)`
+Recursively match field name in for decode value.
+
+#### `tobits`
+Transform input to binary with bit as unit and don't preserve source range.
+
+#### `tobitsrange`
+Transform input to binary with bit as unit and preserve source range.
+
+#### `tobytes`
+Transform input to binary with byte as unit and don't preserve source range.
+
+#### `tobytesrange`
+Transform input to binary with byte as unit and preserve source range.
+
+#### `open`
+Open file for reading.
 
 ### Naming inconsistencies
 
