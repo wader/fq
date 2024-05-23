@@ -462,19 +462,19 @@ Produce a diff between `$a` and `$b`. Differences are represented as a object `{
 #### `band`, `bor`, `bxor`, `bsl`, `bsr`, `bnot`.
 Bitwise functions. Works the same as jq math functions. Functions with no arguments like `1 | bnot` uses only input, functions with more than one argument ignores input, `bsl(1; 3)`.
 
-### `repl`/`repl($opts)`
+#### `repl`/`repl($opts)`
 Nested REPL. Must be last in a pipeline. `1 | repl`, can "slurp" outputs. Ex: `1, 2, 3 | repl`, `[1,2,3] | repl({compact: true})`.
 
-### `slurp("<name>")`
+#### `slurp("<name>")`
 Slurp outputs and save them to `$name`. Must be last in the pipeline. Will be available as a global array `$name`. Ex `1,2,3 | slurp("a")`, `$a[]` same as `spew("a")`.
 
-### `spew`/`spew("<name>")`
+#### `spew`/`spew("<name>")`
 Output previously slurped values.
 
-### `spew`
+#### `spew`
 Outputs all slurps as an object. `spew("<name>")` outputs one slurp. Ex: `spew("a")`.
 
-### `paste`
+#### `paste`
 Read string from stdin until ^D. Useful for pasting text. Ex: `paste | from_pem | asn1_ber | repl` read from stdin then decode and start a new sub-REPL with result.
 
 ### Format decode functions
