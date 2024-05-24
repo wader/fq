@@ -70,6 +70,7 @@ def formats_sections:
   | ({} | _help_format_enrich("fq"; $f; false)) as $fhelp
   | select(has_section($f; $fhelp))
   | "## \($f.name)"
+  , $f.description + "."
   , ""
   , ($fhelp.notes | if . then ., "" else empty end)
   , if $f.decode_in_arg then
