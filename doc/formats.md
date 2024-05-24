@@ -157,6 +157,7 @@ fq -d bytes 'mp4({force: true})' file.mp4
 [fq -rn -L . 'include "formats"; formats_sections']: sh-start
 
 ## aac_frame
+Advanced Audio Coding frame.
 
 ### Options
 
@@ -177,6 +178,7 @@ Decode value as aac_frame
 ```
 
 ## apple_bookmark
+Apple BookmarkData.
 
 Apple's `bookmarkData` format is used to encode information that can be resolved
 into a `URL` object for a file even if the user moves or renames it. Can also
@@ -218,6 +220,7 @@ torepr' <sfl2 file>
 - https://michaellynn.github.io/2015/10/24/apples-bookmarkdata-exposed/
 
 ## asn1_ber
+ASN1 BER (basic encoding rules, also CER and DER).
 
 Supports decoding BER, CER and DER (X.690).
 
@@ -250,6 +253,7 @@ $ fq -d asn1_ber 'torepr as $r | ["version", "modulus", "private_exponent", "pri
 - https://lapo.it/asn1js/
 
 ## avc_au
+H.264/AVC Access Unit.
 
 ### Options
 
@@ -270,6 +274,7 @@ Decode value as avc_au
 ```
 
 ## avi
+Audio Video Interleaved.
 
 ### Options
 
@@ -318,6 +323,7 @@ $ fq -o decode_samples=false -o decode_extended_chunks=false d file.avi
 - [OpenDML AVI File Format Extensions](http://www.jmcgowan.com/odmlff2.pdf)
 
 ## avro_ocf
+Avro object container file.
 
 Supports reading Avro Object Container Format (OCF) files based on the 1.11.0 specification.
 
@@ -337,6 +343,7 @@ xentripetal@fastmail.com
 [@xentripetal](https://github.com/xentripetal)
 
 ## bencode
+BitTorrent bencoding.
 
 ### Convert represented value to JSON
 
@@ -348,6 +355,7 @@ $ fq -d bencode torepr file.torrent
 - https://wiki.theory.org/BitTorrentSpecification#Bencoding
 
 ## bitcoin_block
+Bitcoin block.
 
 ### Options
 
@@ -368,6 +376,7 @@ Decode value as bitcoin_block
 ```
 
 ## bits
+Raw bits.
 
 Decode to a slice and indexable binary of bits.
 
@@ -390,6 +399,7 @@ $ echo 'hello' | fq -c -d bits '[.[range(8)]]'
 ```
 
 ## bplist
+Apple Binary Property List.
 
 ### Show full decoding
 ```sh
@@ -454,6 +464,7 @@ bplist> from_ns_keyed_archiver(1)
 - https://opensource.apple.com/source/CF/CF-550/CFBinaryPList.c
 
 ## bson
+Binary JSON.
 
 ### Limitations
 
@@ -479,6 +490,7 @@ $ fq -d bson 'torepr | select(.name=="bob")' file.bson
 - https://bsonspec.org/spec.html
 
 ## bytes
+Raw bytes.
 
 Decode to a slice and indexable binary of bytes.
 
@@ -506,6 +518,7 @@ $ echo 'hello' | fq -d bytes '.[1]'
 ```
 
 ## caff
+Live2D Cubism archive.
 
 ### Options
 
@@ -529,6 +542,7 @@ Decode value as caff
 - [@ronsor](https://github.com/ronsor)
 
 ## cbor
+Concise Binary Object Representation.
 
 ### Convert represented value to JSON
 
@@ -541,6 +555,7 @@ $ fq -d cbor torepr file.cbor
 - https://www.rfc-editor.org/rfc/rfc8949.html
 
 ## csv
+Comma separated values.
 
 ### Options
 
@@ -574,6 +589,7 @@ $ fq -d csv '.[0] as $t | .[1:] | map(with_entries(.key = $t[.key]))' file.csv
 ```
 
 ## fit
+Garmin Flexible and Interoperable Data Transfer.
 
 ### Limitations
 
@@ -596,6 +612,7 @@ $ fq '[.data_records[] | select(.record_header.message_type == "data").data_mess
 - https://developer.garmin.com/fit/cookbook/decoding-activity-files/
 
 ## flac_frame
+FLAC frame.
 
 ### Options
 
@@ -616,6 +633,7 @@ Decode value as flac_frame
 ```
 
 ## hevc_au
+H.265/HEVC Access Unit.
 
 ### Options
 
@@ -636,6 +654,7 @@ Decode value as hevc_au
 ```
 
 ## html
+HyperText Markup Language.
 
 ### Options
 
@@ -719,6 +738,7 @@ $ fq -r -o array=true -d html '.. | select(.[0] == "a" and .[1].href)?.[1].href'
 ```
 
 ## leveldb_descriptor
+LevelDB Descriptor.
 
 ### Limitations
 
@@ -735,6 +755,7 @@ $ fq -r -o array=true -d html '.. | select(.[0] == "a" and .[1].href)?.[1].href'
 - https://github.com/google/leveldb/blob/main/db/version_edit.cc
 
 ## leveldb_log
+LevelDB Log.
 
 ### Limitations
 
@@ -751,6 +772,7 @@ $ fq -r -o array=true -d html '.. | select(.[0] == "a" and .[1].href)?.[1].href'
 - https://github.com/google/leveldb/blob/main/db/write_batch.cc
 
 ## leveldb_table
+LevelDB Table.
 
 ### Limitations
 
@@ -768,6 +790,7 @@ $ fq -r -o array=true -d html '.. | select(.[0] == "a" and .[1].href)?.[1].href'
 - https://github.com/google/leveldb/blob/main/doc/index.md
 
 ## luajit
+LuaJIT 2.0 bytecode.
 
 ### Authors
 - [@dlatchx](https://github.com/dlatchx)
@@ -777,6 +800,7 @@ $ fq -r -o array=true -d html '.. | select(.[0] == "a" and .[1].href)?.[1].href'
 - http://scm.zoomquiet.top/data/20131216145900/index.html
 
 ## macho
+Mach-O macOS executable.
 
 Supports decoding vanilla and FAT Mach-O binaries.
 
@@ -795,12 +819,14 @@ acils@itu.edu.tr
 [@Akaame](https://github.com/Akaame)
 
 ## markdown
+Markdown.
 
 ### Array with all level 1 and 2 headers
 ```sh
 $ fq -d markdown '[.. | select(.type=="heading" and .level<=2)?.children[0]]' file.md
 ```
 ## matroska
+Matroska file.
 
 ### Options
 
@@ -840,11 +866,13 @@ $ fq 'grep_by(.id == "Tracks") | matroska_path' file.mkv
 - https://wiki.xiph.org/MatroskaOpus
 
 ## moc3
+MOC3 file.
 
 ### Authors
 - [@ronsor](https://github.com/ronsor)
 
 ## mp3
+MP3 file.
 
 ### Options
 
@@ -867,6 +895,7 @@ Decode value as mp3
 ```
 
 ## mp4
+ISOBMFF, QuickTime and similar.
 
 ### Options
 
@@ -932,6 +961,7 @@ $ fq 'grep_by(.type == "trak") | mp4_path' file.mp4
 - [Quicktime file format](https://developer.apple.com/standards/qtff-2001.pdf)
 
 ## msgpack
+MessagePack.
 
 ### Convert represented value to JSON
 
@@ -943,6 +973,7 @@ $ fq -d msgpack torepr file.msgpack
 - https://github.com/msgpack/msgpack/blob/master/spec.md
 
 ## nes
+iNES/NES 2.0 cartridge ROM format.
 
 ### Limitations
 
@@ -979,6 +1010,7 @@ $ for line in $(fq -r '.chr_rom[] | nes_tokitty(5)' file.nes);do printf "%b%s" "
 - https://bugzmanov.github.io/nes_ebook/chapter_6_3.html
 
 ## opentimestamps
+OpenTimestamps file.
 
 ### View a full OpenTimestamps file
 
@@ -1006,6 +1038,7 @@ $ fq '.operations | map(select(.attestation_type == "bitcoin")) | length > 0' fi
 - https://github.com/opentimestamps/python-opentimestamps
 
 ## pcap
+PCAP packet capture.
 
 ### Build object with number of (reassembled) TCP bytes sent to/from client IP
 ```sh
@@ -1018,6 +1051,7 @@ $ fq '.tcp_connections | group_by(.client.ip) | map({key: .[0].client.ip, value:
 }
 ```
 ## pg_btree
+PostgreSQL btree index file.
 
 ### Options
 
@@ -1057,6 +1091,7 @@ p.n.safonov@gmail.com
 ### References
 - https://www.postgresql.org/docs/current/storage-page-layout.html
 ## pg_control
+PostgreSQL control file.
 
 ### Options
 
@@ -1096,6 +1131,7 @@ p.n.safonov@gmail.com
 ### References
 - https://github.com/postgres/postgres/blob/REL_14_2/src/include/catalog/pg_control.h
 ## pg_heap
+PostgreSQL heap file.
 
 ### Options
 
@@ -1148,6 +1184,7 @@ p.n.safonov@gmail.com
 ### References
 - https://www.postgresql.org/docs/current/storage-page-layout.html
 ## protobuf
+Protobuf.
 
 ### Can decode sub messages
 
@@ -1159,6 +1196,7 @@ $ fq -d protobuf '.fields[6].wire_value | protobuf | d' file
 - https://developers.google.com/protocol-buffers/docs/encoding
 
 ## rtmp
+Real-Time Messaging Protocol.
 
 Current only supports plain RTMP (not RTMPT or encrypted variants etc) with AMF0 (not AMF3).
 
@@ -1172,6 +1210,7 @@ fq '.tcp_connections[] | select(.server.port=="rtmp") | d' file.cap
 - https://rtmp.veriskope.com/pdf/video_file_format_spec_v10.pdf
 
 ## tls
+Transport layer security.
 
 ### Options
 
@@ -1319,6 +1358,7 @@ $ fq -o keylog=@traffic.keylog  'first(grep_by(.server.stream | format == "tls")
 - [RFC 6101: The Secure Sockets Layer (SSL) Protocol Version 3.0](https://www.rfc-editor.org/rfc/rfc)
 
 ## tzif
+Time Zone Information Format.
 
 ### Get last transition time
 ```sh
@@ -1339,6 +1379,7 @@ fq '.v2plusdatablock.leap_second_records | length' tziffile
 - https://datatracker.ietf.org/doc/html/rfc8536
 
 ## wasm
+WebAssembly Binary Format.
 
 ### Count opcode usage
 ```sh
@@ -1359,6 +1400,7 @@ $ fq '.sections | {import: map(select(.id == "import_section").content.im.x[].nm
 - https://webassembly.github.io/spec/core/
 
 ## xml
+Extensible Markup Language.
 
 ### Options
 
@@ -1487,6 +1529,7 @@ $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -o array=true '.[2][2
 - [xml.com's Converting Between XML and JSON](https://www.xml.com/pub/a/2006/05/31/converting-between-xml-and-json.html)
 
 ## zip
+ZIP archive.
 
 ### Options
 
