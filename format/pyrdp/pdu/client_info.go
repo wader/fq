@@ -1,5 +1,6 @@
 // Copyright (c) 2022-2023 GoSecure Inc.
 // Copyright (c) 2024 Flare Systems
+// Licensed under the MIT License
 package pyrdp
 
 import (

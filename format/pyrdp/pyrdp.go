@@ -3,6 +3,7 @@
 //
 // Copyright (c) 2022-2023 GoSecure Inc.
 // Copyright (c) 2024 Flare Systems
+// Licensed under the MIT License
 //
 // Maintainer: Olivier Bilodeau <olivier.bilodeau@flare.io>
 // Author: Lisandro Ubiedo
