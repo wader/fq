@@ -29,6 +29,7 @@ $ fq -n _registry.groups.probe
   "pcap",
   "pcapng",
   "png",
+  "sqlite3",
   "tar",
   "tiff",
   "tzif",
