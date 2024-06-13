@@ -84,7 +84,7 @@ func ParseClientDataCore(d *decode.D, length int64) {
 	d.FieldU16("sas_sequence")
 	d.FieldU32("keyboard_layout")
 	d.FieldU32("client_build")
-	d.FieldStrFn("client_name", toTextUTF16Fn(32))
+	d.FieldUTF16LE("client_name", 32, scalar.StrActualTrim("\x00"))
 	d.FieldU32("keyboard_type")
 	d.FieldU32("keyboard_sub_type")
 	d.FieldU32("keyboard_function_key")

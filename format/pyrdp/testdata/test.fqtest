@@ -79,7 +79,7 @@ $ ./fq -d pyrdp dv /test.pyrdp
 0x000180|                              31 00 30 00 2e 00|          1.0...|          address: "10.0.89.70" 0x18a-0x1a0 (22)
 0x000190|30 00 2e 00 38 00 39 00 2e 00 37 00 30 00 00 00|0...8.9...7.0...|
 0x0001a0|40 00                                          |@.              |          client_dir_length: 64 0x1a0-0x1a2 (2)
-0x0001a0|      43 00 3a 00 5c 00 57 00 69 00 6e 00 64 00|  C.:.\.W.i.n.d.|          clientDir: "C:\\Windows\\system32\\mstscax.dll" 0x1a2-0x1e2 (64)
+0x0001a0|      43 00 3a 00 5c 00 57 00 69 00 6e 00 64 00|  C.:.\.W.i.n.d.|          client_dir: "C:\\Windows\\system32\\mstscax.dll" 0x1a2-0x1e2 (64)
 0x0001b0|6f 00 77 00 73 00 5c 00 73 00 79 00 73 00 74 00|o.w.s.\.s.y.s.t.|
 *       |until 0x1e1.7 (64)                             |                |
 0x0001e0|      20 fe ff ff                              |   ...          |          timezone_bias: 4294966816 0x1e2-0x1e6 (4)
