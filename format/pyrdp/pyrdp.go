@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/wader/fq/format"
-	pyrdp "github.com/wader/fq/format/pyrdp/pdu"
+	pyrdp_pdu "github.com/wader/fq/format/pyrdp/pdu"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
@@ -69,26 +69,26 @@ var pduTypesMap = scalar.UintMapSymStr{
 }
 
 var pduParsersMap = map[uint16]interface{}{
-	PDU_FAST_PATH_INPUT: pyrdp.ParseFastPathInput,
-	// PDU_FAST_PATH_OUTPUT:           pyrdp.ParseFastPathOut,
-	PDU_CLIENT_INFO: pyrdp.ParseClientInfo,
-	// PDU_SLOW_PATH_PDU:              pyrdp.ParseSlowPathPDU,
+	PDU_FAST_PATH_INPUT: pyrdp_pdu.ParseFastPathInput,
+	// PDU_FAST_PATH_OUTPUT:           pyrdp_pdu.ParseFastPathOut,
+	PDU_CLIENT_INFO: pyrdp_pdu.ParseClientInfo,
+	// PDU_SLOW_PATH_PDU:              pyrdp_pdu.ParseSlowPathPDU,
 	PDU_CONNECTION_CLOSE: noParse,
-	PDU_CLIPBOARD_DATA:   pyrdp.ParseClipboardData,
-	PDU_CLIENT_DATA:      pyrdp.ParseClientData,
-	// PDU_MOUSE_MOVE:                 pyrdp.ParseMouseMove,
-	// PDU_MOUSE_BUTTON:               pyrdp.ParseMouseButton,
-	// PDU_MOUSE_WHEEL:                pyrdp.ParseMouseWheel,
-	// PDU_KEYBOARD:                   pyrdp.ParseKeyboard,
-	// PDU_TEXT:                       pyrdp.ParseText,
-	// PDU_FORWARDING_STATE:           pyrdp.ParseForwardingState,
-	// PDU_BITMAP:                     pyrdp.ParseBitmap,
-	// PDU_DEVICE_MAPPING:             pyrdp.ParseDeviceMapping,
-	// PDU_DIRECTORY_LISTING_REQUEST:  pyrdp.ParseDirectoryListingRequest,
-	// PDU_DIRECTORY_LISTING_RESPONSE: pyrdp.ParseDirectoryListingResponse,
-	// PDU_FILE_DOWNLOAD_REQUEST:      pyrdp.ParseFileDownloadRequest,
-	// PDU_FILE_DOWNLOAD_RESPONSE:     pyrdp.ParseFileDownloadResponse,
-	// PDU_FILE_DOWNLOAD_COMPLETE:     pyrdp.ParseFileDownloadComplete,
+	PDU_CLIPBOARD_DATA:   pyrdp_pdu.ParseClipboardData,
+	PDU_CLIENT_DATA:      pyrdp_pdu.ParseClientData,
+	// PDU_MOUSE_MOVE:                 pyrdp_pdu.ParseMouseMove,
+	// PDU_MOUSE_BUTTON:               pyrdp_pdu.ParseMouseButton,
+	// PDU_MOUSE_WHEEL:                pyrdp_pdu.ParseMouseWheel,
+	// PDU_KEYBOARD:                   pyrdp_pdu.ParseKeyboard,
+	// PDU_TEXT:                       pyrdp_pdu.ParseText,
+	// PDU_FORWARDING_STATE:           pyrdp_pdu.ParseForwardingState,
+	// PDU_BITMAP:                     pyrdp_pdu.ParseBitmap,
+	// PDU_DEVICE_MAPPING:             pyrdp_pdu.ParseDeviceMapping,
+	// PDU_DIRECTORY_LISTING_REQUEST:  pyrdp_pdu.ParseDirectoryListingRequest,
+	// PDU_DIRECTORY_LISTING_RESPONSE: pyrdp_pdu.ParseDirectoryListingResponse,
+	// PDU_FILE_DOWNLOAD_REQUEST:      pyrdp_pdu.ParseFileDownloadRequest,
+	// PDU_FILE_DOWNLOAD_RESPONSE:     pyrdp_pdu.ParseFileDownloadResponse,
+	// PDU_FILE_DOWNLOAD_COMPLETE:     pyrdp_pdu.ParseFileDownloadComplete,
 }
 
 func init() {

@@ -1,6 +1,6 @@
 // Copyright (c) 2022-2023 GoSecure Inc.
 // Licensed under the MIT License
-package pyrdp
+package pdu
 
 import (
 	"fmt"
