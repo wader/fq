@@ -114,5 +114,5 @@ func decodeFlagsFn(d *decode.D) {
 	d.FieldBool("reserved2")
 	d.FieldBool("hidef_rail_supported")
 
-	d.SeekRel(int64(d.Pos()) % 31)
+	d.SeekRel(d.Pos() % 31)
 }

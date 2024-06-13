@@ -60,9 +60,13 @@ func ParseClipboardData(d *decode.D, length int64) {
 		d.FieldU16("msg_flags", cbFlagsMap)
 		data_length := d.FieldU32("data_len")
 
-		if _, ok := cbParseFnMap[msg_type]; ok {
-			cbParseFnMap[msg_type].(func(d *decode.D, length uint64))(d, data_length)
-			return
+		cbParser, ok := cbParseFnMap[msg_type]
+		if ok {
+			parseFn, ok := cbParser.(func(d *decode.D, length uint64))
+			if ok {
+				parseFn(d, data_length)
+				return
+			}
 		}
 		// Assert() once all functions are implemented.
 		d.FieldRawLen("data", int64(data_length*8))

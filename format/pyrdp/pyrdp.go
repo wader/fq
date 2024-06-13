@@ -113,14 +113,18 @@ func decodePYRDP(d *decode.D) any {
 				d.FieldU64("timestamp", timestampMapper)
 				pdu_size := int64(size - 18)
 
-				if _, ok := pduParsersMap[pdu_type]; !ok { // catch undeclared parsers
+				pduParser, ok := pduParsersMap[pdu_type]
+				if !ok { // catch undeclared parsers
 					if pdu_size > 0 {
-						d.FieldRawLen("data", int64(pdu_size*8))
+						d.FieldRawLen("data", pdu_size*8)
 					}
 					return
 				}
-				pduParsersMap[uint16(pdu_type)].(func(d *decode.D, length int64))(
-					d, pdu_size)
+				parseFn, ok := pduParser.(func(d *decode.D, length int64))
+				if !ok {
+					return
+				}
+				parseFn(d, pdu_size)
 
 				curr := d.Pos() - pos
 				if READ_EXTRA {
@@ -134,9 +138,7 @@ func decodePYRDP(d *decode.D) any {
 	return nil
 }
 
-func noParse(d *decode.D, length int64) {
-	return
-}
+func noParse(d *decode.D, length int64) {}
 
 var timestampMapper = scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
 	s.Sym = time.UnixMilli(int64(s.Actual)).UTC().String()
