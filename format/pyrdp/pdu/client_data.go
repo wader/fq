@@ -1,4 +1,5 @@
 // Copyright (c) 2022-2023 GoSecure Inc.
+// Copyright (c) 2024 Flare Systems
 // Licensed under the MIT License
 package pyrdp
 
@@ -23,20 +24,20 @@ const (
 	RDP10_10 = 0x8000f
 )
 
-var RDPVersionMap = scalar.UintMap{
-	RDP4:     {Sym: "rdp4", Description: "RDP 4"},
-	RDP5:     {Sym: "rdp5", Description: "RDP 5"},
-	RDP10:    {Sym: "rdp10", Description: "RDP 10"},
-	RDP10_1:  {Sym: "rdp10_1", Description: "RDP 10.1"},
-	RDP10_2:  {Sym: "rdp10_2", Description: "RDP 10.2"},
-	RDP10_3:  {Sym: "rdp10_3", Description: "RDP 10.3"},
-	RDP10_4:  {Sym: "rdp10_4", Description: "RDP 10.4"},
-	RDP10_5:  {Sym: "rdp10_5", Description: "RDP 10.5"},
-	RDP10_6:  {Sym: "rdp10_6", Description: "RDP 10.6"},
-	RDP10_7:  {Sym: "rdp10_7", Description: "RDP 10.7"},
-	RDP10_8:  {Sym: "rdp10_8", Description: "RDP 10.8"},
-	RDP10_9:  {Sym: "rdp10_9", Description: "RDP 10.9"},
-	RDP10_10: {Sym: "rdp10_10", Description: "RDP 10.10"},
+var RDPVersionMap = scalar.UintMapSymStr{
+	RDP4:     "rdp4",
+	RDP5:     "rdp5",
+	RDP10:    "rdp10",
+	RDP10_1:  "rdp10_1",
+	RDP10_2:  "rdp10_2",
+	RDP10_3:  "rdp10_3",
+	RDP10_4:  "rdp10_4",
+	RDP10_5:  "rdp10_5",
+	RDP10_6:  "rdp10_6",
+	RDP10_7:  "rdp10_7",
+	RDP10_8:  "rdp10_8",
+	RDP10_9:  "rdp10_9",
+	RDP10_10: "rdp10_10",
 }
 
 const (
@@ -46,12 +47,11 @@ const (
 	CLIENT_CLUSTER  = 0xC004
 )
 
-// TODO: Fill descriptions.
-var clientDataMap = scalar.UintMap{
-	CLIENT_CORE:     {Sym: "client_core", Description: ""},
-	CLIENT_SECURITY: {Sym: "client_security", Description: ""},
-	CLIENT_NETWORK:  {Sym: "client_network", Description: ""},
-	CLIENT_CLUSTER:  {Sym: "client_cluster", Description: ""},
+var clientDataMap = scalar.UintMapSymStr{
+	CLIENT_CORE:     "client_core",
+	CLIENT_SECURITY: "client_security",
+	CLIENT_NETWORK:  "client_network",
+	CLIENT_CLUSTER:  "client_cluster",
 }
 
 func ParseClientData(d *decode.D, length int64) {

@@ -1,4 +1,5 @@
 // Copyright (c) 2022-2023 GoSecure Inc.
+// Copyright (c) 2024 Flare Systems
 // Licensed under the MIT License
 package pyrdp
 
@@ -28,26 +29,25 @@ const (
 	CB_ASCII_NAMES   = 0x0004
 )
 
-// TODO: Fill the descriptions.
-var cbTypesMap = scalar.UintMap{
-	CB_MONITOR_READY:         {Sym: "cb_monitor_ready", Description: ""},
-	CB_FORMAT_LIST:           {Sym: "cb_format_list", Description: ""},
-	CB_FORMAT_LIST_RESPONSE:  {Sym: "cb_format_list_response", Description: ""},
-	CB_FORMAT_DATA_REQUEST:   {Sym: "cb_format_data_request", Description: ""},
-	CB_FORMAT_DATA_RESPONSE:  {Sym: "cb_format_data_response", Description: ""},
-	CB_TEMP_DIRECTORY:        {Sym: "cb_temp_directory", Description: ""},
-	CB_CLIP_CAPS:             {Sym: "cb_clip_caps", Description: ""},
-	CB_FILECONTENTS_REQUEST:  {Sym: "cb_filecontents_request", Description: ""},
-	CB_FILECONTENTS_RESPONSE: {Sym: "cb_filecontents_response", Description: ""},
-	CB_LOCK_CLIPDATA:         {Sym: "cb_lock_clipdata", Description: ""},
-	CB_UNLOCK_CLIPDATA:       {Sym: "cb_unlock_clipdata", Description: ""},
+var cbTypesMap = scalar.UintMapSymStr{
+	CB_MONITOR_READY:         "cb_monitor_ready",
+	CB_FORMAT_LIST:           "cb_format_list",
+	CB_FORMAT_LIST_RESPONSE:  "cb_format_list_response",
+	CB_FORMAT_DATA_REQUEST:   "cb_format_data_request",
+	CB_FORMAT_DATA_RESPONSE:  "cb_format_data_response",
+	CB_TEMP_DIRECTORY:        "cb_temp_directory",
+	CB_CLIP_CAPS:             "cb_clip_caps",
+	CB_FILECONTENTS_REQUEST:  "cb_filecontents_request",
+	CB_FILECONTENTS_RESPONSE: "cb_filecontents_response",
+	CB_LOCK_CLIPDATA:         "cb_lock_clipdata",
+	CB_UNLOCK_CLIPDATA:       "cb_unlock_clipdata",
 }
 
-var cbFlagsMap = scalar.UintMap{
-	NONE:             {Sym: "none", Description: ""},
-	CB_RESPONSE_OK:   {Sym: "cb_response_ok", Description: ""},
-	CB_RESPONSE_FAIL: {Sym: "cb_response_fail", Description: ""},
-	CB_ASCII_NAMES:   {Sym: "cb_ascii_names", Description: ""},
+var cbFlagsMap = scalar.UintMapSymStr{
+	NONE:             "none",
+	CB_RESPONSE_OK:   "cb_response_ok",
+	CB_RESPONSE_FAIL: "cb_response_fail",
+	CB_ASCII_NAMES:   "cb_ascii_names",
 }
 
 var cbParseFnMap = map[uint16]interface{}{

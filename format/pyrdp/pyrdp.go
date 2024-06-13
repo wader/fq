@@ -45,28 +45,27 @@ const (
 	PDU_FILE_DOWNLOAD_COMPLETE     = 20 // File download completion notification to the player
 )
 
-// TODO: Fill all descriptions.
-var pduTypesMap = scalar.UintMap{
-	PDU_FAST_PATH_INPUT:            {Sym: "pdu_fastpath_input", Description: ""},
-	PDU_FAST_PATH_OUTPUT:           {Sym: "pdu_fastpath_output", Description: ""},
-	PDU_CLIENT_INFO:                {Sym: "pdu_client_info", Description: ""},
-	PDU_SLOW_PATH_PDU:              {Sym: "pdu_slow_path_pdu", Description: ""},
-	PDU_CONNECTION_CLOSE:           {Sym: "pdu_connection_close", Description: ""},
-	PDU_CLIPBOARD_DATA:             {Sym: "pdu_clipboard_data", Description: ""},
-	PDU_CLIENT_DATA:                {Sym: "pdu_client_data", Description: ""},
-	PDU_MOUSE_MOVE:                 {Sym: "pdu_mouse_move", Description: ""},
-	PDU_MOUSE_BUTTON:               {Sym: "pdu_mouse_button", Description: ""},
-	PDU_MOUSE_WHEEL:                {Sym: "pdu_mouse_wheel", Description: ""},
-	PDU_KEYBOARD:                   {Sym: "pdu_keyboard", Description: ""},
-	PDU_TEXT:                       {Sym: "pdu_text", Description: ""},
-	PDU_FORWARDING_STATE:           {Sym: "pdu_forwarding_state", Description: ""},
-	PDU_BITMAP:                     {Sym: "pdu_bitmap", Description: ""},
-	PDU_DEVICE_MAPPING:             {Sym: "pdu_device_mapping", Description: ""},
-	PDU_DIRECTORY_LISTING_REQUEST:  {Sym: "pdu_directory_listing_request", Description: ""},
-	PDU_DIRECTORY_LISTING_RESPONSE: {Sym: "pdu_directory_listing_response", Description: ""},
-	PDU_FILE_DOWNLOAD_REQUEST:      {Sym: "pdu_file_download_request", Description: ""},
-	PDU_FILE_DOWNLOAD_RESPONSE:     {Sym: "pdu_file_download_response", Description: ""},
-	PDU_FILE_DOWNLOAD_COMPLETE:     {Sym: "pdu_file_download_complete", Description: ""},
+var pduTypesMap = scalar.UintMapSymStr{
+	PDU_FAST_PATH_INPUT:            "pdu_fastpath_input",
+	PDU_FAST_PATH_OUTPUT:           "pdu_fastpath_output",
+	PDU_CLIENT_INFO:                "pdu_client_info",
+	PDU_SLOW_PATH_PDU:              "pdu_slow_path_pdu",
+	PDU_CONNECTION_CLOSE:           "pdu_connection_close",
+	PDU_CLIPBOARD_DATA:             "pdu_clipboard_data",
+	PDU_CLIENT_DATA:                "pdu_client_data",
+	PDU_MOUSE_MOVE:                 "pdu_mouse_move",
+	PDU_MOUSE_BUTTON:               "pdu_mouse_button",
+	PDU_MOUSE_WHEEL:                "pdu_mouse_wheel",
+	PDU_KEYBOARD:                   "pdu_keyboard",
+	PDU_TEXT:                       "pdu_text",
+	PDU_FORWARDING_STATE:           "pdu_forwarding_state",
+	PDU_BITMAP:                     "pdu_bitmap",
+	PDU_DEVICE_MAPPING:             "pdu_device_mapping",
+	PDU_DIRECTORY_LISTING_REQUEST:  "pdu_directory_listing_request",
+	PDU_DIRECTORY_LISTING_RESPONSE: "pdu_directory_listing_response",
+	PDU_FILE_DOWNLOAD_REQUEST:      "pdu_file_download_request",
+	PDU_FILE_DOWNLOAD_RESPONSE:     "pdu_file_download_response",
+	PDU_FILE_DOWNLOAD_COMPLETE:     "pdu_file_download_complete",
 }
 
 var pduParsersMap = map[uint16]interface{}{

@@ -1,4 +1,5 @@
 // Copyright (c) 2022-2023 GoSecure Inc.
+// Copyright (c) 2024 Flare Systems
 // Licensed under the MIT License
 package pyrdp
 
@@ -21,13 +22,13 @@ const (
 	FASTPATH_INPUT_EVENT_QOE_TIMESTAMP = 6
 )
 
-var eventCodesMap = scalar.UintMap{
-	FASTPATH_INPUT_EVENT_SCANCODE:      {Sym: "fastpath_input_event_scancode", Description: ""},
-	FASTPATH_INPUT_EVENT_MOUSE:         {Sym: "fastpath_input_event_mouse", Description: ""},
-	FASTPATH_INPUT_EVENT_MOUSEX:        {Sym: "fastpath_input_event_mousex", Description: ""},
-	FASTPATH_INPUT_EVENT_SYNC:          {Sym: "fastpath_input_event_sync", Description: ""},
-	FASTPATH_INPUT_EVENT_UNICODE:       {Sym: "fastpath_input_event_unicode", Description: ""},
-	FASTPATH_INPUT_EVENT_QOE_TIMESTAMP: {Sym: "fastpath_input_event_qoe_timestamp", Description: ""},
+var eventCodesMap = scalar.UintMapSymStr{
+	FASTPATH_INPUT_EVENT_SCANCODE:      "fastpath_input_event_scancode",
+	FASTPATH_INPUT_EVENT_MOUSE:         "fastpath_input_event_mouse",
+	FASTPATH_INPUT_EVENT_MOUSEX:        "fastpath_input_event_mousex",
+	FASTPATH_INPUT_EVENT_SYNC:          "fastpath_input_event_sync",
+	FASTPATH_INPUT_EVENT_UNICODE:       "fastpath_input_event_unicode",
+	FASTPATH_INPUT_EVENT_QOE_TIMESTAMP: "fastpath_input_event_qoe_timestamp",
 }
 
 var eventFnMap = map[int]interface{}{
