@@ -92,14 +92,14 @@ const (
 func decodeFlagsFn(d *decode.D) {
 	d.FieldBool("mouse")
 	d.FieldBool("disabledctrlaltdel")
-	d.SeekRel(1)
+	d.FieldRawLen("unused0", 1)
 	d.FieldBool("autologon")
 	d.FieldBool("unicode")
 	d.FieldBool("maximizeshell")
 	d.FieldBool("logonnotify")
 	d.FieldBool("compression")
 	d.FieldBool("enablewindowskey")
-	d.SeekRel(4)
+	d.FieldRawLen("unused1", 4)
 	d.FieldBool("remoteconsoleaudio")
 	d.FieldBool("force_encrypted_cs_pdu")
 	d.FieldBool("rail")
@@ -113,6 +113,5 @@ func decodeFlagsFn(d *decode.D) {
 	d.FieldBool("reserved1")
 	d.FieldBool("reserved2")
 	d.FieldBool("hidef_rail_supported")
-
-	d.SeekRel(d.Pos() % 31)
+	d.FieldRawLen("unused2", 6)
 }
