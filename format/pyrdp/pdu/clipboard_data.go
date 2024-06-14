@@ -19,8 +19,8 @@ const (
 	CB_CLIP_CAPS             = 0x0007
 	CB_FILECONTENTS_REQUEST  = 0x0008
 	CB_FILECONTENTS_RESPONSE = 0x0009
-	CB_LOCK_CLIPDATA         = 0x000A
-	CB_UNLOCK_CLIPDATA       = 0x000B
+	CB_LOCK_CLIPDATA         = 0x000a
+	CB_UNLOCK_CLIPDATA       = 0x000b
 
 	// Message flags.
 	NONE             = 0
@@ -56,20 +56,20 @@ var cbParseFnMap = map[uint16]interface{}{
 
 func ParseClipboardData(d *decode.D, length int64) {
 	d.FieldStruct("clipboard_data", func(d *decode.D) {
-		msg_type := uint16(d.FieldU16("msg_type", cbTypesMap))
+		msgType := uint16(d.FieldU16("msg_type", cbTypesMap))
 		d.FieldU16("msg_flags", cbFlagsMap)
-		data_length := d.FieldU32("data_len")
+		dataLength := d.FieldU32("data_len")
 
-		cbParser, ok := cbParseFnMap[msg_type]
+		cbParser, ok := cbParseFnMap[msgType]
 		if ok {
 			parseFn, ok := cbParser.(func(d *decode.D, length uint64))
 			if ok {
-				parseFn(d, data_length)
+				parseFn(d, dataLength)
 				return
 			}
 		}
 		// Assert() once all functions are implemented.
-		d.FieldRawLen("data", int64(data_length*8))
+		d.FieldRawLen("data", int64(dataLength*8))
 	})
 }
 

@@ -67,9 +67,9 @@ func ParseFastPathInput(d *decode.D, length int64) {
 			}
 		})
 
-		input_length := d.FieldU8("input_length1", scalar.UintHex)
-		if input_length&0x80 != 0 {
-			input_length = ((input_length & 0x7f) << 8) | d.FieldU8("input_length2", scalar.UintHex)
+		inputLength := d.FieldU8("input_length1", scalar.UintHex)
+		if inputLength&0x80 != 0 {
+			inputLength = ((inputLength & 0x7f) << 8) | d.FieldU8("input_length2", scalar.UintHex)
 		}
 
 		// d.FieldU64("data_signature", scalar.Hex)
@@ -92,9 +92,9 @@ func ParseFastPathInput(d *decode.D, length int64) {
 		// 	}
 		// })
 
-		input_length -= uint64(d.Pos()-pos) / 8
-		if input_length > 0 {
-			d.FieldRawLen("data", int64(input_length*8))
+		inputLength -= uint64(d.Pos()-pos) / 8
+		if inputLength > 0 {
+			d.FieldRawLen("data", int64(inputLength*8))
 		}
 	})
 }

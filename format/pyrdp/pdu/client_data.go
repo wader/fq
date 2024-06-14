@@ -16,9 +16,9 @@ const (
 	RDP10_2  = 0x80007
 	RDP10_3  = 0x80008
 	RDP10_4  = 0x80009
-	RDP10_5  = 0x8000A
-	RDP10_6  = 0x8000B
-	RDP10_7  = 0x8000C
+	RDP10_5  = 0x8000a
+	RDP10_6  = 0x8000b
+	RDP10_7  = 0x8000c
 	RDP10_8  = 0x8000d
 	RDP10_9  = 0x8000e
 	RDP10_10 = 0x8000f
@@ -41,10 +41,10 @@ var RDPVersionMap = scalar.UintMapSymStr{
 }
 
 const (
-	CLIENT_CORE     = 0xC001
-	CLIENT_SECURITY = 0xC002
-	CLIENT_NETWORK  = 0xC003
-	CLIENT_CLUSTER  = 0xC004
+	CLIENT_CORE     = 0xc001
+	CLIENT_SECURITY = 0xc002
+	CLIENT_NETWORK  = 0xc003
+	CLIENT_CLUSTER  = 0xc004
 )
 
 var clientDataMap = scalar.UintMapSymStr{
@@ -57,20 +57,20 @@ var clientDataMap = scalar.UintMapSymStr{
 func ParseClientData(d *decode.D, length int64) {
 	d.FieldStruct("client_data", func(d *decode.D) {
 		header := d.FieldU16("header", clientDataMap)
-		data_len := int64(d.FieldU16("length") - 4)
+		dataLen := int64(d.FieldU16("length") - 4)
 
 		switch header {
 		case CLIENT_CORE:
-			ParseClientDataCore(d, data_len)
+			ParseClientDataCore(d, dataLen)
 		case CLIENT_SECURITY:
-			ParseClientDataSecurity(d, data_len)
+			ParseClientDataSecurity(d, dataLen)
 		case CLIENT_NETWORK:
-			ParseClientDataNetwork(d, data_len)
+			ParseClientDataNetwork(d, dataLen)
 		case CLIENT_CLUSTER:
-			ParseClientDataCluster(d, data_len)
+			ParseClientDataCluster(d, dataLen)
 		default:
 			// Assert() once all functions are implemented and tested.
-			d.FieldRawLen("data", data_len*8)
+			d.FieldRawLen("data", dataLen*8)
 			return
 		}
 	})

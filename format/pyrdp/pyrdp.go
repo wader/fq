@@ -114,14 +114,14 @@ func decodePYRDP(d *decode.D) any {
 				pos := d.Pos()
 
 				size := d.FieldU64("size") // minus the length
-				pdu_type := uint16(d.FieldU16("pdu_type", pduTypesMap))
+				pduType := uint16(d.FieldU16("pdu_type", pduTypesMap))
 				d.FieldU64("timestamp", scalar.UintActualUnixTimeDescription(time.Millisecond, time.RFC3339Nano))
-				pdu_size := int64(size - 18)
+				pduSize := int64(size - 18)
 
-				pduParser, ok := pduParsersMap[pdu_type]
+				pduParser, ok := pduParsersMap[pduType]
 				if !ok { // catch undeclared parsers
-					if pdu_size > 0 {
-						d.FieldRawLen("data", pdu_size*8)
+					if pduSize > 0 {
+						d.FieldRawLen("data", pduSize*8)
 					}
 					return
 				}
@@ -129,7 +129,7 @@ func decodePYRDP(d *decode.D) any {
 				if !ok {
 					return
 				}
-				parseFn(d, pdu_size)
+				parseFn(d, pduSize)
 
 				curr := d.Pos() - pos
 				if READ_EXTRA {

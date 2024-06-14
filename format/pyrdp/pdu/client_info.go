@@ -12,46 +12,46 @@ func ParseClientInfo(d *decode.D, length int64) {
 	d.FieldStruct("client_info", func(d *decode.D) {
 		pos := d.Pos()
 		var (
-			is_unicode bool
-			has_null   bool
-			null_n     uint64 = 0
-			unicode_n  uint64 = 0
+			isUnicode bool
+			hasNull   bool
+			nullN     uint64 = 0
+			unicodeN  uint64 = 0
 		)
-		code_page := d.FieldU32("code_page")
+		codePage := d.FieldU32("code_page")
 		flags := d.U32()
 		d.SeekRel(-4 * 8)
 		d.FieldStruct("flags", decodeFlagsFn)
 
-		is_unicode = ((flags & INFO_UNICODE) != 0)
-		has_null = (code_page == 1252 || is_unicode)
+		isUnicode = ((flags & INFO_UNICODE) != 0)
+		hasNull = (codePage == 1252 || isUnicode)
 
-		if has_null {
-			null_n = 1
+		if hasNull {
+			nullN = 1
 		}
-		if is_unicode {
-			unicode_n = 2
+		if isUnicode {
+			unicodeN = 2
 		}
 
-		domain_length := int(d.FieldU16("domain_length") + null_n*unicode_n)
-		username_length := int(d.FieldU16("username_length") + null_n*unicode_n)
-		password_length := int(d.FieldU16("password_length") + null_n*unicode_n)
-		alternate_shell_length := int(d.FieldU16("alternate_shell_length") + null_n*unicode_n)
-		working_dir_length := int(d.FieldU16("working_dir_length") + null_n*unicode_n)
+		domainLength := int(d.FieldU16("domain_length") + nullN*unicodeN)
+		usernameLength := int(d.FieldU16("username_length") + nullN*unicodeN)
+		passwordLength := int(d.FieldU16("password_length") + nullN*unicodeN)
+		alternateShellLength := int(d.FieldU16("alternate_shell_length") + nullN*unicodeN)
+		workingDirLength := int(d.FieldU16("working_dir_length") + nullN*unicodeN)
 
-		d.FieldUTF16LE("domain", domain_length, scalar.StrActualTrim("\x00"))
-		d.FieldUTF16LE("username", username_length, scalar.StrActualTrim("\x00"))
-		d.FieldUTF16LE("password", password_length, scalar.StrActualTrim("\x00"))
-		d.FieldUTF16LE("alternate_shell", alternate_shell_length, scalar.StrActualTrim("\x00"))
-		d.FieldUTF16LE("working_dir", working_dir_length, scalar.StrActualTrim("\x00"))
+		d.FieldUTF16LE("domain", domainLength, scalar.StrActualTrim("\x00"))
+		d.FieldUTF16LE("username", usernameLength, scalar.StrActualTrim("\x00"))
+		d.FieldUTF16LE("password", passwordLength, scalar.StrActualTrim("\x00"))
+		d.FieldUTF16LE("alternate_shell", alternateShellLength, scalar.StrActualTrim("\x00"))
+		d.FieldUTF16LE("working_dir", workingDirLength, scalar.StrActualTrim("\x00"))
 
-		extra_length := length - ((d.Pos() - pos) / 8)
-		if extra_length > 0 {
+		extraLength := length - ((d.Pos() - pos) / 8)
+		if extraLength > 0 {
 			d.FieldStruct("extra_info", func(d *decode.D) {
 				d.FieldU16("address_family", scalar.UintHex)
-				address_length := int(d.FieldU16("address_length"))
-				d.FieldUTF16LE("address", address_length, scalar.StrActualTrim("\x00"))
-				client_dir_length := int(d.FieldU16("client_dir_length"))
-				d.FieldUTF16LE("client_dir", client_dir_length, scalar.StrActualTrim("\x00"))
+				addressLength := int(d.FieldU16("address_length"))
+				d.FieldUTF16LE("address", addressLength, scalar.StrActualTrim("\x00"))
+				clientDirLength := int(d.FieldU16("client_dir_length"))
+				d.FieldUTF16LE("client_dir", clientDirLength, scalar.StrActualTrim("\x00"))
 				// TS_TIME_ZONE_INFORMATION structure
 				// https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-rdpbcgr/526ed635-d7a9-4d3c-bbe1-4e3fb17585f4
 				d.FieldU32("timezone_bias")
