@@ -10,6 +10,7 @@
 package pyrdp
 
 import (
+	"embed"
 	"time"
 
 	"github.com/wader/fq/format"
@@ -18,6 +19,19 @@ import (
 	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
+
+//go:embed pyrdp.md
+var pyrdpFS embed.FS
+
+func init() {
+	interp.RegisterFormat(
+		format.PYRDP,
+		&decode.Format{
+			Description: "PyRDP Replay Files",
+			DecodeFn:    decodePYRDP,
+		})
+	interp.RegisterFS(pyrdpFS)
+}
 
 const (
 	READ_EXTRA = true
@@ -89,15 +103,6 @@ var pduParsersMap = map[uint16]interface{}{
 	// PDU_FILE_DOWNLOAD_REQUEST:      pyrdp_pdu.ParseFileDownloadRequest,
 	// PDU_FILE_DOWNLOAD_RESPONSE:     pyrdp_pdu.ParseFileDownloadResponse,
 	// PDU_FILE_DOWNLOAD_COMPLETE:     pyrdp_pdu.ParseFileDownloadComplete,
-}
-
-func init() {
-	interp.RegisterFormat(
-		format.PYRDP,
-		&decode.Format{
-			Description: "PyRDP Replay Files",
-			DecodeFn:    decodePYRDP,
-		})
 }
 
 func decodePYRDP(d *decode.D) any {
