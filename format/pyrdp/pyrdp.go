@@ -115,7 +115,7 @@ func decodePYRDP(d *decode.D) any {
 
 				size := d.FieldU64("size") // minus the length
 				pdu_type := uint16(d.FieldU16("pdu_type", pduTypesMap))
-				d.FieldU64("timestamp", timestampMapper)
+				d.FieldU64("timestamp", scalar.UintActualUnixTimeDescription(time.Millisecond, time.RFC3339Nano))
 				pdu_size := int64(size - 18)
 
 				pduParser, ok := pduParsersMap[pdu_type]
@@ -144,8 +144,3 @@ func decodePYRDP(d *decode.D) any {
 }
 
 func noParse(d *decode.D, length int64) {}
-
-var timestampMapper = scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
-	s.Sym = time.UnixMilli(int64(s.Actual)).UTC().String()
-	return s, nil
-})
