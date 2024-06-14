@@ -30,24 +30,24 @@ const (
 )
 
 var cbTypesMap = scalar.UintMapSymStr{
-	CB_MONITOR_READY:         "cb_monitor_ready",
-	CB_FORMAT_LIST:           "cb_format_list",
-	CB_FORMAT_LIST_RESPONSE:  "cb_format_list_response",
-	CB_FORMAT_DATA_REQUEST:   "cb_format_data_request",
-	CB_FORMAT_DATA_RESPONSE:  "cb_format_data_response",
-	CB_TEMP_DIRECTORY:        "cb_temp_directory",
-	CB_CLIP_CAPS:             "cb_clip_caps",
-	CB_FILECONTENTS_REQUEST:  "cb_filecontents_request",
-	CB_FILECONTENTS_RESPONSE: "cb_filecontents_response",
-	CB_LOCK_CLIPDATA:         "cb_lock_clipdata",
-	CB_UNLOCK_CLIPDATA:       "cb_unlock_clipdata",
+	CB_MONITOR_READY:         "monitor_ready",
+	CB_FORMAT_LIST:           "format_list",
+	CB_FORMAT_LIST_RESPONSE:  "format_list_response",
+	CB_FORMAT_DATA_REQUEST:   "format_data_request",
+	CB_FORMAT_DATA_RESPONSE:  "format_data_response",
+	CB_TEMP_DIRECTORY:        "temp_directory",
+	CB_CLIP_CAPS:             "clip_caps",
+	CB_FILECONTENTS_REQUEST:  "filecontents_request",
+	CB_FILECONTENTS_RESPONSE: "filecontents_response",
+	CB_LOCK_CLIPDATA:         "lock_clipdata",
+	CB_UNLOCK_CLIPDATA:       "unlock_clipdata",
 }
 
 var cbFlagsMap = scalar.UintMapSymStr{
 	NONE:             "none",
-	CB_RESPONSE_OK:   "cb_response_ok",
-	CB_RESPONSE_FAIL: "cb_response_fail",
-	CB_ASCII_NAMES:   "cb_ascii_names",
+	CB_RESPONSE_OK:   "response_ok",
+	CB_RESPONSE_FAIL: "response_fail",
+	CB_ASCII_NAMES:   "ascii_names",
 }
 
 var cbParseFnMap = map[uint16]interface{}{

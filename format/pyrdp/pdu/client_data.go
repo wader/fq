@@ -25,19 +25,19 @@ const (
 )
 
 var RDPVersionMap = scalar.UintMapSymStr{
-	RDP4:     "rdp4",
-	RDP5:     "rdp5",
-	RDP10:    "rdp10",
-	RDP10_1:  "rdp10_1",
-	RDP10_2:  "rdp10_2",
-	RDP10_3:  "rdp10_3",
-	RDP10_4:  "rdp10_4",
-	RDP10_5:  "rdp10_5",
-	RDP10_6:  "rdp10_6",
-	RDP10_7:  "rdp10_7",
-	RDP10_8:  "rdp10_8",
-	RDP10_9:  "rdp10_9",
-	RDP10_10: "rdp10_10",
+	RDP4:     "4",
+	RDP5:     "5",
+	RDP10:    "10",
+	RDP10_1:  "10_1",
+	RDP10_2:  "10_2",
+	RDP10_3:  "10_3",
+	RDP10_4:  "10_4",
+	RDP10_5:  "10_5",
+	RDP10_6:  "10_6",
+	RDP10_7:  "10_7",
+	RDP10_8:  "10_8",
+	RDP10_9:  "10_9",
+	RDP10_10: "10_10",
 }
 
 const (
@@ -48,10 +48,10 @@ const (
 )
 
 var clientDataMap = scalar.UintMapSymStr{
-	CLIENT_CORE:     "client_core",
-	CLIENT_SECURITY: "client_security",
-	CLIENT_NETWORK:  "client_network",
-	CLIENT_CLUSTER:  "client_cluster",
+	CLIENT_CORE:     "core",
+	CLIENT_SECURITY: "security",
+	CLIENT_NETWORK:  "network",
+	CLIENT_CLUSTER:  "cluster",
 }
 
 func ParseClientData(d *decode.D, length int64) {
