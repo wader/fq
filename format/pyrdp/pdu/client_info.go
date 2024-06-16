@@ -18,11 +18,36 @@ func parseClientInfo(d *decode.D, length int64) {
 			unicodeN  uint64 = 0
 		)
 		codePage := d.FieldU32("code_page")
-		flags := d.U32()
-		d.SeekRel(-4 * 8)
-		d.FieldStruct("flags", decodeFlagsFn)
+		d.FieldStruct("flags", func(d *decode.D) {
+			d.FieldBool("compression")
+			d.FieldBool("logonnotify")
+			d.FieldBool("maximizeshell")
+			isUnicode = d.FieldBool("unicode")
+			d.FieldBool("autologon")
+			d.FieldRawLen("unused0", 1)
+			d.FieldBool("disabledctrlaltdel")
+			d.FieldBool("mouse")
 
-		isUnicode = ((flags & INFO_UNICODE) != 0)
+			d.FieldBool("rail")
+			d.FieldBool("force_encrypted_cs_pdu")
+			d.FieldBool("remoteconsoleaudio")
+			d.FieldRawLen("unused1", 4)
+			d.FieldBool("enablewindowskey")
+
+			d.FieldBool("reserved1")
+			d.FieldBool("video_disable")
+			d.FieldBool("audiocapture")
+			d.FieldBool("using_saved_creds")
+			d.FieldBool("noaudioplayback")
+			d.FieldBool("password_is_sc_pin")
+			d.FieldBool("mouse_has_wheel")
+			d.FieldBool("logonerrors")
+
+			d.FieldRawLen("unused2", 6)
+			d.FieldBool("hidef_rail_supported")
+			d.FieldBool("reserved2")
+		})
+
 		hasNull = (codePage == 1252 || isUnicode)
 
 		if hasNull {
@@ -62,56 +87,4 @@ func parseClientInfo(d *decode.D, length int64) {
 			//			client (other than UTC info)
 		}
 	})
-}
-
-const (
-	// flags
-	INFO_MOUSE                  = 0x00000001
-	INFO_DISABLECTRLALTDEL      = 0x00000002
-	INFO_AUTOLOGON              = 0x00000008
-	INFO_UNICODE                = 0x00000010
-	INFO_MAXIMIZESHELL          = 0x00000020
-	INFO_LOGONNOTIFY            = 0x00000040
-	INFO_COMPRESSION            = 0x00000080
-	INFO_ENABLEWINDOWSKEY       = 0x00000100
-	INFO_REMOTECONSOLEAUDIO     = 0x00002000
-	INFO_FORCE_ENCRYPTED_CS_PDU = 0x00004000
-	INFO_RAIL                   = 0x00008000
-	INFO_LOGONERRORS            = 0x00010000
-	INFO_MOUSE_HAS_WHEEL        = 0x00020000
-	INFO_PASSWORD_IS_SC_PIN     = 0x00040000
-	INFO_NOAUDIOPLAYBACK        = 0x00080000
-	INFO_USING_SAVED_CREDS      = 0x00100000
-	INFO_AUDIOCAPTURE           = 0x00200000
-	INFO_VIDEO_DISABLE          = 0x00400000
-	INFO_RESERVED1              = 0x00800000
-	INFO_RESERVED2              = 0x01000000
-	INFO_HIDEF_RAIL_SUPPORTED   = 0x02000000
-)
-
-func decodeFlagsFn(d *decode.D) {
-	d.FieldBool("mouse")
-	d.FieldBool("disabledctrlaltdel")
-	d.FieldRawLen("unused0", 1)
-	d.FieldBool("autologon")
-	d.FieldBool("unicode")
-	d.FieldBool("maximizeshell")
-	d.FieldBool("logonnotify")
-	d.FieldBool("compression")
-	d.FieldBool("enablewindowskey")
-	d.FieldRawLen("unused1", 4)
-	d.FieldBool("remoteconsoleaudio")
-	d.FieldBool("force_encrypted_cs_pdu")
-	d.FieldBool("rail")
-	d.FieldBool("logonerrors")
-	d.FieldBool("mouse_has_wheel")
-	d.FieldBool("password_is_sc_pin")
-	d.FieldBool("noaudioplayback")
-	d.FieldBool("using_saved_creds")
-	d.FieldBool("audiocapture")
-	d.FieldBool("video_disable")
-	d.FieldBool("reserved1")
-	d.FieldBool("reserved2")
-	d.FieldBool("hidef_rail_supported")
-	d.FieldRawLen("unused2", 6)
 }
