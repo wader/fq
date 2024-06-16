@@ -34,8 +34,6 @@ func init() {
 }
 
 const (
-	READ_EXTRA = true
-
 	// PDU Types.
 	PDU_FAST_PATH_INPUT            = 1  // Ex: scan codes, mouse, etc.
 	PDU_FAST_PATH_OUTPUT           = 2  // Ex: image
@@ -132,11 +130,7 @@ func decodePYRDP(d *decode.D) any {
 				parseFn(d, pduSize)
 
 				curr := d.Pos() - pos
-				if READ_EXTRA {
-					d.FieldRawLen("extra", (int64(size)*8)-curr) // seek whatever is left
-				} else {
-					d.SeekRel((int64(size) * 8) - curr) // read whatever is left
-				}
+				d.FieldRawLen("extra", (int64(size)*8)-curr) // seek whatever is left
 			})
 		}
 	})
