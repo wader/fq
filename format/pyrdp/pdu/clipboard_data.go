@@ -54,7 +54,7 @@ var cbParseFnMap = map[uint16]interface{}{
 	CB_FORMAT_DATA_RESPONSE: parseCbFormatDataResponse,
 }
 
-func ParseClipboardData(d *decode.D, length int64) {
+func parseClipboardData(d *decode.D, length int64) {
 	d.FieldStruct("clipboard_data", func(d *decode.D) {
 		msgType := uint16(d.FieldU16("msg_type", cbTypesMap))
 		d.FieldU16("msg_flags", cbFlagsMap)

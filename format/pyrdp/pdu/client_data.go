@@ -54,7 +54,7 @@ var clientDataMap = scalar.UintMapSymStr{
 	CLIENT_CLUSTER:  "cluster",
 }
 
-func ParseClientData(d *decode.D, length int64) {
+func parseClientData(d *decode.D, length int64) {
 	d.FieldStruct("client_data", func(d *decode.D) {
 		header := d.FieldU16("header", clientDataMap)
 		dataLen := int64(d.FieldU16("length") - 4)

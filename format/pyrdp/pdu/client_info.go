@@ -8,7 +8,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-func ParseClientInfo(d *decode.D, length int64) {
+func parseClientInfo(d *decode.D, length int64) {
 	d.FieldStruct("client_info", func(d *decode.D) {
 		pos := d.Pos()
 		var (

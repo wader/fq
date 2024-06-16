@@ -50,7 +50,7 @@ const (
 //	FASTPATH_INPUT_EVENT_QOE_TIMESTAMP: 5,
 //}
 
-func ParseFastPathInput(d *decode.D, length int64) {
+func parseFastPathInput(d *decode.D, length int64) {
 	d.FieldStruct("fastpath_input", func(d *decode.D) {
 		// var (
 		// 	events uint8 = 1
