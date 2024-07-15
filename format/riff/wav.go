@@ -158,6 +158,10 @@ func wavDecode(d *decode.D) any {
 				d.FieldRawLen("coding_history", d.BitsLeft())
 				return false, nil
 
+			case "dbmd":
+				dbmdDecode(d)
+				return false, nil
+
 			default:
 				if riffIsStringChunkID(id) {
 					d.FieldUTF8NullFixedLen("value", int(d.BitsLeft())/8)
