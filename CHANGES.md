@@ -1,3 +1,60 @@
+# 0.12.0
+
+REPL word navigation fix and `jpeg` DHT decoding, otherwise mostly maintenance release to update dependencies.
+
+## Changes
+
+- Update readline package to fix issue with left/right word jump in REPL. #969
+- Update of version of golang and other dependencies.
+
+## Format changes
+
+- `jpeg`
+  - Decode DHT paramaters. Thanks @matmat. #934
+  - Fix Fix EOI description. #932
+
+## Changelog
+
+* 94cfbc67 Update docker-golang to 1.22.3 from 1.22.2
+* ab09d3ce Update docker-golang to 1.22.4 from 1.22.3
+* c6dd0ed1 Update docker-golang to 1.22.5 from 1.22.4
+* 9ff7da12 Update github-go-version to 1.22.3 from 1.22.2
+* 1ff5a3fa Update github-go-version to 1.22.4 from 1.22.3
+* e33c6c61 Update github-go-version to 1.22.5 from 1.22.4
+* a5de74cd Update github-golangci-lint to 1.58.0 from 1.57.2
+* a59ba2a2 Update github-golangci-lint to 1.58.1 from 1.58.0
+* f6d72354 Update github-golangci-lint to 1.58.2 from 1.58.1
+* 44e2385a Update github-golangci-lint to 1.59.0 from 1.58.2
+* 6383626a Update github-golangci-lint to 1.59.1 from 1.59.0
+* 61f81fbf Update gomod-BurntSushi/toml to 1.4.0 from 1.3.2
+* 12f33206 Update gomod-ergochat-readline to 0.1.1 from 0.1.0
+* 6b1cc870 Update gomod-ergochat-readline to 0.1.2 from 0.1.1
+* 14ada508 Update gomod-golang-x-crypto to 0.23.0 from 0.22.0
+* f7cbf844 Update gomod-golang-x-crypto to 0.24.0 from 0.23.0
+* 384e4c23 Update gomod-golang-x-crypto to 0.25.0 from 0.24.0
+* cabb67e8 Update gomod-golang-x-net to 0.25.0 from 0.24.0
+* c55e1066 Update gomod-golang-x-net to 0.26.0 from 0.25.0
+* e625fcbf Update gomod-golang-x-net to 0.27.0 from 0.26.0
+* 586cf142 Update gomod-golang-x-term to 0.20.0 from 0.19.0
+* 7566fd93 Update gomod-golang-x-term to 0.21.0 from 0.20.0
+* 41ff984c Update gomod-golang-x-term to 0.22.0 from 0.21.0
+* 42730d75 Update gomod-golang/text to 0.15.0 from 0.14.0
+* 8bc1a20b Update gomod-golang/text to 0.16.0 from 0.15.0
+* 3a683b64 Update make-golangci-lint to 1.58.0 from 1.57.2
+* 7714fcf4 Update make-golangci-lint to 1.58.1 from 1.58.0
+* aef47df2 Update make-golangci-lint to 1.58.2 from 1.58.1
+* 0cd90ce0 Update make-golangci-lint to 1.59.0 from 1.58.2
+* 71476743 Update make-golangci-lint to 1.59.1 from 1.59.0
+* 6db6a54d build,test: Ignore some files to make ./... work
+* 175661d3 doc: Add kodsnack 585 - Polymorfisk JSON
+* ebf063d1 doc: Cleanup and improve texts a bit
+* b818923c doc: Fix function indent
+* 6f2b5994 doc: Include format description per format
+* 40f38a55 doc: Reorganize and cleanup function descriptions
+* ad2c032c goreleaser: Update action and fix deprecation warning
+* 6e13b4b5 jpeg: Add parsing of DHT parameters
+* b4825560 jpeg: Fix EOI description
+
 # 0.11.0
 
 New iNES/NES 2.0 ROM decoder (thanks @mlofjard) and basic JPEG 2000 format support. jq language improvements and fixes from gojq. And as always various decoder improvements and fixes.
