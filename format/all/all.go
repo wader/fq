@@ -50,6 +50,7 @@ import (
 	_ "github.com/wader/fq/format/postgres"
 	_ "github.com/wader/fq/format/prores"
 	_ "github.com/wader/fq/format/protobuf"
+	_ "github.com/wader/fq/format/pyrdp"
 	_ "github.com/wader/fq/format/riff"
 	_ "github.com/wader/fq/format/rtmp"
 	_ "github.com/wader/fq/format/tar"
