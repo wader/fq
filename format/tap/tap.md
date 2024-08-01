@@ -1,0 +1,12 @@
+The TAP- (and BLK-) format is nearly a direct copy of the data that is stored
+in real tapes, as it is written by the ROM save routine of the ZX-Spectrum.
+A TAP file is simply one data block or a group of 2 or more data blocks, one
+followed after the other. The TAP file may be empty.
+
+You will often find this format embedded inside the TZX tape format.
+
+The default file extension is `.tap`.
+
+### References
+
+- https://worldofspectrum.net/zx-modules/fileformats/tapformat.html

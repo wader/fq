@@ -32,6 +32,7 @@ $ fq -n _registry.groups.probe
   "tar",
   "tiff",
   "tzif",
+  "tzx",
   "wasm",
   "webp",
   "zip",
@@ -162,6 +163,7 @@ tiff                 Tag Image File Format
 tls                  Transport layer security
 toml                 Tom's Obvious, Minimal Language
 tzif                 Time Zone Information Format
+tzx                  TZX tape format for ZX Spectrum computers
 udp_datagram         User datagram protocol
 vorbis_comment       Vorbis comment
 vorbis_packet        Vorbis packet
