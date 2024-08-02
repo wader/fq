@@ -165,7 +165,7 @@ func decodeBlock(d *decode.D) {
 			// Sampling rate
 			d.FieldU24("sample_rate")
 			// Compression type
-			d.FieldU8("compression_type", scalar.UintMapSymStr{0x01: "RLE", 0x02: "Z-RLE"})
+			d.FieldU8("compression_type", scalar.UintMapSymStr{0x01: "rle", 0x02: "zrle"})
 			// Number of stored pulses (after decompression)
 			d.FieldU32("stored_pulse_count")
 
