@@ -8,6 +8,10 @@ the company Ramsoft became the maintainers, and created revision `v1.20`.
 
 The default file extension is `.tzx`.
 
+### Authors
+
+- Michael R. Cook work.mrc@pm.me, original author
+
 ### References
 
 - https://worldofspectrum.net/TZXformat.html
