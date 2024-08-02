@@ -29,7 +29,6 @@ $ fq -n _registry.groups.probe
   "pcap",
   "pcapng",
   "png",
-  "tap",
   "tar",
   "tiff",
   "tzif",
