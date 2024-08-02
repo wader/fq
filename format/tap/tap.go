@@ -22,7 +22,11 @@ func init() {
 		&decode.Format{
 			Description: "TAP tape format for ZX Spectrum computers",
 			DecodeFn:    tapDecoder,
+			DefaultInArg: format.TAP_In{
+				ReadOneBlock: false,
+			},
 		})
+
 	interp.RegisterFS(tapFS)
 }
 
