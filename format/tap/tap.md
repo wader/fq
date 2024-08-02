@@ -7,6 +7,10 @@ You will often find this format embedded inside the TZX tape format.
 
 The default file extension is `.tap`.
 
+### Authors
+
+- Michael R. Cook work.mrc@pm.me, original author
+
 ### References
 
 - https://worldofspectrum.net/zx-modules/fileformats/tapformat.html
