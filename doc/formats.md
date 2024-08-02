@@ -139,7 +139,7 @@
 |`ip_packet`                                                     |Group                                                                                                        |<sub>`icmp` `icmpv6` `tcp_segment` `udp_datagram`</sub>|
 |`link_frame`                                                    |Group                                                                                                        |<sub>`bsd_loopback_frame` `ether8023_frame` `ipv4_packet` `ipv6_packet` `sll2_packet` `sll_packet`</sub>|
 |`mp3_frame_tags`                                                |Group                                                                                                        |<sub>`mp3_frame_vbri` `mp3_frame_xing`</sub>|
-|`probe`                                                         |Group                                                                                                        |<sub>`adts` `aiff` `apple_bookmark` `ar` `avi` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `caff` `elf` `fit` `flac` `gif` `gzip` `html` `jp2c` `jpeg` `json` `jsonl` `leveldb_table` `luajit` `macho` `macho_fat` `matroska` `moc3` `mp3` `mp4` `mpeg_ts` `nes` `ogg` `opentimestamps` `pcap` `pcapng` `png` `tap` `tar` `tiff` `toml` `tzif` `tzx` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
+|`probe`                                                         |Group                                                                                                        |<sub>`adts` `aiff` `apple_bookmark` `ar` `avi` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `caff` `elf` `fit` `flac` `gif` `gzip` `html` `jp2c` `jpeg` `json` `jsonl` `leveldb_table` `luajit` `macho` `macho_fat` `matroska` `moc3` `mp3` `mp4` `mpeg_ts` `nes` `ogg` `opentimestamps` `pcap` `pcapng` `png` `tar` `tiff` `toml` `tzif` `tzx` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
 |`tcp_stream`                                                    |Group                                                                                                        |<sub>`dns_tcp` `rtmp` `tls`</sub>|
 |`udp_payload`                                                   |Group                                                                                                        |<sub>`dns`</sub>|
 
@@ -1223,6 +1223,10 @@ You will often find this format embedded inside the TZX tape format.
 
 The default file extension is `.tap`.
 
+### Authors
+
+- Michael R. Cook work.mrc@pm.me, original author
+
 ### References
 
 - https://worldofspectrum.net/zx-modules/fileformats/tapformat.html
@@ -1408,6 +1412,10 @@ The format was originally created by Tomaz Kac, who was maintainer until
 the company Ramsoft became the maintainers, and created revision `v1.20`.
 
 The default file extension is `.tzx`.
+
+### Authors
+
+- Michael R. Cook work.mrc@pm.me, original author
 
 ### References
 
