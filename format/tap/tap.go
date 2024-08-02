@@ -21,7 +21,6 @@ func init() {
 		format.TAP,
 		&decode.Format{
 			Description: "TAP tape format for ZX Spectrum computers",
-			Groups:      []*decode.Group{format.Probe},
 			DecodeFn:    tapDecoder,
 		})
 	interp.RegisterFS(tapFS)
