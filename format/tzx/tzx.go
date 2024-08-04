@@ -68,7 +68,7 @@ func decodeBlock(d *decode.D) {
 			peekBytes := d.PeekBytes(2)                              // get the TAP data block length
 			length := uint16(peekBytes[1])<<8 | uint16(peekBytes[0]) // bytes are stored in LittleEndian
 			length += 2                                              // include the two bytes for this value
-			d.FieldFormatLen("tap_block", int64(length)*8, &tapFormat, format.TAP_In{ReadOneBlock: true})
+			d.FieldFormatLen("tap", int64(length)*8, &tapFormat, nil)
 		},
 
 		// ID: 11h (17d) | Turbo Speed Data

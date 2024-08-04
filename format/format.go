@@ -406,7 +406,3 @@ type Pg_Heap_In struct {
 type Pg_BTree_In struct {
 	Page int `doc:"First page number in file, default is 0"`
 }
-
-type TAP_In struct {
-	ReadOneBlock bool `doc:"Read only a single block (required by TZX files)"`
-}

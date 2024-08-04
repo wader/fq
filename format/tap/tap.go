@@ -22,9 +22,6 @@ func init() {
 		&decode.Format{
 			Description: "TAP tape format for ZX Spectrum computers",
 			DecodeFn:    tapDecoder,
-			DefaultInArg: format.TAP_In{
-				ReadOneBlock: false,
-			},
 		})
 
 	interp.RegisterFS(tapFS)
@@ -36,14 +33,6 @@ func init() {
 // followed after the other. The TAP file may be empty.
 func tapDecoder(d *decode.D) any {
 	d.Endian = decode.LittleEndian
-
-	var ti format.TAP_In
-	d.ArgAs(&ti)
-
-	if ti.ReadOneBlock {
-		decodeTapBlock(d)
-		return nil
-	}
 
 	d.FieldArray("blocks", func(d *decode.D) {
 		for !d.End() {
