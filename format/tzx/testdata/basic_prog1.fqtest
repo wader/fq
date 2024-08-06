@@ -5,7 +5,7 @@ $ fq -d tzx dv basic_prog1.tzx
 0x00|                           14                  |         .      |  minor_version: 20 0x9-0xa (1)
     |                                               |                |  blocks[0:3]: 0xa-0xcd (195)
     |                                               |                |    [0]{}: block 0xa-0x88 (126)
-0x00|                              32               |          2     |      block_type: "archive_info" (50) 0xa-0xb (1)
+0x00|                              32               |          2     |      type: "archive_info" (50) 0xa-0xb (1)
 0x00|                                 7b 00         |           {.   |      length: 123 0xb-0xd (2)
 0x00|                                       09      |             .  |      count: 9 0xd-0xe (1)
     |                                               |                |      archive_info[0:9]: 0xe-0x88 (122)
@@ -51,7 +51,7 @@ $ fq -d tzx dv basic_prog1.tzx
 0x70|54 5a 58 65 64 20 62 79 20 4d 69 63 68 61 65 6c|TZXed by Michael|          value: "TZXed by Michael R. Cook" 0x70-0x88 (24)
 0x80|20 52 2e 20 43 6f 6f 6b                        | R. Cook        |
     |                                               |                |    [1]{}: block 0x88-0xa0 (24)
-0x80|                        10                     |        .       |      block_type: "standard_speed_data" (16) 0x88-0x89 (1)
+0x80|                        10                     |        .       |      type: "standard_speed_data" (16) 0x88-0x89 (1)
 0x80|                           e8 03               |         ..     |      pause: 1000 0x89-0x8b (2)
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      tap{}: (tap) 0x8b-0xa0 (21)
     |                                               |                |        blocks[0:1]: 0x8b-0xa0 (21)
@@ -65,9 +65,9 @@ $ fq -d tzx dv basic_prog1.tzx
 0x90|                           26 00               |         &.     |              data_length: 38 0x99-0x9b (2)
 0x90|                                 0a 00         |           ..   |              auto_start_line: 10 0x9b-0x9d (2)
 0x90|                                       26 00   |             &. |              program_length: 38 0x9d-0x9f (2)
-0x90|                                             01|               .|              checksum: 0x1 0x9f-0xa0 (1)
+0x90|                                             01|               .|              checksum: 0x1 (valid) 0x9f-0xa0 (1)
     |                                               |                |    [2]{}: block 0xa0-0xcd (45)
-0xa0|10                                             |.               |      block_type: "standard_speed_data" (16) 0xa0-0xa1 (1)
+0xa0|10                                             |.               |      type: "standard_speed_data" (16) 0xa0-0xa1 (1)
 0xa0|   e8 03                                       | ..             |      pause: 1000 0xa1-0xa3 (2)
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      tap{}: (tap) 0xa3-0xcd (42)
     |                                               |                |        blocks[0:1]: 0xa3-0xcd (42)
@@ -78,4 +78,4 @@ $ fq -d tzx dv basic_prog1.tzx
 0xa0|                  00 0a 14 00 20 f5 22 66 71 20|      .... ."fq |              data: raw bits 0xa6-0xcc (38)
 0xb0|69 73 20 74 68 65 20 62 65 73 74 21 22 0d 00 14|is the best!"...|
 0xc0|0a 00 ec 31 30 0e 00 00 0a 00 00 0d            |...10.......    |
-0xc0|                                    b6|        |            .|  |              checksum: 0xb6 0xcc-0xcd (1)
+0xc0|                                    b6|        |            .|  |              checksum: 0xb6 (valid) 0xcc-0xcd (1)

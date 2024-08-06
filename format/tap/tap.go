@@ -3,11 +3,14 @@ package tzx
 // https://worldofspectrum.net/zx-modules/fileformats/tapformat.html
 
 import (
+	"bufio"
+	"bytes"
 	"embed"
 
 	"golang.org/x/text/encoding/charmap"
 
 	"github.com/wader/fq/format"
+	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
@@ -67,6 +70,8 @@ func decodeTapBlock(d *decode.D) {
 
 // decodes the different types of 19-byte header blocks.
 func decodeHeader(d *decode.D) {
+	blockStartPosition := d.Pos()
+
 	// Always 0: byte indicating a standard ROM loading header
 	d.FieldU8("flag", scalar.UintMapSymStr{0: "standard_speed_data"})
 	// Header type
@@ -119,10 +124,12 @@ func decodeHeader(d *decode.D) {
 	}
 
 	// Simply all bytes XORed (including flag byte).
-	d.FieldU8("checksum", scalar.UintHex)
+	d.FieldU8("checksum", d.UintValidate(calculateChecksum(d, blockStartPosition, d.Pos()-blockStartPosition)), scalar.UintHex)
 }
 
 func decodeDataBlock(d *decode.D, length uint64) {
+	blockStartPosition := d.Pos()
+
 	// flag indicating the type of data block, usually 255 (standard speed data)
 	d.FieldU8("flag", scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
 		if s.Actual == 0xFF {
@@ -135,5 +142,17 @@ func decodeDataBlock(d *decode.D, length uint64) {
 	// The essential data: length minus the flag/checksum bytes (may be empty)
 	d.FieldRawLen("data", int64(length-2)*8)
 	// Simply all bytes (including flag byte) XORed
-	d.FieldU8("checksum", scalar.UintHex)
+	d.FieldU8("checksum", d.UintValidate(calculateChecksum(d, blockStartPosition, d.Pos()-blockStartPosition)), scalar.UintHex)
+}
+
+func calculateChecksum(d *decode.D, blockStartPos, blockEndPos int64) uint64 {
+	var blockSlice bytes.Buffer
+	writer := bufio.NewWriter(&blockSlice)
+	d.Copy(writer, bitio.NewIOReader(d.BitBufRange(blockStartPos, blockEndPos)))
+
+	var checksum uint8
+	for _, v := range blockSlice.Bytes() {
+		checksum ^= v
+	}
+	return uint64(checksum)
 }
