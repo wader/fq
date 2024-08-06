@@ -408,7 +408,7 @@ func decodeBlock(d *decode.D) {
 		},
 	}
 
-	blockType := d.FieldU8("block_type", blockTypeMapper)
+	blockType := d.FieldU8("type", blockTypeMapper)
 
 	// Deprecated block types: C64RomType, C64TurboData, EmulationInfo, Snapshot
 	if blockType == 0x16 || blockType == 0x17 || blockType == 0x34 || blockType == 0x40 {
