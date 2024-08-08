@@ -165,12 +165,14 @@ var (
 	RTMP                = &decode.Group{Name: "rtmp"}
 	SLL_Packet          = &decode.Group{Name: "sll_packet"}
 	SLL2_Packet         = &decode.Group{Name: "sll2_packet"}
+	TAP                 = &decode.Group{Name: "tap"}
 	TAR                 = &decode.Group{Name: "tar"}
 	TCP_Segment         = &decode.Group{Name: "tcp_segment"}
 	TIFF                = &decode.Group{Name: "tiff"}
 	TLS                 = &decode.Group{Name: "tls"}
 	TOML                = &decode.Group{Name: "toml"}
 	Tzif                = &decode.Group{Name: "tzif"}
+	TZX                 = &decode.Group{Name: "tzx"}
 	UDP_Datagram        = &decode.Group{Name: "udp_datagram"}
 	Vorbis_Comment      = &decode.Group{Name: "vorbis_comment"}
 	Vorbis_Packet       = &decode.Group{Name: "vorbis_packet"}

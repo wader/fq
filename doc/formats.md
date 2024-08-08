@@ -113,12 +113,14 @@
 |[`rtmp`](#rtmp)                                                 |Real-Time&nbsp;Messaging&nbsp;Protocol                                                                       |<sub>`amf0` `mpeg_asc`</sub>|
 |`sll2_packet`                                                   |Linux&nbsp;cooked&nbsp;capture&nbsp;encapsulation&nbsp;v2                                                    |<sub>`inet_packet`</sub>|
 |`sll_packet`                                                    |Linux&nbsp;cooked&nbsp;capture&nbsp;encapsulation                                                            |<sub>`inet_packet`</sub>|
+|[`tap`](#tap)                                                   |TAP&nbsp;tape&nbsp;format&nbsp;for&nbsp;ZX&nbsp;Spectrum&nbsp;computers                                      |<sub></sub>|
 |`tar`                                                           |Tar&nbsp;archive                                                                                             |<sub>`probe`</sub>|
 |`tcp_segment`                                                   |Transmission&nbsp;control&nbsp;protocol&nbsp;segment                                                         |<sub></sub>|
 |`tiff`                                                          |Tag&nbsp;Image&nbsp;File&nbsp;Format                                                                         |<sub>`icc_profile`</sub>|
 |[`tls`](#tls)                                                   |Transport&nbsp;layer&nbsp;security                                                                           |<sub>`asn1_ber`</sub>|
 |`toml`                                                          |Tom's&nbsp;Obvious,&nbsp;Minimal&nbsp;Language                                                               |<sub></sub>|
 |[`tzif`](#tzif)                                                 |Time&nbsp;Zone&nbsp;Information&nbsp;Format                                                                  |<sub></sub>|
+|[`tzx`](#tzx)                                                   |TZX&nbsp;tape&nbsp;format&nbsp;for&nbsp;ZX&nbsp;Spectrum&nbsp;computers                                      |<sub>`tap`</sub>|
 |`udp_datagram`                                                  |User&nbsp;datagram&nbsp;protocol                                                                             |<sub>`udp_payload`</sub>|
 |`vorbis_comment`                                                |Vorbis&nbsp;comment                                                                                          |<sub>`flac_picture`</sub>|
 |`vorbis_packet`                                                 |Vorbis&nbsp;packet                                                                                           |<sub>`vorbis_comment`</sub>|
@@ -137,7 +139,7 @@
 |`ip_packet`                                                     |Group                                                                                                        |<sub>`icmp` `icmpv6` `tcp_segment` `udp_datagram`</sub>|
 |`link_frame`                                                    |Group                                                                                                        |<sub>`bsd_loopback_frame` `ether8023_frame` `ipv4_packet` `ipv6_packet` `sll2_packet` `sll_packet`</sub>|
 |`mp3_frame_tags`                                                |Group                                                                                                        |<sub>`mp3_frame_vbri` `mp3_frame_xing`</sub>|
-|`probe`                                                         |Group                                                                                                        |<sub>`adts` `aiff` `apple_bookmark` `ar` `avi` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `caff` `elf` `fit` `flac` `gif` `gzip` `html` `jp2c` `jpeg` `json` `jsonl` `leveldb_table` `luajit` `macho` `macho_fat` `matroska` `moc3` `mp3` `mp4` `mpeg_ts` `nes` `ogg` `opentimestamps` `pcap` `pcapng` `png` `tar` `tiff` `toml` `tzif` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
+|`probe`                                                         |Group                                                                                                        |<sub>`adts` `aiff` `apple_bookmark` `ar` `avi` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `caff` `elf` `fit` `flac` `gif` `gzip` `html` `jp2c` `jpeg` `json` `jsonl` `leveldb_table` `luajit` `macho` `macho_fat` `matroska` `moc3` `mp3` `mp4` `mpeg_ts` `nes` `ogg` `opentimestamps` `pcap` `pcapng` `png` `tar` `tiff` `toml` `tzif` `tzx` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
 |`tcp_stream`                                                    |Group                                                                                                        |<sub>`dns_tcp` `rtmp` `tls`</sub>|
 |`udp_payload`                                                   |Group                                                                                                        |<sub>`dns`</sub>|
 
@@ -1209,6 +1211,26 @@ fq '.tcp_connections[] | select(.server.port=="rtmp") | d' file.cap
 - https://rtmp.veriskope.com/docs/spec/
 - https://rtmp.veriskope.com/pdf/video_file_format_spec_v10.pdf
 
+## tap
+TAP tape format for ZX Spectrum computers.
+
+The TAP- (and BLK-) format is nearly a direct copy of the data that is stored
+in real tapes, as it is written by the ROM save routine of the ZX-Spectrum.
+A TAP file is simply one data block or a group of 2 or more data blocks, one
+followed after the other. The TAP file may be empty.
+
+You will often find this format embedded inside the TZX tape format.
+
+The default file extension is `.tap`.
+
+### Authors
+
+- Michael R. Cook work.mrc@pm.me, original author
+
+### References
+
+- https://worldofspectrum.net/zx-modules/fileformats/tapformat.html
+
 ## tls
 Transport layer security.
 
@@ -1377,6 +1399,27 @@ fq '.v2plusdatablock.leap_second_records | length' tziffile
 
 ### References
 - https://datatracker.ietf.org/doc/html/rfc8536
+
+## tzx
+TZX tape format for ZX Spectrum computers.
+
+`TZX` is a file format designed to preserve cassette tapes compatible with the
+ZX Spectrum computers, although some specialized versions of the format have
+been defined for other machines such as the Amstrad CPC and C64.
+
+The format was originally created by Tomaz Kac, who was maintainer until
+`revision 1.13`, before passing it to Martijn v.d. Heide. For a brief period
+the company Ramsoft became the maintainers, and created revision `v1.20`.
+
+The default file extension is `.tzx`.
+
+### Authors
+
+- Michael R. Cook work.mrc@pm.me, original author
+
+### References
+
+- https://worldofspectrum.net/TZXformat.html
 
 ## wasm
 WebAssembly Binary Format.

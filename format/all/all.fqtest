@@ -32,6 +32,7 @@ $ fq -n _registry.groups.probe
   "tar",
   "tiff",
   "tzif",
+  "tzx",
   "wasm",
   "webp",
   "zip",
@@ -156,12 +157,14 @@ pssh_playready       PlayReady PSSH
 rtmp                 Real-Time Messaging Protocol
 sll2_packet          Linux cooked capture encapsulation v2
 sll_packet           Linux cooked capture encapsulation
+tap                  TAP tape format for ZX Spectrum computers
 tar                  Tar archive
 tcp_segment          Transmission control protocol segment
 tiff                 Tag Image File Format
 tls                  Transport layer security
 toml                 Tom's Obvious, Minimal Language
 tzif                 Time Zone Information Format
+tzx                  TZX tape format for ZX Spectrum computers
 udp_datagram         User datagram protocol
 vorbis_comment       Vorbis comment
 vorbis_packet        Vorbis packet
