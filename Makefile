@@ -125,5 +125,6 @@ release:
 
 
 midi:
+	go fmt ./format/midi/...
 	go run . -d midi dv format/midi/testdata/test.mid
 
