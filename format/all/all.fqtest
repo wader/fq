@@ -21,6 +21,7 @@ $ fq -n _registry.groups.probe
   "macho",
   "macho_fat",
   "matroska",
+  "midi",
   "moc3",
   "mp4",
   "nes",

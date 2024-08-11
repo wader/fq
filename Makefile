@@ -122,3 +122,8 @@ release:
 	@echo "# wader/fq":
 	@echo git push wader v${VERSION}:v${VERSION}
 	@echo "# edit draft release notes and publish"
+
+
+midi:
+	go run . -d midi dv format/midi/testdata/test.mid
+

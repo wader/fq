@@ -1,0 +1,21 @@
+$ fq -h midi
+midi: Standard MIDI file decoder
+
+Decode examples
+===============
+
+  # Decode file as MIDI
+  $ fq -d midi . file
+
+
+Limitations
+===========
+
+
+Authors
+=======
+
+
+References
+==========
+
