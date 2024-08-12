@@ -91,6 +91,7 @@ func decodeMTrk(d *decode.D) {
 	d.FieldArray("events", func(d *decode.D) {
 		d.FramedFn(int64(length)*8, func(d *decode.D) {
 			d.FieldStruct("event", decodeEvent)
+			d.FieldStruct("event", decodeEvent)
 		})
 	})
 }
@@ -98,14 +99,17 @@ func decodeMTrk(d *decode.D) {
 func decodeEvent(d *decode.D) {
 	d.FieldUintFn("delta", vlq)
 
-	status := d.FieldU8("status")
+	event := d.PeekBytes(2)
 
 	// ... meta event?
-	if status == 0xff {
-		event := d.UintBits(8)
-		switch MetaEventType(event) {
+	if event[0] == 0xff {
+		switch MetaEventType(event[1]) {
 		case TypeTrackName:
 			d.FieldStruct("TrackName", decodeTrackName)
+			return
+
+		case TypeTempo:
+			d.FieldStruct("Tempo", decodeTempo)
 			return
 		}
 	}
@@ -132,7 +136,7 @@ func vlq(d *decode.D) uint64 {
 	return vlq
 }
 
-func vlf(d *decode.D) []byte {
+func vlf(d *decode.D) []uint8 {
 	N := int(vlq(d))
 
 	return d.BytesLen(N)

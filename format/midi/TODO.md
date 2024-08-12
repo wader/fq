@@ -1,5 +1,8 @@
 # TODO
 
+- [ ] add to probe group
+- [ ] move delta into events
+
 - formats
     - [ ] format 0
     - [ ] format 1
@@ -9,7 +12,7 @@
     - [ ] sequence number
     - [ ] text
     - [ ] copyright
-    - [ ] track name 
+    - [x] track name 
     - [ ] instrument name
     - [ ] lyric
     - [ ] marker
@@ -19,7 +22,7 @@
     - [ ] MIDI channel prefix
     - [ ] MIDI port
     - [ ] end of track
-    - [ ] tempo
+    - [x] tempo
     - [ ] SMPTE offset
     - [ ] key signature
     - [ ] time signature
@@ -39,4 +42,3 @@
     - [ ] continuation
     - [ ] escape
 
-- [ ] add to probe group

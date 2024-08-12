@@ -1,12 +1,7 @@
 package midi
 
 import (
-	// "bytes"
-	// "embed"
-
-	// "github.com/wader/fq/format"
 	"github.com/wader/fq/pkg/decode"
-	// "github.com/wader/fq/pkg/interp"
 )
 
 type MetaEventType uint8
@@ -33,7 +28,25 @@ const (
 )
 
 func decodeTrackName(d *decode.D) {
+	d.FieldU8("status")
+	d.FieldU8("event")
 	d.FieldStrFn("Name", func(d *decode.D) string {
 		return string(vlf(d))
+	})
+}
+
+func decodeTempo(d *decode.D) {
+	d.FieldU8("status")
+	d.FieldU8("event")
+	d.FieldUintFn("Tempo", func(d *decode.D) uint64 {
+		tempo := uint64(0)
+		bytes := vlf(d)
+
+		for _, b := range bytes {
+			tempo <<= 8
+			tempo |= uint64(b & 0x00ff)
+		}
+
+		return tempo
 	})
 }
