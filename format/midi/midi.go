@@ -92,7 +92,8 @@ func decodeMTrk(d *decode.D) {
 	d.FieldArray("events", func(d *decode.D) {
 		d.FramedFn(int64(length)*8, func(d *decode.D) {
 			for d.BitsLeft() > 0 {
-				d.FieldStruct("event", decodeEvent)
+				// d.FieldStruct("event", decodeEvent)
+				decodeEvent(d)
 			}
 		})
 	})

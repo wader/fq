@@ -31,7 +31,7 @@ func decodeTrackName(d *decode.D) {
 	d.FieldUintFn("delta", vlq)
 	d.FieldU8("status")
 	d.FieldU8("event")
-	d.FieldStrFn("Name", func(d *decode.D) string {
+	d.FieldStrFn("name", func(d *decode.D) string {
 		return string(vlf(d))
 	})
 }
@@ -58,27 +58,28 @@ func decodeTimeSignature(d *decode.D) {
 	d.FieldUintFn("delta", vlq)
 	d.FieldU8("status")
 	d.FieldU8("event")
+	d.FieldStruct("signature", func(d *decode.D) {
+		bytes := vlf(d)
 
-	bytes := vlf(d)
-
-	if len(bytes) > 0 {
-		d.FieldValueUint("numerator", uint64(bytes[0]))
-	}
-
-	if len(bytes) > 1 {
-		denominator := uint16(1)
-		for i := uint8(0); i < bytes[1]; i++ {
-			denominator *= 2
+		if len(bytes) > 0 {
+			d.FieldValueUint("numerator", uint64(bytes[0]))
 		}
 
-		d.FieldValueUint("denominator", uint64(denominator))
-	}
+		if len(bytes) > 1 {
+			denominator := uint16(1)
+			for i := uint8(0); i < bytes[1]; i++ {
+				denominator *= 2
+			}
 
-	if len(bytes) > 2 {
-		d.FieldValueUint("ticksPerClick", uint64(bytes[2]))
-	}
+			d.FieldValueUint("denominator", uint64(denominator))
+		}
 
-	if len(bytes) > 3 {
-		d.FieldValueUint("thirtySecondsPerQuarter", uint64(bytes[3]))
-	}
+		if len(bytes) > 2 {
+			d.FieldValueUint("ticksPerClick", uint64(bytes[2]))
+		}
+
+		if len(bytes) > 3 {
+			d.FieldValueUint("thirtySecondsPerQuarter", uint64(bytes[3]))
+		}
+	})
 }

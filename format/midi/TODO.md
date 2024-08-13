@@ -2,7 +2,7 @@
 
 - [ ] add to probe group
 - [x] move delta into events
-- [ ] somehow map VLF fields
+- [ ] tests
 
 - formats
     - [ ] format 0
