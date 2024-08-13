@@ -5,6 +5,7 @@ package midi
 import (
 	"bytes"
 	"embed"
+	"fmt"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/pkg/decode"
@@ -100,6 +101,8 @@ func decodeMTrk(d *decode.D) {
 func decodeEvent(d *decode.D) {
 	_, status, event := peekEvent(d)
 
+	fmt.Printf(">> status:%02x event:%02x\n", status, event)
+
 	// ... meta event?
 	if status == 0xff {
 		switch MetaEventType(event) {
@@ -109,6 +112,10 @@ func decodeEvent(d *decode.D) {
 
 		case TypeTempo:
 			d.FieldStruct("Tempo", decodeTempo)
+			return
+
+		case TypeTimeSignature:
+			d.FieldStruct("TimeSignature", decodeTimeSignature)
 			return
 		}
 	}
