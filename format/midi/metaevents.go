@@ -28,6 +28,7 @@ const (
 )
 
 func decodeTrackName(d *decode.D) {
+	d.FieldUintFn("delta", vlq)
 	d.FieldU8("status")
 	d.FieldU8("event")
 	d.FieldStrFn("Name", func(d *decode.D) string {
@@ -36,6 +37,7 @@ func decodeTrackName(d *decode.D) {
 }
 
 func decodeTempo(d *decode.D) {
+	d.FieldUintFn("delta", vlq)
 	d.FieldU8("status")
 	d.FieldU8("event")
 	d.FieldUintFn("Tempo", func(d *decode.D) uint64 {

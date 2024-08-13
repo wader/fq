@@ -90,20 +90,19 @@ func decodeMTrk(d *decode.D) {
 
 	d.FieldArray("events", func(d *decode.D) {
 		d.FramedFn(int64(length)*8, func(d *decode.D) {
-			d.FieldStruct("event", decodeEvent)
-			d.FieldStruct("event", decodeEvent)
+			for d.BitsLeft() > 0 {
+				d.FieldStruct("event", decodeEvent)
+			}
 		})
 	})
 }
 
 func decodeEvent(d *decode.D) {
-	d.FieldUintFn("delta", vlq)
-
-	event := d.PeekBytes(2)
+	_, status, event := peekEvent(d)
 
 	// ... meta event?
-	if event[0] == 0xff {
-		switch MetaEventType(event[1]) {
+	if status == 0xff {
+		switch MetaEventType(event) {
 		case TypeTrackName:
 			d.FieldStruct("TrackName", decodeTrackName)
 			return
@@ -114,9 +113,34 @@ func decodeEvent(d *decode.D) {
 		}
 	}
 
-	// ... unknown event - swallow remaining bytes
-	// for N := d.BitsLeft(); N > 0; {
-	// }
+	// ... unknown event - flush remaining data
+	var N int = int(d.BitsLeft())
+
+	d.Bits(N)
+}
+
+func peekEvent(d *decode.D) (uint64, uint8, uint8) {
+	N := 3
+
+	for {
+		bytes := d.PeekBytes(N)
+
+		// ... peek at delta value
+		delta := uint64(0)
+
+		for i, b := range bytes[:N-2] {
+			delta <<= 7
+			delta += uint64(b & 0x7f)
+
+			if b&0x80 == 0 {
+				status := bytes[i+1]
+				event := bytes[i+2]
+				return delta, status, event
+			}
+		}
+
+		N++
+	}
 }
 
 func vlq(d *decode.D) uint64 {

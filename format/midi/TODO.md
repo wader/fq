@@ -1,12 +1,12 @@
 # TODO
 
 - [ ] add to probe group
-- [ ] move delta into events
+- [x] move delta into events
 
 - formats
     - [ ] format 0
     - [ ] format 1
-    - [ ] format 1
+    - [ ] format 2
 
 - meta events
     - [ ] sequence number
