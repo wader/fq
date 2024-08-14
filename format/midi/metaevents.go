@@ -83,3 +83,11 @@ func decodeTimeSignature(d *decode.D) {
 		}
 	})
 }
+
+func decodeEndOfTrack(d *decode.D) {
+	d.FieldUintFn("delta", vlq)
+	d.FieldU8("status")
+	d.FieldU8("event")
+
+	vlf(d)
+}
