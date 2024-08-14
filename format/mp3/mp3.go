@@ -133,7 +133,7 @@ func mp3Decode(d *decode.D) any {
 
 	unknownPercent := int(float64((d.Len() - knownSize)) / float64(d.Len()) * 100.0)
 	if unknownPercent > mi.MaxUnknown {
-		d.Errorf(fmt.Sprintf("exceeds max precent unknown bits, %d > %d", unknownPercent, mi.MaxUnknown))
+		d.Errorf("exceeds max precent unknown bits, %d > %d", unknownPercent, mi.MaxUnknown)
 	}
 
 	return nil

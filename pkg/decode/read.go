@@ -169,7 +169,7 @@ func (d *D) tryTextLenPrefixed(prefixLenBytes int, fixedBytes int, e encoding.En
 	if fixedBytes != -1 {
 		// TODO: error?
 		readBytes = fixedBytes - prefixLenBytes
-		lenBytes = mathx.Min(lenBytes, uint64(readBytes))
+		lenBytes = min(lenBytes, uint64(readBytes))
 	}
 
 	bs, err := d.TryBytesLen(readBytes)
