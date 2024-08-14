@@ -54,28 +54,8 @@ func PadFormatBigInt(i *big.Int, base int, basePrefix bool, width int) string {
 	return padFormatNumber(i.Text(base), base, basePrefix, width)
 }
 
-func Max[T constraints.Ordered](v T, vs ...T) T {
-	m := v
-	for _, v := range vs {
-		if v > m {
-			m = v
-		}
-	}
-	return m
-}
-
-func Min[T constraints.Ordered](v T, vs ...T) T {
-	m := v
-	for _, v := range vs {
-		if v < m {
-			m = v
-		}
-	}
-	return m
-}
-
-func Clamp[T constraints.Ordered](min, max, v T) T {
-	return Max(min, Min(max, v))
+func Clamp[T constraints.Ordered](a, b, v T) T {
+	return max(a, min(b, v))
 }
 
 type Bits uint64

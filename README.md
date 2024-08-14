@@ -243,7 +243,7 @@ apk add -X http://dl-cdn.alpinelinux.org/alpine/edge/testing fq
 
 ### Build from source
 
-Make sure you have [go](https://go.dev) 1.20 or later installed.
+Make sure you have [go](https://go.dev) 1.21 or later installed.
 
 To install directly from git repository (no git clone needed):
 ```sh

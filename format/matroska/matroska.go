@@ -470,7 +470,6 @@ func matroskaDecode(d *decode.D) any {
 			if !ok {
 				panic(fmt.Sprintf("expected mpegASCOut got %#+v", v))
 			}
-			//nolint:gosimple
 			t.formatInArg = format.AAC_Frame_In{ObjectType: mpegASCOut.ObjectType}
 		case "A_OPUS":
 			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, &opusPacketFrameGroup, nil)
@@ -494,14 +493,14 @@ func matroskaDecode(d *decode.D) any {
 			if !ok {
 				panic(fmt.Sprintf("expected AvcDcrOut got %#+v", v))
 			}
-			t.formatInArg = format.AVC_AU_In{LengthSize: avcDcrOut.LengthSize} //nolint:gosimple
+			t.formatInArg = format.AVC_AU_In{LengthSize: avcDcrOut.LengthSize}
 		case "V_MPEGH/ISO/HEVC":
 			_, v := t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, &mpegHEVCDCRGroup, nil)
 			hevcDcrOut, ok := v.(format.HEVC_DCR_Out)
 			if !ok {
 				panic(fmt.Sprintf("expected HevcDcrOut got %#+v", v))
 			}
-			t.formatInArg = format.HEVC_AU_In{LengthSize: hevcDcrOut.LengthSize} //nolint:gosimple
+			t.formatInArg = format.HEVC_AU_In{LengthSize: hevcDcrOut.LengthSize}
 		case "V_AV1":
 			t.parentD.FieldFormatRange("value", t.codecPrivatePos, t.codecPrivateTagSize, &av1CCRGroup, nil)
 		case "V_VP9":

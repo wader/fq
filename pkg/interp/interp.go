@@ -1057,13 +1057,13 @@ type Options struct {
 func OptionsFromValue(v any) (*Options, error) {
 	var opts Options
 	_ = mapstruct.ToStruct(v, &opts)
-	opts.ArrayTruncate = mathx.Max(0, opts.ArrayTruncate)
-	opts.StringTruncate = mathx.Max(0, opts.StringTruncate)
-	opts.Depth = mathx.Max(0, opts.Depth)
+	opts.ArrayTruncate = max(0, opts.ArrayTruncate)
+	opts.StringTruncate = max(0, opts.StringTruncate)
+	opts.Depth = max(0, opts.Depth)
 	opts.Addrbase = mathx.Clamp(2, 36, opts.Addrbase)
 	opts.Sizebase = mathx.Clamp(2, 36, opts.Sizebase)
-	opts.LineBytes = mathx.Max(1, opts.LineBytes)
-	opts.DisplayBytes = mathx.Max(0, opts.DisplayBytes)
+	opts.LineBytes = max(1, opts.LineBytes)
+	opts.DisplayBytes = max(0, opts.DisplayBytes)
 	opts.Decorator = decoratorFromOptions(opts)
 	if fn, err := bitsFormatFnFromOptions(opts); err != nil {
 		return nil, err
