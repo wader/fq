@@ -106,61 +106,14 @@ func decodeEvent(d *decode.D) {
 
 	// ... meta event?
 	if status == 0xff {
-		switch MetaEventType(event) {
-		case TypeTrackName:
-			d.FieldStruct("TrackName", decodeTrackName)
-			return
-
-		case TypeTempo:
-			d.FieldStruct("Tempo", decodeTempo)
-			return
-
-		case TypeTimeSignature:
-			d.FieldStruct("TimeSignature", decodeTimeSignature)
-			return
-
-		case TypeEndOfTrack:
-			d.FieldStruct("EndOfTrack", decodeEndOfTrack)
-			return
-
-			// TypeSequenceNumber         MetaEventType = 0x00
-			// TypeText                   MetaEventType = 0x01
-			// TypeCopyright              MetaEventType = 0x02
-			// TypeInstrumentName         MetaEventType = 0x04
-			// TypeLyric                  MetaEventType = 0x05
-			// TypeMarker                 MetaEventType = 0x06
-			// TypeCuePoint               MetaEventType = 0x07
-			// TypeProgramName            MetaEventType = 0x08
-			// TypeDeviceName             MetaEventType = 0x09
-			// TypeMIDIChannelPrefix      MetaEventType = 0x20
-			// TypeMIDIPort               MetaEventType = 0x21
-			// TypeSMPTEOffset            MetaEventType = 0x54
-			// TypeKeySignature           MetaEventType = 0x59
-			// TypeSequencerSpecificEvent MetaEventType = 0x7f
-		}
+		decodeMetaEvent(d, event)
+		return
 	}
+
+	// ... sysex event
 
 	// ... midi event?
-	switch MidiEventType(status & 0xf0) {
-	case TypeProgramChange:
-		d.FieldStruct("ProgramChange", decodeProgramChange)
-		return
-
-		// TypeNoteOff            MidiEventType = 0x80
-		// TypeNoteOn             MidiEventType = 0x90
-		// TypePolyphonicPressure MidiEventType = 0xa0
-		// TypeController         MidiEventType = 0xb0
-		// TypeProgramChange      MidiEventType = 0xc0
-		// TypeChannelPressure    MidiEventType = 0xd0
-		// TypePitchBend          MidiEventType = 0xe0
-	}
-
-	fmt.Printf(">>>>>>>>>>> UNKNOWN: %02x %02x\n", status, event)
-
-	// ... unknown event - flush remaining data
-	var N int = int(d.BitsLeft())
-
-	d.Bits(N)
+	decodeMIDIEvent(d, status)
 }
 
 func peekEvent(d *decode.D) (uint64, uint8, uint8) {
