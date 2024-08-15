@@ -1,171 +1,85 @@
-$ fq -d midi  dv test.mid
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: test.bson (bson) 0x0-0x141 (321)
-0x000|41 01 00 00                                    |A...            |  size: 321 0x0-0x4 (4)
-     |                                               |                |  elements[0:17]: 0x4-0x140 (316)
-     |                                               |                |    [0]{}: element 0x4-0x11 (13)
-0x000|            01                                 |    .           |      type: "double" (1) (64-bit binary floating point) 0x4-0x5 (1)
-0x000|               64 6f 75 00                     |     dou.       |      name: "dou" 0x5-0x9 (4)
-0x000|                           29 5c 8f c2 f5 b0 58|         )\....X|      value: 98.765 0x9-0x11 (8)
-0x010|40                                             |@               |
-     |                                               |                |    [1]{}: element 0x11-0x24 (19)
-0x010|   02                                          | .              |      type: "string" (2) (UTF-8 string) 0x11-0x12 (1)
-0x010|      73 74 72 00                              |  str.          |      name: "str" 0x12-0x16 (4)
-0x010|                  0a 00 00 00                  |      ....      |      length: 10 0x16-0x1a (4)
-0x010|                              6d 79 20 73 74 72|          my str|      value: "my string" 0x1a-0x24 (10)
-0x020|69 6e 67 00                                    |ing.            |
-     |                                               |                |    [2]{}: element 0x24-0x66 (66)
-0x020|            03                                 |    .           |      type: "document" (3) (Embedded document) 0x24-0x25 (1)
-0x020|               64 6f 63 00                     |     doc.       |      name: "doc" 0x25-0x29 (4)
-     |                                               |                |      value{}: 0x29-0x66 (61)
-0x020|                           3d 00 00 00         |         =...   |        size: 61 0x29-0x2d (4)
-     |                                               |                |        elements[0:3]: 0x2d-0x65 (56)
-     |                                               |                |          [0]{}: element 0x2d-0x45 (24)
-0x020|                                       02      |             .  |            type: "string" (2) (UTF-8 string) 0x2d-0x2e (1)
-0x020|                                          6e 73|              ns|            name: "nstr" 0x2e-0x33 (5)
-0x030|74 72 00                                       |tr.             |
-0x030|         0e 00 00 00                           |   ....         |            length: 14 0x33-0x37 (4)
-0x030|                     6e 65 73 74 65 64 20 73 74|       nested st|            value: "nested string" 0x37-0x45 (14)
-0x040|72 69 6e 67 00                                 |ring.           |
-     |                                               |                |          [1]{}: element 0x45-0x57 (18)
-0x040|               04                              |     .          |            type: "array" (4) (Array) 0x45-0x46 (1)
-0x040|                  6e 61 72 72 00               |      narr.     |            name: "narr" 0x46-0x4b (5)
-     |                                               |                |            value{}: 0x4b-0x57 (12)
-0x040|                                 0c 00 00 00   |           .... |              size: 12 0x4b-0x4f (4)
-     |                                               |                |              elements[0:1]: 0x4f-0x56 (7)
-     |                                               |                |                [0]{}: element 0x4f-0x56 (7)
-0x040|                                             10|               .|                  type: "int32" (16) (32-bit integer) 0x4f-0x50 (1)
-0x050|30 00                                          |0.              |                  name: "0" 0x50-0x52 (2)
-0x050|      85 ff ff ff                              |  ....          |                  value: -123 0x52-0x56 (4)
-0x050|                  00                           |      .         |              terminator: 0 (valid) 0x56-0x57 (1)
-     |                                               |                |          [2]{}: element 0x57-0x65 (14)
-0x050|                     01                        |       .        |            type: "double" (1) (64-bit binary floating point) 0x57-0x58 (1)
-0x050|                        6e 64 6f 75 00         |        ndou.   |            name: "ndou" 0x58-0x5d (5)
-0x050|                                       29 5c 8f|             )\.|            value: 98.765 0x5d-0x65 (8)
-0x060|c2 f5 b0 58 40                                 |...X@           |
-0x060|               00                              |     .          |        terminator: 0 (valid) 0x65-0x66 (1)
-     |                                               |                |    [3]{}: element 0x66-0x9f (57)
-0x060|                  04                           |      .         |      type: "array" (4) (Array) 0x66-0x67 (1)
-0x060|                     61 72 72 00               |       arr.     |      name: "arr" 0x67-0x6b (4)
-     |                                               |                |      value{}: 0x6b-0x9f (52)
-0x060|                                 34 00 00 00   |           4... |        size: 52 0x6b-0x6f (4)
-     |                                               |                |        elements[0:3]: 0x6f-0x9e (47)
-     |                                               |                |          [0]{}: element 0x6f-0x81 (18)
-0x060|                                             02|               .|            type: "string" (2) (UTF-8 string) 0x6f-0x70 (1)
-0x070|30 00                                          |0.              |            name: "0" 0x70-0x72 (2)
-0x070|      0b 00 00 00                              |  ....          |            length: 11 0x72-0x76 (4)
-0x070|                  61 72 72 20 73 74 72 69 6e 67|      arr string|            value: "arr string" 0x76-0x81 (11)
-0x080|00                                             |.               |
-     |                                               |                |          [1]{}: element 0x81-0x93 (18)
-0x080|   03                                          | .              |            type: "document" (3) (Embedded document) 0x81-0x82 (1)
-0x080|      31 00                                    |  1.            |            name: "1" 0x82-0x84 (2)
-     |                                               |                |            value{}: 0x84-0x93 (15)
-0x080|            0f 00 00 00                        |    ....        |              size: 15 0x84-0x88 (4)
-     |                                               |                |              elements[0:1]: 0x88-0x92 (10)
-     |                                               |                |                [0]{}: element 0x88-0x92 (10)
-0x080|                        10                     |        .       |                  type: "int32" (16) (32-bit integer) 0x88-0x89 (1)
-0x080|                           6e 69 33 32 00      |         ni32.  |                  name: "ni32" 0x89-0x8e (5)
-0x080|                                          85 ff|              ..|                  value: -123 0x8e-0x92 (4)
-0x090|ff ff                                          |..              |
-0x090|      00                                       |  .             |              terminator: 0 (valid) 0x92-0x93 (1)
-     |                                               |                |          [2]{}: element 0x93-0x9e (11)
-0x090|         01                                    |   .            |            type: "double" (1) (64-bit binary floating point) 0x93-0x94 (1)
-0x090|            32 00                              |    2.          |            name: "2" 0x94-0x96 (2)
-0x090|                  29 5c 8f c2 f5 b0 58 40      |      )\....X@  |            value: 98.765 0x96-0x9e (8)
-0x090|                                          00   |              . |        terminator: 0 (valid) 0x9e-0x9f (1)
-     |                                               |                |    [4]{}: element 0x9f-0xae (15)
-0x090|                                             05|               .|      type: "binary" (5) (Binary data) 0x9f-0xa0 (1)
-0x0a0|62 69 6e 00                                    |bin.            |      name: "bin" 0xa0-0xa4 (4)
-0x0a0|            05 00 00 00                        |    ....        |      length: 5 0xa4-0xa8 (4)
-0x0a0|                        00                     |        .       |      subtype: 0 0xa8-0xa9 (1)
-0x0a0|                           00 01 02 03 04      |         .....  |      value: raw bits 0xa9-0xae (5)
-     |                                               |                |    [5]{}: element 0xae-0xbf (17)
-0x0a0|                                          07   |              . |      type: "object_id" (7) (ObjectId) 0xae-0xaf (1)
-0x0a0|                                             5f|               _|      name: "_id" 0xaf-0xb3 (4)
-0x0b0|69 64 00                                       |id.             |
-0x0b0|         64 4b 16 19 25 1b e7 40 e8 55 22 d6   |   dK..%..@.U". |      value: raw bits 0xb3-0xbf (12)
-     |                                               |                |    [6]{}: element 0xbf-0xc5 (6)
-0x0b0|                                             08|               .|      type: "boolean" (8) (Boolean) 0xbf-0xc0 (1)
-0x0c0|62 6f 6f 00                                    |boo.            |      name: "boo" 0xc0-0xc4 (4)
-0x0c0|            01                                 |    .           |      value: 1 0xc4-0xc5 (1)
-     |                                               |                |    [7]{}: element 0xc5-0xd2 (13)
-0x0c0|               09                              |     .          |      type: "datetime" (9) (UTC datetime) 0xc5-0xc6 (1)
-0x0c0|                  64 61 74 00                  |      dat.      |      name: "dat" 0xc6-0xca (4)
-0x0c0|                              da d8 50 c5 87 01|          ..P...|      value: 1682642622682 0xca-0xd2 (8)
-0x0d0|00 00                                          |..              |
-     |                                               |                |    [8]{}: element 0xd2-0xd7 (5)
-0x0d0|      0a                                       |  .             |      type: "null" (10) (Null value) 0xd2-0xd3 (1)
-0x0d0|         6e 75 6c 00                           |   nul.         |      name: "nul" 0xd3-0xd7 (4)
-     |                                               |                |      value: null
-     |                                               |                |    [9]{}: element 0xd7-0xea (19)
-0x0d0|                     0b                        |       .        |      type: "regexp" (11) (Regular expression) 0xd7-0xd8 (1)
-0x0d0|                        72 65 67 00            |        reg.    |      name: "reg" 0xd8-0xdc (4)
-0x0d0|                                    6d 79 20 70|            my p|      value: "my pattern" 0xdc-0xe7 (11)
-0x0e0|61 74 74 65 72 6e 00                           |attern.         |
-0x0e0|                     69 78 00                  |       ix.      |      options: "ix" 0xe7-0xea (3)
-     |                                               |                |    [10]{}: element 0xea-0xfe (20)
-0x0e0|                              0d               |          .     |      type: "javascript" (13) (JavaScript code) 0xea-0xeb (1)
-0x0e0|                                 6a 61 76 00   |           jav. |      name: "jav" 0xeb-0xef (4)
-0x0e0|                                             0b|               .|      length: 11 0xef-0xf3 (4)
-0x0f0|00 00 00                                       |...             |
-0x0f0|         76 61 72 20 78 20 3d 20 35 3b 00      |   var x = 5;.  |      value: "var x = 5;" 0xf3-0xfe (11)
-     |                                               |                |    [11]{}: element 0xfe-0x107 (9)
-0x0f0|                                          10   |              . |      type: "int32" (16) (32-bit integer) 0xfe-0xff (1)
-0x0f0|                                             69|               i|      name: "i32" 0xff-0x103 (4)
-0x100|33 32 00                                       |32.             |
-0x100|         85 ff ff ff                           |   ....         |      value: -123 0x103-0x107 (4)
-     |                                               |                |    [12]{}: element 0x107-0x114 (13)
-0x100|                     11                        |       .        |      type: "timestamp" (17) (Timestamp) 0x107-0x108 (1)
-0x100|                        74 69 6d 00            |        tim.    |      name: "tim" 0x108-0x10c (4)
-0x100|                                    9e 17 4b 64|            ..Kd|      value: 529963620254 0x10c-0x114 (8)
-0x110|7b 00 00 00                                    |{...            |
-     |                                               |                |    [13]{}: element 0x114-0x121 (13)
-0x110|            12                                 |    .           |      type: "int64" (18) (64-bit integer) 0x114-0x115 (1)
-0x110|               69 36 34 00                     |     i64.       |      name: "i64" 0x115-0x119 (4)
-0x110|                           38 fe ff ff ff ff ff|         8......|      value: -456 0x119-0x121 (8)
-0x120|ff                                             |.               |
-     |                                               |                |    [14]{}: element 0x121-0x136 (21)
-0x120|   13                                          | .              |      type: "decimal128" (19) (128-bit decimal floating point) 0x121-0x122 (1)
-0x120|      64 65 63 00                              |  dec.          |      name: "dec" 0x122-0x126 (4)
-0x120|                  40 e2 01 00 00 00 00 00 00 00|      @.........|      value: raw bits 0x126-0x136 (16)
-0x130|00 00 00 00 3a 30                              |....:0          |
-     |                                               |                |    [15]{}: element 0x136-0x13b (5)
-0x130|                  ff                           |      .         |      type: "minkey" (255) (Min key) 0x136-0x137 (1)
-0x130|                     6d 69 6e 00               |       min.     |      name: "min" 0x137-0x13b (4)
-     |                                               |                |      value: null
-     |                                               |                |    [16]{}: element 0x13b-0x140 (5)
-0x130|                                 7f            |           .    |      type: "maxkey" (127) (Max key) 0x13b-0x13c (1)
-0x130|                                    6d 61 78 00|            max.|      name: "max" 0x13c-0x140 (4)
-     |                                               |                |      value: null
-0x140|00|                                            |.|              |  terminator: 0 (valid) 0x140-0x141 (1)
-$ fq -d bson torepr test.bson
-{
-  "_id": "dK\u0016\u0019%\u001b\ufffd@\ufffdU\"\ufffd",
-  "arr": [
-    "arr string",
-    {
-      "ni32": -123
-    },
-    98.765
-  ],
-  "bin": "\u0000\u0001\u0002\u0003\u0004",
-  "boo": true,
-  "dat": 1682642622682,
-  "dec": "@\ufffd\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000:0",
-  "doc": {
-    "narr": [
-      -123
-    ],
-    "ndou": 98.765,
-    "nstr": "nested string"
-  },
-  "dou": 98.765,
-  "i32": -123,
-  "i64": -456,
-  "jav": "var x = 5;",
-  "max": null,
-  "min": null,
-  "nul": null,
-  "reg": "my pattern",
-  "str": "my string",
-  "tim": 529963620254
-}
+$ ./fq -d midi dv test.mid
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: test.mid (midi) 0x0-0x8e (142)
+    |                                               |                |  header{}: 0x0-0xe (14)
+    |                                               |                |    header[0:5]: 0x0-0xe (14)
+0x00|4d 54 68 64                                    |MThd            |      [0]: "MThd" tag 0x0-0x4 (4)
+0x00|            00 00 00 06                        |    ....        |      [1]: 6 length 0x4-0x8 (4)
+0x00|                        00 01                  |        ..      |      [2]: 1 format 0x8-0xa (2)
+0x00|                              00 02            |          ..    |      [3]: 2 tracks 0xa-0xc (2)
+0x00|                                    00 60      |            .`  |      [4]: 96 division 0xc-0xe (2)
+    |                                               |                |  tracks[0:2]: 0xe-0x6a (92)
+    |                                               |                |    [0]{}: track 0xe-0x35 (39)
+0x00|                                          4d 54|              MT|      tag: "MTrk" 0xe-0x12 (4)
+0x10|72 6b                                          |rk              |
+0x10|      00 00 00 20                              |  ...           |      length: 32 0x12-0x16 (4)
+    |                                               |                |      events[0:4]: 0x16-0x35 (31)
+    |                                               |                |        [0]{}: TrackName 0x16-0x23 (13)
+0x10|                  00                           |      .         |          delta: 0 0x16-0x17 (1)
+0x10|                     ff                        |       .        |          status: 255 0x17-0x18 (1)
+0x10|                        03                     |        .       |          event: 3 0x18-0x19 (1)
+0x10|                           09 45 78 61 6d 70 6c|         .Exampl|          name: "Example 1" 0x19-0x23 (10)
+0x20|65 20 31                                       |e 1             |
+    |                                               |                |        [1]{}: Tempo 0x23-0x2a (7)
+0x20|         00                                    |   .            |          delta: 0 0x23-0x24 (1)
+0x20|            ff                                 |    .           |          status: 255 0x24-0x25 (1)
+0x20|               51                              |     Q          |          event: 81 0x25-0x26 (1)
+0x20|                  03 07 a1 20                  |      ...       |          tempo: 500000 0x26-0x2a (4)
+    |                                               |                |        [2]{}: TimeSignature 0x2a-0x2d (3)
+0x20|                              00               |          .     |          delta: 0 0x2a-0x2b (1)
+0x20|                                 ff            |           .    |          status: 255 0x2b-0x2c (1)
+0x20|                                    58         |            X   |          event: 88 0x2c-0x2d (1)
+    |                                               |                |          signature{}: 0x2d-0x2d (0)
+    |                                               |                |            numerator: 4
+    |                                               |                |            denominator: 4
+    |                                               |                |            ticksPerClick: 24
+    |                                               |                |            thirtySecondsPerQuarter: 8
+    |                                               |                |        [3]{}: EndOfTrack 0x32-0x35 (3)
+0x30|      00                                       |  .             |          delta: 0 0x32-0x33 (1)
+0x30|         ff                                    |   .            |          status: 255 0x33-0x34 (1)
+0x30|            2f                                 |    /           |          event: 47 0x34-0x35 (1)
+    |                                               |                |    [1]{}: track 0x36-0x6a (52)
+0x30|                  4d 54 72 6b                  |      MTrk      |      tag: "MTrk" 0x36-0x3a (4)
+0x30|                              00 00 00 50      |          ...P  |      length: 80 0x3a-0x3e (4)
+    |                                               |                |      events[0:7]: 0x3e-0x6a (44)
+    |                                               |                |        [0]{}: TrackName 0x3e-0x51 (19)
+0x30|                                          00   |              . |          delta: 0 0x3e-0x3f (1)
+0x30|                                             ff|               .|          status: 255 0x3f-0x40 (1)
+0x40|03                                             |.               |          event: 3 0x40-0x41 (1)
+0x40|   0f 41 63 6f 75 73 74 69 63 20 47 75 69 74 61| .Acoustic Guita|          name: "Acoustic Guitar" 0x41-0x51 (16)
+0x50|72                                             |r               |
+    |                                               |                |        [1]{}: ProgramChange 0x51-0x54 (3)
+0x50|   00                                          | .              |          delta: 0 0x51-0x52 (1)
+0x50|      c0                                       |  .             |          channel: 0 0x52-0x53 (1)
+0x50|         19                                    |   .            |          program: 25 0x53-0x54 (1)
+    |                                               |                |        [2]{}: NoteOn 0x54-0x58 (4)
+0x50|            00                                 |    .           |          delta: 0 0x54-0x55 (1)
+0x50|               90                              |     .          |          channel: 0 0x55-0x56 (1)
+0x50|                  30                           |      0         |          note: 48 0x56-0x57 (1)
+0x50|                     48                        |       H        |          velocity: 72 0x57-0x58 (1)
+    |                                               |                |        [3]{}: KeySignature 0x58-0x5b (3)
+0x50|                        00                     |        .       |          delta: 0 0x58-0x59 (1)
+0x50|                           ff                  |         .      |          status: 255 0x59-0x5a (1)
+0x50|                              59               |          Y     |          event: 89 0x5a-0x5b (1)
+    |                                               |                |          key: "C major" (1)
+    |                                               |                |        [4]{}: Controller 0x5e-0x62 (4)
+0x50|                                          00   |              . |          delta: 0 0x5e-0x5f (1)
+0x50|                                             b0|               .|          channel: 0 0x5f-0x60 (1)
+0x60|65                                             |e               |          controller: "Registered Parameter Number (MSB)" (101) 0x60-0x61 (1)
+0x60|   00                                          | .              |          value: 0 0x61-0x62 (1)
+    |                                               |                |        [5]{}: Controller 0x62-0x66 (4)
+0x60|      00                                       |  .             |          delta: 0 0x62-0x63 (1)
+0x60|         b0                                    |   .            |          channel: 0 0x63-0x64 (1)
+0x60|            64                                 |    d           |          controller: "Registered Parameter Number (LSB)" (100) 0x64-0x65 (1)
+0x60|               00                              |     .          |          value: 0 0x65-0x66 (1)
+    |                                               |                |        [6]{}: Controller 0x66-0x6a (4)
+0x60|                  00                           |      .         |          delta: 0 0x66-0x67 (1)
+0x60|                     b0                        |       .        |          channel: 0 0x67-0x68 (1)
+0x60|                        06                     |        .       |          controller: "Data Entry (MSB)" (6) 0x68-0x69 (1)
+0x60|                           06                  |         .      |          value: 6 0x69-0x6a (1)
+0x20|                                       04 04 02|             ...|  gap0: raw bits 0x2d-0x32 (5)
+0x30|18 08                                          |..              |
+0x30|               00                              |     .          |  gap1: raw bits 0x35-0x36 (1)
+0x50|                                 02 00 01      |           ...  |  gap2: raw bits 0x5b-0x5e (3)
+0x60|                              83 60 80 30 40 00|          .`.0@.|  gap3: raw bits 0x6a-0x8e (36)
+0x70|90 32 48 83 60 80 32 40 00 90 34 48 83 60 80 34|.2H.`.2@..4H.`.4|
+0x80|40 00 90 35 48 83 60 80 35 40 00 ff 2f 00|     |@..5H.`.5@../.| |

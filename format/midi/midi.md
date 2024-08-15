@@ -1,6 +1,9 @@
 ### Notes
 
+1. Only supports the MIDI 1.0 specification.
+
 ### Authors
+- transcriptaze.development@gmail.com
 
 ### References
 

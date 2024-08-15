@@ -128,3 +128,5 @@ midi:
 	go fmt ./format/midi/...
 	go run . -d midi dv format/midi/testdata/test.mid
 
+midi-test: fq
+	go test ./format -run TestFormats/midi

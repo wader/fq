@@ -4,18 +4,19 @@ midi: Standard MIDI file decoder
 Decode examples
 ===============
 
-  # Decode file as MIDI
+  # Decode file as midi
   $ fq -d midi . file
+  # Decode value as midi
+  ... | midi
 
-
-Limitations
-===========
-
+Notes
+=====
+* Only supports the MIDI 1.0 specification.
 
 Authors
 =======
-
+- transcriptaze.development@gmail.com
 
 References
 ==========
-
+* The Complete MIDI 1.0 Detailed Specification (https://www.midi.org/specifications/item/the-midi-1-0-specification)

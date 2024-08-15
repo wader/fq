@@ -3,6 +3,9 @@
 - [ ] add to probe group
 - [x] move delta into events
 - [ ] tests
+      - [ ] format 0
+      - [ ] format 1
+      - [ ] format 2
 - [ ] discard unknown chunks
 
 - formats
@@ -28,7 +31,7 @@
     - [ ] SMPTE offset
     - [x] key signature
           - [ ] check key mappings
-    - [ ] time signature
+    - [x] time signature
     - [ ] sequencer specific event
 
 - midi events
