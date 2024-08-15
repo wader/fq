@@ -1,12 +1,13 @@
 # TODO
 
-- [ ] add to probe group
-- [x] move delta into events
+- [ ] discard unknown chunks
 - [ ] tests
       - [ ] format 0
       - [ ] format 1
       - [ ] format 2
-- [ ] discard unknown chunks
+- [x] move delta into events
+- [ ] fix gaps
+- (?) add to probe group
 
 - formats
     - [ ] format 0
@@ -35,8 +36,10 @@
     - [ ] sequencer specific event
 
 - midi events
-    - [ ] note off
+    - [x] note off
+          - [ ] map note name
     - [x] note on
+          - [ ] map note name
     - [ ] polyphonic pressure
     - [x] controller
     - [ ] program change

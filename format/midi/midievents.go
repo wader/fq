@@ -108,6 +108,10 @@ var controllers = scalar.UintMapSymStr{
 
 func decodeMIDIEvent(d *decode.D, status uint8) {
 	switch MidiEventType(status & 0xf0) {
+	case TypeNoteOff:
+		d.FieldStruct("NoteOff", decodeNoteOff)
+		return
+
 	case TypeNoteOn:
 		d.FieldStruct("NoteOn", decodeNoteOn)
 		return
@@ -120,7 +124,6 @@ func decodeMIDIEvent(d *decode.D, status uint8) {
 		d.FieldStruct("ProgramChange", decodeProgramChange)
 		return
 
-		// TypeNoteOff            MidiEventType = 0x80
 		// TypePolyphonicPressure MidiEventType = 0xa0
 		// TypeProgramChange      MidiEventType = 0xc0
 		// TypeChannelPressure    MidiEventType = 0xd0
@@ -133,6 +136,18 @@ func decodeMIDIEvent(d *decode.D, status uint8) {
 	var N int = int(d.BitsLeft())
 
 	d.Bits(N)
+}
+
+func decodeNoteOff(d *decode.D) {
+	d.FieldUintFn("delta", vlq)
+	d.FieldUintFn("channel", func(d *decode.D) uint64 {
+		b := d.BytesLen(1)
+
+		return uint64(b[0] & 0x0f)
+	})
+
+	d.FieldU8("note")
+	d.FieldU8("velocity")
 }
 
 func decodeNoteOn(d *decode.D) {
