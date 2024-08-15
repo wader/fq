@@ -1,6 +1,6 @@
 .[] | _query_fromstring | _query_pipe_last | _query_tostring
 ["", ".", "a", "1,  2", "1 | 2", "1 | 2 | 3", "(1 | 2) | 3", "1 | (2 | 3)", "1 as $_ | 2", "def f: 1; 1", "def f: 1; 1 | 2"]
-"."
+""
 "."
 "a"
 "1, 2"
