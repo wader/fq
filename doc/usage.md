@@ -55,6 +55,8 @@ fq -Vr .path.to.string file
 fq -o bits_format=truncate tovalue file
 # JSON but raw bit fields as md5 hex string
 fq -o bits_format=md5 tovalue file
+# JSON but raw bit fields as byte arrays
+fq -o bits_format=byte_array tovalue file
 # look up a path
 fq '.some[1].path' file
 # look up a path and output JSON
@@ -898,12 +900,13 @@ fq has some general options in addition to decode and decoders specific options.
 
 How to represent raw binary as JSON.
 
-- `-o bits_format=string` String with raw bytes (zero bit padded if size is not byte aligned). The string is binary safe internally in fq but bytes not representable as UTF-8 will be lost if turn to JSON.
-- `-o bits_format=md5` MD5 hex string (zero bit padded).
-- `-o bits_format=hex` Hex string.
 - `-o bits_format=base64` Base64 string.
-- `-p bits_format=truncate` Truncated string.
+- `-o bits_format=byte_array` Array of bytes (zero bit padded if size is not byte aligned).
+- `-o bits_format=hex` Hex string.
+- `-o bits_format=md5` MD5 hex string (zero bit padded).
 - `-o bits_format=snippet` Truncated Base64 string prefixed with bit length.
+- `-o bits_format=string` String with raw bytes (zero bit padded if size is not byte aligned). The string is binary safe internally in fq but bytes not representable as UTF-8 will be lost if turn into JSON (default).
+- `-p bits_format=truncate` Truncated string.
 
 ```sh
 $ fq -V -o bits_format=base64 . file

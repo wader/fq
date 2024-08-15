@@ -1134,6 +1134,18 @@ func bitsFormatFnFromOptions(opts Options) (func(br bitio.ReaderAtSeeker) (any, 
 
 			return fmt.Sprintf("<%s>%s", mathx.Bits(brLen).StringByteBits(opts.Sizebase), b.String()), nil
 		}, nil
+	case "byte_array":
+		return func(br bitio.ReaderAtSeeker) (any, error) {
+			b := &bytes.Buffer{}
+			if _, err := bitiox.CopyBits(b, br); err != nil {
+				return "", err
+			}
+			var v []any
+			for _, bv := range b.Bytes() {
+				v = append(v, int(bv))
+			}
+			return v, nil
+		}, nil
 	default:
 		return nil, fmt.Errorf("invalid bits format %q", opts.BitsFormat)
 	}
