@@ -7,7 +7,6 @@ package leveldb
 //  - MANIFEST-*
 
 import (
-	"github.com/wader/fq/internal/mathx"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
 )
@@ -49,7 +48,7 @@ func readBlockSequence(rro recordReadOptions, d *decode.D) {
 
 	d.FieldArray("blocks", func(d *decode.D) {
 		for d.BitsLeft() >= headerSize {
-			d.LimitedFn(mathx.Min(blockSize, d.BitsLeft()), func(d *decode.D) {
+			d.LimitedFn(min(blockSize, d.BitsLeft()), func(d *decode.D) {
 				d.FieldStruct("block", bind(readLogBlock, rro))
 			})
 		}

@@ -1,6 +1,6 @@
 module github.com/wader/fq
 
-go 1.20
+go 1.21
 
 // fork of github.com/itchyny/gojq, see github.com/wader/gojq fq branch
 require github.com/wader/gojq v0.12.1-0.20240401131232-6c6bc364201a
@@ -14,7 +14,7 @@ require (
 	// bump: gomod-creasty-defaults /github\.com\/creasty\/defaults v(.*)/ https://github.com/creasty/defaults.git|^1
 	// bump: gomod-creasty-defaults command go get -d github.com/creasty/defaults@v$LATEST && go mod tidy
 	// bump: gomod-creasty-defaults link "Source diff $CURRENT..$LATEST" https://github.com/creasty/defaults/compare/v$CURRENT..v$LATEST
-	github.com/creasty/defaults v1.7.0
+	github.com/creasty/defaults v1.8.0
 
 	// bump: gomod-ergochat-readline /github\.com\/ergochat\/readline v(.*)/ https://github.com/ergochat/readline.git|*
 	// bump: gomod-ergochat-readline command go get -d github.com/ergochat/readline@v$LATEST && go mod tidy

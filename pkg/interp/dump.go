@@ -350,7 +350,7 @@ func dump(v *decode.Value, w io.Writer, opts *Options) error {
 	}
 
 	_ = v.WalkPreOrder(makeWalkFn(func(v *decode.Value, _ *decode.Value, _ int, rootDepth int) error {
-		maxAddrIndentWidth = mathx.Max(
+		maxAddrIndentWidth = max(
 			maxAddrIndentWidth,
 			rootIndentWidth*rootDepth+mathx.DigitsInBase(bitio.BitsByteCount(v.InnerRange().Stop()), true, opts.Addrbase),
 		)
