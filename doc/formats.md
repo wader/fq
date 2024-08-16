@@ -7,6 +7,7 @@
 |[`aac_frame`](#aac_frame)                                       |Advanced&nbsp;Audio&nbsp;Coding&nbsp;frame                                                                   |<sub></sub>|
 |`adts`                                                          |Audio&nbsp;Data&nbsp;Transport&nbsp;Stream                                                                   |<sub>`adts_frame`</sub>|
 |`adts_frame`                                                    |Audio&nbsp;Data&nbsp;Transport&nbsp;Stream&nbsp;frame                                                        |<sub>`aac_frame`</sub>|
+|[`adm`](#adm)                                                   |Audio&nbsp;Definition&nbsp;Model                                                                             |<sub>`riff`</sub>|
 |`aiff`                                                          |Audio&nbsp;Interchange&nbsp;File&nbsp;Format                                                                 |<sub></sub>|
 |`amf0`                                                          |Action&nbsp;Message&nbsp;Format&nbsp;0                                                                       |<sub></sub>|
 |`apev2`                                                         |APEv2&nbsp;metadata&nbsp;tag                                                                                 |<sub>`image`</sub>|
@@ -25,6 +26,7 @@
 |`avc_sps`                                                       |H.264/AVC&nbsp;Sequence&nbsp;Parameter&nbsp;Set                                                              |<sub></sub>|
 |[`avi`](#avi)                                                   |Audio&nbsp;Video&nbsp;Interleaved                                                                            |<sub>`avc_au` `hevc_au` `mp3_frame` `flac_frame`</sub>|
 |[`avro_ocf`](#avro_ocf)                                         |Avro&nbsp;object&nbsp;container&nbsp;file                                                                    |<sub></sub>|
+|[`axml`](#adm)                                                  |Audio&nbsp;Definition&nbsp;Model&nbsp;<axml>&nbsp;Chunk                                                      |<sub>`riff`</sub>|
 |[`bencode`](#bencode)                                           |BitTorrent&nbsp;bencoding                                                                                    |<sub></sub>|
 |`bitcoin_blkdat`                                                |Bitcoin&nbsp;blk.dat                                                                                         |<sub>`bitcoin_block`</sub>|
 |[`bitcoin_block`](#bitcoin_block)                               |Bitcoin&nbsp;block                                                                                           |<sub>`bitcoin_transaction`</sub>|
@@ -38,7 +40,9 @@
 |`bzip2`                                                         |bzip2&nbsp;compression                                                                                       |<sub>`probe`</sub>|
 |[`caff`](#caff)                                                 |Live2D&nbsp;Cubism&nbsp;archive                                                                              |<sub>`probe`</sub>|
 |[`cbor`](#cbor)                                                 |Concise&nbsp;Binary&nbsp;Object&nbsp;Representation                                                          |<sub></sub>|
+|[`chna`](#adm)                                                  |Audio&nbsp;Definition&nbsp;Model&nbsp;<chna>&nbsp;Chunk                                                      |<sub>`riff`</sub>|
 |[`csv`](#csv)                                                   |Comma&nbsp;separated&nbsp;values                                                                             |<sub></sub>|
+|[`dolby_metadata`](#dolby_metadata)                             |Dolby&nbsp;Metadata&nbsp;(Atmos,&nbsp;AC3,&nbsp;Digital&nbspPlus)                                            |<sub>`riff`</sub>|
 |`dns`                                                           |DNS&nbsp;packet                                                                                              |<sub></sub>|
 |`dns_tcp`                                                       |DNS&nbsp;packet&nbsp;(TCP)                                                                                   |<sub></sub>|
 |`elf`                                                           |Executable&nbsp;and&nbsp;Linkable&nbsp;Format                                                                |<sub></sub>|
@@ -176,6 +180,27 @@ Decode value as aac_frame
 ```
 ... | aac_frame({object_type:1})
 ```
+
+## adm
+[Audio Definition Model](https://adm.ebu.io/background/what_is_the_adm.html) including 3D Audio.
+
+RIFF / WAV / Broadcast Wave Format (BWF) chunks:
+- `<chna>` Chunk, Track UIDs of Audio Definition Model
+-	`<axml>` Chunk, BWF XML Metadata, e.g. for Audio Definition Model ambisonics and elements
+
+### Examples
+Decode ADM configuration from `<chna>` and `<axml>` chunks:
+```
+$ fq -d wav '.chunks[] | select(.id | IN("chna", "axml")) | tovalue' bwf.wav
+```
+
+### Authors
+- [@johnnymarnell](https://johnnymarnell.github.io), original author
+
+### References
+- https://adm.ebu.io/background/what_is_the_adm.html
+- https://tech.ebu.ch/publications/tech3285s7
+- https://tech.ebu.ch/publications/tech3285s5
 
 ## apple_bookmark
 Apple BookmarkData.
@@ -588,6 +613,23 @@ $ fq -d csv -o comma="\t" to_csv file.tsv
 $ fq -d csv '.[0] as $t | .[1:] | map(with_entries(.key = $t[.key]))' file.csv
 ```
 
+## dolby_metadata
+Dolby Metadata from `<dbmd>` chunk of RIFF / WAV / Broadcast Wave Format (BWF),
+including Dolby Atmos, AC3, Dolby Digital \[Plus\], and Dolby Audio Info (e.g. LUFS, True Peak).
+
+### Examples
+Decode Dolby metadata from `<dbmd>` chunk:
+```
+$ fq -d wav '.chunks[] | select(.id | IN("dbmd")) | tovalue' bwf.wav
+```
+
+### References
+- https://tech.ebu.ch/files/live/sites/tech/files/shared/tech/tech3285s6.pdf
+- https://github.com/DolbyLaboratories/dbmd-atmos-parser
+
+### Authors
+- [@johnnymarnell](https://johnnymarnell.github.io), original author
+
 ## fit
 Garmin Flexible and Interoperable Data Transfer.
 
@@ -780,7 +822,6 @@ LevelDB Table.
 - Zstandard uncompression is not implemented yet.
 
 ### Authors
-
 - [@mikez](https://github.com/mikez), original author
 
 ### References

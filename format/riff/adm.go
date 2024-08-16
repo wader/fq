@@ -25,7 +25,6 @@ func chnaDecode(d *decode.D, size int64) {
 }
 
 func axmlDecode(d *decode.D, size int64) {
-	// fmt.Println("test axml")
 	// TODO(jmarnell): this chunk is all variable xml, so leave as is?
 	d.FieldRawLen("xml", size*8)
 }
