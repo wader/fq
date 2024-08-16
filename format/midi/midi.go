@@ -66,7 +66,7 @@ func decodeMThd(d *decode.D) {
 				d.Errorf("MIDI format 0 expects 1 track (got %v)", tracks)
 			}
 
-			division := d.FieldU16("division")
+			division := d.FieldU16("divisions")
 			if division&0x8000 == 0x8000 {
 				SMPTE := (division & 0xff00) >> 8
 				if SMPTE != 0xe8 && SMPTE != SMPTE && SMPTE != 0xe6 && SMPTE != 0xe5 {
@@ -92,7 +92,6 @@ func decodeMTrk(d *decode.D) {
 	d.FieldArray("events", func(d *decode.D) {
 		d.FramedFn(int64(length)*8, func(d *decode.D) {
 			for d.BitsLeft() > 0 {
-				// d.FieldStruct("event", decodeEvent)
 				decodeEvent(d)
 			}
 		})
@@ -117,13 +116,14 @@ func decodeEvent(d *decode.D) {
 }
 
 func peekEvent(d *decode.D) (uint64, uint8, uint8) {
+	delta := uint64(0)
 	N := 3
 
 	for {
 		bytes := d.PeekBytes(N)
 
 		// ... peek at delta value
-		delta := uint64(0)
+		delta = 0
 
 		for i, b := range bytes[:N-2] {
 			delta <<= 7

@@ -1,6 +1,7 @@
 ### Notes
 
 1. Only supports the MIDI 1.0 specification.
+2. Does only basic validation on the MIDI data.
 
 ### Authors
 - transcriptaze.development@gmail.com

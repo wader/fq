@@ -12,6 +12,7 @@ Decode examples
 Notes
 =====
 * Only supports the MIDI 1.0 specification.
+* Does only basic validation on the MIDI data.
 
 Authors
 =======

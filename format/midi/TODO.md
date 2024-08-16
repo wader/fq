@@ -1,5 +1,6 @@
 # TODO
 
+- [ ] update fork from master
 - [ ] discard unknown chunks
 - [ ] tests
       - [ ] format 0
@@ -7,6 +8,7 @@
       - [ ] format 2
 - [x] move delta into events
 - [ ] fix gaps
+- (?) warn only for e.g. invalid format tracks
 - (?) add to probe group
 
 - formats

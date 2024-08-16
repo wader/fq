@@ -6,7 +6,7 @@ $ ./fq -d midi dv test.mid
 0x00|            00 00 00 06                        |    ....        |      [1]: 6 length 0x4-0x8 (4)
 0x00|                        00 01                  |        ..      |      [2]: 1 format 0x8-0xa (2)
 0x00|                              00 02            |          ..    |      [3]: 2 tracks 0xa-0xc (2)
-0x00|                                    00 60      |            .`  |      [4]: 96 division 0xc-0xe (2)
+0x00|                                    00 60      |            .`  |      [4]: 96 divisions 0xc-0xe (2)
     |                                               |                |  tracks[0:2]: 0xe-0x8d (127)
     |                                               |                |    [0]{}: track 0xe-0x35 (39)
 0x00|                                          4d 54|              MT|      tag: "MTrk" 0xe-0x12 (4)
