@@ -54,8 +54,6 @@ func dbmdDecode(d *decode.D, size int64) any {
 					d.FieldRawLen("unknown_segment_raw", int64(segmentSize*8))
 				}
 
-				fmt.Println("bytesRead: ", (bitsLeft-d.BitsLeft())/8, " segment size:", segmentSize)
-
 				bytesRemaining := (bitsLeft-d.BitsLeft())/8 - int64(segmentSize)
 				if bytesRemaining < 0 {
 					d.Fatalf("Read too many bytes for segment %d, read %d over, expected %d", segmentID, -bytesRemaining, segmentSize)
@@ -63,6 +61,7 @@ func dbmdDecode(d *decode.D, size int64) any {
 					d.FieldValueUint("SKIPPED_BYTES", uint64(bytesRemaining))
 					d.SeekRel((int64(segmentSize) - bytesRemaining) * 8)
 				}
+
 				d.FieldU8("metadata_segment_checksum")
 			})
 		}
@@ -227,7 +226,6 @@ func parseAudioInfo(d *decode.D) {
 
 func parseDolbyAtmos(d *decode.D, size uint64) {
 	d.FieldValueStr("metadata_segment_type", "dolby_atmos")
-	bitsLeft := d.BitsLeft()
 
 	// d.SeekRel(32 * 8)
 	str := d.FieldUTF8Null("atmos_dbmd_content_creation_preamble")
@@ -248,14 +246,10 @@ func parseDolbyAtmos(d *decode.D, size uint64) {
 
 	d.SeekRel(15 * 8)
 	d.SeekRel(80 * 8)
-
-	fmt.Println("test", int64(size)*8-(bitsLeft-d.BitsLeft()))
-	d.SeekRel(int64(size)*8 - (bitsLeft - d.BitsLeft()))
 }
 
 func parseDolbyAtmosSupplemental(d *decode.D, size uint64) {
 	d.FieldValueStr("metadata_segment_type", "dolby_atmos_supplemental")
-	bitsLeft := d.BitsLeft()
 
 	sync := d.FieldU32LE("dasms_sync")
 	d.FieldValueBool("dasms_sync_valid", sync == 0xf8726fbd)
@@ -281,8 +275,8 @@ func parseDolbyAtmosSupplemental(d *decode.D, size uint64) {
 				nonZeroBytes = append(nonZeroBytes, fmt.Sprintf("%d", b))
 			}
 		}
-		// TODO(jmarnell): I think the +3dB trim settings are here. Would like this as an array of numbers
-		// 			at least, instead of CSV string
+		// TODO(jmarnell): I think the +3dB trim settings are here.
+		//		Would like this at least as an array of numbers, instead of this CSV string
 		d.FieldValueStr("trim_defs", strings.Join(nonZeroBytes, ", "))
 
 		i++
@@ -297,7 +291,4 @@ func parseDolbyAtmosSupplemental(d *decode.D, size uint64) {
 		d.FieldValueUint("render_mode", mode)
 		d.FieldValueStr("render_mode_type", binaural[mode])
 	})
-
-	fmt.Println("test", int64(size)*8-(bitsLeft-d.BitsLeft()))
-	d.SeekRel(int64(size)*8 - (bitsLeft - d.BitsLeft()))
 }
