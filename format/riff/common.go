@@ -19,11 +19,11 @@ func (p path) topData() any {
 	return p[len(p)-1].data
 }
 
-func riffDecode(d *decode.D, path path, headFn func(d *decode.D, path path) (string, int64), chunkFn func(d *decode.D, id string, path path) (bool, any)) {
+func riffDecode(d *decode.D, path path, headFn func(d *decode.D, path path) (string, int64), chunkFn func(d *decode.D, id string, path path, size int64) (bool, any)) {
 	id, size := headFn(d, path)
 
 	d.FramedFn(size*8, func(d *decode.D) {
-		hasChildren, data := chunkFn(d, id, path)
+		hasChildren, data := chunkFn(d, id, path, size)
 		if hasChildren {
 			np := append(path, pathEntry{id: id, data: data})
 			d.FieldArray("chunks", func(d *decode.D) {
@@ -57,6 +57,10 @@ var chunkIDDescriptions = scalar.StrMapDescription{
 	"vprp": "Video properties",
 
 	"dmlh": "Extended AVI header",
+
+	"chna": "<chna> Chunk, Track UIDs of Audio Definition Model",
+	"axml": "<axml> Chunk, BWF XML Metadata, e.g. for Audio Definition Model ambisonics and elements",
+	"dbmd": "Dolby Metadata",
 
 	"ISMP": "SMPTE timecode",
 	"IDIT": "Time and date digitizing commenced",

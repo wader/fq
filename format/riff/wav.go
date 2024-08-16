@@ -76,7 +76,7 @@ func wavDecode(d *decode.D) any {
 
 			return id, size
 		},
-		func(d *decode.D, id string, path path) (bool, any) {
+		func(d *decode.D, id string, path path, size int64) (bool, any) {
 			switch id {
 			case "RIFF":
 				riffType = d.FieldUTF8("format", 4, d.StrAssert(wavRiffType))
@@ -158,8 +158,14 @@ func wavDecode(d *decode.D) any {
 				d.FieldRawLen("coding_history", d.BitsLeft())
 				return false, nil
 
+			case "chna":
+				chnaDecode(d, size)
+				return false, nil
+			case "axml":
+				axmlDecode(d, size)
+				return false, nil
 			case "dbmd":
-				dbmdDecode(d)
+				dbmdDecode(d, size)
 				return false, nil
 
 			default:
