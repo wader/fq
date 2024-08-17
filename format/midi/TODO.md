@@ -35,8 +35,9 @@
     - [x] key signature
           - [ ] check key mappings
     - [x] time signature
-    - [ ] sequencer specific event
+    - [x] sequencer specific event
           - [ ] map manufacturer
+    - [ ] Use FieldUTF8String
 
 - midi events
     - [x] note off
@@ -48,7 +49,7 @@
     - [x] program change
     - [x] channel pressure
     - [x] pitch bend
-    - [ ] running status
+    - [x] running status
 
 - sysex events
     - [ ] message

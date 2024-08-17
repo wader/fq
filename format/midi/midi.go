@@ -90,14 +90,25 @@ func decodeMTrk(d *decode.D) {
 
 	d.FieldArray("events", func(d *decode.D) {
 		d.FramedFn(int64(length)*8, func(d *decode.D) {
+			var running uint8 = 0x000
+
 			for d.BitsLeft() > 0 {
-				decodeEvent(d)
+				_, status, _ := peekEvent(d)
+				if status < 0x80 {
+					status = running
+				} else if status == 0xff || status == 0xf0 || status == 0xf7 {
+					running = 0x00
+				} else {
+					running = status
+				}
+
+				decodeEvent(d, running)
 			}
 		})
 	})
 }
 
-func decodeEvent(d *decode.D) {
+func decodeEvent(d *decode.D, running uint8) {
 	_, status, event := peekEvent(d)
 
 	// ... meta event?
@@ -109,7 +120,11 @@ func decodeEvent(d *decode.D) {
 	// ... sysex event
 
 	// ... midi event?
-	decodeMIDIEvent(d, status)
+	if status < 0x80 {
+		decodeMIDIEvent(d, running)
+	} else {
+		decodeMIDIEvent(d, status)
+	}
 }
 
 func peekEvent(d *decode.D) (uint64, uint8, uint8) {
