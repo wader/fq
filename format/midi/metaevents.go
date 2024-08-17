@@ -140,6 +140,14 @@ func decodeMetaEvent(d *decode.D, event uint8) {
 		d.FieldStruct("DeviceName", decodeDeviceName)
 		return
 
+	case TypeMIDIChannelPrefix:
+		d.FieldStruct("TypeMIDIChannelPrefix", decodeMIDIChannelPrefix)
+		return
+
+	case TypeMIDIPort:
+		d.FieldStruct("TypeMIDIPort", decodeMIDIPort)
+		return
+
 	case TypeTempo:
 		d.FieldStruct("Tempo", decodeTempo)
 		return
@@ -160,9 +168,9 @@ func decodeMetaEvent(d *decode.D, event uint8) {
 		d.FieldStruct("EndOfTrack", decodeEndOfTrack)
 		return
 
-		// TypeMIDIChannelPrefix      MetaEventType = 0x20
-		// TypeMIDIPort               MetaEventType = 0x21
-		// TypeSequencerSpecificEvent MetaEventType = 0x7f
+	case TypeSequencerSpecificEvent:
+		d.FieldStruct("SequencerSpecificEvent", decodeSequencerSpecificEvent)
+		return
 	}
 
 	// ... unknown event - flush remaining data
@@ -275,6 +283,40 @@ func decodeDeviceName(d *decode.D) {
 	})
 }
 
+func decodeMIDIChannelPrefix(d *decode.D) {
+	d.FieldUintFn("delta", vlq)
+	d.FieldU8("status")
+	d.FieldU8("event")
+	d.FieldUintFn("channel", func(d *decode.D) uint64 {
+		channel := uint64(0)
+		data := vlf(d)
+
+		for _, b := range data {
+			channel <<= 8
+			channel |= uint64(b & 0x00ff)
+		}
+
+		return channel
+	})
+}
+
+func decodeMIDIPort(d *decode.D) {
+	d.FieldUintFn("delta", vlq)
+	d.FieldU8("status")
+	d.FieldU8("event")
+	d.FieldUintFn("port", func(d *decode.D) uint64 {
+		channel := uint64(0)
+		data := vlf(d)
+
+		for _, b := range data {
+			channel <<= 8
+			channel |= uint64(b & 0x00ff)
+		}
+
+		return channel
+	})
+}
+
 func decodeTempo(d *decode.D) {
 	d.FieldUintFn("delta", vlq)
 	d.FieldU8("status")
@@ -377,10 +419,10 @@ func decodeKeySignature(d *decode.D) {
 	d.FieldU8("status")
 	d.FieldU8("event")
 
-	bytes := vlf(d)
-	if len(bytes) > 1 {
-		key := (uint64(bytes[0]) << 8) & 0xff00
-		key |= (uint64(bytes[1]) << 0) & 0x00ff
+	data := vlf(d)
+	if len(data) > 1 {
+		key := (uint64(data[0]) << 8) & 0xff00
+		key |= (uint64(data[1]) << 0) & 0x00ff
 
 		d.FieldValueUint("key", key, keys)
 	}
@@ -392,4 +434,25 @@ func decodeEndOfTrack(d *decode.D) {
 	d.FieldU8("event")
 
 	vlf(d)
+}
+
+func decodeSequencerSpecificEvent(d *decode.D) {
+	d.FieldUintFn("delta", vlq)
+	d.FieldU8("status")
+	d.FieldU8("event")
+
+	data := vlf(d)
+	if len(data) > 2 && data[0] == 0x00 {
+		d.FieldValueStr("manufacturer", fmt.Sprintf("%02X%02X%02X", data[0], data[1], data[2]))
+
+		if len(data) > 3 {
+			d.FieldValueStr("data", fmt.Sprintf("%v", data[3:]))
+		}
+
+	} else if len(data) > 0 {
+		d.FieldValueStr("manufacturer", fmt.Sprintf("%02x", data[0]))
+		if len(data) > 1 {
+			d.FieldValueStr("data", fmt.Sprintf("%v", data[1:]))
+		}
+	}
 }

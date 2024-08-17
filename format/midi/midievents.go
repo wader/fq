@@ -116,6 +116,10 @@ func decodeMIDIEvent(d *decode.D, status uint8) {
 		d.FieldStruct("NoteOn", decodeNoteOn)
 		return
 
+	case TypePolyphonicPressure:
+		d.FieldStruct("PolyphonicPressure", decodePolyphonicPressure)
+		return
+
 	case TypeController:
 		d.FieldStruct("Controller", decodeController)
 		return
@@ -124,7 +128,6 @@ func decodeMIDIEvent(d *decode.D, status uint8) {
 		d.FieldStruct("ProgramChange", decodeProgramChange)
 		return
 
-		// TypePolyphonicPressure MidiEventType = 0xa0
 		// TypeProgramChange      MidiEventType = 0xc0
 		// TypeChannelPressure    MidiEventType = 0xd0
 		// TypePitchBend          MidiEventType = 0xe0
@@ -160,6 +163,17 @@ func decodeNoteOn(d *decode.D) {
 
 	d.FieldU8("note")
 	d.FieldU8("velocity")
+}
+
+func decodePolyphonicPressure(d *decode.D) {
+	d.FieldUintFn("delta", vlq)
+	d.FieldUintFn("channel", func(d *decode.D) uint64 {
+		b := d.BytesLen(1)
+
+		return uint64(b[0] & 0x0f)
+	})
+
+	d.FieldU8("pressure")
 }
 
 func decodeController(d *decode.D) {

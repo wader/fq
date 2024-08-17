@@ -1,6 +1,6 @@
 # TODO
 
-- [ ] update fork from master
+- [x] update forked master branch
 - [ ] discard unknown chunks
 - [ ] tests
       - [ ] format 0
@@ -17,25 +17,26 @@
     - [ ] format 2
 
 - meta events
-    - [ ] sequence number
-    - [ ] text
-    - [ ] copyright
+    - [x] sequence number
+    - [x] text
+    - [x] copyright
     - [x] track name 
-    - [ ] instrument name
-    - [ ] lyric
-    - [ ] marker
-    - [ ] cue point
-    - [ ] program name
-    - [ ] device name
-    - [ ] MIDI channel prefix
-    - [ ] MIDI port
-    - [ ] end of track
+    - [x] instrument name
+    - [x] lyric
+    - [x] marker
+    - [x] cue point
+    - [x] program name
+    - [x] device name
+    - [x] MIDI channel prefix
+    - [x] MIDI port
+    - [x] end of track
     - [x] tempo
-    - [ ] SMPTE offset
+    - [x] SMPTE offset
     - [x] key signature
           - [ ] check key mappings
     - [x] time signature
     - [ ] sequencer specific event
+          - [ ] map manufacturer
 
 - midi events
     - [x] note off
@@ -44,7 +45,7 @@
           - [ ] map note name
     - [ ] polyphonic pressure
     - [x] controller
-    - [ ] program change
+    - [x] program change
     - [ ] channel pressure
     - [ ] pitch bend
 
