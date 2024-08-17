@@ -43,11 +43,12 @@
           - [ ] map note name
     - [x] note on
           - [ ] map note name
-    - [ ] polyphonic pressure
+    - [x] polyphonic pressure
     - [x] controller
     - [x] program change
-    - [ ] channel pressure
-    - [ ] pitch bend
+    - [x] channel pressure
+    - [x] pitch bend
+    - [ ] running status
 
 - sysex events
     - [ ] message

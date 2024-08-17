@@ -1,8 +1,6 @@
 package midi
 
 import (
-	"fmt"
-
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
 )
@@ -107,7 +105,9 @@ var controllers = scalar.UintMapSymStr{
 }
 
 func decodeMIDIEvent(d *decode.D, status uint8) {
-	switch MidiEventType(status & 0xf0) {
+	event := status & 0xf0
+
+	switch MidiEventType(event) {
 	case TypeNoteOff:
 		d.FieldStruct("NoteOff", decodeNoteOff)
 		return
@@ -128,13 +128,17 @@ func decodeMIDIEvent(d *decode.D, status uint8) {
 		d.FieldStruct("ProgramChange", decodeProgramChange)
 		return
 
-		// TypeProgramChange      MidiEventType = 0xc0
-		// TypeChannelPressure    MidiEventType = 0xd0
-		// TypePitchBend          MidiEventType = 0xe0
+	case TypeChannelPressure:
+		d.FieldStruct("ChannelPressure", decodeChannelPressure)
+		return
+
+	case TypePitchBend:
+		d.FieldStruct("PitchBend", decodePitchBend)
+		return
 	}
 
 	// ... unknown event - flush remaining data
-	fmt.Printf("UNKNOWN MIDI EVENT: %02x\n", status)
+	d.Errorf("unknown MIDI event (%02x)", event)
 
 	var N int = int(d.BitsLeft())
 
@@ -197,4 +201,34 @@ func decodeProgramChange(d *decode.D) {
 	})
 
 	d.FieldU8("program")
+}
+
+func decodeChannelPressure(d *decode.D) {
+	d.FieldUintFn("delta", vlq)
+	d.FieldUintFn("channel", func(d *decode.D) uint64 {
+		b := d.BytesLen(1)
+
+		return uint64(b[0] & 0x0f)
+	})
+
+	d.FieldU8("pressure")
+}
+
+func decodePitchBend(d *decode.D) {
+	d.FieldUintFn("delta", vlq)
+	d.FieldUintFn("channel", func(d *decode.D) uint64 {
+		b := d.BytesLen(1)
+
+		return uint64(b[0] & 0x0f)
+	})
+
+	d.FieldUintFn("bend", func(d *decode.D) uint64 {
+		data := d.BytesLen(2)
+
+		bend := uint64(data[0])
+		bend <<= 7
+		bend |= uint64(data[1]) & 0x7f
+
+		return bend
+	})
 }

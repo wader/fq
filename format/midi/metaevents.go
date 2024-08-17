@@ -169,12 +169,12 @@ func decodeMetaEvent(d *decode.D, event uint8) {
 		return
 
 	case TypeSequencerSpecificEvent:
-		d.FieldStruct("SequencerSpecificEvent", decodeSequencerSpecificEvent)
+		d.FieldStruct("SequencerSpecific", decodeSequencerSpecificEvent)
 		return
 	}
 
 	// ... unknown event - flush remaining data
-	fmt.Printf("UNKNOWN META EVENT:%02x\n", event)
+	d.Errorf("unknown meta event (%02x)", event)
 
 	var N int = int(d.BitsLeft())
 
