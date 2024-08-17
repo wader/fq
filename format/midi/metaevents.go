@@ -102,83 +102,61 @@ func decodeMetaEvent(d *decode.D, event uint8) {
 	switch MetaEventType(event) {
 	case TypeSequenceNumber:
 		d.FieldStruct("SequenceNumber", decodeSequenceNumber)
-		return
 
 	case TypeText:
 		d.FieldStruct("Text", decodeText)
-		return
 
 	case TypeCopyright:
 		d.FieldStruct("Copyright", decodeCopyright)
-		return
 
 	case TypeTrackName:
 		d.FieldStruct("TrackName", decodeTrackName)
-		return
 
 	case TypeInstrumentName:
 		d.FieldStruct("InstrumentName", decodeInstrumentName)
-		return
 
 	case TypeLyric:
 		d.FieldStruct("Lyric", decodeLyric)
-		return
 
 	case TypeMarker:
 		d.FieldStruct("Marker", decodeMarker)
-		return
 
 	case TypeCuePoint:
 		d.FieldStruct("CuePoint", decodeCuePoint)
-		return
 
 	case TypeProgramName:
 		d.FieldStruct("ProgramName", decodeProgramName)
-		return
 
 	case TypeDeviceName:
 		d.FieldStruct("DeviceName", decodeDeviceName)
-		return
 
 	case TypeMIDIChannelPrefix:
 		d.FieldStruct("TypeMIDIChannelPrefix", decodeMIDIChannelPrefix)
-		return
 
 	case TypeMIDIPort:
 		d.FieldStruct("TypeMIDIPort", decodeMIDIPort)
-		return
 
 	case TypeTempo:
 		d.FieldStruct("Tempo", decodeTempo)
-		return
 
 	case TypeSMPTEOffset:
 		d.FieldStruct("SMPTEOffset", decodeSMPTEOffset)
-		return
 
 	case TypeTimeSignature:
 		d.FieldStruct("TimeSignature", decodeTimeSignature)
-		return
 
 	case TypeKeySignature:
 		d.FieldStruct("KeySignature", decodeKeySignature)
-		return
 
 	case TypeEndOfTrack:
 		d.FieldStruct("EndOfTrack", decodeEndOfTrack)
-		return
 
 	case TypeSequencerSpecificEvent:
 		d.FieldStruct("SequencerSpecific", decodeSequencerSpecificEvent)
-		return
+
+	default:
+		flush(d, "unknown meta event (%02x)", event)
 	}
-
-	// ... unknown event - flush remaining data
-	d.Errorf("unknown meta event (%02x)", event)
-
-	var N int = int(d.BitsLeft())
-
-	d.Bits(N)
 }
 
 func decodeSequenceNumber(d *decode.D) {

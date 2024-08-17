@@ -105,8 +105,6 @@ var controllers = scalar.UintMapSymStr{
 }
 
 func decodeMIDIEvent(d *decode.D, status uint8) {
-	event := status & 0xf0
-
 	channel := func(d *decode.D) uint64 {
 		b := d.PeekBytes(1)
 		if b[0] >= 0x80 {
@@ -116,7 +114,7 @@ func decodeMIDIEvent(d *decode.D, status uint8) {
 		return uint64(status & 0x0f)
 	}
 
-	switch MidiEventType(event) {
+	switch MidiEventType(status & 0xf0) {
 	case TypeNoteOff:
 		d.FieldStruct("NoteOff", func(d *decode.D) {
 			d.FieldUintFn("delta", vlq)
@@ -124,7 +122,6 @@ func decodeMIDIEvent(d *decode.D, status uint8) {
 
 			decodeNoteOff(d)
 		})
-		return
 
 	case TypeNoteOn:
 		d.FieldStruct("NoteOn", func(d *decode.D) {
@@ -133,7 +130,6 @@ func decodeMIDIEvent(d *decode.D, status uint8) {
 
 			decodeNoteOn(d)
 		})
-		return
 
 	case TypePolyphonicPressure:
 		d.FieldStruct("PolyphonicPressure", func(d *decode.D) {
@@ -142,7 +138,6 @@ func decodeMIDIEvent(d *decode.D, status uint8) {
 
 			decodePolyphonicPressure(d)
 		})
-		return
 
 	case TypeController:
 		d.FieldStruct("Controller", func(d *decode.D) {
@@ -151,7 +146,6 @@ func decodeMIDIEvent(d *decode.D, status uint8) {
 
 			decodeController(d)
 		})
-		return
 
 	case TypeProgramChange:
 		d.FieldStruct("ProgramChange", func(d *decode.D) {
@@ -160,7 +154,6 @@ func decodeMIDIEvent(d *decode.D, status uint8) {
 
 			decodeProgramChange(d)
 		})
-		return
 
 	case TypeChannelPressure:
 		d.FieldStruct("ChannelPressure", func(d *decode.D) {
@@ -169,7 +162,6 @@ func decodeMIDIEvent(d *decode.D, status uint8) {
 
 			decodeChannelPressure(d)
 		})
-		return
 
 	case TypePitchBend:
 		d.FieldStruct("PitchBend", func(d *decode.D) {
@@ -178,15 +170,10 @@ func decodeMIDIEvent(d *decode.D, status uint8) {
 
 			decodePitchBend(d)
 		})
-		return
+
+	default:
+		flush(d, "unknown MIDI event (%02x)", status&0xf0)
 	}
-
-	// ... unknown event - flush remaining data
-	d.Errorf("unknown MIDI event (%02x)", event)
-
-	var N int = int(d.BitsLeft())
-
-	d.Bits(N)
 }
 
 func decodeNoteOff(d *decode.D) {

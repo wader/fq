@@ -10,6 +10,10 @@
 - [ ] fix gaps
 - (?) warn only for e.g. invalid format tracks
 - (?) add to probe group
+- (?) example queries
+      - tempo changes
+      - key changes
+      - notes
 
 - formats
     - [ ] format 0
@@ -38,6 +42,7 @@
     - [x] sequencer specific event
           - [ ] map manufacturer
     - [ ] Use FieldUTF8String
+    - [ ] Combine status + event into metaevent field
 
 - midi events
     - [x] note off
@@ -50,9 +55,13 @@
     - [x] channel pressure
     - [x] pitch bend
     - [x] running status
+    - [ ] use context struct for running status
 
 - sysex events
-    - [ ] message
-    - [ ] continuation
-    - [ ] escape
+    - [x] message
+    - [x] continuation
+    - [x] escape
+    - [ ] map manufacturer ID
+    - [ ] use context struct for casio
+
 
