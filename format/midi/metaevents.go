@@ -331,13 +331,15 @@ func decodeKeySignature(d *decode.D) {
 	d.FieldU8("status")
 	d.FieldU8("event")
 
-	data := vlf(d)
-	if len(data) > 1 {
-		key := (uint64(data[0]) << 8) & 0xff00
-		key |= (uint64(data[1]) << 0) & 0x00ff
+	d.FieldUintFn("key", func (d *decode.D) uint64 {
+		data := vlf(d)
+		key := uint64(data[0]) & 0x00ff
+		key <<= 8
+		key |= uint64(data[1]) & 0x00ff
 
-		d.FieldValueUint("key", key, keys)
-	}
+		return key
+
+	},keys)
 }
 
 func decodeEndOfTrack(d *decode.D) {

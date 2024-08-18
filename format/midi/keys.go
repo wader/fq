@@ -5,37 +5,37 @@ import (
 )
 
 const (
-	keyCMajor      = 0x0001
-	keyGMajor      = 0x0101
-	keyDMajor      = 0x0201
-	keyAMajor      = 0x0301
-	keyEMajor      = 0x0401
-	keyBMajor      = 0x0501
-	keyFSharpMajor = 0x0601
-	keyCSharpMajor = 0x0701
-	keyFMajor      = 0x0801
-	keyBFlatMajor  = 0x0901
-	keyEFlatMajor  = 0x0a01
-	keyAFlatMajor  = 0x0b01
-	keyDFlatMajor  = 0x0c01
-	keyGFlatMajor  = 0x0d01
-	keyCFlatMajor  = 0x0e01
+	keyCMajor      = 0x0000
+	keyGMajor      = 0x0100
+	keyDMajor      = 0x0200
+	keyAMajor      = 0x0300
+	keyEMajor      = 0x0400
+	keyBMajor      = 0x0500
+	keyFSharpMajor = 0x0600
+	keyCSharpMajor = 0x0700
+	keyFMajor      = 0xff00
+	keyBFlatMajor  = 0xfe00
+	keyEFlatMajor  = 0xfd00
+	keyAFlatMajor  = 0xfc00
+	keyDFlatMajor  = 0xfb00
+	keyGFlatMajor  = 0xfa00
+	keyCFlatMajor  = 0xf900
 
-	keyAMinor      = 0x0000
-	keyEMinor      = 0x0100
-	keyBMinor      = 0x0200
-	keyASharpMinor = 0x0300
-	keyDSharpMinor = 0x0400
-	keyGSharpMinor = 0x0500
-	keyCSharpMinor = 0x0600
-	keyFSharpMinor = 0x0700
-	keyDMinor      = 0x0800
-	keyGMinor      = 0x0900
-	keyCMinor      = 0x0a00
-	keyFMinor      = 0x0b00
-	keyBFlatMinor  = 0x0c00
-	keyEFlatMinor  = 0x0d00
-	keyAFlatMinor  = 0x0e00
+	keyAMinor      = 0x0001
+	keyEMinor      = 0x0101
+	keyBMinor      = 0x0201
+	keyFSharpMinor = 0x0301
+	keyCSharpMinor = 0x0401
+	keyGSharpMinor = 0x0501
+	keyDSharpMinor = 0x0601
+	keyASharpMinor = 0x0701
+	keyDMinor      = 0xff01
+	keyGMinor      = 0xfe01
+	keyCMinor      = 0xfd01
+	keyFMinor      = 0xfc01
+	keyBFlatMinor  = 0xfb01
+	keyEFlatMinor  = 0xfa01
+	keyAFlatMinor  = 0xf901
 )
 
 var keys = scalar.UintMapSymStr{
@@ -58,11 +58,11 @@ var keys = scalar.UintMapSymStr{
 	keyAMinor:      "A minor",
 	keyEMinor:      "E minor",
 	keyBMinor:      "B minor",
-	keyASharpMinor: "A♯ minor",
-	keyDSharpMinor: "D♯ minor",
-	keyGSharpMinor: "G♯ minor",
-	keyCSharpMinor: "C♯ minor",
 	keyFSharpMinor: "F♯ minor",
+	keyCSharpMinor: "C♯ minor",
+	keyGSharpMinor: "G♯ minor",
+	keyDSharpMinor: "D♯ minor",
+	keyASharpMinor: "A♯ minor",
 	keyDMinor:      "D minor",
 	keyGMinor:      "G minor",
 	keyCMinor:      "C minor",

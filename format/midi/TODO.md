@@ -36,7 +36,7 @@
     - [x] time signature
     - [x] sequencer specific event
     - [x] map manufacturer
-    - [ ] check key mappings
+    - [x] check key mappings
     - [ ] Combine status + event into metaevent field
 
 - midi events
