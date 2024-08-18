@@ -54,7 +54,7 @@
     - [x] pitch bend
     - [x] running status
     - [x] use context struct for running status
-    - [ ] map note name
+    - [x] map note names
 
 - sysex events
     - [x] message
