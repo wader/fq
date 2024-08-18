@@ -58,9 +58,7 @@ func decodeTapBlock(d *decode.D) {
 		d.Fatalf("TAP fragments with 0 bytes are not supported")
 	case 1:
 		d.FieldStruct("data", func(d *decode.D) {
-			d.FieldArray("bytes", func(d *decode.D) {
-				d.FieldU8("byte")
-			})
+			d.FieldRawLen("bytes", 8)
 		})
 	case 19:
 		d.FieldStruct("header", func(d *decode.D) {
@@ -167,11 +165,7 @@ func decodeDataBlock(d *decode.D, length uint64) {
 		return s, nil
 	}))
 	// The essential data: length minus the flag/checksum bytes (may be empty)
-	d.FieldArray("bytes", func(d *decode.D) {
-		for i := uint64(0); i < length-2; i++ {
-			d.FieldU8("byte")
-		}
-	})
+	d.FieldRawLen("bytes", int64(length-2)*8)
 
 	// Simply all bytes (including flag byte) XORed
 	d.FieldU8("checksum", d.UintValidate(calculateChecksum(d, blockStartPosition, d.Pos()-blockStartPosition)), scalar.UintHex)
