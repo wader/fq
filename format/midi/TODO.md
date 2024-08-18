@@ -1,24 +1,20 @@
 # TODO
 
 - [x] update forked master branch
+- [x] move delta into events
+- [x] Use FieldUTF8 for MIDI chunk tags
 - [ ] discard unknown chunks
+- [ ] fix gaps
+- [ ] assert available bytes
 - [ ] tests
       - [ ] format 0
       - [ ] format 1
       - [ ] format 2
-- [x] move delta into events
-- [ ] fix gaps
-- (?) warn only for e.g. invalid format tracks
-- (?) add to probe group
 - (?) example queries
       - tempo changes
       - key changes
       - notes
-
-- formats
-    - [ ] format 0
-    - [ ] format 1
-    - [ ] format 2
+- (?) add to probe group
 
 - meta events
     - [x] sequence number
@@ -41,7 +37,6 @@
     - [x] sequencer specific event
     - [x] map manufacturer
     - [ ] check key mappings
-    - [ ] Use FieldUTF8String
     - [ ] Combine status + event into metaevent field
 
 - midi events

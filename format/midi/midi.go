@@ -51,7 +51,7 @@ func decodeMThd(d *decode.D) {
 	}
 
 	d.FieldArray("header", func(d *decode.D) {
-		d.FieldUTF8NullFixedLen("tag", 4)
+		d.FieldUTF8("tag", 4)
 		length := d.FieldU32("length")
 
 		d.FramedFn(int64(length)*8, func(d *decode.D) {
@@ -85,7 +85,7 @@ func decodeMTrk(d *decode.D) {
 		d.Errorf("no MTrk marker")
 	}
 
-	d.FieldUTF8NullFixedLen("tag", 4)
+	d.FieldUTF8("tag", 4)
 	length := d.FieldU32("length")
 
 	d.FieldArray("events", func(d *decode.D) {
