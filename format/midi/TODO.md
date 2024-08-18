@@ -39,8 +39,8 @@
     - [x] key signature
     - [x] time signature
     - [x] sequencer specific event
+    - [x] map manufacturer
     - [ ] check key mappings
-    - [ ] map manufacturer
     - [ ] Use FieldUTF8String
     - [ ] Combine status + event into metaevent field
 
@@ -61,6 +61,6 @@
     - [x] continuation
     - [x] escape
     - [x] use context struct for casio
-    - [ ] map manufacturer ID
+    - [x] map manufacturer ID
 
 

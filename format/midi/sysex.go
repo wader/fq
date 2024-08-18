@@ -40,7 +40,7 @@ func decodeSysExMessage(d *decode.D) bool {
 	data := vlf(d)
 
 	if len(data) > 0 {
-		d.FieldValueStr("manufacturer", fmt.Sprintf("%02x", data[0]))
+		d.FieldValueStr("manufacturer", fmt.Sprintf("%02X", data[0]), manufacturers)
 
 		if len(data) > 1 && data[len(data)-1] == 0xf7 {
 			d.FieldValueStr("data", fmt.Sprintf("%v", data[1:len(data)-1]))
