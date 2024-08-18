@@ -4,7 +4,6 @@
 - [x] move delta into events
 - [x] Use FieldUTF8 for MIDI chunk tags
 - [ ] discard unknown chunks
-- [ ] fix gaps
 - [ ] assert available bytes
 - [ ] tests
       - [ ] format 0
@@ -15,6 +14,13 @@
       - key changes
       - notes
 - (?) add to probe group
+
+- [ ] fix gaps
+      - [ ] SysExMessage
+      - [ ] SequencerSpecificEvent
+      - [ ] SMPTEOffset
+      - [ ] TimeSignature
+      - [ ] SysEx - 'continued' flag
 
 - meta events
     - [x] sequence number
