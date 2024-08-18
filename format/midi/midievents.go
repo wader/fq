@@ -104,7 +104,14 @@ var controllers = scalar.UintMapSymStr{
 	127: "Poly Mode On",
 }
 
-func decodeMIDIEvent(d *decode.D, status uint8) {
+func decodeMIDIEvent(d *decode.D, status uint8, ctx *context) {
+	if status < 0x80 {
+		status = ctx.running
+	}
+
+	ctx.running = status
+	ctx.casio = false
+
 	channel := func(d *decode.D) uint64 {
 		b := d.PeekBytes(1)
 		if b[0] >= 0x80 {

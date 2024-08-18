@@ -37,31 +37,30 @@
     - [x] tempo
     - [x] SMPTE offset
     - [x] key signature
-          - [ ] check key mappings
     - [x] time signature
     - [x] sequencer specific event
-          - [ ] map manufacturer
+    - [ ] check key mappings
+    - [ ] map manufacturer
     - [ ] Use FieldUTF8String
     - [ ] Combine status + event into metaevent field
 
 - midi events
     - [x] note off
-          - [ ] map note name
     - [x] note on
-          - [ ] map note name
     - [x] polyphonic pressure
     - [x] controller
     - [x] program change
     - [x] channel pressure
     - [x] pitch bend
     - [x] running status
-    - [ ] use context struct for running status
+    - [x] use context struct for running status
+    - [ ] map note name
 
 - sysex events
     - [x] message
     - [x] continuation
     - [x] escape
+    - [x] use context struct for casio
     - [ ] map manufacturer ID
-    - [ ] use context struct for casio
 
 

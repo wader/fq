@@ -6,25 +6,26 @@ import (
 	"github.com/wader/fq/pkg/decode"
 )
 
-func decodeSysExEvent(d *decode.D, status uint8, casio *bool) {
+func decodeSysExEvent(d *decode.D, status uint8, ctx *context) {
+	ctx.running = 0x00
+
 	switch {
-	case status == 0xf0 && *casio:
+	case status == 0xf0 && ctx.casio:
 		d.Errorf("SysExMessage F0 start byte without terminating F7")
-		return
 
 	case status == 0xf0:
 		d.FieldStruct("SysExMessage", func(d *decode.D) {
-			*casio = decodeSysExMessage(d)
+			ctx.casio = decodeSysExMessage(d)
 		})
 
-	case status == 0xf7 && *casio:
+	case status == 0xf7 && ctx.casio:
 		d.FieldStruct("SysExContinuation", func(d *decode.D) {
-			*casio = decodeSysExContinuation(d)
+			decodeSysExContinuation(d, ctx)
 		})
 
 	case status == 0xf7:
 		d.FieldStruct("SysExEscape", func(d *decode.D) {
-			*casio = decodeSysExEscape(d)
+			decodeSysExEscape(d, ctx)
 		})
 
 	default:
@@ -44,7 +45,6 @@ func decodeSysExMessage(d *decode.D) bool {
 		if len(data) > 1 && data[len(data)-1] == 0xf7 {
 			d.FieldValueStr("data", fmt.Sprintf("%v", data[1:len(data)-1]))
 			return false
-
 		} else {
 			d.FieldValueStr("data", fmt.Sprintf("%v", data[1:]))
 			d.FieldValueBool("more", true)
@@ -52,10 +52,10 @@ func decodeSysExMessage(d *decode.D) bool {
 		}
 	}
 
-	return false
+	return true
 }
 
-func decodeSysExContinuation(d *decode.D) bool {
+func decodeSysExContinuation(d *decode.D, ctx *context) {
 	d.FieldUintFn("delta", vlq)
 	d.FieldU8("status")
 
@@ -63,16 +63,16 @@ func decodeSysExContinuation(d *decode.D) bool {
 
 	if len(data) > 0 && data[len(data)-1] == 0xf7 {
 		d.FieldValueStr("data", fmt.Sprintf("%v", data[:len(data)-1]))
-		return false
+		ctx.casio = false
 
 	} else {
 		d.FieldValueStr("data", fmt.Sprintf("%v", data))
 		d.FieldValueBool("more", true)
-		return true
+		ctx.casio = true
 	}
 }
 
-func decodeSysExEscape(d *decode.D) bool {
+func decodeSysExEscape(d *decode.D, ctx *context) {
 	d.FieldUintFn("delta", vlq)
 	d.FieldU8("status")
 
@@ -82,5 +82,5 @@ func decodeSysExEscape(d *decode.D) bool {
 		d.FieldValueStr("data", fmt.Sprintf("%v", data))
 	}
 
-	return false
+	ctx.casio = true
 }

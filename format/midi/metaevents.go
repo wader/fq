@@ -98,7 +98,10 @@ var keys = scalar.UintMapSymStr{
 	keyAFlatMinor:  "A♭ minor",
 }
 
-func decodeMetaEvent(d *decode.D, event uint8) {
+func decodeMetaEvent(d *decode.D, event uint8, ctx *context) {
+	ctx.running = 0x00
+	ctx.casio = false
+
 	switch MetaEventType(event) {
 	case TypeSequenceNumber:
 		d.FieldStruct("SequenceNumber", decodeSequenceNumber)
