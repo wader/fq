@@ -97,11 +97,7 @@ func decodeBlock(d *decode.D) {
 			length := d.FieldU24("length") // Length of data that follows
 
 			// Data as in .TAP files
-			d.FieldArray("data", func(d *decode.D) {
-				for i := uint64(0); i < length; i++ {
-					d.FieldU8("byte")
-				}
-			})
+			d.FieldRawLen("data", int64(length)*8)
 		},
 
 		// ID: 12h (18d) | Pure Tone
@@ -135,11 +131,7 @@ func decodeBlock(d *decode.D) {
 			length := d.FieldU24("length") // Length of data that follows
 
 			// Data as in .TAP files
-			d.FieldArray("data", func(d *decode.D) {
-				for i := uint64(0); i < length; i++ {
-					d.FieldU8("byte")
-				}
-			})
+			d.FieldRawLen("data", int64(length)*8)
 		},
 
 		// ID: 15h (21d) | Direct Recording
@@ -151,17 +143,11 @@ func decodeBlock(d *decode.D) {
 		// The preferred sampling frequencies are 22050 or 44100 Hz
 		// (158 or 79 T-states/sample).
 		0x15: func(d *decode.D) {
-			d.FieldU16("t_states")         // Number of T-states per sample (bit of data)
-			d.FieldU16("pause")            // Pause after this block in milliseconds (ms.)
-			d.FieldU8("used_bits")         // Used bits (samples) in last byte of data (1-8)
-			length := d.FieldU24("length") // Length of data that follows
-
-			// Samples data. Each bit represents a state on the EAR port
-			d.FieldArray("data", func(d *decode.D) {
-				for i := uint64(0); i < length; i++ {
-					d.FieldU8("byte")
-				}
-			})
+			d.FieldU16("t_states")                 // Number of T-states per sample (bit of data)
+			d.FieldU16("pause")                    // Pause after this block in milliseconds (ms.)
+			d.FieldU8("used_bits")                 // Used bits (samples) in last byte of data (1-8)
+			length := d.FieldU24("length")         // Length of data that follows
+			d.FieldRawLen("data", int64(length)*8) // Samples data. Each bit represents a state on the EAR port
 		},
 
 		// ID: 18h (24d) | CSW Recording
@@ -184,11 +170,7 @@ func decodeBlock(d *decode.D) {
 			d.FieldU32("stored_pulse_count")
 
 			// CSW data, encoded according to the CSW specification
-			d.FieldArray("data", func(d *decode.D) {
-				for i := uint64(0); i < length; i++ {
-					d.FieldU8("byte")
-				}
-			})
+			d.FieldRawLen("data", int64(length)*8)
 		},
 
 		// ID: 19h (25d) | Generalized Data
@@ -212,11 +194,7 @@ func decodeBlock(d *decode.D) {
 			//	PilotStreams []PilotRLE // 0x12+ (2*NPP+1)*ASP - PRLE[TOTP]  Pilot and sync data stream
 			//	DataSymbols  []Symbol   // 0x12+ (TOTP>0)*((2*NPP+1)*ASP)+TOTP*3  - SYMDEF[ASD] Data symbols definition table
 			//	DataStreams  []uint8    // 0x12+ (TOTP>0)*((2*NPP+1)*ASP)+ TOTP*3+(2*NPD+1)*ASD - BYTE[DS]  Data stream
-			d.FieldArray("data", func(d *decode.D) {
-				for i := uint64(0); i < length; i++ {
-					d.FieldU8("byte")
-				}
-			})
+			d.FieldRawLen("data", int64(length)*8)
 		},
 
 		// ID: 20h (32d) | Pause Tape Command
@@ -409,13 +387,9 @@ func decodeBlock(d *decode.D) {
 		// some information written by a utility, extra settings required by a
 		// particular emulator, etc.
 		0x35: func(d *decode.D) {
-			d.FieldStr("identification", 10, charmap.ISO8859_1)
+			d.FieldStr("identification", 16, charmap.ISO8859_1)
 			length := d.FieldU32("length")
-			d.FieldArray("info", func(d *decode.D) {
-				for i := uint64(0); i < length; i++ {
-					d.FieldU8("byte")
-				}
-			})
+			d.FieldRawLen("info", int64(length)*8)
 		},
 
 		// ID: 5Ah (90d) | Glue Block
