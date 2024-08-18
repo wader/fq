@@ -331,7 +331,7 @@ func decodeKeySignature(d *decode.D) {
 	d.FieldU8("status")
 	d.FieldU8("event")
 
-	d.FieldUintFn("key", func (d *decode.D) uint64 {
+	d.FieldUintFn("key", func(d *decode.D) uint64 {
 		data := vlf(d)
 		key := uint64(data[0]) & 0x00ff
 		key <<= 8
@@ -339,7 +339,7 @@ func decodeKeySignature(d *decode.D) {
 
 		return key
 
-	},keys)
+	}, keys)
 }
 
 func decodeEndOfTrack(d *decode.D) {
@@ -347,7 +347,10 @@ func decodeEndOfTrack(d *decode.D) {
 	d.FieldU8("status")
 	d.FieldU8("event")
 
-	vlf(d)
+	d.FieldAnyFn("data", func(d *decode.D) any {
+		vlf(d)
+		return nil
+	})
 }
 
 func decodeSequencerSpecificEvent(d *decode.D) {
