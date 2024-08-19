@@ -97,7 +97,7 @@ func decodeBlock(d *decode.D) {
 			length := d.FieldU24("length") // Length of data that follows
 
 			// Data as in .TAP files
-			d.FieldRawLen("data", int64(length*8))
+			d.FieldRawLen("data", int64(length)*8)
 		},
 
 		// ID: 12h (18d) | Pure Tone
@@ -131,7 +131,7 @@ func decodeBlock(d *decode.D) {
 			length := d.FieldU24("length") // Length of data that follows
 
 			// Data as in .TAP files
-			d.FieldRawLen("data", int64(length*8))
+			d.FieldRawLen("data", int64(length)*8)
 		},
 
 		// ID: 15h (21d) | Direct Recording
@@ -147,7 +147,7 @@ func decodeBlock(d *decode.D) {
 			d.FieldU16("pause")                    // Pause after this block in milliseconds (ms.)
 			d.FieldU8("used_bits")                 // Used bits (samples) in last byte of data (1-8)
 			length := d.FieldU24("length")         // Length of data that follows
-			d.FieldRawLen("data", int64(length*8)) // Samples data. Each bit represents a state on the EAR port
+			d.FieldRawLen("data", int64(length)*8) // Samples data. Each bit represents a state on the EAR port
 		},
 
 		// ID: 18h (24d) | CSW Recording
@@ -165,12 +165,12 @@ func decodeBlock(d *decode.D) {
 			// Sampling rate
 			d.FieldU24("sample_rate")
 			// Compression type
-			d.FieldU8("compression_type", scalar.UintMapSymStr{0x01: "rle", 0x02: "zrle"})
+			d.FieldU8("compression_type", scalar.UintMapSymStr{0x00: "unknown", 0x01: "rle", 0x02: "zrle"})
 			// Number of stored pulses (after decompression)
 			d.FieldU32("stored_pulse_count")
 
 			// CSW data, encoded according to the CSW specification
-			d.FieldRawLen("data", int64(length*8))
+			d.FieldRawLen("data", int64(length)*8)
 		},
 
 		// ID: 19h (25d) | Generalized Data
@@ -194,7 +194,7 @@ func decodeBlock(d *decode.D) {
 			//	PilotStreams []PilotRLE // 0x12+ (2*NPP+1)*ASP - PRLE[TOTP]  Pilot and sync data stream
 			//	DataSymbols  []Symbol   // 0x12+ (TOTP>0)*((2*NPP+1)*ASP)+TOTP*3  - SYMDEF[ASD] Data symbols definition table
 			//	DataStreams  []uint8    // 0x12+ (TOTP>0)*((2*NPP+1)*ASP)+ TOTP*3+(2*NPD+1)*ASD - BYTE[DS]  Data stream
-			d.FieldRawLen("data", int64(length*8))
+			d.FieldRawLen("data", int64(length)*8)
 		},
 
 		// ID: 20h (32d) | Pause Tape Command
@@ -340,7 +340,7 @@ func decodeBlock(d *decode.D) {
 			count := d.FieldU8("count") // Number of entries in the archive info
 
 			// the archive strings
-			d.FieldArray("archive_info", func(d *decode.D) {
+			d.FieldArray("entries", func(d *decode.D) {
 				for i := uint64(0); i < count; i++ {
 					d.FieldStruct("entry", func(d *decode.D) {
 						d.FieldU8("id", scalar.UintMapSymStr{
@@ -372,11 +372,11 @@ func decodeBlock(d *decode.D) {
 				for i := uint64(0); i < count; i++ {
 					d.FieldStruct("info", func(d *decode.D) {
 						// Hardware Type ID (computers, printers, mice, etc.)
-						typeId := d.FieldU8("type", hwInfoTypeMapper)
-						// Hardware ID (ZX81, Kempston Joystick, etc.)
-						d.FieldU8("id", hwInfoTypeIdMapper[typeId])
+						typeId := d.FieldU8("type_id", hwInfoTypes)
+						// Hardware Device ID (ZX81, Kempston Joystick, etc.)
+						d.FieldU8("device_id", hwInfoDevices[typeId])
 						// Hardware compatibility information
-						d.FieldU8("info_id", hwInfoIdMapper)
+						d.FieldU8("info_id", hwInfoCompatibilityInfo)
 					})
 				}
 			})
@@ -387,9 +387,9 @@ func decodeBlock(d *decode.D) {
 		// some information written by a utility, extra settings required by a
 		// particular emulator, etc.
 		0x35: func(d *decode.D) {
-			d.FieldStr("identification", 10, charmap.ISO8859_1)
+			d.FieldStr("identification", 16, charmap.ISO8859_1)
 			length := d.FieldU32("length")
-			d.FieldRawLen("info", int64(length*8))
+			d.FieldRawLen("info", int64(length)*8)
 		},
 
 		// ID: 5Ah (90d) | Glue Block
@@ -404,22 +404,26 @@ func decodeBlock(d *decode.D) {
 		0x5A: func(d *decode.D) {
 			// Value: { "XTape!",0x1A,MajR,MinR }
 			// Just skip these 9 bytes and you will end up on the next ID.
-			d.FieldRawLen("value", int64(9*8))
+			d.FieldRawLen("value", 9*8)
 		},
 	}
 
-	blockType := d.FieldU8("type", blockTypeMapper)
-
+	blockType := d.PeekUintBits(8)
 	// Deprecated block types: C64RomType, C64TurboData, EmulationInfo, Snapshot
 	if blockType == 0x16 || blockType == 0x17 || blockType == 0x34 || blockType == 0x40 {
 		d.Fatalf("deprecated block type encountered: %02x", blockType)
 	}
 
-	if fn, ok := blocks[blockType]; ok {
-		fn(d)
-	} else {
-		d.Fatalf("block type not valid, got: %02x", blockType)
-	}
+	blockLabel := blockTypeMapper[blockType]
+	d.FieldStruct(blockLabel, func(d *decode.D) {
+		d.FieldU8("type", blockTypeMapper)
+
+		if fn, ok := blocks[blockType]; ok {
+			fn(d)
+		} else {
+			d.Fatalf("block type not valid, got: %02x", blockType)
+		}
+	})
 }
 
 var blockTypeMapper = scalar.UintMapSymStr{
@@ -454,7 +458,7 @@ var blockTypeMapper = scalar.UintMapSymStr{
 	0x5A: "glue_block",
 }
 
-var hwInfoTypeMapper = scalar.UintMapDescription{
+var hwInfoTypes = scalar.UintMapDescription{
 	0x00: "Computers",
 	0x01: "External storage",
 	0x02: "ROM/RAM type add-ons",
@@ -474,7 +478,7 @@ var hwInfoTypeMapper = scalar.UintMapDescription{
 	0x10: "Graphics",
 }
 
-var hwInfoTypeIdMapper = map[uint64]scalar.UintMapDescription{
+var hwInfoDevices = map[uint64]scalar.UintMapDescription{
 	0x00: { // Computers
 		0x00: "ZX Spectrum 16k",
 		0x01: "ZX Spectrum 48k, Plus",
@@ -647,7 +651,7 @@ var hwInfoTypeIdMapper = map[uint64]scalar.UintMapDescription{
 	},
 }
 
-var hwInfoIdMapper = scalar.UintMapDescription{
+var hwInfoCompatibilityInfo = scalar.UintMapDescription{
 	00: "RUNS on this machine or with this hardware, but may or may not use the hardware or special features of the machine.",
 	01: "USES the hardware or special features of the machine, such as extra memory or a sound chip.",
 	02: "RUNS but it DOESN'T use the hardware or special features of the machine.",
