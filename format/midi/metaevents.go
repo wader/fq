@@ -253,47 +253,106 @@ func decodeSMPTEOffset(d *decode.D) {
 	d.FieldU8("event")
 
 	d.FieldStruct("offset", func(d *decode.D) {
-		data := vlf(d)
+		N := int(d.FieldUintFn("length", vlq))
+		data := d.PeekBytes(N)
 
 		if len(data) > 0 {
-			rr := (data[0] >> 6) & 0x03
+			d.FieldUintFn("framerate", func(d *decode.D) uint64 {
+				d.BytesLen(1)
+				rr := (data[0] >> 6) & 0x03
 
-			switch rr {
-			case 0:
-				d.FieldValueUint("framerate", 24)
+				switch rr {
+				case 0:
+					return 24
 
-			case 1:
-				d.FieldValueUint("framerate", 25)
+				case 1:
+					return 25
 
-			case 2:
-				d.FieldValueUint("framerate", 29)
+				case 2:
+					return 29
 
-			case 3:
-				d.FieldValueUint("framerate", 30)
+				case 3:
+					return 30
 
-			default:
-				d.FieldValueUint("framerate", 0)
-			}
-
+				default:
+					return 0
+				}
+			})
 			d.FieldValueUint("hour", uint64(data[0]&0x01f))
 		}
 
 		if len(data) > 1 {
-			d.FieldValueUint("minute", uint64(data[1]))
+			d.FieldUintFn("minute", func(d *decode.D) uint64 {
+				d.BytesLen(1)
+				return uint64(data[1])
+			})
 		}
 
 		if len(data) > 2 {
-			d.FieldValueUint("second", uint64(data[2]))
+			d.FieldUintFn("second", func(d *decode.D) uint64 {
+				d.BytesLen(1)
+				return uint64(data[2])
+			})
 		}
 
 		if len(data) > 3 {
-			d.FieldValueUint("frames", uint64(data[3]))
+			d.FieldUintFn("frames", func(d *decode.D) uint64 {
+				d.BytesLen(1)
+				return uint64(data[3])
+			})
 		}
 
 		if len(data) > 4 {
-			d.FieldValueUint("fractions", uint64(data[4]))
+			d.FieldUintFn("fractions", func(d *decode.D) uint64 {
+				d.BytesLen(1)
+				return uint64(data[4])
+			})
 		}
+
 	})
+
+	// d.FieldStruct("offset", func(d *decode.D) {
+	// 	data := vlf(d)
+	//
+	// 	if len(data) > 0 {
+	// 		rr := (data[0] >> 6) & 0x03
+	//
+	// 		switch rr {
+	// 		case 0:
+	// 			d.FieldValueUint("framerate", 24)
+	//
+	// 		case 1:
+	// 			d.FieldValueUint("framerate", 25)
+	//
+	// 		case 2:
+	// 			d.FieldValueUint("framerate", 29)
+	//
+	// 		case 3:
+	// 			d.FieldValueUint("framerate", 30)
+	//
+	// 		default:
+	// 			d.FieldValueUint("framerate", 0)
+	// 		}
+	//
+	// 		d.FieldValueUint("hour", uint64(data[0]&0x01f))
+	// 	}
+	//
+	// 	if len(data) > 1 {
+	// 		d.FieldValueUint("minute", uint64(data[1]))
+	// 	}
+	//
+	// 	if len(data) > 2 {
+	// 		d.FieldValueUint("second", uint64(data[2]))
+	// 	}
+	//
+	// 	if len(data) > 3 {
+	// 		d.FieldValueUint("frames", uint64(data[3]))
+	// 	}
+	//
+	// 	if len(data) > 4 {
+	// 		d.FieldValueUint("fractions", uint64(data[4]))
+	// 	}
+	// })
 }
 
 func decodeTimeSignature(d *decode.D) {

@@ -17,7 +17,7 @@
 
 - [ ] fix gaps
       - [x] SequencerSpecificEvent
-      - [ ] SMPTEOffset
+      - [x] SMPTEOffset
       - [ ] TimeSignature
       - [ ] SysExMessage
       - [ ] SysEx - 'continued' flag
