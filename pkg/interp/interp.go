@@ -51,7 +51,7 @@ import (
 //go:embed init.jq
 var builtinFS embed.FS
 
-var initSource = `include "@builtin/init";`
+var initSource = `include "@builtin/init"; .`
 
 func init() {
 	RegisterIter1("_readline", (*Interp)._readline)
@@ -882,9 +882,8 @@ func (i *Interp) Eval(ctx context.Context, c any, expr string, opts EvalOpts) (g
 					pos:      p,
 				}
 			}
-
-			// not identity body means it returns something, threat as dynamic include
-			if q.Term == nil || q.Term.Type != gojq.TermTypeIdentity {
+			// has some root expression, threat as dynamic include
+			if q.Term != nil || q.Op != gojq.Operator(0) {
 				gc, err := gojq.Compile(q, funcCompilerOpts...)
 				if err != nil {
 					return nil, err
