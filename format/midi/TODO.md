@@ -16,10 +16,10 @@
 - (?) add to probe group
 
 - [ ] fix gaps
-      - [ ] SysExMessage
-      - [ ] SequencerSpecificEvent
+      - [x] SequencerSpecificEvent
       - [ ] SMPTEOffset
       - [ ] TimeSignature
+      - [ ] SysExMessage
       - [ ] SysEx - 'continued' flag
 
 - meta events

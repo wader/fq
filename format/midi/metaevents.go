@@ -358,18 +358,49 @@ func decodeSequencerSpecificEvent(d *decode.D) {
 	d.FieldU8("status")
 	d.FieldU8("event")
 
-	data := vlf(d)
-	if len(data) > 2 && data[0] == 0x00 {
-		d.FieldValueStr("manufacturer", fmt.Sprintf("%02X%02X", data[1], data[2]), manufacturers)
+	d.FieldStruct("message", func(d *decode.D) {
+		N := int(d.FieldUintFn("length", vlq))
+		data := d.PeekBytes(N)
 
-		if len(data) > 3 {
-			d.FieldValueStr("data", fmt.Sprintf("%v", data[3:]))
-		}
+		if len(data) > 2 && data[0] == 0x00 {
+			d.FieldStrFn("manufacturer", func(d *decode.D) string {
+				d.BytesLen(3)
+				return fmt.Sprintf("%02X%02X", data[1], data[2])
+			}, manufacturers)
 
-	} else if len(data) > 0 {
-		d.FieldValueStr("manufacturer", fmt.Sprintf("%02x", data[0]), manufacturers)
-		if len(data) > 1 {
-			d.FieldValueStr("data", fmt.Sprintf("%v", data[1:]))
+			if len(data) > 3 {
+				d.FieldStrFn("data", func(d *decode.D) string {
+					d.BytesLen(N - 3)
+					return fmt.Sprintf("%v", data[3:])
+				})
+			}
+
+		} else if len(data) > 0 {
+			d.FieldStrFn("manufacturer", func(d *decode.D) string {
+				d.BytesLen(1)
+				return fmt.Sprintf("%02x", data[0])
+			}, manufacturers)
+			if len(data) > 1 {
+				d.BytesLen(N - 1)
+				d.FieldStrFn("data", func(d *decode.D) string {
+					return fmt.Sprintf("%v", data[1:])
+				})
+			}
 		}
-	}
+	})
+
+	// data := vlf(d)
+	// if len(data) > 2 && data[0] == 0x00 {
+	// 	d.FieldValueStr("manufacturer", fmt.Sprintf("%02X%02X", data[1], data[2]), manufacturers)
+
+	// 	if len(data) > 3 {
+	// 		d.FieldValueStr("data", fmt.Sprintf("%v", data[3:]))
+	// 	}
+
+	// } else if len(data) > 0 {
+	// 	d.FieldValueStr("manufacturer", fmt.Sprintf("%02x", data[0]), manufacturers)
+	// 	if len(data) > 1 {
+	// 		d.FieldValueStr("data", fmt.Sprintf("%v", data[1:]))
+	// 	}
+	// }
 }
