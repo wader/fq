@@ -19,7 +19,7 @@
       - [x] SequencerSpecificEvent
       - [x] SMPTEOffset
       - [ ] TimeSignature
-      - [ ] SysExMessage
+      - [x] SysExMessage
       - [ ] SysEx - 'continued' flag
 
 - meta events
