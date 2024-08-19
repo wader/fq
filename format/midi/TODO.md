@@ -14,11 +14,12 @@
       - key changes
       - notes
 - (?) add to probe group
+- (?) tick field
 
 - [ ] fix gaps
       - [x] SequencerSpecificEvent
       - [x] SMPTEOffset
-      - [ ] TimeSignature
+      - [x] TimeSignature
       - [x] SysExMessage
       - [ ] SysEx - 'continued' flag
 

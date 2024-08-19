@@ -189,4 +189,4 @@ $ ./fq -d midi d key-signatures.mid
 0x100|                     00                        |       .        |          delta: 0
 0x100|                        ff                     |        .       |          status: 255
 0x100|                           2f                  |         /      |          event: 47
-0x100|                              00|              |          .|    |          data: null
+0x100|                              00|              |          .|    |          length: 0
