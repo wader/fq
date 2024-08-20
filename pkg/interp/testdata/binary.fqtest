@@ -35,12 +35,30 @@ $ fq -d mp3 '.frames[]._bits[0:12] | tonumber' test.mp3
 4095
 $ fq -d mp3 '.headers[0].header.magic._bits[0:24] | tostring' test.mp3
 "ID3"
-$ fq -d mp3 '.frames[0].audio_data | ("", "md5", "hex", "base64", "snippet") as $f | try tovalue({bits_format: $f}) catch .' test.mp3
+$ fq -d mp3 '.frames[0].audio_data, (.frames[0].tag.header | tobytes) | ("", "md5", "hex", "base64", "snippet", "byte_array") as $f | try tovalue({bits_format: $f}) catch .' test.mp3
 "invalid bits format \"\""
 "ca9c491ac66b2c62500882e93f3719a8"
 "0000000000"
 "AAAAAAA="
 "<5>AAAAAAA="
+[
+  0,
+  0,
+  0,
+  0,
+  0
+]
+"invalid bits format \"\""
+"4059b0251f66a18cb56f544728796875"
+"496e666f"
+"SW5mbw=="
+"<4>SW5mbw=="
+[
+  73,
+  110,
+  102,
+  111
+]
 $ fq -o bits_format=hex -n '[1,2,3] | tobytes'
    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x0|01 02 03|                                      |...|            |.: raw bits 0x0-0x3 (3)
