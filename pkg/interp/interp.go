@@ -131,8 +131,9 @@ type Output interface {
 }
 
 type Platform struct {
-	OS   string
-	Arch string
+	OS        string
+	Arch      string
+	GoVersion string
 }
 
 type CompleteFn func(line string, pos int) (newLine []string, shared int)
@@ -380,10 +381,11 @@ func (i *Interp) Main(ctx context.Context, output Output, versionStr string) err
 
 	platform := i.OS.Platform()
 	input := map[string]any{
-		"args":    args,
-		"version": versionStr,
-		"os":      platform.OS,
-		"arch":    platform.Arch,
+		"args":       args,
+		"version":    versionStr,
+		"os":         platform.OS,
+		"arch":       platform.Arch,
+		"go_version": platform.GoVersion,
 	}
 
 	iter, err := i.EvalFunc(ctx, input, "_main", nil, EvalOpts{output: output})

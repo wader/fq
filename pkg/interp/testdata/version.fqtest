@@ -1,2 +1,2 @@
 $ fq -v
-testversion (testos testarch)
+testversion (testos testarch testgo_version)
