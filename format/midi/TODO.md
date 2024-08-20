@@ -48,7 +48,7 @@
     - [x] sequencer specific event
     - [x] map manufacturer
     - [x] check key mappings
-    - [ ] Combine status + event into metaevent field
+    - [x] Combine status + event into metaevent field
 
 - midi events
     - [x] note off
@@ -68,5 +68,6 @@
     - [x] escape
     - [x] use context struct for casio
     - [x] map manufacturer ID
+    - [ ] Decode status as 'sysex'
 
 
