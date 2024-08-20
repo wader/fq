@@ -168,7 +168,7 @@ def _main:
           )
       )
     );
-  ( . as {$version, $os, $arch, $args, args: [$arg0]}
+  ( . as {$version, $os, $arch, $go_version, $args, args: [$arg0]}
   # make sure we don't unintentionally use . to make things clearer
   | null
   | ( try _args_parse($args[1:]; _opt_cli_opts)
@@ -203,7 +203,7 @@ def _main:
       | println
       )
     elif $opts.show_version then
-      "\($version) (\($os) \($arch))" | println
+      "\($version) (\($os) \($arch) \($go_version))" | println
     elif
       ( $opts.filenames == [null] and
         $opts.null_input == false and
