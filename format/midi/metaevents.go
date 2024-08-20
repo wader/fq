@@ -253,12 +253,15 @@ func decodeSMPTEOffset(d *decode.D) {
 	d.FieldU8("event")
 
 	d.FieldStruct("offset", func(d *decode.D) {
-		N := int(d.FieldUintFn("length", vlq))
-		data := d.PeekBytes(N)
+		var data []uint8
+		d.FieldStrFn("bytes", func(d *decode.D) string {
+			data = vlf(d)
+
+			return fmt.Sprintf("%v", data)
+		})
 
 		if len(data) > 0 {
 			d.FieldUintFn("framerate", func(d *decode.D) uint64 {
-				d.BytesLen(1)
 				rr := (data[0] >> 6) & 0x03
 
 				switch rr {
@@ -278,35 +281,24 @@ func decodeSMPTEOffset(d *decode.D) {
 					return 0
 				}
 			})
+
 			d.FieldValueUint("hour", uint64(data[0]&0x01f))
 		}
 
 		if len(data) > 1 {
-			d.FieldUintFn("minute", func(d *decode.D) uint64 {
-				d.BytesLen(1)
-				return uint64(data[1])
-			})
+			d.FieldValueUint("minute", uint64(data[1]))
 		}
 
 		if len(data) > 2 {
-			d.FieldUintFn("second", func(d *decode.D) uint64 {
-				d.BytesLen(1)
-				return uint64(data[2])
-			})
+			d.FieldValueUint("second", uint64(data[2]))
 		}
 
 		if len(data) > 3 {
-			d.FieldUintFn("frames", func(d *decode.D) uint64 {
-				d.BytesLen(1)
-				return uint64(data[3])
-			})
+			d.FieldValueUint("frames", uint64(data[3]))
 		}
 
 		if len(data) > 4 {
-			d.FieldUintFn("fractions", func(d *decode.D) uint64 {
-				d.BytesLen(1)
-				return uint64(data[4])
-			})
+			d.FieldValueUint("fractions", uint64(data[4]))
 		}
 	})
 }
@@ -316,33 +308,35 @@ func decodeTimeSignature(d *decode.D) {
 	d.FieldU8("status")
 	d.FieldU8("event")
 	d.FieldStruct("signature", func(d *decode.D) {
-		N := int(d.FieldUintFn("length", vlq))
-		data := d.PeekBytes(N)
+		var data []uint8
+		d.FieldStrFn("bytes", func(d *decode.D) string {
+			data = vlf(d)
 
-		d.FieldUintFn("numerator", func(d *decode.D) uint64 {
-			d.BytesLen(1)
-			return uint64(data[0])
+			return fmt.Sprintf("%v", data)
 		})
 
-		d.FieldUintFn("denominator", func(d *decode.D) uint64 {
-			d.BytesLen(1)
-			denominator := uint16(1)
-			for i := uint8(0); i < data[1]; i++ {
-				denominator *= 2
-			}
+		if len(data) > 0 {
+			d.FieldValueUint("numerator", uint64(data[0]))
+		}
 
-			return uint64(denominator)
-		})
+		if len(data) > 1 {
+			d.FieldUintFn("denominator", func(d *decode.D) uint64 {
+				denominator := uint16(1)
+				for i := uint8(0); i < data[1]; i++ {
+					denominator *= 2
+				}
 
-		d.FieldUintFn("ticksPerClick", func(d *decode.D) uint64 {
-			d.BytesLen(1)
-			return uint64(data[2])
-		})
+				return uint64(denominator)
+			})
+		}
 
-		d.FieldUintFn("thirtySecondsPerQuarter", func(d *decode.D) uint64 {
-			d.BytesLen(1)
-			return uint64(data[3])
-		})
+		if len(data) > 2 {
+			d.FieldValueUint("ticksPerClick", uint64(data[2]))
+		}
+
+		if len(data) > 3 {
+			d.FieldValueUint("thirtySecondsPerQuarter", uint64(data[3]))
+		}
 	})
 }
 
@@ -376,33 +370,25 @@ func decodeSequencerSpecificEvent(d *decode.D) {
 	d.FieldU8("status")
 	d.FieldU8("event")
 
-	d.FieldStruct("message", func(d *decode.D) {
-		N := int(d.FieldUintFn("length", vlq))
-		data := d.PeekBytes(N)
+	d.FieldStruct("info", func(d *decode.D) {
+		var data []uint8
+		d.FieldStrFn("bytes", func(d *decode.D) string {
+			data = vlf(d)
+
+			return fmt.Sprintf("%v", data)
+		})
 
 		if len(data) > 2 && data[0] == 0x00 {
-			d.FieldStrFn("manufacturer", func(d *decode.D) string {
-				d.BytesLen(3)
-				return fmt.Sprintf("%02X%02X", data[1], data[2])
-			}, manufacturers)
+			d.FieldValueStr("manufacturer", fmt.Sprintf("%02X%02X", data[1], data[2]), manufacturers)
 
 			if len(data) > 3 {
-				d.FieldStrFn("data", func(d *decode.D) string {
-					d.BytesLen(N - 3)
-					return fmt.Sprintf("%v", data[3:])
-				})
+				d.FieldValueStr("data", fmt.Sprintf("%v", data[3:]))
 			}
 
 		} else if len(data) > 0 {
-			d.FieldStrFn("manufacturer", func(d *decode.D) string {
-				d.BytesLen(1)
-				return fmt.Sprintf("%02x", data[0])
-			}, manufacturers)
+			d.FieldValueStr("manufacturer", fmt.Sprintf("%02x", data[0]), manufacturers)
 			if len(data) > 1 {
-				d.BytesLen(N - 1)
-				d.FieldStrFn("data", func(d *decode.D) string {
-					return fmt.Sprintf("%v", data[1:])
-				})
+				d.FieldValueStr("data", fmt.Sprintf("%v", data[1:]))
 			}
 		}
 	})

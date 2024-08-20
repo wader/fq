@@ -36,69 +36,67 @@ func decodeSysExEvent(d *decode.D, status uint8, ctx *context) {
 func decodeSysExMessage(d *decode.D, ctx *context) {
 	d.FieldUintFn("delta", vlq)
 	d.FieldU8("status")
-	d.FieldStruct("message", func(d *decode.D) {
-		N := int(d.FieldUintFn("length", vlq))
-		data := d.PeekBytes(N)
 
-		if N < 1 {
-			ctx.casio = true
-		} else {
-			d.FieldStrFn("manufacturer", func(d *decode.D) string {
-				d.BytesLen(1)
+	var bytes []uint8
+	d.FieldStrFn("bytes", func(d *decode.D) string {
+		bytes = vlf(d)
+		return fmt.Sprintf("%v", bytes)
+	})
 
-				return fmt.Sprintf("%02X", data[0])
-			}, manufacturers)
+	if len(bytes) < 1 {
+		ctx.casio = true
+	} else {
+		id := fmt.Sprintf("%02X", bytes[0])
 
-			if N > 1 {
-				d.FieldStrFn("data", func(d *decode.D) string {
-					d.BytesLen(int(N) - 1)
+		d.FieldValueStr("manufacturer", id, manufacturers)
 
-					if data[len(data)-1] == 0xf7 {
-						ctx.casio = false
-					} else {
-						ctx.casio = true
-					}
+		if len(bytes) > 1 {
+			if bytes[len(bytes)-1] == 0xf7 {
+				ctx.casio = false
+			} else {
+				ctx.casio = true
+			}
 
-					if data[len(data)-1] == 0xf7 {
-						return fmt.Sprintf("%v", data[1:len(data)-1])
-					} else {
-						return fmt.Sprintf("%v", data[1:])
-					}
-				})
+			if bytes[len(bytes)-1] == 0xf7 {
+				d.FieldValueStr("data", fmt.Sprintf("%v", bytes[1:len(bytes)-1]))
+			} else {
+				d.FieldValueStr("data", fmt.Sprintf("%v", bytes[1:]))
 			}
 		}
-	})
+	}
+
+	if ctx.casio {
+		d.FieldValueBool("continued", true)
+	}
 }
 
 func decodeSysExContinuation(d *decode.D, ctx *context) {
 	d.FieldUintFn("delta", vlq)
 	d.FieldU8("status")
-	d.FieldStruct("message", func(d *decode.D) {
-		N := int(d.FieldUintFn("length", vlq))
+	d.FieldStrFn("data", func(d *decode.D) string {
+		data := vlf(d)
 
-		d.FieldStrFn("data", func(d *decode.D) string {
-			data := d.BytesLen(N)
-			if len(data) > 0 && data[len(data)-1] == 0xf7 {
-				ctx.casio = false
-				return fmt.Sprintf("%v", data[:len(data)-1])
-			} else {
-				ctx.casio = true
-				return fmt.Sprintf("%v", data)
-			}
-		})
+		if len(data) > 0 && data[len(data)-1] == 0xf7 {
+			ctx.casio = false
+		} else {
+			ctx.casio = true
+		}
+
+		if len(data) > 0 && data[len(data)-1] == 0xf7 {
+			return fmt.Sprintf("%v", data[:len(data)-1])
+		} else {
+			return fmt.Sprintf("%v", data)
+		}
 	})
 }
 
 func decodeSysExEscape(d *decode.D, ctx *context) {
 	d.FieldUintFn("delta", vlq)
 	d.FieldU8("status")
-	d.FieldStruct("message", func(d *decode.D) {
-		N := int(d.FieldUintFn("length", vlq))
+	d.FieldStrFn("data", func(d *decode.D) string {
+		data := vlf(d)
 
-		d.FieldStrFn("data", func(d *decode.D) string {
-			data := d.BytesLen(N)
-			return fmt.Sprintf("%v", data)
-		})
+		return fmt.Sprintf("%v", data)
 	})
 
 	ctx.casio = false

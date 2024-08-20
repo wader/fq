@@ -9,6 +9,7 @@
       - [ ] format 0
       - [ ] format 1
       - [ ] format 2
+      - [x] key signatures
 - (?) example queries
       - tempo changes
       - key changes
@@ -16,12 +17,13 @@
 - (?) add to probe group
 - (?) tick field
 
-- [ ] fix gaps
+- [x] fix gaps
       - [x] SequencerSpecificEvent
       - [x] SMPTEOffset
       - [x] TimeSignature
       - [x] SysExMessage
-      - [ ] SysEx - 'continued' flag
+      - [x] SysExContinuation
+      - [x] SysEx - 'continued' flag
 
 - meta events
     - [x] sequence number
@@ -39,8 +41,10 @@
     - [x] end of track
     - [x] tempo
     - [x] SMPTE offset
+          - [ ] map frame rates
     - [x] key signature
     - [x] time signature
+          - [ ] map denominator 
     - [x] sequencer specific event
     - [x] map manufacturer
     - [x] check key mappings

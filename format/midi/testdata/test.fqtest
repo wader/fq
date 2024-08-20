@@ -29,11 +29,12 @@ $ ./fq -d midi dv test.mid
 0x20|                                 ff            |           .    |          status: 255 0x2b-0x2c (1)
 0x20|                                    58         |            X   |          event: 88 0x2c-0x2d (1)
     |                                               |                |          signature{}: 0x2d-0x32 (5)
-0x20|                                       04      |             .  |            length: 4 0x2d-0x2e (1)
-0x20|                                          04   |              . |            numerator: 4 0x2e-0x2f (1)
-0x20|                                             02|               .|            denominator: 4 0x2f-0x30 (1)
-0x30|18                                             |.               |            ticksPerClick: 24 0x30-0x31 (1)
-0x30|   08                                          | .              |            thirtySecondsPerQuarter: 8 0x31-0x32 (1)
+0x20|                                       04 04 02|             ...|            bytes: "[4 2 24 8]" 0x2d-0x32 (5)
+0x30|18 08                                          |..              |
+    |                                               |                |            numerator: 4
+    |                                               |                |            denominator: 4 0x32-0x32 (0)
+    |                                               |                |            ticksPerClick: 24
+    |                                               |                |            thirtySecondsPerQuarter: 8
     |                                               |                |        [3]{}: EndOfTrack 0x32-0x36 (4)
 0x30|      00                                       |  .             |          delta: 0 0x32-0x33 (1)
 0x30|         ff                                    |   .            |          status: 255 0x33-0x34 (1)
