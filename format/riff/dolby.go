@@ -5,64 +5,48 @@ package riff
 // https://github.com/DolbyLaboratories/dbmd-atmos-parser
 
 import (
-	"fmt"
-	"strings"
-
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
 )
 
-func dbmdDecode(d *decode.D, size int64) any {
-	version := d.U32()
-	major := (version >> 24) & 0xFF
-	minor := (version >> 16) & 0xFF
-	patch := (version >> 8) & 0xFF
-	build := version & 0xFF
-	d.FieldValueStr("version", fmt.Sprintf("%d.%d.%d.%d", major, minor, patch, build))
+func dbmdDecode(d *decode.D) any {
+	d.FieldStruct("version", func(d *decode.D) {
+		d.FieldU8("major")
+		d.FieldU8("minor")
+		d.FieldU8("patch")
+		d.FieldU8("build")
+	})
 
 	d.FieldArray("metadata_segments", func(d *decode.D) {
-		for {
+		seenEnd := false
+		for !seenEnd {
 			d.FieldStruct("metadata_segment", func(d *decode.D) {
-				segmentID := d.FieldU8("metadata_segment_id")
-
-				// TODO(jmarnell): I think I need a loop until, but not creating these empty segments
-				// spec says we're done with 0 ID, so I'd like to not make the empty segment(s)
+				segmentID := d.FieldU8("id", metadataSegmentTypeMap)
 				if segmentID == 0 {
-					if d.BitsLeft() > 0 {
-						d.SeekRel(d.BitsLeft() * 8)
-					}
+					seenEnd = true
 					return
 				}
 
-				segmentSize := d.FieldU16("metadata_segment_size")
-				bitsLeft := d.BitsLeft()
+				segmentSize := d.FieldU16("size")
 
 				switch segmentID {
-				case 1:
+				case metadataSegmentTypeDolyEMetadata:
 					parseDolbyE(d)
-				case 3:
+				case metadataSegmentTypeDolyEDigitaletadata:
 					parseDolbyDigital(d)
-				case 7:
+				case metadataSegmentTypeDolyDigitalPlusMetadata:
 					parseDolbyDigitalPlus(d)
-				case 8:
+				case metadataSegmentTypeAudioInfo:
 					parseAudioInfo(d)
-				case 9:
-					parseDolbyAtmos(d, segmentSize)
-				case 10:
-					parseDolbyAtmosSupplemental(d, segmentSize)
+				case metadataSegmentTypeDolyAtmos:
+					parseDolbyAtmos(d)
+				case metadataSegmentTypeDolbyAtmosSupplemental:
+					parseDolbyAtmosSupplemental(d)
 				default:
-					d.FieldRawLen("unknown_segment_raw", int64(segmentSize*8))
+					d.FieldRawLen("unknown", int64(segmentSize*8))
 				}
 
-				bytesRemaining := (bitsLeft-d.BitsLeft())/8 - int64(segmentSize)
-				if bytesRemaining < 0 {
-					d.Fatalf("Read too many bytes for segment %d, read %d over, expected %d", segmentID, -bytesRemaining, segmentSize)
-				} else if bytesRemaining > 0 {
-					d.FieldValueUint("SKIPPED_BYTES", uint64(bytesRemaining))
-					d.SeekRel((int64(segmentSize) - bytesRemaining) * 8)
-				}
-
-				d.FieldU8("metadata_segment_checksum")
+				d.FieldU8("checksum", scalar.UintHex)
 			})
 		}
 	})
@@ -70,22 +54,13 @@ func dbmdDecode(d *decode.D, size int64) any {
 	return nil
 }
 
-var compressionDesc = scalar.UintMapDescription{
+var compressionDescMap = scalar.UintMapSymStr{
 	0: "none",
-	1: "Film, Standard",
-	2: "Film, Light",
-	3: "Music, Standard",
-	4: "Music, Light",
-	5: "Speech",
-	// TODO(jmarnell): Can I handle rest is "Reserved"?
-}
-
-// TODO(jmarnell): Better way to handle "Reserved"?
-func mapWithReserved(m map[uint64]string, key uint64) string {
-	if val, ok := m[key]; ok {
-		return val
-	}
-	return "Reserved"
+	1: "film_standard",
+	2: "film_light",
+	3: "music_standard",
+	4: "music_light",
+	5: "speech",
 }
 
 var bitstreamMode = scalar.UintMapDescription{
@@ -101,20 +76,20 @@ var bitstreamMode = scalar.UintMapDescription{
 	0b1000: "associated service: karaoke (K)",
 }
 
-var binaural = scalar.UintMapDescription{
+var binauralRenderModeMap = scalar.UintMapSymStr{
 	0: "bypass",
 	1: "near",
 	2: "far",
 	3: "mid",
-	4: "not indicated",
+	4: "not_indicated",
 }
 
-var warpMode = scalar.UintMapDescription{
-	0: "normal",
-	1: "warping",
-	2: "downmix Dolby Pro Logic IIx",
-	3: "downmix LoRo",
-	4: "not indicated (Default warping will be applied.)",
+var warpModeMap = scalar.UintMap{
+	0: {Sym: "normal"},
+	1: {Sym: "warping"},
+	2: {Sym: "downmix_dolby_pro_logic_iix"},
+	3: {Sym: "downmix_loro"},
+	4: {Sym: "not_indicated", Description: "Default warping will be applied"},
 }
 
 var trimConfigName = scalar.UintMapDescription{
@@ -134,9 +109,35 @@ var trimType = scalar.UintMapDescription{
 	1: "automatic",
 }
 
-func parseDolbyE(d *decode.D) {
-	d.FieldValueStr("metadata_segment_type", "dolby_e")
+const (
+	metadataSegmentTypeEnd                     = 0
+	metadataSegmentTypeDolyEMetadata           = 1
+	metadataSegmentTypeDolyReserved2           = 2
+	metadataSegmentTypeDolyEDigitaletadata     = 3
+	metadataSegmentTypeDolyReserved4           = 4
+	metadataSegmentTypeDolyReserved5           = 5
+	metadataSegmentTypeDolyReserved6           = 6
+	metadataSegmentTypeDolyDigitalPlusMetadata = 7
+	metadataSegmentTypeAudioInfo               = 8
+	metadataSegmentTypeDolyAtmos               = 9
+	metadataSegmentTypeDolbyAtmosSupplemental  = 10
+)
 
+var metadataSegmentTypeMap = scalar.UintMapSymStr{
+	metadataSegmentTypeEnd:                     "end",
+	metadataSegmentTypeDolyEMetadata:           "doly_e_metadata",
+	metadataSegmentTypeDolyReserved2:           "reserved2",
+	metadataSegmentTypeDolyEDigitaletadata:     "doly_e_digitale_tadata",
+	metadataSegmentTypeDolyReserved4:           "reserved4",
+	metadataSegmentTypeDolyReserved5:           "reserved5",
+	metadataSegmentTypeDolyReserved6:           "reserved6",
+	metadataSegmentTypeDolyDigitalPlusMetadata: "doly_digital_plus_metadata",
+	metadataSegmentTypeAudioInfo:               "audio_info",
+	metadataSegmentTypeDolyAtmos:               "doly_atmos",
+	metadataSegmentTypeDolbyAtmosSupplemental:  "dolby_atmos_supplemental",
+}
+
+func parseDolbyE(d *decode.D) {
 	d.FieldU8("program_config")
 	d.FieldU8("frame_rate_code")
 	d.FieldRawLen("e_SMPTE_time_code", 8*8)
@@ -146,8 +147,6 @@ func parseDolbyE(d *decode.D) {
 }
 
 func parseDolbyDigital(d *decode.D) {
-	d.FieldValueStr("metadata_segment_type", "dolby_digital")
-
 	d.FieldU8("ac3_program_id")
 	d.FieldU8("program_info")
 	d.FieldU8("datarate_info")
@@ -167,9 +166,8 @@ func parseDolbyDigital(d *decode.D) {
 }
 
 func parseDolbyDigitalPlus(d *decode.D) {
-	d.FieldValueStr("metadata_segment_type", "dolby_digital_plus")
-
 	d.FieldU8("program_id")
+	// TODO: make struct and read U1(?) U1 (lfeon) U3 (bsmod) U3(acmod) fields?
 	programInfo := d.FieldU8("program_info")
 	lfeon := programInfo & 0b1_000_000
 	bsmod := programInfo & 0b0_111_000
@@ -192,8 +190,8 @@ func parseDolbyDigitalPlus(d *decode.D) {
 
 	d.FieldU24LE("ddplus_reserved_b")
 
-	d.FieldValueStr("compr1_type", mapWithReserved(compressionDesc, d.FieldU8("compr1")))
-	d.FieldValueStr("dynrng1_type", mapWithReserved(compressionDesc, d.FieldU8("dynrng1")))
+	d.FieldU8("compr1", scalar.UintSym("reserved"), compressionDescMap)
+	d.FieldU8("dynrng1", scalar.UintSym("reserved"), compressionDescMap)
 
 	d.FieldU24LE("ddplus_reserved_c")
 
@@ -206,8 +204,6 @@ func parseDolbyDigitalPlus(d *decode.D) {
 }
 
 func parseAudioInfo(d *decode.D) {
-	d.FieldValueStr("metadata_segment_type", "audio_info")
-
 	d.FieldU8("program_id")
 	d.FieldUTF8("audio_origin", 32)
 	d.FieldU32LE("largest_sample_value")
@@ -224,36 +220,30 @@ func parseAudioInfo(d *decode.D) {
 	d.FieldUTF8("segment_modified_date", 32)
 }
 
-func parseDolbyAtmos(d *decode.D, size uint64) {
-	d.FieldValueStr("metadata_segment_type", "dolby_atmos")
+func parseDolbyAtmos(d *decode.D) {
+	// TODO: both these are fixed size null terminated strings?
+	d.FieldUTF8NullFixedLen("atmos_dbmd_content_creation_preamble", 32)
+	d.FieldUTF8NullFixedLen("atmos_dbmd_content_creation_tool", 64)
+	d.FieldStruct("version", func(d *decode.D) {
+		d.FieldU8("major")
+		d.FieldU8("minor")
+		d.FieldU8("micro")
+	})
 
-	// d.SeekRel(32 * 8)
-	str := d.FieldUTF8Null("atmos_dbmd_content_creation_preamble")
-	d.SeekRel(int64(32-len(str)-1) * 8)
+	// TODO: what is this?
+	d.FieldRawLen("unknown0", 53*8)
 
-	str = d.FieldUTF8Null("atmos_dbmd_content_creation_tool")
-	d.SeekRel(int64(64-len(str)-1) * 8)
+	d.FieldU8("warp_mode", warpModeMap)
 
-	major := d.U8()
-	minor := d.U8()
-	micro := d.U8()
-	d.FieldValueStr("version", fmt.Sprintf("%d.%d.%d", major, minor, micro))
-	d.SeekRel(53 * 8)
-
-	warpBedReserved := d.U8()
-	d.FieldValueUint("warp_mode", warpBedReserved&0x7)
-	d.FieldValueStr("warp_mode_type", warpMode[warpBedReserved&0x7])
-
-	d.SeekRel(15 * 8)
-	d.SeekRel(80 * 8)
+	// TODO: what is this?
+	d.FieldRawLen("unknown1", 15*8)
+	d.FieldRawLen("unknown2", 80*8)
 }
 
-func parseDolbyAtmosSupplemental(d *decode.D, size uint64) {
-	d.FieldValueStr("metadata_segment_type", "dolby_atmos_supplemental")
+func parseDolbyAtmosSupplemental(d *decode.D) {
+	d.FieldU32LE("dasms_sync", d.UintAssert(0xf8726fbd), scalar.UintHex)
 
-	sync := d.FieldU32LE("dasms_sync")
-	d.FieldValueBool("dasms_sync_valid", sync == 0xf8726fbd)
-
+	// TODO: wav.go sets LE default i think?
 	objectCount := int64(d.FieldU16LE("object_count"))
 	d.FieldU8LE("reserved")
 
@@ -265,30 +255,33 @@ func parseDolbyAtmosSupplemental(d *decode.D, size uint64) {
 		d.FieldValueStr("trim_type", trimType[autoTrim])
 		d.FieldValueStr("trim_config_name", trimConfigName[uint64(i)])
 
-		//d.SeekRel(14 * 8)
-		// d.FieldUTF8("raw", 14)
-		str := d.UTF8(14)
-		bytes := []byte(str)
-		var nonZeroBytes []string
-		for _, b := range bytes {
-			if b != 0 {
-				nonZeroBytes = append(nonZeroBytes, fmt.Sprintf("%d", b))
-			}
-		}
+		// TODO: this is null separted list of def strings?
+		d.FieldUTF8("raw", 14)
+		// str := d.UTF8(14)
+		// bytes := []byte(str)
+		// var nonZeroBytes []string
+		// for _, b := range bytes {
+		// 	if b != 0 {
+		// 		nonZeroBytes = append(nonZeroBytes, fmt.Sprintf("%d", b))
+		// 	}
+		// }
 		// TODO(jmarnell): I think the +3dB trim settings are here.
 		//		Would like this at least as an array of numbers, instead of this CSV string
-		d.FieldValueStr("trim_defs", strings.Join(nonZeroBytes, ", "))
+		// d.FieldValueStr("trim_defs", strings.Join(nonZeroBytes, ", "))
 
 		i++
 	})
 
-	d.FieldStructNArray("objects", "object", objectCount, func(d *decode.D) {
-		d.FieldU8LE("object_value")
+	d.FieldArray("objects", func(d *decode.D) {
+		for i := int64(0); i < objectCount; i++ {
+			d.FieldU8("object_value")
+		}
 	})
 
-	d.FieldStructNArray("binaural_render_modes", "binaural_render_mode", objectCount, func(d *decode.D) {
-		mode := d.U8LE() & 0x7
-		d.FieldValueUint("render_mode", mode)
-		d.FieldValueStr("render_mode_type", binaural[mode])
+	d.FieldArray("binaural_render_modes", func(d *decode.D) {
+		// TODO: 0x7 mask needed?
+		for i := int64(0); i < objectCount; i++ {
+			d.FieldU8("render_mode", scalar.UintActualFn(func(a uint64) uint64 { return a & 0x7 }), binauralRenderModeMap)
+		}
 	})
 }

@@ -19,12 +19,11 @@ func chnaDecode(d *decode.D, size int64) {
 		d.FieldUTF8("uid", 12)
 		d.FieldUTF8("track_format_id_reference", 14)
 		d.FieldUTF8("pack_format_id_reference", 11)
-		// Skip padding single byte
-		d.U8()
+		d.FieldRawLen("padding", 8)
 	})
 }
 
 func axmlDecode(d *decode.D, size int64) {
 	// TODO(jmarnell): this chunk is all variable xml, so leave as is?
-	d.FieldRawLen("xml", size*8)
+	d.FieldUTF8("xml", int(size))
 }

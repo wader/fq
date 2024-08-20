@@ -165,7 +165,7 @@ func wavDecode(d *decode.D) any {
 				axmlDecode(d, size)
 				return false, nil
 			case "dbmd":
-				dbmdDecode(d, size)
+				dbmdDecode(d)
 				return false, nil
 
 			default:
