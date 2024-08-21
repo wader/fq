@@ -54,7 +54,7 @@ func aiffDecode(d *decode.D) any {
 			}
 			return id, size
 		},
-		func(d *decode.D, id string, path path, size int64) (bool, any) {
+		func(d *decode.D, id string, path path) (bool, any) {
 			switch id {
 			case "FORM":
 				riffType = d.FieldUTF8("format", 4, d.StrAssert(aiffRiffType))

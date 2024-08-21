@@ -5,11 +5,31 @@ package riff
 // https://github.com/DolbyLaboratories/dbmd-atmos-parser
 
 import (
+	"embed"
+
+	"github.com/wader/fq/format"
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
+//go:embed dolby_metadata.md
+var dolbyMetadataFS embed.FS
+
+func init() {
+	interp.RegisterFormat(
+		format.Dolby_Metadata,
+		&decode.Format{
+			Description: "Dolby Metadata (Atmos, AC3, Dolby Digital)",
+			DecodeFn:    dbmdDecode,
+		},
+	)
+	interp.RegisterFS(dolbyMetadataFS)
+}
+
 func dbmdDecode(d *decode.D) any {
+	d.Endian = decode.LittleEndian
+
 	d.FieldStruct("version", func(d *decode.D) {
 		d.FieldU8("major")
 		d.FieldU8("minor")
@@ -30,15 +50,15 @@ func dbmdDecode(d *decode.D) any {
 				segmentSize := d.FieldU16("size")
 
 				switch segmentID {
-				case metadataSegmentTypeDolyEMetadata:
+				case metadataSegmentTypeDolbyEMetadata:
 					parseDolbyE(d)
-				case metadataSegmentTypeDolyEDigitaletadata:
+				case metadataSegmentTypeDolbyEDigitaletadata:
 					parseDolbyDigital(d)
-				case metadataSegmentTypeDolyDigitalPlusMetadata:
+				case metadataSegmentTypeDolbyDigitalPlusMetadata:
 					parseDolbyDigitalPlus(d)
 				case metadataSegmentTypeAudioInfo:
 					parseAudioInfo(d)
-				case metadataSegmentTypeDolyAtmos:
+				case metadataSegmentTypeDolbyAtmos:
 					parseDolbyAtmos(d)
 				case metadataSegmentTypeDolbyAtmosSupplemental:
 					parseDolbyAtmosSupplemental(d)
@@ -63,7 +83,7 @@ var compressionDescMap = scalar.UintMapSymStr{
 	5: "speech",
 }
 
-var bitstreamMode = scalar.UintMapDescription{
+var bitstreamModeMap = scalar.UintMapDescription{
 	0b000: "main audio service: complete main (CM)",
 	0b001: "main audio service: music and effects (ME)",
 	0b010: "associated service: visually impaired (VI)",
@@ -104,43 +124,38 @@ var trimConfigName = scalar.UintMapDescription{
 	8: "7.1.4",
 }
 
-var trimType = scalar.UintMapDescription{
-	0: "manual",
-	1: "automatic",
-}
-
 const (
-	metadataSegmentTypeEnd                     = 0
-	metadataSegmentTypeDolyEMetadata           = 1
-	metadataSegmentTypeDolyReserved2           = 2
-	metadataSegmentTypeDolyEDigitaletadata     = 3
-	metadataSegmentTypeDolyReserved4           = 4
-	metadataSegmentTypeDolyReserved5           = 5
-	metadataSegmentTypeDolyReserved6           = 6
-	metadataSegmentTypeDolyDigitalPlusMetadata = 7
-	metadataSegmentTypeAudioInfo               = 8
-	metadataSegmentTypeDolyAtmos               = 9
-	metadataSegmentTypeDolbyAtmosSupplemental  = 10
+	metadataSegmentTypeEnd                      = 0
+	metadataSegmentTypeDolbyEMetadata           = 1
+	metadataSegmentTypeDolbyReserved2           = 2
+	metadataSegmentTypeDolbyEDigitaletadata     = 3
+	metadataSegmentTypeDolbyReserved4           = 4
+	metadataSegmentTypeDolbyReserved5           = 5
+	metadataSegmentTypeDolbyReserved6           = 6
+	metadataSegmentTypeDolbyDigitalPlusMetadata = 7
+	metadataSegmentTypeAudioInfo                = 8
+	metadataSegmentTypeDolbyAtmos               = 9
+	metadataSegmentTypeDolbyAtmosSupplemental   = 10
 )
 
 var metadataSegmentTypeMap = scalar.UintMapSymStr{
-	metadataSegmentTypeEnd:                     "end",
-	metadataSegmentTypeDolyEMetadata:           "doly_e_metadata",
-	metadataSegmentTypeDolyReserved2:           "reserved2",
-	metadataSegmentTypeDolyEDigitaletadata:     "doly_e_digitale_tadata",
-	metadataSegmentTypeDolyReserved4:           "reserved4",
-	metadataSegmentTypeDolyReserved5:           "reserved5",
-	metadataSegmentTypeDolyReserved6:           "reserved6",
-	metadataSegmentTypeDolyDigitalPlusMetadata: "doly_digital_plus_metadata",
-	metadataSegmentTypeAudioInfo:               "audio_info",
-	metadataSegmentTypeDolyAtmos:               "doly_atmos",
-	metadataSegmentTypeDolbyAtmosSupplemental:  "dolby_atmos_supplemental",
+	metadataSegmentTypeEnd:                      "end",
+	metadataSegmentTypeDolbyEMetadata:           "dolby_e_metadata",
+	metadataSegmentTypeDolbyReserved2:           "reserved2",
+	metadataSegmentTypeDolbyEDigitaletadata:     "dolby_e_digitale_tadata",
+	metadataSegmentTypeDolbyReserved4:           "reserved4",
+	metadataSegmentTypeDolbyReserved5:           "reserved5",
+	metadataSegmentTypeDolbyReserved6:           "reserved6",
+	metadataSegmentTypeDolbyDigitalPlusMetadata: "dolby_digital_plus_metadata",
+	metadataSegmentTypeAudioInfo:                "audio_info",
+	metadataSegmentTypeDolbyAtmos:               "dolby_atmos",
+	metadataSegmentTypeDolbyAtmosSupplemental:   "dolby_atmos_supplemental",
 }
 
 func parseDolbyE(d *decode.D) {
 	d.FieldU8("program_config")
 	d.FieldU8("frame_rate_code")
-	d.FieldRawLen("e_SMPTE_time_code", 8*8)
+	d.FieldRawLen("e_smpte_time_code", 8*8)
 	d.FieldRawLen("e_reserved", 1*8)
 	d.FieldRawLen("e_reserved2", 25*8)
 	d.FieldRawLen("reserved_for_future_use", 80*8)
@@ -176,9 +191,9 @@ func parseDolbyDigitalPlus(d *decode.D) {
 	if bsmod == 0b111 && acmod != 0b001 {
 		bsmod = 0b1000
 	}
-	d.FieldValueStr("bitstream_mode", bitstreamMode[bsmod])
+	d.FieldValueStr("bitstream_mode", bitstreamModeMap[bsmod])
 
-	d.FieldU16LE("ddplus_reserved_a")
+	d.FieldU16("ddplus_reserved_a")
 
 	d.FieldU8("surround_config")
 	d.FieldU8("dialnorm_info")
@@ -188,32 +203,32 @@ func parseDolbyDigitalPlus(d *decode.D) {
 	d.FieldU8("ext_bsi1_word2")
 	d.FieldU8("ext_bsi2_word1")
 
-	d.FieldU24LE("ddplus_reserved_b")
+	d.FieldU24("ddplus_reserved_b")
 
 	d.FieldU8("compr1", scalar.UintSym("reserved"), compressionDescMap)
 	d.FieldU8("dynrng1", scalar.UintSym("reserved"), compressionDescMap)
 
-	d.FieldU24LE("ddplus_reserved_c")
+	d.FieldU24("ddplus_reserved_c")
 
 	d.FieldU8("ddplus_info1")
 
-	d.FieldU40LE("ddplus_reserved_d")
+	d.FieldU40("ddplus_reserved_d")
 
-	d.FieldU16LE("datarate")
+	d.FieldU16("datarate")
 	d.FieldRawLen("reserved_for_future_use", 69*8)
 }
 
 func parseAudioInfo(d *decode.D) {
 	d.FieldU8("program_id")
 	d.FieldUTF8("audio_origin", 32)
-	d.FieldU32LE("largest_sample_value")
-	d.FieldU32LE("largest_sample_value_2")
-	d.FieldU32LE("largest_true_peak_value")
-	d.FieldU32LE("largest_true_peak_value_2")
-	d.FieldU32LE("dialogue_loudness")
-	d.FieldU32LE("dialogue_loudness_2")
-	d.FieldU32LE("speech_content")
-	d.FieldU32LE("speech_content_2")
+	d.FieldU32("largest_sample_value")
+	d.FieldU32("largest_sample_value_2")
+	d.FieldU32("largest_true_peak_value")
+	d.FieldU32("largest_true_peak_value_2")
+	d.FieldU32("dialogue_loudness")
+	d.FieldU32("dialogue_loudness_2")
+	d.FieldU32("speech_content")
+	d.FieldU32("speech_content_2")
 	d.FieldUTF8("last_processed_by", 32)
 	d.FieldUTF8("last_operation", 32)
 	d.FieldUTF8("segment_creation_date", 32)
@@ -241,19 +256,20 @@ func parseDolbyAtmos(d *decode.D) {
 }
 
 func parseDolbyAtmosSupplemental(d *decode.D) {
-	d.FieldU32LE("dasms_sync", d.UintAssert(0xf8726fbd), scalar.UintHex)
+	d.FieldU32("dasms_sync", d.UintAssert(0xf8726fbd), scalar.UintHex)
 
 	// TODO: wav.go sets LE default i think?
-	objectCount := int64(d.FieldU16LE("object_count"))
-	d.FieldU8LE("reserved")
+	objectCount := int64(d.FieldU16("object_count"))
+	d.FieldU8("reserved")
 
 	i := 0
 	d.FieldStructNArray("trim_configs", "trim_config", 9, func(d *decode.D) {
-		autoTrimReserved := d.FieldU8LE("auto_trim_reserved")
-		autoTrim := autoTrimReserved & 0x01
-		d.FieldValueBool("auto_trim", autoTrim == 1)
-		d.FieldValueStr("trim_type", trimType[autoTrim])
-		d.FieldValueStr("trim_config_name", trimConfigName[uint64(i)])
+		d.FieldRawLen("reserved", 7)
+		d.FieldU1("type", scalar.UintMapSymStr{
+			0: "manual",
+			1: "automatic",
+		})
+		d.FieldValueStr("config_name", trimConfigName[uint64(i)])
 
 		// TODO: this is null separted list of def strings?
 		d.FieldUTF8("raw", 14)

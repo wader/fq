@@ -19,11 +19,11 @@ func (p path) topData() any {
 	return p[len(p)-1].data
 }
 
-func riffDecode(d *decode.D, path path, headFn func(d *decode.D, path path) (string, int64), chunkFn func(d *decode.D, id string, path path, size int64) (bool, any)) {
+func riffDecode(d *decode.D, path path, headFn func(d *decode.D, path path) (string, int64), chunkFn func(d *decode.D, id string, path path) (bool, any)) {
 	id, size := headFn(d, path)
 
 	d.FramedFn(size*8, func(d *decode.D) {
-		hasChildren, data := chunkFn(d, id, path, size)
+		hasChildren, data := chunkFn(d, id, path)
 		if hasChildren {
 			np := append(path, pathEntry{id: id, data: data})
 			d.FieldArray("chunks", func(d *decode.D) {

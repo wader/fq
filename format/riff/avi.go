@@ -238,7 +238,7 @@ func aviDecodeEx(d *decode.D, ai format.AVI_In, extendedChunk bool) {
 			size := d.FieldU32("size")
 			return id, int64(size)
 		},
-		func(d *decode.D, id string, path path, size int64) (bool, any) {
+		func(d *decode.D, id string, path path) (bool, any) {
 			switch id {
 			case "RIFF":
 				foundRiffType = d.FieldUTF8("type", 4, d.StrAssert(requiredRiffType))
