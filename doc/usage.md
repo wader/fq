@@ -405,8 +405,9 @@ There is also `tobitsrange` and `tobytesrange` which does the same thing but wil
   - `[0x12, 0x34, 0x56] | tobits[4:12]` will be a binary with the byte `0x23`
   - `[0x12, 0x34, 0x56] | tobits[4:20]` will be a binary with the byte `0x23`, `0x45`
   - `[0x12, 0x34, 0x56] | tobits[4:20] | tobytes[1:]` will be a binary with the byte `0x45`,
-
-Both `.[index]` and `.[start:end]` support negative indices to index from end.
+  - Both `.[index]` and `.[start:end]` support negative indices to index from end.
+- `.[]` outputs all bytes or bit as integers, same as `explode[]`.
+- `explode` output an array with all byte or bits as integers, same as `[.[]]`.
 
 #### Binary array
 
