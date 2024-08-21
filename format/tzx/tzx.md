@@ -8,6 +8,15 @@ the company Ramsoft became the maintainers, and created revision `v1.20`.
 
 The default file extension is `.tzx`.
 
+### Processing JSON files
+
+When needing to process a generated JSON file it's recommended to convert the
+plain data bytes to an array by setting `bits_format=byte_array`:
+
+```bash
+fq -o bits_format=byte_array -d tzx -V d /path/to/file.tzx
+```
+
 ### Authors
 
 - Michael R. Cook work.mrc@pm.me, original author
