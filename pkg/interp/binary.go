@@ -414,7 +414,12 @@ func (b Binary) JQValueKey(name string) any {
 	return nil
 }
 func (b Binary) JQValueEach() any {
-	return nil
+	l := int(b.r.Len / int64(b.unit))
+	vs := make([]gojq.PathValue, l)
+	for i := 0; i < l; i++ {
+		vs[i] = gojq.PathValue{Path: i, Value: b.JQValueIndex(i)}
+	}
+	return vs
 }
 func (b Binary) JQValueType() string {
 	return gojq.JQTypeString
