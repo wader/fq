@@ -29,7 +29,7 @@ $ ./fq -d midi dv test.mid
 0x20|                                       04 04 02|             ...|            bytes: "[4 2 24 8]" 0x2d-0x32 (5)
 0x30|18 08                                          |..              |
     |                                               |                |            numerator: 4
-    |                                               |                |            denominator: 4 0x32-0x32 (0)
+    |                                               |                |            denominator: 4
     |                                               |                |            ticksPerClick: 24
     |                                               |                |            thirtySecondsPerQuarter: 8
     |                                               |                |        [3]{}: EndOfTrack 0x32-0x36 (4)

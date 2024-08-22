@@ -42,10 +42,8 @@
     - [x] end of track
     - [x] tempo
     - [x] SMPTE offset
-          - [x] map frame rates
     - [x] key signature
     - [x] time signature
-          - [x] cleanup denominator 
     - [x] sequencer specific event
     - [x] map manufacturer
     - [x] check key mappings
@@ -69,6 +67,6 @@
     - [x] escape
     - [x] use context struct for casio
     - [x] map manufacturer ID
-    - [ ] Decode status as 'sysex'
+    - [x] Decode status as 'sysex'
 
 

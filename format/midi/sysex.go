@@ -4,7 +4,13 @@ import (
 	"fmt"
 
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
+
+var sysex = scalar.UintMapSymStr{
+	0xf0: "F0",
+	0xf7: "F7",
+}
 
 func decodeSysExEvent(d *decode.D, status uint8, ctx *context) {
 	ctx.running = 0x00
@@ -35,7 +41,7 @@ func decodeSysExEvent(d *decode.D, status uint8, ctx *context) {
 
 func decodeSysExMessage(d *decode.D, ctx *context) {
 	d.FieldUintFn("delta", vlq)
-	d.FieldU8("status")
+	d.FieldU8("sysex", sysex)
 
 	var bytes []uint8
 	d.FieldStrFn("bytes", func(d *decode.D) string {
@@ -72,7 +78,7 @@ func decodeSysExMessage(d *decode.D, ctx *context) {
 
 func decodeSysExContinuation(d *decode.D, ctx *context) {
 	d.FieldUintFn("delta", vlq)
-	d.FieldU8("status")
+	d.FieldU8("sysex", sysex)
 	d.FieldStrFn("data", func(d *decode.D) string {
 		data := vlf(d)
 
@@ -92,7 +98,7 @@ func decodeSysExContinuation(d *decode.D, ctx *context) {
 
 func decodeSysExEscape(d *decode.D, ctx *context) {
 	d.FieldUintFn("delta", vlq)
-	d.FieldU8("status")
+	d.FieldU8("sysex", sysex)
 	d.FieldStrFn("data", func(d *decode.D) string {
 		data := vlf(d)
 
