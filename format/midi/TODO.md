@@ -4,7 +4,6 @@
 - [x] move delta into events
 - [x] Use FieldUTF8 for MIDI chunk tags
 - [ ] discard unknown chunks
-- [ ] assert available bytes
 - [ ] tests
       - [ ] format 0
       - [ ] format 1
@@ -15,7 +14,9 @@
       - key changes
       - notes
 - (?) add to probe group
-- (?) tick field
+
+- [ ] tick field
+- [ ] assert available bytes
 
 - [x] fix gaps
       - [x] SequencerSpecificEvent
@@ -41,10 +42,10 @@
     - [x] end of track
     - [x] tempo
     - [x] SMPTE offset
-          - [ ] map frame rates
+          - [x] map frame rates
     - [x] key signature
     - [x] time signature
-          - [ ] map denominator 
+          - [x] cleanup denominator 
     - [x] sequencer specific event
     - [x] map manufacturer
     - [x] check key mappings

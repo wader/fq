@@ -51,6 +51,13 @@ var metaevents = scalar.UintMapSymUint{
 	0xff7f: 0x7f,
 }
 
+var framerates = scalar.UintMapSymUint{
+	0: 24,
+	1: 25,
+	2: 29,
+	3: 30,
+}
+
 func decodeMetaEvent(d *decode.D, event uint8, ctx *context) {
 	ctx.running = 0x00
 	ctx.casio = false
@@ -268,25 +275,8 @@ func decodeSMPTEOffset(d *decode.D) {
 
 		if len(data) > 0 {
 			d.FieldUintFn("framerate", func(d *decode.D) uint64 {
-				rr := (data[0] >> 6) & 0x03
-
-				switch rr {
-				case 0:
-					return 24
-
-				case 1:
-					return 25
-
-				case 2:
-					return 29
-
-				case 3:
-					return 30
-
-				default:
-					return 0
-				}
-			})
+				return uint64((data[0] >> 6) & 0x03)
+			}, framerates)
 
 			d.FieldValueUint("hour", uint64(data[0]&0x01f))
 		}
@@ -325,14 +315,12 @@ func decodeTimeSignature(d *decode.D) {
 		}
 
 		if len(data) > 1 {
-			d.FieldUintFn("denominator", func(d *decode.D) uint64 {
-				denominator := uint16(1)
-				for i := uint8(0); i < data[1]; i++ {
-					denominator *= 2
-				}
+			denominator := uint64(1)
+			for i := uint8(0); i < data[1]; i++ {
+				denominator <<= 1
+			}
 
-				return uint64(denominator)
-			})
+			d.FieldValueUint("denominator", denominator)
 		}
 
 		if len(data) > 2 {
