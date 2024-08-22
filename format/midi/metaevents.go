@@ -62,60 +62,139 @@ func decodeMetaEvent(d *decode.D, event uint8, ctx *context) {
 	ctx.running = 0x00
 	ctx.casio = false
 
+	delta := func(d *decode.D) {
+		dt := d.FieldUintFn("delta", vlq)
+		d.FieldValueUint("tick", ctx.tick)
+
+		ctx.tick += dt
+	}
+
 	switch MetaEventType(event) {
 	case TypeSequenceNumber:
-		d.FieldStruct("SequenceNumber", decodeSequenceNumber)
+		d.FieldStruct("SequenceNumber", func(d *decode.D) {
+			d.FieldStruct("time", delta)
+			d.FieldU16("metaevent", metaevents)
+			decodeSequenceNumber(d)
+		})
 
 	case TypeText:
-		d.FieldStruct("Text", decodeText)
+		d.FieldStruct("Text", func(d *decode.D) {
+			d.FieldStruct("time", delta)
+			d.FieldU16("metaevent", metaevents)
+			decodeText(d)
+		})
 
 	case TypeCopyright:
-		d.FieldStruct("Copyright", decodeCopyright)
+		d.FieldStruct("Copyright", func(d *decode.D) {
+			d.FieldStruct("time", delta)
+			d.FieldU16("metaevent", metaevents)
+			decodeCopyright(d)
+		})
 
 	case TypeTrackName:
-		d.FieldStruct("TrackName", decodeTrackName)
+		d.FieldStruct("TrackName", func(d *decode.D) {
+			d.FieldStruct("time", delta)
+			d.FieldU16("metaevent", metaevents)
+			decodeTrackName(d)
+		})
 
 	case TypeInstrumentName:
-		d.FieldStruct("InstrumentName", decodeInstrumentName)
+		d.FieldStruct("InstrumentName", func(d *decode.D) {
+			d.FieldStruct("time", delta)
+			d.FieldU16("metaevent", metaevents)
+			decodeInstrumentName(d)
+		})
 
 	case TypeLyric:
-		d.FieldStruct("Lyric", decodeLyric)
+		d.FieldStruct("Lyric", func(d *decode.D) {
+			d.FieldStruct("time", delta)
+			d.FieldU16("metaevent", metaevents)
+			decodeLyric(d)
+		})
 
 	case TypeMarker:
-		d.FieldStruct("Marker", decodeMarker)
+		d.FieldStruct("Marker", func(d *decode.D) {
+			d.FieldStruct("time", delta)
+			d.FieldU16("metaevent", metaevents)
+			decodeMarker(d)
+		})
 
 	case TypeCuePoint:
-		d.FieldStruct("CuePoint", decodeCuePoint)
+		d.FieldStruct("CuePoint", func(d *decode.D) {
+			d.FieldStruct("time", delta)
+			d.FieldU16("metaevent", metaevents)
+			decodeCuePoint(d)
+		})
 
 	case TypeProgramName:
-		d.FieldStruct("ProgramName", decodeProgramName)
+		d.FieldStruct("ProgramName", func(d *decode.D) {
+			d.FieldStruct("time", delta)
+			d.FieldU16("metaevent", metaevents)
+			decodeProgramName(d)
+		})
 
 	case TypeDeviceName:
-		d.FieldStruct("DeviceName", decodeDeviceName)
+		d.FieldStruct("DeviceName", func(d *decode.D) {
+			d.FieldStruct("time", delta)
+			d.FieldU16("metaevent", metaevents)
+			decodeDeviceName(d)
+		})
 
 	case TypeMIDIChannelPrefix:
-		d.FieldStruct("TypeMIDIChannelPrefix", decodeMIDIChannelPrefix)
+		d.FieldStruct("TypeMIDIChannelPrefix", func(d *decode.D) {
+			d.FieldStruct("time", delta)
+			d.FieldU16("metaevent", metaevents)
+			decodeMIDIChannelPrefix(d)
+		})
 
 	case TypeMIDIPort:
-		d.FieldStruct("TypeMIDIPort", decodeMIDIPort)
+		d.FieldStruct("TypeMIDIPort", func(d *decode.D) {
+			d.FieldStruct("time", delta)
+			d.FieldU16("metaevent", metaevents)
+			decodeMIDIPort(d)
+		})
 
 	case TypeTempo:
-		d.FieldStruct("Tempo", decodeTempo)
+		d.FieldStruct("Tempo", func(d *decode.D) {
+			d.FieldStruct("time", delta)
+			d.FieldU16("metaevent", metaevents)
+			decodeTempo(d)
+		})
 
 	case TypeSMPTEOffset:
-		d.FieldStruct("SMPTEOffset", decodeSMPTEOffset)
+		d.FieldStruct("SMPTEOffset", func(d *decode.D) {
+			d.FieldStruct("time", delta)
+			d.FieldU16("metaevent", metaevents)
+			decodeSMPTEOffset(d)
+		})
 
 	case TypeTimeSignature:
-		d.FieldStruct("TimeSignature", decodeTimeSignature)
+		d.FieldStruct("TimeSignature", func(d *decode.D) {
+			d.FieldStruct("time", delta)
+			d.FieldU16("metaevent", metaevents)
+			decodeTimeSignature(d)
+		})
 
 	case TypeKeySignature:
-		d.FieldStruct("KeySignature", decodeKeySignature)
+		d.FieldStruct("KeySignature", func(d *decode.D) {
+			d.FieldStruct("time", delta)
+			d.FieldU16("metaevent", metaevents)
+			decodeKeySignature(d)
+		})
 
 	case TypeEndOfTrack:
-		d.FieldStruct("EndOfTrack", decodeEndOfTrack)
+		d.FieldStruct("EndOfTrack", func(d *decode.D) {
+			d.FieldStruct("time", delta)
+			d.FieldU16("metaevent", metaevents)
+			decodeEndOfTrack(d)
+		})
 
 	case TypeSequencerSpecificEvent:
-		d.FieldStruct("SequencerSpecific", decodeSequencerSpecificEvent)
+		d.FieldStruct("SequencerSpecific", func(d *decode.D) {
+			d.FieldStruct("time", delta)
+			d.FieldU16("metaevent", metaevents)
+			decodeSequencerSpecificEvent(d)
+		})
 
 	default:
 		flush(d, "unknown meta event (%02x)", event)
@@ -123,8 +202,6 @@ func decodeMetaEvent(d *decode.D, event uint8, ctx *context) {
 }
 
 func decodeSequenceNumber(d *decode.D) {
-	d.FieldUintFn("delta", vlq)
-	d.FieldU16("metaevent", metaevents)
 	d.FieldUintFn("sequenceNumber", func(d *decode.D) uint64 {
 		data := vlf(d)
 		seqno := uint64(0)
@@ -143,80 +220,60 @@ func decodeSequenceNumber(d *decode.D) {
 }
 
 func decodeText(d *decode.D) {
-	d.FieldUintFn("delta", vlq)
-	d.FieldU16("metaevent", metaevents)
 	d.FieldStrFn("text", func(d *decode.D) string {
 		return string(vlf(d))
 	})
 }
 
 func decodeCopyright(d *decode.D) {
-	d.FieldUintFn("delta", vlq)
-	d.FieldU16("metaevent", metaevents)
 	d.FieldStrFn("copyright", func(d *decode.D) string {
 		return string(vlf(d))
 	})
 }
 
 func decodeTrackName(d *decode.D) {
-	d.FieldUintFn("delta", vlq)
-	d.FieldU16("metaevent", metaevents)
 	d.FieldStrFn("name", func(d *decode.D) string {
 		return string(vlf(d))
 	})
 }
 
 func decodeInstrumentName(d *decode.D) {
-	d.FieldUintFn("delta", vlq)
-	d.FieldU16("metaevent", metaevents)
 	d.FieldStrFn("instrument", func(d *decode.D) string {
 		return string(vlf(d))
 	})
 }
 
 func decodeLyric(d *decode.D) {
-	d.FieldUintFn("delta", vlq)
-	d.FieldU16("metaevent", metaevents)
 	d.FieldStrFn("lyric", func(d *decode.D) string {
 		return string(vlf(d))
 	})
 }
 
 func decodeMarker(d *decode.D) {
-	d.FieldUintFn("delta", vlq)
-	d.FieldU16("metaevent", metaevents)
 	d.FieldStrFn("marker", func(d *decode.D) string {
 		return string(vlf(d))
 	})
 }
 
 func decodeCuePoint(d *decode.D) {
-	d.FieldUintFn("delta", vlq)
-	d.FieldU16("metaevent", metaevents)
 	d.FieldStrFn("cue", func(d *decode.D) string {
 		return string(vlf(d))
 	})
 }
 
 func decodeProgramName(d *decode.D) {
-	d.FieldUintFn("delta", vlq)
-	d.FieldU16("metaevent", metaevents)
 	d.FieldStrFn("program", func(d *decode.D) string {
 		return string(vlf(d))
 	})
 }
 
 func decodeDeviceName(d *decode.D) {
-	d.FieldUintFn("delta", vlq)
-	d.FieldU16("metaevent", metaevents)
 	d.FieldStrFn("device", func(d *decode.D) string {
 		return string(vlf(d))
 	})
 }
 
 func decodeMIDIChannelPrefix(d *decode.D) {
-	d.FieldUintFn("delta", vlq)
-	d.FieldU16("metaevent", metaevents)
 	d.FieldUintFn("channel", func(d *decode.D) uint64 {
 		channel := uint64(0)
 		data := vlf(d)
@@ -231,8 +288,6 @@ func decodeMIDIChannelPrefix(d *decode.D) {
 }
 
 func decodeMIDIPort(d *decode.D) {
-	d.FieldUintFn("delta", vlq)
-	d.FieldU16("metaevent", metaevents)
 	d.FieldUintFn("port", func(d *decode.D) uint64 {
 		channel := uint64(0)
 		data := vlf(d)
@@ -247,8 +302,6 @@ func decodeMIDIPort(d *decode.D) {
 }
 
 func decodeTempo(d *decode.D) {
-	d.FieldUintFn("delta", vlq)
-	d.FieldU16("metaevent", metaevents)
 	d.FieldUintFn("tempo", func(d *decode.D) uint64 {
 		tempo := uint64(0)
 		data := vlf(d)
@@ -263,8 +316,6 @@ func decodeTempo(d *decode.D) {
 }
 
 func decodeSMPTEOffset(d *decode.D) {
-	d.FieldUintFn("delta", vlq)
-	d.FieldU16("metaevent", metaevents)
 	d.FieldStruct("offset", func(d *decode.D) {
 		var data []uint8
 		d.FieldStrFn("bytes", func(d *decode.D) string {
@@ -300,8 +351,6 @@ func decodeSMPTEOffset(d *decode.D) {
 }
 
 func decodeTimeSignature(d *decode.D) {
-	d.FieldUintFn("delta", vlq)
-	d.FieldU16("metaevent", metaevents)
 	d.FieldStruct("signature", func(d *decode.D) {
 		var data []uint8
 		d.FieldStrFn("bytes", func(d *decode.D) string {
@@ -334,8 +383,6 @@ func decodeTimeSignature(d *decode.D) {
 }
 
 func decodeKeySignature(d *decode.D) {
-	d.FieldUintFn("delta", vlq)
-	d.FieldU16("metaevent", metaevents)
 	d.FieldUintFn("key", func(d *decode.D) uint64 {
 		data := vlf(d)
 		key := uint64(data[0]) & 0x00ff
@@ -348,16 +395,12 @@ func decodeKeySignature(d *decode.D) {
 }
 
 func decodeEndOfTrack(d *decode.D) {
-	d.FieldUintFn("delta", vlq)
-	d.FieldU16("metaevent", metaevents)
 	d.FieldUintFn("length", func(d *decode.D) uint64 {
 		return uint64(len(vlf(d)))
 	})
 }
 
 func decodeSequencerSpecificEvent(d *decode.D) {
-	d.FieldUintFn("delta", vlq)
-	d.FieldU16("metaevent", metaevents)
 	d.FieldStruct("info", func(d *decode.D) {
 		var data []uint8
 		d.FieldStrFn("bytes", func(d *decode.D) string {

@@ -11,6 +11,12 @@ import (
 	"github.com/wader/fq/pkg/interp"
 )
 
+type context struct {
+	tick    uint64
+	running uint8
+	casio   bool
+}
+
 //go:embed midi.md
 var midiFS embed.FS
 
@@ -91,6 +97,7 @@ func decodeMTrk(d *decode.D) {
 	d.FieldArray("events", func(d *decode.D) {
 		d.FramedFn(int64(length)*8, func(d *decode.D) {
 			ctx := context{
+				tick:    0,
 				running: 0x000,
 				casio:   false,
 			}

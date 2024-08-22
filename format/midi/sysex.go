@@ -15,22 +15,35 @@ var sysex = scalar.UintMapSymStr{
 func decodeSysExEvent(d *decode.D, status uint8, ctx *context) {
 	ctx.running = 0x00
 
+	delta := func(d *decode.D) {
+		dt := d.FieldUintFn("delta", vlq)
+		d.FieldValueUint("tick", ctx.tick)
+
+		ctx.tick += dt
+	}
+
 	switch {
 	case status == 0xf0 && ctx.casio:
 		d.Errorf("SysExMessage F0 start byte without terminating F7")
 
 	case status == 0xf0:
 		d.FieldStruct("SysExMessage", func(d *decode.D) {
+			d.FieldStruct("time", delta)
+			d.FieldU8("sysex", sysex)
 			decodeSysExMessage(d, ctx)
 		})
 
 	case status == 0xf7 && ctx.casio:
 		d.FieldStruct("SysExContinuation", func(d *decode.D) {
+			d.FieldStruct("time", delta)
+			d.FieldU8("sysex", sysex)
 			decodeSysExContinuation(d, ctx)
 		})
 
 	case status == 0xf7:
 		d.FieldStruct("SysExEscape", func(d *decode.D) {
+			d.FieldStruct("time", delta)
+			d.FieldU8("sysex", sysex)
 			decodeSysExEscape(d, ctx)
 		})
 
@@ -40,10 +53,8 @@ func decodeSysExEvent(d *decode.D, status uint8, ctx *context) {
 }
 
 func decodeSysExMessage(d *decode.D, ctx *context) {
-	d.FieldUintFn("delta", vlq)
-	d.FieldU8("sysex", sysex)
-
 	var bytes []uint8
+
 	d.FieldStrFn("bytes", func(d *decode.D) string {
 		bytes = vlf(d)
 		return fmt.Sprintf("%v", bytes)
@@ -77,8 +88,6 @@ func decodeSysExMessage(d *decode.D, ctx *context) {
 }
 
 func decodeSysExContinuation(d *decode.D, ctx *context) {
-	d.FieldUintFn("delta", vlq)
-	d.FieldU8("sysex", sysex)
 	d.FieldStrFn("data", func(d *decode.D) string {
 		data := vlf(d)
 
@@ -97,8 +106,6 @@ func decodeSysExContinuation(d *decode.D, ctx *context) {
 }
 
 func decodeSysExEscape(d *decode.D, ctx *context) {
-	d.FieldUintFn("delta", vlq)
-	d.FieldU8("sysex", sysex)
 	d.FieldStrFn("data", func(d *decode.D) string {
 		data := vlf(d)
 

@@ -15,7 +15,7 @@
       - notes
 - (?) add to probe group
 
-- [ ] tick field
+- [x] tick field
 - [ ] assert available bytes
 
 - [x] fix gaps
