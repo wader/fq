@@ -27,8 +27,8 @@ require (
 	github.com/golang/snappy v0.0.4
 
 	// has no tags
-	// go get -d github.com/gomarkdown/markdown@master && go mod tidy
-	github.com/gomarkdown/markdown v0.0.0-20240328165702-4d01890c35c0
+	// go get github.com/gomarkdown/markdown@master && go mod tidy
+	github.com/gomarkdown/markdown v0.0.0-20240730141124-034f12af3bf6
 
 	// bump: gomod-gopacket /github\.com\/gopacket\/gopacket v(.*)/ https://github.com/gopacket/gopacket.git|^1
 	// bump: gomod-gopacket command go get -d github.com/gopacket/gopacket@v$LATEST && go mod tidy
@@ -51,8 +51,8 @@ require (
 	golang.org/x/crypto v0.26.0
 
 	// has no tags
-	// go get -d golang.org/x/exp@master && go mod tidy
-	golang.org/x/exp v0.0.0-20240325151524-a685a6edb6d8
+	// go get golang.org/x/exp@master && go mod tidy
+	golang.org/x/exp v0.0.0-20240808152545-0cdaa3abc0fa
 
 	// bump: gomod-golang-x-net /golang\.org\/x\/net v(.*)/ https://github.com/golang/net.git|^0
 	// bump: gomod-golang-x-net command go get -d golang.org/x/net@v$LATEST && go mod tidy
