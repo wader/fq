@@ -1,0 +1,5 @@
+$ fq -d midi 'grep_by(.event=="NoteOn" or .event=="NoteOff") | [.time.tick, .note] | join(" ")' test.mid
+"0 C3"
+"0 C♯3/D♭3"
+"0 C3"
+"240 C3"

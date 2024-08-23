@@ -4,17 +4,11 @@
 - [ ] discard unknown chunks
 - [ ] tests
       - [ ] format 0
-      - [ ] format 1
+      - [x] format 1
       - [ ] format 2
       - [x] key signatures
 
-- [ ] example queries
-      - [x] Add mapped event name to all events
-      - [x] TrackName
-      - [ ] Tempo changes
-      - [ ] Key changes
-      - [ ] Notes
-      - [ ] Make tests
+- [x] example queries
 
 - (?) add to probe group
 

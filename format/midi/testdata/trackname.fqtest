@@ -1,4 +1,4 @@
-$ fq -d midi '.. | select(.event=="TrackName")?.name' format-1.mid
+$ fq -d midi '.. | select(.event=="TrackName")?.name' test.mid
     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
 0x10|                           0b 52 65 66 65 72 65|         .Refere|.tracks[0].events[0].name: "Reference-1"
 0x20|6e 63 65 2d 31                                 |nce-1           |
