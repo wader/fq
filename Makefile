@@ -122,21 +122,3 @@ release:
 	@echo "# wader/fq":
 	@echo git push wader v${VERSION}:v${VERSION}
 	@echo "# edit draft release notes and publish"
-
-
-midi:
-	go fmt ./format/midi/...
-	go run . -d midi dv format/midi/testdata/test.mid
-
-midi-debug:
-	go fmt ./format/midi/...
-	go run . -d midi dv format/midi/testdata/test.mid
-
-midi-test: fq
-	go test ./format -run TestFormats/midi
-
-midi-query: fq
-	./fq -d midi '.. | select(.event=="TrackName")?.name' format/midi/testdata/format-1.mid 
-	./fq -d midi '.. | select(.event=="Tempo")?.tempo' format/midi/testdata/format-1.mid
-	./fq -d midi '.. | select(.event=="KeySignature")?.key' format/midi/testdata/format-1.mid
-	./fq -d midi 'grep_by(.event=="NoteOn" or .event=="NoteOff") | "\(.time.tick) \(.note)"' format/midi/testdata/format-1.mid

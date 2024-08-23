@@ -1,27 +1,18 @@
 # TODO
 
 - [x] update forked master branch
-- [ ] discard unknown chunks
-- [ ] tests
-      - [ ] format 0
-      - [x] format 1
-      - [ ] format 2
-      - [x] key signatures
-
-- [x] example queries
-
 - (?) add to probe group
 
-- [x] tick field
+- [ ] discard unknown chunks
 - [ ] assert available bytes
-
+- [x] example queries
 - [x] fix gaps
-      - [x] SequencerSpecificEvent
-      - [x] SMPTEOffset
-      - [x] TimeSignature
-      - [x] SysExMessage
-      - [x] SysExContinuation
-      - [x] SysEx - 'continued' flag
+- [x] tick field
+- [x] tests
+      - [x] key signatures
+      - [x] format 0
+      - [x] format 1
+      - [x] format 2
 
 - meta events
     - [x] sequence number
