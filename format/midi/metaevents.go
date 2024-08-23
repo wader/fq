@@ -30,25 +30,25 @@ const (
 	TypeSequencerSpecificEvent MetaEventType = 0x7f
 )
 
-var metaevents = scalar.UintMapSymUint{
-	0xff00: 0x00,
-	0xff01: 0x01,
-	0xff02: 0x02,
-	0xff03: 0x03,
-	0xff04: 0x04,
-	0xff05: 0x05,
-	0xff06: 0x06,
-	0xff07: 0x07,
-	0xff08: 0x08,
-	0xff09: 0x09,
-	0xff20: 0x20,
-	0xff21: 0x21,
-	0xff51: 0x51,
-	0xff54: 0x54,
-	0xff58: 0x58,
-	0xff59: 0x59,
-	0xff2f: 0x2f,
-	0xff7f: 0x7f,
+var metaevents = scalar.UintMapSymStr{
+	0xff00: "SequenceNumber",
+	0xff01: "Text",
+	0xff02: "Copyright",
+	0xff03: "TrackName",
+	0xff04: "InstrumentName",
+	0xff05: "Lyric",
+	0xff06: "Marker",
+	0xff07: "CuePoint",
+	0xff08: "ProgramName",
+	0xff09: "DeviceName",
+	0xff20: "MIDIChannelPrefix",
+	0xff21: "MIDIPort",
+	0xff51: "Tempo",
+	0xff54: "SMPTEOffset",
+	0xff58: "TimeSignature",
+	0xff59: "KeySignature",
+	0xff2f: "EndOfTrack",
+	0xff7f: "SequencerSpecificEvent",
 }
 
 var framerates = scalar.UintMapSymUint{
@@ -73,126 +73,126 @@ func decodeMetaEvent(d *decode.D, event uint8, ctx *context) {
 	case TypeSequenceNumber:
 		d.FieldStruct("SequenceNumber", func(d *decode.D) {
 			d.FieldStruct("time", delta)
-			d.FieldU16("metaevent", metaevents)
+			d.FieldU16("event", metaevents)
 			decodeSequenceNumber(d)
 		})
 
 	case TypeText:
 		d.FieldStruct("Text", func(d *decode.D) {
 			d.FieldStruct("time", delta)
-			d.FieldU16("metaevent", metaevents)
+			d.FieldU16("event", metaevents)
 			decodeText(d)
 		})
 
 	case TypeCopyright:
 		d.FieldStruct("Copyright", func(d *decode.D) {
 			d.FieldStruct("time", delta)
-			d.FieldU16("metaevent", metaevents)
+			d.FieldU16("event", metaevents)
 			decodeCopyright(d)
 		})
 
 	case TypeTrackName:
 		d.FieldStruct("TrackName", func(d *decode.D) {
 			d.FieldStruct("time", delta)
-			d.FieldU16("metaevent", metaevents)
+			d.FieldU16("event", metaevents)
 			decodeTrackName(d)
 		})
 
 	case TypeInstrumentName:
 		d.FieldStruct("InstrumentName", func(d *decode.D) {
 			d.FieldStruct("time", delta)
-			d.FieldU16("metaevent", metaevents)
+			d.FieldU16("event", metaevents)
 			decodeInstrumentName(d)
 		})
 
 	case TypeLyric:
 		d.FieldStruct("Lyric", func(d *decode.D) {
 			d.FieldStruct("time", delta)
-			d.FieldU16("metaevent", metaevents)
+			d.FieldU16("event", metaevents)
 			decodeLyric(d)
 		})
 
 	case TypeMarker:
 		d.FieldStruct("Marker", func(d *decode.D) {
 			d.FieldStruct("time", delta)
-			d.FieldU16("metaevent", metaevents)
+			d.FieldU16("event", metaevents)
 			decodeMarker(d)
 		})
 
 	case TypeCuePoint:
 		d.FieldStruct("CuePoint", func(d *decode.D) {
 			d.FieldStruct("time", delta)
-			d.FieldU16("metaevent", metaevents)
+			d.FieldU16("event", metaevents)
 			decodeCuePoint(d)
 		})
 
 	case TypeProgramName:
 		d.FieldStruct("ProgramName", func(d *decode.D) {
 			d.FieldStruct("time", delta)
-			d.FieldU16("metaevent", metaevents)
+			d.FieldU16("event", metaevents)
 			decodeProgramName(d)
 		})
 
 	case TypeDeviceName:
 		d.FieldStruct("DeviceName", func(d *decode.D) {
 			d.FieldStruct("time", delta)
-			d.FieldU16("metaevent", metaevents)
+			d.FieldU16("event", metaevents)
 			decodeDeviceName(d)
 		})
 
 	case TypeMIDIChannelPrefix:
 		d.FieldStruct("TypeMIDIChannelPrefix", func(d *decode.D) {
 			d.FieldStruct("time", delta)
-			d.FieldU16("metaevent", metaevents)
+			d.FieldU16("event", metaevents)
 			decodeMIDIChannelPrefix(d)
 		})
 
 	case TypeMIDIPort:
 		d.FieldStruct("TypeMIDIPort", func(d *decode.D) {
 			d.FieldStruct("time", delta)
-			d.FieldU16("metaevent", metaevents)
+			d.FieldU16("event", metaevents)
 			decodeMIDIPort(d)
 		})
 
 	case TypeTempo:
 		d.FieldStruct("Tempo", func(d *decode.D) {
 			d.FieldStruct("time", delta)
-			d.FieldU16("metaevent", metaevents)
+			d.FieldU16("event", metaevents)
 			decodeTempo(d)
 		})
 
 	case TypeSMPTEOffset:
 		d.FieldStruct("SMPTEOffset", func(d *decode.D) {
 			d.FieldStruct("time", delta)
-			d.FieldU16("metaevent", metaevents)
+			d.FieldU16("event", metaevents)
 			decodeSMPTEOffset(d)
 		})
 
 	case TypeTimeSignature:
 		d.FieldStruct("TimeSignature", func(d *decode.D) {
 			d.FieldStruct("time", delta)
-			d.FieldU16("metaevent", metaevents)
+			d.FieldU16("event", metaevents)
 			decodeTimeSignature(d)
 		})
 
 	case TypeKeySignature:
 		d.FieldStruct("KeySignature", func(d *decode.D) {
 			d.FieldStruct("time", delta)
-			d.FieldU16("metaevent", metaevents)
+			d.FieldU16("event", metaevents)
 			decodeKeySignature(d)
 		})
 
 	case TypeEndOfTrack:
 		d.FieldStruct("EndOfTrack", func(d *decode.D) {
 			d.FieldStruct("time", delta)
-			d.FieldU16("metaevent", metaevents)
+			d.FieldU16("event", metaevents)
 			decodeEndOfTrack(d)
 		})
 
 	case TypeSequencerSpecificEvent:
 		d.FieldStruct("SequencerSpecific", func(d *decode.D) {
 			d.FieldStruct("time", delta)
-			d.FieldU16("metaevent", metaevents)
+			d.FieldU16("event", metaevents)
 			decodeSequencerSpecificEvent(d)
 		})
 

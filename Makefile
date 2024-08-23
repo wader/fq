@@ -134,3 +134,6 @@ midi-debug:
 
 midi-test: fq
 	go test ./format -run TestFormats/midi
+
+midi-query: fq
+	./fq -d midi '.. | select(.event=="TrackName")?.name' format/midi/testdata/format-1.mid 

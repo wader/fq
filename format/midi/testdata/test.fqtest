@@ -17,20 +17,20 @@ $ ./fq -d midi dv test.mid
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
-0x10|                     ff 03                     |       ..       |          metaevent: 3 (65283) 0x17-0x19 (2)
+0x10|                     ff 03                     |       ..       |          event: "TrackName" (65283) 0x17-0x19 (2)
 0x10|                           09 45 78 61 6d 70 6c|         .Exampl|          name: "Example 1" 0x19-0x23 (10)
 0x20|65 20 31                                       |e 1             |
     |                                               |                |        [1]{}: Tempo 0x23-0x2a (7)
     |                                               |                |          time{}: 0x23-0x24 (1)
 0x20|         00                                    |   .            |            delta: 0 0x23-0x24 (1)
     |                                               |                |            tick: 0
-0x20|            ff 51                              |    .Q          |          metaevent: 81 (65361) 0x24-0x26 (2)
+0x20|            ff 51                              |    .Q          |          event: "Tempo" (65361) 0x24-0x26 (2)
 0x20|                  03 07 a1 20                  |      ...       |          tempo: 500000 0x26-0x2a (4)
     |                                               |                |        [2]{}: TimeSignature 0x2a-0x32 (8)
     |                                               |                |          time{}: 0x2a-0x2b (1)
 0x20|                              00               |          .     |            delta: 0 0x2a-0x2b (1)
     |                                               |                |            tick: 0
-0x20|                                 ff 58         |           .X   |          metaevent: 88 (65368) 0x2b-0x2d (2)
+0x20|                                 ff 58         |           .X   |          event: "TimeSignature" (65368) 0x2b-0x2d (2)
     |                                               |                |          signature{}: 0x2d-0x32 (5)
 0x20|                                       04 04 02|             ...|            bytes: "[4 2 24 8]" 0x2d-0x32 (5)
 0x30|18 08                                          |..              |
@@ -42,7 +42,7 @@ $ ./fq -d midi dv test.mid
     |                                               |                |          time{}: 0x32-0x33 (1)
 0x30|      00                                       |  .             |            delta: 0 0x32-0x33 (1)
     |                                               |                |            tick: 0
-0x30|         ff 2f                                 |   ./           |          metaevent: 47 (65327) 0x33-0x35 (2)
+0x30|         ff 2f                                 |   ./           |          event: "EndOfTrack" (65327) 0x33-0x35 (2)
 0x30|               00                              |     .          |          length: 0 0x35-0x36 (1)
     |                                               |                |    [1]{}: track 0x36-0x8e (88)
 0x30|                  4d 54 72 6b                  |      MTrk      |      tag: "MTrk" 0x36-0x3a (4)
@@ -52,7 +52,7 @@ $ ./fq -d midi dv test.mid
     |                                               |                |          time{}: 0x3e-0x3f (1)
 0x30|                                          00   |              . |            delta: 0 0x3e-0x3f (1)
     |                                               |                |            tick: 0
-0x30|                                             ff|               .|          metaevent: 3 (65283) 0x3f-0x41 (2)
+0x30|                                             ff|               .|          event: "TrackName" (65283) 0x3f-0x41 (2)
 0x40|03                                             |.               |
 0x40|   0f 41 63 6f 75 73 74 69 63 20 47 75 69 74 61| .Acoustic Guita|          name: "Acoustic Guitar" 0x41-0x51 (16)
 0x50|72                                             |r               |
@@ -60,12 +60,14 @@ $ ./fq -d midi dv test.mid
     |                                               |                |          time{}: 0x51-0x52 (1)
 0x50|   00                                          | .              |            delta: 0 0x51-0x52 (1)
     |                                               |                |            tick: 0
+    |                                               |                |          event: "ProgramChange" (192)
 0x50|      c0                                       |  .             |          channel: 0 0x52-0x53 (1)
 0x50|         19                                    |   .            |          program: 25 0x53-0x54 (1)
     |                                               |                |        [2]{}: NoteOn 0x54-0x58 (4)
     |                                               |                |          time{}: 0x54-0x55 (1)
 0x50|            00                                 |    .           |            delta: 0 0x54-0x55 (1)
     |                                               |                |            tick: 0
+    |                                               |                |          event: "NoteOn" (144)
 0x50|               90                              |     .          |          channel: 0 0x55-0x56 (1)
 0x50|                  30                           |      0         |          note: "C3" (48) 0x56-0x57 (1)
 0x50|                     48                        |       H        |          velocity: 72 0x57-0x58 (1)
@@ -73,12 +75,13 @@ $ ./fq -d midi dv test.mid
     |                                               |                |          time{}: 0x58-0x59 (1)
 0x50|                        00                     |        .       |            delta: 0 0x58-0x59 (1)
     |                                               |                |            tick: 0
-0x50|                           ff 59               |         .Y     |          metaevent: 89 (65369) 0x59-0x5b (2)
+0x50|                           ff 59               |         .Y     |          event: "KeySignature" (65369) 0x59-0x5b (2)
 0x50|                                 02 00 01      |           ...  |          key: "A minor" (1) 0x5b-0x5e (3)
     |                                               |                |        [4]{}: Controller 0x5e-0x62 (4)
     |                                               |                |          time{}: 0x5e-0x5f (1)
 0x50|                                          00   |              . |            delta: 0 0x5e-0x5f (1)
     |                                               |                |            tick: 0
+    |                                               |                |          event: "Controller" (176)
 0x50|                                             b0|               .|          channel: 0 0x5f-0x60 (1)
 0x60|65                                             |e               |          controller: "Registered Parameter Number (MSB)" (101) 0x60-0x61 (1)
 0x60|   00                                          | .              |          value: 0 0x61-0x62 (1)
@@ -86,6 +89,7 @@ $ ./fq -d midi dv test.mid
     |                                               |                |          time{}: 0x62-0x63 (1)
 0x60|      00                                       |  .             |            delta: 0 0x62-0x63 (1)
     |                                               |                |            tick: 0
+    |                                               |                |          event: "Controller" (176)
 0x60|         b0                                    |   .            |          channel: 0 0x63-0x64 (1)
 0x60|            64                                 |    d           |          controller: "Registered Parameter Number (LSB)" (100) 0x64-0x65 (1)
 0x60|               00                              |     .          |          value: 0 0x65-0x66 (1)
@@ -93,6 +97,7 @@ $ ./fq -d midi dv test.mid
     |                                               |                |          time{}: 0x66-0x67 (1)
 0x60|                  00                           |      .         |            delta: 0 0x66-0x67 (1)
     |                                               |                |            tick: 0
+    |                                               |                |          event: "Controller" (176)
 0x60|                     b0                        |       .        |          channel: 0 0x67-0x68 (1)
 0x60|                        06                     |        .       |          controller: "Data Entry (MSB)" (6) 0x68-0x69 (1)
 0x60|                           06                  |         .      |          value: 6 0x69-0x6a (1)
@@ -100,6 +105,7 @@ $ ./fq -d midi dv test.mid
     |                                               |                |          time{}: 0x6a-0x6c (2)
 0x60|                              83 60            |          .`    |            delta: 480 0x6a-0x6c (2)
     |                                               |                |            tick: 0
+    |                                               |                |          event: "NoteOff" (128)
 0x60|                                    80         |            .   |          channel: 0 0x6c-0x6d (1)
 0x60|                                       30      |             0  |          note: "C3" (48) 0x6d-0x6e (1)
 0x60|                                          40   |              @ |          velocity: 64 0x6e-0x6f (1)
@@ -107,6 +113,7 @@ $ ./fq -d midi dv test.mid
     |                                               |                |          time{}: 0x6f-0x70 (1)
 0x60|                                             00|               .|            delta: 0 0x6f-0x70 (1)
     |                                               |                |            tick: 480
+    |                                               |                |          event: "NoteOn" (144)
 0x70|90                                             |.               |          channel: 0 0x70-0x71 (1)
 0x70|   32                                          | 2              |          note: "D3" (50) 0x71-0x72 (1)
 0x70|      48                                       |  H             |          velocity: 72 0x72-0x73 (1)
@@ -114,6 +121,7 @@ $ ./fq -d midi dv test.mid
     |                                               |                |          time{}: 0x73-0x75 (2)
 0x70|         83 60                                 |   .`           |            delta: 480 0x73-0x75 (2)
     |                                               |                |            tick: 480
+    |                                               |                |          event: "NoteOff" (128)
 0x70|               80                              |     .          |          channel: 0 0x75-0x76 (1)
 0x70|                  32                           |      2         |          note: "D3" (50) 0x76-0x77 (1)
 0x70|                     40                        |       @        |          velocity: 64 0x77-0x78 (1)
@@ -121,6 +129,7 @@ $ ./fq -d midi dv test.mid
     |                                               |                |          time{}: 0x78-0x79 (1)
 0x70|                        00                     |        .       |            delta: 0 0x78-0x79 (1)
     |                                               |                |            tick: 960
+    |                                               |                |          event: "NoteOn" (144)
 0x70|                           90                  |         .      |          channel: 0 0x79-0x7a (1)
 0x70|                              34               |          4     |          note: "E3" (52) 0x7a-0x7b (1)
 0x70|                                 48            |           H    |          velocity: 72 0x7b-0x7c (1)
@@ -128,6 +137,7 @@ $ ./fq -d midi dv test.mid
     |                                               |                |          time{}: 0x7c-0x7e (2)
 0x70|                                    83 60      |            .`  |            delta: 480 0x7c-0x7e (2)
     |                                               |                |            tick: 960
+    |                                               |                |          event: "NoteOff" (128)
 0x70|                                          80   |              . |          channel: 0 0x7e-0x7f (1)
 0x70|                                             34|               4|          note: "E3" (52) 0x7f-0x80 (1)
 0x80|40                                             |@               |          velocity: 64 0x80-0x81 (1)
@@ -135,6 +145,7 @@ $ ./fq -d midi dv test.mid
     |                                               |                |          time{}: 0x81-0x82 (1)
 0x80|   00                                          | .              |            delta: 0 0x81-0x82 (1)
     |                                               |                |            tick: 1440
+    |                                               |                |          event: "NoteOn" (144)
 0x80|      90                                       |  .             |          channel: 0 0x82-0x83 (1)
 0x80|         35                                    |   5            |          note: "F3" (53) 0x83-0x84 (1)
 0x80|            48                                 |    H           |          velocity: 72 0x84-0x85 (1)
@@ -142,6 +153,7 @@ $ ./fq -d midi dv test.mid
     |                                               |                |          time{}: 0x85-0x87 (2)
 0x80|               83 60                           |     .`         |            delta: 480 0x85-0x87 (2)
     |                                               |                |            tick: 1440
+    |                                               |                |          event: "NoteOff" (128)
 0x80|                     80                        |       .        |          channel: 0 0x87-0x88 (1)
 0x80|                        35                     |        5       |          note: "F3" (53) 0x88-0x89 (1)
 0x80|                           40                  |         @      |          velocity: 64 0x89-0x8a (1)
@@ -149,5 +161,5 @@ $ ./fq -d midi dv test.mid
     |                                               |                |          time{}: 0x8a-0x8b (1)
 0x80|                              00               |          .     |            delta: 0 0x8a-0x8b (1)
     |                                               |                |            tick: 1920
-0x80|                                 ff 2f         |           ./   |          metaevent: 47 (65327) 0x8b-0x8d (2)
+0x80|                                 ff 2f         |           ./   |          event: "EndOfTrack" (65327) 0x8b-0x8d (2)
 0x80|                                       00|     |             .| |          length: 0 0x8d-0x8e (1)

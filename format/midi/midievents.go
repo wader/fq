@@ -2,6 +2,7 @@ package midi
 
 import (
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 type MidiEventType byte
@@ -15,6 +16,16 @@ const (
 	TypeChannelPressure    MidiEventType = 0xd0
 	TypePitchBend          MidiEventType = 0xe0
 )
+
+var midievents = scalar.UintMapSymStr{
+	0x80: "NoteOff",
+	0x90: "NoteOn",
+	0xa0: "PolyphonicPressure",
+	0xb0: "Controller",
+	0xc0: "ProgramChange",
+	0xd0: "ChannelPressure",
+	0xe0: "PitchBend",
+}
 
 func decodeMIDIEvent(d *decode.D, status uint8, ctx *context) {
 	if status < 0x80 {
@@ -40,10 +51,13 @@ func decodeMIDIEvent(d *decode.D, status uint8, ctx *context) {
 		return uint64(status & 0x0f)
 	}
 
-	switch MidiEventType(status & 0xf0) {
+	event := uint64(status & 0xf0)
+
+	switch MidiEventType(event) {
 	case TypeNoteOff:
 		d.FieldStruct("NoteOff", func(d *decode.D) {
 			d.FieldStruct("time", delta)
+			d.FieldValueUint("event", event, midievents)
 			d.FieldUintFn("channel", channel)
 
 			decodeNoteOff(d)
@@ -52,6 +66,7 @@ func decodeMIDIEvent(d *decode.D, status uint8, ctx *context) {
 	case TypeNoteOn:
 		d.FieldStruct("NoteOn", func(d *decode.D) {
 			d.FieldStruct("time", delta)
+			d.FieldValueUint("event", event, midievents)
 			d.FieldUintFn("channel", channel)
 
 			decodeNoteOn(d)
@@ -60,6 +75,7 @@ func decodeMIDIEvent(d *decode.D, status uint8, ctx *context) {
 	case TypePolyphonicPressure:
 		d.FieldStruct("PolyphonicPressure", func(d *decode.D) {
 			d.FieldStruct("time", delta)
+			d.FieldValueUint("event", event, midievents)
 			d.FieldUintFn("channel", channel)
 
 			decodePolyphonicPressure(d)
@@ -68,6 +84,7 @@ func decodeMIDIEvent(d *decode.D, status uint8, ctx *context) {
 	case TypeController:
 		d.FieldStruct("Controller", func(d *decode.D) {
 			d.FieldStruct("time", delta)
+			d.FieldValueUint("event", event, midievents)
 			d.FieldUintFn("channel", channel)
 
 			decodeController(d)
@@ -76,6 +93,7 @@ func decodeMIDIEvent(d *decode.D, status uint8, ctx *context) {
 	case TypeProgramChange:
 		d.FieldStruct("ProgramChange", func(d *decode.D) {
 			d.FieldStruct("time", delta)
+			d.FieldValueUint("event", event, midievents)
 			d.FieldUintFn("channel", channel)
 
 			decodeProgramChange(d)
@@ -84,6 +102,7 @@ func decodeMIDIEvent(d *decode.D, status uint8, ctx *context) {
 	case TypeChannelPressure:
 		d.FieldStruct("ChannelPressure", func(d *decode.D) {
 			d.FieldStruct("time", delta)
+			d.FieldValueUint("event", event, midievents)
 			d.FieldUintFn("channel", channel)
 
 			decodeChannelPressure(d)
@@ -92,6 +111,7 @@ func decodeMIDIEvent(d *decode.D, status uint8, ctx *context) {
 	case TypePitchBend:
 		d.FieldStruct("PitchBend", func(d *decode.D) {
 			d.FieldStruct("time", delta)
+			d.FieldValueUint("event", event, midievents)
 			d.FieldUintFn("channel", channel)
 
 			decodePitchBend(d)

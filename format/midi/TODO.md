@@ -1,18 +1,21 @@
 # TODO
 
 - [x] update forked master branch
-- [x] move delta into events
-- [x] Use FieldUTF8 for MIDI chunk tags
 - [ ] discard unknown chunks
 - [ ] tests
       - [ ] format 0
       - [ ] format 1
       - [ ] format 2
       - [x] key signatures
-- (?) example queries
-      - tempo changes
-      - key changes
-      - notes
+
+- [ ] example queries
+      - [x] Add mapped event name to all events
+      - [x] TrackName
+      - [ ] Tempo changes
+      - [ ] Key changes
+      - [ ] Notes
+      - [ ] Make tests
+
 - (?) add to probe group
 
 - [x] tick field
@@ -45,9 +48,6 @@
     - [x] key signature
     - [x] time signature
     - [x] sequencer specific event
-    - [x] map manufacturer
-    - [x] check key mappings
-    - [x] Combine status + event into metaevent field
 
 - midi events
     - [x] note off
@@ -57,16 +57,10 @@
     - [x] program change
     - [x] channel pressure
     - [x] pitch bend
-    - [x] running status
-    - [x] use context struct for running status
-    - [x] map note names
 
 - sysex events
     - [x] message
     - [x] continuation
     - [x] escape
-    - [x] use context struct for casio
-    - [x] map manufacturer ID
-    - [x] Decode status as 'sysex'
 
 
