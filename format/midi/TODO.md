@@ -9,10 +9,6 @@
 - [x] fix gaps
 - [x] tick field
 - [x] tests
-      - [x] key signatures
-      - [x] format 0
-      - [x] format 1
-      - [x] format 2
 
 - meta events
     - [x] sequence number
