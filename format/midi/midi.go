@@ -58,9 +58,11 @@ func decodeMThd(d *decode.D) {
 
 	d.FieldArray("header", func(d *decode.D) {
 		d.FieldUTF8("tag", 4)
-		length := d.FieldU32("length")
+		length := d.FieldS32("length")
 
-		d.FramedFn(int64(length)*8, func(d *decode.D) {
+		d.AssertLeastBytesLeft(length)
+
+		d.FramedFn(length*8, func(d *decode.D) {
 			format := d.FieldU16("format")
 			if format != 0 && format != 1 && format != 2 {
 				d.Errorf("invalid MThd format %v (expected 0,1 or 2)", format)
@@ -92,10 +94,12 @@ func decodeMTrk(d *decode.D) {
 	}
 
 	d.FieldUTF8("tag", 4)
-	length := d.FieldU32("length")
+	length := d.FieldS32("length")
+
+	d.AssertLeastBytesLeft(length)
 
 	d.FieldArray("events", func(d *decode.D) {
-		d.FramedFn(int64(length)*8, func(d *decode.D) {
+		d.FramedFn(length*8, func(d *decode.D) {
 			ctx := context{
 				tick:    0,
 				running: 0x000,
@@ -112,20 +116,13 @@ func decodeMTrk(d *decode.D) {
 func decodeEvent(d *decode.D, ctx *context) {
 	_, status, event := peekEvent(d)
 
-	// ... sysex event
 	if status == 0xf0 || status == 0xf7 {
 		decodeSysExEvent(d, status, ctx)
-		return
-	}
-
-	// ... meta event?
-	if status == 0xff {
+	} else if status == 0xff {
 		decodeMetaEvent(d, event, ctx)
-		return
+	} else {
+		decodeMIDIEvent(d, status, ctx)
 	}
-
-	// ... midi event?
-	decodeMIDIEvent(d, status, ctx)
 }
 
 func peekEvent(d *decode.D) (uint64, uint8, uint8) {

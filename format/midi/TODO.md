@@ -4,7 +4,7 @@
 - (?) add to probe group
 
 - [ ] discard unknown chunks
-- [ ] assert available bytes
+- [x] assert available bytes
 - [x] example queries
 - [x] fix gaps
 - [x] tick field

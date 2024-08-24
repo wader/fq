@@ -8,9 +8,9 @@ import (
 )
 
 var sysex = scalar.UintMapSymStr{
-	0x00f0: "SysExMessage",
-	0x80f7: "SysExContinuation",
-	0x00f7: "SysExEscape",
+	0x00f0: "SysEx Message",
+	0x80f7: "SysEx Continuation",
+	0x00f7: "SysEx Escape",
 }
 
 func decodeSysExEvent(d *decode.D, status uint8, ctx *context) {

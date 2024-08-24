@@ -17,7 +17,7 @@ $ fq -d midi dv format-2.mid
      |                                               |                |          time{}: 0x16-0x17 (1)
 0x010|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
      |                                               |                |            tick: 0
-0x010|                     ff 00                     |       ..       |          event: "SequenceNumber" (65280) 0x17-0x19 (2)
+0x010|                     ff 00                     |       ..       |          event: "Sequence Number" (65280) 0x17-0x19 (2)
 0x010|                           02 00 17            |         ...    |          sequenceNumber: 23 0x19-0x1c (3)
      |                                               |                |        [1]{}: Text 0x1c-0x2d (17)
      |                                               |                |          time{}: 0x1c-0x1d (1)
@@ -36,14 +36,14 @@ $ fq -d midi dv format-2.mid
      |                                               |                |          time{}: 0x35-0x36 (1)
 0x030|               00                              |     .          |            delta: 0 0x35-0x36 (1)
      |                                               |                |            tick: 0
-0x030|                  ff 03                        |      ..        |          event: "TrackName" (65283) 0x36-0x38 (2)
+0x030|                  ff 03                        |      ..        |          event: "Track Name" (65283) 0x36-0x38 (2)
 0x030|                        0a 4c 65 66 74 20 54 72|        .Left Tr|          name: "Left Track" 0x38-0x43 (11)
 0x040|61 63 6b                                       |ack             |
      |                                               |                |        [4]{}: InstrumentName 0x43-0x51 (14)
      |                                               |                |          time{}: 0x43-0x44 (1)
 0x040|         00                                    |   .            |            delta: 0 0x43-0x44 (1)
      |                                               |                |            tick: 0
-0x040|            ff 04                              |    ..          |          event: "InstrumentName" (65284) 0x44-0x46 (2)
+0x040|            ff 04                              |    ..          |          event: "Instrument Name" (65284) 0x44-0x46 (2)
 0x040|                  0a 44 69 64 67 65 72 69 64 6f|      .Didgerido|          instrument: "Didgeridoo" 0x46-0x51 (11)
 0x050|6f                                             |o               |
      |                                               |                |        [5]{}: Lyric 0x51-0x5d (12)
@@ -62,32 +62,32 @@ $ fq -d midi dv format-2.mid
      |                                               |                |          time{}: 0x70-0x71 (1)
 0x070|00                                             |.               |            delta: 0 0x70-0x71 (1)
      |                                               |                |            tick: 0
-0x070|   ff 07                                       | ..             |          event: "CuePoint" (65287) 0x71-0x73 (2)
+0x070|   ff 07                                       | ..             |          event: "Cue Point" (65287) 0x71-0x73 (2)
 0x070|         0c 4d 6f 72 65 20 63 6f 77 62 65 6c 6c|   .More cowbell|          cue: "More cowbell" 0x73-0x80 (13)
      |                                               |                |        [8]{}: ProgramName 0x80-0x8a (10)
      |                                               |                |          time{}: 0x80-0x81 (1)
 0x080|00                                             |.               |            delta: 0 0x80-0x81 (1)
      |                                               |                |            tick: 0
-0x080|   ff 08                                       | ..             |          event: "ProgramName" (65288) 0x81-0x83 (2)
+0x080|   ff 08                                       | ..             |          event: "Program Name" (65288) 0x81-0x83 (2)
 0x080|         06 45 73 63 61 70 65                  |   .Escape      |          program: "Escape" 0x83-0x8a (7)
      |                                               |                |        [9]{}: DeviceName 0x8a-0x96 (12)
      |                                               |                |          time{}: 0x8a-0x8b (1)
 0x080|                              00               |          .     |            delta: 0 0x8a-0x8b (1)
      |                                               |                |            tick: 0
-0x080|                                 ff 09         |           ..   |          event: "DeviceName" (65289) 0x8b-0x8d (2)
+0x080|                                 ff 09         |           ..   |          event: "Device Name" (65289) 0x8b-0x8d (2)
 0x080|                                       08 54 68|             .Th|          device: "TheThing" 0x8d-0x96 (9)
 0x090|65 54 68 69 6e 67                              |eThing          |
      |                                               |                |        [10]{}: TypeMIDIChannelPrefix 0x96-0x9b (5)
      |                                               |                |          time{}: 0x96-0x97 (1)
 0x090|                  00                           |      .         |            delta: 0 0x96-0x97 (1)
      |                                               |                |            tick: 0
-0x090|                     ff 20                     |       .        |          event: "MIDIChannelPrefix" (65312) 0x97-0x99 (2)
+0x090|                     ff 20                     |       .        |          event: "MIDI Channel Prefix" (65312) 0x97-0x99 (2)
 0x090|                           01 0d               |         ..     |          channel: 13 0x99-0x9b (2)
      |                                               |                |        [11]{}: TypeMIDIPort 0x9b-0xa0 (5)
      |                                               |                |          time{}: 0x9b-0x9c (1)
 0x090|                                 00            |           .    |            delta: 0 0x9b-0x9c (1)
      |                                               |                |            tick: 0
-0x090|                                    ff 21      |            .!  |          event: "MIDIPort" (65313) 0x9c-0x9e (2)
+0x090|                                    ff 21      |            .!  |          event: "MIDI Port" (65313) 0x9c-0x9e (2)
 0x090|                                          01 70|              .p|          port: 112 0x9e-0xa0 (2)
      |                                               |                |        [12]{}: Tempo 0xa0-0xa7 (7)
      |                                               |                |          time{}: 0xa0-0xa1 (1)
@@ -99,7 +99,7 @@ $ fq -d midi dv format-2.mid
      |                                               |                |          time{}: 0xa7-0xa8 (1)
 0x0a0|                     00                        |       .        |            delta: 0 0xa7-0xa8 (1)
      |                                               |                |            tick: 0
-0x0a0|                        ff 54                  |        .T      |          event: "SMPTEOffset" (65364) 0xa8-0xaa (2)
+0x0a0|                        ff 54                  |        .T      |          event: "SMPTE Offset" (65364) 0xa8-0xaa (2)
      |                                               |                |          offset{}: 0xaa-0xb0 (6)
 0x0a0|                              05 4d 2d 3b 07 27|          .M-;.'|            bytes: "[77 45 59 7 39]" 0xaa-0xb0 (6)
      |                                               |                |            framerate: 25 (1) 0xb0-0xb0 (0)
@@ -112,7 +112,7 @@ $ fq -d midi dv format-2.mid
      |                                               |                |          time{}: 0xb0-0xb1 (1)
 0x0b0|00                                             |.               |            delta: 0 0xb0-0xb1 (1)
      |                                               |                |            tick: 0
-0x0b0|   ff 58                                       | .X             |          event: "TimeSignature" (65368) 0xb1-0xb3 (2)
+0x0b0|   ff 58                                       | .X             |          event: "Time Signature" (65368) 0xb1-0xb3 (2)
      |                                               |                |          signature{}: 0xb3-0xb8 (5)
 0x0b0|         04 04 02 18 08                        |   .....        |            bytes: "[4 2 24 8]" 0xb3-0xb8 (5)
      |                                               |                |            numerator: 4
@@ -123,13 +123,13 @@ $ fq -d midi dv format-2.mid
      |                                               |                |          time{}: 0xb8-0xb9 (1)
 0x0b0|                        00                     |        .       |            delta: 0 0xb8-0xb9 (1)
      |                                               |                |            tick: 0
-0x0b0|                           ff 59               |         .Y     |          event: "KeySignature" (65369) 0xb9-0xbb (2)
+0x0b0|                           ff 59               |         .Y     |          event: "Key Signature" (65369) 0xb9-0xbb (2)
 0x0b0|                                 02 00 01      |           ...  |          key: "A minor" (1) 0xbb-0xbe (3)
      |                                               |                |        [16]{}: SequencerSpecific 0xbe-0xc8 (10)
      |                                               |                |          time{}: 0xbe-0xbf (1)
 0x0b0|                                          00   |              . |            delta: 0 0xbe-0xbf (1)
      |                                               |                |            tick: 0
-0x0b0|                                             ff|               .|          event: "SequencerSpecificEvent" (65407) 0xbf-0xc1 (2)
+0x0b0|                                             ff|               .|          event: "Sequencer Specific Event" (65407) 0xbf-0xc1 (2)
 0x0c0|7f                                             |.               |
      |                                               |                |          info{}: 0xc1-0xc8 (7)
 0x0c0|   06 00 00 3b 3a 4c 5e                        | ...;:L^        |            bytes: "[0 0 59 58 76 94]" 0xc1-0xc8 (7)
@@ -139,7 +139,7 @@ $ fq -d midi dv format-2.mid
      |                                               |                |          time{}: 0xc8-0xca (2)
 0x0c0|                        83 60                  |        .`      |            delta: 480 0xc8-0xca (2)
      |                                               |                |            tick: 0
-     |                                               |                |          event: "NoteOff" (128)
+     |                                               |                |          event: "Note Off" (128)
 0x0c0|                              80               |          .     |          channel: 0 0xca-0xcb (1)
 0x0c0|                                 30            |           0    |          note: "C3" (48) 0xcb-0xcc (1)
 0x0c0|                                    40         |            @   |          velocity: 64 0xcc-0xcd (1)
@@ -147,7 +147,7 @@ $ fq -d midi dv format-2.mid
      |                                               |                |          time{}: 0xcd-0xce (1)
 0x0c0|                                       00      |             .  |            delta: 0 0xcd-0xce (1)
      |                                               |                |            tick: 480
-     |                                               |                |          event: "NoteOn" (144)
+     |                                               |                |          event: "Note On" (144)
 0x0c0|                                          90   |              . |          channel: 0 0xce-0xcf (1)
 0x0c0|                                             30|               0|          note: "C3" (48) 0xcf-0xd0 (1)
 0x0d0|48                                             |H               |          velocity: 72 0xd0-0xd1 (1)
@@ -155,7 +155,7 @@ $ fq -d midi dv format-2.mid
      |                                               |                |          time{}: 0xd1-0xd2 (1)
 0x0d0|   00                                          | .              |            delta: 0 0xd1-0xd2 (1)
      |                                               |                |            tick: 480
-     |                                               |                |          event: "NoteOn" (144)
+     |                                               |                |          event: "Note On" (144)
 0x0d0|      92                                       |  .             |          channel: 2 0xd2-0xd3 (1)
 0x0d0|         31                                    |   1            |          note: "C♯3/D♭3" (49) 0xd3-0xd4 (1)
 0x0d0|            48                                 |    H           |          velocity: 72 0xd4-0xd5 (1)
@@ -163,7 +163,7 @@ $ fq -d midi dv format-2.mid
      |                                               |                |          time{}: 0xd5-0xd6 (1)
 0x0d0|               00                              |     .          |            delta: 0 0xd5-0xd6 (1)
      |                                               |                |            tick: 480
-     |                                               |                |          event: "NoteOn" (144)
+     |                                               |                |          event: "Note On" (144)
      |                                               |                |          channel: 2 0xd6-0xd6 (0)
 0x0d0|                  30                           |      0         |          note: "C3" (48) 0xd6-0xd7 (1)
 0x0d0|                     64                        |       d        |          velocity: 100 0xd7-0xd8 (1)
@@ -171,7 +171,7 @@ $ fq -d midi dv format-2.mid
      |                                               |                |          time{}: 0xd8-0xd9 (1)
 0x0d0|                        00                     |        .       |            delta: 0 0xd8-0xd9 (1)
      |                                               |                |            tick: 480
-     |                                               |                |          event: "PolyphonicPressure" (160)
+     |                                               |                |          event: "Polyphonic Pressure" (160)
 0x0d0|                           a0                  |         .      |          channel: 0 0xd9-0xda (1)
 0x0d0|                              64               |          d     |          pressure: 100 0xda-0xdb (1)
      |                                               |                |        [22]{}: Controller 0xdb-0xdf (4)
@@ -202,28 +202,28 @@ $ fq -d midi dv format-2.mid
      |                                               |                |          time{}: 0xe7-0xe8 (1)
 0x0e0|                     00                        |       .        |            delta: 0 0xe7-0xe8 (1)
      |                                               |                |            tick: 480
-     |                                               |                |          event: "ProgramChange" (192)
+     |                                               |                |          event: "Program Change" (192)
 0x0e0|                        c0                     |        .       |          channel: 0 0xe8-0xe9 (1)
 0x0e0|                           19                  |         .      |          program: 25 0xe9-0xea (1)
      |                                               |                |        [26]{}: ChannelPressure 0xea-0xed (3)
      |                                               |                |          time{}: 0xea-0xeb (1)
 0x0e0|                              00               |          .     |            delta: 0 0xea-0xeb (1)
      |                                               |                |            tick: 480
-     |                                               |                |          event: "ChannelPressure" (208)
+     |                                               |                |          event: "Channel Pressure" (208)
 0x0e0|                                 d0            |           .    |          channel: 0 0xeb-0xec (1)
 0x0e0|                                    07         |            .   |          pressure: 7 0xec-0xed (1)
      |                                               |                |        [27]{}: PitchBend 0xed-0xf2 (5)
      |                                               |                |          time{}: 0xed-0xef (2)
 0x0e0|                                       81 70   |             .p |            delta: 240 0xed-0xef (2)
      |                                               |                |            tick: 480
-     |                                               |                |          event: "PitchBend" (224)
+     |                                               |                |          event: "Pitch Bend" (224)
 0x0e0|                                             e0|               .|          channel: 0 0xef-0xf0 (1)
 0x0f0|00 08                                          |..              |          bend: 8 0xf0-0xf2 (2)
      |                                               |                |        [28]{}: SysExMessage 0xf2-0xfa (8)
      |                                               |                |          time{}: 0xf2-0xf3 (1)
 0x0f0|      00                                       |  .             |            delta: 0 0xf2-0xf3 (1)
      |                                               |                |            tick: 720
-0x0f0|         f0                                    |   .            |          event: "SysExMessage" (240) 0xf3-0xf4 (1)
+0x0f0|         f0                                    |   .            |          event: "SysEx Message" (240) 0xf3-0xf4 (1)
 0x0f0|            05 7e 00 09 01 f7                  |    .~....      |          bytes: "[126 0 9 1 247]" 0xf4-0xfa (6)
      |                                               |                |          manufacturer: "Non-RealTime Extensions" ("7E")
      |                                               |                |          data: "[0 9 1]"
@@ -231,7 +231,7 @@ $ fq -d midi dv format-2.mid
      |                                               |                |          time{}: 0xfa-0xfb (1)
 0x0f0|                              00               |          .     |            delta: 0 0xfa-0xfb (1)
      |                                               |                |            tick: 720
-0x0f0|                                 f0            |           .    |          event: "SysExMessage" (240) 0xfb-0xfc (1)
+0x0f0|                                 f0            |           .    |          event: "SysEx Message" (240) 0xfb-0xfc (1)
 0x0f0|                                    03 43 12 00|            .C..|          bytes: "[67 18 0]" 0xfc-0x100 (4)
      |                                               |                |          manufacturer: "Yamaha" ("43")
      |                                               |                |          data: "[18 0]"
@@ -240,26 +240,26 @@ $ fq -d midi dv format-2.mid
      |                                               |                |          time{}: 0x100-0x102 (2)
 0x100|81 48                                          |.H              |            delta: 200 0x100-0x102 (2)
      |                                               |                |            tick: 720
-0x100|      f7                                       |  .             |          event: "SysExContinuation" (33015) 0x102-0x103 (1)
+0x100|      f7                                       |  .             |          event: "SysEx Continuation" (33015) 0x102-0x103 (1)
 0x100|         06 43 12 00 43 12 00                  |   .C..C..      |          data: "[67 18 0 67 18 0]" 0x103-0x10a (7)
      |                                               |                |        [31]{}: SysExContinuation 0x10a-0x111 (7)
      |                                               |                |          time{}: 0x10a-0x10b (1)
 0x100|                              64               |          d     |            delta: 100 0x10a-0x10b (1)
      |                                               |                |            tick: 920
-0x100|                                 f7            |           .    |          event: "SysExContinuation" (33015) 0x10b-0x10c (1)
+0x100|                                 f7            |           .    |          event: "SysEx Continuation" (33015) 0x10b-0x10c (1)
 0x100|                                    04 43 12 00|            .C..|          data: "[67 18 0]" 0x10c-0x111 (5)
 0x110|f7                                             |.               |
      |                                               |                |        [32]{}: SysExEscape 0x111-0x116 (5)
      |                                               |                |          time{}: 0x111-0x112 (1)
 0x110|   00                                          | .              |            delta: 0 0x111-0x112 (1)
      |                                               |                |            tick: 1020
-0x110|      f7                                       |  .             |          event: "SysExEscape" (247) 0x112-0x113 (1)
+0x110|      f7                                       |  .             |          event: "SysEx Escape" (247) 0x112-0x113 (1)
 0x110|         02 f3 01                              |   ...          |          data: "[243 1]" 0x113-0x116 (3)
      |                                               |                |        [33]{}: EndOfTrack 0x116-0x11a (4)
      |                                               |                |          time{}: 0x116-0x117 (1)
 0x110|                  00                           |      .         |            delta: 0 0x116-0x117 (1)
      |                                               |                |            tick: 1020
-0x110|                     ff 2f                     |       ./       |          event: "EndOfTrack" (65327) 0x117-0x119 (2)
+0x110|                     ff 2f                     |       ./       |          event: "End Of Track" (65327) 0x117-0x119 (2)
 0x110|                           00                  |         .      |          length: 0 0x119-0x11a (1)
      |                                               |                |    [1]{}: track 0x11a-0x227 (269)
 0x110|                              4d 54 72 6b      |          MTrk  |      tag: "MTrk" 0x11a-0x11e (4)
@@ -270,7 +270,7 @@ $ fq -d midi dv format-2.mid
      |                                               |                |          time{}: 0x122-0x123 (1)
 0x120|      00                                       |  .             |            delta: 0 0x122-0x123 (1)
      |                                               |                |            tick: 0
-0x120|         f0                                    |   .            |          event: "SysExMessage" (240) 0x123-0x124 (1)
+0x120|         f0                                    |   .            |          event: "SysEx Message" (240) 0x123-0x124 (1)
 0x120|            05 7e 00 09 01 f7                  |    .~....      |          bytes: "[126 0 9 1 247]" 0x124-0x12a (6)
      |                                               |                |          manufacturer: "Non-RealTime Extensions" ("7E")
      |                                               |                |          data: "[0 9 1]"
@@ -278,7 +278,7 @@ $ fq -d midi dv format-2.mid
      |                                               |                |          time{}: 0x12a-0x12b (1)
 0x120|                              00               |          .     |            delta: 0 0x12a-0x12b (1)
      |                                               |                |            tick: 0
-0x120|                                 f0            |           .    |          event: "SysExMessage" (240) 0x12b-0x12c (1)
+0x120|                                 f0            |           .    |          event: "SysEx Message" (240) 0x12b-0x12c (1)
 0x120|                                    03 43 12 00|            .C..|          bytes: "[67 18 0]" 0x12c-0x130 (4)
      |                                               |                |          manufacturer: "Yamaha" ("43")
      |                                               |                |          data: "[18 0]"
@@ -287,40 +287,40 @@ $ fq -d midi dv format-2.mid
      |                                               |                |          time{}: 0x130-0x132 (2)
 0x130|81 48                                          |.H              |            delta: 200 0x130-0x132 (2)
      |                                               |                |            tick: 0
-0x130|      f7                                       |  .             |          event: "SysExContinuation" (33015) 0x132-0x133 (1)
+0x130|      f7                                       |  .             |          event: "SysEx Continuation" (33015) 0x132-0x133 (1)
 0x130|         06 43 12 00 43 12 00                  |   .C..C..      |          data: "[67 18 0 67 18 0]" 0x133-0x13a (7)
      |                                               |                |        [3]{}: SysExContinuation 0x13a-0x141 (7)
      |                                               |                |          time{}: 0x13a-0x13b (1)
 0x130|                              64               |          d     |            delta: 100 0x13a-0x13b (1)
      |                                               |                |            tick: 200
-0x130|                                 f7            |           .    |          event: "SysExContinuation" (33015) 0x13b-0x13c (1)
+0x130|                                 f7            |           .    |          event: "SysEx Continuation" (33015) 0x13b-0x13c (1)
 0x130|                                    04 43 12 00|            .C..|          data: "[67 18 0]" 0x13c-0x141 (5)
 0x140|f7                                             |.               |
      |                                               |                |        [4]{}: SysExEscape 0x141-0x146 (5)
      |                                               |                |          time{}: 0x141-0x142 (1)
 0x140|   00                                          | .              |            delta: 0 0x141-0x142 (1)
      |                                               |                |            tick: 300
-0x140|      f7                                       |  .             |          event: "SysExEscape" (247) 0x142-0x143 (1)
+0x140|      f7                                       |  .             |          event: "SysEx Escape" (247) 0x142-0x143 (1)
 0x140|         02 f3 01                              |   ...          |          data: "[243 1]" 0x143-0x146 (3)
      |                                               |                |        [5]{}: PitchBend 0x146-0x14b (5)
      |                                               |                |          time{}: 0x146-0x148 (2)
 0x140|                  81 70                        |      .p        |            delta: 240 0x146-0x148 (2)
      |                                               |                |            tick: 300
-     |                                               |                |          event: "PitchBend" (224)
+     |                                               |                |          event: "Pitch Bend" (224)
 0x140|                        e0                     |        .       |          channel: 0 0x148-0x149 (1)
 0x140|                           00 08               |         ..     |          bend: 8 0x149-0x14b (2)
      |                                               |                |        [6]{}: ChannelPressure 0x14b-0x14e (3)
      |                                               |                |          time{}: 0x14b-0x14c (1)
 0x140|                                 00            |           .    |            delta: 0 0x14b-0x14c (1)
      |                                               |                |            tick: 540
-     |                                               |                |          event: "ChannelPressure" (208)
+     |                                               |                |          event: "Channel Pressure" (208)
 0x140|                                    d0         |            .   |          channel: 0 0x14c-0x14d (1)
 0x140|                                       07      |             .  |          pressure: 7 0x14d-0x14e (1)
      |                                               |                |        [7]{}: ProgramChange 0x14e-0x151 (3)
      |                                               |                |          time{}: 0x14e-0x14f (1)
 0x140|                                          00   |              . |            delta: 0 0x14e-0x14f (1)
      |                                               |                |            tick: 540
-     |                                               |                |          event: "ProgramChange" (192)
+     |                                               |                |          event: "Program Change" (192)
 0x140|                                             c0|               .|          channel: 0 0x14f-0x150 (1)
 0x150|19                                             |.               |          program: 25 0x150-0x151 (1)
      |                                               |                |        [8]{}: Controller 0x151-0x155 (4)
@@ -351,14 +351,14 @@ $ fq -d midi dv format-2.mid
      |                                               |                |          time{}: 0x15d-0x15e (1)
 0x150|                                       00      |             .  |            delta: 0 0x15d-0x15e (1)
      |                                               |                |            tick: 540
-     |                                               |                |          event: "PolyphonicPressure" (160)
+     |                                               |                |          event: "Polyphonic Pressure" (160)
 0x150|                                          a0   |              . |          channel: 0 0x15e-0x15f (1)
 0x150|                                             64|               d|          pressure: 100 0x15f-0x160 (1)
      |                                               |                |        [12]{}: NoteOn 0x160-0x164 (4)
      |                                               |                |          time{}: 0x160-0x161 (1)
 0x160|00                                             |.               |            delta: 0 0x160-0x161 (1)
      |                                               |                |            tick: 540
-     |                                               |                |          event: "NoteOn" (144)
+     |                                               |                |          event: "Note On" (144)
 0x160|   90                                          | .              |          channel: 0 0x161-0x162 (1)
 0x160|      30                                       |  0             |          note: "C3" (48) 0x162-0x163 (1)
 0x160|         48                                    |   H            |          velocity: 72 0x163-0x164 (1)
@@ -366,7 +366,7 @@ $ fq -d midi dv format-2.mid
      |                                               |                |          time{}: 0x164-0x165 (1)
 0x160|            00                                 |    .           |            delta: 0 0x164-0x165 (1)
      |                                               |                |            tick: 540
-     |                                               |                |          event: "NoteOn" (144)
+     |                                               |                |          event: "Note On" (144)
 0x160|               92                              |     .          |          channel: 2 0x165-0x166 (1)
 0x160|                  31                           |      1         |          note: "C♯3/D♭3" (49) 0x166-0x167 (1)
 0x160|                     48                        |       H        |          velocity: 72 0x167-0x168 (1)
@@ -374,7 +374,7 @@ $ fq -d midi dv format-2.mid
      |                                               |                |          time{}: 0x168-0x169 (1)
 0x160|                        00                     |        .       |            delta: 0 0x168-0x169 (1)
      |                                               |                |            tick: 540
-     |                                               |                |          event: "NoteOn" (144)
+     |                                               |                |          event: "Note On" (144)
      |                                               |                |          channel: 2 0x169-0x169 (0)
 0x160|                           30                  |         0      |          note: "C3" (48) 0x169-0x16a (1)
 0x160|                              64               |          d     |          velocity: 100 0x16a-0x16b (1)
@@ -382,7 +382,7 @@ $ fq -d midi dv format-2.mid
      |                                               |                |          time{}: 0x16b-0x16d (2)
 0x160|                                 83 60         |           .`   |            delta: 480 0x16b-0x16d (2)
      |                                               |                |            tick: 540
-     |                                               |                |          event: "NoteOff" (128)
+     |                                               |                |          event: "Note Off" (128)
 0x160|                                       80      |             .  |          channel: 0 0x16d-0x16e (1)
 0x160|                                          30   |              0 |          note: "C3" (48) 0x16e-0x16f (1)
 0x160|                                             40|               @|          velocity: 64 0x16f-0x170 (1)
@@ -390,7 +390,7 @@ $ fq -d midi dv format-2.mid
      |                                               |                |          time{}: 0x170-0x171 (1)
 0x170|00                                             |.               |            delta: 0 0x170-0x171 (1)
      |                                               |                |            tick: 1020
-0x170|   ff 7f                                       | ..             |          event: "SequencerSpecificEvent" (65407) 0x171-0x173 (2)
+0x170|   ff 7f                                       | ..             |          event: "Sequencer Specific Event" (65407) 0x171-0x173 (2)
      |                                               |                |          info{}: 0x173-0x17a (7)
 0x170|         06 00 00 3b 3a 4c 5e                  |   ...;:L^      |            bytes: "[0 0 59 58 76 94]" 0x173-0x17a (7)
      |                                               |                |            manufacturer: "Mark Of The Unicorn (MOTU)" ("003B")
@@ -399,13 +399,13 @@ $ fq -d midi dv format-2.mid
      |                                               |                |          time{}: 0x17a-0x17b (1)
 0x170|                              00               |          .     |            delta: 0 0x17a-0x17b (1)
      |                                               |                |            tick: 1020
-0x170|                                 ff 59         |           .Y   |          event: "KeySignature" (65369) 0x17b-0x17d (2)
+0x170|                                 ff 59         |           .Y   |          event: "Key Signature" (65369) 0x17b-0x17d (2)
 0x170|                                       02 00 01|             ...|          key: "A minor" (1) 0x17d-0x180 (3)
      |                                               |                |        [18]{}: TimeSignature 0x180-0x188 (8)
      |                                               |                |          time{}: 0x180-0x181 (1)
 0x180|00                                             |.               |            delta: 0 0x180-0x181 (1)
      |                                               |                |            tick: 1020
-0x180|   ff 58                                       | .X             |          event: "TimeSignature" (65368) 0x181-0x183 (2)
+0x180|   ff 58                                       | .X             |          event: "Time Signature" (65368) 0x181-0x183 (2)
      |                                               |                |          signature{}: 0x183-0x188 (5)
 0x180|         04 04 02 18 08                        |   .....        |            bytes: "[4 2 24 8]" 0x183-0x188 (5)
      |                                               |                |            numerator: 4
@@ -416,7 +416,7 @@ $ fq -d midi dv format-2.mid
      |                                               |                |          time{}: 0x188-0x189 (1)
 0x180|                        00                     |        .       |            delta: 0 0x188-0x189 (1)
      |                                               |                |            tick: 1020
-0x180|                           ff 54               |         .T     |          event: "SMPTEOffset" (65364) 0x189-0x18b (2)
+0x180|                           ff 54               |         .T     |          event: "SMPTE Offset" (65364) 0x189-0x18b (2)
      |                                               |                |          offset{}: 0x18b-0x191 (6)
 0x180|                                 05 4d 2d 3b 07|           .M-;.|            bytes: "[77 45 59 7 39]" 0x18b-0x191 (6)
 0x190|27                                             |'               |
@@ -436,32 +436,32 @@ $ fq -d midi dv format-2.mid
      |                                               |                |          time{}: 0x198-0x199 (1)
 0x190|                        00                     |        .       |            delta: 0 0x198-0x199 (1)
      |                                               |                |            tick: 1020
-0x190|                           ff 21               |         .!     |          event: "MIDIPort" (65313) 0x199-0x19b (2)
+0x190|                           ff 21               |         .!     |          event: "MIDI Port" (65313) 0x199-0x19b (2)
 0x190|                                 01 70         |           .p   |          port: 112 0x19b-0x19d (2)
      |                                               |                |        [22]{}: TypeMIDIChannelPrefix 0x19d-0x1a2 (5)
      |                                               |                |          time{}: 0x19d-0x19e (1)
 0x190|                                       00      |             .  |            delta: 0 0x19d-0x19e (1)
      |                                               |                |            tick: 1020
-0x190|                                          ff 20|              . |          event: "MIDIChannelPrefix" (65312) 0x19e-0x1a0 (2)
+0x190|                                          ff 20|              . |          event: "MIDI Channel Prefix" (65312) 0x19e-0x1a0 (2)
 0x1a0|01 0d                                          |..              |          channel: 13 0x1a0-0x1a2 (2)
      |                                               |                |        [23]{}: DeviceName 0x1a2-0x1ae (12)
      |                                               |                |          time{}: 0x1a2-0x1a3 (1)
 0x1a0|      00                                       |  .             |            delta: 0 0x1a2-0x1a3 (1)
      |                                               |                |            tick: 1020
-0x1a0|         ff 09                                 |   ..           |          event: "DeviceName" (65289) 0x1a3-0x1a5 (2)
+0x1a0|         ff 09                                 |   ..           |          event: "Device Name" (65289) 0x1a3-0x1a5 (2)
 0x1a0|               08 54 68 65 54 68 69 6e 67      |     .TheThing  |          device: "TheThing" 0x1a5-0x1ae (9)
      |                                               |                |        [24]{}: ProgramName 0x1ae-0x1b8 (10)
      |                                               |                |          time{}: 0x1ae-0x1af (1)
 0x1a0|                                          00   |              . |            delta: 0 0x1ae-0x1af (1)
      |                                               |                |            tick: 1020
-0x1a0|                                             ff|               .|          event: "ProgramName" (65288) 0x1af-0x1b1 (2)
+0x1a0|                                             ff|               .|          event: "Program Name" (65288) 0x1af-0x1b1 (2)
 0x1b0|08                                             |.               |
 0x1b0|   06 45 73 63 61 70 65                        | .Escape        |          program: "Escape" 0x1b1-0x1b8 (7)
      |                                               |                |        [25]{}: CuePoint 0x1b8-0x1c8 (16)
      |                                               |                |          time{}: 0x1b8-0x1b9 (1)
 0x1b0|                        00                     |        .       |            delta: 0 0x1b8-0x1b9 (1)
      |                                               |                |            tick: 1020
-0x1b0|                           ff 07               |         ..     |          event: "CuePoint" (65287) 0x1b9-0x1bb (2)
+0x1b0|                           ff 07               |         ..     |          event: "Cue Point" (65287) 0x1b9-0x1bb (2)
 0x1b0|                                 0c 4d 6f 72 65|           .More|          cue: "More cowbell" 0x1bb-0x1c8 (13)
 0x1c0|20 63 6f 77 62 65 6c 6c                        | cowbell        |
      |                                               |                |        [26]{}: Marker 0x1c8-0x1db (19)
@@ -482,14 +482,14 @@ $ fq -d midi dv format-2.mid
      |                                               |                |          time{}: 0x1e7-0x1e8 (1)
 0x1e0|                     00                        |       .        |            delta: 0 0x1e7-0x1e8 (1)
      |                                               |                |            tick: 1020
-0x1e0|                        ff 04                  |        ..      |          event: "InstrumentName" (65284) 0x1e8-0x1ea (2)
+0x1e0|                        ff 04                  |        ..      |          event: "Instrument Name" (65284) 0x1e8-0x1ea (2)
 0x1e0|                              0a 44 69 64 67 65|          .Didge|          instrument: "Didgeridoo" 0x1ea-0x1f5 (11)
 0x1f0|72 69 64 6f 6f                                 |ridoo           |
      |                                               |                |        [29]{}: TrackName 0x1f5-0x204 (15)
      |                                               |                |          time{}: 0x1f5-0x1f6 (1)
 0x1f0|               00                              |     .          |            delta: 0 0x1f5-0x1f6 (1)
      |                                               |                |            tick: 1020
-0x1f0|                  ff 03                        |      ..        |          event: "TrackName" (65283) 0x1f6-0x1f8 (2)
+0x1f0|                  ff 03                        |      ..        |          event: "Track Name" (65283) 0x1f6-0x1f8 (2)
 0x1f0|                        0b 52 69 67 68 74 20 54|        .Right T|          name: "Right Track" 0x1f8-0x204 (12)
 0x200|72 61 63 6b                                    |rack            |
      |                                               |                |        [30]{}: Copyright 0x204-0x20c (8)
@@ -509,11 +509,11 @@ $ fq -d midi dv format-2.mid
      |                                               |                |          time{}: 0x21d-0x21e (1)
 0x210|                                       00      |             .  |            delta: 0 0x21d-0x21e (1)
      |                                               |                |            tick: 1020
-0x210|                                          ff 00|              ..|          event: "SequenceNumber" (65280) 0x21e-0x220 (2)
+0x210|                                          ff 00|              ..|          event: "Sequence Number" (65280) 0x21e-0x220 (2)
 0x220|02 00 17                                       |...             |          sequenceNumber: 23 0x220-0x223 (3)
      |                                               |                |        [33]{}: EndOfTrack 0x223-0x227 (4)
      |                                               |                |          time{}: 0x223-0x224 (1)
 0x220|         00                                    |   .            |            delta: 0 0x223-0x224 (1)
      |                                               |                |            tick: 1020
-0x220|            ff 2f                              |    ./          |          event: "EndOfTrack" (65327) 0x224-0x226 (2)
+0x220|            ff 2f                              |    ./          |          event: "End Of Track" (65327) 0x224-0x226 (2)
 0x220|                  00|                          |      .|        |          length: 0 0x226-0x227 (1)

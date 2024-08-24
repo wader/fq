@@ -31,24 +31,24 @@ const (
 )
 
 var metaevents = scalar.UintMapSymStr{
-	0xff00: "SequenceNumber",
+	0xff00: "Sequence Number",
 	0xff01: "Text",
 	0xff02: "Copyright",
-	0xff03: "TrackName",
-	0xff04: "InstrumentName",
+	0xff03: "Track Name",
+	0xff04: "Instrument Name",
 	0xff05: "Lyric",
 	0xff06: "Marker",
-	0xff07: "CuePoint",
-	0xff08: "ProgramName",
-	0xff09: "DeviceName",
-	0xff20: "MIDIChannelPrefix",
-	0xff21: "MIDIPort",
+	0xff07: "Cue Point",
+	0xff08: "Program Name",
+	0xff09: "Device Name",
+	0xff20: "MIDI Channel Prefix",
+	0xff21: "MIDI Port",
 	0xff51: "Tempo",
-	0xff54: "SMPTEOffset",
-	0xff58: "TimeSignature",
-	0xff59: "KeySignature",
-	0xff2f: "EndOfTrack",
-	0xff7f: "SequencerSpecificEvent",
+	0xff54: "SMPTE Offset",
+	0xff58: "Time Signature",
+	0xff59: "Key Signature",
+	0xff2f: "End Of Track",
+	0xff7f: "Sequencer Specific Event",
 }
 
 var framerates = scalar.UintMapSymUint{
