@@ -5,6 +5,7 @@ package midi
 import (
 	"bytes"
 	"embed"
+	"encoding/binary"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/pkg/decode"
@@ -34,19 +35,45 @@ func init() {
 func decodeMIDI(d *decode.D) any {
 	d.Endian = decode.BigEndian
 
-	decodeMIDIFile(d)
+	// ... skip to MThd chunk
+	for d.BitsLeft() > 0 {
+		if tag, len, err := peekChunk(d); err != nil {
+			d.Errorf("error reading MIDI file chunk (%v)", err)
+		} else if tag == "MThd" {
+			break
+		} else {
+			d.SeekRel(8 * int64(len+8))
+		}
+	}
+
+	// ... read MThd chunk
+	if d.BitsLeft() < 64 {
+		d.Errorf("missing MThd header chunk")
+	} else {
+		d.FieldStruct("header", decodeMThd)
+
+		if d.BitsLeft() < 64 {
+			d.Errorf("missing MTrk track chunk(s)")
+		} else {
+			// ... read MTrk chunks, discarding unexpected chunks
+			d.FieldArray("tracks", func(d *decode.D) {
+				for d.BitsLeft() > 0 {
+					for d.BitsLeft() > 0 {
+						if tag, len, err := peekChunk(d); err != nil {
+							d.Errorf("error reading MIDI file chunk (%v)", err)
+						} else if tag == "MTrk" {
+							d.FieldStruct("track", decodeMTrk)
+							break
+						} else {
+							d.SeekRel(8 * int64(len+8))
+						}
+					}
+				}
+			})
+		}
+	}
 
 	return nil
-}
-
-func decodeMIDIFile(d *decode.D) {
-	d.FieldStruct("header", decodeMThd)
-
-	d.FieldArray("tracks", func(d *decode.D) {
-		for d.BitsLeft() > 0 {
-			d.FieldStruct("track", decodeMTrk)
-		}
-	})
 }
 
 func decodeMThd(d *decode.D) {
@@ -123,6 +150,20 @@ func decodeEvent(d *decode.D, ctx *context) {
 	} else {
 		decodeMIDIEvent(d, status, ctx)
 	}
+}
+
+func peekChunk(d *decode.D) (string, uint32, error) {
+	if d.BitsLeft() > 64 {
+		d.AssertLeastBytesLeft(8)
+
+		bytes := d.PeekBytes(8)
+		tag := string(bytes[0:4])
+		len := binary.BigEndian.Uint32(bytes[4:])
+
+		return tag, len, nil
+	}
+
+	return "", 0, nil
 }
 
 func peekEvent(d *decode.D) (uint64, uint8, uint8) {

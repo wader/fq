@@ -3,7 +3,7 @@
 - [x] update forked master branch
 - (?) add to probe group
 
-- [ ] discard unknown chunks
+- [x] discard unknown chunks
 - [x] assert available bytes
 - [x] example queries
 - [x] fix gaps
