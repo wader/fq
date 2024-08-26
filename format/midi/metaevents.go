@@ -203,16 +203,19 @@ func decodeMetaEvent(d *decode.D, event uint8, ctx *context) {
 
 func decodeSequenceNumber(d *decode.D) {
 	d.FieldUintFn("sequenceNumber", func(d *decode.D) uint64 {
-		data := vlf(d)
 		seqno := uint64(0)
 
-		if len(data) > 0 {
-			seqno += uint64(data[0])
-		}
+		if data, err := vlf(d); err != nil {
+			d.Errorf("%v", err)
+		} else {
+			if len(data) > 0 {
+				seqno += uint64(data[0])
+			}
 
-		if len(data) > 1 {
-			seqno <<= 8
-			seqno += uint64(data[1])
+			if len(data) > 1 {
+				seqno <<= 8
+				seqno += uint64(data[1])
+			}
 		}
 
 		return seqno
@@ -221,66 +224,123 @@ func decodeSequenceNumber(d *decode.D) {
 
 func decodeText(d *decode.D) {
 	d.FieldStrFn("text", func(d *decode.D) string {
-		return string(vlf(d))
+		if data, err := vlf(d); err != nil {
+			d.Errorf("%v", err)
+		} else {
+			return string(data)
+		}
+
+		return ""
 	})
 }
 
 func decodeCopyright(d *decode.D) {
 	d.FieldStrFn("copyright", func(d *decode.D) string {
-		return string(vlf(d))
+		if data, err := vlf(d); err != nil {
+			d.Errorf("%v", err)
+		} else {
+			return string(data)
+		}
+
+		return ""
 	})
 }
 
 func decodeTrackName(d *decode.D) {
 	d.FieldStrFn("name", func(d *decode.D) string {
-		return string(vlf(d))
+		if data, err := vlf(d); err != nil {
+			d.Errorf("%v", err)
+		} else {
+			return string(data)
+		}
+
+		return ""
 	})
 }
 
 func decodeInstrumentName(d *decode.D) {
 	d.FieldStrFn("instrument", func(d *decode.D) string {
-		return string(vlf(d))
+		if data, err := vlf(d); err != nil {
+			d.Errorf("%v", err)
+		} else {
+			return string(data)
+		}
+
+		return ""
 	})
 }
 
 func decodeLyric(d *decode.D) {
 	d.FieldStrFn("lyric", func(d *decode.D) string {
-		return string(vlf(d))
+		if data, err := vlf(d); err != nil {
+			d.Errorf("%v", err)
+		} else {
+			return string(data)
+		}
+
+		return ""
 	})
 }
 
 func decodeMarker(d *decode.D) {
 	d.FieldStrFn("marker", func(d *decode.D) string {
-		return string(vlf(d))
+		if data, err := vlf(d); err != nil {
+			d.Errorf("%v", err)
+		} else {
+			return string(data)
+		}
+
+		return ""
 	})
 }
 
 func decodeCuePoint(d *decode.D) {
 	d.FieldStrFn("cue", func(d *decode.D) string {
-		return string(vlf(d))
+		if data, err := vlf(d); err != nil {
+			d.Errorf("%v", err)
+		} else {
+			return string(data)
+		}
+
+		return ""
 	})
 }
 
 func decodeProgramName(d *decode.D) {
 	d.FieldStrFn("program", func(d *decode.D) string {
-		return string(vlf(d))
+		if data, err := vlf(d); err != nil {
+			d.Errorf("%v", err)
+		} else {
+			return string(data)
+		}
+
+		return ""
 	})
 }
 
 func decodeDeviceName(d *decode.D) {
 	d.FieldStrFn("device", func(d *decode.D) string {
-		return string(vlf(d))
+		if data, err := vlf(d); err != nil {
+			d.Errorf("%v", err)
+		} else {
+			return string(data)
+		}
+
+		return ""
 	})
 }
 
 func decodeMIDIChannelPrefix(d *decode.D) {
 	d.FieldUintFn("channel", func(d *decode.D) uint64 {
 		channel := uint64(0)
-		data := vlf(d)
 
-		for _, b := range data {
-			channel <<= 8
-			channel |= uint64(b & 0x00ff)
+		if data, err := vlf(d); err != nil {
+			d.Errorf("%v", err)
+		} else {
+			for _, b := range data {
+				channel <<= 8
+				channel |= uint64(b & 0x00ff)
+			}
 		}
 
 		return channel
@@ -290,11 +350,14 @@ func decodeMIDIChannelPrefix(d *decode.D) {
 func decodeMIDIPort(d *decode.D) {
 	d.FieldUintFn("port", func(d *decode.D) uint64 {
 		channel := uint64(0)
-		data := vlf(d)
 
-		for _, b := range data {
-			channel <<= 8
-			channel |= uint64(b & 0x00ff)
+		if data, err := vlf(d); err != nil {
+			d.Errorf("%v", err)
+		} else {
+			for _, b := range data {
+				channel <<= 8
+				channel |= uint64(b & 0x00ff)
+			}
 		}
 
 		return channel
@@ -304,11 +367,14 @@ func decodeMIDIPort(d *decode.D) {
 func decodeTempo(d *decode.D) {
 	d.FieldUintFn("tempo", func(d *decode.D) uint64 {
 		tempo := uint64(0)
-		data := vlf(d)
 
-		for _, b := range data {
-			tempo <<= 8
-			tempo |= uint64(b & 0x00ff)
+		if data, err := vlf(d); err != nil {
+			d.Errorf("%v", err)
+		} else {
+			for _, b := range data {
+				tempo <<= 8
+				tempo |= uint64(b & 0x00ff)
+			}
 		}
 
 		return tempo
@@ -318,10 +384,16 @@ func decodeTempo(d *decode.D) {
 func decodeSMPTEOffset(d *decode.D) {
 	d.FieldStruct("offset", func(d *decode.D) {
 		var data []uint8
-		d.FieldStrFn("bytes", func(d *decode.D) string {
-			data = vlf(d)
+		var err error
 
-			return fmt.Sprintf("%v", data)
+		d.FieldStrFn("bytes", func(d *decode.D) string {
+			if data, err = vlf(d); err != nil {
+				d.Errorf("%v", err)
+			} else {
+				return fmt.Sprintf("%v", data)
+			}
+
+			return "[]"
 		})
 
 		if len(data) > 0 {
@@ -353,10 +425,16 @@ func decodeSMPTEOffset(d *decode.D) {
 func decodeTimeSignature(d *decode.D) {
 	d.FieldStruct("signature", func(d *decode.D) {
 		var data []uint8
-		d.FieldStrFn("bytes", func(d *decode.D) string {
-			data = vlf(d)
+		var err error
 
-			return fmt.Sprintf("%v", data)
+		d.FieldStrFn("bytes", func(d *decode.D) string {
+			if data, err = vlf(d); err != nil {
+				d.Errorf("%v", err)
+			} else {
+				return fmt.Sprintf("%v", data)
+			}
+
+			return "[]"
 		})
 
 		if len(data) > 0 {
@@ -384,17 +462,20 @@ func decodeTimeSignature(d *decode.D) {
 
 func decodeKeySignature(d *decode.D) {
 	d.FieldUintFn("key", func(d *decode.D) uint64 {
-		data := vlf(d)
 		key := uint64(0)
 
-		if len(data) > 0 {
-			key <<= 8
-			key |= uint64(data[0]) & 0x00ff
-		}
+		if data, err := vlf(d); err != nil {
+			d.Errorf("%v", err)
+		} else {
+			if len(data) > 0 {
+				key <<= 8
+				key |= uint64(data[0]) & 0x00ff
+			}
 
-		if len(data) > 1 {
-			key <<= 8
-			key |= uint64(data[1]) & 0x00ff
+			if len(data) > 1 {
+				key <<= 8
+				key |= uint64(data[1]) & 0x00ff
+			}
 		}
 
 		return key
@@ -404,17 +485,31 @@ func decodeKeySignature(d *decode.D) {
 
 func decodeEndOfTrack(d *decode.D) {
 	d.FieldUintFn("length", func(d *decode.D) uint64 {
-		return uint64(len(vlf(d)))
+		length := 0
+
+		if data, err := vlf(d); err != nil {
+			d.Errorf("%v", err)
+		} else {
+			length = len(data)
+		}
+
+		return uint64(length)
 	})
 }
 
 func decodeSequencerSpecificEvent(d *decode.D) {
 	d.FieldStruct("info", func(d *decode.D) {
 		var data []uint8
-		d.FieldStrFn("bytes", func(d *decode.D) string {
-			data = vlf(d)
+		var err error
 
-			return fmt.Sprintf("%v", data)
+		d.FieldStrFn("bytes", func(d *decode.D) string {
+			if data, err = vlf(d); err != nil {
+				d.Errorf("%v", err)
+			} else {
+				return fmt.Sprintf("%v", data)
+			}
+
+			return "[]"
 		})
 
 		if len(data) > 2 && data[0] == 0x00 {

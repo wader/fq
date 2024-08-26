@@ -27,7 +27,7 @@ func init() {
 		format.MIDI,
 		&decode.Format{
 			Description: "Standard MIDI file",
-            Groups:      []*decode.Group{format.Probe},
+			Groups:      []*decode.Group{format.Probe},
 			DecodeFn:    decodeMIDI,
 		})
 
@@ -38,14 +38,19 @@ func decodeMIDI(d *decode.D) any {
 	d.Endian = decode.BigEndian
 
 	// ... decode header
+	println(">> 1")
 	if err := skipTo(d, "MThd"); err != nil {
 		d.Errorf("%v", err)
 	} else {
+		println(">> 2")
 		d.FieldStruct("header", decodeMThd)
 
 		// ... decode tracks
+		println(">> 3")
 		d.FieldArray("tracks", func(d *decode.D) {
+			println(">> 4")
 			for d.BitsLeft() > 0 {
+				println(">> 5", d.BitsLeft())
 				if err := skipTo(d, "MTrk"); err != nil {
 					d.Errorf("%v", err)
 				} else {
@@ -188,10 +193,14 @@ func vlq(d *decode.D) uint64 {
 	return vlq
 }
 
-func vlf(d *decode.D) []uint8 {
+func vlf(d *decode.D) ([]uint8, error) {
 	N := int(vlq(d))
 
-	return d.BytesLen(N)
+	if int64(N*8) > d.BitsLeft() {
+		return nil, fmt.Errorf("invalid field length")
+	} else {
+		return d.BytesLen(N), nil
+	}
 }
 
 func flush(d *decode.D, format string, args ...any) {

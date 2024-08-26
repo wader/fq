@@ -67,10 +67,16 @@ func decodeSysExEvent(d *decode.D, status uint8, ctx *context) {
 
 func decodeSysExMessage(d *decode.D, ctx *context) {
 	var bytes []uint8
+	var err error
 
 	d.FieldStrFn("bytes", func(d *decode.D) string {
-		bytes = vlf(d)
-		return fmt.Sprintf("%v", bytes)
+		if bytes, err = vlf(d); err != nil {
+			d.Errorf("%v", err)
+		} else {
+			return fmt.Sprintf("%v", bytes)
+		}
+
+		return "[]"
 	})
 
 	if len(bytes) < 1 {
@@ -102,7 +108,18 @@ func decodeSysExMessage(d *decode.D, ctx *context) {
 
 func decodeSysExContinuation(d *decode.D, ctx *context) {
 	d.FieldStrFn("data", func(d *decode.D) string {
-		data := vlf(d)
+		var data []uint8
+		var err error
+
+		d.FieldStrFn("bytes", func(d *decode.D) string {
+			if data, err = vlf(d); err != nil {
+				d.Errorf("%v", err)
+			} else {
+				return fmt.Sprintf("%v", data)
+			}
+
+			return "[]"
+		})
 
 		if len(data) > 0 && data[len(data)-1] == 0xf7 {
 			ctx.casio = false
@@ -120,7 +137,18 @@ func decodeSysExContinuation(d *decode.D, ctx *context) {
 
 func decodeSysExEscape(d *decode.D, ctx *context) {
 	d.FieldStrFn("data", func(d *decode.D) string {
-		data := vlf(d)
+		var data []uint8
+		var err error
+
+		d.FieldStrFn("bytes", func(d *decode.D) string {
+			if data, err = vlf(d); err != nil {
+				d.Errorf("%v", err)
+			} else {
+				return fmt.Sprintf("%v", data)
+			}
+
+			return "[]"
+		})
 
 		return fmt.Sprintf("%v", data)
 	})
