@@ -84,14 +84,12 @@ func decodeMThd(d *decode.D) {
 			division := d.FieldU16("divisions")
 			if division&0x8000 == 0x8000 {
 				SMPTE := (division & 0xff00) >> 8
-				if SMPTE != 0xe8 && SMPTE != SMPTE && SMPTE != 0xe6 && SMPTE != 0xe5 {
+				if SMPTE != 0xe8 && SMPTE != 0xe7 && SMPTE != 0xe6 && SMPTE != 0xe5 {
 					d.Errorf("invalid MThd division SMPTE timecode type %02X (expected E8,E7, E6 or E5)", SMPTE)
 				}
 			}
 		})
 	})
-
-	return
 }
 
 func decodeMTrk(d *decode.D) {
@@ -140,9 +138,9 @@ func skipTo(d *decode.D, tag string) error {
 		if string(bytes[0:4]) == tag {
 			return nil
 		} else {
-			len := 8 + binary.BigEndian.Uint32(bytes[4:])
+			length := 8 + binary.BigEndian.Uint32(bytes[4:])
 
-			d.SeekRel(8 * int64(len))
+			d.SeekRel(8 * int64(length))
 		}
 	}
 
@@ -150,13 +148,11 @@ func skipTo(d *decode.D, tag string) error {
 }
 
 func peekEvent(d *decode.D) (uint64, uint8, uint8) {
-	delta := uint64(0)
-	N := 3
+	var delta uint64
+	var N int = 3
 
 	for {
 		bytes := d.PeekBytes(N)
-
-		// ... peek at delta value
 		delta = 0
 
 		for i, b := range bytes[:N-2] {

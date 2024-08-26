@@ -82,6 +82,7 @@
 |`macho_fat`                                                     |Fat&nbsp;Mach-O&nbsp;macOS&nbsp;executable&nbsp;(multi-architecture)                                         |<sub>`macho`</sub>|
 |[`markdown`](#markdown)                                         |Markdown                                                                                                     |<sub></sub>|
 |[`matroska`](#matroska)                                         |Matroska&nbsp;file                                                                                           |<sub>`aac_frame` `av1_ccr` `av1_frame` `avc_au` `avc_dcr` `flac_frame` `flac_metadatablocks` `hevc_au` `hevc_dcr` `image` `mp3_frame` `mpeg_asc` `mpeg_pes_packet` `mpeg_spu` `opus_packet` `vorbis_packet` `vp8_frame` `vp9_cfm` `vp9_frame`</sub>|
+|[`midi`](#midi)                                                 |Standard&nbsp;MIDI&nbsp;file                                                                                 |<sub></sub>|
 |[`moc3`](#moc3)                                                 |MOC3&nbsp;file                                                                                               |<sub></sub>|
 |[`mp3`](#mp3)                                                   |MP3&nbsp;file                                                                                                |<sub>`id3v2` `id3v1` `id3v11` `apev2` `mp3_frame`</sub>|
 |`mp3_frame`                                                     |MPEG&nbsp;audio&nbsp;layer&nbsp;3&nbsp;frame                                                                 |<sub>`mp3_frame_tags`</sub>|
@@ -866,6 +867,43 @@ $ fq 'grep_by(.id == "Tracks") | matroska_path' file.mkv
 - https://www.matroska.org/technical/basics.html
 - https://www.matroska.org/technical/codec_specs.html
 - https://wiki.xiph.org/MatroskaOpus
+
+## midi
+Standard MIDI file.
+
+### Notes
+
+1. Only supports the MIDI 1.0 specification.
+2. Does only basic validation on the MIDI data.
+
+### Sample queries
+
+1. Extract the track names from a MIDI file
+```
+fq -d midi -d midi '.. | select(.event=="Track Name")? | "\(.name)"' twinkle.mid 
+```
+
+2. Extract the tempo changes from a MIDI file
+```
+fq -d midi '.. | select(.event=="Tempo")?.tempo' twinkle.mid
+```
+
+3. Extract the key changes from a MIDI file
+```
+fq -d midi '.. | select(.event=="Key Signature")?.key' key-signatures.mid
+```
+
+4. Extract NoteOn and NoteOff events:
+```
+fq -d midi 'grep_by(.event=="Note On" or .event=="Note Off") | "\(.event)  \(.time.tick)  \(.note)"' twinkle.mid
+```
+
+### Authors
+- transcriptaze.development@gmail.com
+
+### References
+
+1. [The Complete MIDI 1.0 Detailed Specification](https://www.midi.org/specifications/item/the-midi-1-0-specification)
 
 ## moc3
 MOC3 file.

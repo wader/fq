@@ -67,7 +67,7 @@ var controllers = scalar.UintMapSymStr{
 	84: "Portamento Control",
 	88: "High Resolution Velocity Prefix",
 	91: "Effects 1 Depth (Reverb Send Level)",
-	92: "Effects 2 Depth (Tremelo Depth)",
+	92: "Effects 2 Depth (Tremolo Depth)",
 	93: "Effects 3 Depth (Chorus Send Level)",
 	94: "Effects 4 Depth (Celeste Depth)",
 	95: "Effects 5 Depth (Phaser Depth)",
