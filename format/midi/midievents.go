@@ -18,13 +18,13 @@ const (
 )
 
 var midievents = scalar.UintMapSymStr{
-	0x80: "Note Off",
-	0x90: "Note On",
-	0xa0: "Polyphonic Pressure",
-	0xb0: "Controller",
-	0xc0: "Program Change",
-	0xd0: "Channel Pressure",
-	0xe0: "Pitch Bend",
+	0x80: "note off",
+	0x90: "note on",
+	0xa0: "polyphonic pressure",
+	0xb0: "controller",
+	0xc0: "program change",
+	0xd0: "channel pressure",
+	0xe0: "pitch bend",
 }
 
 func decodeMIDIEvent(d *decode.D, status uint8, ctx *context) {
