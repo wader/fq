@@ -385,9 +385,17 @@ func decodeTimeSignature(d *decode.D) {
 func decodeKeySignature(d *decode.D) {
 	d.FieldUintFn("key", func(d *decode.D) uint64 {
 		data := vlf(d)
-		key := uint64(data[0]) & 0x00ff
-		key <<= 8
-		key |= uint64(data[1]) & 0x00ff
+		key := uint64(0)
+
+		if len(data) > 0 {
+			key <<= 8
+			key |= uint64(data[0]) & 0x00ff
+		}
+
+		if len(data) > 1 {
+			key <<= 8
+			key |= uint64(data[1]) & 0x00ff
+		}
 
 		return key
 

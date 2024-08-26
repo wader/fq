@@ -27,6 +27,7 @@ func init() {
 		format.MIDI,
 		&decode.Format{
 			Description: "Standard MIDI file",
+            Groups:      []*decode.Group{format.Probe},
 			DecodeFn:    decodeMIDI,
 		})
 
