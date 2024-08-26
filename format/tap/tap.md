@@ -7,6 +7,15 @@ You will often find this format embedded inside the TZX tape format.
 
 The default file extension is `.tap`.
 
+### Processing JSON files
+
+When needing to process a generated JSON file it's recommended to convert the
+plain data bytes to an array by setting `bits_format=byte_array`:
+
+```bash
+fq -o bits_format=byte_array -d tap -V d /path/to/file.tap
+```
+
 ### Authors
 
 - Michael R. Cook work.mrc@pm.me, original author

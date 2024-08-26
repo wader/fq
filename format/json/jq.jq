@@ -81,7 +81,7 @@ def from_jq:
         ( $v.term.object.key_vals // []
         | map(
             { key: (.key // .key_string.str)
-            , value: (.val.queries[0] | _f)
+            , value: (.val | _f)
             }
           )
         | from_entries

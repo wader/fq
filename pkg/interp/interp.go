@@ -51,7 +51,7 @@ import (
 //go:embed init.jq
 var builtinFS embed.FS
 
-var initSource = `include "@builtin/init";`
+var initSource = `include "@builtin/init"; .`
 
 func init() {
 	RegisterIter1("_readline", (*Interp)._readline)
@@ -131,8 +131,9 @@ type Output interface {
 }
 
 type Platform struct {
-	OS   string
-	Arch string
+	OS        string
+	Arch      string
+	GoVersion string
 }
 
 type CompleteFn func(line string, pos int) (newLine []string, shared int)
@@ -380,10 +381,11 @@ func (i *Interp) Main(ctx context.Context, output Output, versionStr string) err
 
 	platform := i.OS.Platform()
 	input := map[string]any{
-		"args":    args,
-		"version": versionStr,
-		"os":      platform.OS,
-		"arch":    platform.Arch,
+		"args":       args,
+		"version":    versionStr,
+		"os":         platform.OS,
+		"arch":       platform.Arch,
+		"go_version": platform.GoVersion,
 	}
 
 	iter, err := i.EvalFunc(ctx, input, "_main", nil, EvalOpts{output: output})
@@ -882,9 +884,8 @@ func (i *Interp) Eval(ctx context.Context, c any, expr string, opts EvalOpts) (g
 					pos:      p,
 				}
 			}
-
-			// not identity body means it returns something, threat as dynamic include
-			if q.Term == nil || q.Term.Type != gojq.TermTypeIdentity {
+			// has some root expression, threat as dynamic include
+			if q.Term != nil || q.Op != gojq.Operator(0) {
 				gc, err := gojq.Compile(q, funcCompilerOpts...)
 				if err != nil {
 					return nil, err
@@ -1134,6 +1135,18 @@ func bitsFormatFnFromOptions(opts Options) (func(br bitio.ReaderAtSeeker) (any, 
 			}
 
 			return fmt.Sprintf("<%s>%s", mathx.Bits(brLen).StringByteBits(opts.Sizebase), b.String()), nil
+		}, nil
+	case "byte_array":
+		return func(br bitio.ReaderAtSeeker) (any, error) {
+			b := &bytes.Buffer{}
+			if _, err := bitiox.CopyBits(b, br); err != nil {
+				return "", err
+			}
+			var v []any
+			for _, bv := range b.Bytes() {
+				v = append(v, int(bv))
+			}
+			return v, nil
 		}, nil
 	default:
 		return nil, fmt.Errorf("invalid bits format %q", opts.BitsFormat)

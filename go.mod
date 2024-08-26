@@ -3,7 +3,7 @@ module github.com/wader/fq
 go 1.21
 
 // fork of github.com/itchyny/gojq, see github.com/wader/gojq fq branch
-require github.com/wader/gojq v0.12.1-0.20240401131232-6c6bc364201a
+require github.com/wader/gojq v0.12.1-0.20240822064856-a7688e3344e7
 
 require (
 	// bump: gomod-BurntSushi/toml /github\.com\/BurntSushi\/toml v(.*)/ https://github.com/BurntSushi/toml.git|^1
@@ -27,8 +27,8 @@ require (
 	github.com/golang/snappy v0.0.4
 
 	// has no tags
-	// go get -d github.com/gomarkdown/markdown@master && go mod tidy
-	github.com/gomarkdown/markdown v0.0.0-20240328165702-4d01890c35c0
+	// go get github.com/gomarkdown/markdown@master && go mod tidy
+	github.com/gomarkdown/markdown v0.0.0-20240730141124-034f12af3bf6
 
 	// bump: gomod-gopacket /github\.com\/gopacket\/gopacket v(.*)/ https://github.com/gopacket/gopacket.git|^1
 	// bump: gomod-gopacket command go get -d github.com/gopacket/gopacket@v$LATEST && go mod tidy
@@ -51,8 +51,8 @@ require (
 	golang.org/x/crypto v0.26.0
 
 	// has no tags
-	// go get -d golang.org/x/exp@master && go mod tidy
-	golang.org/x/exp v0.0.0-20240325151524-a685a6edb6d8
+	// go get golang.org/x/exp@master && go mod tidy
+	golang.org/x/exp v0.0.0-20240808152545-0cdaa3abc0fa
 
 	// bump: gomod-golang-x-net /golang\.org\/x\/net v(.*)/ https://github.com/golang/net.git|^0
 	// bump: gomod-golang-x-net command go get -d golang.org/x/net@v$LATEST && go mod tidy
@@ -76,7 +76,7 @@ require (
 )
 
 require (
-	github.com/itchyny/timefmt-go v0.1.5 // indirect
+	github.com/itchyny/timefmt-go v0.1.6 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	golang.org/x/sys v0.23.0 // indirect

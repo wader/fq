@@ -81,8 +81,9 @@ func newStandardOS() *stdOS {
 
 func (stdOS) Platform() interp.Platform {
 	return interp.Platform{
-		OS:   runtime.GOOS,
-		Arch: runtime.GOARCH,
+		OS:        runtime.GOOS,
+		Arch:      runtime.GOARCH,
+		GoVersion: runtime.Version(),
 	}
 }
 

@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"bytes"
 	"embed"
+	"fmt"
 
 	"golang.org/x/text/encoding/charmap"
 
@@ -54,9 +55,11 @@ func decodeTapBlock(d *decode.D) {
 	// read header, fragment, or data block
 	switch length {
 	case 0:
-		// fragment with no data
+		d.Fatalf("TAP fragments with 0 bytes are not supported")
 	case 1:
-		d.FieldRawLen("data", 8)
+		d.FieldStruct("data", func(d *decode.D) {
+			d.FieldRawLen("bytes", 8)
+		})
 	case 19:
 		d.FieldStruct("header", func(d *decode.D) {
 			decodeHeader(d)
@@ -72,15 +75,34 @@ func decodeTapBlock(d *decode.D) {
 func decodeHeader(d *decode.D) {
 	blockStartPosition := d.Pos()
 
-	// Always 0: byte indicating a standard ROM loading header
-	d.FieldU8("flag", scalar.UintMapSymStr{0: "standard_speed_data"})
+	// flag indicating the type of header block, usually 0 (standard speed data)
+	d.FieldU8("flag", scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
+		if s.Actual == 0x00 {
+			s.Sym = "standard_speed_data"
+		} else {
+			s.Sym = "custom_data_block"
+		}
+		return s, nil
+	}))
+
 	// Header type
-	dataType := d.FieldU8("data_type", scalar.UintMapSymStr{
-		0x00: "program",
-		0x01: "numeric",
-		0x02: "alphanumeric",
-		0x03: "data",
-	})
+	dataType := d.FieldU8("data_type", scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
+		switch s.Actual {
+		case 0x00:
+			s.Sym = "program"
+		case 0x01:
+			s.Sym = "numeric"
+		case 0x02:
+			s.Sym = "alphanumeric"
+		case 0x03:
+			s.Sym = "data"
+		default:
+			// unofficial header types
+			s.Sym = fmt.Sprintf("unknown%02X", s.Actual)
+		}
+		return s, nil
+	}))
+
 	// Loading name of the program. Filled with spaces (0x20) to 10 characters.
 	d.FieldStr("program_name", 10, charmap.ISO8859_1)
 
@@ -120,7 +142,10 @@ func decodeHeader(d *decode.D) {
 		//	UnusedWord: 32768.
 		d.FieldU16("unused")
 	default:
-		d.Fatalf("invalid TAP header type, got: %d", dataType)
+		// Unofficial header types
+		d.FieldU16("data_length")
+		d.FieldU16("unknown1", scalar.UintHex)
+		d.FieldU16("unknown2", scalar.UintHex)
 	}
 
 	// Simply all bytes XORed (including flag byte).
@@ -140,7 +165,8 @@ func decodeDataBlock(d *decode.D, length uint64) {
 		return s, nil
 	}))
 	// The essential data: length minus the flag/checksum bytes (may be empty)
-	d.FieldRawLen("data", int64(length-2)*8)
+	d.FieldRawLen("bytes", int64(length-2)*8)
+
 	// Simply all bytes (including flag byte) XORed
 	d.FieldU8("checksum", d.UintValidate(calculateChecksum(d, blockStartPosition, d.Pos()-blockStartPosition)), scalar.UintHex)
 }

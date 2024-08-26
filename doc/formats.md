@@ -1261,6 +1261,15 @@ You will often find this format embedded inside the TZX tape format.
 
 The default file extension is `.tap`.
 
+### Processing JSON files
+
+When needing to process a generated JSON file it's recommended to convert the
+plain data bytes to an array by setting `bits_format=byte_array`:
+
+```bash
+fq -o bits_format=byte_array -d tap -V d /path/to/file.tap
+```
+
 ### Authors
 
 - Michael R. Cook work.mrc@pm.me, original author
@@ -1450,6 +1459,15 @@ The format was originally created by Tomaz Kac, who was maintainer until
 the company Ramsoft became the maintainers, and created revision `v1.20`.
 
 The default file extension is `.tzx`.
+
+### Processing JSON files
+
+When needing to process a generated JSON file it's recommended to convert the
+plain data bytes to an array by setting `bits_format=byte_array`:
+
+```bash
+fq -o bits_format=byte_array -d tzx -V d /path/to/file.tzx
+```
 
 ### Authors
 

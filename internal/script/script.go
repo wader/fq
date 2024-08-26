@@ -118,8 +118,9 @@ func (cr *CaseRun) getEnvInt(name string) int {
 
 func (cr *CaseRun) Platform() interp.Platform {
 	return interp.Platform{
-		OS:   "testos",
-		Arch: "testarch",
+		OS:        "testos",
+		Arch:      "testarch",
+		GoVersion: "testgo_version",
 	}
 }
 

@@ -15,7 +15,7 @@ $ fq -d tap dv basic_prog1.tap
 0x10|               28 00                           |     (.         |      length: 40 0x15-0x17 (2)
     |                                               |                |      data{}: 0x17-0x3f (40)
 0x10|                     ff                        |       .        |        flag: "standard_speed_data" (255) 0x17-0x18 (1)
-0x10|                        00 0a 14 00 20 f5 22 66|        .... ."f|        data: raw bits 0x18-0x3e (38)
+0x10|                        00 0a 14 00 20 f5 22 66|        .... ."f|        bytes: raw bits 0x18-0x3e (38)
 0x20|71 20 69 73 20 74 68 65 20 62 65 73 74 21 22 0d|q is the best!".|
 0x30|00 14 0a 00 ec 31 30 0e 00 00 0a 00 00 0d      |.....10.......  |
 0x30|                                          b6|  |              .||        checksum: 0xb6 (valid) 0x3e-0x3f (1)

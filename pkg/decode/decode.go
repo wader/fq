@@ -226,7 +226,7 @@ func (d *D) ArgAs(target any) bool {
 	for _, in := range d.inArgs {
 		// target will be &format.<Format>In
 		// in format.<Format>In so have to get ptr type
-		inType := reflect.PtrTo(reflect.TypeOf(in))
+		inType := reflect.PointerTo(reflect.TypeOf(in))
 		if inType.AssignableTo(targeType) {
 			targetVal := reflect.ValueOf(target)
 			targetVal.Elem().Set(reflect.ValueOf(in))
