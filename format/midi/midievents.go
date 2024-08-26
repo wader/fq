@@ -18,13 +18,13 @@ const (
 )
 
 var midievents = scalar.UintMapSymStr{
-	0x80: "note off",
-	0x90: "note on",
-	0xa0: "polyphonic pressure",
-	0xb0: "controller",
-	0xc0: "program change",
-	0xd0: "channel pressure",
-	0xe0: "pitch bend",
+	0x80: "Note Off",
+	0x90: "Note On",
+	0xa0: "Polyphonic Pressure",
+	0xb0: "Controller",
+	0xc0: "Program Change",
+	0xd0: "Channel Pressure",
+	0xe0: "Pitch Bend",
 }
 
 func decodeMIDIEvent(d *decode.D, status uint8, ctx *context) {
@@ -42,6 +42,8 @@ func decodeMIDIEvent(d *decode.D, status uint8, ctx *context) {
 		ctx.tick += dt
 	}
 
+	event := uint64(status & 0xf0)
+
 	channel := func(d *decode.D) uint64 {
 		b := d.PeekBytes(1)
 		if b[0] >= 0x80 {
@@ -51,71 +53,37 @@ func decodeMIDIEvent(d *decode.D, status uint8, ctx *context) {
 		return uint64(status & 0x0f)
 	}
 
-	event := uint64(status & 0xf0)
+	midievent := func(name string, f func(d *decode.D)) {
+		d.FieldStruct(name, func(d *decode.D) {
+			d.FieldStruct("time", delta)
+			d.FieldValueUint("event", event, midievents)
+			d.FieldUintFn("channel", channel)
+
+			f(d)
+		})
+	}
 
 	switch MidiEventType(event) {
 	case TypeNoteOff:
-		d.FieldStruct("NoteOff", func(d *decode.D) {
-			d.FieldStruct("time", delta)
-			d.FieldValueUint("event", event, midievents)
-			d.FieldUintFn("channel", channel)
-
-			decodeNoteOff(d)
-		})
+		midievent("NoteOff", decodeNoteOff)
 
 	case TypeNoteOn:
-		d.FieldStruct("NoteOn", func(d *decode.D) {
-			d.FieldStruct("time", delta)
-			d.FieldValueUint("event", event, midievents)
-			d.FieldUintFn("channel", channel)
-
-			decodeNoteOn(d)
-		})
+		midievent("NoteOn", decodeNoteOn)
 
 	case TypePolyphonicPressure:
-		d.FieldStruct("PolyphonicPressure", func(d *decode.D) {
-			d.FieldStruct("time", delta)
-			d.FieldValueUint("event", event, midievents)
-			d.FieldUintFn("channel", channel)
-
-			decodePolyphonicPressure(d)
-		})
+		midievent("PolyphonicPressure", decodePolyphonicPressure)
 
 	case TypeController:
-		d.FieldStruct("Controller", func(d *decode.D) {
-			d.FieldStruct("time", delta)
-			d.FieldValueUint("event", event, midievents)
-			d.FieldUintFn("channel", channel)
-
-			decodeController(d)
-		})
+		midievent("Controller", decodeController)
 
 	case TypeProgramChange:
-		d.FieldStruct("ProgramChange", func(d *decode.D) {
-			d.FieldStruct("time", delta)
-			d.FieldValueUint("event", event, midievents)
-			d.FieldUintFn("channel", channel)
-
-			decodeProgramChange(d)
-		})
+		midievent("ProgramChange", decodeProgramChange)
 
 	case TypeChannelPressure:
-		d.FieldStruct("ChannelPressure", func(d *decode.D) {
-			d.FieldStruct("time", delta)
-			d.FieldValueUint("event", event, midievents)
-			d.FieldUintFn("channel", channel)
-
-			decodeChannelPressure(d)
-		})
+		midievent("ChannelPressure", decodeChannelPressure)
 
 	case TypePitchBend:
-		d.FieldStruct("PitchBend", func(d *decode.D) {
-			d.FieldStruct("time", delta)
-			d.FieldValueUint("event", event, midievents)
-			d.FieldUintFn("channel", channel)
-
-			decodePitchBend(d)
-		})
+		midievent("PitchBend", decodePitchBend)
 
 	default:
 		flush(d, "unknown MIDI event (%02x)", status&0xf0)

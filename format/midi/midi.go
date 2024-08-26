@@ -203,6 +203,16 @@ func vlf(d *decode.D) ([]uint8, error) {
 	}
 }
 
+func vlstring(d *decode.D) string {
+	if data, err := vlf(d); err != nil {
+		d.Errorf("%v", err)
+	} else {
+		return string(data)
+	}
+
+	return ""
+}
+
 func flush(d *decode.D, format string, args ...any) {
 	d.Errorf(format, args...)
 
