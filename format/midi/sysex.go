@@ -31,7 +31,7 @@ func decodeSysExEvent(d *decode.D, status uint8, ctx *context) {
 		d.FieldStruct("SysExMessage", func(d *decode.D) {
 			d.FieldStruct("time", delta)
 			d.FieldUintFn("event", func(d *decode.D) uint64 {
-				d.BytesLen(1)
+				d.U8()
 
 				return 0x00f0
 			}, sysex)
@@ -42,7 +42,7 @@ func decodeSysExEvent(d *decode.D, status uint8, ctx *context) {
 		d.FieldStruct("SysExContinuation", func(d *decode.D) {
 			d.FieldStruct("time", delta)
 			d.FieldUintFn("event", func(d *decode.D) uint64 {
-				d.BytesLen(1)
+				d.U8()
 
 				return 0x80f7
 			}, sysex)
@@ -53,7 +53,7 @@ func decodeSysExEvent(d *decode.D, status uint8, ctx *context) {
 		d.FieldStruct("SysExEscape", func(d *decode.D) {
 			d.FieldStruct("time", delta)
 			d.FieldUintFn("event", func(d *decode.D) uint64 {
-				d.BytesLen(1)
+				d.U8()
 
 				return 0x00f7
 			}, sysex)

@@ -47,7 +47,7 @@ func decodeMIDIEvent(d *decode.D, status uint8, ctx *context) {
 	channel := func(d *decode.D) uint64 {
 		b := d.PeekBytes(1)
 		if b[0] >= 0x80 {
-			d.BytesLen(1)
+			d.U8()
 		}
 
 		return uint64(status & 0x0f)

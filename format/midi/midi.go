@@ -175,12 +175,12 @@ func vlq(d *decode.D) uint64 {
 	vlq := uint64(0)
 
 	for {
-		b := d.BytesLen(1)
+		b := d.U8()
 
 		vlq <<= 7
-		vlq += uint64(b[0] & 0x7f)
+		vlq += uint64(b & 0x7f)
 
-		if b[0]&0x80 == 0 {
+		if b&0x80 == 0 {
 			break
 		}
 	}
