@@ -18,13 +18,13 @@ const (
 )
 
 var midievents = scalar.UintMapSymStr{
-	0x80: "Note Off",
-	0x90: "Note On",
-	0xa0: "Polyphonic Pressure",
-	0xb0: "Controller",
-	0xc0: "Program Change",
-	0xd0: "Channel Pressure",
-	0xe0: "Pitch Bend",
+	0x80: "note_off",
+	0x90: "note_on",
+	0xa0: "polyphonic_pressure",
+	0xb0: "controller",
+	0xc0: "program_change",
+	0xd0: "channel_pressure",
+	0xe0: "pitch_bend",
 }
 
 func decodeMIDIEvent(d *decode.D, status uint8, ctx *context) {
@@ -65,25 +65,25 @@ func decodeMIDIEvent(d *decode.D, status uint8, ctx *context) {
 
 	switch MidiEventType(event) {
 	case TypeNoteOff:
-		midievent("NoteOff", decodeNoteOff)
+		midievent("note_off", decodeNoteOff)
 
 	case TypeNoteOn:
-		midievent("NoteOn", decodeNoteOn)
+		midievent("note_on", decodeNoteOn)
 
 	case TypePolyphonicPressure:
-		midievent("PolyphonicPressure", decodePolyphonicPressure)
+		midievent("polyphonic_pressure", decodePolyphonicPressure)
 
 	case TypeController:
-		midievent("Controller", decodeController)
+		midievent("controller", decodeController)
 
 	case TypeProgramChange:
-		midievent("ProgramChange", decodeProgramChange)
+		midievent("program_change", decodeProgramChange)
 
 	case TypeChannelPressure:
-		midievent("ChannelPressure", decodeChannelPressure)
+		midievent("channel_pressure", decodeChannelPressure)
 
 	case TypePitchBend:
-		midievent("PitchBend", decodePitchBend)
+		midievent("pitch_bend", decodePitchBend)
 
 	default:
 		flush(d, "unknown MIDI event (%02x)", status&0xf0)

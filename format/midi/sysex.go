@@ -8,9 +8,9 @@ import (
 )
 
 var sysex = scalar.UintMapSymStr{
-	0x00f0: "Sysex Message",
-	0x80f7: "Sysex Continuation",
-	0x00f7: "Sysex Escape",
+	0x00f0: "sysex_message",
+	0x80f7: "sysex_continuation",
+	0x00f7: "sysex_escape",
 }
 
 func decodeSysExEvent(d *decode.D, status uint8, ctx *context) {
@@ -28,7 +28,7 @@ func decodeSysExEvent(d *decode.D, status uint8, ctx *context) {
 		d.Errorf("SysExMessage F0 start byte without terminating F7")
 
 	case status == 0xf0:
-		d.FieldStruct("SysExMessage", func(d *decode.D) {
+		d.FieldStruct("sysex_message", func(d *decode.D) {
 			d.FieldStruct("time", delta)
 			d.FieldUintFn("event", func(d *decode.D) uint64 {
 				d.U8()
@@ -39,7 +39,7 @@ func decodeSysExEvent(d *decode.D, status uint8, ctx *context) {
 		})
 
 	case status == 0xf7 && ctx.casio:
-		d.FieldStruct("SysExContinuation", func(d *decode.D) {
+		d.FieldStruct("sysex_continuation", func(d *decode.D) {
 			d.FieldStruct("time", delta)
 			d.FieldUintFn("event", func(d *decode.D) uint64 {
 				d.U8()
@@ -50,7 +50,7 @@ func decodeSysExEvent(d *decode.D, status uint8, ctx *context) {
 		})
 
 	case status == 0xf7:
-		d.FieldStruct("SysExEscape", func(d *decode.D) {
+		d.FieldStruct("sysex_escape", func(d *decode.D) {
 			d.FieldStruct("time", delta)
 			d.FieldUintFn("event", func(d *decode.D) uint64 {
 				d.U8()

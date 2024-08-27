@@ -31,24 +31,24 @@ const (
 )
 
 var metaevents = scalar.UintMapSymStr{
-	0xff00: "Sequence Number",
-	0xff01: "Text",
-	0xff02: "Copyright",
-	0xff03: "Track Name",
-	0xff04: "Instrument Name",
-	0xff05: "Lyric",
-	0xff06: "Marker",
-	0xff07: "Cue Point",
-	0xff08: "Program Name",
-	0xff09: "Device Name",
-	0xff20: "Midi Channel Prefix",
-	0xff21: "Midi Port",
-	0xff51: "Tempo",
-	0xff54: "Smpte Offset",
-	0xff58: "Time Signature",
-	0xff59: "Key Signature",
-	0xff2f: "End Of Track",
-	0xff7f: "Sequencer Specific Event",
+	0xff00: "sequence_number",
+	0xff01: "text",
+	0xff02: "copyright",
+	0xff03: "track_name",
+	0xff04: "instrument_name",
+	0xff05: "lyric",
+	0xff06: "marker",
+	0xff07: "cue_point",
+	0xff08: "program_name",
+	0xff09: "device_name",
+	0xff20: "midi_channel_prefix",
+	0xff21: "midi_port",
+	0xff51: "tempo",
+	0xff54: "smpte_offset",
+	0xff58: "time_signature",
+	0xff59: "key_signature",
+	0xff2f: "end_of_track",
+	0xff7f: "sequencer_specific_event",
 }
 
 var framerates = scalar.UintMapSymUint{
@@ -79,58 +79,58 @@ func decodeMetaEvent(d *decode.D, event uint8, ctx *context) {
 
 	switch MetaEventType(event) {
 	case TypeSequenceNumber:
-		metaevent("SequenceNumber", decodeSequenceNumber)
+		metaevent("sequence_number", decodeSequenceNumber)
 
 	case TypeText:
-		metaevent("Text", decodeText)
+		metaevent("text", decodeText)
 
 	case TypeCopyright:
-		metaevent("Copyright", decodeCopyright)
+		metaevent("copyright", decodeCopyright)
 
 	case TypeTrackName:
-		metaevent("TrackName", decodeTrackName)
+		metaevent("track_name", decodeTrackName)
 
 	case TypeInstrumentName:
-		metaevent("InstrumentName", decodeInstrumentName)
+		metaevent("instrument_name", decodeInstrumentName)
 
 	case TypeLyric:
-		metaevent("Lyric", decodeLyric)
+		metaevent("lyric", decodeLyric)
 
 	case TypeMarker:
-		metaevent("Marker", decodeMarker)
+		metaevent("marker", decodeMarker)
 
 	case TypeCuePoint:
-		metaevent("CuePoint", decodeCuePoint)
+		metaevent("cue_point", decodeCuePoint)
 
 	case TypeProgramName:
-		metaevent("ProgramName", decodeProgramName)
+		metaevent("program_name", decodeProgramName)
 
 	case TypeDeviceName:
-		metaevent("DeviceName", decodeDeviceName)
+		metaevent("device_name", decodeDeviceName)
 
 	case TypeMIDIChannelPrefix:
-		metaevent("MIDIChannelPrefix", decodeMIDIChannelPrefix)
+		metaevent("midi_channel_prefix", decodeMIDIChannelPrefix)
 
 	case TypeMIDIPort:
-		metaevent("MIDIPort", decodeMIDIPort)
+		metaevent("midi_port", decodeMIDIPort)
 
 	case TypeTempo:
-		metaevent("Tempo", decodeTempo)
+		metaevent("tempo", decodeTempo)
 
 	case TypeSMPTEOffset:
-		metaevent("SMPTEOffset", decodeSMPTEOffset)
+		metaevent("smpte_offset", decodeSMPTEOffset)
 
 	case TypeTimeSignature:
-		metaevent("TimeSignature", decodeTimeSignature)
+		metaevent("time_signature", decodeTimeSignature)
 
 	case TypeKeySignature:
-		metaevent("KeySignature", decodeKeySignature)
+		metaevent("key_signature", decodeKeySignature)
 
 	case TypeEndOfTrack:
-		metaevent("EndOfTrack", decodeEndOfTrack)
+		metaevent("end_of_track", decodeEndOfTrack)
 
 	case TypeSequencerSpecificEvent:
-		metaevent("SequencerSpecific", decodeSequencerSpecificEvent)
+		metaevent("sequencer_specific_event", decodeSequencerSpecificEvent)
 
 	default:
 		flush(d, "unknown meta event (%02x)", event)
@@ -138,7 +138,7 @@ func decodeMetaEvent(d *decode.D, event uint8, ctx *context) {
 }
 
 func decodeSequenceNumber(d *decode.D) {
-	d.FieldUintFn("sequenceNumber", func(d *decode.D) uint64 {
+	d.FieldUintFn("sequence_number", func(d *decode.D) uint64 {
 		seqno := uint64(0)
 
 		if data, err := vlf(d); err != nil {
@@ -315,11 +315,11 @@ func decodeTimeSignature(d *decode.D) {
 		}
 
 		if len(data) > 2 {
-			d.FieldValueUint("ticksPerClick", uint64(data[2]))
+			d.FieldValueUint("ticks_per_click", uint64(data[2]))
 		}
 
 		if len(data) > 3 {
-			d.FieldValueUint("thirtySecondsPerQuarter", uint64(data[3]))
+			d.FieldValueUint("thirty_seconds_per_quarter", uint64(data[3]))
 		}
 	})
 }
