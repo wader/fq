@@ -38,19 +38,14 @@ func decodeMIDI(d *decode.D) any {
 	d.Endian = decode.BigEndian
 
 	// ... decode header
-	println(">> 1")
 	if err := skipTo(d, "MThd"); err != nil {
 		d.Errorf("%v", err)
 	} else {
-		println(">> 2")
 		d.FieldStruct("header", decodeMThd)
 
 		// ... decode tracks
-		println(">> 3")
 		d.FieldArray("tracks", func(d *decode.D) {
-			println(">> 4")
 			for d.BitsLeft() > 0 {
-				println(">> 5", d.BitsLeft())
 				if err := skipTo(d, "MTrk"); err != nil {
 					d.Errorf("%v", err)
 				} else {
