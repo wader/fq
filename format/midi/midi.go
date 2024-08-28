@@ -163,6 +163,7 @@ func peekEvent(d *decode.D) (uint64, uint8, uint8) {
 	}
 }
 
+// Big endian varint
 func vlq(d *decode.D) uint64 {
 	vlq := uint64(0)
 
@@ -170,7 +171,7 @@ func vlq(d *decode.D) uint64 {
 		b := d.U8()
 
 		vlq <<= 7
-		vlq += uint64(b & 0x7f)
+		vlq += b & 0x7f
 
 		if b&0x80 == 0 {
 			break
@@ -180,6 +181,7 @@ func vlq(d *decode.D) uint64 {
 	return vlq
 }
 
+// Variable length with a big endian varint length
 func vlf(d *decode.D) ([]uint8, error) {
 	N := int(vlq(d))
 
@@ -190,6 +192,7 @@ func vlf(d *decode.D) ([]uint8, error) {
 	}
 }
 
+// Variable length string with a big endian varint length
 func vlstring(d *decode.D) string {
 	if data, err := vlf(d); err != nil {
 		d.Errorf("%v", err)

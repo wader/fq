@@ -18,6 +18,9 @@ debug: build
 test: build
 	go test ./format -run TestFormats/midi
 
+lint: test
+	make -f Makefile lint
+
 regenerate: build
 	go test ./format -run TestFormats/midi -update
 
