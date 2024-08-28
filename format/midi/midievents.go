@@ -91,47 +91,33 @@ func decodeMIDIEvent(d *decode.D, status uint8, ctx *context) {
 }
 
 func decodeNoteOff(d *decode.D) {
-	d.AssertLeastBytesLeft(2)
-
 	d.FieldU8("note", notes)
 	d.FieldU8("velocity")
 }
 
 func decodeNoteOn(d *decode.D) {
-	d.AssertLeastBytesLeft(2)
-
 	d.FieldU8("note", notes)
 	d.FieldU8("velocity")
 }
 
 func decodePolyphonicPressure(d *decode.D) {
-	d.AssertLeastBytesLeft(1)
-
 	d.FieldU8("pressure")
 }
 
 func decodeController(d *decode.D) {
-	d.AssertLeastBytesLeft(2)
-
 	d.FieldU8("controller", controllers)
 	d.FieldU8("value")
 }
 
 func decodeProgramChange(d *decode.D) {
-	d.AssertLeastBytesLeft(1)
-
 	d.FieldU8("program")
 }
 
 func decodeChannelPressure(d *decode.D) {
-	d.AssertLeastBytesLeft(1)
-
 	d.FieldU8("pressure")
 }
 
 func decodePitchBend(d *decode.D) {
-	d.AssertLeastBytesLeft(2)
-
 	d.FieldUintFn("bend", func(d *decode.D) uint64 {
 		data := d.BytesLen(2)
 

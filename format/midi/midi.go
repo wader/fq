@@ -55,8 +55,6 @@ func decodeMIDI(d *decode.D) any {
 }
 
 func decodeMThd(d *decode.D) {
-	d.AssertLeastBytesLeft(8)
-
 	if !bytes.Equal(d.PeekBytes(4), []byte("MThd")) {
 		d.Errorf("no MThd marker")
 	}
@@ -90,8 +88,6 @@ func decodeMThd(d *decode.D) {
 }
 
 func decodeMTrk(d *decode.D) {
-	d.AssertLeastBytesLeft(8)
-
 	if !bytes.Equal(d.PeekBytes(4), []byte("MTrk")) {
 		d.Errorf("no MTrk marker")
 	}
