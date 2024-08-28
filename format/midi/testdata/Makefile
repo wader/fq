@@ -1,8 +1,9 @@
 # Invoke make from fq root folder
 # 
-# e.g. make -f format/midi/testdata/Makefile midi
+# e.g. make -f format/midi/testdata/Makefile all
 
 .PHONY: build
+.PHONY: lint
 
 build:
 	go fmt ./format/midi/...
@@ -13,13 +14,17 @@ run: build
 
 debug: build
 # 	go run . -d midi dv format/midi/workdir/15ba2fe0cd4bf33a.mid
-	go run . -d midi dv format/midi/testdata/unknown-chunks.mid
+# 	go run . -d midi dv format/midi/testdata/unknown-chunks.mid
+	go test ./format -run TestFormats/all/all.fqtest
 
 test: build
 	go test ./format -run TestFormats/midi
 
-lint: test
+lint: 
 	make -f Makefile lint
+
+all: test lint
+	make -f Makefile test
 
 regenerate: build
 	go test ./format -run TestFormats/midi -update
