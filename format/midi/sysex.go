@@ -82,9 +82,9 @@ func decodeSysExMessage(d *decode.D, ctx *context) {
 	if len(bytes) < 1 {
 		ctx.casio = true
 	} else {
-		id := fmt.Sprintf("%02X", bytes[0])
+		id := uint64(bytes[0])
 
-		d.FieldValueStr("manufacturer", id, manufacturers)
+		d.FieldValueUint("manufacturer", id, manufacturers)
 
 		if len(bytes) > 1 {
 			if bytes[len(bytes)-1] == 0xf7 {

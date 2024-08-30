@@ -181,18 +181,22 @@ func vlq(d *decode.D) uint64 {
 	return vlq
 }
 
-// Variable length with a big endian varint length
+// Byte array with a big endian varint length
 func vlf(d *decode.D) ([]uint8, error) {
-	N := int(vlq(d))
+	N := vlq(d)
+
+	if N*8 > uint64(d.BitsLeft()) {
+		d.Fatalf("invalid field length")
+	}
 
 	if int64(N*8) > d.BitsLeft() {
 		return nil, fmt.Errorf("invalid field length")
 	} else {
-		return d.BytesLen(N), nil
+		return d.BytesLen(int(N)), nil
 	}
 }
 
-// Variable length string with a big endian varint length
+// String with a big endian varint length
 func vlstring(d *decode.D) string {
 	if data, err := vlf(d); err != nil {
 		d.Fatalf("%v", err)

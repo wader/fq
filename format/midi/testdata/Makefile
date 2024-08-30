@@ -9,14 +9,16 @@ build:
 	go fmt ./format/midi/...
 	make -f Makefile fq
 
+regenerate: build
+	go test ./format -run TestFormats/midi -update
+
 run: build
-	go run . -d midi dv format/midi/testdata/test.mid
+	go run . -d midi dv format/midi/testdata/midi/test.mid
 
 debug: build
-# 	go run . -d midi dv format/midi/workdir/15ba2fe0cd4bf33a.mid
-# 	go run . -d midi dv format/midi/testdata/unknown-chunks.mid
-# 	go test ./format -run TestFormats/all/all.fqtest
-	go run . -d midi dv format/midi/workdir/sequencer-specific-event.mid
+# 	go run . -d midi dv format/midi/testdata/events/note-on.mid
+	./fq -d midi 'grep_by(.event=="note_on" or .event=="note_off") | [.time.tick, .note.note] | join(" ")' format/midi/testdata/midi/test.mid
+# 	./fq -d midi 'grep_by(.event=="note_on").note' format/midi/testdata/midi/test.mid
 
 test: build
 	go test ./format -run TestFormats/midi
@@ -24,14 +26,49 @@ test: build
 lint: 
 	make -f Makefile lint
 
-all: test lint
-	make -f Makefile test
+fuzz: build
+	make -f Makefile fuzz GROUP=midi
 
-regenerate: build
-	go test ./format -run TestFormats/midi -update
+events: build
+	go run . -d midi dv format/midi/testdata/events/sequence-number.mid
+	go run . -d midi dv format/midi/testdata/events/text.mid
+	go run . -d midi dv format/midi/testdata/events/copyright.mid
+	go run . -d midi dv format/midi/testdata/events/track-name.mid
+	go run . -d midi dv format/midi/testdata/events/instrument-name.mid
+	go run . -d midi dv format/midi/testdata/events/lyric.mid
+	go run . -d midi dv format/midi/testdata/events/marker.mid
+	go run . -d midi dv format/midi/testdata/events/cuepoint.mid
+	go run . -d midi dv format/midi/testdata/events/program-name.mid
+	go run . -d midi dv format/midi/testdata/events/device-name.mid
+	go run . -d midi dv format/midi/testdata/events/midi-channel-prefix.mid
+	go run . -d midi dv format/midi/testdata/events/midi-port.mid
+	go run . -d midi dv format/midi/testdata/events/tempo.mid
+	go run . -d midi dv format/midi/testdata/events/smpte-offset.mid
+	go run . -d midi dv format/midi/testdata/events/time-signature.mid
+	go run . -d midi dv format/midi/testdata/events/key-signature.mid
+	go run . -d midi dv format/midi/testdata/events/end-of-track.mid
+	go run . -d midi dv format/midi/testdata/events/sequencer-specific-event.mid
+
+	go run . -d midi dv format/midi/testdata/events/note-off.mid
+	go run . -d midi dv format/midi/testdata/events/note-on.mid
+	go run . -d midi dv format/midi/testdata/events/polyphonic-pressure.mid
+	go run . -d midi dv format/midi/testdata/events/controller.mid
+	go run . -d midi dv format/midi/testdata/events/program-change.mid
+	go run . -d midi dv format/midi/testdata/events/channel-pressure.mid
+	go run . -d midi dv format/midi/testdata/events/pitch-bend.mid
+
+fuzzes: build
+	go run . -d midi dv format/midi/testdata/fuzz/15ba2fe0cd4bf33a.mid
+	go run . -d midi dv format/midi/testdata/fuzz/8450de010e750ed5.mid
 
 query: build
-	./fq -d midi '.. | select(.event=="track_name")? | "\(.name)"' format/midi/testdata/twinkle.mid 
-	./fq -d midi '.. | select(.event=="tempo")?.tempo' format/midi/testdata/test.mid
-	./fq -d midi '.. | select(.event=="key_signature")?.key' format/midi/testdata/test.mid
-	./fq -d midi 'grep_by(.event=="note_on" or .event=="note_off") | "\(.time.tick) \(.note)"' format/midi/testdata/test.mid
+	./fq -d midi '.. | select(.event=="track_name")? | "\(.name)"' format/midi/testdata/midi/twinkle.mid 
+	./fq -d midi '.. | select(.event=="tempo")?.tempo' format/midi/testdata/midi/test.mid
+	./fq -d midi '.. | select(.event=="key_signature")?.key' format/midi/testdata/midi/test.mid
+	./fq -d midi 'grep_by(.event=="note_on" or .event=="note_off") | "\(.time.tick) \(.note)"' format/midi/testdata/midi/test.mid
+
+all: test lint
+	make -f Makefile test
+# 	go test ./format -run TestFormats/all/all.fqtest
+# 	go run . -d midi dv format/midi/testdata/midi/unknown-chunks.mid
+# 	go run . -d midi dv format/midi/testdata/midi/empty.mid
