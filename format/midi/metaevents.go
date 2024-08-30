@@ -7,48 +7,46 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-type MetaEventType uint8
-
 const (
-	TypeSequenceNumber         MetaEventType = 0x00
-	TypeText                   MetaEventType = 0x01
-	TypeCopyright              MetaEventType = 0x02
-	TypeTrackName              MetaEventType = 0x03
-	TypeInstrumentName         MetaEventType = 0x04
-	TypeLyric                  MetaEventType = 0x05
-	TypeMarker                 MetaEventType = 0x06
-	TypeCuePoint               MetaEventType = 0x07
-	TypeProgramName            MetaEventType = 0x08
-	TypeDeviceName             MetaEventType = 0x09
-	TypeMIDIChannelPrefix      MetaEventType = 0x20
-	TypeMIDIPort               MetaEventType = 0x21
-	TypeTempo                  MetaEventType = 0x51
-	TypeSMPTEOffset            MetaEventType = 0x54
-	TypeTimeSignature          MetaEventType = 0x58
-	TypeKeySignature           MetaEventType = 0x59
-	TypeEndOfTrack             MetaEventType = 0x2f
-	TypeSequencerSpecificEvent MetaEventType = 0x7f
+	TypeSequenceNumber         uint64 = 0x00
+	TypeText                   uint64 = 0x01
+	TypeCopyright              uint64 = 0x02
+	TypeTrackName              uint64 = 0x03
+	TypeInstrumentName         uint64 = 0x04
+	TypeLyric                  uint64 = 0x05
+	TypeMarker                 uint64 = 0x06
+	TypeCuePoint               uint64 = 0x07
+	TypeProgramName            uint64 = 0x08
+	TypeDeviceName             uint64 = 0x09
+	TypeMIDIChannelPrefix      uint64 = 0x20
+	TypeMIDIPort               uint64 = 0x21
+	TypeTempo                  uint64 = 0x51
+	TypeSMPTEOffset            uint64 = 0x54
+	TypeTimeSignature          uint64 = 0x58
+	TypeKeySignature           uint64 = 0x59
+	TypeEndOfTrack             uint64 = 0x2f
+	TypeSequencerSpecificEvent uint64 = 0x7f
 )
 
 var metaevents = scalar.UintMapSymStr{
-	0xff00: "sequence_number",
-	0xff01: "text",
-	0xff02: "copyright",
-	0xff03: "track_name",
-	0xff04: "instrument_name",
-	0xff05: "lyric",
-	0xff06: "marker",
-	0xff07: "cue_point",
-	0xff08: "program_name",
-	0xff09: "device_name",
-	0xff20: "midi_channel_prefix",
-	0xff21: "midi_port",
-	0xff51: "tempo",
-	0xff54: "smpte_offset",
-	0xff58: "time_signature",
-	0xff59: "key_signature",
-	0xff2f: "end_of_track",
-	0xff7f: "sequencer_specific_event",
+	TypeSequenceNumber:         "sequence_number",
+	TypeText:                   "text",
+	TypeCopyright:              "copyright",
+	TypeTrackName:              "track_name",
+	TypeInstrumentName:         "instrument_name",
+	TypeLyric:                  "lyric",
+	TypeMarker:                 "marker",
+	TypeCuePoint:               "cue_point",
+	TypeProgramName:            "program_name",
+	TypeDeviceName:             "device_name",
+	TypeMIDIChannelPrefix:      "midi_channel_prefix",
+	TypeMIDIPort:               "midi_port",
+	TypeTempo:                  "tempo",
+	TypeSMPTEOffset:            "smpte_offset",
+	TypeTimeSignature:          "time_signature",
+	TypeKeySignature:           "key_signature",
+	TypeEndOfTrack:             "end_of_track",
+	TypeSequencerSpecificEvent: "sequencer_specific_event",
 }
 
 var framerates = scalar.UintMapSymUint{
@@ -72,12 +70,13 @@ func decodeMetaEvent(d *decode.D, event uint8, ctx *context) {
 	metaevent := func(name string, f func(d *decode.D)) {
 		d.FieldStruct(name, func(d *decode.D) {
 			d.FieldStruct("time", delta)
-			d.FieldU16("event", metaevents)
+			d.FieldU8("status")
+			d.FieldU8("event", metaevents)
 			f(d)
 		})
 	}
 
-	switch MetaEventType(event) {
+	switch uint64(event) {
 	case TypeSequenceNumber:
 		metaevent("sequence_number", decodeSequenceNumber)
 
@@ -142,7 +141,7 @@ func decodeSequenceNumber(d *decode.D) {
 		seqno := uint64(0)
 
 		if data, err := vlf(d); err != nil {
-			d.Errorf("%v", err)
+			d.Fatalf("%v", err)
 		} else {
 			if len(data) > 0 {
 				seqno += uint64(data[0])
@@ -199,7 +198,7 @@ func decodeMIDIChannelPrefix(d *decode.D) {
 		channel := uint64(0)
 
 		if data, err := vlf(d); err != nil {
-			d.Errorf("%v", err)
+			d.Fatalf("%v", err)
 		} else {
 			for _, b := range data {
 				channel <<= 8
@@ -216,7 +215,7 @@ func decodeMIDIPort(d *decode.D) {
 		port := uint64(0)
 
 		if data, err := vlf(d); err != nil {
-			d.Errorf("%v", err)
+			d.Fatalf("%v", err)
 		} else {
 			for _, b := range data {
 				port <<= 8
@@ -233,7 +232,7 @@ func decodeTempo(d *decode.D) {
 		tempo := uint64(0)
 
 		if data, err := vlf(d); err != nil {
-			d.Errorf("%v", err)
+			d.Fatalf("%v", err)
 		} else {
 			for _, b := range data {
 				tempo <<= 8
@@ -252,7 +251,7 @@ func decodeSMPTEOffset(d *decode.D) {
 
 		d.FieldStrFn("bytes", func(d *decode.D) string {
 			if data, err = vlf(d); err != nil {
-				d.Errorf("%v", err)
+				d.Fatalf("%v", err)
 			} else {
 				return fmt.Sprintf("%v", data)
 			}
@@ -288,38 +287,29 @@ func decodeSMPTEOffset(d *decode.D) {
 
 func decodeTimeSignature(d *decode.D) {
 	d.FieldStruct("signature", func(d *decode.D) {
-		var data []uint8
-		var err error
+		length := d.FieldUintFn("length", vlq)
 
-		d.FieldStrFn("bytes", func(d *decode.D) string {
-			if data, err = vlf(d); err != nil {
-				d.Errorf("%v", err)
-			} else {
-				return fmt.Sprintf("%v", data)
-			}
-
-			return "[]"
-		})
-
-		if len(data) > 0 {
-			d.FieldValueUint("numerator", uint64(data[0]))
+		if length > 0 {
+			d.FieldU8("numerator")
 		}
 
-		if len(data) > 1 {
-			denominator := uint64(1)
-			for i := uint8(0); i < data[1]; i++ {
-				denominator <<= 1
-			}
-
-			d.FieldValueUint("denominator", denominator)
+		if length > 1 {
+			d.FieldUintFn("denominator", func(d *decode.D) uint64 {
+				denominator := uint64(1)
+				v := d.U8()
+				for i := uint64(0); i < v; i++ {
+					denominator <<= 1
+				}
+				return denominator
+			})
 		}
 
-		if len(data) > 2 {
-			d.FieldValueUint("ticks_per_click", uint64(data[2]))
+		if length > 2 {
+			d.FieldU8("ticks_per_click")
 		}
 
-		if len(data) > 3 {
-			d.FieldValueUint("thirty_seconds_per_quarter", uint64(data[3]))
+		if length > 3 {
+			d.FieldU8("thirty_seconds_per_quarter")
 		}
 	})
 }
@@ -329,7 +319,7 @@ func decodeKeySignature(d *decode.D) {
 		key := uint64(0)
 
 		if data, err := vlf(d); err != nil {
-			d.Errorf("%v", err)
+			d.Fatalf("%v", err)
 		} else {
 			if len(data) > 0 {
 				key <<= 8
@@ -352,7 +342,7 @@ func decodeEndOfTrack(d *decode.D) {
 		length := 0
 
 		if data, err := vlf(d); err != nil {
-			d.Errorf("%v", err)
+			d.Fatalf("%v", err)
 		} else {
 			length = len(data)
 		}
@@ -363,30 +353,27 @@ func decodeEndOfTrack(d *decode.D) {
 
 func decodeSequencerSpecificEvent(d *decode.D) {
 	d.FieldStruct("info", func(d *decode.D) {
-		var data []uint8
-		var err error
+		if length := d.FieldUintFn("length", vlq); length > 0 {
+			b := d.PeekUintBits(8)
 
-		d.FieldStrFn("bytes", func(d *decode.D) string {
-			if data, err = vlf(d); err != nil {
-				d.Errorf("%v", err)
-			} else {
-				return fmt.Sprintf("%v", data)
-			}
+			if length > 2 && b == 0 {
+				d.FieldStrFn("manufacturer", func(d *decode.D) string {
+					manufacturer := d.BytesLen(3)
 
-			return "[]"
-		})
+					return fmt.Sprintf("%02X%02X", manufacturer[1], manufacturer[2])
+				}, manufacturers)
 
-		if len(data) > 2 && data[0] == 0x00 {
-			d.FieldValueStr("manufacturer", fmt.Sprintf("%02X%02X", data[1], data[2]), manufacturers)
+				if length > 3 {
+					d.FieldRawLen("data", 8*(int64(length)-3))
+				}
+			} else if length > 0 {
+				d.FieldStrFn("manufacturer", func(d *decode.D) string {
+					return fmt.Sprintf("%02X", d.U8())
+				}, manufacturers)
 
-			if len(data) > 3 {
-				d.FieldValueStr("data", fmt.Sprintf("%v", data[3:]))
-			}
-
-		} else if len(data) > 0 {
-			d.FieldValueStr("manufacturer", fmt.Sprintf("%02x", data[0]), manufacturers)
-			if len(data) > 1 {
-				d.FieldValueStr("data", fmt.Sprintf("%v", data[1:]))
+				if length > 1 {
+					d.FieldRawLen("data", 8*(int64(length)-1))
+				}
 			}
 		}
 	})

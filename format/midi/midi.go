@@ -195,7 +195,7 @@ func vlf(d *decode.D) ([]uint8, error) {
 // Variable length string with a big endian varint length
 func vlstring(d *decode.D) string {
 	if data, err := vlf(d); err != nil {
-		d.Errorf("%v", err)
+		d.Fatalf("%v", err)
 	} else {
 		return string(data)
 	}

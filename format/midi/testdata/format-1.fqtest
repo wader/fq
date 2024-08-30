@@ -17,32 +17,35 @@ $ fq -d midi dv format-1.mid
      |                                               |                |          time{}: 0x16-0x17 (1)
 0x010|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
      |                                               |                |            tick: 0
-0x010|                     ff 03                     |       ..       |          event: "track_name" (65283) 0x17-0x19 (2)
+0x010|                     ff                        |       .        |          status: 255 0x17-0x18 (1)
+0x010|                        03                     |        .       |          event: "track_name" (3) 0x18-0x19 (1)
 0x010|                           08 46 6f 72 6d 61 74|         .Format|          name: "Format 1" 0x19-0x22 (9)
 0x020|20 31                                          | 1              |
      |                                               |                |        [1]{}: tempo 0x22-0x29 (7)
      |                                               |                |          time{}: 0x22-0x23 (1)
 0x020|      00                                       |  .             |            delta: 0 0x22-0x23 (1)
      |                                               |                |            tick: 0
-0x020|         ff 51                                 |   .Q           |          event: "tempo" (65361) 0x23-0x25 (2)
+0x020|         ff                                    |   .            |          status: 255 0x23-0x24 (1)
+0x020|            51                                 |    Q           |          event: "tempo" (81) 0x24-0x25 (1)
 0x020|               03 07 a1 20                     |     ...        |          tempo: 500000 0x25-0x29 (4)
      |                                               |                |        [2]{}: time_signature 0x29-0x31 (8)
      |                                               |                |          time{}: 0x29-0x2a (1)
 0x020|                           00                  |         .      |            delta: 0 0x29-0x2a (1)
      |                                               |                |            tick: 0
-0x020|                              ff 58            |          .X    |          event: "time_signature" (65368) 0x2a-0x2c (2)
+0x020|                              ff               |          .     |          status: 255 0x2a-0x2b (1)
+0x020|                                 58            |           X    |          event: "time_signature" (88) 0x2b-0x2c (1)
      |                                               |                |          signature{}: 0x2c-0x31 (5)
-0x020|                                    04 04 02 18|            ....|            bytes: "[4 2 24 8]" 0x2c-0x31 (5)
-0x030|08                                             |.               |
-     |                                               |                |            numerator: 4
-     |                                               |                |            denominator: 4
-     |                                               |                |            ticks_per_click: 24
-     |                                               |                |            thirty_seconds_per_quarter: 8
+0x020|                                    04         |            .   |            length: 4 0x2c-0x2d (1)
+0x020|                                       04      |             .  |            numerator: 4 0x2d-0x2e (1)
+0x020|                                          02   |              . |            denominator: 4 0x2e-0x2f (1)
+0x020|                                             18|               .|            ticks_per_click: 24 0x2f-0x30 (1)
+0x030|08                                             |.               |            thirty_seconds_per_quarter: 8 0x30-0x31 (1)
      |                                               |                |        [3]{}: end_of_track 0x31-0x35 (4)
      |                                               |                |          time{}: 0x31-0x32 (1)
 0x030|   00                                          | .              |            delta: 0 0x31-0x32 (1)
      |                                               |                |            tick: 0
-0x030|      ff 2f                                    |  ./            |          event: "end_of_track" (65327) 0x32-0x34 (2)
+0x030|      ff                                       |  .             |          status: 255 0x32-0x33 (1)
+0x030|         2f                                    |   /            |          event: "end_of_track" (47) 0x33-0x34 (1)
 0x030|            00                                 |    .           |          length: 0 0x34-0x35 (1)
      |                                               |                |    [1]{}: track 0x35-0x137 (258)
 0x030|               4d 54 72 6b                     |     MTrk       |      tag: "MTrk" 0x35-0x39 (4)
@@ -52,85 +55,98 @@ $ fq -d midi dv format-1.mid
      |                                               |                |          time{}: 0x3d-0x3e (1)
 0x030|                                       00      |             .  |            delta: 0 0x3d-0x3e (1)
      |                                               |                |            tick: 0
-0x030|                                          ff 00|              ..|          event: "sequence_number" (65280) 0x3e-0x40 (2)
+0x030|                                          ff   |              . |          status: 255 0x3e-0x3f (1)
+0x030|                                             00|               .|          event: "sequence_number" (0) 0x3f-0x40 (1)
 0x040|02 00 17                                       |...             |          sequence_number: 23 0x40-0x43 (3)
      |                                               |                |        [1]{}: text 0x43-0x54 (17)
      |                                               |                |          time{}: 0x43-0x44 (1)
 0x040|         00                                    |   .            |            delta: 0 0x43-0x44 (1)
      |                                               |                |            tick: 0
-0x040|            ff 01                              |    ..          |          event: "text" (65281) 0x44-0x46 (2)
+0x040|            ff                                 |    .           |          status: 255 0x44-0x45 (1)
+0x040|               01                              |     .          |          event: "text" (1) 0x45-0x46 (1)
 0x040|                  0d 54 68 69 73 20 61 6e 64 20|      .This and |          text: "This and That" 0x46-0x54 (14)
 0x050|54 68 61 74                                    |That            |
      |                                               |                |        [2]{}: copyright 0x54-0x5c (8)
      |                                               |                |          time{}: 0x54-0x55 (1)
 0x050|            00                                 |    .           |            delta: 0 0x54-0x55 (1)
      |                                               |                |            tick: 0
-0x050|               ff 02                           |     ..         |          event: "copyright" (65282) 0x55-0x57 (2)
+0x050|               ff                              |     .          |          status: 255 0x55-0x56 (1)
+0x050|                  02                           |      .         |          event: "copyright" (2) 0x56-0x57 (1)
 0x050|                     04 54 68 65 6d            |       .Them    |          copyright: "Them" 0x57-0x5c (5)
      |                                               |                |        [3]{}: track_name 0x5c-0x6f (19)
      |                                               |                |          time{}: 0x5c-0x5d (1)
 0x050|                                    00         |            .   |            delta: 0 0x5c-0x5d (1)
      |                                               |                |            tick: 0
-0x050|                                       ff 03   |             .. |          event: "track_name" (65283) 0x5d-0x5f (2)
+0x050|                                       ff      |             .  |          status: 255 0x5d-0x5e (1)
+0x050|                                          03   |              . |          event: "track_name" (3) 0x5e-0x5f (1)
 0x050|                                             0f|               .|          name: "Acoustic Guitar" 0x5f-0x6f (16)
 0x060|41 63 6f 75 73 74 69 63 20 47 75 69 74 61 72   |Acoustic Guitar |
      |                                               |                |        [4]{}: instrument_name 0x6f-0x7d (14)
      |                                               |                |          time{}: 0x6f-0x70 (1)
 0x060|                                             00|               .|            delta: 0 0x6f-0x70 (1)
      |                                               |                |            tick: 0
-0x070|ff 04                                          |..              |          event: "instrument_name" (65284) 0x70-0x72 (2)
+0x070|ff                                             |.               |          status: 255 0x70-0x71 (1)
+0x070|   04                                          | .              |          event: "instrument_name" (4) 0x71-0x72 (1)
 0x070|      0a 44 69 64 67 65 72 69 64 6f 6f         |  .Didgeridoo   |          instrument: "Didgeridoo" 0x72-0x7d (11)
      |                                               |                |        [5]{}: lyric 0x7d-0x89 (12)
      |                                               |                |          time{}: 0x7d-0x7e (1)
 0x070|                                       00      |             .  |            delta: 0 0x7d-0x7e (1)
      |                                               |                |            tick: 0
-0x070|                                          ff 05|              ..|          event: "lyric" (65285) 0x7e-0x80 (2)
+0x070|                                          ff   |              . |          status: 255 0x7e-0x7f (1)
+0x070|                                             05|               .|          event: "lyric" (5) 0x7f-0x80 (1)
 0x080|08 4c 61 2d 6c 61 2d 6c 61                     |.La-la-la       |          lyric: "La-la-la" 0x80-0x89 (9)
      |                                               |                |        [6]{}: marker 0x89-0x9c (19)
      |                                               |                |          time{}: 0x89-0x8a (1)
 0x080|                           00                  |         .      |            delta: 0 0x89-0x8a (1)
      |                                               |                |            tick: 0
-0x080|                              ff 06            |          ..    |          event: "marker" (65286) 0x8a-0x8c (2)
+0x080|                              ff               |          .     |          status: 255 0x8a-0x8b (1)
+0x080|                                 06            |           .    |          event: "marker" (6) 0x8b-0x8c (1)
 0x080|                                    0f 48 65 72|            .Her|          marker: "Here Be Dragons" 0x8c-0x9c (16)
 0x090|65 20 42 65 20 44 72 61 67 6f 6e 73            |e Be Dragons    |
      |                                               |                |        [7]{}: cue_point 0x9c-0xac (16)
      |                                               |                |          time{}: 0x9c-0x9d (1)
 0x090|                                    00         |            .   |            delta: 0 0x9c-0x9d (1)
      |                                               |                |            tick: 0
-0x090|                                       ff 07   |             .. |          event: "cue_point" (65287) 0x9d-0x9f (2)
+0x090|                                       ff      |             .  |          status: 255 0x9d-0x9e (1)
+0x090|                                          07   |              . |          event: "cue_point" (7) 0x9e-0x9f (1)
 0x090|                                             0c|               .|          cue: "More cowbell" 0x9f-0xac (13)
 0x0a0|4d 6f 72 65 20 63 6f 77 62 65 6c 6c            |More cowbell    |
      |                                               |                |        [8]{}: program_name 0xac-0xb6 (10)
      |                                               |                |          time{}: 0xac-0xad (1)
 0x0a0|                                    00         |            .   |            delta: 0 0xac-0xad (1)
      |                                               |                |            tick: 0
-0x0a0|                                       ff 08   |             .. |          event: "program_name" (65288) 0xad-0xaf (2)
+0x0a0|                                       ff      |             .  |          status: 255 0xad-0xae (1)
+0x0a0|                                          08   |              . |          event: "program_name" (8) 0xae-0xaf (1)
 0x0a0|                                             06|               .|          program: "Escape" 0xaf-0xb6 (7)
 0x0b0|45 73 63 61 70 65                              |Escape          |
      |                                               |                |        [9]{}: device_name 0xb6-0xc2 (12)
      |                                               |                |          time{}: 0xb6-0xb7 (1)
 0x0b0|                  00                           |      .         |            delta: 0 0xb6-0xb7 (1)
      |                                               |                |            tick: 0
-0x0b0|                     ff 09                     |       ..       |          event: "device_name" (65289) 0xb7-0xb9 (2)
+0x0b0|                     ff                        |       .        |          status: 255 0xb7-0xb8 (1)
+0x0b0|                        09                     |        .       |          event: "device_name" (9) 0xb8-0xb9 (1)
 0x0b0|                           08 54 68 65 54 68 69|         .TheThi|          device: "TheThing" 0xb9-0xc2 (9)
 0x0c0|6e 67                                          |ng              |
      |                                               |                |        [10]{}: midi_channel_prefix 0xc2-0xc7 (5)
      |                                               |                |          time{}: 0xc2-0xc3 (1)
 0x0c0|      00                                       |  .             |            delta: 0 0xc2-0xc3 (1)
      |                                               |                |            tick: 0
-0x0c0|         ff 20                                 |   .            |          event: "midi_channel_prefix" (65312) 0xc3-0xc5 (2)
+0x0c0|         ff                                    |   .            |          status: 255 0xc3-0xc4 (1)
+0x0c0|            20                                 |                |          event: "midi_channel_prefix" (32) 0xc4-0xc5 (1)
 0x0c0|               01 0d                           |     ..         |          channel: 13 0xc5-0xc7 (2)
      |                                               |                |        [11]{}: midi_port 0xc7-0xcc (5)
      |                                               |                |          time{}: 0xc7-0xc8 (1)
 0x0c0|                     00                        |       .        |            delta: 0 0xc7-0xc8 (1)
      |                                               |                |            tick: 0
-0x0c0|                        ff 21                  |        .!      |          event: "midi_port" (65313) 0xc8-0xca (2)
+0x0c0|                        ff                     |        .       |          status: 255 0xc8-0xc9 (1)
+0x0c0|                           21                  |         !      |          event: "midi_port" (33) 0xc9-0xca (1)
 0x0c0|                              01 70            |          .p    |          port: 112 0xca-0xcc (2)
      |                                               |                |        [12]{}: smpte_offset 0xcc-0xd5 (9)
      |                                               |                |          time{}: 0xcc-0xcd (1)
 0x0c0|                                    00         |            .   |            delta: 0 0xcc-0xcd (1)
      |                                               |                |            tick: 0
-0x0c0|                                       ff 54   |             .T |          event: "smpte_offset" (65364) 0xcd-0xcf (2)
+0x0c0|                                       ff      |             .  |          status: 255 0xcd-0xce (1)
+0x0c0|                                          54   |              T |          event: "smpte_offset" (84) 0xce-0xcf (1)
      |                                               |                |          offset{}: 0xcf-0xd5 (6)
 0x0c0|                                             05|               .|            bytes: "[77 45 59 7 39]" 0xcf-0xd5 (6)
 0x0d0|4d 2d 3b 07 27                                 |M-;.'           |
@@ -144,18 +160,20 @@ $ fq -d midi dv format-1.mid
      |                                               |                |          time{}: 0xd5-0xd6 (1)
 0x0d0|               00                              |     .          |            delta: 0 0xd5-0xd6 (1)
      |                                               |                |            tick: 0
-0x0d0|                  ff 59                        |      .Y        |          event: "key_signature" (65369) 0xd6-0xd8 (2)
+0x0d0|                  ff                           |      .         |          status: 255 0xd6-0xd7 (1)
+0x0d0|                     59                        |       Y        |          event: "key_signature" (89) 0xd7-0xd8 (1)
 0x0d0|                        02 00 01               |        ...     |          key: "A minor" (1) 0xd8-0xdb (3)
      |                                               |                |        [14]{}: sequencer_specific_event 0xdb-0xe5 (10)
      |                                               |                |          time{}: 0xdb-0xdc (1)
 0x0d0|                                 00            |           .    |            delta: 0 0xdb-0xdc (1)
      |                                               |                |            tick: 0
-0x0d0|                                    ff 7f      |            ..  |          event: "sequencer_specific_event" (65407) 0xdc-0xde (2)
+0x0d0|                                    ff         |            .   |          status: 255 0xdc-0xdd (1)
+0x0d0|                                       7f      |             .  |          event: "sequencer_specific_event" (127) 0xdd-0xde (1)
      |                                               |                |          info{}: 0xde-0xe5 (7)
-0x0d0|                                          06 00|              ..|            bytes: "[0 0 59 58 76 94]" 0xde-0xe5 (7)
-0x0e0|00 3b 3a 4c 5e                                 |.;:L^           |
-     |                                               |                |            manufacturer: "Mark Of The Unicorn (MOTU)" ("003B")
-     |                                               |                |            data: "[58 76 94]"
+0x0d0|                                          06   |              . |            length: 6 0xde-0xdf (1)
+0x0d0|                                             00|               .|            manufacturer: "Mark Of The Unicorn (MOTU)" ("003B") 0xdf-0xe2 (3)
+0x0e0|00 3b                                          |.;              |
+0x0e0|      3a 4c 5e                                 |  :L^           |            data: raw bits 0xe2-0xe5 (3)
      |                                               |                |        [15]{}: note_off 0xe5-0xea (5)
      |                                               |                |          time{}: 0xe5-0xe7 (2)
 0x0e0|               83 60                           |     .`         |            delta: 480 0xe5-0xe7 (2)
@@ -282,5 +300,6 @@ $ fq -d midi dv format-1.mid
      |                                               |                |          time{}: 0x133-0x134 (1)
 0x130|         00                                    |   .            |            delta: 0 0x133-0x134 (1)
      |                                               |                |            tick: 1020
-0x130|            ff 2f                              |    ./          |          event: "end_of_track" (65327) 0x134-0x136 (2)
+0x130|            ff                                 |    .           |          status: 255 0x134-0x135 (1)
+0x130|               2f                              |     /          |          event: "end_of_track" (47) 0x135-0x136 (1)
 0x130|                  00|                          |      .|        |          length: 0 0x136-0x137 (1)

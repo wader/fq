@@ -15,7 +15,8 @@ run: build
 debug: build
 # 	go run . -d midi dv format/midi/workdir/15ba2fe0cd4bf33a.mid
 # 	go run . -d midi dv format/midi/testdata/unknown-chunks.mid
-	go test ./format -run TestFormats/all/all.fqtest
+# 	go test ./format -run TestFormats/all/all.fqtest
+	go run . -d midi dv format/midi/workdir/sequencer-specific-event.mid
 
 test: build
 	go test ./format -run TestFormats/midi

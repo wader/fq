@@ -30,7 +30,6 @@ Test file with all supported MIDI key signatures.
 
 Test file with all supported MIDI notes.
 
-
 8. _twinkle.mid_
 
 Sample MIDI file for the example queries in the help.

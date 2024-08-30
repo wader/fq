@@ -71,7 +71,7 @@ func decodeSysExMessage(d *decode.D, ctx *context) {
 
 	d.FieldStrFn("bytes", func(d *decode.D) string {
 		if bytes, err = vlf(d); err != nil {
-			d.Errorf("%v", err)
+			d.Fatalf("%v", err)
 		} else {
 			return fmt.Sprintf("%v", bytes)
 		}
@@ -113,7 +113,7 @@ func decodeSysExContinuation(d *decode.D, ctx *context) {
 
 		d.FieldStrFn("bytes", func(d *decode.D) string {
 			if data, err = vlf(d); err != nil {
-				d.Errorf("%v", err)
+				d.Fatalf("%v", err)
 			} else {
 				return fmt.Sprintf("%v", data)
 			}
@@ -142,7 +142,7 @@ func decodeSysExEscape(d *decode.D, ctx *context) {
 
 		d.FieldStrFn("bytes", func(d *decode.D) string {
 			if data, err = vlf(d); err != nil {
-				d.Errorf("%v", err)
+				d.Fatalf("%v", err)
 			} else {
 				return fmt.Sprintf("%v", data)
 			}
