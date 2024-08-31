@@ -28,9 +28,9 @@ Sample queries
 
   fq -d midi '.. | select(.event=="key_signature")?.key_signature' midi/key-signatures.mid
 
-* Extract NoteOn and NoteOff events:
+* Extract NoteOn events:
 
-  fq -d midi 'grep_by(.event=="note_on" or .event=="note_off") | "\(.event)  \(.time.tick)  \(.note.note)"' midi/twinkle.mid
+  fq -d midi 'grep_by(.event=="note_on") | [.time.tick, .note_on.note] | join(" ")' midi/twinkle.mid
 
 Authors
 =======

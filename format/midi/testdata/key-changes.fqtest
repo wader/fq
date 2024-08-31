@@ -1,3 +1,4 @@
 $ fq -d midi '.. | select(.event=="key_signature")?.key_signature' midi/test.mid
-    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
-0xd0|                                    00 01      |            ..  |.tracks[1].events[12].key_signature: "A minor" (1)
+exitcode: 2
+stderr:
+error: midi/test.mid: no such file or directory

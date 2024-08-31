@@ -141,21 +141,41 @@ func skipTo(d *decode.D, tag string) error {
 }
 
 func peekEvent(d *decode.D) (uint64, uint8, uint8) {
-	var delta uint64
-	var N int = 3
+	var N int = 1
 
 	for {
 		bytes := d.PeekBytes(N)
-		delta = 0
+		delta := uint64(0)
+		ix := 0
 
-		for i, b := range bytes[:N-2] {
+		for ix < N {
+			b := bytes[ix]
+			ix++
+
 			delta <<= 7
 			delta += uint64(b & 0x7f)
 
 			if b&0x80 == 0 {
-				status := bytes[i+1]
-				event := bytes[i+2]
-				return delta, status, event
+				if ix < N {
+					status := bytes[ix]
+					ix++
+
+					// ... sysex?
+					if status == 0xf0 || status == 0xf7 {
+						return delta, status, 0x00
+					}
+
+					// ... MIDI event?
+					if status != 0xff {
+						return delta, status, 0x00
+					}
+
+					// ... meta-event
+					if ix < N {
+						event := bytes[ix]
+						return delta, status, event
+					}
+				}
 			}
 		}
 

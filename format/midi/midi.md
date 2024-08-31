@@ -20,9 +20,9 @@ fq -d midi '.. | select(.event=="tempo")?.tempo' midi/twinkle.mid
 fq -d midi '.. | select(.event=="key_signature")?.key_signature' midi/key-signatures.mid
 ```
 
-4. Extract NoteOn and NoteOff events:
+4. Extract NoteOn events:
 ```
-fq -d midi 'grep_by(.event=="note_on" or .event=="note_off") | "\(.event)  \(.time.tick)  \(.note.note)"' midi/twinkle.mid
+fq -d midi 'grep_by(.event=="note_on") | [.time.tick, .note_on.note] | join(" ")' midi/twinkle.mid
 ```
 
 ### Authors

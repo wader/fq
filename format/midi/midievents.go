@@ -25,6 +25,16 @@ var midievents = scalar.UintMapSymStr{
 	PitchBend:          "pitch_bend",
 }
 
+var midifns = map[uint64]func(d *decode.D){
+	NoteOff:            decodeNoteOff,
+	NoteOn:             decodeNoteOn,
+	PolyphonicPressure: decodePolyphonicPressure,
+	Controller:         decodeController,
+	ProgramChange:      decodeProgramChange,
+	ChannelPressure:    decodeChannelPressure,
+	PitchBend:          decodePitchBend,
+}
+
 func decodeMIDIEvent(d *decode.D, status uint8, ctx *context) {
 	if status < 0x80 {
 		status = ctx.running
@@ -34,62 +44,34 @@ func decodeMIDIEvent(d *decode.D, status uint8, ctx *context) {
 	ctx.casio = false
 
 	delta := func(d *decode.D) {
-		dt := d.FieldUintFn("delta", vlq)
+		ctx.tick += d.FieldUintFn("delta", vlq)
 		d.FieldValueUint("tick", ctx.tick)
-
-		ctx.tick += dt
 	}
 
-	event := uint64(status & 0xf0)
-
-	channel := func(d *decode.D) uint64 {
-		b := d.PeekBytes(1)
-		if b[0] >= 0x80 {
-			d.U8()
-		}
-
-		return uint64(status & 0x0f)
-	}
-
-	midievent := func(name string, f func(d *decode.D)) {
-		d.FieldStruct(name, func(d *decode.D) {
+	if fn, ok := midifns[uint64(status&0x00f0)]; ok {
+		d.FieldStruct("midievent", func(d *decode.D) {
 			d.FieldStruct("time", delta)
-			d.FieldValueUint("event", event, midievents)
-			d.FieldUintFn("channel", channel)
 
-			f(d)
+			b := d.PeekBytes(1)
+			if b[0] >= 0x80 {
+				d.FieldUintFn("event", func(d *decode.D) uint64 {
+					return d.U4() << 4
+				}, midievents)
+				d.FieldU4("channel")
+			} else {
+				d.FieldValueUint("event", uint64(status&0x00f0), midievents)
+				d.FieldValueUint("channel", uint64(status&0x000f))
+			}
+
+			fn(d)
 		})
-	}
-
-	switch event {
-	case NoteOff:
-		midievent("midievent", decodeNoteOff)
-
-	case NoteOn:
-		midievent("midievent", decodeNoteOn)
-
-	case PolyphonicPressure:
-		midievent("midievent", decodePolyphonicPressure)
-
-	case Controller:
-		midievent("midievent", decodeController)
-
-	case ProgramChange:
-		midievent("midievent", decodeProgramChange)
-
-	case ChannelPressure:
-		midievent("midievent", decodeChannelPressure)
-
-	case PitchBend:
-		midievent("midievent", decodePitchBend)
-
-	default:
+	} else {
 		flush(d, "unknown MIDI event (%02x)", status&0xf0)
 	}
 }
 
 func decodeNoteOff(d *decode.D) {
-	d.FieldStruct("note", func(d *decode.D) {
+	d.FieldStruct("note_off", func(d *decode.D) {
 		d.FieldU8("note", notes)
 		d.FieldUintFn("velocity", func(d *decode.D) uint64 {
 			return d.U8() & 0x7f
@@ -98,7 +80,7 @@ func decodeNoteOff(d *decode.D) {
 }
 
 func decodeNoteOn(d *decode.D) {
-	d.FieldStruct("note", func(d *decode.D) {
+	d.FieldStruct("note_on", func(d *decode.D) {
 		d.FieldU8("note", notes)
 		d.FieldUintFn("velocity", func(d *decode.D) uint64 {
 			return d.U8() & 0x7f
@@ -127,9 +109,10 @@ func decodeChannelPressure(d *decode.D) {
 
 func decodePitchBend(d *decode.D) {
 	d.FieldSintFn("pitch_bend", func(d *decode.D) int64 {
+		// ... 14 bit range i.e. [0..16383]
 		bytes := d.BytesLen(2)
 
-		bend := uint64(bytes[0])
+		bend := uint64(bytes[0]) & 0x7f
 		bend <<= 7
 		bend |= uint64(bytes[1]) & 0x7f
 

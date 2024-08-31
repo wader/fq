@@ -41,7 +41,7 @@ Sample MIDI file for the example queries in the help.
 
 MIDI files with a single event for development and debugging are located in the _testdata/events_ folder.
 
-### Metaevents
+### Meta events
 
 1. _sequence-number.mid_
 ```
@@ -192,7 +192,7 @@ delta: 0
 00 ff 7f 06 00 00 3b 3a 4c 5e
 
 delta: 0
-manufacturer: 00 00 3b Mark Of The Unicorn (MOTU)
+manufacturer: 00 00 3b (Mark Of The Unicorn (MOTU))
 data:         3a 4c 5e
 ```
 
@@ -200,66 +200,95 @@ data:         3a 4c 5e
 
 1. _note-off.mid_
 ```
-00 81 70 60
+00 81 70 60      40 71 48
 
-delta: 0
+delta: 0         delta: 64
 channel: 1
-note: 112 (E3)
-velocity: 96
+note: 112 (E8)   note: 113 (F8)
+velocity: 96     velocity: 72
 ```
 
 2. _note-on.mid_
 ```
-00 90 30 48
+00 92 30 48      40 32 48
 
-delta: 0
+delta: 0         delta: 64
 channel: 0
-note: 48 (C3)
-velocity: 72
+note: 48 (C3)    note: 50 (D3)
+velocity: 72     velocity: 72
 ```
 
 3. _polyphonic-pressure.mid_
 ```
-00 a0 64
+00 a0 64         40 48
 
-delta: 0
+delta: 0         delta: 64
 channel: 0
-pressure: 100
+pressure: 100    pressure: 72
 ```
 
 4. _controller.mid_
 ```
-00 b0 20 21
+00 b0 20 21      40 20 22
 
-delta: 0
+delta: 0         delta: 64
 channel: 0
-controller: 32
-value: 33
+controller: 32   controller: 32
+value: 33        value: 34
 ```
 
 5. _program-change.mid_
 ```
-00 c0 19
+00 c0 19         40 20
 
-delta: 0
+delta: 0         delta: 64
 channel: 0
-program: 25
+program: 25      program: 32
 ```
 
 6. _channel-pressure.mid_
 ```
-00 d0 07
+00 d0 07         40 48
 
-delta: 0
+delta: 0         delta: 64
 channel: 0
-pressure: 7
+pressure: 7      pressure: 72
 ```
 
 7. _pitch-bend.mid_
 ```
-00 e0 40 00    00 e0 60 00    00 e0 20 00
+00 e5 40 00    20 60 00       40 20 00
              
-delta: 0       delta: 0       delta: 0
-channel: 0     channel: 0     channel: 0
+delta: 0       delta: 32      delta: 64
+channel: 5
 bend: 0        bend: 4096     bend: -4096
 ```
+
+### System Exclusive events
+
+1. _sysex-message.mid_
+```
+00 f0 05 7e 00 09 01 f7
+
+delta: 0
+manufacturer: 7e (Non-RealTime Extensions)
+data: 00 09 01
+```
+
+2. _sysex-continuation.mid_
+```
+00 f0 03 43 01 23           00 f7 06 45 67 89 ab cd ef    00 f7 04 01 23 45 f7
+
+delta: 0                    delta: 0                      delta: 0
+manufacturer: 43 (Yamaha)   data: 45 67 89 ab cd ef       data: 01 23 45
+data: 01 23
+```
+
+3. _sysex-escape.mid_
+```
+00 f7 02 f3 01
+
+delta: 0
+data: f3 01
+```
+

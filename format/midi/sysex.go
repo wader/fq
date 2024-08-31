@@ -1,62 +1,51 @@
 package midi
 
 import (
-	"fmt"
-
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/scalar"
 )
 
 var sysex = scalar.UintMapSymStr{
-	0x00f0: "sysex_message",
-	0x80f7: "sysex_continuation",
-	0x00f7: "sysex_escape",
+	0xf0: "sysex_message",
+	0xf7: "sysex_escape",
+}
+
+var sysex_extensions = scalar.UintMapSymStr{
+	0xf7: "sysex_continuation",
 }
 
 func decodeSysExEvent(d *decode.D, status uint8, ctx *context) {
 	ctx.running = 0x00
 
 	delta := func(d *decode.D) {
-		dt := d.FieldUintFn("delta", vlq)
+		ctx.tick += d.FieldUintFn("delta", vlq)
 		d.FieldValueUint("tick", ctx.tick)
-
-		ctx.tick += dt
 	}
 
 	switch {
-	case status == 0xf0 && ctx.casio:
-		d.Errorf("SysExMessage F0 start byte without terminating F7")
 
 	case status == 0xf0:
-		d.FieldStruct("sysex_message", func(d *decode.D) {
-			d.FieldStruct("time", delta)
-			d.FieldUintFn("event", func(d *decode.D) uint64 {
-				d.U8()
+		if ctx.casio {
+			d.Errorf("SysExMessage F0 start byte without terminating F7")
+		}
 
-				return 0x00f0
-			}, sysex)
+		d.FieldStruct("sysex", func(d *decode.D) {
+			d.FieldStruct("time", delta)
+			d.FieldU8("event", sysex)
 			decodeSysExMessage(d, ctx)
 		})
 
 	case status == 0xf7 && ctx.casio:
-		d.FieldStruct("sysex_continuation", func(d *decode.D) {
+		d.FieldStruct("sysex", func(d *decode.D) {
 			d.FieldStruct("time", delta)
-			d.FieldUintFn("event", func(d *decode.D) uint64 {
-				d.U8()
-
-				return 0x80f7
-			}, sysex)
+			d.FieldU8("event", sysex_extensions)
 			decodeSysExContinuation(d, ctx)
 		})
 
 	case status == 0xf7:
-		d.FieldStruct("sysex_escape", func(d *decode.D) {
+		d.FieldStruct("sysex", func(d *decode.D) {
 			d.FieldStruct("time", delta)
-			d.FieldUintFn("event", func(d *decode.D) uint64 {
-				d.U8()
-
-				return 0x00f7
-			}, sysex)
+			d.FieldU8("event", sysex)
 			decodeSysExEscape(d, ctx)
 		})
 
@@ -66,91 +55,77 @@ func decodeSysExEvent(d *decode.D, status uint8, ctx *context) {
 }
 
 func decodeSysExMessage(d *decode.D, ctx *context) {
-	var bytes []uint8
-	var err error
+	length := d.FieldUintFn("length", vlq)
 
-	d.FieldStrFn("bytes", func(d *decode.D) string {
-		if bytes, err = vlf(d); err != nil {
-			d.Fatalf("%v", err)
+	if length*8 > uint64(d.BitsLeft()) {
+		d.Fatalf("invalid field length")
+	}
+
+	d.FieldStruct("sysex_message", func(d *decode.D) {
+		d.FieldU8("manufacturer", manufacturers)
+
+		if length < 1 {
+			ctx.casio = true
+			d.FieldValueBool("continued", true)
 		} else {
-			return fmt.Sprintf("%v", bytes)
-		}
+			bytes := d.PeekBytes(int(length - 1))
+			N := len(bytes)
 
-		return "[]"
-	})
-
-	if len(bytes) < 1 {
-		ctx.casio = true
-	} else {
-		id := uint64(bytes[0])
-
-		d.FieldValueUint("manufacturer", id, manufacturers)
-
-		if len(bytes) > 1 {
-			if bytes[len(bytes)-1] == 0xf7 {
+			if N > 0 && bytes[N-1] == 0xf7 {
 				ctx.casio = false
 			} else {
 				ctx.casio = true
 			}
 
-			if bytes[len(bytes)-1] == 0xf7 {
-				d.FieldValueStr("data", fmt.Sprintf("%v", bytes[1:len(bytes)-1]))
+			if N > 0 && bytes[N-1] == 0xf7 {
+				d.FieldRawLen("data", int64(8*(N-1)))
+				d.FieldU8("end_of_message")
 			} else {
-				d.FieldValueStr("data", fmt.Sprintf("%v", bytes[1:]))
+				d.FieldRawLen("data", int64(8*N))
+				d.FieldValueBool("continued", true)
 			}
 		}
-	}
-
-	if ctx.casio {
-		d.FieldValueBool("continued", true)
-	}
+	})
 }
 
 func decodeSysExContinuation(d *decode.D, ctx *context) {
-	d.FieldStrFn("data", func(d *decode.D) string {
-		var data []uint8
-		var err error
+	length := d.FieldUintFn("length", vlq)
 
-		d.FieldStrFn("bytes", func(d *decode.D) string {
-			if data, err = vlf(d); err != nil {
-				d.Fatalf("%v", err)
+	if length*8 > uint64(d.BitsLeft()) {
+		d.Fatalf("invalid field length")
+	}
+
+	d.FieldStruct("sysex_continuation", func(d *decode.D) {
+		if length > 0 {
+			bytes := d.PeekBytes(int(length))
+			N := len(bytes)
+
+			if N > 0 && bytes[N-1] == 0xf7 {
+				ctx.casio = false
 			} else {
-				return fmt.Sprintf("%v", data)
+				ctx.casio = true
 			}
 
-			return "[]"
-		})
-
-		if len(data) > 0 && data[len(data)-1] == 0xf7 {
-			ctx.casio = false
-		} else {
-			ctx.casio = true
-		}
-
-		if len(data) > 0 && data[len(data)-1] == 0xf7 {
-			return fmt.Sprintf("%v", data[:len(data)-1])
-		} else {
-			return fmt.Sprintf("%v", data)
+			if N > 0 && bytes[N-1] == 0xf7 {
+				d.FieldRawLen("data", int64(8*(N-1)))
+				d.FieldU8("end_of_message")
+			} else {
+				d.FieldRawLen("data", int64(8*N))
+				d.FieldValueBool("continued", true)
+			}
 		}
 	})
 }
 
 func decodeSysExEscape(d *decode.D, ctx *context) {
-	d.FieldStrFn("data", func(d *decode.D) string {
-		var data []uint8
-		var err error
+	length := d.FieldUintFn("length", vlq)
 
-		d.FieldStrFn("bytes", func(d *decode.D) string {
-			if data, err = vlf(d); err != nil {
-				d.Fatalf("%v", err)
-			} else {
-				return fmt.Sprintf("%v", data)
-			}
+	if length*8 > uint64(d.BitsLeft()) {
+		d.Fatalf("invalid field length")
+	}
 
-			return "[]"
-		})
-
-		return fmt.Sprintf("%v", data)
+	d.FieldStruct("sysex_escape", func(d *decode.D) {
+		d.FieldRawLen("data", int64(8*length))
 	})
 
 	ctx.casio = false

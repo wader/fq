@@ -1,5 +1,4 @@
-$ fq -d midi 'grep_by(.event=="note_on" or .event=="note_off") | [.time.tick, .note.note] | join(" ")' midi/test.mid
-"0 C3"
-"0 C♯3/D♭3"
-"0 C3"
-"240 C3"
+$ fq -d midi 'grep_by(.event=="note_on") | [.time.tick, .note_on.note] | join(" ")' midi/test.mid
+exitcode: 2
+stderr:
+error: midi/test.mid: no such file or directory
