@@ -17,7 +17,7 @@ fq -d midi '.. | select(.event=="tempo")?.tempo' midi/twinkle.mid
 
 3. Extract the key changes from a MIDI file
 ```
-fq -d midi '.. | select(.event=="key_signature")?.key_signature' midi/key-signatures.mid
+fq -d midi '.. | select(.event=="key_signature")?.key_signature' midi/twinkle.mid
 ```
 
 4. Extract NoteOn events:

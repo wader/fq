@@ -4,24 +4,24 @@
 
 The test and example MIDI files are located in the _testdata/midi_ folder.
 
-1. _format-0.mid_
-MIDI format 0 reference file. Contains a single track with all supported MIDI events.
+1. _reference.mid_
+Reference MIDI file for testing/development only (it is not a valid MIDI file), with two tracks:
+- _Track 0_: _empty_ track with only an _end-of-track_ event
+- _Track 1_: _instrument_ track with sequential examples of all decoded MIDI events
 
-2. _format-1.mid_
-MIDI format 1 reference file. Contains two tracks:
-- _Track 0_, a tempo track with the _Time Signature_ and _Tempo_ events
-- _Track 1_, with all the other supported MIDI events
+2. _format-0.mid_
+Basic MIDI format 0 test file. Contains a single track with only a _track name_ and _end-of-track_ events.
 
-3. _format-2.mid_
-MIDI format 2 reference file. Contains two tracks:
-- _Track 0_, a track with all supported MIDI events
-- _Track 1_, a reversed version of _Track 0_
+3. _format-1.mid_
+Basic MIDI format 1 test file. Contains two tracks, each with only a _track name_ and _end-of-track_ events.
 
-4. _empty.mid_
+4. _format-2.mid_
+Basic MIDI format 2 test file.  Contains two tracks, each with only a _track name_ and _end-of-track_ events.
+
+5. _empty.mid_
 Empty MIDI file to verify MIDI decoder handles empty files.
 
-5. _unknown_chunks.mid_
-
+6. _unknown_chunks.mid_
 MIDI file with non-MIDI chunks interleaved between the _MTrk_ track chunks.
 
 6. _key_signatures.mid_
@@ -34,7 +34,7 @@ Test file with all supported MIDI notes.
 
 8. _twinkle.mid_
 
-Sample MIDI file for the example queries in the help.
+Sample valid MIDI file for the example queries in the help.
 
 
 ## MIDI event files
