@@ -26,18 +26,23 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            goarch: amd64
             test_target: test-race
+            GOARCH: amd64
+            # race requires cgo, otherwise should not be needed
+            CGO_ENABLED: 1
           # build and test on 32 bit, does not support race
           - os: ubuntu-latest
-            goarch: "386"
             test_target: test
+            GOARCH: "386"
+            CGO_ENABLED: 0
           - os: macos-latest
-            goarch: amd64
             test_target: test
+            GOARCH: amd64
+            CGO_ENABLED: 0
           - os: windows-latest
-            goarch: amd64
             test_target: test
+            GOARCH: amd64
+            CGO_ENABLED: 0
     runs-on: ${{ matrix.os }}
     steps:
       # only run cli binary tests on linux
@@ -50,5 +55,6 @@ jobs:
           go-version: "1.23.0"
       - name: Test
         env:
-          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: ${{ matrix.CGO_ENABLED }}
+          GOARCH: ${{ matrix.GOARCH }}
         run: make ${{ matrix.test_target }}
