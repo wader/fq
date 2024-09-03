@@ -31,4 +31,5 @@ fq -d midi 'grep_by(.event=="note_on") | [.time.tick, .note_on.note] | join(" ")
 ### References
 
 1. [The Complete MIDI 1.0 Detailed Specification](https://www.midi.org/specifications/item/the-midi-1-0-specification)
-2. [The MIDI Specification](http://midi.teragonaudio.com/tech/midispec.htm)
+2. [Standard MIDI File (SMF) Format](http://midi.teragonaudio.com/tech/midifile.htm)
+3. [MIDI Files Specification](http://www.somascape.org/midi/tech/mfile.html)

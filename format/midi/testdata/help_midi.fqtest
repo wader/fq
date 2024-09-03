@@ -39,4 +39,5 @@ Authors
 References
 ==========
 * The Complete MIDI 1.0 Detailed Specification (https://www.midi.org/specifications/item/the-midi-1-0-specification)
-* The MIDI Specification (http://midi.teragonaudio.com/tech/midispec.htm)
+* Standard MIDI File (SMF) Format (http://midi.teragonaudio.com/tech/midifile.htm)
+* MIDI Files Specification (http://www.somascape.org/midi/tech/mfile.html)
