@@ -16,13 +16,9 @@ run: build
 	go run . -d midi dv format/midi/testdata/reference.mid
 
 debug: build
-	go run . -d midi dv format/midi/testdata/events/note-off.mid
-	go run . -d midi dv format/midi/testdata/events/note-on.mid
-	go run . -d midi dv format/midi/testdata/events/controller.mid
-	go run . -d midi dv format/midi/testdata/events/polyphonic-pressure.mid
-	go run . -d midi dv format/midi/testdata/events/program-change.mid
-	go run . -d midi dv format/midi/testdata/events/channel-pressure.mid
-	go run . -d midi dv format/midi/testdata/events/pitch-bend.mid
+	go run . -d midi dv format/midi/testdata/midi/invalid-MThd-length.mid
+	go run . -d midi dv format/midi/testdata/midi/invalid-MTrk-length.mid
+	go run . -d midi dv format/midi/testdata/events/smpte-offset.mid
 
 test: build
 	go test ./format -run TestFormats/midi
@@ -78,5 +74,4 @@ query: build
 all: test lint
 	make -f Makefile test
 # 	go test ./format -run TestFormats/all/all.fqtest
-# 	go run . -d midi dv format/midi/testdata/midi/unknown-chunks.mid
 # 	go run . -d midi dv format/midi/testdata/midi/empty.mid

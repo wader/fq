@@ -21,9 +21,6 @@ Basic MIDI format 2 test file.  Contains two tracks, each with only a _track nam
 5. _empty.mid_
 Empty MIDI file to verify MIDI decoder handles empty files.
 
-6. _unknown_chunks.mid_
-MIDI file with non-MIDI chunks interleaved between the _MTrk_ track chunks.
-
 6. _key_signatures.mid_
 
 Test file with all supported MIDI key signatures.
@@ -32,7 +29,15 @@ Test file with all supported MIDI key signatures.
 
 Test file with all supported MIDI notes.
 
-8. _twinkle.mid_
+8. _invalid-MThd-length.mid_
+
+Test file with invalid _MThd_ chunk length.
+
+9. _invalid-MTrk-length.mid_
+
+Test file with invalid _MTrk_ chunk length.
+
+10. _twinkle.mid_
 
 Sample valid MIDI file for the example queries in the help.
 

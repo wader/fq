@@ -11,7 +11,8 @@ Decode examples
 
 Notes
 =====
-* Only supports the MIDI 1.0 specification.
+* Only supports the MIDI 1.0 MIDI file specification.
+* Only supports and chunks.
 * Does only basic validation on the MIDI data.
 
 Sample queries
@@ -34,10 +35,11 @@ Sample queries
 
 Authors
 =======
-- transcriptaze.development@gmail.com
+- transcriptaze (https://github.com/transcriptaze)
 
 References
 ==========
 * The Complete MIDI 1.0 Detailed Specification (https://www.midi.org/specifications/item/the-midi-1-0-specification)
+* Standard MIDI Files (https://midi.org/standard-midi-files)
 * Standard MIDI File (SMF) Format (http://midi.teragonaudio.com/tech/midifile.htm)
 * MIDI Files Specification (http://www.somascape.org/midi/tech/mfile.html)

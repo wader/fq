@@ -5,7 +5,6 @@ package midi
 import (
 	"bytes"
 	"embed"
-	"encoding/binary"
 	"fmt"
 
 	"github.com/wader/fq/format"
@@ -43,11 +42,7 @@ func decodeMIDI(d *decode.D) any {
 	// ... decode tracks
 	d.FieldArray("tracks", func(d *decode.D) {
 		for d.BitsLeft() > 0 {
-			if err := skipTo(d, "MTrk"); err != nil {
-				d.Errorf("%v", err)
-			} else {
-				d.FieldStruct("track", decodeMTrk)
-			}
+			d.FieldStruct("track", decodeMTrk)
 		}
 	})
 
@@ -59,31 +54,27 @@ func decodeMThd(d *decode.D) {
 		d.Errorf("no MThd marker")
 	}
 
-	d.FieldArray("header", func(d *decode.D) {
-		d.FieldUTF8("tag", 4)
-		length := d.FieldS32("length")
+	d.FieldUTF8("tag", 4)
+	length := d.FieldS32("length")
 
-		d.AssertLeastBytesLeft(length)
+	d.FramedFn(length*8, func(d *decode.D) {
+		format := d.FieldU16("format")
+		if format != 0 && format != 1 && format != 2 {
+			d.Errorf("invalid MThd format %v (expected 0,1 or 2)", format)
+		}
 
-		d.FramedFn(length*8, func(d *decode.D) {
-			format := d.FieldU16("format")
-			if format != 0 && format != 1 && format != 2 {
-				d.Errorf("invalid MThd format %v (expected 0,1 or 2)", format)
+		tracks := d.FieldU16("tracks")
+		if format == 0 && tracks > 1 {
+			d.Errorf("MIDI format 0 expects 1 track (got %v)", tracks)
+		}
+
+		division := d.FieldU16("divisions")
+		if division&0x8000 == 0x8000 {
+			SMPTE := (division & 0xff00) >> 8
+			if SMPTE != 0xe8 && SMPTE != 0xe7 && SMPTE != 0xe6 && SMPTE != 0xe5 {
+				d.Errorf("invalid MThd division SMPTE timecode type %02X (expected E8,E7, E6 or E5)", SMPTE)
 			}
-
-			tracks := d.FieldU16("tracks")
-			if format == 0 && tracks > 1 {
-				d.Errorf("MIDI format 0 expects 1 track (got %v)", tracks)
-			}
-
-			division := d.FieldU16("divisions")
-			if division&0x8000 == 0x8000 {
-				SMPTE := (division & 0xff00) >> 8
-				if SMPTE != 0xe8 && SMPTE != 0xe7 && SMPTE != 0xe6 && SMPTE != 0xe5 {
-					d.Errorf("invalid MThd division SMPTE timecode type %02X (expected E8,E7, E6 or E5)", SMPTE)
-				}
-			}
-		})
+		}
 	})
 }
 
@@ -94,8 +85,6 @@ func decodeMTrk(d *decode.D) {
 
 	d.FieldUTF8("tag", 4)
 	length := d.FieldS32("length")
-
-	d.AssertLeastBytesLeft(length)
 
 	d.FieldArray("events", func(d *decode.D) {
 		d.FramedFn(length*8, func(d *decode.D) {
@@ -122,22 +111,6 @@ func decodeEvent(d *decode.D, ctx *context) {
 	} else {
 		decodeMIDIEvent(d, status, ctx)
 	}
-}
-
-func skipTo(d *decode.D, tag string) error {
-	for d.BitsLeft() > 0 {
-		bytes := d.PeekBytes(8)
-
-		if string(bytes[0:4]) == tag {
-			return nil
-		} else {
-			length := 8 + binary.BigEndian.Uint32(bytes[4:])
-
-			d.SeekRel(8 * int64(length))
-		}
-	}
-
-	return fmt.Errorf("missing %v chunk", tag)
 }
 
 func peekEvent(d *decode.D) (uint64, uint8, uint8) {

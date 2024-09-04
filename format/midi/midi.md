@@ -1,7 +1,8 @@
 ### Notes
 
-1. Only supports the MIDI 1.0 specification.
-2. Does only basic validation on the MIDI data.
+1. Only supports the MIDI 1.0 MIDI file specification.
+2. Only supports _MThd_ and _MTrk_ chunks.
+3. Does only basic validation on the MIDI data.
 
 ### Sample queries
 
@@ -26,10 +27,11 @@ fq -d midi 'grep_by(.event=="note_on") | [.time.tick, .note_on.note] | join(" ")
 ```
 
 ### Authors
-- transcriptaze.development@gmail.com
+- [transcriptaze](https://github.com/transcriptaze)
 
 ### References
 
 1. [The Complete MIDI 1.0 Detailed Specification](https://www.midi.org/specifications/item/the-midi-1-0-specification)
-2. [Standard MIDI File (SMF) Format](http://midi.teragonaudio.com/tech/midifile.htm)
-3. [MIDI Files Specification](http://www.somascape.org/midi/tech/mfile.html)
+2. [Standard MIDI Files](https://midi.org/standard-midi-files)
+3. [Standard MIDI File (SMF) Format](http://midi.teragonaudio.com/tech/midifile.htm)
+4. [MIDI Files Specification](http://www.somascape.org/midi/tech/mfile.html)
