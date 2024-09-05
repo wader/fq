@@ -12,7 +12,7 @@ $ fq -d midi dv midi/format-0.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 10                              |  ....          |      length: 16 0x12-0x16 (4)
     |                                               |                |      events[0:2]: 0x16-0x26 (16)
-    |                                               |                |        [0]{}: metaevent 0x16-0x22 (12)
+    |                                               |                |        [0]{}: meta_event 0x16-0x22 (12)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
@@ -20,7 +20,7 @@ $ fq -d midi dv midi/format-0.mid
 0x10|                        03                     |        .       |          event: "track_name" (3) 0x18-0x19 (1)
 0x10|                           08 46 6f 72 6d 61 74|         .Format|          track_name: "Format 0" 0x19-0x22 (9)
 0x20|20 30                                          | 0              |
-    |                                               |                |        [1]{}: metaevent 0x22-0x26 (4)
+    |                                               |                |        [1]{}: meta_event 0x22-0x26 (4)
     |                                               |                |          time{}: 0x22-0x23 (1)
 0x20|      00                                       |  .             |            delta: 0 0x22-0x23 (1)
     |                                               |                |            tick: 0

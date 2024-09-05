@@ -12,7 +12,7 @@ $ fq -d midi dv midi/format-2.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 12                              |  ....          |      length: 18 0x12-0x16 (4)
     |                                               |                |      events[0:2]: 0x16-0x28 (18)
-    |                                               |                |        [0]{}: metaevent 0x16-0x24 (14)
+    |                                               |                |        [0]{}: meta_event 0x16-0x24 (14)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
@@ -20,7 +20,7 @@ $ fq -d midi dv midi/format-2.mid
 0x10|                        03                     |        .       |          event: "track_name" (3) 0x18-0x19 (1)
 0x10|                           0a 4c 65 66 74 20 54|         .Left T|          track_name: "Left Track" 0x19-0x24 (11)
 0x20|72 61 63 6b                                    |rack            |
-    |                                               |                |        [1]{}: metaevent 0x24-0x28 (4)
+    |                                               |                |        [1]{}: meta_event 0x24-0x28 (4)
     |                                               |                |          time{}: 0x24-0x25 (1)
 0x20|            00                                 |    .           |            delta: 0 0x24-0x25 (1)
     |                                               |                |            tick: 0
@@ -31,14 +31,14 @@ $ fq -d midi dv midi/format-2.mid
 0x20|                        4d 54 72 6b            |        MTrk    |      tag: "MTrk" 0x28-0x2c (4)
 0x20|                                    00 00 00 13|            ....|      length: 19 0x2c-0x30 (4)
     |                                               |                |      events[0:2]: 0x30-0x43 (19)
-    |                                               |                |        [0]{}: metaevent 0x30-0x3f (15)
+    |                                               |                |        [0]{}: meta_event 0x30-0x3f (15)
     |                                               |                |          time{}: 0x30-0x31 (1)
 0x30|00                                             |.               |            delta: 0 0x30-0x31 (1)
     |                                               |                |            tick: 0
 0x30|   ff                                          | .              |          status: 255 0x31-0x32 (1)
 0x30|      03                                       |  .             |          event: "track_name" (3) 0x32-0x33 (1)
 0x30|         0b 52 69 67 68 74 20 54 72 61 63 6b   |   .Right Track |          track_name: "Right Track" 0x33-0x3f (12)
-    |                                               |                |        [1]{}: metaevent 0x3f-0x43 (4)
+    |                                               |                |        [1]{}: meta_event 0x3f-0x43 (4)
     |                                               |                |          time{}: 0x3f-0x40 (1)
 0x30|                                             00|               .|            delta: 0 0x3f-0x40 (1)
     |                                               |                |            tick: 0

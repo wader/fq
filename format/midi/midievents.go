@@ -49,7 +49,7 @@ func decodeMIDIEvent(d *decode.D, status uint8, ctx *context) {
 	}
 
 	if fn, ok := midifns[uint64(status&0x00f0)]; ok {
-		d.FieldStruct("midievent", func(d *decode.D) {
+		d.FieldStruct("midi_event", func(d *decode.D) {
 			d.FieldStruct("time", delta)
 
 			b := d.PeekBytes(1)

@@ -42,7 +42,11 @@ func decodeMIDI(d *decode.D) any {
 	// ... decode tracks
 	d.FieldArray("tracks", func(d *decode.D) {
 		for d.BitsLeft() > 0 {
-			d.FieldStruct("track", decodeMTrk)
+			if bytes.Equal(d.PeekBytes(4), []byte("MTrk")) {
+				d.FieldStruct("track", decodeMTrk)
+			} else {
+				d.FieldStruct("other", decodeOther)
+			}
 		}
 	})
 
@@ -154,6 +158,12 @@ func peekEvent(d *decode.D) (uint64, uint8, uint8) {
 
 		N++
 	}
+}
+
+func decodeOther(d *decode.D) {
+	d.FieldUTF8("tag", 4)
+	length := d.FieldS32("length")
+	d.FieldRawLen("data", length*8)
 }
 
 // Big endian varint

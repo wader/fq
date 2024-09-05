@@ -26,24 +26,24 @@ func decodeSysExEvent(d *decode.D, status uint8, ctx *context) {
 
 	case status == 0xf0:
 		if ctx.casio {
-			d.Errorf("SysExMessage F0 start byte without terminating F7")
+			d.Errorf("SysEx message F0 start byte without terminating F7")
 		}
 
-		d.FieldStruct("sysex", func(d *decode.D) {
+		d.FieldStruct("sysex_event", func(d *decode.D) {
 			d.FieldStruct("time", delta)
 			d.FieldU8("event", sysex)
 			decodeSysExMessage(d, ctx)
 		})
 
 	case status == 0xf7 && ctx.casio:
-		d.FieldStruct("sysex", func(d *decode.D) {
+		d.FieldStruct("sysex_event", func(d *decode.D) {
 			d.FieldStruct("time", delta)
 			d.FieldU8("event", sysex_extensions)
 			decodeSysExContinuation(d, ctx)
 		})
 
 	case status == 0xf7:
-		d.FieldStruct("sysex", func(d *decode.D) {
+		d.FieldStruct("sysex_event", func(d *decode.D) {
 			d.FieldStruct("time", delta)
 			d.FieldU8("event", sysex)
 			decodeSysExEscape(d, ctx)
@@ -61,7 +61,7 @@ func decodeSysExMessage(d *decode.D, ctx *context) {
 		d.Fatalf("invalid field length")
 	}
 
-	d.FieldStruct("sysex_message", func(d *decode.D) {
+	d.FieldStruct("message", func(d *decode.D) {
 		d.FieldU8("manufacturer", manufacturers)
 
 		if length < 1 {
@@ -95,7 +95,7 @@ func decodeSysExContinuation(d *decode.D, ctx *context) {
 		d.Fatalf("invalid field length")
 	}
 
-	d.FieldStruct("sysex_continuation", func(d *decode.D) {
+	d.FieldStruct("continuation", func(d *decode.D) {
 		if length > 0 {
 			bytes := d.PeekBytes(int(length))
 			N := len(bytes)
@@ -124,7 +124,7 @@ func decodeSysExEscape(d *decode.D, ctx *context) {
 		d.Fatalf("invalid field length")
 	}
 
-	d.FieldStruct("sysex_escape", func(d *decode.D) {
+	d.FieldStruct("escape", func(d *decode.D) {
 		d.FieldRawLen("data", int64(8*length))
 	})
 

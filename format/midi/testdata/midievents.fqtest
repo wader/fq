@@ -12,7 +12,7 @@ $ fq -d midi dv events/note-off.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 07                              |  ....          |      length: 7 0x12-0x16 (4)
     |                                               |                |      events[0:2]: 0x16-0x1d (7)
-    |                                               |                |        [0]{}: midievent 0x16-0x1a (4)
+    |                                               |                |        [0]{}: midi_event 0x16-0x1a (4)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
@@ -21,7 +21,7 @@ $ fq -d midi dv events/note-off.mid
     |                                               |                |          note_off{}: 0x18-0x1a (2)
 0x10|                        70                     |        p       |            note: "E8" (112) 0x18-0x19 (1)
 0x10|                           60                  |         `      |            velocity: 96 0x19-0x1a (1)
-    |                                               |                |        [1]{}: midievent 0x1a-0x1d (3)
+    |                                               |                |        [1]{}: midi_event 0x1a-0x1d (3)
     |                                               |                |          time{}: 0x1a-0x1b (1)
 0x10|                              64               |          d     |            delta: 100 0x1a-0x1b (1)
     |                                               |                |            tick: 100
@@ -44,7 +44,7 @@ $ fq -d midi dv events/note-on.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 07                              |  ....          |      length: 7 0x12-0x16 (4)
     |                                               |                |      events[0:2]: 0x16-0x1d (7)
-    |                                               |                |        [0]{}: midievent 0x16-0x1a (4)
+    |                                               |                |        [0]{}: midi_event 0x16-0x1a (4)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
@@ -53,7 +53,7 @@ $ fq -d midi dv events/note-on.mid
     |                                               |                |          note_on{}: 0x18-0x1a (2)
 0x10|                        30                     |        0       |            note: "C3" (48) 0x18-0x19 (1)
 0x10|                           48                  |         H      |            velocity: 72 0x19-0x1a (1)
-    |                                               |                |        [1]{}: midievent 0x1a-0x1d (3)
+    |                                               |                |        [1]{}: midi_event 0x1a-0x1d (3)
     |                                               |                |          time{}: 0x1a-0x1b (1)
 0x10|                              40               |          @     |            delta: 64 0x1a-0x1b (1)
     |                                               |                |            tick: 64
@@ -76,14 +76,14 @@ $ fq -d midi dv events/polyphonic-pressure.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 05                              |  ....          |      length: 5 0x12-0x16 (4)
     |                                               |                |      events[0:2]: 0x16-0x1b (5)
-    |                                               |                |        [0]{}: midievent 0x16-0x19 (3)
+    |                                               |                |        [0]{}: midi_event 0x16-0x19 (3)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
 0x10|                     a0                        |       .        |          event: "polyphonic_pressure" (160) 0x17-0x17.4 (0.4)
 0x10|                     a0                        |       .        |          channel: 0 0x17.4-0x18 (0.4)
 0x10|                        64                     |        d       |          polyphonic_pressure: 100 0x18-0x19 (1)
-    |                                               |                |        [1]{}: midievent 0x19-0x1b (2)
+    |                                               |                |        [1]{}: midi_event 0x19-0x1b (2)
     |                                               |                |          time{}: 0x19-0x1a (1)
 0x10|                           40                  |         @      |            delta: 64 0x19-0x1a (1)
     |                                               |                |            tick: 64
@@ -104,7 +104,7 @@ $ fq -d midi dv events/controller.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 07                              |  ....          |      length: 7 0x12-0x16 (4)
     |                                               |                |      events[0:2]: 0x16-0x1d (7)
-    |                                               |                |        [0]{}: midievent 0x16-0x1a (4)
+    |                                               |                |        [0]{}: midi_event 0x16-0x1a (4)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
@@ -113,7 +113,7 @@ $ fq -d midi dv events/controller.mid
     |                                               |                |          controller{}: 0x18-0x1a (2)
 0x10|                        20                     |                |            controller: "Bank Select (LSB)" (32) 0x18-0x19 (1)
 0x10|                           21                  |         !      |            value: 33 0x19-0x1a (1)
-    |                                               |                |        [1]{}: midievent 0x1a-0x1d (3)
+    |                                               |                |        [1]{}: midi_event 0x1a-0x1d (3)
     |                                               |                |          time{}: 0x1a-0x1b (1)
 0x10|                              40               |          @     |            delta: 64 0x1a-0x1b (1)
     |                                               |                |            tick: 64
@@ -136,14 +136,14 @@ $ fq -d midi dv events/program-change.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 05                              |  ....          |      length: 5 0x12-0x16 (4)
     |                                               |                |      events[0:2]: 0x16-0x1b (5)
-    |                                               |                |        [0]{}: midievent 0x16-0x19 (3)
+    |                                               |                |        [0]{}: midi_event 0x16-0x19 (3)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
 0x10|                     c0                        |       .        |          event: "program_change" (192) 0x17-0x17.4 (0.4)
 0x10|                     c0                        |       .        |          channel: 0 0x17.4-0x18 (0.4)
 0x10|                        19                     |        .       |          program_change: 25 0x18-0x19 (1)
-    |                                               |                |        [1]{}: midievent 0x19-0x1b (2)
+    |                                               |                |        [1]{}: midi_event 0x19-0x1b (2)
     |                                               |                |          time{}: 0x19-0x1a (1)
 0x10|                           40                  |         @      |            delta: 64 0x19-0x1a (1)
     |                                               |                |            tick: 64
@@ -164,14 +164,14 @@ $ fq -d midi dv events/channel-pressure.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 05                              |  ....          |      length: 5 0x12-0x16 (4)
     |                                               |                |      events[0:2]: 0x16-0x1b (5)
-    |                                               |                |        [0]{}: midievent 0x16-0x19 (3)
+    |                                               |                |        [0]{}: midi_event 0x16-0x19 (3)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
 0x10|                     d0                        |       .        |          event: "channel_pressure" (208) 0x17-0x17.4 (0.4)
 0x10|                     d0                        |       .        |          channel: 0 0x17.4-0x18 (0.4)
 0x10|                        07                     |        .       |          channel_pressure: 7 0x18-0x19 (1)
-    |                                               |                |        [1]{}: midievent 0x19-0x1b (2)
+    |                                               |                |        [1]{}: midi_event 0x19-0x1b (2)
     |                                               |                |          time{}: 0x19-0x1a (1)
 0x10|                           40                  |         @      |            delta: 64 0x19-0x1a (1)
     |                                               |                |            tick: 64
@@ -192,21 +192,21 @@ $ fq -d midi dv events/pitch-bend.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 0a                              |  ....          |      length: 10 0x12-0x16 (4)
     |                                               |                |      events[0:3]: 0x16-0x20 (10)
-    |                                               |                |        [0]{}: midievent 0x16-0x1a (4)
+    |                                               |                |        [0]{}: midi_event 0x16-0x1a (4)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
 0x10|                     e5                        |       .        |          event: "pitch_bend" (224) 0x17-0x17.4 (0.4)
 0x10|                     e5                        |       .        |          channel: 5 0x17.4-0x18 (0.4)
 0x10|                        40 00                  |        @.      |          pitch_bend: 0 0x18-0x1a (2)
-    |                                               |                |        [1]{}: midievent 0x1a-0x1d (3)
+    |                                               |                |        [1]{}: midi_event 0x1a-0x1d (3)
     |                                               |                |          time{}: 0x1a-0x1b (1)
 0x10|                              20               |                |            delta: 32 0x1a-0x1b (1)
     |                                               |                |            tick: 32
     |                                               |                |          event: "pitch_bend" (224)
     |                                               |                |          channel: 5
 0x10|                                 60 00         |           `.   |          pitch_bend: 4096 0x1b-0x1d (2)
-    |                                               |                |        [2]{}: midievent 0x1d-0x20 (3)
+    |                                               |                |        [2]{}: midi_event 0x1d-0x20 (3)
     |                                               |                |          time{}: 0x1d-0x1e (1)
 0x10|                                       40      |             @  |            delta: 64 0x1d-0x1e (1)
     |                                               |                |            tick: 96

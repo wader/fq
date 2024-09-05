@@ -12,7 +12,7 @@ $ fq -d midi dv events/sequence-number.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 06                              |  ....          |      length: 6 0x12-0x16 (4)
     |                                               |                |      events[0:1]: 0x16-0x1c (6)
-    |                                               |                |        [0]{}: metaevent 0x16-0x1c (6)
+    |                                               |                |        [0]{}: meta_event 0x16-0x1c (6)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
@@ -34,7 +34,7 @@ $ fq -d midi dv events/text.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 11                              |  ....          |      length: 17 0x12-0x16 (4)
     |                                               |                |      events[0:1]: 0x16-0x27 (17)
-    |                                               |                |        [0]{}: metaevent 0x16-0x27 (17)
+    |                                               |                |        [0]{}: meta_event 0x16-0x27 (17)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
@@ -56,7 +56,7 @@ $ fq -d midi dv events/copyright.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 08                              |  ....          |      length: 8 0x12-0x16 (4)
     |                                               |                |      events[0:1]: 0x16-0x1e (8)
-    |                                               |                |        [0]{}: metaevent 0x16-0x1e (8)
+    |                                               |                |        [0]{}: meta_event 0x16-0x1e (8)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
@@ -77,7 +77,7 @@ $ fq -d midi dv events/track-name.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 13                              |  ....          |      length: 19 0x12-0x16 (4)
     |                                               |                |      events[0:1]: 0x16-0x29 (19)
-    |                                               |                |        [0]{}: metaevent 0x16-0x29 (19)
+    |                                               |                |        [0]{}: meta_event 0x16-0x29 (19)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
@@ -99,7 +99,7 @@ $ fq -d midi dv events/instrument-name.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 0e                              |  ....          |      length: 14 0x12-0x16 (4)
     |                                               |                |      events[0:1]: 0x16-0x24 (14)
-    |                                               |                |        [0]{}: metaevent 0x16-0x24 (14)
+    |                                               |                |        [0]{}: meta_event 0x16-0x24 (14)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
@@ -121,7 +121,7 @@ $ fq -d midi dv events/lyric.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 0c                              |  ....          |      length: 12 0x12-0x16 (4)
     |                                               |                |      events[0:1]: 0x16-0x22 (12)
-    |                                               |                |        [0]{}: metaevent 0x16-0x22 (12)
+    |                                               |                |        [0]{}: meta_event 0x16-0x22 (12)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
@@ -143,7 +143,7 @@ $ fq -d midi dv events/marker.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 13                              |  ....          |      length: 19 0x12-0x16 (4)
     |                                               |                |      events[0:1]: 0x16-0x29 (19)
-    |                                               |                |        [0]{}: metaevent 0x16-0x29 (19)
+    |                                               |                |        [0]{}: meta_event 0x16-0x29 (19)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
@@ -165,7 +165,7 @@ $ fq -d midi dv events/cuepoint.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 10                              |  ....          |      length: 16 0x12-0x16 (4)
     |                                               |                |      events[0:1]: 0x16-0x26 (16)
-    |                                               |                |        [0]{}: metaevent 0x16-0x26 (16)
+    |                                               |                |        [0]{}: meta_event 0x16-0x26 (16)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
@@ -187,7 +187,7 @@ $ fq -d midi dv events/program-name.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 0a                              |  ....          |      length: 10 0x12-0x16 (4)
     |                                               |                |      events[0:1]: 0x16-0x20 (10)
-    |                                               |                |        [0]{}: metaevent 0x16-0x20 (10)
+    |                                               |                |        [0]{}: meta_event 0x16-0x20 (10)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
@@ -208,7 +208,7 @@ $ fq -d midi dv events/device-name.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 0c                              |  ....          |      length: 12 0x12-0x16 (4)
     |                                               |                |      events[0:1]: 0x16-0x22 (12)
-    |                                               |                |        [0]{}: metaevent 0x16-0x22 (12)
+    |                                               |                |        [0]{}: meta_event 0x16-0x22 (12)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
@@ -230,7 +230,7 @@ $ fq -d midi dv events/midi-channel-prefix.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 05                              |  ....          |      length: 5 0x12-0x16 (4)
     |                                               |                |      events[0:1]: 0x16-0x1b (5)
-    |                                               |                |        [0]{}: metaevent 0x16-0x1b (5)
+    |                                               |                |        [0]{}: meta_event 0x16-0x1b (5)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
@@ -252,7 +252,7 @@ $ fq -d midi dv events/midi-port.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 05                              |  ....          |      length: 5 0x12-0x16 (4)
     |                                               |                |      events[0:1]: 0x16-0x1b (5)
-    |                                               |                |        [0]{}: metaevent 0x16-0x1b (5)
+    |                                               |                |        [0]{}: meta_event 0x16-0x1b (5)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
@@ -274,7 +274,7 @@ $ fq -d midi dv events/tempo.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 07                              |  ....          |      length: 7 0x12-0x16 (4)
     |                                               |                |      events[0:1]: 0x16-0x1d (7)
-    |                                               |                |        [0]{}: metaevent 0x16-0x1d (7)
+    |                                               |                |        [0]{}: meta_event 0x16-0x1d (7)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
@@ -296,7 +296,7 @@ $ fq -d midi dv events/smpte-offset.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 09                              |  ....          |      length: 9 0x12-0x16 (4)
     |                                               |                |      events[0:1]: 0x16-0x1f (9)
-    |                                               |                |        [0]{}: metaevent 0x16-0x1f (9)
+    |                                               |                |        [0]{}: meta_event 0x16-0x1f (9)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
@@ -324,7 +324,7 @@ $ fq -d midi dv events/time-signature.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 08                              |  ....          |      length: 8 0x12-0x16 (4)
     |                                               |                |      events[0:1]: 0x16-0x1e (8)
-    |                                               |                |        [0]{}: metaevent 0x16-0x1e (8)
+    |                                               |                |        [0]{}: meta_event 0x16-0x1e (8)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
@@ -350,7 +350,7 @@ $ fq -d midi dv events/key-signature.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 06                              |  ....          |      length: 6 0x12-0x16 (4)
     |                                               |                |      events[0:1]: 0x16-0x1c (6)
-    |                                               |                |        [0]{}: metaevent 0x16-0x1c (6)
+    |                                               |                |        [0]{}: meta_event 0x16-0x1c (6)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
@@ -372,7 +372,7 @@ $ fq -d midi dv events/end-of-track.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 04                              |  ....          |      length: 4 0x12-0x16 (4)
     |                                               |                |      events[0:1]: 0x16-0x1a (4)
-    |                                               |                |        [0]{}: metaevent 0x16-0x1a (4)
+    |                                               |                |        [0]{}: meta_event 0x16-0x1a (4)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
@@ -393,7 +393,7 @@ $ fq -d midi dv events/sequencer-specific-event.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 0a                              |  ....          |      length: 10 0x12-0x16 (4)
     |                                               |                |      events[0:1]: 0x16-0x20 (10)
-    |                                               |                |        [0]{}: metaevent 0x16-0x20 (10)
+    |                                               |                |        [0]{}: meta_event 0x16-0x20 (10)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0

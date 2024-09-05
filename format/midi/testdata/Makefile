@@ -16,9 +16,7 @@ run: build
 	go run . -d midi dv format/midi/testdata/reference.mid
 
 debug: build
-	go run . -d midi dv format/midi/testdata/midi/invalid-MThd-length.mid
-	go run . -d midi dv format/midi/testdata/midi/invalid-MTrk-length.mid
-	go run . -d midi dv format/midi/testdata/events/smpte-offset.mid
+	go run . -d midi dv format/midi/workdir/test-all-gm-percussion.mid
 
 test: build
 	go test ./format -run TestFormats/midi

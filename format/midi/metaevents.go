@@ -78,7 +78,7 @@ func decodeMetaEvent(d *decode.D, event uint8, ctx *context) {
 	}
 
 	if fn, ok := metafns[uint64(event)]; ok {
-		d.FieldStruct("metaevent", func(d *decode.D) {
+		d.FieldStruct("meta_event", func(d *decode.D) {
 			d.FieldStruct("time", delta)
 			d.FieldU8("status")
 			d.FieldU8("event", metaevents)

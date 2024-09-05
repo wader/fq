@@ -12,7 +12,7 @@ $ fq -d midi dv midi/format-1.mid
 0x10|72 6b                                          |rk              |
 0x10|      00 00 00 10                              |  ....          |      length: 16 0x12-0x16 (4)
     |                                               |                |      events[0:2]: 0x16-0x26 (16)
-    |                                               |                |        [0]{}: metaevent 0x16-0x22 (12)
+    |                                               |                |        [0]{}: meta_event 0x16-0x22 (12)
     |                                               |                |          time{}: 0x16-0x17 (1)
 0x10|                  00                           |      .         |            delta: 0 0x16-0x17 (1)
     |                                               |                |            tick: 0
@@ -20,7 +20,7 @@ $ fq -d midi dv midi/format-1.mid
 0x10|                        03                     |        .       |          event: "track_name" (3) 0x18-0x19 (1)
 0x10|                           08 46 6f 72 6d 61 74|         .Format|          track_name: "Format 1" 0x19-0x22 (9)
 0x20|20 31                                          | 1              |
-    |                                               |                |        [1]{}: metaevent 0x22-0x26 (4)
+    |                                               |                |        [1]{}: meta_event 0x22-0x26 (4)
     |                                               |                |          time{}: 0x22-0x23 (1)
 0x20|      00                                       |  .             |            delta: 0 0x22-0x23 (1)
     |                                               |                |            tick: 0
@@ -31,7 +31,7 @@ $ fq -d midi dv midi/format-1.mid
 0x20|                  4d 54 72 6b                  |      MTrk      |      tag: "MTrk" 0x26-0x2a (4)
 0x20|                              00 00 00 17      |          ....  |      length: 23 0x2a-0x2e (4)
     |                                               |                |      events[0:2]: 0x2e-0x45 (23)
-    |                                               |                |        [0]{}: metaevent 0x2e-0x41 (19)
+    |                                               |                |        [0]{}: meta_event 0x2e-0x41 (19)
     |                                               |                |          time{}: 0x2e-0x2f (1)
 0x20|                                          00   |              . |            delta: 0 0x2e-0x2f (1)
     |                                               |                |            tick: 0
@@ -39,7 +39,7 @@ $ fq -d midi dv midi/format-1.mid
 0x30|03                                             |.               |          event: "track_name" (3) 0x30-0x31 (1)
 0x30|   0f 41 63 6f 75 73 74 69 63 20 47 75 69 74 61| .Acoustic Guita|          track_name: "Acoustic Guitar" 0x31-0x41 (16)
 0x40|72                                             |r               |
-    |                                               |                |        [1]{}: metaevent 0x41-0x45 (4)
+    |                                               |                |        [1]{}: meta_event 0x41-0x45 (4)
     |                                               |                |          time{}: 0x41-0x42 (1)
 0x40|   00                                          | .              |            delta: 0 0x41-0x42 (1)
     |                                               |                |            tick: 0

@@ -29,15 +29,19 @@ Test file with all supported MIDI key signatures.
 
 Test file with all supported MIDI notes.
 
-8. _invalid-MThd-length.mid_
+8. _unknown-chunks.mid_
+
+Test file with 'alien' chunks interleaved with the _MTrk_ track chunks.
+
+9. _invalid-MThd-length.mid_
 
 Test file with invalid _MThd_ chunk length.
 
-9. _invalid-MTrk-length.mid_
+10. _invalid-MTrk-length.mid_
 
 Test file with invalid _MTrk_ chunk length.
 
-10. _twinkle.mid_
+11. _twinkle.mid_
 
 Sample valid MIDI file for the example queries in the help.
 
