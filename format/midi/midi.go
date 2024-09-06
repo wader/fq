@@ -39,8 +39,8 @@ func decodeMIDI(d *decode.D) any {
 	// ... decode header
 	d.FieldStruct("header", decodeMThd)
 
-	// ... decode tracks
-	d.FieldArray("tracks", func(d *decode.D) {
+	// ... decode tracks (and other chunks)
+	d.FieldArray("content", func(d *decode.D) {
 		for d.BitsLeft() > 0 {
 			if bytes.Equal(d.PeekBytes(4), []byte("MTrk")) {
 				d.FieldStruct("track", decodeMTrk)
@@ -55,36 +55,30 @@ func decodeMIDI(d *decode.D) any {
 
 func decodeMThd(d *decode.D) {
 	if !bytes.Equal(d.PeekBytes(4), []byte("MThd")) {
-		d.Errorf("no MThd marker")
+		d.Errorf("missing MThd tag")
 	}
 
 	d.FieldUTF8("tag", 4)
 	length := d.FieldS32("length")
 
 	d.FramedFn(length*8, func(d *decode.D) {
-		format := d.FieldU16("format")
-		if format != 0 && format != 1 && format != 2 {
-			d.Errorf("invalid MThd format %v (expected 0,1 or 2)", format)
-		}
+		d.FieldU16("format")
+		d.FieldU16("tracks")
 
-		tracks := d.FieldU16("tracks")
-		if format == 0 && tracks > 1 {
-			d.Errorf("MIDI format 0 expects 1 track (got %v)", tracks)
-		}
-
-		division := d.FieldU16("divisions")
-		if division&0x8000 == 0x8000 {
-			SMPTE := (division & 0xff00) >> 8
-			if SMPTE != 0xe8 && SMPTE != 0xe7 && SMPTE != 0xe6 && SMPTE != 0xe5 {
-				d.Errorf("invalid MThd division SMPTE timecode type %02X (expected E8,E7, E6 or E5)", SMPTE)
+		d.FieldStruct("division", func(d *decode.D) {
+			if division := d.PeekUintBits(16); division&0x8000 == 0x8000 {
+				d.FieldU8("fps", fps)
+				d.FieldU8("resolution")
+			} else {
+				d.FieldU16("ppqn")
 			}
-		}
+		})
 	})
 }
 
 func decodeMTrk(d *decode.D) {
 	if !bytes.Equal(d.PeekBytes(4), []byte("MTrk")) {
-		d.Errorf("no MTrk marker")
+		d.Errorf("missing MTrk tag")
 	}
 
 	d.FieldUTF8("tag", 4)

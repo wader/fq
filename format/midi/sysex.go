@@ -25,10 +25,6 @@ func decodeSysExEvent(d *decode.D, status uint8, ctx *context) {
 	switch {
 
 	case status == 0xf0:
-		if ctx.casio {
-			d.Errorf("SysEx message F0 start byte without terminating F7")
-		}
-
 		d.FieldStruct("sysex_event", func(d *decode.D) {
 			d.FieldStruct("time", delta)
 			d.FieldU8("event", sysex)

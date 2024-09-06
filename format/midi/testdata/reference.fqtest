@@ -5,8 +5,9 @@ $ fq -d midi dv reference.mid
 0x000|            00 00 00 06                        |    ....        |    length: 6 0x4-0x8 (4)
 0x000|                        00 01                  |        ..      |    format: 1 0x8-0xa (2)
 0x000|                              00 02            |          ..    |    tracks: 2 0xa-0xc (2)
-0x000|                                    01 e0      |            ..  |    divisions: 480 0xc-0xe (2)
-     |                                               |                |  tracks[0:2]: 0xe-0x12b (285)
+     |                                               |                |    division{}: 0xc-0xe (2)
+0x000|                                    01 e0      |            ..  |      ppqn: 480 0xc-0xe (2)
+     |                                               |                |  content[0:2]: 0xe-0x12b (285)
      |                                               |                |    [0]{}: track 0xe-0x1a (12)
 0x000|                                          4d 54|              MT|      tag: "MTrk" 0xe-0x12 (4)
 0x010|72 6b                                          |rk              |

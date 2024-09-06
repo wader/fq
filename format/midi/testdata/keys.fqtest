@@ -5,8 +5,9 @@ $ fq -d midi d midi/key-signatures.mid
 0x000|            00 00 00 06                        |    ....        |    length: 6
 0x000|                        00 00                  |        ..      |    format: 0
 0x000|                              00 01            |          ..    |    tracks: 1
-0x000|                                    01 e0      |            ..  |    divisions: 480
-     |                                               |                |  tracks[0:1]:
+     |                                               |                |    division{}:
+0x000|                                    01 e0      |            ..  |      ppqn: 480
+     |                                               |                |  content[0:1]:
      |                                               |                |    [0]{}: track
 0x000|                                          4d 54|              MT|      tag: "MTrk"
 0x010|72 6b                                          |rk              |

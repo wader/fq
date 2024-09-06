@@ -18,30 +18,33 @@ Basic MIDI format 1 test file. Contains two tracks, each with only a _track name
 4. _format-2.mid_
 Basic MIDI format 2 test file.  Contains two tracks, each with only a _track name_ and _end-of-track_ events.
 
-5. _empty.mid_
+5. _smpte-timecode.mid_
+MIDI format 0 test file with an SMPTE timecode for the divisions field.
+
+6. _empty.mid_
 Empty MIDI file to verify MIDI decoder handles empty files.
 
-6. _key_signatures.mid_
+7. _key_signatures.mid_
 
 Test file with all supported MIDI key signatures.
 
-7. _notes.mid_
+8. _notes.mid_
 
 Test file with all supported MIDI notes.
 
-8. _unknown-chunks.mid_
+9. _unknown-chunks.mid_
 
 Test file with 'alien' chunks interleaved with the _MTrk_ track chunks.
 
-9. _invalid-MThd-length.mid_
+10. _invalid-MThd-length.mid_
 
 Test file with invalid _MThd_ chunk length.
 
-10. _invalid-MTrk-length.mid_
+11. _invalid-MTrk-length.mid_
 
 Test file with invalid _MTrk_ chunk length.
 
-11. _twinkle.mid_
+12. _twinkle.mid_
 
 Sample valid MIDI file for the example queries in the help.
 

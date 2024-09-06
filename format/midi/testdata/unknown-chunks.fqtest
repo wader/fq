@@ -5,8 +5,9 @@ $ fq -d midi dv midi/unknown-chunks.mid
 0x00|            00 00 00 06                        |    ....        |    length: 6 0x4-0x8 (4)
 0x00|                        00 01                  |        ..      |    format: 1 0x8-0xa (2)
 0x00|                              00 02            |          ..    |    tracks: 2 0xa-0xc (2)
-0x00|                                    01 e0      |            ..  |    divisions: 480 0xc-0xe (2)
-    |                                               |                |  tracks[0:5]: 0xe-0x56 (72)
+    |                                               |                |    division{}: 0xc-0xe (2)
+0x00|                                    01 e0      |            ..  |      ppqn: 480 0xc-0xe (2)
+    |                                               |                |  content[0:5]: 0xe-0x56 (72)
     |                                               |                |    [0]{}: other 0xe-0x1e (16)
 0x00|                                          4d 54|              MT|      tag: "MTrx" 0xe-0x12 (4)
 0x10|72 78                                          |rx              |

@@ -16,7 +16,8 @@ run: build
 	go run . -d midi dv format/midi/testdata/reference.mid
 
 debug: build
-	go run . -d midi dv format/midi/workdir/test-all-gm-percussion.mid
+	go run . -d midi dv format/midi/testdata/midi/smpte-timecode.mid
+	go run . -d midi dv format/midi/testdata/midi/format-0.mid
 
 test: build
 	go test ./format -run TestFormats/midi
