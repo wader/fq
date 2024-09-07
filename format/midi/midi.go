@@ -106,8 +106,10 @@ func decodeEvent(d *decode.D, ctx *context) {
 		decodeSysExEvent(d, status, ctx)
 	} else if status == 0xff {
 		decodeMetaEvent(d, event, ctx)
-	} else {
+	} else if status < 0xf0 {
 		decodeMIDIEvent(d, status, ctx)
+	} else {
+		d.Errorf("invalid status byte (%02x)", status)
 	}
 }
 
@@ -131,12 +133,17 @@ func peekEvent(d *decode.D) (uint64, uint8, uint8) {
 					status := bytes[ix]
 					ix++
 
+					// ... MIDI event?
+					if status < 0xf0 {
+						return delta, status, 0x00
+					}
+
 					// ... sysex?
 					if status == 0xf0 || status == 0xf7 {
 						return delta, status, 0x00
 					}
 
-					// ... MIDI event?
+					// ... (invalid) real-time event
 					if status != 0xff {
 						return delta, status, 0x00
 					}
