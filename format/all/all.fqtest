@@ -21,6 +21,7 @@ $ fq -n _registry.groups.probe
   "macho",
   "macho_fat",
   "matroska",
+  "midi",
   "moc3",
   "mp4",
   "nes",
@@ -126,6 +127,7 @@ macho                Mach-O macOS executable
 macho_fat            Fat Mach-O macOS executable (multi-architecture)
 markdown             Markdown
 matroska             Matroska file
+midi                 Standard MIDI file
 moc3                 MOC3 file
 mp3                  MP3 file
 mp3_frame            MPEG audio layer 3 frame

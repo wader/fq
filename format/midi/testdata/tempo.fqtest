@@ -1,0 +1,51 @@
+$ fq -d midi '.. | select(.event=="tempo")?.tempo' midi/twinkle.mid
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x10|                              0a 2c 2a         |          .,*   |.content[0].events[0].tempo: 666666
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x30|                  0a 83 a4                     |      ...       |.content[0].events[3].tempo: 689060
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x30|                                       0a b9 67|             ..g|.content[0].events[4].tempo: 702823
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x40|            0a f3 dd                           |    ...         |.content[0].events[5].tempo: 717789
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x40|                                 0b 30 df      |           .0.  |.content[0].events[6].tempo: 733407
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x50|      0b 70 97                                 |  .p.           |.content[0].events[7].tempo: 749719
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x50|                           0b b2 d3            |         ...    |.content[0].events[8].tempo: 766675
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x60|0b f8 87                                       |...             |.content[0].events[9].tempo: 784519
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x60|                     0c 41 8c                  |       .A.      |.content[0].events[10].tempo: 803212
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x60|                                          0c 8e|              ..|.content[0].events[11].tempo: 822819
+0x70|23                                             |#               |
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x70|               0c de 8f                        |     ...        |.content[0].events[12].tempo: 843407
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x70|                                    0d 33 1d   |            .3. |.content[0].events[13].tempo: 865053
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x80|         0d 8c 1c                              |   ...          |.content[0].events[14].tempo: 887836
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x80|                              0d e9 64         |          ..d   |.content[0].events[15].tempo: 911716
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x90|   0e 4c 65                                    | .Le            |.content[0].events[16].tempo: 937061
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x90|                        0e b5 0f               |        ...     |.content[0].events[17].tempo: 963855
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x90|                                             0f|               .|.content[0].events[18].tempo: 992227
+0xa0|23 e3                                          |#.              |
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0xa0|                  0f 99 71                     |      ..q       |.content[0].events[19].tempo: 1022321
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0xa0|                                       10 16 58|             ..X|.content[0].events[20].tempo: 1054296
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0xb0|            10 9b 52                           |    ..R         |.content[0].events[21].tempo: 1088338
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0xb0|                                 11 29 28      |           .)(  |.content[0].events[22].tempo: 1124648
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0xc0|      11 bf ea                                 |  ...           |.content[0].events[23].tempo: 1163242
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0xc0|                           12 62 53            |         .bS    |.content[0].events[24].tempo: 1204819
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0xd0|13 10 c7                                       |...             |.content[0].events[25].tempo: 1249479

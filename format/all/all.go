@@ -36,6 +36,7 @@ import (
 	_ "github.com/wader/fq/format/markdown"
 	_ "github.com/wader/fq/format/math"
 	_ "github.com/wader/fq/format/matroska"
+	_ "github.com/wader/fq/format/midi"
 	_ "github.com/wader/fq/format/moc3"
 	_ "github.com/wader/fq/format/mp3"
 	_ "github.com/wader/fq/format/mp4"

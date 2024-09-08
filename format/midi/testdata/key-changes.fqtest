@@ -1,0 +1,30 @@
+$ fq -d midi '.. | select(.event=="key_signature")?.key_signature' midi/twinkle.mid
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0xf0|                        00 01                  |        ..      |.content[1].events[2].key_signature: "A minor" (1)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x390|                                          00 01|              ..|.content[2].events[2].key_signature: "A minor" (1)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x3d0|   00 01                                       | ..             |.content[3].events[2].key_signature: "A minor" (1)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x550|      00 01                                    |  ..            |.content[4].events[2].key_signature: "A minor" (1)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x6d0|00 01                                          |..              |.content[5].events[2].key_signature: "A minor" (1)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x9f0|   00 01                                       | ..             |.content[6].events[2].key_signature: "A minor" (1)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0xeb0|         00 01                                 |   ..           |.content[7].events[2].key_signature: "A minor" (1)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0xfa0|            00 01                              |    ..          |.content[8].events[2].key_signature: "A minor" (1)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x1700|                        00 01                  |        ..      |.content[9].events[2].key_signature: "A minor" (1)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x2080|                              00 01            |          ..    |.content[10].events[2].key_signature: "A minor" (1)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x2280|                                             00|               .|.content[11].events[2].key_signature: "A minor" (1)
+0x2290|01                                             |.               |
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x2460|            00 01                              |    ..          |.content[12].events[2].key_signature: "A minor" (1)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x25f0|                  00 01                        |      ..        |.content[13].events[2].key_signature: "A minor" (1)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x2860|                  00 01                        |      ..        |.content[14].events[2].key_signature: "A minor" (1)

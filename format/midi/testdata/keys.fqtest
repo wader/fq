@@ -1,0 +1,290 @@
+$ fq -d midi d midi/key-signatures.mid
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: midi/key-signatures.mid (midi)
+     |                                               |                |  header{}:
+0x000|4d 54 68 64                                    |MThd            |    tag: "MThd"
+0x000|            00 00 00 06                        |    ....        |    length: 6
+0x000|                        00 00                  |        ..      |    format: 0
+0x000|                              00 01            |          ..    |    tracks: 1
+     |                                               |                |    division{}:
+0x000|                                    01 e0      |            ..  |      ppqn: 480
+     |                                               |                |  content[0:1]:
+     |                                               |                |    [0]{}: track
+0x000|                                          4d 54|              MT|      tag: "MTrk"
+0x010|72 6b                                          |rk              |
+0x010|      00 00 00 f7                              |  ....          |      length: 247
+     |                                               |                |      events[0:34]:
+     |                                               |                |        [0]{}: meta_event
+     |                                               |                |          time{}:
+0x010|                  00                           |      .         |            delta: 0
+     |                                               |                |            tick: 0
+0x010|                     ff                        |       .        |          status: 255
+0x010|                        03                     |        .       |          event: "track_name" (3)
+0x010|                           0e 4b 65 79 20 53 69|         .Key Si|          track_name: "Key Signatures"
+0x020|67 6e 61 74 75 72 65 73                        |gnatures        |
+     |                                               |                |        [1]{}: meta_event
+     |                                               |                |          time{}:
+0x020|                        87 69                  |        .i      |            delta: 1001
+     |                                               |                |            tick: 1001
+0x020|                              ff               |          .     |          status: 255
+0x020|                                 59            |           Y    |          event: "key_signature" (89)
+0x020|                                    02         |            .   |          length: 2
+0x020|                                       00 00   |             .. |          key_signature: "C major" (0)
+     |                                               |                |        [2]{}: meta_event
+     |                                               |                |          time{}:
+0x020|                                             87|               .|            delta: 1001
+0x030|69                                             |i               |
+     |                                               |                |            tick: 2002
+0x030|   ff                                          | .              |          status: 255
+0x030|      59                                       |  Y             |          event: "key_signature" (89)
+0x030|         02                                    |   .            |          length: 2
+0x030|            01 00                              |    ..          |          key_signature: "G major" (256)
+     |                                               |                |        [3]{}: meta_event
+     |                                               |                |          time{}:
+0x030|                  87 69                        |      .i        |            delta: 1001
+     |                                               |                |            tick: 3003
+0x030|                        ff                     |        .       |          status: 255
+0x030|                           59                  |         Y      |          event: "key_signature" (89)
+0x030|                              02               |          .     |          length: 2
+0x030|                                 02 00         |           ..   |          key_signature: "D major" (512)
+     |                                               |                |        [4]{}: meta_event
+     |                                               |                |          time{}:
+0x030|                                       87 69   |             .i |            delta: 1001
+     |                                               |                |            tick: 4004
+0x030|                                             ff|               .|          status: 255
+0x040|59                                             |Y               |          event: "key_signature" (89)
+0x040|   02                                          | .              |          length: 2
+0x040|      03 00                                    |  ..            |          key_signature: "A major" (768)
+     |                                               |                |        [5]{}: meta_event
+     |                                               |                |          time{}:
+0x040|            87 69                              |    .i          |            delta: 1001
+     |                                               |                |            tick: 5005
+0x040|                  ff                           |      .         |          status: 255
+0x040|                     59                        |       Y        |          event: "key_signature" (89)
+0x040|                        02                     |        .       |          length: 2
+0x040|                           04 00               |         ..     |          key_signature: "E major" (1024)
+     |                                               |                |        [6]{}: meta_event
+     |                                               |                |          time{}:
+0x040|                                 87 69         |           .i   |            delta: 1001
+     |                                               |                |            tick: 6006
+0x040|                                       ff      |             .  |          status: 255
+0x040|                                          59   |              Y |          event: "key_signature" (89)
+0x040|                                             02|               .|          length: 2
+0x050|05 00                                          |..              |          key_signature: "B major" (1280)
+     |                                               |                |        [7]{}: meta_event
+     |                                               |                |          time{}:
+0x050|      87 69                                    |  .i            |            delta: 1001
+     |                                               |                |            tick: 7007
+0x050|            ff                                 |    .           |          status: 255
+0x050|               59                              |     Y          |          event: "key_signature" (89)
+0x050|                  02                           |      .         |          length: 2
+0x050|                     06 00                     |       ..       |          key_signature: "F♯ major" (1536)
+     |                                               |                |        [8]{}: meta_event
+     |                                               |                |          time{}:
+0x050|                           87 69               |         .i     |            delta: 1001
+     |                                               |                |            tick: 8008
+0x050|                                 ff            |           .    |          status: 255
+0x050|                                    59         |            Y   |          event: "key_signature" (89)
+0x050|                                       02      |             .  |          length: 2
+0x050|                                          07 00|              ..|          key_signature: "C♯ major" (1792)
+     |                                               |                |        [9]{}: meta_event
+     |                                               |                |          time{}:
+0x060|87 69                                          |.i              |            delta: 1001
+     |                                               |                |            tick: 9009
+0x060|      ff                                       |  .             |          status: 255
+0x060|         59                                    |   Y            |          event: "key_signature" (89)
+0x060|            02                                 |    .           |          length: 2
+0x060|               00 00                           |     ..         |          key_signature: "C major" (0)
+     |                                               |                |        [10]{}: meta_event
+     |                                               |                |          time{}:
+0x060|                     87 69                     |       .i       |            delta: 1001
+     |                                               |                |            tick: 10010
+0x060|                           ff                  |         .      |          status: 255
+0x060|                              59               |          Y     |          event: "key_signature" (89)
+0x060|                                 02            |           .    |          length: 2
+0x060|                                    ff 00      |            ..  |          key_signature: "F major" (65280)
+     |                                               |                |        [11]{}: meta_event
+     |                                               |                |          time{}:
+0x060|                                          87 69|              .i|            delta: 1001
+     |                                               |                |            tick: 11011
+0x070|ff                                             |.               |          status: 255
+0x070|   59                                          | Y              |          event: "key_signature" (89)
+0x070|      02                                       |  .             |          length: 2
+0x070|         fe 00                                 |   ..           |          key_signature: "B♭ major" (65024)
+     |                                               |                |        [12]{}: meta_event
+     |                                               |                |          time{}:
+0x070|               87 69                           |     .i         |            delta: 1001
+     |                                               |                |            tick: 12012
+0x070|                     ff                        |       .        |          status: 255
+0x070|                        59                     |        Y       |          event: "key_signature" (89)
+0x070|                           02                  |         .      |          length: 2
+0x070|                              fd 00            |          ..    |          key_signature: "E♭ major" (64768)
+     |                                               |                |        [13]{}: meta_event
+     |                                               |                |          time{}:
+0x070|                                    87 69      |            .i  |            delta: 1001
+     |                                               |                |            tick: 13013
+0x070|                                          ff   |              . |          status: 255
+0x070|                                             59|               Y|          event: "key_signature" (89)
+0x080|02                                             |.               |          length: 2
+0x080|   fc 00                                       | ..             |          key_signature: "A♭ major" (64512)
+     |                                               |                |        [14]{}: meta_event
+     |                                               |                |          time{}:
+0x080|         87 69                                 |   .i           |            delta: 1001
+     |                                               |                |            tick: 14014
+0x080|               ff                              |     .          |          status: 255
+0x080|                  59                           |      Y         |          event: "key_signature" (89)
+0x080|                     02                        |       .        |          length: 2
+0x080|                        fb 00                  |        ..      |          key_signature: "D♭ major" (64256)
+     |                                               |                |        [15]{}: meta_event
+     |                                               |                |          time{}:
+0x080|                              87 69            |          .i    |            delta: 1001
+     |                                               |                |            tick: 15015
+0x080|                                    ff         |            .   |          status: 255
+0x080|                                       59      |             Y  |          event: "key_signature" (89)
+0x080|                                          02   |              . |          length: 2
+0x080|                                             fa|               .|          key_signature: "G♭ major" (64000)
+0x090|00                                             |.               |
+     |                                               |                |        [16]{}: meta_event
+     |                                               |                |          time{}:
+0x090|   87 69                                       | .i             |            delta: 1001
+     |                                               |                |            tick: 16016
+0x090|         ff                                    |   .            |          status: 255
+0x090|            59                                 |    Y           |          event: "key_signature" (89)
+0x090|               02                              |     .          |          length: 2
+0x090|                  f9 00                        |      ..        |          key_signature: "C♭ major" (63744)
+     |                                               |                |        [17]{}: meta_event
+     |                                               |                |          time{}:
+0x090|                        87 69                  |        .i      |            delta: 1001
+     |                                               |                |            tick: 17017
+0x090|                              ff               |          .     |          status: 255
+0x090|                                 59            |           Y    |          event: "key_signature" (89)
+0x090|                                    02         |            .   |          length: 2
+0x090|                                       00 01   |             .. |          key_signature: "A minor" (1)
+     |                                               |                |        [18]{}: meta_event
+     |                                               |                |          time{}:
+0x090|                                             87|               .|            delta: 1001
+0x0a0|69                                             |i               |
+     |                                               |                |            tick: 18018
+0x0a0|   ff                                          | .              |          status: 255
+0x0a0|      59                                       |  Y             |          event: "key_signature" (89)
+0x0a0|         02                                    |   .            |          length: 2
+0x0a0|            01 01                              |    ..          |          key_signature: "E minor" (257)
+     |                                               |                |        [19]{}: meta_event
+     |                                               |                |          time{}:
+0x0a0|                  87 69                        |      .i        |            delta: 1001
+     |                                               |                |            tick: 19019
+0x0a0|                        ff                     |        .       |          status: 255
+0x0a0|                           59                  |         Y      |          event: "key_signature" (89)
+0x0a0|                              02               |          .     |          length: 2
+0x0a0|                                 02 01         |           ..   |          key_signature: "B minor" (513)
+     |                                               |                |        [20]{}: meta_event
+     |                                               |                |          time{}:
+0x0a0|                                       87 69   |             .i |            delta: 1001
+     |                                               |                |            tick: 20020
+0x0a0|                                             ff|               .|          status: 255
+0x0b0|59                                             |Y               |          event: "key_signature" (89)
+0x0b0|   02                                          | .              |          length: 2
+0x0b0|      03 01                                    |  ..            |          key_signature: "F♯ minor" (769)
+     |                                               |                |        [21]{}: meta_event
+     |                                               |                |          time{}:
+0x0b0|            87 69                              |    .i          |            delta: 1001
+     |                                               |                |            tick: 21021
+0x0b0|                  ff                           |      .         |          status: 255
+0x0b0|                     59                        |       Y        |          event: "key_signature" (89)
+0x0b0|                        02                     |        .       |          length: 2
+0x0b0|                           04 01               |         ..     |          key_signature: "C♯ minor" (1025)
+     |                                               |                |        [22]{}: meta_event
+     |                                               |                |          time{}:
+0x0b0|                                 87 69         |           .i   |            delta: 1001
+     |                                               |                |            tick: 22022
+0x0b0|                                       ff      |             .  |          status: 255
+0x0b0|                                          59   |              Y |          event: "key_signature" (89)
+0x0b0|                                             02|               .|          length: 2
+0x0c0|05 01                                          |..              |          key_signature: "G♯ minor" (1281)
+     |                                               |                |        [23]{}: meta_event
+     |                                               |                |          time{}:
+0x0c0|      87 69                                    |  .i            |            delta: 1001
+     |                                               |                |            tick: 23023
+0x0c0|            ff                                 |    .           |          status: 255
+0x0c0|               59                              |     Y          |          event: "key_signature" (89)
+0x0c0|                  02                           |      .         |          length: 2
+0x0c0|                     06 01                     |       ..       |          key_signature: "D♯ minor" (1537)
+     |                                               |                |        [24]{}: meta_event
+     |                                               |                |          time{}:
+0x0c0|                           87 69               |         .i     |            delta: 1001
+     |                                               |                |            tick: 24024
+0x0c0|                                 ff            |           .    |          status: 255
+0x0c0|                                    59         |            Y   |          event: "key_signature" (89)
+0x0c0|                                       02      |             .  |          length: 2
+0x0c0|                                          07 01|              ..|          key_signature: "A♯ minor" (1793)
+     |                                               |                |        [25]{}: meta_event
+     |                                               |                |          time{}:
+0x0d0|87 69                                          |.i              |            delta: 1001
+     |                                               |                |            tick: 25025
+0x0d0|      ff                                       |  .             |          status: 255
+0x0d0|         59                                    |   Y            |          event: "key_signature" (89)
+0x0d0|            02                                 |    .           |          length: 2
+0x0d0|               00 01                           |     ..         |          key_signature: "A minor" (1)
+     |                                               |                |        [26]{}: meta_event
+     |                                               |                |          time{}:
+0x0d0|                     87 69                     |       .i       |            delta: 1001
+     |                                               |                |            tick: 26026
+0x0d0|                           ff                  |         .      |          status: 255
+0x0d0|                              59               |          Y     |          event: "key_signature" (89)
+0x0d0|                                 02            |           .    |          length: 2
+0x0d0|                                    ff 01      |            ..  |          key_signature: "D minor" (65281)
+     |                                               |                |        [27]{}: meta_event
+     |                                               |                |          time{}:
+0x0d0|                                          87 69|              .i|            delta: 1001
+     |                                               |                |            tick: 27027
+0x0e0|ff                                             |.               |          status: 255
+0x0e0|   59                                          | Y              |          event: "key_signature" (89)
+0x0e0|      02                                       |  .             |          length: 2
+0x0e0|         fe 01                                 |   ..           |          key_signature: "G minor" (65025)
+     |                                               |                |        [28]{}: meta_event
+     |                                               |                |          time{}:
+0x0e0|               87 69                           |     .i         |            delta: 1001
+     |                                               |                |            tick: 28028
+0x0e0|                     ff                        |       .        |          status: 255
+0x0e0|                        59                     |        Y       |          event: "key_signature" (89)
+0x0e0|                           02                  |         .      |          length: 2
+0x0e0|                              fd 01            |          ..    |          key_signature: "C minor" (64769)
+     |                                               |                |        [29]{}: meta_event
+     |                                               |                |          time{}:
+0x0e0|                                    87 69      |            .i  |            delta: 1001
+     |                                               |                |            tick: 29029
+0x0e0|                                          ff   |              . |          status: 255
+0x0e0|                                             59|               Y|          event: "key_signature" (89)
+0x0f0|02                                             |.               |          length: 2
+0x0f0|   fc 01                                       | ..             |          key_signature: "F minor" (64513)
+     |                                               |                |        [30]{}: meta_event
+     |                                               |                |          time{}:
+0x0f0|         87 69                                 |   .i           |            delta: 1001
+     |                                               |                |            tick: 30030
+0x0f0|               ff                              |     .          |          status: 255
+0x0f0|                  59                           |      Y         |          event: "key_signature" (89)
+0x0f0|                     02                        |       .        |          length: 2
+0x0f0|                        fb 01                  |        ..      |          key_signature: "B♭ minor" (64257)
+     |                                               |                |        [31]{}: meta_event
+     |                                               |                |          time{}:
+0x0f0|                              87 69            |          .i    |            delta: 1001
+     |                                               |                |            tick: 31031
+0x0f0|                                    ff         |            .   |          status: 255
+0x0f0|                                       59      |             Y  |          event: "key_signature" (89)
+0x0f0|                                          02   |              . |          length: 2
+0x0f0|                                             fa|               .|          key_signature: "E♭ minor" (64001)
+0x100|01                                             |.               |
+     |                                               |                |        [32]{}: meta_event
+     |                                               |                |          time{}:
+0x100|   87 69                                       | .i             |            delta: 1001
+     |                                               |                |            tick: 32032
+0x100|         ff                                    |   .            |          status: 255
+0x100|            59                                 |    Y           |          event: "key_signature" (89)
+0x100|               02                              |     .          |          length: 2
+0x100|                  f9 01                        |      ..        |          key_signature: "A♭ minor" (63745)
+     |                                               |                |        [33]{}: meta_event
+     |                                               |                |          time{}:
+0x100|                        87 69                  |        .i      |            delta: 1001
+     |                                               |                |            tick: 33033
+0x100|                              ff               |          .     |          status: 255
+0x100|                                 2f            |           /    |          event: "end_of_track" (47)
+0x100|                                    00|        |            .|  |          length: 0
