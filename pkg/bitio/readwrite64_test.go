@@ -136,7 +136,6 @@ func TestWrite64(t *testing.T) {
 		{0b1, 1, []byte{0b0000_0000}, 7, []byte{0b0000_0001}},
 	}
 	for _, tC := range testCases {
-		tC := tC
 		t.Run(fmt.Sprintf("%d %d %s", tC.v, tC.nBits, hex.EncodeToString(tC.buf)), func(t *testing.T) {
 			bitio.Write64(tC.v, tC.nBits, tC.buf, tC.firstBit)
 			if !bytes.Equal(tC.expectedBuf, tC.buf) {
