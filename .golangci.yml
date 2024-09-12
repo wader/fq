@@ -6,7 +6,6 @@ linters:
         - errname
         - errorlint
         - exhaustive
-        - exportloopref
         - forcetypeassert
         - goimports
         - gosec
@@ -25,6 +24,7 @@ linters:
         - wastedassign
         - staticcheck
         - govet
+        - copyloopvar
 
 linters-settings:
     revive:
@@ -54,11 +54,13 @@ linters-settings:
     staticcheck:
         checks: ["all"]
 
-run:
-    timeout: 5m
-    skip-dirs:
+issues:
+    exclude-dirs:
         # allow md5
         - dev
         - doc
         # ignore warnings in code from crypto/tls and zmap/zcrypto
         - format/tls/tlsdecrypt
+
+run:
+    timeout: 5m

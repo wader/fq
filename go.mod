@@ -1,6 +1,6 @@
 module github.com/wader/fq
 
-go 1.21
+go 1.22
 
 // fork of github.com/itchyny/gojq, see github.com/wader/gojq fq branch
 require github.com/wader/gojq v0.12.1-0.20240822064856-a7688e3344e7
