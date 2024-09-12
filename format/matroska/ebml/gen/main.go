@@ -248,10 +248,10 @@ func main() {
 
 					switch c.Type {
 					case "integer":
-						n, _ := strconv.ParseInt(e.Value, 10, 64)
+						n, _ := strconv.ParseInt(e.Value, 0, 64)
 						fmt.Printf("    %d:{", n)
 					case "uinteger":
-						n, _ := strconv.ParseUint(e.Value, 10, 64)
+						n, _ := strconv.ParseUint(e.Value, 0, 64)
 						fmt.Printf("    %d:{", n)
 					case "string":
 						fmt.Printf("    %q:{", e.Value)

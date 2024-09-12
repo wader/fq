@@ -155,7 +155,7 @@ $ fq -d matroska dv vp8.mkv
 0x00f0|                              4c 61 76 66 35 38|          Lavf58|              value: "Lavf58.45.100" 0xfa-0x107 (13)
 0x0100|2e 34 35 2e 31 30 30                           |.45.100         |
       |                                               |                |            [4]{}: element 0x107-0x11a (19)
-0x0100|                     73 a4                     |       s.       |              id: "segment_uuid" (0x73a4) (A randomly generated unique ID to identify the Segment amongst many others chosen) 0x107-0x109 (2)
+0x0100|                     73 a4                     |       s.       |              id: "segment_uuid" (0x73a4) (A randomly generated UID that identifies the Segment amongst many others v4 RFC4122 with all bits randomly (or pseudorandomly) chosen) 0x107-0x109 (2)
       |                                               |                |              type: "binary"
 0x0100|                           90                  |         .      |              size: 16 0x109-0x10a (1)
 0x0100|                              b6 f7 5d 8a 6f c3|          ..].o.|              value: raw bits 0x10a-0x11a (16)
@@ -177,7 +177,7 @@ $ fq -d matroska dv vp8.mkv
 0x0120|                                 84            |           .    |              size: 4 0x12b-0x12c (1)
 0x0120|                                    37 00 fb fb|            7...|              value: raw bits 0x12c-0x130 (4)
       |                                               |                |            [1]{}: element 0x130-0x173 (67)
-0x0130|ae                                             |.               |              id: "track_entry" (0xae) (Describes a track with all Elements) 0x130-0x131 (1)
+0x0130|ae                                             |.               |              id: "track_entry" (0xae) (Describes a track with all elements) 0x130-0x131 (1)
       |                                               |                |              type: "master"
 0x0130|   01 00 00 00 00 00 00 3a                     | .......:       |              size: 58 0x131-0x139 (8)
       |                                               |                |              elements[0:8]: 0x139-0x173 (58)
@@ -187,13 +187,13 @@ $ fq -d matroska dv vp8.mkv
 0x0130|                              81               |          .     |                  size: 1 0x13a-0x13b (1)
 0x0130|                                 01            |           .    |                  value: 1 0x13b-0x13c (1)
       |                                               |                |                [1]{}: element 0x13c-0x147 (11)
-0x0130|                                    73 c5      |            s.  |                  id: "track_uid" (0x73c5) (A unique ID to identify the Track) 0x13c-0x13e (2)
+0x0130|                                    73 c5      |            s.  |                  id: "track_uid" (0x73c5) (A UID that identifies the Track) 0x13c-0x13e (2)
       |                                               |                |                  type: "uinteger"
 0x0130|                                          88   |              . |                  size: 8 0x13e-0x13f (1)
 0x0130|                                             f1|               .|                  value: 17384833503613418420 0x13f-0x147 (8)
 0x0140|43 55 f6 76 2f fb b4                           |CU.v/..         |
       |                                               |                |                [2]{}: element 0x147-0x14a (3)
-0x0140|                     9c                        |       .        |                  id: "flag_lacing" (0x9c) (Set to 1 if the track **MAY** contain blocks using lacing) 0x147-0x148 (1)
+0x0140|                     9c                        |       .        |                  id: "flag_lacing" (0x9c) (Set to 1 if the track **MAY** contain blocks that use lacing) 0x147-0x148 (1)
       |                                               |                |                  type: "uinteger"
 0x0140|                        81                     |        .       |                  size: 1 0x148-0x149 (1)
 0x0140|                           00                  |         .      |                  value: 0 0x149-0x14a (1)
@@ -251,7 +251,7 @@ $ fq -d matroska dv vp8.mkv
 0x0180|   01 00 00 00 00 00 00 27                     | .......'       |              size: 39 0x181-0x189 (8)
       |                                               |                |              elements[0:2]: 0x189-0x1b0 (39)
       |                                               |                |                [0]{}: element 0x189-0x18c (3)
-0x0180|                           63 c0               |         c.     |                  id: "targets" (0x63c0) (Specifies which other elements the metadata represented by the Tag applies to) 0x189-0x18b (2)
+0x0180|                           63 c0               |         c.     |                  id: "targets" (0x63c0) (Specifies which other elements the metadata represented by the tag value applies to) 0x189-0x18b (2)
       |                                               |                |                  type: "master"
 0x0180|                                 80            |           .    |                  size: 0 0x18b-0x18c (1)
       |                                               |                |                  elements[0:0]: 0x18c-0x18c (0)
@@ -262,12 +262,12 @@ $ fq -d matroska dv vp8.mkv
 0x0190|00 00 00 00 00 1a                              |......          |
       |                                               |                |                  elements[0:2]: 0x196-0x1b0 (26)
       |                                               |                |                    [0]{}: element 0x196-0x1a0 (10)
-0x0190|                  45 a3                        |      E.        |                      id: "tag_name" (0x45a3) (The name of the Tag that is going to be stored) 0x196-0x198 (2)
+0x0190|                  45 a3                        |      E.        |                      id: "tag_name" (0x45a3) (The name of the tag value that is going to be stored) 0x196-0x198 (2)
       |                                               |                |                      type: "utf8"
 0x0190|                        87                     |        .       |                      size: 7 0x198-0x199 (1)
 0x0190|                           45 4e 43 4f 44 45 52|         ENCODER|                      value: "ENCODER" 0x199-0x1a0 (7)
       |                                               |                |                    [1]{}: element 0x1a0-0x1b0 (16)
-0x01a0|44 87                                          |D.              |                      id: "tag_string" (0x4487) (The value of the Tag) 0x1a0-0x1a2 (2)
+0x01a0|44 87                                          |D.              |                      id: "tag_string" (0x4487) (The tag value) 0x1a0-0x1a2 (2)
       |                                               |                |                      type: "utf8"
 0x01a0|      8d                                       |  .             |                      size: 13 0x1a2-0x1a3 (1)
 0x01a0|         4c 61 76 66 35 38 2e 34 35 2e 31 30 30|   Lavf58.45.100|                      value: "Lavf58.45.100" 0x1a3-0x1b0 (13)
@@ -277,12 +277,12 @@ $ fq -d matroska dv vp8.mkv
 0x01b0|      01 00 00 00 00 00 00 5e                  |  .......^      |              size: 94 0x1b2-0x1ba (8)
       |                                               |                |              elements[0:3]: 0x1ba-0x218 (94)
       |                                               |                |                [0]{}: element 0x1ba-0x1c8 (14)
-0x01b0|                              63 c0            |          c.    |                  id: "targets" (0x63c0) (Specifies which other elements the metadata represented by the Tag applies to) 0x1ba-0x1bc (2)
+0x01b0|                              63 c0            |          c.    |                  id: "targets" (0x63c0) (Specifies which other elements the metadata represented by the tag value applies to) 0x1ba-0x1bc (2)
       |                                               |                |                  type: "master"
 0x01b0|                                    8b         |            .   |                  size: 11 0x1bc-0x1bd (1)
       |                                               |                |                  elements[0:1]: 0x1bd-0x1c8 (11)
       |                                               |                |                    [0]{}: element 0x1bd-0x1c8 (11)
-0x01b0|                                       63 c5   |             c. |                      id: "tag_track_uid" (0x63c5) (A unique ID to identify the Track(s) the tags belong to) 0x1bd-0x1bf (2)
+0x01b0|                                       63 c5   |             c. |                      id: "tag_track_uid" (0x63c5) (A UID that identifies the Track(s) that the tags belong to) 0x1bd-0x1bf (2)
       |                                               |                |                      type: "uinteger"
 0x01b0|                                             88|               .|                      size: 8 0x1bf-0x1c0 (1)
 0x01c0|f1 43 55 f6 76 2f fb b4                        |.CU.v/..        |                      value: 17384833503613418420 0x1c0-0x1c8 (8)
@@ -293,12 +293,12 @@ $ fq -d matroska dv vp8.mkv
 0x01d0|00 21                                          |.!              |
       |                                               |                |                  elements[0:2]: 0x1d2-0x1f3 (33)
       |                                               |                |                    [0]{}: element 0x1d2-0x1dc (10)
-0x01d0|      45 a3                                    |  E.            |                      id: "tag_name" (0x45a3) (The name of the Tag that is going to be stored) 0x1d2-0x1d4 (2)
+0x01d0|      45 a3                                    |  E.            |                      id: "tag_name" (0x45a3) (The name of the tag value that is going to be stored) 0x1d2-0x1d4 (2)
       |                                               |                |                      type: "utf8"
 0x01d0|            87                                 |    .           |                      size: 7 0x1d4-0x1d5 (1)
 0x01d0|               45 4e 43 4f 44 45 52            |     ENCODER    |                      value: "ENCODER" 0x1d5-0x1dc (7)
       |                                               |                |                    [1]{}: element 0x1dc-0x1f3 (23)
-0x01d0|                                    44 87      |            D.  |                      id: "tag_string" (0x4487) (The value of the Tag) 0x1dc-0x1de (2)
+0x01d0|                                    44 87      |            D.  |                      id: "tag_string" (0x4487) (The tag value) 0x1dc-0x1de (2)
       |                                               |                |                      type: "utf8"
 0x01d0|                                          94   |              . |                      size: 20 0x1de-0x1df (1)
 0x01d0|                                             4c|               L|                      value: "Lavc58.91.100 libvpx" 0x1df-0x1f3 (20)
@@ -310,13 +310,13 @@ $ fq -d matroska dv vp8.mkv
 0x01f0|               a2                              |     .          |                  size: 34 0x1f5-0x1f6 (1)
       |                                               |                |                  elements[0:2]: 0x1f6-0x218 (34)
       |                                               |                |                    [0]{}: element 0x1f6-0x201 (11)
-0x01f0|                  45 a3                        |      E.        |                      id: "tag_name" (0x45a3) (The name of the Tag that is going to be stored) 0x1f6-0x1f8 (2)
+0x01f0|                  45 a3                        |      E.        |                      id: "tag_name" (0x45a3) (The name of the tag value that is going to be stored) 0x1f6-0x1f8 (2)
       |                                               |                |                      type: "utf8"
 0x01f0|                        88                     |        .       |                      size: 8 0x1f8-0x1f9 (1)
 0x01f0|                           44 55 52 41 54 49 4f|         DURATIO|                      value: "DURATION" 0x1f9-0x201 (8)
 0x0200|4e                                             |N               |
       |                                               |                |                    [1]{}: element 0x201-0x218 (23)
-0x0200|   44 87                                       | D.             |                      id: "tag_string" (0x4487) (The value of the Tag) 0x201-0x203 (2)
+0x0200|   44 87                                       | D.             |                      id: "tag_string" (0x4487) (The tag value) 0x201-0x203 (2)
       |                                               |                |                      type: "utf8"
 0x0200|         94                                    |   .            |                      size: 20 0x203-0x204 (1)
 0x0200|            30 30 3a 30 30 3a 30 30 2e 30 34 30|    00:00:00.040|                      value: "00:00:00.040000000" 0x204-0x218 (20)
@@ -337,7 +337,7 @@ $ fq -d matroska dv vp8.mkv
 0x0220|               81                              |     .          |              size: 1 0x225-0x226 (1)
 0x0220|                  00                           |      .         |              value: 0 0x226-0x227 (1)
       |                                               |                |            [2]{}: element 0x227-0x1470 (4681)
-0x0220|                     a3                        |       .        |              id: "simple_block" (0xa3) (Similar to Block) 0x227-0x228 (1)
+0x0220|                     a3                        |       .        |              id: "simple_block" (0xa3) (Similar to Block ) but without all the extra information) 0x227-0x228 (1)
       |                                               |                |              type: "binary"
 0x0220|                        52 46                  |        RF      |              size: 4678 0x228-0x22a (2)
 0x0220|                              81               |          .     |              track_number: 1 0x22a-0x22b (1)
@@ -392,7 +392,7 @@ $ fq -d matroska dv vp8.mkv
 0x1470|                                          81   |              . |                  size: 1 0x147e-0x147f (1)
 0x1470|                                             00|               .|                  value: 0 0x147f-0x1480 (1)
       |                                               |                |                [1]{}: element 0x1480-0x148c (12)
-0x1480|b7                                             |.               |                  id: "cue_track_positions" (0xb7) (Contain positions for different tracks corresponding to the timestamp) 0x1480-0x1481 (1)
+0x1480|b7                                             |.               |                  id: "cue_track_positions" (0xb7) (Contains positions for different tracks corresponding to the timestamp) 0x1480-0x1481 (1)
       |                                               |                |                  type: "master"
 0x1480|   8a                                          | .              |                  size: 10 0x1481-0x1482 (1)
       |                                               |                |                  elements[0:3]: 0x1482-0x148c (10)
@@ -407,7 +407,7 @@ $ fq -d matroska dv vp8.mkv
 0x1480|                  82                           |      .         |                      size: 2 0x1486-0x1487 (1)
 0x1480|                     01 e4                     |       ..       |                      value: 484 0x1487-0x1489 (2)
       |                                               |                |                    [2]{}: element 0x1489-0x148c (3)
-0x1480|                           f0                  |         .      |                      id: "cue_relative_position" (0xf0) (The relative position inside the Cluster of the referenced SimpleBlock or BlockGroup with 0 being the first possible position for an Element inside that Cluster) 0x1489-0x148a (1)
+0x1480|                           f0                  |         .      |                      id: "cue_relative_position" (0xf0) (The relative position inside the Cluster of the referenced SimpleBlock or BlockGroup with 0 being the first possible position for an element inside that Cluster) 0x1489-0x148a (1)
       |                                               |                |                      type: "uinteger"
 0x1480|                              81               |          .     |                      size: 1 0x148a-0x148b (1)
 0x1480|                                 09|           |           .|   |                      value: 9 0x148b-0x148c (1)

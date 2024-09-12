@@ -371,7 +371,7 @@ var SegmentUUIDElement = &ebml.Binary{
 		ID:         SegmentUUIDID,
 		ParentID:   InfoID,
 		Name:       "segment_uuid",
-		Definition: "A randomly generated unique ID to identify the Segment amongst many others chosen",
+		Definition: "A randomly generated UID that identifies the Segment amongst many others v4 RFC4122 with all bits randomly (or pseudorandomly) chosen",
 	},
 }
 var SegmentFilenameElement = &ebml.UTF8{
@@ -387,7 +387,7 @@ var PrevUUIDElement = &ebml.Binary{
 		ID:         PrevUUIDID,
 		ParentID:   InfoID,
 		Name:       "prev_uuid",
-		Definition: "An ID to identify the previous Segment of a Linked Segment",
+		Definition: "An ID that identifies the previous Segment of a Linked Segment",
 	},
 }
 var PrevFilenameElement = &ebml.UTF8{
@@ -403,7 +403,7 @@ var NextUUIDElement = &ebml.Binary{
 		ID:         NextUUIDID,
 		ParentID:   InfoID,
 		Name:       "next_uuid",
-		Definition: "An ID to identify the next Segment of a Linked Segment",
+		Definition: "An ID that identifies the next Segment of a Linked Segment",
 	},
 }
 var NextFilenameElement = &ebml.UTF8{
@@ -419,7 +419,7 @@ var SegmentFamilyElement = &ebml.Binary{
 		ID:         SegmentFamilyID,
 		ParentID:   InfoID,
 		Name:       "segment_family",
-		Definition: "A unique ID that all Segments of a Linked Segment **MUST** share chosen",
+		Definition: "A UID that all Segments of a Linked Segment **MUST** share chosen",
 	},
 }
 var TimestampScaleElement = &ebml.Uinteger{
@@ -497,11 +497,7 @@ var ChapterTranslateCodecElement = &ebml.Uinteger{
 		ID:         ChapterTranslateCodecID,
 		ParentID:   ChapterTranslateID,
 		Name:       "chapter_translate_codec",
-		Definition: "This ChapterTranslate applies to this chapter codec of the given chapter edition",
-	},
-	Enums: map[uint64]ebml.Enum{
-		0: {Name: "matroska_script", Description: "Chapter commands using the Matroska Script codec"},
-		1: {Name: "dvd_menu", Description: "Chapter commands using the DVD-like codec"},
+		Definition: "Applies to the chapter codec of the given chapter edition",
 	},
 }
 var ChapterTranslateEditionUIDElement = &ebml.Uinteger{
@@ -509,7 +505,7 @@ var ChapterTranslateEditionUIDElement = &ebml.Uinteger{
 		ID:         ChapterTranslateEditionUIDID,
 		ParentID:   ChapterTranslateID,
 		Name:       "chapter_translate_edition_uid",
-		Definition: "Specify a chapter edition UID on which this ChapterTranslate applies",
+		Definition: "Specifies a chapter edition UID to which this ChapterTranslate applies",
 	},
 }
 
@@ -559,7 +555,7 @@ var SimpleBlockElement = &ebml.Binary{
 		ID:         SimpleBlockID,
 		ParentID:   ClusterID,
 		Name:       "simple_block",
-		Definition: "Similar to Block",
+		Definition: "Similar to Block ) but without all the extra information",
 	},
 }
 var EncryptedBlockElement = &ebml.Binary{
@@ -567,7 +563,7 @@ var EncryptedBlockElement = &ebml.Binary{
 		ID:         EncryptedBlockID,
 		ParentID:   ClusterID,
 		Name:       "encrypted_block",
-		Definition: "Similar to SimpleBlock",
+		Definition: "Similar to SimpleBlock )",
 	},
 }
 
@@ -587,7 +583,7 @@ var SilentTrackNumberElement = &ebml.Uinteger{
 		ID:         SilentTrackNumberID,
 		ParentID:   SilentTracksID,
 		Name:       "silent_track_number",
-		Definition: "One of the track number that are not used from now on in the stream",
+		Definition: "One of the track numbers that is not used from now on in the stream",
 	},
 }
 
@@ -682,7 +678,7 @@ var BlockAdditionsElement = &ebml.Master{
 		ID:         BlockAdditionsID,
 		ParentID:   BlockGroupID,
 		Name:       "block_additions",
-		Definition: "Contain additional binary data to complete the main one",
+		Definition: "Contains additional binary data to complete the Block element",
 	},
 	Master: map[ebml.ID]ebml.Element{
 		BlockMoreID: BlockMoreElement,
@@ -694,7 +690,7 @@ var BlockMoreElement = &ebml.Master{
 		ID:         BlockMoreID,
 		ParentID:   BlockAdditionsID,
 		Name:       "block_more",
-		Definition: "Contain the BlockAdditional and some parameters",
+		Definition: "Contains the BlockAdditional and some parameters",
 	},
 	Master: map[ebml.ID]ebml.Element{
 		BlockAdditionalID: BlockAdditionalElement,
@@ -714,7 +710,7 @@ var BlockAddIDElement = &ebml.Uinteger{
 		ID:         BlockAddIDID,
 		ParentID:   BlockMoreID,
 		Name:       "block_add_id",
-		Definition: "An ID to identify how to interpret the BlockAdditional data",
+		Definition: "An ID that identifies how to interpret the BlockAdditional data",
 	},
 }
 
@@ -766,7 +762,7 @@ var BlockAdditionIDElement = &ebml.Uinteger{
 		ID:         BlockAdditionIDID,
 		ParentID:   TimeSliceID,
 		Name:       "block_addition_id",
-		Definition: "The ID of the BlockAdditional Element (0 is the main Block)",
+		Definition: "The ID of the BlockAdditional element",
 	},
 }
 var DelayElement = &ebml.Uinteger{
@@ -774,7 +770,7 @@ var DelayElement = &ebml.Uinteger{
 		ID:         DelayID,
 		ParentID:   TimeSliceID,
 		Name:       "delay",
-		Definition: "The delay to apply to the Element",
+		Definition: "The delay to apply to the element",
 	},
 }
 var SliceDurationElement = &ebml.Uinteger{
@@ -782,7 +778,7 @@ var SliceDurationElement = &ebml.Uinteger{
 		ID:         SliceDurationID,
 		ParentID:   TimeSliceID,
 		Name:       "slice_duration",
-		Definition: "The duration to apply to the Element",
+		Definition: "The duration to apply to the element",
 	},
 }
 
@@ -832,7 +828,7 @@ var TrackEntryElement = &ebml.Master{
 		ID:         TrackEntryID,
 		ParentID:   TracksID,
 		Name:       "track_entry",
-		Definition: "Describes a track with all Elements",
+		Definition: "Describes a track with all elements",
 	},
 	Master: map[ebml.ID]ebml.Element{
 		TrackNumberID:                 TrackNumberElement,
@@ -894,7 +890,7 @@ var TrackUIDElement = &ebml.Uinteger{
 		ID:         TrackUIDID,
 		ParentID:   TrackEntryID,
 		Name:       "track_uid",
-		Definition: "A unique ID to identify the Track",
+		Definition: "A UID that identifies the Track",
 	},
 }
 var TrackTypeElement = &ebml.Uinteger{
@@ -928,7 +924,7 @@ var FlagDefaultElement = &ebml.Uinteger{
 		ID:         FlagDefaultID,
 		ParentID:   TrackEntryID,
 		Name:       "flag_default",
-		Definition: "Set if that track is eligible for automatic selection by the player",
+		Definition: "Set to 1 if the track is eligible for automatic selection by the player",
 	},
 }
 var FlagForcedElement = &ebml.Uinteger{
@@ -944,7 +940,7 @@ var FlagHearingImpairedElement = &ebml.Uinteger{
 		ID:         FlagHearingImpairedID,
 		ParentID:   TrackEntryID,
 		Name:       "flag_hearing_impaired",
-		Definition: "Set to 1 if and only if that track is suitable for users with hearing impairments",
+		Definition: "Set to 1 if and only if the track is suitable for users with hearing impairments",
 	},
 }
 var FlagVisualImpairedElement = &ebml.Uinteger{
@@ -952,7 +948,7 @@ var FlagVisualImpairedElement = &ebml.Uinteger{
 		ID:         FlagVisualImpairedID,
 		ParentID:   TrackEntryID,
 		Name:       "flag_visual_impaired",
-		Definition: "Set to 1 if and only if that track is suitable for users with visual impairments",
+		Definition: "Set to 1 if and only if the track is suitable for users with visual impairments",
 	},
 }
 var FlagTextDescriptionsElement = &ebml.Uinteger{
@@ -960,7 +956,7 @@ var FlagTextDescriptionsElement = &ebml.Uinteger{
 		ID:         FlagTextDescriptionsID,
 		ParentID:   TrackEntryID,
 		Name:       "flag_text_descriptions",
-		Definition: "Set to 1 if and only if that track contains textual descriptions of video content",
+		Definition: "Set to 1 if and only if the track contains textual descriptions of video content",
 	},
 }
 var FlagOriginalElement = &ebml.Uinteger{
@@ -968,7 +964,7 @@ var FlagOriginalElement = &ebml.Uinteger{
 		ID:         FlagOriginalID,
 		ParentID:   TrackEntryID,
 		Name:       "flag_original",
-		Definition: "Set to 1 if and only if that track is in the content's original language",
+		Definition: "Set to 1 if and only if the track is in the content's original language",
 	},
 }
 var FlagCommentaryElement = &ebml.Uinteger{
@@ -976,7 +972,7 @@ var FlagCommentaryElement = &ebml.Uinteger{
 		ID:         FlagCommentaryID,
 		ParentID:   TrackEntryID,
 		Name:       "flag_commentary",
-		Definition: "Set to 1 if and only if that track contains commentary",
+		Definition: "Set to 1 if and only if the track contains commentary",
 	},
 }
 var FlagLacingElement = &ebml.Uinteger{
@@ -984,7 +980,7 @@ var FlagLacingElement = &ebml.Uinteger{
 		ID:         FlagLacingID,
 		ParentID:   TrackEntryID,
 		Name:       "flag_lacing",
-		Definition: "Set to 1 if the track **MAY** contain blocks using lacing",
+		Definition: "Set to 1 if the track **MAY** contain blocks that use lacing",
 	},
 }
 var MinCacheElement = &ebml.Uinteger{
@@ -1120,7 +1116,7 @@ var CodecDownloadURLElement = &ebml.String{
 		ID:         CodecDownloadURLID,
 		ParentID:   TrackEntryID,
 		Name:       "codec_download_url",
-		Definition: "A URL to download about the codec used",
+		Definition: "A URL to download information about the codec used",
 	},
 }
 var CodecDecodeAllElement = &ebml.Uinteger{
@@ -1144,7 +1140,7 @@ var CodecDelayElement = &ebml.Uinteger{
 		ID:         CodecDelayID,
 		ParentID:   TrackEntryID,
 		Name:       "codec_delay",
-		Definition: "CodecDelay is The codec-built-in delay",
+		Definition: "The built-in delay for the codec",
 	},
 }
 var SeekPreRollElement = &ebml.Uinteger{
@@ -1168,7 +1164,7 @@ var TrickTrackSegmentUIDElement = &ebml.Binary{
 		ID:         TrickTrackSegmentUIDID,
 		ParentID:   TrackEntryID,
 		Name:       "trick_track_segment_uid",
-		Definition: "The SegmentUID of the Segment containing the track identified by TrickTrackUID",
+		Definition: "The SegmentUUID of the Segment containing the track identified by TrickTrackUID",
 	},
 }
 var TrickTrackFlagElement = &ebml.Uinteger{
@@ -1192,7 +1188,7 @@ var TrickMasterTrackSegmentUIDElement = &ebml.Binary{
 		ID:         TrickMasterTrackSegmentUIDID,
 		ParentID:   TrackEntryID,
 		Name:       "trick_master_track_segment_uid",
-		Definition: "The SegmentUID of the Segment containing the track identified by MasterTrackUID",
+		Definition: "The SegmentUUID of the Segment containing the track identified by MasterTrackUID",
 	},
 }
 
@@ -1201,7 +1197,7 @@ var BlockAdditionMappingElement = &ebml.Master{
 		ID:         BlockAdditionMappingID,
 		ParentID:   TrackEntryID,
 		Name:       "block_addition_mapping",
-		Definition: "Contains elements that extend the track format",
+		Definition: "Contains elements that extend the track format by adding content either to each frame",
 	},
 	Master: map[ebml.ID]ebml.Element{
 		BlockAddIDValueID:     BlockAddIDValueElement,
@@ -1269,11 +1265,7 @@ var TrackTranslateCodecElement = &ebml.Uinteger{
 		ID:         TrackTranslateCodecID,
 		ParentID:   TrackTranslateID,
 		Name:       "track_translate_codec",
-		Definition: "This TrackTranslate applies to this chapter codec of the given chapter edition",
-	},
-	Enums: map[uint64]ebml.Enum{
-		0: {Name: "matroska_script", Description: "Chapter commands using the Matroska Script codec"},
-		1: {Name: "dvd_menu", Description: "Chapter commands using the DVD-like codec"},
+		Definition: "Applies to the chapter codec of the given chapter edition",
 	},
 }
 var TrackTranslateEditionUIDElement = &ebml.Uinteger{
@@ -1281,7 +1273,7 @@ var TrackTranslateEditionUIDElement = &ebml.Uinteger{
 		ID:         TrackTranslateEditionUIDID,
 		ParentID:   TrackTranslateID,
 		Name:       "track_translate_edition_uid",
-		Definition: "Specify a chapter edition UID on which this TrackTranslate applies",
+		Definition: "Specifies a chapter edition UID to which this TrackTranslate applies",
 	},
 }
 
@@ -1320,7 +1312,7 @@ var FlagInterlacedElement = &ebml.Uinteger{
 		ID:         FlagInterlacedID,
 		ParentID:   VideoID,
 		Name:       "flag_interlaced",
-		Definition: "Specify whether the video frames in this track are interlaced",
+		Definition: "Specifies whether the video frames in this track are interlaced",
 	},
 	Enums: map[uint64]ebml.Enum{
 		0: {Name: "undetermined", Description: "Unknown status"},
@@ -1333,7 +1325,7 @@ var FieldOrderElement = &ebml.Uinteger{
 		ID:         FieldOrderID,
 		ParentID:   VideoID,
 		Name:       "field_order",
-		Definition: "Specify the field ordering of video frames in this track",
+		Definition: "Specifies the field ordering of video frames in this track",
 	},
 	Enums: map[uint64]ebml.Enum{
 		0:  {Name: "progressive", Description: "Interlaced frames"},
@@ -1374,11 +1366,11 @@ var AlphaModeElement = &ebml.Uinteger{
 		ID:         AlphaModeID,
 		ParentID:   VideoID,
 		Name:       "alpha_mode",
-		Definition: "Indicate whether the BlockAdditional Element with BlockAddID of \"1\" contains Alpha data",
+		Definition: "Indicates whether the BlockAdditional element with BlockAddID of \"1\" contains Alpha data as defined by the Codec Mapping for the CodecID",
 	},
 	Enums: map[uint64]ebml.Enum{
-		0: {Name: "none", Description: "The BlockAdditional Element with BlockAddID of \"1\" does not exist or **SHOULD NOT** be considered as containing such data"},
-		1: {Name: "present", Description: "The BlockAdditional Element with BlockAddID of \"1\" contains alpha channel data"},
+		0: {Name: "none", Description: "The BlockAdditional element with BlockAddID of \"1\" does not exist or **SHOULD NOT** be considered as containing such data"},
+		1: {Name: "present", Description: "The BlockAdditional element with BlockAddID of \"1\" contains alpha channel data"},
 	},
 }
 var OldStereoModeElement = &ebml.Uinteger{
@@ -1464,7 +1456,7 @@ var DisplayUnitElement = &ebml.Uinteger{
 		ID:         DisplayUnitID,
 		ParentID:   VideoID,
 		Name:       "display_unit",
-		Definition: "How DisplayWidth & DisplayHeight are interpreted",
+		Definition: "How DisplayWidth and DisplayHeight are interpreted",
 	},
 	Enums: map[uint64]ebml.Enum{
 		0: {Name: "pixels"},
@@ -1479,7 +1471,7 @@ var AspectRatioTypeElement = &ebml.Uinteger{
 		ID:         AspectRatioTypeID,
 		ParentID:   VideoID,
 		Name:       "aspect_ratio_type",
-		Definition: "Specify the possible modifications to the aspect ratio",
+		Definition: "Specifies the possible modifications to the aspect ratio",
 	},
 	Enums: map[uint64]ebml.Enum{
 		0: {Name: "free_resizing"},
@@ -1492,7 +1484,7 @@ var UncompressedFourCCElement = &ebml.Binary{
 		ID:         UncompressedFourCCID,
 		ParentID:   VideoID,
 		Name:       "uncompressed_four_cc",
-		Definition: "Specify the uncompressed pixel format used for the Track's data as a FourCC",
+		Definition: "Specifies the uncompressed pixel format used for the Track's data as a FourCC",
 	},
 }
 var GammaValueElement = &ebml.Float{
@@ -1500,7 +1492,7 @@ var GammaValueElement = &ebml.Float{
 		ID:         GammaValueID,
 		ParentID:   VideoID,
 		Name:       "gamma_value",
-		Definition: "Gamma Value",
+		Definition: "Gamma value",
 	},
 }
 var FrameRateElement = &ebml.Float{
@@ -1517,7 +1509,7 @@ var ColourElement = &ebml.Master{
 		ID:         ColourID,
 		ParentID:   VideoID,
 		Name:       "colour",
-		Definition: "Settings describing the colour format",
+		Definition: "Settings describing the color format",
 	},
 	Master: map[ebml.ID]ebml.Element{
 		MatrixCoefficientsID:      MatrixCoefficientsElement,
@@ -1574,7 +1566,7 @@ var ChromaSubsamplingHorzElement = &ebml.Uinteger{
 		ID:         ChromaSubsamplingHorzID,
 		ParentID:   ColourID,
 		Name:       "chroma_subsampling_horz",
-		Definition: "The amount of pixels to remove in the Cr and Cb channels for every pixel not removed horizontally",
+		Definition: "The number of pixels to remove in the Cr and Cb channels for every pixel not removed horizontally",
 	},
 }
 var ChromaSubsamplingVertElement = &ebml.Uinteger{
@@ -1582,7 +1574,7 @@ var ChromaSubsamplingVertElement = &ebml.Uinteger{
 		ID:         ChromaSubsamplingVertID,
 		ParentID:   ColourID,
 		Name:       "chroma_subsampling_vert",
-		Definition: "The amount of pixels to remove in the Cr and Cb channels for every pixel not removed vertically",
+		Definition: "The number of pixels to remove in the Cr and Cb channels for every pixel not removed vertically",
 	},
 }
 var CbSubsamplingHorzElement = &ebml.Uinteger{
@@ -1590,7 +1582,7 @@ var CbSubsamplingHorzElement = &ebml.Uinteger{
 		ID:         CbSubsamplingHorzID,
 		ParentID:   ColourID,
 		Name:       "cb_subsampling_horz",
-		Definition: "The amount of pixels to remove in the Cb channel for every pixel not removed horizontally",
+		Definition: "The number of pixels to remove in the Cb channel for every pixel not removed horizontally",
 	},
 }
 var CbSubsamplingVertElement = &ebml.Uinteger{
@@ -1598,7 +1590,7 @@ var CbSubsamplingVertElement = &ebml.Uinteger{
 		ID:         CbSubsamplingVertID,
 		ParentID:   ColourID,
 		Name:       "cb_subsampling_vert",
-		Definition: "The amount of pixels to remove in the Cb channel for every pixel not removed vertically",
+		Definition: "The number of pixels to remove in the Cb channel for every pixel not removed vertically",
 	},
 }
 var ChromaSitingHorzElement = &ebml.Uinteger{
@@ -1675,7 +1667,7 @@ var PrimariesElement = &ebml.Uinteger{
 		ID:         PrimariesID,
 		ParentID:   ColourID,
 		Name:       "primaries",
-		Definition: "The colour primaries of the video",
+		Definition: "The color primaries of the video",
 	},
 	Enums: map[uint64]ebml.Enum{
 		0:  {Name: "reserved"},
@@ -1903,7 +1895,7 @@ var OutputSamplingFrequencyElement = &ebml.Float{
 		ID:         OutputSamplingFrequencyID,
 		ParentID:   AudioID,
 		Name:       "output_sampling_frequency",
-		Definition: "Real output sampling frequency in Hz",
+		Definition: "Real output sampling frequency in Hz that is used for Spectral Band Replication (SBR) techniques",
 	},
 }
 var ChannelsElement = &ebml.Uinteger{
@@ -1984,7 +1976,7 @@ var TrackPlaneElement = &ebml.Master{
 		ID:         TrackPlaneID,
 		ParentID:   TrackCombinePlanesID,
 		Name:       "track_plane",
-		Definition: "Contains a video plane track that need to be combined to create this 3D track",
+		Definition: "Contains a video plane track that needs to be combined to create this 3D track",
 	},
 	Master: map[ebml.ID]ebml.Element{
 		TrackPlaneUIDID:  TrackPlaneUIDElement,
@@ -1996,7 +1988,7 @@ var TrackPlaneUIDElement = &ebml.Uinteger{
 		ID:         TrackPlaneUIDID,
 		ParentID:   TrackPlaneID,
 		Name:       "track_plane_uid",
-		Definition: "The trackUID number of the track representing the plane",
+		Definition: "The TrackUID number of the track representing the plane",
 	},
 }
 var TrackPlaneTypeElement = &ebml.Uinteger{
@@ -2029,7 +2021,7 @@ var TrackJoinUIDElement = &ebml.Uinteger{
 		ID:         TrackJoinUIDID,
 		ParentID:   TrackJoinBlocksID,
 		Name:       "track_join_uid",
-		Definition: "The trackUID number of a track whose blocks are used to create this virtual track",
+		Definition: "The TrackUID number of a track whose blocks are used to create this virtual track",
 	},
 }
 
@@ -2065,7 +2057,7 @@ var ContentEncodingOrderElement = &ebml.Uinteger{
 		ID:         ContentEncodingOrderID,
 		ParentID:   ContentEncodingID,
 		Name:       "content_encoding_order",
-		Definition: "Tell in which order to apply each ContentEncoding of the ContentEncodings",
+		Definition: "Defines the order to apply each ContentEncoding of the ContentEncodings",
 	},
 }
 var ContentEncodingScopeElement = &ebml.Uinteger{
@@ -2073,7 +2065,7 @@ var ContentEncodingScopeElement = &ebml.Uinteger{
 		ID:         ContentEncodingScopeID,
 		ParentID:   ContentEncodingID,
 		Name:       "content_encoding_scope",
-		Definition: "A bit field that describes which Elements have been modified in this way",
+		Definition: "A bit field that describes which elements have been modified in this way",
 	},
 	Enums: map[uint64]ebml.Enum{
 		1: {Name: "block", Description: "All frame contents"},
@@ -2086,7 +2078,7 @@ var ContentEncodingTypeElement = &ebml.Uinteger{
 		ID:         ContentEncodingTypeID,
 		ParentID:   ContentEncodingID,
 		Name:       "content_encoding_type",
-		Definition: "A value describing what kind of transformation is applied",
+		Definition: "A value describing the kind of transformation that is applied",
 	},
 	Enums: map[uint64]ebml.Enum{
 		0: {Name: "compression"},
@@ -2115,8 +2107,8 @@ var ContentCompAlgoElement = &ebml.Uinteger{
 	},
 	Enums: map[uint64]ebml.Enum{
 		0: {Name: "zlib", Description: "zlib compression RFC1950"},
-		1: {Name: "bzlib", Description: "bzip2 compression BZIP2"},
-		2: {Name: "lzo1x", Description: "Lempel-Ziv-Oberhumer compression LZO"},
+		1: {Name: "bzlib", Description: "bzip2 compression BZIP2 **SHOULD NOT** be used"},
+		2: {Name: "lzo1x", Description: "Lempel-Ziv-Oberhumer compression LZO **SHOULD NOT** be used"},
 		3: {Name: "header_stripping", Description: "Octets in ContentCompSettings have been stripped from each frame"},
 	},
 }
@@ -2155,11 +2147,11 @@ var ContentEncAlgoElement = &ebml.Uinteger{
 	},
 	Enums: map[uint64]ebml.Enum{
 		0: {Name: "not_encrypted", Description: "The data are not encrypted"},
-		1: {Name: "des", Description: "Data Encryption Standard (DES) FIPS"},
-		2: {Name: "3des", Description: "Triple Data Encryption Algorithm SP"},
+		1: {Name: "des", Description: "Data Encryption Standard (DES) FIPS46-3"},
+		2: {Name: "3des", Description: "Triple Data Encryption Algorithm SP800-67"},
 		3: {Name: "twofish", Description: "Twofish Encryption Algorithm Twofish"},
 		4: {Name: "blowfish", Description: "Blowfish Encryption Algorithm Blowfish"},
-		5: {Name: "aes", Description: "Advanced Encryption Standard (AES) FIPS"},
+		5: {Name: "aes", Description: "Advanced Encryption Standard (AES) FIPS197"},
 	},
 }
 var ContentEncKeyIDElement = &ebml.Binary{
@@ -2167,7 +2159,7 @@ var ContentEncKeyIDElement = &ebml.Binary{
 		ID:         ContentEncKeyIDID,
 		ParentID:   ContentEncryptionID,
 		Name:       "content_enc_key_id",
-		Definition: "For public key algorithms this is the ID of the public key the data was encrypted with",
+		Definition: "For public key algorithms",
 	},
 }
 var ContentSignatureElement = &ebml.Binary{
@@ -2183,7 +2175,7 @@ var ContentSigKeyIDElement = &ebml.Binary{
 		ID:         ContentSigKeyIDID,
 		ParentID:   ContentEncryptionID,
 		Name:       "content_sig_key_id",
-		Definition: "This is the ID of the private key the data was signed with",
+		Definition: "This is the ID of the private key that the data was signed with",
 	},
 }
 var ContentSigAlgoElement = &ebml.Uinteger{
@@ -2231,8 +2223,8 @@ var AESSettingsCipherModeElement = &ebml.Uinteger{
 		Definition: "The AES cipher mode used in the encryption",
 	},
 	Enums: map[uint64]ebml.Enum{
-		1: {Name: "aes_ctr", Description: "Counter SP"},
-		2: {Name: "aes_cbc", Description: "Cipher Block Chaining SP"},
+		1: {Name: "aes_ctr", Description: "Counter SP800-38A"},
+		2: {Name: "aes_cbc", Description: "Cipher Block Chaining SP800-38A"},
 	},
 }
 
@@ -2274,7 +2266,7 @@ var CueTrackPositionsElement = &ebml.Master{
 		ID:         CueTrackPositionsID,
 		ParentID:   CuePointID,
 		Name:       "cue_track_positions",
-		Definition: "Contain positions for different tracks corresponding to the timestamp",
+		Definition: "Contains positions for different tracks corresponding to the timestamp",
 	},
 	Master: map[ebml.ID]ebml.Element{
 		CueTrackID:            CueTrackElement,
@@ -2307,7 +2299,7 @@ var CueRelativePositionElement = &ebml.Uinteger{
 		ID:         CueRelativePositionID,
 		ParentID:   CueTrackPositionsID,
 		Name:       "cue_relative_position",
-		Definition: "The relative position inside the Cluster of the referenced SimpleBlock or BlockGroup with 0 being the first possible position for an Element inside that Cluster",
+		Definition: "The relative position inside the Cluster of the referenced SimpleBlock or BlockGroup with 0 being the first possible position for an element inside that Cluster",
 	},
 }
 var CueDurationElement = &ebml.Uinteger{
@@ -2331,7 +2323,7 @@ var CueCodecStateElement = &ebml.Uinteger{
 		ID:         CueCodecStateID,
 		ParentID:   CueTrackPositionsID,
 		Name:       "cue_codec_state",
-		Definition: "The Segment Position of the Codec State corresponding to this Cue Element",
+		Definition: "The Segment Position of the Codec State corresponding to this Cues element",
 	},
 }
 
@@ -2378,7 +2370,7 @@ var CueRefCodecStateElement = &ebml.Uinteger{
 		ID:         CueRefCodecStateID,
 		ParentID:   CueReferenceID,
 		Name:       "cue_ref_codec_state",
-		Definition: "The Segment Position of the Codec State corresponding to this referenced Element",
+		Definition: "The Segment Position of the Codec State corresponding to this referenced element",
 	},
 }
 
@@ -2387,7 +2379,7 @@ var AttachmentsElement = &ebml.Master{
 		ID:         AttachmentsID,
 		ParentID:   SegmentID,
 		Name:       "attachments",
-		Definition: "Contain attached files",
+		Definition: "Contains attached files",
 	},
 	Master: map[ebml.ID]ebml.Element{
 		AttachedFileID: AttachedFileElement,
@@ -2433,7 +2425,7 @@ var FileMediaTypeElement = &ebml.String{
 		ID:         FileMediaTypeID,
 		ParentID:   AttachedFileID,
 		Name:       "file_media_type",
-		Definition: "Media type of the file following the RFC6838 format",
+		Definition: "Media type of the file following the format described in RFC6838",
 	},
 }
 var FileDataElement = &ebml.Binary{
@@ -2449,7 +2441,7 @@ var FileUIDElement = &ebml.Uinteger{
 		ID:         FileUIDID,
 		ParentID:   AttachedFileID,
 		Name:       "file_uid",
-		Definition: "Unique ID representing the file",
+		Definition: "UID representing the file",
 	},
 }
 var FileReferralElement = &ebml.Binary{
@@ -2510,7 +2502,7 @@ var EditionUIDElement = &ebml.Uinteger{
 		ID:         EditionUIDID,
 		ParentID:   EditionEntryID,
 		Name:       "edition_uid",
-		Definition: "A unique ID to identify the edition",
+		Definition: "A UID that identifies the edition",
 	},
 }
 var EditionFlagHiddenElement = &ebml.Uinteger{
@@ -2572,7 +2564,7 @@ var ChapterAtomElement = &ebml.Master{
 		ID:         ChapterAtomID,
 		ParentID:   EditionEntryID,
 		Name:       "chapter_atom",
-		Definition: "Contains the atom information to use as the chapter atom (apply to all tracks)",
+		Definition: "Contains the atom information to use as the chapter atom",
 	},
 	Master: map[ebml.ID]ebml.Element{
 		ChapterUIDID:               ChapterUIDElement,
@@ -2595,7 +2587,7 @@ var ChapterUIDElement = &ebml.Uinteger{
 		ID:         ChapterUIDID,
 		ParentID:   ChapterAtomID,
 		Name:       "chapter_uid",
-		Definition: "A unique ID to identify the Chapter",
+		Definition: "A UID that identifies the Chapter",
 	},
 }
 var ChapterStringUIDElement = &ebml.UTF8{
@@ -2603,7 +2595,7 @@ var ChapterStringUIDElement = &ebml.UTF8{
 		ID:         ChapterStringUIDID,
 		ParentID:   ChapterAtomID,
 		Name:       "chapter_string_uid",
-		Definition: "A unique string ID to identify the Chapter",
+		Definition: "A unique string ID that identifies the Chapter",
 	},
 }
 var ChapterTimeStartElement = &ebml.Uinteger{
@@ -2619,7 +2611,7 @@ var ChapterTimeEndElement = &ebml.Uinteger{
 		ID:         ChapterTimeEndID,
 		ParentID:   ChapterAtomID,
 		Name:       "chapter_time_end",
-		Definition: "Timestamp of the end of Chapter timestamp excluded",
+		Definition: "Timestamp of the end of Chapter ",
 	},
 }
 var ChapterFlagHiddenElement = &ebml.Uinteger{
@@ -2651,7 +2643,7 @@ var ChapterSkipTypeElement = &ebml.Uinteger{
 		ID:         ChapterSkipTypeID,
 		ParentID:   ChapterAtomID,
 		Name:       "chapter_skip_type",
-		Definition: "Indicate what type of content the ChapterAtom contains and might be skipped",
+		Definition: "Indicates what type of content the ChapterAtom contains and might be skipped",
 	},
 	Enums: map[uint64]ebml.Enum{
 		0: {Name: "no_skipping", Description: "Content which should not be skipped"},
@@ -2676,7 +2668,7 @@ var ChapterPhysicalEquivElement = &ebml.Uinteger{
 		ID:         ChapterPhysicalEquivID,
 		ParentID:   ChapterAtomID,
 		Name:       "chapter_physical_equiv",
-		Definition: "Specify the physical equivalent of this ChapterAtom like \"DVD\" (60) or \"SIDE\" (50)",
+		Definition: "Specifies the physical equivalent of this ChapterAtom",
 	},
 }
 
@@ -2752,7 +2744,7 @@ var ChapProcessElement = &ebml.Master{
 		ID:         ChapProcessID,
 		ParentID:   ChapterAtomID,
 		Name:       "chap_process",
-		Definition: "Contains all the commands associated to the Atom",
+		Definition: "Contains all the commands associated with the Atom",
 	},
 	Master: map[ebml.ID]ebml.Element{
 		ChapProcessCodecIDID: ChapProcessCodecIDElement,
@@ -2765,7 +2757,11 @@ var ChapProcessCodecIDElement = &ebml.Uinteger{
 		ID:         ChapProcessCodecIDID,
 		ParentID:   ChapProcessID,
 		Name:       "chap_process_codec_id",
-		Definition: "Contains the type of the codec used for the processing",
+		Definition: "Contains the type of the codec used for processing",
+	},
+	Enums: map[uint64]ebml.Enum{
+		0: {Name: "matroska_script", Description: "Chapter commands using the Matroska Script codec"},
+		1: {Name: "dvd_menu", Description: "Chapter commands using the DVD-like codec"},
 	},
 }
 var ChapProcessPrivateElement = &ebml.Binary{
@@ -2773,7 +2769,7 @@ var ChapProcessPrivateElement = &ebml.Binary{
 		ID:         ChapProcessPrivateID,
 		ParentID:   ChapProcessID,
 		Name:       "chap_process_private",
-		Definition: "Some optional data attached to the ChapProcessCodecID information",
+		Definition: "Optional data attached to the ChapProcessCodecID information",
 	},
 }
 
@@ -2782,7 +2778,7 @@ var ChapProcessCommandElement = &ebml.Master{
 		ID:         ChapProcessCommandID,
 		ParentID:   ChapProcessID,
 		Name:       "chap_process_command",
-		Definition: "Contains all the commands associated to the Atom",
+		Definition: "Contains all the commands associated with the Atom",
 	},
 	Master: map[ebml.ID]ebml.Element{
 		ChapProcessTimeID: ChapProcessTimeElement,
@@ -2841,7 +2837,7 @@ var TargetsElement = &ebml.Master{
 		ID:         TargetsID,
 		ParentID:   TagID,
 		Name:       "targets",
-		Definition: "Specifies which other elements the metadata represented by the Tag applies to",
+		Definition: "Specifies which other elements the metadata represented by the tag value applies to",
 	},
 	Master: map[ebml.ID]ebml.Element{
 		TargetTypeValueID:  TargetTypeValueElement,
@@ -2860,13 +2856,13 @@ var TargetTypeValueElement = &ebml.Uinteger{
 		Definition: "A number to indicate the logical level of the target",
 	},
 	Enums: map[uint64]ebml.Enum{
-		70: {Name: "collection", Description: "The highest hierarchical level that tags can describe"},
-		60: {Name: "edition_issue_volume_opus_season_sequel", Description: "A list of lower levels grouped together"},
-		50: {Name: "album_opera_concert_movie_episode", Description: "The most common grouping level of music and video"},
-		40: {Name: "part_session", Description: "When an album or episode has different logical parts"},
-		30: {Name: "track_song_chapter", Description: "The common parts of an album or movie"},
-		20: {Name: "subtrack_movement_scene", Description: "Corresponds to parts of a track for audio like a movement"},
 		10: {Name: "shot", Description: "The lowest hierarchy found in music or movies"},
+		20: {Name: "subtrack_movement_scene", Description: "Corresponds to parts of a track for audio"},
+		30: {Name: "track_song_chapter", Description: "The common parts of an album or movie"},
+		40: {Name: "part_session", Description: "When an album or episode has different logical parts"},
+		50: {Name: "album_opera_concert_movie_episode", Description: "The most common grouping level of music and video"},
+		60: {Name: "edition_issue_volume_opus_season_sequel", Description: "A list of lower levels grouped together"},
+		70: {Name: "collection", Description: "The highest hierarchical level that tags can describe"},
 	},
 }
 var TargetTypeElement = &ebml.String{
@@ -2874,7 +2870,7 @@ var TargetTypeElement = &ebml.String{
 		ID:         TargetTypeID,
 		ParentID:   TargetsID,
 		Name:       "target_type",
-		Definition: "An informational string that can be used to display the logical level of the target like \"ALBUM\"",
+		Definition: "An informational string that can be used to display the logical level of the target",
 	},
 	Enums: map[string]ebml.Enum{
 		"COLLECTION": {Name: "targettypevalue_70"},
@@ -2905,7 +2901,7 @@ var TagTrackUIDElement = &ebml.Uinteger{
 		ID:         TagTrackUIDID,
 		ParentID:   TargetsID,
 		Name:       "tag_track_uid",
-		Definition: "A unique ID to identify the Track(s) the tags belong to",
+		Definition: "A UID that identifies the Track(s) that the tags belong to",
 	},
 }
 var TagEditionUIDElement = &ebml.Uinteger{
@@ -2913,7 +2909,7 @@ var TagEditionUIDElement = &ebml.Uinteger{
 		ID:         TagEditionUIDID,
 		ParentID:   TargetsID,
 		Name:       "tag_edition_uid",
-		Definition: "A unique ID to identify the EditionEntry(s) the tags belong to",
+		Definition: "A UID that identifies the EditionEntry(s) that the tags belong to",
 	},
 }
 var TagChapterUIDElement = &ebml.Uinteger{
@@ -2921,7 +2917,7 @@ var TagChapterUIDElement = &ebml.Uinteger{
 		ID:         TagChapterUIDID,
 		ParentID:   TargetsID,
 		Name:       "tag_chapter_uid",
-		Definition: "A unique ID to identify the Chapter(s) the tags belong to",
+		Definition: "A UID that identifies the Chapter(s) that the tags belong to",
 	},
 }
 var TagAttachmentUIDElement = &ebml.Uinteger{
@@ -2929,7 +2925,7 @@ var TagAttachmentUIDElement = &ebml.Uinteger{
 		ID:         TagAttachmentUIDID,
 		ParentID:   TargetsID,
 		Name:       "tag_attachment_uid",
-		Definition: "A unique ID to identify the Attachment(s) the tags belong to",
+		Definition: "A UID that identifies the Attachment(s) that the tags belong to",
 	},
 }
 
@@ -2955,7 +2951,7 @@ var TagNameElement = &ebml.UTF8{
 		ID:         TagNameID,
 		ParentID:   SimpleTagID,
 		Name:       "tag_name",
-		Definition: "The name of the Tag that is going to be stored",
+		Definition: "The name of the tag value that is going to be stored",
 	},
 }
 var TagLanguageElement = &ebml.String{
@@ -2963,7 +2959,7 @@ var TagLanguageElement = &ebml.String{
 		ID:         TagLanguageID,
 		ParentID:   SimpleTagID,
 		Name:       "tag_language",
-		Definition: "Specifies the language of the tag specified",
+		Definition: "Specifies the language of the specified tag in the Matroska languages form",
 	},
 }
 var TagLanguageBCP47Element = &ebml.String{
@@ -2987,7 +2983,7 @@ var TagDefaultBogusElement = &ebml.Uinteger{
 		ID:         TagDefaultBogusID,
 		ParentID:   SimpleTagID,
 		Name:       "tag_default_bogus",
-		Definition: "A variant of the TagDefault element with a bogus Element ID",
+		Definition: "A variant of the TagDefault element with a bogus element ID",
 	},
 }
 var TagStringElement = &ebml.UTF8{
@@ -2995,7 +2991,7 @@ var TagStringElement = &ebml.UTF8{
 		ID:         TagStringID,
 		ParentID:   SimpleTagID,
 		Name:       "tag_string",
-		Definition: "The value of the Tag",
+		Definition: "The tag value",
 	},
 }
 var TagBinaryElement = &ebml.Binary{
@@ -3003,7 +2999,7 @@ var TagBinaryElement = &ebml.Binary{
 		ID:         TagBinaryID,
 		ParentID:   SimpleTagID,
 		Name:       "tag_binary",
-		Definition: "The values of the Tag",
+		Definition: "The tag value if it is binary",
 	},
 }
 
