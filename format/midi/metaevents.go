@@ -5,6 +5,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
+// MIDI meta-event status byte values.
 const (
 	SequenceNumber         uint64 = 0x00
 	Text                   uint64 = 0x01
@@ -26,6 +27,7 @@ const (
 	SequencerSpecificEvent uint64 = 0x7f
 )
 
+// Maps MIDI meta-events to a human readable name.
 var metaevents = scalar.UintMapSymStr{
 	SequenceNumber:         "sequence_number",
 	Text:                   "text",
@@ -47,6 +49,7 @@ var metaevents = scalar.UintMapSymStr{
 	SequencerSpecificEvent: "sequencer_specific_event",
 }
 
+// Internal map of MIDI meta-events to the associated event parser.
 var metafns = map[uint64]func(d *decode.D){
 	SequenceNumber:         decodeSequenceNumber,
 	Text:                   decodeText,
@@ -68,6 +71,7 @@ var metafns = map[uint64]func(d *decode.D){
 	SequencerSpecificEvent: decodeSequencerSpecificEvent,
 }
 
+// decodeMetaEvent extracts the meta-event delta time, event status and event detail.
 func decodeMetaEvent(d *decode.D, event uint8, ctx *context) {
 	ctx.running = 0x00
 	ctx.casio = false
@@ -89,6 +93,8 @@ func decodeMetaEvent(d *decode.D, event uint8, ctx *context) {
 	}
 }
 
+// decodeSequenceNumber parses a Sequence Number MIDI meta event to a struct comprising:
+//  - sequence_number
 func decodeSequenceNumber(d *decode.D) {
 	d.FieldUintFn("length", vlq, d.UintRequire(2))
 	d.FieldU16("sequence_number")

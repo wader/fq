@@ -5,6 +5,9 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
+// MIDI event status byte values. A MIDI event status byte is a composite byte
+// composed of the event type in the high order nibble and the event channel 
+// (0 to 15) in the low order nibble.
 const (
 	NoteOff            uint64 = 0x80
 	NoteOn             uint64 = 0x90

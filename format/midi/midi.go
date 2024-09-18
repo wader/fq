@@ -12,15 +12,18 @@ import (
 	"github.com/wader/fq/pkg/interp"
 )
 
+//go:embed midi.md
+var midiFS embed.FS
+
+// context is a container struct for the running parse information required to 
+// decode a MIDI track.
 type context struct {
 	tick    uint64
 	running uint8
 	casio   bool
 }
 
-//go:embed midi.md
-var midiFS embed.FS
-
+// init registers the MIDI format decoder and adds it to the 'probe' group.
 func init() {
 	interp.RegisterFormat(
 		format.MIDI,
@@ -33,6 +36,10 @@ func init() {
 	interp.RegisterFS(midiFS)
 }
 
+// decodeMIDI implements the MIDI file decoder.
+//
+// The decoder parses the file as a set of chunks, each comprising a 4 character tag
+// followed by a uint32 length field. The decoder parses the MTHd and MTrk MIDI chunks.
 func decodeMIDI(d *decode.D) any {
 	d.Endian = decode.BigEndian
 
@@ -53,6 +60,12 @@ func decodeMIDI(d *decode.D) any {
 	return nil
 }
 
+// decodeMThd decodes an MThd MIDI header chunk into a struct with the fields:
+//  - tag       "MThd"
+//  - length    Header chunk size
+//  - format    MIDI format (0,1 or 2)
+//  - tracks    Number of tracks
+//  - division  Time division
 func decodeMThd(d *decode.D) {
 	if !bytes.Equal(d.PeekBytes(4), []byte("MThd")) {
 		d.Errorf("missing MThd tag")
@@ -76,6 +89,10 @@ func decodeMThd(d *decode.D) {
 	})
 }
 
+// decodeMTrk decodes an MTrk MIDI track chunk into a struct with the header fields:
+//  - tag      "MTrk"
+//  - length   Track chunk size
+//  - events   List of track events
 func decodeMTrk(d *decode.D) {
 	if !bytes.Equal(d.PeekBytes(4), []byte("MTrk")) {
 		d.Errorf("missing MTrk tag")
@@ -99,6 +116,10 @@ func decodeMTrk(d *decode.D) {
 	})
 }
 
+// decodeEvent decodes a single MIDI event as either:
+//  - Meta event
+//  - MIDI channel event
+//  - SysEx system event
 func decodeEvent(d *decode.D, ctx *context) {
 	_, status, event := peekEvent(d)
 
@@ -113,6 +134,7 @@ func decodeEvent(d *decode.D, ctx *context) {
 	}
 }
 
+// peekEvent retrieves the type of the next event without moving the reader location.
 func peekEvent(d *decode.D) (uint64, uint8, uint8) {
 	var N int = 1
 
@@ -161,13 +183,14 @@ func peekEvent(d *decode.D) (uint64, uint8, uint8) {
 	}
 }
 
+// decodeOther decodes non-MIDI chunks as raw data.
 func decodeOther(d *decode.D) {
 	d.FieldUTF8("tag", 4)
 	length := d.FieldS32("length")
 	d.FieldRawLen("data", length*8)
 }
 
-// Big endian varint
+// vlq decodes a MIDI big-endian varuint.
 func vlq(d *decode.D) uint64 {
 	vlq := uint64(0)
 
@@ -185,7 +208,7 @@ func vlq(d *decode.D) uint64 {
 	return vlq
 }
 
-// Byte array with a big endian varint length
+// vlf decodes a MIDI byte array prefixed with a varuint length.
 func vlf(d *decode.D) ([]uint8, error) {
 	N := vlq(d)
 
@@ -200,7 +223,7 @@ func vlf(d *decode.D) ([]uint8, error) {
 	}
 }
 
-// String with a big endian varint length
+// vlstring decodes a MIDI string prefixed with a varuint length.
 func vlstring(d *decode.D) string {
 	if data, err := vlf(d); err != nil {
 		d.Fatalf("%v", err)
@@ -211,6 +234,8 @@ func vlstring(d *decode.D) string {
 	return ""
 }
 
+// flush reads and discards any remaining bits in a chunk after encountering an 
+// invalid event.
 func flush(d *decode.D, format string, args ...any) {
 	d.Errorf(format, args...)
 

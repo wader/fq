@@ -4,6 +4,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
+// Map of note values to note names.
 var notes = scalar.UintMapSymStr{
 	127: "G9",
 	126: "F♯9/G♭9",
@@ -114,6 +115,7 @@ var notes = scalar.UintMapSymStr{
 	21:  "A0",
 }
 
+// Map of key signature values to key signature names.
 const (
 	keyCMajor      = 0x0000
 	keyGMajor      = 0x0100

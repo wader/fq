@@ -28,6 +28,9 @@ lint:
 fuzz: build
 	make -f Makefile fuzz GROUP=midi
 
+godoc:
+	godoc -http=:80	-index_interval=60s
+
 events: build
 	go run . -d midi dv format/midi/testdata/events/sequence-number.mid
 	go run . -d midi dv format/midi/testdata/events/text.mid
