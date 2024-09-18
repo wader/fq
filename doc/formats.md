@@ -96,6 +96,7 @@
 |`mpeg_spu`                                                      |Sub&nbsp;Picture&nbsp;Unit&nbsp;(DVD&nbsp;subtitle)                                                          |<sub></sub>|
 |`mpeg_ts`                                                       |MPEG&nbsp;Transport&nbsp;Stream                                                                              |<sub></sub>|
 |[`msgpack`](#msgpack)                                           |MessagePack                                                                                                  |<sub></sub>|
+|[`negentropy`](#negentropy)                                     |Negentropy&nbsp;message                                                                                      |<sub></sub>|
 |[`nes`](#nes)                                                   |iNES/NES&nbsp;2.0&nbsp;cartridge&nbsp;ROM&nbsp;format                                                        |<sub></sub>|
 |`ogg`                                                           |OGG&nbsp;file                                                                                                |<sub>`ogg_page` `vorbis_packet` `opus_packet` `flac_metadatablock` `flac_frame`</sub>|
 |`ogg_page`                                                      |OGG&nbsp;page                                                                                                |<sub></sub>|
@@ -140,7 +141,7 @@
 |`ip_packet`                                                     |Group                                                                                                        |<sub>`icmp` `icmpv6` `tcp_segment` `udp_datagram`</sub>|
 |`link_frame`                                                    |Group                                                                                                        |<sub>`bsd_loopback_frame` `ether8023_frame` `ipv4_packet` `ipv6_packet` `sll2_packet` `sll_packet`</sub>|
 |`mp3_frame_tags`                                                |Group                                                                                                        |<sub>`mp3_frame_vbri` `mp3_frame_xing`</sub>|
-|`probe`                                                         |Group                                                                                                        |<sub>`adts` `aiff` `apple_bookmark` `ar` `avi` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `caff` `elf` `fit` `flac` `gif` `gzip` `html` `jp2c` `jpeg` `json` `jsonl` `leveldb_table` `luajit` `macho` `macho_fat` `matroska` `moc3` `mp3` `mp4` `mpeg_ts` `nes` `ogg` `opentimestamps` `pcap` `pcapng` `png` `tar` `tiff` `toml` `tzif` `tzx` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
+|`probe`                                                         |Group                                                                                                        |<sub>`adts` `aiff` `apple_bookmark` `ar` `avi` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `caff` `elf` `fit` `flac` `gif` `gzip` `html` `jp2c` `jpeg` `json` `jsonl` `leveldb_table` `luajit` `macho` `macho_fat` `matroska` `midi` `moc3` `mp3` `mp4` `mpeg_ts` `nes` `ogg` `opentimestamps` `pcap` `pcapng` `png` `tar` `tiff` `toml` `tzif` `tzx` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
 |`tcp_stream`                                                    |Group                                                                                                        |<sub>`dns_tcp` `rtmp` `tls`</sub>|
 |`udp_payload`                                                   |Group                                                                                                        |<sub>`dns`</sub>|
 
@@ -873,37 +874,41 @@ Standard MIDI file.
 
 ### Notes
 
-1. Only supports the MIDI 1.0 specification.
-2. Does only basic validation on the MIDI data.
+1. Only supports the MIDI 1.0 MIDI file specification.
+2. Only supports _MThd_ and _MTrk_ chunks.
+3. Does only basic validation on the MIDI data.
 
 ### Sample queries
 
 1. Extract the track names from a MIDI file
 ```
-fq -d midi -d midi '.. | select(.event=="Track Name")? | "\(.name)"' twinkle.mid 
+fq -d midi -d midi '.. | select(.event=="track_name")? | "\(.track_name)"' midi/twinkle.mid 
 ```
 
 2. Extract the tempo changes from a MIDI file
 ```
-fq -d midi '.. | select(.event=="Tempo")?.tempo' twinkle.mid
+fq -d midi '.. | select(.event=="tempo")?.tempo' midi/twinkle.mid
 ```
 
 3. Extract the key changes from a MIDI file
 ```
-fq -d midi '.. | select(.event=="Key Signature")?.key' key-signatures.mid
+fq -d midi '.. | select(.event=="key_signature")?.key_signature' midi/twinkle.mid
 ```
 
-4. Extract NoteOn and NoteOff events:
+4. Extract NoteOn events:
 ```
-fq -d midi 'grep_by(.event=="Note On" or .event=="Note Off") | "\(.event)  \(.time.tick)  \(.note)"' twinkle.mid
+fq -d midi 'grep_by(.event=="note_on") | [.time.tick, .note_on.note] | join(" ")' midi/twinkle.mid
 ```
 
 ### Authors
-- transcriptaze.development@gmail.com
+- [transcriptaze](https://github.com/transcriptaze)
 
 ### References
 
 1. [The Complete MIDI 1.0 Detailed Specification](https://www.midi.org/specifications/item/the-midi-1-0-specification)
+2. [Standard MIDI Files](https://midi.org/standard-midi-files)
+3. [Standard MIDI File (SMF) Format](http://midi.teragonaudio.com/tech/midifile.htm)
+4. [MIDI Files Specification](http://www.somascape.org/midi/tech/mfile.html)
 
 ## moc3
 MOC3 file.
@@ -1011,6 +1016,33 @@ $ fq -d msgpack torepr file.msgpack
 
 ### References
 - https://github.com/msgpack/msgpack/blob/master/spec.md
+
+## negentropy
+Negentropy message.
+
+### View a full Negentropy message
+
+```
+$ fq -d negentropy dd file
+```
+
+### Check how many ranges the message has and how many of those are of 'fingerprint' mode
+
+```
+$ fq -d negentropy '.bounds | length as $total | map(select(.mode == "fingerprint")) | length | {$total, fingerprint: .}' message
+```
+
+### Check get all ids in all idlists
+
+```
+$ fq -d negentropy '.bounds | map(select(.mode == "idlist") | .idlist | .ids) | flatten' message
+```
+
+### Authors
+- fiatjaf, https://fiatjaf.com
+
+### References
+- https://github.com/hoytech/negentropy
 
 ## nes
 iNES/NES 2.0 cartridge ROM format.
