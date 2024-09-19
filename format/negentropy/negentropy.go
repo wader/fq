@@ -43,15 +43,13 @@ type timestampTranslator struct{ last time.Time }
 func (tt *timestampTranslator) MapSint(s scalar.Sint) (scalar.Sint, error) {
 	if s.Actual == 0 {
 		s.Description = "infinity"
-		s.Actual = -1
 		tt.last = time.Unix(math.MaxInt64, 0)
 		return s, nil
 	} else {
-		s.Actual--
-
 		timestamp := tt.last.Add(time.Second * time.Duration(s.Actual-1))
+		s.Description = timestamp.UTC().Format(time.DateTime + " UTC")
+		s.Sym = timestamp.Unix()
 		tt.last = timestamp
-		s.Description = timestamp.Format(time.DateTime)
 		return s, nil
 	}
 }
@@ -67,7 +65,7 @@ func decodeNegentropyMessage(d *decode.D) any {
 	}
 
 	d.FieldStructArrayLoop("bounds", "bound", d.NotEnd, func(d *decode.D) {
-		d.FieldSintFn("timestamp_delta", decodeVarInt, tt)
+		d.FieldSintFn("timestamp", decodeVarInt, tt)
 
 		size := d.FieldSintFn("id_prefix_size", decodeVarInt)
 		if size > 32 {
