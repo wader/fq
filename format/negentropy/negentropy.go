@@ -30,12 +30,29 @@ func init() {
 const (
 	version         = 0x61
 	fingerprintSize = 16
+
+	modeSkip        = 0
+	modeFingerprint = 1
+	modeIdlist      = 2
 )
 
 var modeMapper = scalar.SintMapSymStr{
-	0: "skip",
-	1: "fingerprint",
-	2: "idlist",
+	modeSkip:        "skip",
+	modeFingerprint: "fingerprint",
+	modeIdlist:      "idlist",
+}
+
+type timestampDeltaTranslator struct{}
+
+func (tt *timestampDeltaTranslator) MapSint(s scalar.Sint) (scalar.Sint, error) {
+	if s.Actual == 0 {
+		s.Sym = -1
+		s.Description = "infinity"
+		return s, nil
+	} else {
+		s.Sym = s.Actual - 1
+		return s, nil
+	}
 }
 
 type timestampTranslator struct{ last time.Time }
@@ -47,14 +64,15 @@ func (tt *timestampTranslator) MapSint(s scalar.Sint) (scalar.Sint, error) {
 		return s, nil
 	} else {
 		timestamp := tt.last.Add(time.Second * time.Duration(s.Actual-1))
-		s.Description = timestamp.UTC().Format(time.DateTime + " UTC")
-		s.Sym = timestamp.Unix()
+		s.Description = timestamp.UTC().Format(time.RFC3339)
+		s.Actual = timestamp.Unix()
 		tt.last = timestamp
 		return s, nil
 	}
 }
 
 func decodeNegentropyMessage(d *decode.D) any {
+	tdt := &timestampDeltaTranslator{}
 	tt := &timestampTranslator{last: time.Unix(0, 0)}
 
 	d.Endian = decode.BigEndian
@@ -65,7 +83,8 @@ func decodeNegentropyMessage(d *decode.D) any {
 	}
 
 	d.FieldStructArrayLoop("bounds", "bound", d.NotEnd, func(d *decode.D) {
-		d.FieldSintFn("timestamp", decodeVarInt, tt)
+		delta := d.FieldSintFn("timestamp_delta", decodeVarInt, tdt)
+		d.FieldValueSint("timestamp", delta, tt)
 
 		size := d.FieldSintFn("id_prefix_size", decodeVarInt)
 		if size > 32 {
@@ -77,12 +96,12 @@ func decodeNegentropyMessage(d *decode.D) any {
 
 		mode := d.FieldSintFn("mode", decodeVarInt, modeMapper)
 		switch mode {
-		case 0:
+		case modeSkip:
 			return
-		case 1:
+		case modeFingerprint:
 			d.FieldRawLen("fingerprint", fingerprintSize*8, scalar.RawHex)
 			return
-		case 2:
+		case modeIdlist:
 			d.FieldStruct("idlist", func(d *decode.D) {
 				num := d.FieldSintFn("num", decodeVarInt)
 				d.FieldArray("ids", func(d *decode.D) {
