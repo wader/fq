@@ -1,3 +1,4 @@
+# message produced by https://github.com/nbd-wtf/go-nostr/blob/e9e96be95e181ccf22e3f54965440147520cea88/nip77/negentropy/whatever_test.go
 $ fq -d negentropy dv bigmessagewitheverything
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: bigmessagewitheverything (negentropy) 0x0-0x116d (4461)
 0x0000|61                                             |a               |  version: 97 0x0-0x1 (1)

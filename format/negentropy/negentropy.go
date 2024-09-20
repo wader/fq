@@ -119,15 +119,13 @@ func decodeNegentropyMessage(d *decode.D) any {
 }
 
 func decodeVarInt(d *decode.D) int64 {
-	var res int64 = 0
-
+	res := 0
 	for {
-		b := d.U8()
-		res = (res << 7) | (int64(b) & 127)
+		b := int(d.U8())
+		res = (res << 7) | (b & 127)
 		if (b & 128) == 0 {
 			break
 		}
 	}
-
-	return res
+	return int64(res)
 }
