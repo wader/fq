@@ -26,7 +26,7 @@ def printerr: tostring | _stderr;
 def printerrln: ., "\n" | printerr;
 
 # jq compat
-def debug: (["DEBUG", .] | tojson | printerrln), .;
+def debug: (["DEBUG:", .] | tojson | printerrln), .;
 def debug(f): (f | debug | empty), .;
 # output raw string or compact json to stderr and let input thru
 def stderr: printerr, .;
