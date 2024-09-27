@@ -1,4 +1,4 @@
-<svg width="126ch" height="50em" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve">
+<svg width="100ch" height="50em" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve">
     <style>
         * {
             font-family: Courier, monospace;
@@ -58,8 +58,8 @@
 <text x="0ch" y="31.5em"><tspan>$ fq &#39;.headers[].frames[] | select(.id == &#34;APIC&#34;)?.picture | tobits&#39; file.mp3 &gt;file.png</tspan></text>
 <text x="0ch" y="32.5em"><tspan>$ file file.png</tspan></text>
 <text x="0ch" y="33.5em"><tspan>file.png: PNG image data, 320 x 240, 8-bit/color RGB, non-interlaced</tspan></text>
-<text x="0ch" y="35.5em"><tspan class="fa15"># Resolution of embedded PNG cover art as YAML</tspan></text>
-<text x="0ch" y="36.5em"><tspan>$ fq -r &#39;.headers[0].frames[] | grep_by(.id == &#34;APIC&#34;) | grep_by(.type == &#34;IHDR&#34;) | {res: {width, height}} | to_yaml&#39; file.mp3</tspan></text>
+<text x="0ch" y="35.5em"><tspan class="fa15"># Grep for PNG header, extract resolution and output as YAML</tspan></text>
+<text x="0ch" y="36.5em"><tspan>$ fq -r &#39;grep_by(.type == &#34;IHDR&#34;) | {res: {width, height}} | to_yaml&#39; file.mp3</tspan></text>
 <text x="0ch" y="37.5em"><tspan>res:</tspan></text>
 <text x="0ch" y="38.5em"><tspan>    height: 240</tspan></text>
 <text x="0ch" y="39.5em"><tspan>    width: 320</tspan></text>
