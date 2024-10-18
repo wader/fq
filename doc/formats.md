@@ -13,7 +13,7 @@
 |[`apple_bookmark`](#apple_bookmark)                             |Apple&nbsp;BookmarkData                                                                                      |<sub></sub>|
 |`ar`                                                            |Unix&nbsp;archive                                                                                            |<sub>`probe`</sub>|
 |[`asn1_ber`](#asn1_ber)                                         |ASN1&nbsp;BER&nbsp;(basic&nbsp;encoding&nbsp;rules,&nbsp;also&nbsp;CER&nbsp;and&nbsp;DER)                    |<sub></sub>|
-|`av1_ccr`                                                       |AV1&nbsp;Codec&nbsp;Configuration&nbsp;Record                                                                |<sub></sub>|
+|`av1_ccr`                                                       |AV1&nbsp;Codec&nbsp;Configuration&nbsp;Record                                                                |<sub>`av1_obu`</sub>|
 |`av1_frame`                                                     |AV1&nbsp;frame                                                                                               |<sub>`av1_obu`</sub>|
 |`av1_obu`                                                       |AV1&nbsp;Open&nbsp;Bitstream&nbsp;Unit                                                                       |<sub></sub>|
 |`avc_annexb`                                                    |H.264/AVC&nbsp;Annex&nbsp;B                                                                                  |<sub>`avc_nalu`</sub>|
