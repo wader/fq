@@ -17,7 +17,7 @@ jobs:
         with:
           go-version: "1.23.0"
       - uses: actions/checkout@v3
-      - uses: golangci/golangci-lint-action@v3
+      - uses: golangci/golangci-lint-action@v6
         with:
           version: v${{ env.GOLANGCILINT_VERSION }}
 
