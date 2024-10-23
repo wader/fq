@@ -16,6 +16,7 @@ import (
 
 var wavHeaderGroup decode.Group
 var wavFooterGroup decode.Group
+var wavDolbyMetadataGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
@@ -28,6 +29,7 @@ func init() {
 			Dependencies: []decode.Dependency{
 				{Groups: []*decode.Group{format.ID3v2}, Out: &wavHeaderGroup},
 				{Groups: []*decode.Group{format.ID3v1, format.ID3v11}, Out: &wavFooterGroup},
+				{Groups: []*decode.Group{format.Dolby_Metadata}, Out: &wavDolbyMetadataGroup},
 			},
 		})
 }
@@ -159,13 +161,13 @@ func wavDecode(d *decode.D) any {
 				return false, nil
 
 			case "chna":
-				chnaDecode(d, size)
+				chnaDecode(d)
 				return false, nil
 			case "axml":
-				axmlDecode(d, size)
+				axmlDecode(d)
 				return false, nil
 			case "dbmd":
-				dbmdDecode(d, size)
+				d.Format(&wavDolbyMetadataGroup, nil)
 				return false, nil
 
 			default:

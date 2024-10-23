@@ -41,7 +41,14 @@ def _eval_query_rewrite($opts):
     | if $opts.catch_query then
         # _query_query to get correct precedence and a valid query
         # try (1+1) catch vs try 1 + 1 catch
-        _query_try(. | _query_query; $opts.catch_query)
+        _query_try(
+            ( .
+            # TODO: error instead or assuming ident?
+            | if (.term or .op) | not then . + _query_ident end
+            | _query_query
+            );
+            $opts.catch_query
+          )
       end
     | if $opts.input_query then
         _query_pipe($opts.input_query; .)

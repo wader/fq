@@ -83,7 +83,7 @@ def _query_object:
             ( to_entries
             | map(
                 { key: .key
-                , val: {queries: [.value]}
+                , val: .value
                 }
               )
             )

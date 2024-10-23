@@ -73,6 +73,7 @@ bzip2,
 [dolby_metadata](doc/formats.md#dolby_metadata),
 dns,
 dns_tcp,
+[dolby_metadata](doc/formats.md#dolby_metadata),
 elf,
 ether8023_frame,
 exif,
@@ -145,12 +146,14 @@ pssh_playready,
 [rtmp](doc/formats.md#rtmp),
 sll2_packet,
 sll_packet,
+[tap](doc/formats.md#tap),
 tar,
 tcp_segment,
 tiff,
 [tls](doc/formats.md#tls),
 toml,
 [tzif](doc/formats.md#tzif),
+[tzx](doc/formats.md#tzx),
 udp_datagram,
 vorbis_comment,
 vorbis_packet,
@@ -171,8 +174,9 @@ It can also work with some common text formats like URLs, hex, base64, PEM etc a
 
 For details see [formats.md](doc/formats.md) and [usage.md](doc/usage.md).
 
-## Presentations
+## Presentations and media
 
+- [PBS Tidbit 8 of Y: Interview with jq Maintainer Mattias Wadman](https://pbs.bartificer.net/tidbit8) - English podcast episode about jq and some fq.
 - [Kodsnack 585 - Polymorfisk JSON](https://kodsnack.se/585/) - Swedish podcast episode about jq and fq
 - "fq - jq for binary formats" at [FOSDEM 2023](https://fosdem.org/2023/) - [video & slides](https://fosdem.org/2023/schedule/event/bintools_fq/)
 - "fq - jq for binary formats" at [No time to wait 6](https://mediaarea.net/NoTimeToWait6) - [video](https://www.youtube.com/watch?v=-Pwt5KL-xRs&t=1450s) - [slides](doc/presentations/nttw6/fq-nttw6-slides.pdf)
@@ -244,7 +248,7 @@ apk add -X http://dl-cdn.alpinelinux.org/alpine/edge/testing fq
 
 ### Build from source
 
-Make sure you have [go](https://go.dev) 1.20 or later installed.
+Make sure you have [go](https://go.dev) 1.21 or later installed.
 
 To install directly from git repository (no git clone needed):
 ```sh

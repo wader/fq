@@ -9,20 +9,6 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-func max(a, b int64) int64 {
-	if a < b {
-		return b
-	}
-	return a
-}
-
-func min(a, b int64) int64 {
-	if a > b {
-		return b
-	}
-	return a
-}
-
 type Range struct {
 	Start int64
 	Len   int64

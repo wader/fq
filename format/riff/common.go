@@ -58,8 +58,8 @@ var chunkIDDescriptions = scalar.StrMapDescription{
 
 	"dmlh": "Extended AVI header",
 
-	"chna": "<chna> Chunk, Track UIDs of Audio Definition Model",
-	"axml": "<axml> Chunk, BWF XML Metadata, e.g. for Audio Definition Model ambisonics and elements",
+	"chna": "Track UIDs of Audio Definition Model",
+	"axml": "Audio Definition Model ambisonics and elements",
 	"dbmd": "Dolby Metadata, e.g. Atmos, AC3, Dolby Digital [Plus]",
 
 	"ISMP": "SMPTE timecode",

@@ -51,7 +51,7 @@ import (
 //go:embed init.jq
 var builtinFS embed.FS
 
-var initSource = `include "@builtin/init";`
+var initSource = `include "@builtin/init"; .`
 
 func init() {
 	RegisterIter1("_readline", (*Interp)._readline)
@@ -882,9 +882,8 @@ func (i *Interp) Eval(ctx context.Context, c any, expr string, opts EvalOpts) (g
 					pos:      p,
 				}
 			}
-
-			// not identity body means it returns something, threat as dynamic include
-			if q.Term == nil || q.Term.Type != gojq.TermTypeIdentity {
+			// has some root expression, threat as dynamic include
+			if q.Term != nil || q.Op != gojq.Operator(0) {
 				gc, err := gojq.Compile(q, funcCompilerOpts...)
 				if err != nil {
 					return nil, err
@@ -1057,13 +1056,13 @@ type Options struct {
 func OptionsFromValue(v any) (*Options, error) {
 	var opts Options
 	_ = mapstruct.ToStruct(v, &opts)
-	opts.ArrayTruncate = mathx.Max(0, opts.ArrayTruncate)
-	opts.StringTruncate = mathx.Max(0, opts.StringTruncate)
-	opts.Depth = mathx.Max(0, opts.Depth)
+	opts.ArrayTruncate = max(0, opts.ArrayTruncate)
+	opts.StringTruncate = max(0, opts.StringTruncate)
+	opts.Depth = max(0, opts.Depth)
 	opts.Addrbase = mathx.Clamp(2, 36, opts.Addrbase)
 	opts.Sizebase = mathx.Clamp(2, 36, opts.Sizebase)
-	opts.LineBytes = mathx.Max(1, opts.LineBytes)
-	opts.DisplayBytes = mathx.Max(0, opts.DisplayBytes)
+	opts.LineBytes = max(1, opts.LineBytes)
+	opts.DisplayBytes = max(0, opts.DisplayBytes)
 	opts.Decorator = decoratorFromOptions(opts)
 	if fn, err := bitsFormatFnFromOptions(opts); err != nil {
 		return nil, err
@@ -1134,6 +1133,18 @@ func bitsFormatFnFromOptions(opts Options) (func(br bitio.ReaderAtSeeker) (any, 
 			}
 
 			return fmt.Sprintf("<%s>%s", mathx.Bits(brLen).StringByteBits(opts.Sizebase), b.String()), nil
+		}, nil
+	case "byte_array":
+		return func(br bitio.ReaderAtSeeker) (any, error) {
+			b := &bytes.Buffer{}
+			if _, err := bitiox.CopyBits(b, br); err != nil {
+				return "", err
+			}
+			var v []any
+			for _, bv := range b.Bytes() {
+				v = append(v, int(bv))
+			}
+			return v, nil
 		}, nil
 	default:
 		return nil, fmt.Errorf("invalid bits format %q", opts.BitsFormat)

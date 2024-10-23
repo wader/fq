@@ -85,7 +85,7 @@ func (d *Dumper) WriteBits(p []byte, nBits int64) (n int64, err error) {
 	pos := int64(0)
 	rBits := nBits
 	if d.bitsBufN > 0 {
-		r := mathx.Min(8-d.bitsBufN, nBits)
+		r := min(8-d.bitsBufN, nBits)
 		v := bitio.Read64(p, 0, r)
 		bitio.Write64(v, r, d.bitsBuf, d.bitsBufN)
 

@@ -1,0 +1,21 @@
+$ fq -d tap dv basic_prog1.tap
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: basic_prog1.tap (tap) 0x0-0x3f (63)
+    |                                               |                |  blocks[0:2]: 0x0-0x3f (63)
+    |                                               |                |    [0]{}: block 0x0-0x15 (21)
+0x00|13 00                                          |..              |      length: 19 0x0-0x2 (2)
+    |                                               |                |      header{}: 0x2-0x15 (19)
+0x00|      00                                       |  .             |        flag: "standard_speed_data" (0) 0x2-0x3 (1)
+0x00|         00                                    |   .            |        data_type: "program" (0) 0x3-0x4 (1)
+0x00|            66 71 54 65 73 74 50 72 6f 67      |    fqTestProg  |        program_name: "fqTestProg" 0x4-0xe (10)
+0x00|                                          26 00|              &.|        data_length: 38 0xe-0x10 (2)
+0x10|0a 00                                          |..              |        auto_start_line: 10 0x10-0x12 (2)
+0x10|      26 00                                    |  &.            |        program_length: 38 0x12-0x14 (2)
+0x10|            01                                 |    .           |        checksum: 0x1 (valid) 0x14-0x15 (1)
+    |                                               |                |    [1]{}: block 0x15-0x3f (42)
+0x10|               28 00                           |     (.         |      length: 40 0x15-0x17 (2)
+    |                                               |                |      data{}: 0x17-0x3f (40)
+0x10|                     ff                        |       .        |        flag: "standard_speed_data" (255) 0x17-0x18 (1)
+0x10|                        00 0a 14 00 20 f5 22 66|        .... ."f|        bytes: raw bits 0x18-0x3e (38)
+0x20|71 20 69 73 20 74 68 65 20 62 65 73 74 21 22 0d|q is the best!".|
+0x30|00 14 0a 00 ec 31 30 0e 00 00 0a 00 00 0d      |.....10.......  |
+0x30|                                          b6|  |              .||        checksum: 0xb6 (valid) 0x3e-0x3f (1)

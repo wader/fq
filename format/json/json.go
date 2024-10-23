@@ -53,7 +53,7 @@ func decodeJSONEx(d *decode.D, lines bool) any {
 					break
 				}
 			} else if lines {
-				d.Fatalf(err.Error())
+				d.Fatalf("%s", err.Error())
 			}
 			break
 		}
