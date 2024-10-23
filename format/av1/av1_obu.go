@@ -221,9 +221,7 @@ func obuDecode(d *decode.D) any {
 				operatingPointsCntMinus1 := d.FieldU5("operating_points_cnt_minus_1")
 
 				d.FieldArray("operating_points", func(d *decode.D) {
-
 					for i := uint64(0); i <= operatingPointsCntMinus1; i++ {
-
 						d.FieldStruct("operating_point", func(d *decode.D) {
 							d.FieldU12("operating_point_idc")
 							seqLevelIdx := d.FieldU5("seq_level_idx")
@@ -233,9 +231,7 @@ func obuDecode(d *decode.D) any {
 							} else {
 								// nop
 							}
-
 						})
-
 						if initialDisplayDelayPresentFlag == 1 {
 							initialDisplayDelayPresentForThisOp := d.FieldU1("seq_tier")
 							if initialDisplayDelayPresentForThisOp == 1 {
@@ -243,15 +239,16 @@ func obuDecode(d *decode.D) any {
 							}
 						}
 					}
-
 				})
 
 			}
 
 			frameWidthBitsMinus1 := d.FieldU4("frame_width_bits_minus_1")
 			frameHeightBitsMinus1 := d.FieldU4("frame_height_bits_minus_1")
-			d.FieldU("max_frame_width_minus_1", int(frameWidthBitsMinus1)+1)
-			d.FieldU("max_frame_height_minus_1", int(frameHeightBitsMinus1)+1)
+			frameWidthMinus1 := d.FieldU("max_frame_width_minus_1", int(frameWidthBitsMinus1)+1)
+			frameHeightMinus1 := d.FieldU("max_frame_height_minus_1", int(frameHeightBitsMinus1)+1)
+			d.FieldValueUint("frame_width", frameWidthMinus1+1)
+			d.FieldValueUint("frame_height", frameHeightMinus1+1)
 
 			var frameIdNumbersPresentFlag uint64 = 0
 			if reducedStillPictureHeader == 1 {
@@ -301,33 +298,58 @@ func obuDecode(d *decode.D) any {
 			d.FieldU1("enable_cdef")
 			d.FieldU1("enable_restoration")
 			d.FieldStruct("color_config", func(d *decode.D) {
+				// https://aomediacodec.github.io/av1-spec/#color-config-syntax
 				highBitdepth := d.FieldU1("high_bitdepth")
 				var twelveBit uint64
+				var bitDepth uint64 = 0 // TODO: what if seqProfile > 2?
 				if seqProfile == 2 && highBitdepth == 1 {
 					twelveBit = d.FieldU1("twelve_bit")
+					if twelveBit == 1 {
+						bitDepth = 12
+					} else {
+						bitDepth = 10
+					}
+				} else if seqProfile <= 2 {
+					if highBitdepth == 1 {
+						bitDepth = 10
+					} else {
+						bitDepth = 8
+					}
 				}
-				var monoChrome uint64 = 0
+				d.FieldValueUint("bit_depth", bitDepth)
+
+				var monoChrome uint64
 				if seqProfile == 1 {
-					// nop
+					d.FieldValueUint("mono_chrome", 0)
+					monoChrome = 0
 				} else {
-					d.FieldU1("mono_chrome")
+					monoChrome = d.FieldU1("mono_chrome")
 				}
 				colorDescriptionPresentFlag := d.FieldU1("color_description_present_flag")
 
-				var colorPrimaries uint64 = 0
-				var transferCharacteristics uint64 = 0
-				var matrixCoefficients uint64 = 0
+				var colorPrimaries uint64 = CP_UNSPECIFIED
+				var transferCharacteristics uint64 = TC_UNSPECIFIED
+				var matrixCoefficients uint64 = MC_UNSPECIFIED
 
 				if colorDescriptionPresentFlag == 1 {
 					colorPrimaries = d.FieldU8("color_primaries", cpTypeNames)
 					transferCharacteristics = d.FieldU8("transfer_characteristics", tcTypeNames)
 					matrixCoefficients = d.FieldU8("matrix_coefficients", mcTypeNames)
+				} else {
+					d.FieldValueUint("color_primaries", transferCharacteristics, cpTypeNames)
+					d.FieldValueUint("transfer_characteristics", transferCharacteristics, tcTypeNames)
+					d.FieldValueUint("matrix_coefficients", matrixCoefficients, mcTypeNames)
 				}
 				if monoChrome == 1 {
 					d.FieldU1("color_range")
+					d.FieldValueUint("subsampling_x", 1)
+					d.FieldValueUint("subsampling_y", 1)
 				} else if colorPrimaries == CP_BT_709 &&
 					transferCharacteristics == TC_SRGB &&
 					matrixCoefficients == MC_IDENTITY {
+					d.FieldValueUint("color_range", 1)
+					d.FieldValueUint("subsampling_x", 0)
+					d.FieldValueUint("subsampling_y", 0)
 					// nop
 				} else {
 					d.FieldU1("color_range")
@@ -336,16 +358,23 @@ func obuDecode(d *decode.D) any {
 					if seqProfile == 0 {
 						subsamplingX = 1
 						subsamplingY = 1
+						d.FieldValueUint("subsampling_x", subsamplingX)
+						d.FieldValueUint("subsampling_y", subsamplingY)
 					} else if seqProfile == 1 {
-						// nop
+						d.FieldValueUint("subsampling_x", subsamplingX)
+						d.FieldValueUint("subsampling_y", subsamplingY)
 					} else {
-						if twelveBit == 1 {
+						if bitDepth == 12 {
 							subsamplingX = d.FieldU1("subsampling_x")
 							if subsamplingX == 1 {
 								subsamplingY = d.FieldU1("subsampling_y")
+							} else {
+								d.FieldValueUint("subsampling_y", subsamplingY)
 							}
 						} else {
 							subsamplingX = 1
+							d.FieldValueUint("subsampling_x", subsamplingX)
+							d.FieldValueUint("subsampling_y", subsamplingY)
 						}
 					}
 					if subsamplingX == 1 && subsamplingY == 1 {

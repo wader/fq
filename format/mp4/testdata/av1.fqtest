@@ -249,6 +249,8 @@ $ fq -d mp4 dv av1.mp4
 0x13d0|   1e                                          | .              |                                        frame_height_bits_minus_1: 7 0x13d1.2-0x13d1.6 (0.4)
 0x13d0|   1e 7f                                       | ..             |                                        max_frame_width_minus_1: 319 0x13d1.6-0x13d2.7 (1.1)
 0x13d0|      7f de                                    |  ..            |                                        max_frame_height_minus_1: 239 0x13d2.7-0x13d3.7 (1)
+      |                                               |                |                                        frame_width: 320
+      |                                               |                |                                        frame_height: 240
 0x13d0|         de                                    |   .            |                                        frame_id_numbers_present_flag: 0 0x13d3.7-0x13d4 (0.1)
 0x13d0|            21                                 |    !           |                                        use_128x128_superblock: 0 0x13d4-0x13d4.1 (0.1)
 0x13d0|            21                                 |    !           |                                        enable_filter_intra: 0 0x13d4.1-0x13d4.2 (0.1)
@@ -268,11 +270,15 @@ $ fq -d mp4 dv av1.mp4
 0x13d0|                  d0                           |      .         |                                        enable_restoration: 1 0x13d6.1-0x13d6.2 (0.1)
       |                                               |                |                                        color_config{}: 0x13d6.2-0x13d9.6 (3.4)
 0x13d0|                  d0                           |      .         |                                          high_bitdepth: 0 0x13d6.2-0x13d6.3 (0.1)
+      |                                               |                |                                          bit_depth: 8
+      |                                               |                |                                          mono_chrome: 0
 0x13d0|                  d0                           |      .         |                                          color_description_present_flag: 1 0x13d6.3-0x13d6.4 (0.1)
 0x13d0|                  d0 20                        |      .         |                                          color_primaries: "unspecified" (2) 0x13d6.4-0x13d7.4 (1)
 0x13d0|                     20 20                     |                |                                          transfer_characteristics: "unspecified" (2) 0x13d7.4-0x13d8.4 (1)
 0x13d0|                        20 25                  |         %      |                                          matrix_coefficients: "unspecified" (2) 0x13d8.4-0x13d9.4 (1)
 0x13d0|                           25                  |         %      |                                          color_range: 0 0x13d9.4-0x13d9.5 (0.1)
+      |                                               |                |                                          subsampling_x: 0
+      |                                               |                |                                          subsampling_y: 0
 0x13d0|                           25                  |         %      |                                          separate_uv_delta_q: 1 0x13d9.5-0x13d9.6 (0.1)
 0x13d0|                           25                  |         %      |                                        film_grain_params_present: 0 0x13d9.6-0x13d9.7 (0.1)
 0x13d0|                           25                  |         %      |                                        data: raw bits 0x13d9.7-0x13da (0.1)
@@ -388,6 +394,8 @@ $ fq -d mp4 dv av1.mp4
 0x0030|      1e                                       |  .             |            frame_height_bits_minus_1: 7 0x32.2-0x32.6 (0.4)
 0x0030|      1e 7f                                    |  ..            |            max_frame_width_minus_1: 319 0x32.6-0x33.7 (1.1)
 0x0030|         7f de                                 |   ..           |            max_frame_height_minus_1: 239 0x33.7-0x34.7 (1)
+      |                                               |                |            frame_width: 320
+      |                                               |                |            frame_height: 240
 0x0030|            de                                 |    .           |            frame_id_numbers_present_flag: 0 0x34.7-0x35 (0.1)
 0x0030|               21                              |     !          |            use_128x128_superblock: 0 0x35-0x35.1 (0.1)
 0x0030|               21                              |     !          |            enable_filter_intra: 0 0x35.1-0x35.2 (0.1)
@@ -407,11 +415,15 @@ $ fq -d mp4 dv av1.mp4
 0x0030|                     d0                        |       .        |            enable_restoration: 1 0x37.1-0x37.2 (0.1)
       |                                               |                |            color_config{}: 0x37.2-0x3a.6 (3.4)
 0x0030|                     d0                        |       .        |              high_bitdepth: 0 0x37.2-0x37.3 (0.1)
+      |                                               |                |              bit_depth: 8
+      |                                               |                |              mono_chrome: 0
 0x0030|                     d0                        |       .        |              color_description_present_flag: 1 0x37.3-0x37.4 (0.1)
 0x0030|                     d0 20                     |       .        |              color_primaries: "unspecified" (2) 0x37.4-0x38.4 (1)
 0x0030|                        20 20                  |                |              transfer_characteristics: "unspecified" (2) 0x38.4-0x39.4 (1)
 0x0030|                           20 25               |          %     |              matrix_coefficients: "unspecified" (2) 0x39.4-0x3a.4 (1)
 0x0030|                              25               |          %     |              color_range: 0 0x3a.4-0x3a.5 (0.1)
+      |                                               |                |              subsampling_x: 0
+      |                                               |                |              subsampling_y: 0
 0x0030|                              25               |          %     |              separate_uv_delta_q: 1 0x3a.5-0x3a.6 (0.1)
 0x0030|                              25               |          %     |            film_grain_params_present: 0 0x3a.6-0x3a.7 (0.1)
 0x0030|                              25               |          %     |            data: raw bits 0x3a.7-0x3b (0.1)
