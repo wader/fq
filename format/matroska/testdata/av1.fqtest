@@ -393,6 +393,8 @@ $ fq -d matroska dv av1.mkv
 0x0230|                                       1e      |             .  |                  frame_height_bits_minus_1: 7 0x23d.2-0x23d.6 (0.4)
 0x0230|                                       1e 7f   |             .. |                  max_frame_width_minus_1: 319 0x23d.6-0x23e.7 (1.1)
 0x0230|                                          7f de|              ..|                  max_frame_height_minus_1: 239 0x23e.7-0x23f.7 (1)
+      |                                               |                |                  frame_width: 320
+      |                                               |                |                  frame_height: 240
 0x0230|                                             de|               .|                  frame_id_numbers_present_flag: 0 0x23f.7-0x240 (0.1)
 0x0240|21                                             |!               |                  use_128x128_superblock: 0 0x240-0x240.1 (0.1)
 0x0240|21                                             |!               |                  enable_filter_intra: 0 0x240.1-0x240.2 (0.1)
@@ -412,11 +414,15 @@ $ fq -d matroska dv av1.mkv
 0x0240|      d0                                       |  .             |                  enable_restoration: 1 0x242.1-0x242.2 (0.1)
       |                                               |                |                  color_config{}: 0x242.2-0x245.6 (3.4)
 0x0240|      d0                                       |  .             |                    high_bitdepth: 0 0x242.2-0x242.3 (0.1)
+      |                                               |                |                    bit_depth: 8
+      |                                               |                |                    mono_chrome: 0
 0x0240|      d0                                       |  .             |                    color_description_present_flag: 1 0x242.3-0x242.4 (0.1)
 0x0240|      d0 20                                    |  .             |                    color_primaries: "unspecified" (2) 0x242.4-0x243.4 (1)
 0x0240|         20 20                                 |                |                    transfer_characteristics: "unspecified" (2) 0x243.4-0x244.4 (1)
 0x0240|            20 25                              |     %          |                    matrix_coefficients: "unspecified" (2) 0x244.4-0x245.4 (1)
 0x0240|               25                              |     %          |                    color_range: 0 0x245.4-0x245.5 (0.1)
+      |                                               |                |                    subsampling_x: 0
+      |                                               |                |                    subsampling_y: 0
 0x0240|               25                              |     %          |                    separate_uv_delta_q: 1 0x245.5-0x245.6 (0.1)
 0x0240|               25                              |     %          |                  film_grain_params_present: 0 0x245.6-0x245.7 (0.1)
 0x0240|               25                              |     %          |                  data: raw bits 0x245.7-0x246 (0.1)

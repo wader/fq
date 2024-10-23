@@ -22,6 +22,8 @@ $ fq -d av1_obu dv av1_obu_seq_header_film_grain_chrome_sample_pos
 0x00|                  ab                           |      .         |  frame_height_bits_minus_1: 10 0x6.2-0x6.6 (0.4)
 0x00|                  ab bf c3                     |      ...       |  max_frame_width_minus_1: 1919 0x6.6-0x8.1 (1.3)
 0x00|                        c3 71                  |        .q      |  max_frame_height_minus_1: 1079 0x8.1-0x9.4 (1.3)
+    |                                               |                |  frame_width: 1920
+    |                                               |                |  frame_height: 1080
 0x00|                           71                  |         q      |  frame_id_numbers_present_flag: 0 0x9.4-0x9.5 (0.1)
 0x00|                           71                  |         q      |  use_128x128_superblock: 0 0x9.5-0x9.6 (0.1)
 0x00|                           71                  |         q      |  enable_filter_intra: 0 0x9.6-0x9.7 (0.1)
@@ -41,12 +43,15 @@ $ fq -d av1_obu dv av1_obu_seq_header_film_grain_chrome_sample_pos
 0x00|                                 e6            |           .    |  enable_restoration: 1 0xb.6-0xb.7 (0.1)
     |                                               |                |  color_config{}: 0xb.7-0xf.6 (3.7)
 0x00|                                 e6            |           .    |    high_bitdepth: 0 0xb.7-0xc (0.1)
+    |                                               |                |    bit_depth: 8
 0x00|                                    40         |            @   |    mono_chrome: 0 0xc-0xc.1 (0.1)
 0x00|                                    40         |            @   |    color_description_present_flag: 1 0xc.1-0xc.2 (0.1)
 0x00|                                    40 40      |            @@  |    color_primaries: "bt_709" (1) 0xc.2-0xd.2 (1)
 0x00|                                       40 40   |             @@ |    transfer_characteristics: "bt_709" (1) 0xd.2-0xe.2 (1)
 0x00|                                          40 43|              @C|    matrix_coefficients: "bt_709" (1) 0xe.2-0xf.2 (1)
 0x00|                                             43|               C|    color_range: 0 0xf.2-0xf.3 (0.1)
+    |                                               |                |    subsampling_x: 1
+    |                                               |                |    subsampling_y: 1
 0x00|                                             43|               C|    chroma_sample_position: 0 0xf.3-0xf.5 (0.2)
 0x00|                                             43|               C|    separate_uv_delta_q: 0 0xf.5-0xf.6 (0.1)
 0x00|                                             43|               C|  film_grain_params_present: 1 0xf.6-0xf.7 (0.1)
