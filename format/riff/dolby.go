@@ -12,7 +12,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-func dbmdDecode(d *decode.D, size int64) any {
+func tmp_dbmdDecode(d *decode.D, size int64) any {
 	version := d.U32()
 	major := (version >> 24) & 0xFF
 	minor := (version >> 16) & 0xFF
@@ -47,9 +47,9 @@ func dbmdDecode(d *decode.D, size int64) any {
 				case 8:
 					parseAudioInfo(d)
 				case 9:
-					parseDolbyAtmos(d, segmentSize)
+					parseDolbyAtmos(d)
 				case 10:
-					parseDolbyAtmosSupplemental(d, segmentSize)
+					parseDolbyAtmosSupplemental(d)
 				default:
 					d.FieldRawLen("unknown_segment_raw", int64(segmentSize*8))
 				}
@@ -117,7 +117,7 @@ var warpMode = scalar.UintMapDescription{
 	4: "not indicated (Default warping will be applied.)",
 }
 
-var trimConfigName = scalar.UintMapDescription{
+var tmp_trimConfigName = scalar.UintMapDescription{
 	0: "2.0",
 	1: "5.1",
 	2: "7.1",
@@ -134,7 +134,7 @@ var trimType = scalar.UintMapDescription{
 	1: "automatic",
 }
 
-func parseDolbyE(d *decode.D) {
+func tmp_parseDolbyE(d *decode.D) {
 	d.FieldValueStr("metadata_segment_type", "dolby_e")
 
 	d.FieldU8("program_config")
@@ -145,7 +145,7 @@ func parseDolbyE(d *decode.D) {
 	d.FieldRawLen("reserved_for_future_use", 80*8)
 }
 
-func parseDolbyDigital(d *decode.D) {
+func tmp_parseDolbyDigital(d *decode.D) {
 	d.FieldValueStr("metadata_segment_type", "dolby_digital")
 
 	d.FieldU8("ac3_program_id")
@@ -166,7 +166,7 @@ func parseDolbyDigital(d *decode.D) {
 	d.FieldRawLen("program_description_text", 32*8)
 }
 
-func parseDolbyDigitalPlus(d *decode.D) {
+func tmp_parseDolbyDigitalPlus(d *decode.D) {
 	d.FieldValueStr("metadata_segment_type", "dolby_digital_plus")
 
 	d.FieldU8("program_id")
@@ -205,7 +205,7 @@ func parseDolbyDigitalPlus(d *decode.D) {
 	d.FieldRawLen("reserved_for_future_use", 69*8)
 }
 
-func parseAudioInfo(d *decode.D) {
+func tmp_parseAudioInfo(d *decode.D) {
 	d.FieldValueStr("metadata_segment_type", "audio_info")
 
 	d.FieldU8("program_id")
@@ -224,7 +224,7 @@ func parseAudioInfo(d *decode.D) {
 	d.FieldUTF8("segment_modified_date", 32)
 }
 
-func parseDolbyAtmos(d *decode.D, size uint64) {
+func tmp_parseDolbyAtmos(d *decode.D, size uint64) {
 	d.FieldValueStr("metadata_segment_type", "dolby_atmos")
 
 	// d.SeekRel(32 * 8)
@@ -248,7 +248,7 @@ func parseDolbyAtmos(d *decode.D, size uint64) {
 	d.SeekRel(80 * 8)
 }
 
-func parseDolbyAtmosSupplemental(d *decode.D, size uint64) {
+func tmp_parseDolbyAtmosSupplemental(d *decode.D, size uint64) {
 	d.FieldValueStr("metadata_segment_type", "dolby_atmos_supplemental")
 
 	sync := d.FieldU32LE("dasms_sync")

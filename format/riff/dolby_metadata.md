@@ -4,7 +4,7 @@ including Dolby Atmos, AC3, Dolby Digital \[Plus\], and Dolby Audio Info (e.g. L
 ### Examples
 Decode Dolby metadata from `<dbmd>` chunk:
 ```
-$ fq -d wav '.chunks[] | select(.id | IN("dbmd")) | tovalue' bwf.wav
+$ fq -d wav '.chunks[] | select(.id | IN("dbmd")) | tovalue' adm-bwf.wav
 ```
 
 RIFF / WAV / Broadcast Wave Format (BWF) chunks:

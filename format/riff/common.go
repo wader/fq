@@ -36,9 +36,9 @@ func riffDecode(d *decode.D, path path, headFn func(d *decode.D, path path) (str
 		}
 	})
 
-	wordAlgin := d.AlignBits(16)
-	if wordAlgin != 0 {
-		d.FieldRawLen("align", int64(wordAlgin))
+	wordAlign := d.AlignBits(16)
+	if wordAlign != 0 {
+		d.FieldRawLen("align", int64(wordAlign))
 	}
 }
 

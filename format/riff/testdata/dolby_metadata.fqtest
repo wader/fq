@@ -1,0 +1,192 @@
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: ./format/riff/testdata/dolby_metadata.wav (wav) 0x0-0x2aec (10988)
+0x0000|52 49 46 46                                    |RIFF            |  id: "RIFF" 0x0-0x4 (4)
+0x0000|            e4 2a 00 00                        |    .*..        |  size: 10980 0x4-0x8 (4)
+0x0000|                        57 41 56 45            |        WAVE    |  format: "WAVE" (valid) 0x8-0xc (4)
+      |                                               |                |  chunks[0:6]: 0xc-0x2aeb (10975)
+      |                                               |                |    [0]{}: chunk 0xc-0x54 (72)
+0x0000|                                    4a 55 4e 4b|            JUNK|      id: "JUNK" (Alignment) 0xc-0x10 (4)
+0x0010|40 00 00 00                                    |@...            |      size: 64 0x10-0x14 (4)
+0x0010|            00 00 00 00 00 00 00 00 00 00 00 00|    ............|      data: raw bits 0x14-0x54 (64)
+0x0020|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
+*     |until 0x53.7 (64)                              |                |
+      |                                               |                |    [1]{}: chunk 0x54-0x6c (24)
+0x0050|            66 6d 74 20                        |    fmt         |      id: "fmt" 0x54-0x58 (4)
+0x0050|                        10 00 00 00            |        ....    |      size: 16 0x58-0x5c (4)
+0x0050|                                    01 00      |            ..  |      audio_format: "pcm_s16le" (1) 0x5c-0x5e (2)
+0x0050|                                          03 00|              ..|      num_channels: 3 0x5e-0x60 (2)
+0x0060|80 bb 00 00                                    |....            |      sample_rate: 48000 0x60-0x64 (4)
+0x0060|            80 97 06 00                        |    ....        |      byte_rate: 432000 0x64-0x68 (4)
+0x0060|                        09 00                  |        ..      |      block_align: 9 0x68-0x6a (2)
+0x0060|                              18 00            |          ..    |      bits_per_sample: 24 0x6a-0x6c (2)
+      |                                               |                |    [2]{}: chunk 0x6c-0x1154 (4328)
+0x0060|                                    64 61 74 61|            data|      id: "data" 0x6c-0x70 (4)
+0x0070|e0 10 00 00                                    |....            |      size: 4320 0x70-0x74 (4)
+0x0070|            00 00 00 00 00 00 00 00 00 00 00 00|    ............|      samples: raw bits 0x74-0x1154 (4320)
+0x0080|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
+*     |until 0x1153.7 (4320)                          |                |
+      |                                               |                |    [3]{}: chunk 0x1154-0x2862 (5902)
+0x1150|            61 78 6d 6c                        |    axml        |      id: "axml" (Audio Definition Model ambisonics and elements) 0x1154-0x1158 (4)
+0x1150|                        06 17 00 00            |        ....    |      size: 5894 0x1158-0x115c (4)
+0x1150|                                    3c 3f 78 6d|            <?xm|      xml: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<ebuCoreMain xmlns=\"urn:ebu:metadata-schema:ebuCore_2016\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"urn:ebu:metadata-schema:ebuCore_2016 ebucore.xsd\" xml:lang=\"en\">\n\t<coreMetadata>\n\t\t<format>\n\t\t\t<audioFormatExtended >\n\t\t\t\t<audioProgramme audioProgrammeID=\"APR_1001\" audioProgrammeName=\"Atmos_Master\" start=\"00:00:00.00000\" end=\"00:00:00.01000\">\n\t\t\t\t\t<audioContentIDRef>ACO_1001</audioContentIDRef>\n\t\t\t\t</audioProgramme>\n\t\t\t\t<audioContent audioContentID=\"ACO_1001\" audioContentName=\"Atmos_Master_Content\">\n\t\t\t\t\t<audioObjectIDRef>AO_1001</audioObjectIDRef>\n\t\t\t\t\t<audioObjectIDRef>AO_100b</audioObjectIDRef>\n\t\t\t\t\t<dialogue mixedContentKind=\"0\">2</dialogue>\n\t\t\t\t</audioContent>\n\t\t\t\t<audioObject audioObjectID=\"AO_1001\" audioObjectName=\"Atmos_Bed_1\" start=\"00:00:00.00000\" duration=\"00:00:00.01000\">\n\t\t\t\t\t<audioPackFormatIDRef>AP_00011001</audioPackFormatIDRef>\n\t\t\t\t\t<audioTrackUIDRef>ATU_00000001</audioTrackUIDRef>\n\t\t\t\t\t<audioTrackUIDRef>ATU_00000002</audioTrackUIDRef>\n\t\t\t\t</audioObject>\n\t\t\t\t<audioObject audioObjectID=\"AO_100b\" audioObjectName=\"Atmos_Obj_1\" start=\"00:00:00.00000\" duration=\"00:00:00.01000\">\n\t\t\t\t\t<audioPackFormatIDRef>AP_00031001</audioPackFormatIDRef>\n\t\t\t\t\t<audioTrackUIDRef>ATU_00000003</audioTrackUIDRef>\n\t\t\t\t</audioObject>\n\t\t\t\t<audioPackFormat audioPackFormatID=\"AP_00011001\" audioPackFormatName=\"AtmosCustomPackFormat1\" typeDefinition=\"DirectSpeakers\" typeLabel=\"0001\">\n\t\t\t\t\t<audioChannelFormatIDRef>AC_00011001</audioChannelFormatIDRef>\n\t\t\t\t\t<audioChannelFormatIDRef>AC_00011002</audioChannelFormatIDRef>\n\t\t\t\t</audioPackFormat>\n\t\t\t\t<audioPackFormat audioPackFormatID=\"AP_00031001\" audioPackFormatName=\"Atmos_Obj_1\" typeDefinition=\"Objects\" typeLabel=\"0003\">\n\t\t\t\t\t<audioChannelFormatIDRef>AC_00031001</audioChannelFormatIDRef>\n\t\t\t\t</audioPackFormat>\n\t\t\t\t<audioChannelFormat audioChannelFormatID=\"AC_00011001\" audioChannelFormatName=\"RoomCentricLeft\" typeDefinition=\"DirectSpeakers\" typeLabel=\"0001\">\n\t\t\t\t\t<audioBlockFormat audioBlockFormatID=\"AB_00011001_00000001\">\n\t\t\t\t\t\t<speakerLabel>RC_L</speakerLabel>\n\t\t\t\t\t\t<cartesian>1</cartesian>\n\t\t\t\t\t\t<position coordinate=\"X\">-1.0000000000</position>\n\t\t\t\t\t\t<position coordinate=\"Y\">1.0000000000</position>\n\t\t\t\t\t\t<position coordinate=\"Z\">0.0000000000</position>\n\t\t\t\t\t</audioBlockFormat>\n\t\t\t\t</audioChannelFormat>\n\t\t\t\t<audioChannelFormat audioChannelFormatID=\"AC_00011002\" audioChannelFormatName=\"RoomCentricRight\" typeDefinition=\"DirectSpeakers\" typeLabel=\"0001\">\n\t\t\t\t\t<audioBlockFormat audioBlockFormatID=\"AB_00011002_00000001\">\n\t\t\t\t\t\t<speakerLabel>RC_R</speakerLabel>\n\t\t\t\t\t\t<cartesian>1</cartesian>\n\t\t\t\t\t\t<position coordinate=\"X\">1.0000000000</position>\n\t\t\t\t\t\t<position coordinate=\"Y\">1.0000000000</position>\n\t\t\t\t\t\t<position coordinate=\"Z\">0.0000000000</position>\n\t\t\t\t\t</audioBlockFormat>\n\t\t\t\t</audioChannelFormat>\n\t\t\t\t<audioChannelFormat audioChannelFormatID=\"AC_00031001\" audioChannelFormatName=\"Atmos_Obj_1\" typeDefinition=\"Objects\" typeLabel=\"0003\">\n\t\t\t\t\t<audioBlockFormat audioBlockFormatID=\"AB_00031001_00000001\" rtime=\"00:00:00.00000\" duration=\"00:00:00.01000\">\n\t\t\t\t\t\t<cartesian>1</cartesian>\n\t\t\t\t\t\t<position coordinate=\"X\">0.0000000000</position>\n\t\t\t\t\t\t<position coordinate=\"Y\">1.0000000000</position>\n\t\t\t\t\t\t<jumpPosition interpolationLength=\"0.000000\">1</jumpPosition>\n\t\t\t\t\t</audioBlockFormat>\n\t\t\t\t</audioChannelFormat>\n\t\t\t\t<audioStreamFormat audioStreamFormatID=\"AS_00011001\" audioStreamFormatName=\"PCM_RoomCentricLeft\" formatDefinition=\"PCM\" formatLabel=\"0001\">\n\t\t\t\t\t<audioChannelFormatIDRef>AC_00011001</audioChannelFormatIDRef>\n\t\t\t\t\t<audioPackFormatIDRef>AP_00011001</audioPackFormatIDRef>\n\t\t\t\t\t<audioTrackFormatIDRef>AT_00011001_01</audioTrackFormatIDRef>\n\t\t\t\t</audioStreamFormat>\n\t\t\t\t<audioStreamFormat audioStreamFormatID=\"AS_00011002\" audioStreamFormatName=\"PCM_RoomCentricRight\" formatDefinition=\"PCM\" formatLabel=\"0001\">\n\t\t\t\t\t<audioChannelFormatIDRef>AC_00011002</audioChannelFormatIDRef>\n\t\t\t\t\t<audioPackFormatIDRef>AP_00011001</audioPackFormatIDRef>\n\t\t\t\t\t<audioTrackFormatIDRef>AT_00011002_01</audioTrackFormatIDRef>\n\t\t\t\t</audioStreamFormat>\n\t\t\t\t<audioStreamFormat audioStreamFormatID=\"AS_00031001\" audioStreamFormatName=\"PCM_Atmos_Obj_1\" formatDefinition=\"PCM\" formatLabel=\"0001\">\n\t\t\t\t\t<audioChannelFormatIDRef>AC_00031001</audioChannelFormatIDRef>\n\t\t\t\t\t<audioPackFormatIDRef>AP_00031001</audioPackFormatIDRef>\n\t\t\t\t\t<audioTrackFormatIDRef>AT_00031001_01</audioTrackFormatIDRef>\n\t\t\t\t</audioStreamFormat>\n\t\t\t\t<audioTrackFormat audioTrackFormatID=\"AT_00011001_01\" audioTrackFormatName=\"PCM_RoomCentricLeft\" formatDefinition=\"PCM\" formatLabel=\"0001\">\n\t\t\t\t\t<audioStreamFormatIDRef>AS_00011001</audioStreamFormatIDRef>\n\t\t\t\t</audioTrackFormat>\n\t\t\t\t<audioTrackFormat audioTrackFormatID=\"AT_00011002_01\" audioTrackFormatName=\"PCM_RoomCentricRight\" formatDefinition=\"PCM\" formatLabel=\"0001\">\n\t\t\t\t\t<audioStreamFormatIDRef>AS_00011002</audioStreamFormatIDRef>\n\t\t\t\t</audioTrackFormat>\n\t\t\t\t<audioTrackFormat audioTrackFormatID=\"AT_00031001_01\" audioTrackFormatName=\"PCM_Atmos_Obj_1\" formatDefinition=\"PCM\" formatLabel=\"0001\">\n\t\t\t\t\t<audioStreamFormatIDRef>AS_00031001</audioStreamFormatIDRef>\n\t\t\t\t</audioTrackFormat>\n\t\t\t\t<audioTrackUID UID=\"ATU_00000001\" bitDepth=\"24\" sampleRate=\"48000\">\n\t\t\t\t\t<audioTrackFormatIDRef>AT_00011001_01</audioTrackFormatIDRef>\n\t\t\t\t\t<audioPackFormatIDRef>AP_00011001</audioPackFormatIDRef>\n\t\t\t\t</audioTrackUID>\n\t\t\t\t<audioTrackUID UID=\"ATU_00000002\" bitDepth=\"24\" sampleRate=\"48000\">\n\t\t\t\t\t<audioTrackFormatIDRef>AT_00011002_01</audioTrackFormatIDRef>\n\t\t\t\t\t<audioPackFormatIDRef>AP_00011001</audioPackFormatIDRef>\n\t\t\t\t</audioTrackUID>\n\t\t\t\t<audioTrackUID UID=\"ATU_00000003\" bitDepth=\"24\" sampleRate=\"48000\">\n\t\t\t\t\t<audioTrackFormatIDRef>AT_00031001_01</audioTrackFormatIDRef>\n\t\t\t\t\t<audioPackFormatIDRef>AP_00031001</audioPackFormatIDRef>\n\t\t\t\t</audioTrackUID>\n\t\t\t</audioFormatExtended>\n\t\t</format>\n\t</coreMetadata>\n</ebuCoreMain>\n" 0x115c-0x2862 (5894)
+0x1160|6c 20 76 65 72 73 69 6f 6e 3d 22 31 2e 30 22 20|l version="1.0" |
+*     |until 0x2861.7 (5894)                          |                |
+      |                                               |                |    [4]{}: chunk 0x2862-0x28e6 (132)
+0x2860|      63 68 6e 61                              |  chna          |      id: "chna" (Track UIDs of Audio Definition Model) 0x2862-0x2866 (4)
+0x2860|                  7c 00 00 00                  |      |...      |      size: 124 0x2866-0x286a (4)
+0x2860|                              03 00            |          ..    |      num_tracks: 3 0x286a-0x286c (2)
+0x2860|                                    03 00      |            ..  |      num_uids: 3 0x286c-0x286e (2)
+      |                                               |                |      audio_ids[0:3]: 0x286e-0x28e6 (120)
+      |                                               |                |        [0]{}: audio_id 0x286e-0x2896 (40)
+0x2860|                                          01 00|              ..|          track_index: 1 0x286e-0x2870 (2)
+0x2870|41 54 55 5f 30 30 30 30 30 30 30 31            |ATU_00000001    |          uid: "ATU_00000001" 0x2870-0x287c (12)
+0x2870|                                    41 54 5f 30|            AT_0|          track_format_id_reference: "AT_00011001_01" 0x287c-0x288a (14)
+0x2880|30 30 31 31 30 30 31 5f 30 31                  |0011001_01      |
+0x2880|                              41 50 5f 30 30 30|          AP_000|          pack_format_id_reference: "AP_00011001" 0x288a-0x2895 (11)
+0x2890|31 31 30 30 31                                 |11001           |
+0x2890|               00                              |     .          |          padding: raw bits 0x2895-0x2896 (1)
+      |                                               |                |        [1]{}: audio_id 0x2896-0x28be (40)
+0x2890|                  02 00                        |      ..        |          track_index: 2 0x2896-0x2898 (2)
+0x2890|                        41 54 55 5f 30 30 30 30|        ATU_0000|          uid: "ATU_00000002" 0x2898-0x28a4 (12)
+0x28a0|30 30 30 32                                    |0002            |
+0x28a0|            41 54 5f 30 30 30 31 31 30 30 32 5f|    AT_00011002_|          track_format_id_reference: "AT_00011002_01" 0x28a4-0x28b2 (14)
+0x28b0|30 31                                          |01              |
+0x28b0|      41 50 5f 30 30 30 31 31 30 30 31         |  AP_00011001   |          pack_format_id_reference: "AP_00011001" 0x28b2-0x28bd (11)
+0x28b0|                                       00      |             .  |          padding: raw bits 0x28bd-0x28be (1)
+      |                                               |                |        [2]{}: audio_id 0x28be-0x28e6 (40)
+0x28b0|                                          03 00|              ..|          track_index: 3 0x28be-0x28c0 (2)
+0x28c0|41 54 55 5f 30 30 30 30 30 30 30 33            |ATU_00000003    |          uid: "ATU_00000003" 0x28c0-0x28cc (12)
+0x28c0|                                    41 54 5f 30|            AT_0|          track_format_id_reference: "AT_00031001_01" 0x28cc-0x28da (14)
+0x28d0|30 30 33 31 30 30 31 5f 30 31                  |0031001_01      |
+0x28d0|                              41 50 5f 30 30 30|          AP_000|          pack_format_id_reference: "AP_00031001" 0x28da-0x28e5 (11)
+0x28e0|33 31 30 30 31                                 |31001           |
+0x28e0|               00                              |     .          |          padding: raw bits 0x28e5-0x28e6 (1)
+      |                                               |                |    [5]{}: chunk 0x28e6-0x2aeb (517)
+0x28e0|                  64 62 6d 64                  |      dbmd      |      id: "dbmd" (Dolby Metadata, e.g. Atmos, AC3, Dolby Digital [Plus]) 0x28e6-0x28ea (4)
+0x28e0|                              fe 01 00 00      |          ....  |      size: 510 0x28ea-0x28ee (4)
+      |                                               |                |      version{}: 0x28ee-0x28f2 (4)
+0x28e0|                                          06   |              . |        major: 6 0x28ee-0x28ef (1)
+0x28e0|                                             00|               .|        minor: 0 0x28ef-0x28f0 (1)
+0x28f0|00                                             |.               |        patch: 0 0x28f0-0x28f1 (1)
+0x28f0|   01                                          | .              |        build: 1 0x28f1-0x28f2 (1)
+      |                                               |                |      metadata_segments[0:4]: 0x28f2-0x2aeb (505)
+      |                                               |                |        [0]{}: metadata_segment 0x28f2-0x2956 (100)
+0x28f0|      07                                       |  .             |          id: "dolby_digital_plus_metadata" (7) 0x28f2-0x28f3 (1)
+0x28f0|         60 00                                 |   `.           |          size: 96 0x28f3-0x28f5 (2)
+0x28f0|               00                              |     .          |          program_id: 0 0x28f5-0x28f6 (1)
+0x28f0|                  47                           |      G         |          program_info: 71 0x28f6-0x28f7 (1)
+      |                                               |                |          lfe_on: true
+      |                                               |                |          bitstream_mode: "main audio service: complete main (CM)"
+0x28f0|                     00 00                     |       ..       |          ddplus_reserved_a: 0 0x28f7-0x28f9 (2)
+0x28f0|                           00                  |         .      |          surround_config: 0 0x28f9-0x28fa (1)
+0x28f0|                              60               |          `     |          dialnorm_info: 96 0x28fa-0x28fb (1)
+0x28f0|                                 00            |           .    |          langcod: 0 0x28fb-0x28fc (1)
+0x28f0|                                    00         |            .   |          audio_prod_info: 0 0x28fc-0x28fd (1)
+0x28f0|                                       24      |             $  |          ext_bsi1_word1: 36 0x28fd-0x28fe (1)
+0x28f0|                                          24   |              $ |          ext_bsi1_word2: 36 0x28fe-0x28ff (1)
+0x28f0|                                             00|               .|          ext_bsi2_word1: 0 0x28ff-0x2900 (1)
+0x2900|00 00 00                                       |...             |          ddplus_reserved_b: 0 0x2900-0x2903 (3)
+0x2900|         02                                    |   .            |          compr1: "film_light" (2) 0x2903-0x2904 (1)
+0x2900|            02                                 |    .           |          dynrng1: "film_light" (2) 0x2904-0x2905 (1)
+0x2900|               00 00 00                        |     ...        |          ddplus_reserved_c: 0 0x2905-0x2908 (3)
+0x2900|                        00                     |        .       |          ddplus_info1: 0 0x2908-0x2909 (1)
+0x2900|                           00 00 00 00 00      |         .....  |          ddplus_reserved_d: 0 0x2909-0x290e (5)
+0x2900|                                          00 00|              ..|          datarate: 0 0x290e-0x2910 (2)
+0x2910|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|          reserved_for_future_use: raw bits 0x2910-0x2955 (69)
+*     |until 0x2954.7 (69)                            |                |
+0x2950|               ad                              |     .          |          checksum: 0xad 0x2955-0x2956 (1)
+      |                                               |                |        [1]{}: metadata_segment 0x2956-0x2a52 (252)
+0x2950|                  09                           |      .         |          id: "dolby_atmos" (9) 0x2956-0x2957 (1)
+0x2950|                     f8 00                     |       ..       |          size: 248 0x2957-0x2959 (2)
+0x2950|                           43 72 65 61 74 65 64|         Created|          atmos_dbmd_content_creation_preamble: "Created using Dolby equipment" 0x2959-0x2979 (32)
+0x2960|20 75 73 69 6e 67 20 44 6f 6c 62 79 20 65 71 75| using Dolby equ|
+0x2970|69 70 6d 65 6e 74 00 00 00                     |ipment...       |
+0x2970|                           44 6f 6c 62 79 20 41|         Dolby A|          atmos_dbmd_content_creation_tool: "Dolby Atmos Composer Essential (fiedler audio)" 0x2979-0x29b9 (64)
+0x2980|74 6d 6f 73 20 43 6f 6d 70 6f 73 65 72 20 45 73|tmos Composer Es|
+*     |until 0x29b8.7 (64)                            |                |
+      |                                               |                |          version{}: 0x29b9-0x29bc (3)
+0x29b0|                           01                  |         .      |            major: 1 0x29b9-0x29ba (1)
+0x29b0|                              00               |          .     |            minor: 0 0x29ba-0x29bb (1)
+0x29b0|                                 01            |           .    |            micro: 1 0x29bb-0x29bc (1)
+0x29b0|                                    00 00 00 00|            ....|          unknown0: raw bits 0x29bc-0x29f1 (53)
+0x29c0|03 00 00 00 00 00 00 00 22 ff 00 00 00 00 00 03|........".......|
+*     |until 0x29f0.7 (53)                            |                |
+0x29f0|   83                                          | .              |          warp_mode: 131 0x29f1-0x29f2 (1)
+0x29f0|      00 00 00 00 00 00 00 00 00 00 00 00 00 00|  ..............|          unknown1: raw bits 0x29f2-0x2a01 (15)
+0x2a00|00                                             |.               |
+0x2a00|   f0 00 08 00 00 00 00 00 00 00 00 00 00 00 00| ...............|          unknown2: raw bits 0x2a01-0x2a51 (80)
+0x2a10|00 f0 00 08 00 00 00 00 00 00 00 00 00 00 00 00|................|
+*     |until 0x2a50.7 (80)                            |                |
+0x2a50|   90                                          | .              |          checksum: 0x90 0x2a51-0x2a52 (1)
+      |                                               |                |        [2]{}: metadata_segment 0x2a52-0x2aea (152)
+0x2a50|      0a                                       |  .             |          id: "dolby_atmos_supplemental" (10) 0x2a52-0x2a53 (1)
+0x2a50|         94 00                                 |   ..           |          size: 148 0x2a53-0x2a55 (2)
+0x2a50|               bd 6f 72 f8                     |     .or.       |          dasms_sync: 0xf8726fbd (valid) 0x2a55-0x2a59 (4)
+0x2a50|                           03 00               |         ..     |          object_count: 3 0x2a59-0x2a5b (2)
+0x2a50|                                 00            |           .    |          reserved: 0 0x2a5b-0x2a5c (1)
+      |                                               |                |          trim_configs[0:9]: 0x2a5c-0x2ae3 (135)
+      |                                               |                |            [0]{}: trim_config 0x2a5c-0x2a6b (15)
+0x2a50|                                    01         |            .   |              reserved: raw bits 0x2a5c-0x2a5c.7 (0.7)
+0x2a50|                                    01         |            .   |              type: "automatic" (1) 0x2a5c.7-0x2a5d (0.1)
+      |                                               |                |              config_name: "2.0"
+0x2a50|                                       00 00 00|             ...|              raw: "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" 0x2a5d-0x2a6b (14)
+0x2a60|00 00 00 00 00 00 00 00 00 00 00               |...........     |
+      |                                               |                |            [1]{}: trim_config 0x2a6b-0x2a7a (15)
+0x2a60|                                 01            |           .    |              reserved: raw bits 0x2a6b-0x2a6b.7 (0.7)
+0x2a60|                                 01            |           .    |              type: "automatic" (1) 0x2a6b.7-0x2a6c (0.1)
+      |                                               |                |              config_name: "5.1"
+0x2a60|                                    00 00 00 00|            ....|              raw: "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" 0x2a6c-0x2a7a (14)
+0x2a70|00 00 00 00 00 00 00 00 00 00                  |..........      |
+      |                                               |                |            [2]{}: trim_config 0x2a7a-0x2a89 (15)
+0x2a70|                              01               |          .     |              reserved: raw bits 0x2a7a-0x2a7a.7 (0.7)
+0x2a70|                              01               |          .     |              type: "automatic" (1) 0x2a7a.7-0x2a7b (0.1)
+      |                                               |                |              config_name: "7.1"
+0x2a70|                                 00 00 00 00 00|           .....|              raw: "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" 0x2a7b-0x2a89 (14)
+0x2a80|00 00 00 00 00 00 00 00 00                     |.........       |
+      |                                               |                |            [3]{}: trim_config 0x2a89-0x2a98 (15)
+0x2a80|                           01                  |         .      |              reserved: raw bits 0x2a89-0x2a89.7 (0.7)
+0x2a80|                           01                  |         .      |              type: "automatic" (1) 0x2a89.7-0x2a8a (0.1)
+      |                                               |                |              config_name: "2.1.2"
+0x2a80|                              00 00 00 00 00 00|          ......|              raw: "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" 0x2a8a-0x2a98 (14)
+0x2a90|00 00 00 00 00 00 00 00                        |........        |
+      |                                               |                |            [4]{}: trim_config 0x2a98-0x2aa7 (15)
+0x2a90|                        01                     |        .       |              reserved: raw bits 0x2a98-0x2a98.7 (0.7)
+0x2a90|                        01                     |        .       |              type: "automatic" (1) 0x2a98.7-0x2a99 (0.1)
+      |                                               |                |              config_name: "5.1.2"
+0x2a90|                           00 00 00 00 00 00 00|         .......|              raw: "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" 0x2a99-0x2aa7 (14)
+0x2aa0|00 00 00 00 00 00 00                           |.......         |
+      |                                               |                |            [5]{}: trim_config 0x2aa7-0x2ab6 (15)
+0x2aa0|                     01                        |       .        |              reserved: raw bits 0x2aa7-0x2aa7.7 (0.7)
+0x2aa0|                     01                        |       .        |              type: "automatic" (1) 0x2aa7.7-0x2aa8 (0.1)
+      |                                               |                |              config_name: "7.1.2"
+0x2aa0|                        00 00 00 00 00 00 00 00|        ........|              raw: "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" 0x2aa8-0x2ab6 (14)
+0x2ab0|00 00 00 00 00 00                              |......          |
+      |                                               |                |            [6]{}: trim_config 0x2ab6-0x2ac5 (15)
+0x2ab0|                  01                           |      .         |              reserved: raw bits 0x2ab6-0x2ab6.7 (0.7)
+0x2ab0|                  01                           |      .         |              type: "automatic" (1) 0x2ab6.7-0x2ab7 (0.1)
+      |                                               |                |              config_name: "2.1.4"
+0x2ab0|                     00 00 00 00 00 00 00 00 00|       .........|              raw: "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" 0x2ab7-0x2ac5 (14)
+0x2ac0|00 00 00 00 00                                 |.....           |
+      |                                               |                |            [7]{}: trim_config 0x2ac5-0x2ad4 (15)
+0x2ac0|               01                              |     .          |              reserved: raw bits 0x2ac5-0x2ac5.7 (0.7)
+0x2ac0|               01                              |     .          |              type: "automatic" (1) 0x2ac5.7-0x2ac6 (0.1)
+      |                                               |                |              config_name: "5.1.4"
+0x2ac0|                  00 00 00 00 00 00 00 00 00 00|      ..........|              raw: "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" 0x2ac6-0x2ad4 (14)
+0x2ad0|00 00 00 00                                    |....            |
+      |                                               |                |            [8]{}: trim_config 0x2ad4-0x2ae3 (15)
+0x2ad0|            01                                 |    .           |              reserved: raw bits 0x2ad4-0x2ad4.7 (0.7)
+0x2ad0|            01                                 |    .           |              type: "automatic" (1) 0x2ad4.7-0x2ad5 (0.1)
+      |                                               |                |              config_name: "7.1.4"
+0x2ad0|               00 00 00 00 00 00 00 00 00 00 00|     ...........|              raw: "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" 0x2ad5-0x2ae3 (14)
+0x2ae0|00 00 00                                       |...             |
+      |                                               |                |          objects[0:3]: 0x2ae3-0x2ae6 (3)
+0x2ae0|         00                                    |   .            |            [0]: 0 object_value 0x2ae3-0x2ae4 (1)
+0x2ae0|            00                                 |    .           |            [1]: 0 object_value 0x2ae4-0x2ae5 (1)
+0x2ae0|               00                              |     .          |            [2]: 0 object_value 0x2ae5-0x2ae6 (1)
+      |                                               |                |          binaural_render_modes[0:3]: 0x2ae6-0x2ae9 (3)
+0x2ae0|                  84                           |      .         |            [0]: "not_indicated" (4) render_mode 0x2ae6-0x2ae7 (1)
+0x2ae0|                     84                        |       .        |            [1]: "not_indicated" (4) render_mode 0x2ae7-0x2ae8 (1)
+0x2ae0|                        84                     |        .       |            [2]: "not_indicated" (4) render_mode 0x2ae8-0x2ae9 (1)
+0x2ae0|                           3e                  |         >      |          checksum: 0x3e 0x2ae9-0x2aea (1)
+      |                                               |                |        [3]{}: metadata_segment 0x2aea-0x2aeb (1)
+0x2ae0|                              00               |          .     |          id: "end" (0) 0x2aea-0x2aeb (1)
+0x2ae0|                                 00|           |           .|   |  gap0: raw bits 0x2aeb-0x2aec (1)

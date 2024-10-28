@@ -38,16 +38,19 @@ Flags can be struct with bit-fields.
   - Use commit messages with a context prefix to make it easier to find and understand, ex:<br>
   `mp3: Validate sync correctly`
 - Tests:
-  - If possible use a pair of `testdata/file` and `testdata/file.fqtest` where `file.fqtest` is `$ fq dv file` or `$ fq 'dv,torepr' file` if there is `torepr` support.
+  - If possible, add one or more pairs of example input file and expected CLI output, with naming like:
+    - `./format/<format_name>/testdata/<name>.<ext>`, e.g. [`./format/mp4/testdata/aac.mp4`](../format/mp4/testdata/aac.mp4)
+    - and `./format/<format_name>/testdata/<name>.fqtest`, e.g. [`./format/mp4/testdata/aac.fqtest`](../format/mp4/testdata/aac.fqtest)
+  - The latter contents should be `$ go run . dv <file_path>` or `$ go run . 'dv,torepr' <file_path>` if there is `torepr` support.
   - If `dv` produces a lof of output maybe use `dv({array_truncate: 50})` etc
   - Run `go test ./format -run TestFormats/<name>` to test expected output.
   - Run `go test ./format -run TestFormats/<name> -update` to update current output as expected output.
 - If you have format specific documentation:
   - Put it in `format/*/<name>.md` and use `//go:embed <name>.md`/`interp.RegisterFS(..)` to embed/register it.
   - Use simple markdown, just sections (depth starts at 3, `### Section`), paragraphs, lists and links.
-  - No heading section is needs with format name, will be added by `make doc` and fq cli help system.
+  - No heading section is needed with format name, will be added by `make doc` and fq cli help system.
   - Add a `testdata/<name>_help.fqtest` with just `$ fq -h <name>` to test CLI help.
-  - If in doubt look at `mp4.md`/`mp4.go` etc.
+  - If in doubt look at [`mp4.md`](../format/mp4/mp4.md)/[`mp4.go`](../format/mp4/mp4.go) etc.
   - Run `make README.md doc/formats.md` to update md files.
 - Run linter `make lint`
 - Run fuzzer `make fuzz GROUP=<name>`, see usage in Makefile
