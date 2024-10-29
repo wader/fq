@@ -83,6 +83,19 @@ var compressionDescMap = scalar.UintMapSymStr{
 	5: "speech",
 }
 
+var downmix5to2DescMap = scalar.UintMap{
+	0: {Sym: "not_indicated", Description: "Not indicated (Lo/Ro)"},
+	1: {Sym: "loro", Description: "Lo/Ro"},
+	2: {Sym: "ltrt_dpl", Description: "Lt/Rt (Dolby Pro Logic)"},
+	3: {Sym: "ltrt_dpl2", Description: "Lt/Rt (Dolby Pro Logic II)"},
+	4: {Sym: "direct_stereo_render", Description: "Direct stereo render"},
+}
+
+var phaseShift5to2DescMap = scalar.UintMap{
+	0: {Sym: "no_shift", Description: "Without Phase 90"},
+	1: {Sym: "shift_90", Description: "With Phase 90"},
+}
+
 var bitstreamModeMap = scalar.UintMapDescription{
 	0b000: "main audio service: complete main (CM)",
 	0b001: "main audio service: music and effects (ME)",
@@ -105,10 +118,10 @@ var binauralRenderModeMap = scalar.UintMapSymStr{
 }
 
 var warpModeMap = scalar.UintMap{
-	0: {Sym: "normal"},
-	1: {Sym: "warping"},
-	2: {Sym: "downmix_dolby_pro_logic_iix"},
-	3: {Sym: "downmix_loro"},
+	0: {Sym: "normal", Description: "possibly: Direct render"},
+	1: {Sym: "warping", Description: "possibly: Direct render with room balance"},
+	2: {Sym: "downmix_dolby_pro_logic_iix", Description: "Dolby Pro Logic IIx"},
+	3: {Sym: "downmix_loro", Description: "possibly: Standard (Lo/Ro)"},
 	4: {Sym: "not_indicated", Description: "Default warping will be applied"},
 }
 
@@ -236,29 +249,35 @@ func parseAudioInfo(d *decode.D) {
 }
 
 func parseDolbyAtmos(d *decode.D) {
-	// TODO: both these are fixed size null terminated strings?
 	d.FieldUTF8NullFixedLen("atmos_dbmd_content_creation_preamble", 32)
 	d.FieldUTF8NullFixedLen("atmos_dbmd_content_creation_tool", 64)
 	d.FieldStruct("version", func(d *decode.D) {
 		d.FieldU8("major")
 		d.FieldU8("minor")
-		d.FieldU8("micro")
+		d.FieldU8("patch")
 	})
+	// TODO: All these unknowns? (mostly from MediaInfoLib, also Dolby repo)
 
-	// TODO: what is this?
-	d.FieldRawLen("unknown0", 53*8)
+	d.FieldRawLen("unknown0", 21*8)
 
-	d.FieldU8("warp_mode", warpModeMap)
+	d.FieldRawLen("unknown1", 1)
+	d.FieldU3("downmix_5to2", scalar.UintSym("unknown"), downmix5to2DescMap)
+	d.FieldRawLen("unknown2", 2)
+	d.FieldU2("phaseshift_90deg_5to2", scalar.UintSym("unknown"), phaseShift5to2DescMap)
 
-	// TODO: what is this?
-	d.FieldRawLen("unknown1", 15*8)
-	d.FieldRawLen("unknown2", 80*8)
+	d.FieldRawLen("unknown3", 12*8)
+
+	d.FieldRawLen("bed_distribution", 2)
+	d.FieldRawLen("reserved0", 3)
+	d.FieldU3("warp_mode", warpModeMap)
+
+	d.FieldRawLen("unknown4", 15*8)
+	d.FieldRawLen("unknown5", 80*8)
 }
 
 func parseDolbyAtmosSupplemental(d *decode.D) {
 	d.FieldU32("dasms_sync", d.UintAssert(0xf8726fbd), scalar.UintHex)
 
-	// TODO: wav.go sets LE default i think?
 	objectCount := int64(d.FieldU16("object_count"))
 	d.FieldU8("reserved")
 

@@ -20,3 +20,4 @@ RIFF / WAV / Broadcast Wave Format (BWF) chunks:
 - https://tech.ebu.ch/publications/tech3285s5
 - https://tech.ebu.ch/files/live/sites/tech/files/shared/tech/tech3285s6.pdf
 - https://github.com/DolbyLaboratories/dbmd-atmos-parser
+- https://github.com/MediaArea/MediaInfoLib/tree/Source/MediaInfo/Audio/File_DolbyAudioMetadata.cpp
