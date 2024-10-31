@@ -44,7 +44,7 @@ func webpDecode(d *decode.D) any {
 			size := d.FieldU32("size")
 			return id, int64(size)
 		},
-		func(d *decode.D, id string, path path, size int64) (bool, any) {
+		func(d *decode.D, id string, path path) (bool, any) {
 			switch id {
 			case "RIFF":
 				riffType = d.FieldUTF8("format", 4, d.StrAssert(webpRiffType))

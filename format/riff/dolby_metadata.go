@@ -42,7 +42,9 @@ func dbmdDecode(d *decode.D) any {
 		for !seenEnd {
 			d.FieldStruct("metadata_segment", func(d *decode.D) {
 				segmentID := d.FieldU8("id", metadataSegmentTypeMap)
-				if segmentID == 0 {
+
+				// TODO(jmarnell): This will always make an empty end segment, I think it would be better to omit it
+				if segmentID == metadataSegmentTypeEnd {
 					seenEnd = true
 					return
 				}
@@ -50,11 +52,11 @@ func dbmdDecode(d *decode.D) any {
 				segmentSize := d.FieldU16("size")
 
 				switch segmentID {
-				case metadataSegmentTypeDolbyEMetadata:
+				case metadataSegmentTypeDolbyE:
 					parseDolbyE(d)
-				case metadataSegmentTypeDolbyEDigitaletadata:
+				case metadataSegmentTypeDolbyDigital:
 					parseDolbyDigital(d)
-				case metadataSegmentTypeDolbyDigitalPlusMetadata:
+				case metadataSegmentTypeDolbyDigitalPlus:
 					parseDolbyDigitalPlus(d)
 				case metadataSegmentTypeAudioInfo:
 					parseAudioInfo(d)
@@ -66,6 +68,7 @@ func dbmdDecode(d *decode.D) any {
 					d.FieldRawLen("unknown", int64(segmentSize*8))
 				}
 
+				// TODO: use this to validate parsing
 				d.FieldU8("checksum", scalar.UintHex)
 			})
 		}
@@ -138,31 +141,31 @@ var trimConfigName = scalar.UintMapDescription{
 }
 
 const (
-	metadataSegmentTypeEnd                      = 0
-	metadataSegmentTypeDolbyEMetadata           = 1
-	metadataSegmentTypeDolbyReserved2           = 2
-	metadataSegmentTypeDolbyEDigitaletadata     = 3
-	metadataSegmentTypeDolbyReserved4           = 4
-	metadataSegmentTypeDolbyReserved5           = 5
-	metadataSegmentTypeDolbyReserved6           = 6
-	metadataSegmentTypeDolbyDigitalPlusMetadata = 7
-	metadataSegmentTypeAudioInfo                = 8
-	metadataSegmentTypeDolbyAtmos               = 9
-	metadataSegmentTypeDolbyAtmosSupplemental   = 10
+	metadataSegmentTypeEnd                    = 0
+	metadataSegmentTypeDolbyE                 = 1
+	metadataSegmentTypeDolbyReserved2         = 2
+	metadataSegmentTypeDolbyDigital           = 3
+	metadataSegmentTypeDolbyReserved4         = 4
+	metadataSegmentTypeDolbyReserved5         = 5
+	metadataSegmentTypeDolbyReserved6         = 6
+	metadataSegmentTypeDolbyDigitalPlus       = 7
+	metadataSegmentTypeAudioInfo              = 8
+	metadataSegmentTypeDolbyAtmos             = 9
+	metadataSegmentTypeDolbyAtmosSupplemental = 10
 )
 
 var metadataSegmentTypeMap = scalar.UintMapSymStr{
-	metadataSegmentTypeEnd:                      "end",
-	metadataSegmentTypeDolbyEMetadata:           "dolby_e_metadata",
-	metadataSegmentTypeDolbyReserved2:           "reserved2",
-	metadataSegmentTypeDolbyEDigitaletadata:     "dolby_e_digitale_tadata",
-	metadataSegmentTypeDolbyReserved4:           "reserved4",
-	metadataSegmentTypeDolbyReserved5:           "reserved5",
-	metadataSegmentTypeDolbyReserved6:           "reserved6",
-	metadataSegmentTypeDolbyDigitalPlusMetadata: "dolby_digital_plus_metadata",
-	metadataSegmentTypeAudioInfo:                "audio_info",
-	metadataSegmentTypeDolbyAtmos:               "dolby_atmos",
-	metadataSegmentTypeDolbyAtmosSupplemental:   "dolby_atmos_supplemental",
+	metadataSegmentTypeEnd:                    "end",
+	metadataSegmentTypeDolbyE:                 "dolby_e_metadata",
+	metadataSegmentTypeDolbyReserved2:         "reserved2",
+	metadataSegmentTypeDolbyDigital:           "dolby_digital_metadata",
+	metadataSegmentTypeDolbyReserved4:         "reserved4",
+	metadataSegmentTypeDolbyReserved5:         "reserved5",
+	metadataSegmentTypeDolbyReserved6:         "reserved6",
+	metadataSegmentTypeDolbyDigitalPlus:       "dolby_digital_plus_metadata",
+	metadataSegmentTypeAudioInfo:              "audio_info",
+	metadataSegmentTypeDolbyAtmos:             "dolby_atmos",
+	metadataSegmentTypeDolbyAtmosSupplemental: "dolby_atmos_supplemental",
 }
 
 func parseDolbyE(d *decode.D) {
@@ -283,27 +286,19 @@ func parseDolbyAtmosSupplemental(d *decode.D) {
 
 	i := 0
 	d.FieldStructNArray("trim_configs", "trim_config", 9, func(d *decode.D) {
-		d.FieldRawLen("reserved", 7)
-		d.FieldU1("type", scalar.UintMapSymStr{
+		d.FieldRawLen("reserved0", 7)
+		trimType := d.FieldU1("type", scalar.UintMapSymStr{
 			0: "manual",
 			1: "automatic",
 		})
 		d.FieldValueStr("config_name", trimConfigName[uint64(i)])
 
-		// TODO: this is null separted list of def strings?
-		d.FieldUTF8("raw", 14)
-		// str := d.UTF8(14)
-		// bytes := []byte(str)
-		// var nonZeroBytes []string
-		// for _, b := range bytes {
-		// 	if b != 0 {
-		// 		nonZeroBytes = append(nonZeroBytes, fmt.Sprintf("%d", b))
-		// 	}
-		// }
-		// TODO(jmarnell): I think the +3dB trim settings are here.
-		//		Would like this at least as an array of numbers, instead of this CSV string
-		// d.FieldValueStr("trim_defs", strings.Join(nonZeroBytes, ", "))
-
+		if trimType == 1 {
+			d.FieldUTF8("reserved1", 14)
+		} else {
+			// TODO: Reference MediaInfo's logic and Dolby pdf's
+			d.FieldUTF8("manual_trim_raw_config", 14)
+		}
 		i++
 	})
 

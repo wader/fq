@@ -12,7 +12,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
-func tmp_dbmdDecode(d *decode.D, size int64) any {
+func old_dbmdDecode(d *decode.D) any {
 	version := d.U32()
 	major := (version >> 24) & 0xFF
 	minor := (version >> 16) & 0xFF
@@ -35,32 +35,32 @@ func tmp_dbmdDecode(d *decode.D, size int64) any {
 				}
 
 				segmentSize := d.FieldU16("metadata_segment_size")
-				bitsLeft := d.BitsLeft()
+				// bitsLeft := d.BitsLeft()
 
 				switch segmentID {
 				case 1:
-					parseDolbyE(d)
+					tmp_parseDolbyE(d)
 				case 3:
-					parseDolbyDigital(d)
+					tmp_parseDolbyDigital(d)
 				case 7:
-					parseDolbyDigitalPlus(d)
+					tmp_parseDolbyDigitalPlus(d)
 				case 8:
-					parseAudioInfo(d)
+					tmp_parseAudioInfo(d)
 				case 9:
-					parseDolbyAtmos(d)
+					tmp_parseDolbyAtmos(d)
 				case 10:
-					parseDolbyAtmosSupplemental(d)
+					tmp_parseDolbyAtmosSupplemental(d)
 				default:
 					d.FieldRawLen("unknown_segment_raw", int64(segmentSize*8))
 				}
 
-				bytesRemaining := (bitsLeft-d.BitsLeft())/8 - int64(segmentSize)
-				if bytesRemaining < 0 {
-					d.Fatalf("Read too many bytes for segment %d, read %d over, expected %d", segmentID, -bytesRemaining, segmentSize)
-				} else if bytesRemaining > 0 {
-					d.FieldValueUint("SKIPPED_BYTES", uint64(bytesRemaining))
-					d.SeekRel((int64(segmentSize) - bytesRemaining) * 8)
-				}
+				// bytesRemaining := (bitsLeft-d.BitsLeft())/8 - int64(segmentSize)
+				// if bytesRemaining < 0 {
+				// 	d.Fatalf("Read too many bytes for segment %d, read %d over, expected %d", segmentID, -bytesRemaining, segmentSize)
+				// } else if bytesRemaining > 0 {
+				// 	d.FieldValueUint("SKIPPED_BYTES", uint64(bytesRemaining))
+				// 	d.SeekRel((int64(segmentSize) - bytesRemaining) * 8)
+				// }
 
 				d.FieldU8("metadata_segment_checksum")
 			})
@@ -224,7 +224,7 @@ func tmp_parseAudioInfo(d *decode.D) {
 	d.FieldUTF8("segment_modified_date", 32)
 }
 
-func tmp_parseDolbyAtmos(d *decode.D, size uint64) {
+func tmp_parseDolbyAtmos(d *decode.D) {
 	d.FieldValueStr("metadata_segment_type", "dolby_atmos")
 
 	// d.SeekRel(32 * 8)
@@ -248,7 +248,7 @@ func tmp_parseDolbyAtmos(d *decode.D, size uint64) {
 	d.SeekRel(80 * 8)
 }
 
-func tmp_parseDolbyAtmosSupplemental(d *decode.D, size uint64) {
+func tmp_parseDolbyAtmosSupplemental(d *decode.D) {
 	d.FieldValueStr("metadata_segment_type", "dolby_atmos_supplemental")
 
 	sync := d.FieldU32LE("dasms_sync")

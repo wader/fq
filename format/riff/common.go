@@ -19,11 +19,11 @@ func (p path) topData() any {
 	return p[len(p)-1].data
 }
 
-func riffDecode(d *decode.D, path path, headFn func(d *decode.D, path path) (string, int64), chunkFn func(d *decode.D, id string, path path, size int64) (bool, any)) {
+func riffDecode(d *decode.D, path path, headFn func(d *decode.D, path path) (string, int64), chunkFn func(d *decode.D, id string, path path) (bool, any)) {
 	id, size := headFn(d, path)
 
 	d.FramedFn(size*8, func(d *decode.D) {
-		hasChildren, data := chunkFn(d, id, path, size)
+		hasChildren, data := chunkFn(d, id, path)
 		if hasChildren {
 			np := append(path, pathEntry{id: id, data: data})
 			d.FieldArray("chunks", func(d *decode.D) {
@@ -58,6 +58,12 @@ var chunkIDDescriptions = scalar.StrMapDescription{
 
 	"dmlh": "Extended AVI header",
 
+	"data": "Raw sound encoded data",
+	"bext": "Broadcast extension, e.g. creator, date, etc.",
+	"smpl": "Sample metadata, e.g. loop points",
+	"fact": "Original info used for compression, e.g. sample length",
+
+	// BWF ADM master and Dolby Metadata
 	"chna": "Track UIDs of Audio Definition Model",
 	"axml": "Audio Definition Model ambisonics and elements",
 	"dbmd": "Dolby Metadata, e.g. Atmos, AC3, Dolby Digital [Plus]",

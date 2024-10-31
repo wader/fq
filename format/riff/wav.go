@@ -8,11 +8,16 @@ package riff
 // TODO: default little endian
 
 import (
+	"embed"
+
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
+
+//go:embed wav.md
+var wavFS embed.FS
 
 var wavHeaderGroup decode.Group
 var wavFooterGroup decode.Group
@@ -32,6 +37,7 @@ func init() {
 				{Groups: []*decode.Group{format.Dolby_Metadata}, Out: &wavDolbyMetadataGroup},
 			},
 		})
+	interp.RegisterFS(wavFS)
 }
 
 const (
@@ -78,7 +84,7 @@ func wavDecode(d *decode.D) any {
 
 			return id, size
 		},
-		func(d *decode.D, id string, path path, size int64) (bool, any) {
+		func(d *decode.D, id string, path path) (bool, any) {
 			switch id {
 			case "RIFF":
 				riffType = d.FieldUTF8("format", 4, d.StrAssert(wavRiffType))
@@ -161,13 +167,26 @@ func wavDecode(d *decode.D) any {
 				return false, nil
 
 			case "chna":
-				chnaDecode(d)
+				d.FieldU16("num_tracks")
+				d.FieldU16("num_uids")
+				d.FieldArray("audio_ids", func(d *decode.D) {
+					for !d.End() {
+						d.FieldStruct("audio_id", func(d *decode.D) {
+							d.FieldU16("track_index")
+							d.FieldUTF8("uid", 12)
+							d.FieldUTF8("track_format_id_reference", 14)
+							d.FieldUTF8("pack_format_id_reference", 11)
+							d.FieldRawLen("padding", 8)
+						})
+					}
+				})
 				return false, nil
 			case "axml":
-				axmlDecode(d)
+				d.FieldUTF8("xml", int(d.BitsLeft())/8)
 				return false, nil
 			case "dbmd":
-				d.Format(&wavDolbyMetadataGroup, nil)
+				// TEMP TEMP TEMP: delete old dolby.go and bring uncomment
+				old_dbmdDecode(d) // d.Format(&wavDolbyMetadataGroup, nil)
 				return false, nil
 
 			default:
