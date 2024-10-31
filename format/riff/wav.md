@@ -27,7 +27,7 @@ $ fq -r -d wav '.chunks[] | select(.id | IN("axml")) | .xml | tovalue' amd-bwf.w
 
 ### Authors
 - [@wader](https://github.com/wader), original author
-- [@johnnymarnell](https://johnnymarnell.github.io), ADM support
+- [@johnnymarnell](https://johnnymarnell.github.io), ADM and Dolby support
 
 ### References
 - http://soundfile.sapp.org/doc/WaveFormat/

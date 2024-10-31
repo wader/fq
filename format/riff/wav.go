@@ -186,7 +186,8 @@ func wavDecode(d *decode.D) any {
 				return false, nil
 			case "dbmd":
 				// TEMP TEMP TEMP: delete old dolby.go and bring uncomment
-				old_dbmdDecode(d) // d.Format(&wavDolbyMetadataGroup, nil)
+				// old_dbmdDecode(d) //
+				d.Format(&wavDolbyMetadataGroup, nil)
 				return false, nil
 
 			default:
