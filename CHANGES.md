@@ -1,3 +1,158 @@
+# 0.13.0
+
+## Changes
+
+- New format decoders `midi`, `negentropy`, `tap` and `txz`, see below for details.
+- Add `byte_array` bits format. #992
+  ```sh
+  # by default binary values are UTF-8 strings
+  $ fq -V -n '[1,2,3] | tobytes'
+  # with -o bits_format=byte_array they are byte arrays instead
+  "\u0001\u0002\u0003"
+  $ fq -cV -n -o bits_format=byte_array '[1,2,3] | tobytes'
+  [1,2,3]
+
+  # data is a string
+  $ fq '.program_headers[] | select(.type=="interp")' /bin/ls
+  {"align":1,"data":"/lib/ld-musl-x86_64.so.1\u0000", ...}
+  # data is a byte array
+  $ fq -cV -o bits_format=byte_array '.program_headers[] | select(.type=="interp")' /bin/ls
+  {"align":1,"data":[47,108,105,98,47,108,100,45,109,117,115,108,45,120,56,54,95,54,52,46,115,111,46,49,0], ...}
+  ```
+- Go 1.22 or later is now required to build. This is to keep up with build requirements of some dependencies. #1011
+- gojq changes from upstream: #1000
+  - Implement `add/1` function
+  - Improve time functions to accept fewer element arrays
+  - Fix uri and urid formats not to convert a space between a plus sign
+
+## Format changes
+
+- `matroska` Updated to latest specification. #1010
+- `midi` MIDI decoder added by @twystd. #1004
+- `negentropy` Negentropy message decoder added by @fiatjaf. #1012
+- `tap` and `txz` TAP and TXZ tape format for ZX Spectrum computers added by @mrcook. #975
+
+## Changelog
+
+* 64b05232 Add PBS tidbit 8 episode
+* 3105b7d2 Added to probe group
+* d73c6635 Update docker-golang to 1.22.6 from 1.22.5
+* 790aa8aa Update docker-golang to 1.23.0 from 1.22.6
+* ea3294f7 Update docker-golang to 1.23.1 from 1.23.0
+* 34b2cc38 Update github-go-version to 1.22.6 from 1.22.5
+* 8bb841f0 Update github-go-version to 1.23.0 from 1.22.6
+* 2c38cf13 Update github-golangci-lint to 1.60.1 from 1.59.1
+* f9dff5c6 Update github-golangci-lint to 1.60.2 from 1.60.1
+* ccf78c75 Update github-golangci-lint to 1.60.3 from 1.60.2
+* 23df9259 Update gomod-creasty-defaults to 1.8.0 from 1.7.0
+* 9e296823 Update gomod-ergochat-readline to 0.1.3 from 0.1.2
+* 01b292d8 Update gomod-golang-x-crypto to 0.26.0 from 0.25.0
+* da6dd9e0 Update gomod-golang-x-net to 0.28.0 from 0.27.0
+* de3fa199 Update make-golangci-lint to 1.60.1 from 1.59.1
+* f6d02798 Update make-golangci-lint to 1.60.2 from 1.60.1
+* e01cff01 Update make-golangci-lint to 1.60.3 from 1.60.2
+* 42998836 Update make-golangci-lint to 1.61.0 from 1.60.3
+* ee404b2b all: re-run the test --update
+* a2417743 all: update tests for tap support
+* 2c0b5289 ci: Add CGO_ENABLED=0 to make sure we dont need it
+* 550bcc27 cli: Add go version to version string
+* a195b3fc doc: Regenerate
+* be9a9164 doc: Update formats.svg
+* db0dfb14 doc: Update formats.svg
+* 66345fec doc: regenerat formats.md for tzx/tap updates
+* f16f6dc9 fq: Update golang.org/x/exp and github.com/gomarkdown/markdown
+* 7b6d8532 go,lint: Update to go 1.22 and fix some lint warnings
+* 36267873 gojq: Update fq fork
+* 824e51ec gojq: Update fq fork
+* fc74f685 intepr: Revert binary value each
+* 3f3183a5 intepr: Support each for binary values
+* 7bf11291 interp: Add bits_format=byte_array support
+* 52e6e1b1 matroska: Update spec
+* fdde5680 midi: (partly) fixed SMPTEOffsetEvent gap
+* a1385caf midi: Decoded EndOfTrack and ProgramChange events
+* 32766412 midi: Decoded KeySignature, NoteOn and Controller events
+* 109719f2 midi: Decoded MIDIChannelPrefix, MIDIPort and SequencerSpecific metaevents
+* cbd4a8a8 midi: Decoded NoteOff event
+* 0226fc69 midi: Decoded PolyphonicPressure, ChannelPressure and PitchBend MIDI events
+* b2e71a32 midi: accomodated MIDI event running status
+* 0915f750 midi: added 'data' field to EndOfTrack event
+* 473394b2 midi: added event type to events to simplify query by event
+* 91fa5475 midi: added example queries to the test data
+* ce02d6ea midi: added length field to TimeSignature struct
+* b5f2bdab midi: added localised Makefile (cf. https://github.com/wader/fq/pull/1004#discussion_r1732745303)
+* 7950dd65 midi: added midi to the TestFormats all.fqtest list (cf. https://github.com/wader/fq/pull/1004#issuecomment-2314599567)
+* 80b93439 midi: added new test and MIDI files
+* 57adef46 midi: added sample queries to midi.md
+* 0e0a6694 midi: added tests for format 0, format 1 and format 2 MIDI files
+* e99d9f69 midi: asserted bytes left for MIDI events
+* d7ec38a2 midi: basic test set
+* a41e1230 midi: cleaned up SysExContinuation and SysExEscape logic
+* a7d0cde9 midi: cleaned up and simplied event decoding logic
+* 89954962 midi: cleaned up event decoding logic
+* 0b4be892 midi: cleaned up unknown chunk logic
+* 3809ddbd midi: combined metaevent status + event bytes
+* b433998b midi: decoded SysEx events
+* 8b236a19 midi: decoded TimeSignature meta event
+* f11dfafd midi: decoded TrackName meta event
+* 9099a3eb midi: decoded chunk tags as FieldUTF8
+* 4fe27f51 midi: decoded remaining text metaevents
+* 1bdeeb68 midi: decoded tempo metaevent
+* 59b1faa4 midi: decorated 'delta' field with running tick
+* 4fac4c68 midi: discarded unknown chunks
+* 9dfcb962 midi: experimenting with struct metaevent data
+* 2a650366 midi: fixed fuzzing errors
+* f1b888bd midi: fixed gap in SequencerSpecificEvent
+* 4bb3292f midi: fixed key signature map
+* f424936f midi: fixed lint warning (cf. https://github.com/wader/fq/pull/1004#discussion_r1734668130)
+* 2f2070ec midi: fixed lint warnings
+* 87c80f57 midi: fixes for PR comments
+* 9f057b67 midi: fixes for PR comments
+* 9c7f7f96 midi: fixes for PR comments:
+* ad0a06d6 midi: initial import
+* 2970fb14 midi: lowercased event names
+* 3ed98897 midi: mapped SMPTE framerates
+* 54a0cf12 midi: mapped SysEx event types
+* 34fca407 midi: mapped manufacturer IDs to strings
+* 0ef3304e midi: mapped note numbers to note names
+* 763d1420 midi: moved 'dev only' Makefile to workdir and removed it from .gitignore (cf. https://github.com/wader/fq/pull/1004#discussion_r1732745303)
+* 5c89d7d2 midi: moved MIDI running status and Casio flag to context struct
+* c5637f05 midi: partly fixed gaps in SysExMessage
+* 7fd9ad27 midi: removed debug leftovers (cf. https://github.com/wader/fq/pull/1004#discussion_r1732723519)
+* 462ae158 midi: removed superfluous AssertLeastBytesLeft (cf. https://github.com/wader/fq/pull/1004#discussion_r1734668130)
+* 17bac771 midi: removed superfluous uint64 cast (cf. https://github.com/wader/fq/pull/1004#discussion_r1740783338)
+* dad4a916 midi: replace d.BytesLen(1) with d.U8()
+* 578b7e78 midi: restructured event decoding to decode length and struct fields (cf. https://github.com/wader/fq/pull/1004#discussion_r1737105173)
+* befdf1fc midi: reworked SysEx events as struct with length field
+* ea3e0898 midi: reworked decoding to expect an MThd header as the first chunk (cf. https://github.com/wader/fq/pull/1004#discussion_r1732725275)
+* e940f476 midi: reworked metaevent decoding for PR comments
+* a337ff00 midi: reworked sysex and metaevent 'struct' events to decode as byte arrays
+* cee51ecd midi: reworked to include delta in event
+* a3a0a069 midi: simplifed and cleaned up MIDI 'fq' tests:
+* c8d9397b midi: snake-cased event types and event names (cf. https://github.com/wader/fq/pull/1004#discussion_r1732733049)
+* 3966d5be midi: tightened up status/event decoding logic (cf. https://github.com/wader/fq/pull/1004#issuecomment-2334916357)
+* 2350afed midi: updated help text to use snake-case event names (cf. https://github.com/wader/fq/pull/1004#discussion_r1734659627)
+* 49bd7c27 negentropy: add format.
+* e3c7b1a3 negentropy: another test from a different source, another doc entry, comments on source of test samples.
+* 38533871 negentropy: const modes, RFC3339 dates and synthetic timestamps.
+* 8f9a0057 negentropy: timestamp description as UTC.
+* 113ca632 tap: add DefaultInArg
+* e526cafa tap: add README to tests directory
+* 90de6199 tap: add a read_one_block test
+* e3c3d925 tap: add author to tap.md
+* 633160bb tap: handle unoffical block types and minor improvements
+* e5be55c1 tap: remove Probe group
+* 7816fe1c tap: remove format.TAP_In and update tzx
+* e345528d tap: rename block_type to type
+* d3849306 tap: revert using an array of bytes
+* c93dc8bb tap: verify checksum values
+* 81b23041 tzx: Add suport for ZX Spectrum TZX and TAP files
+* 6ac69e25 tzx: add README to tests directory
+* 88b6ded5 tzx: add author to tzx.md
+* b27017cc tzx: add readme instructions for bits_format=byte_array
+* fc350f3d tzx: change data fields to array of bytes for easier JSON parsing
+* d3a5b8df tzx: revert using an array of bytes
+* ffb5eb33 tzx: use jq-ish values for the mapped symbols in block type 0x18
+
 # 0.12.0
 
 REPL word navigation fix and `jpeg` DHT decoding, otherwise mostly maintenance release to update dependencies.

@@ -11,8 +11,8 @@ null> {a: 123, b: []} | debug({a})
 }
 null> ^D
 stderr:
-["DEBUG",{"a":123,"b":[]}]
-["DEBUG",{"a":123}]
+["DEBUG:",{"a":123,"b":[]}]
+["DEBUG:",{"a":123}]
 $ fq -n 'null, {a:1}, "abc" | ., "\n" | print'
 null
 {"a":1}
@@ -41,4 +41,6 @@ null
 "abc"
 "\n"
 stderr:
-null"\n"{"a":1}"\n""abc""\n"
+null
+{"a":1}
+abc

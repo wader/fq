@@ -25,20 +25,11 @@ def println: ., "\n" | print;
 def printerr: tostring | _stderr;
 def printerrln: ., "\n" | printerr;
 
-def _debug($name):
-  ( (([$name, .] | tojson) | printerrln)
-  , .
-  );
-
 # jq compat
-def debug: _debug("DEBUG");
-def debug(f): . as $c | f | debug | $c;
-
-# jq compat, output to compact json to stderr and let input thru
-def stderr:
-  ( (tojson | printerr)
-  , .
-  );
+def debug: (["DEBUG:", .] | tojson | printerrln), .;
+def debug(f): (f | debug | empty), .;
+# output raw string or compact json to stderr and let input thru
+def stderr: printerr, .;
 
 def _fatal_error($code): "error: \(.)\n" | halt_error($code);
 

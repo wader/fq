@@ -28,8 +28,8 @@ s "fq '.headers[].frames[] | select(.id == \"APIC\")?.picture | tobits' file.mp3
 s "file file.png"
 rm -f file.png
 echo
-c "Resolution of embedded PNG cover art as YAML"
-s "fq -r '.headers[0].frames[] | grep_by(.id == \"APIC\") | grep_by(.type == \"IHDR\") | {res: {width, height}} | to_yaml' file.mp3"
+c "Grep for PNG header, extract resolution and output as YAML"
+s "fq -r 'grep_by(.type == \"IHDR\") | {res: {width, height}} | to_yaml' file.mp3"
 #echo
 c "Add query parameter to URL"
 s "echo 'http://host?a=b' | fq -Rr 'from_url | .query.b = \"a b c\" | to_url'"

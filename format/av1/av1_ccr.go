@@ -11,12 +11,17 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
+var av1CCRav1OBUGroup decode.Group
+
 func init() {
 	interp.RegisterFormat(
 		format.AV1_CCR,
 		&decode.Format{
 			Description: "AV1 Codec Configuration Record",
 			DecodeFn:    ccrDecode,
+			Dependencies: []decode.Dependency{
+				{Groups: []*decode.Group{format.AV1_OBU}, Out: &av1CCRav1OBUGroup},
+			},
 		})
 }
 
@@ -39,9 +44,11 @@ func ccrDecode(d *decode.D) any {
 	} else {
 		d.FieldU4("reserved")
 	}
-	if d.BitsLeft() > 0 {
-		d.FieldRawLen("config_obus", d.BitsLeft())
-	}
+	d.FieldArray("config_obus", func(d *decode.D) {
+		for d.BitsLeft() > 0 {
+			d.FieldFormat("config_obu", &av1CCRav1OBUGroup, nil)
+		}
+	})
 
 	return nil
 }
