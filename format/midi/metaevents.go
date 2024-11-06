@@ -94,7 +94,7 @@ func decodeMetaEvent(d *decode.D, event uint8, ctx *context) {
 }
 
 // decodeSequenceNumber parses a Sequence Number MIDI meta event to a struct comprising:
-//  - sequence_number
+//   - sequence_number
 func decodeSequenceNumber(d *decode.D) {
 	d.FieldUintFn("length", vlq, d.UintRequire(2))
 	d.FieldU16("sequence_number")

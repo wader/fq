@@ -1,3 +1,15 @@
+/*
+Package midi implements an fq plugin to decode [standard MIDI files].
+
+The MIDI decoder is a member of the 'probe' group and fq should automatically invoke the
+decoder when opening a MIDI file. The decoder can be explicitly specified with the '-d midi'
+command line option.
+
+The decoder currently only supports MIDI 1.0 files and does only basic validation on the
+MIDI file structure.
+
+[standard MIDI files]: https://midi.org/standard-midi-files.
+*/
 package midi
 
 // https://www.midi.org/specifications/item/the-midi-1-0-specification
@@ -15,7 +27,7 @@ import (
 //go:embed midi.md
 var midiFS embed.FS
 
-// context is a container struct for the running parse information required to 
+// context is a container struct for the running parse information required to
 // decode a MIDI track.
 type context struct {
 	tick    uint64
@@ -61,11 +73,11 @@ func decodeMIDI(d *decode.D) any {
 }
 
 // decodeMThd decodes an MThd MIDI header chunk into a struct with the fields:
-//  - tag       "MThd"
-//  - length    Header chunk size
-//  - format    MIDI format (0,1 or 2)
-//  - tracks    Number of tracks
-//  - division  Time division
+//   - tag       "MThd"
+//   - length    Header chunk size
+//   - format    MIDI format (0,1 or 2)
+//   - tracks    Number of tracks
+//   - division  Time division
 func decodeMThd(d *decode.D) {
 	if !bytes.Equal(d.PeekBytes(4), []byte("MThd")) {
 		d.Errorf("missing MThd tag")
@@ -90,9 +102,9 @@ func decodeMThd(d *decode.D) {
 }
 
 // decodeMTrk decodes an MTrk MIDI track chunk into a struct with the header fields:
-//  - tag      "MTrk"
-//  - length   Track chunk size
-//  - events   List of track events
+//   - tag      "MTrk"
+//   - length   Track chunk size
+//   - events   List of track events
 func decodeMTrk(d *decode.D) {
 	if !bytes.Equal(d.PeekBytes(4), []byte("MTrk")) {
 		d.Errorf("missing MTrk tag")
@@ -117,9 +129,9 @@ func decodeMTrk(d *decode.D) {
 }
 
 // decodeEvent decodes a single MIDI event as either:
-//  - Meta event
-//  - MIDI channel event
-//  - SysEx system event
+//   - Meta event
+//   - MIDI channel event
+//   - SysEx system event
 func decodeEvent(d *decode.D, ctx *context) {
 	_, status, event := peekEvent(d)
 
@@ -234,7 +246,7 @@ func vlstring(d *decode.D) string {
 	return ""
 }
 
-// flush reads and discards any remaining bits in a chunk after encountering an 
+// flush reads and discards any remaining bits in a chunk after encountering an
 // invalid event.
 func flush(d *decode.D, format string, args ...any) {
 	d.Errorf(format, args...)
