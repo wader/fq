@@ -370,9 +370,9 @@ var framerates = scalar.UintMapSymUint{
 	3: 30,
 }
 
-var fps = scalar.UintMapSymUint{
-	0xe8: 24,
-	0xe7: 25,
-	0xe6: 29,
-	0xe5: 30,
+var fps = scalar.SintMapSymUint{
+	-24: 24,
+	-25: 25,
+	-29: 29,
+	-30: 30,
 }
