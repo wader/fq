@@ -16,8 +16,10 @@ run: build
 	go run . -d midi dv format/midi/testdata/reference.mid
 
 debug: build
-	go run . -d midi dv format/midi/testdata/midi/smpte-timecode.mid
-	go run . -d midi dv format/midi/testdata/midi/format-0.mid
+	go run . -d midi dv format/midi/testdata/midi/format-0x.mid
+	go run . -d midi dv format/midi/testdata/midi/format-0y.mid
+	go test ./format -run TestFormats/midi/testdata/format-0x.fqtest
+	go test ./format -run TestFormats/midi/testdata/format-0y.fqtest
 
 test: build
 	go test ./format -run TestFormats/midi

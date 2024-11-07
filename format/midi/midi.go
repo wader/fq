@@ -56,13 +56,23 @@ func decodeMIDI(d *decode.D) any {
 	d.Endian = decode.BigEndian
 
 	// ... decode header
-	d.FieldStruct("header", decodeMThd)
+	format, _ := decodeMThd(d)
 
 	// ... decode tracks (and other chunks)
 	d.FieldArray("content", func(d *decode.D) {
+		tracks := uint16(0)
+
 		for d.BitsLeft() > 0 {
 			if bytes.Equal(d.PeekBytes(4), []byte("MTrk")) {
-				d.FieldStruct("track", decodeMTrk)
+				switch {
+				case format == 0 && tracks > 0: // decode 'extra' format 0 tracks as data
+					d.FieldStruct("other", decodeOther)
+
+				default:
+					d.FieldStruct("track", decodeMTrk)
+				}
+
+				tracks++
 			} else {
 				d.FieldStruct("other", decodeOther)
 			}
@@ -72,33 +82,42 @@ func decodeMIDI(d *decode.D) any {
 	return nil
 }
 
-// decodeMThd decodes an MThd MIDI header chunk into a struct with the fields:
+// decodeMThd decodes an MThd MIDI header chunk into a 'header' struct with the fields:
 //   - tag       "MThd"
 //   - length    Header chunk size
 //   - format    MIDI format (0,1 or 2)
 //   - tracks    Number of tracks
 //   - division  Time division
-func decodeMThd(d *decode.D) {
-	if !bytes.Equal(d.PeekBytes(4), []byte("MThd")) {
-		d.Errorf("missing MThd tag")
+func decodeMThd(d *decode.D) (uint16, uint16) {
+	var format uint16
+	var tracks uint16
+
+	f := func(d *decode.D) {
+		if !bytes.Equal(d.PeekBytes(4), []byte("MThd")) {
+			d.Errorf("missing MThd tag")
+		}
+
+		d.FieldUTF8("tag", 4)
+		length := d.FieldS32("length")
+
+		d.FramedFn(length*8, func(d *decode.D) {
+			format = uint16(d.FieldU16("format"))
+			tracks = uint16(d.FieldU16("tracks"))
+
+			d.FieldStruct("division", func(d *decode.D) {
+				if division := d.PeekUintBits(16); division&0x8000 == 0x8000 {
+					d.FieldS8("fps", fps)
+					d.FieldU8("resolution")
+				} else {
+					d.FieldU16("ppqn")
+				}
+			})
+		})
 	}
 
-	d.FieldUTF8("tag", 4)
-	length := d.FieldS32("length")
+	d.FieldStruct("header", f)
 
-	d.FramedFn(length*8, func(d *decode.D) {
-		d.FieldU16("format")
-		d.FieldU16("tracks")
-
-		d.FieldStruct("division", func(d *decode.D) {
-			if division := d.PeekUintBits(16); division&0x8000 == 0x8000 {
-				d.FieldS8("fps", fps)
-				d.FieldU8("resolution")
-			} else {
-				d.FieldU16("ppqn")
-			}
-		})
-	})
+	return format, tracks
 }
 
 // decodeMTrk decodes an MTrk MIDI track chunk into a struct with the header fields:
