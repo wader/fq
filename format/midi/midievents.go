@@ -97,7 +97,7 @@ func decodePolyphonicPressure(d *decode.D) {
 
 func decodeController(d *decode.D) {
 	d.FieldStruct("controller", func(d *decode.D) {
-		d.FieldU8("controller", controllers)
+		d.FieldU8("controller", controllersMap)
 		d.FieldU8("value")
 	})
 }

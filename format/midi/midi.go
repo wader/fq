@@ -106,7 +106,7 @@ func decodeMThd(d *decode.D) (uint16, uint16) {
 
 			d.FieldStruct("division", func(d *decode.D) {
 				if division := d.PeekUintBits(16); division&0x8000 == 0x8000 {
-					d.FieldS8("fps", fps)
+					d.FieldS8("fps", fpsMap)
 					d.FieldU8("resolution")
 				} else {
 					d.FieldU16("ppqn")

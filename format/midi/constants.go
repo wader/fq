@@ -184,7 +184,7 @@ var keys = scalar.UintMapSymStr{
 	keyAFlatMinor:  "A♭ minor",
 }
 
-var controllers = scalar.UintMapSymStr{
+var controllersMap = scalar.UintMapSymStr{
 	// High resolution continuous controllers (MSB)
 	0:  "Bank Select (MSB)",
 	1:  "Modulation Wheel (MSB)",
@@ -271,7 +271,7 @@ var controllers = scalar.UintMapSymStr{
 	127: "Poly Mode On",
 }
 
-var manufacturers = scalar.UintMapSymStr{
+var manufacturersMap = scalar.UintMapSymStr{
 	// special purpose
 
 	0x7D: "Non-Commercial",
@@ -320,7 +320,7 @@ var manufacturers = scalar.UintMapSymStr{
 	0x52: "Zoom",
 }
 
-var manufacturers_extended = scalar.UintMapSymStr{
+var manufacturersExtendedMap = scalar.UintMapSymStr{
 	0x0007: "Digital Music Corporation",
 	0x0009: "New England Digital",
 	0x000E: "Alesis",
@@ -363,14 +363,14 @@ var manufacturers_extended = scalar.UintMapSymStr{
 	0x2127: "Expert Sleepers",
 }
 
-var framerates = scalar.UintMapSymStr{
+var frameratesMap = scalar.UintMapSymStr{
 	0: "24 FPS",
 	1: "25 FPS",
 	2: "29.97 FPS DF",
 	3: "30 FPS",
 }
 
-var fps = scalar.SintMapSymStr{
+var fpsMap = scalar.SintMapSymStr{
 	-24: "SMPTE 24 FPS",
 	-25: "SMPTE 25 FPS",
 	-29: "SMPTE 29.97 FPS DF",

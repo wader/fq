@@ -155,7 +155,7 @@ func decodeSMPTEOffset(d *decode.D) {
 	d.FieldUintFn("length", vlq, d.UintRequire(5))
 
 	d.FieldStruct("smpte_offset", func(d *decode.D) {
-		d.FieldU3("framerate", framerates)
+		d.FieldU3("framerate", frameratesMap)
 		d.FieldU5("hour")
 		d.FieldU8("minute")
 		d.FieldU8("second")
@@ -201,13 +201,13 @@ func decodeSequencerSpecificEvent(d *decode.D) {
 			b := d.PeekUintBits(8)
 
 			if length > 2 && b == 0 {
-				d.FieldU24("manufacturer", manufacturers_extended)
+				d.FieldU24("manufacturer", manufacturersExtendedMap)
 
 				if length > 3 {
 					d.FieldRawLen("data", 8*(int64(length)-3))
 				}
 			} else if length > 0 {
-				d.FieldU8("manufacturer", manufacturers)
+				d.FieldU8("manufacturer", manufacturersMap)
 
 				if length > 1 {
 					d.FieldRawLen("data", 8*(int64(length)-1))
