@@ -363,16 +363,16 @@ var manufacturers_extended = scalar.UintMapSymStr{
 	0x2127: "Expert Sleepers",
 }
 
-var framerates = scalar.UintMapSymUint{
-	0: 24,
-	1: 25,
-	2: 29,
-	3: 30,
+var framerates = scalar.UintMapSymStr{
+	0: "24 FPS",
+	1: "25 FPS",
+	2: "29.97 FPS DF",
+	3: "30 FPS",
 }
 
-var fps = scalar.SintMapSymUint{
-	-24: 24,
-	-25: 25,
-	-29: 29,
-	-30: 30,
+var fps = scalar.SintMapSymStr{
+	-24: "SMPTE 24 FPS",
+	-25: "SMPTE 25 FPS",
+	-29: "SMPTE 29.97 FPS DF",
+	-30: "SMPTE 30 FPS",
 }

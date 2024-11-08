@@ -155,8 +155,8 @@ func decodeSMPTEOffset(d *decode.D) {
 	d.FieldUintFn("length", vlq, d.UintRequire(5))
 
 	d.FieldStruct("smpte_offset", func(d *decode.D) {
-		d.FieldU2("framerate", framerates)
-		d.FieldU6("hour")
+		d.FieldU3("framerate", framerates)
+		d.FieldU5("hour")
 		d.FieldU8("minute")
 		d.FieldU8("second")
 		d.FieldU8("frames")
