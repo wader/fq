@@ -22,14 +22,14 @@ debug: build
 # 	go run . -d midi dv format/midi/testdata/midi/smpte-timecode-30.mid
 
 	go test ./format -run TestFormats/midi/testdata/smpte-timecode-24.fqtest
-# 	go test ./format -run TestFormats/midi/testdata/smpte-timecode-25.fqtest
-# 	go test ./format -run TestFormats/midi/testdata/smpte-timecode-29.fqtest
-# 	go test ./format -run TestFormats/midi/testdata/smpte-timecode-30.fqtest
+	go test ./format -run TestFormats/midi/testdata/smpte-timecode-25.fqtest
+	go test ./format -run TestFormats/midi/testdata/smpte-timecode-29.fqtest
+	go test ./format -run TestFormats/midi/testdata/smpte-timecode-30.fqtest
 
-# 	go run . -d midi dv format/midi/testdata/midi/format-0x.mid
-# 	go run . -d midi dv format/midi/testdata/midi/format-0y.mid
-# 	go test ./format -run TestFormats/midi/testdata/format-0x.fqtest
-# 	go test ./format -run TestFormats/midi/testdata/format-0y.fqtest
+# 	go run . -d midi dv format/midi/testdata/midi/format-0-extra-tracks.mid
+# 	go run . -d midi dv format/midi/testdata/midi/format-0-extra-tracks2.mid
+# 	go test ./format -run TestFormats/midi/testdata/format-0-extra-tracks.fqtest
+# 	go test ./format -run TestFormats/midi/testdata/format-0-extra-tracks2.fqtest
 
 test: build
 	go test ./format -run TestFormats/midi
