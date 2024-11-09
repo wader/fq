@@ -16,8 +16,20 @@ run: build
 	go run . -d midi dv format/midi/testdata/reference.mid
 
 debug: build
-	go run . -d midi dv format/midi/testdata/midi/smpte-timecode.mid
-	go run . -d midi dv format/midi/testdata/midi/format-0.mid
+# 	go run . -d midi dv format/midi/testdata/midi/smpte-timecode-24.mid
+# 	go run . -d midi dv format/midi/testdata/midi/smpte-timecode-25.mid
+# 	go run . -d midi dv format/midi/testdata/midi/smpte-timecode-29.mid
+# 	go run . -d midi dv format/midi/testdata/midi/smpte-timecode-30.mid
+
+	go test ./format -run TestFormats/midi/testdata/smpte-timecode-24.fqtest
+	go test ./format -run TestFormats/midi/testdata/smpte-timecode-25.fqtest
+	go test ./format -run TestFormats/midi/testdata/smpte-timecode-29.fqtest
+	go test ./format -run TestFormats/midi/testdata/smpte-timecode-30.fqtest
+
+# 	go run . -d midi dv format/midi/testdata/midi/format-0-extra-tracks.mid
+# 	go run . -d midi dv format/midi/testdata/midi/format-0-extra-tracks2.mid
+# 	go test ./format -run TestFormats/midi/testdata/format-0-extra-tracks.fqtest
+# 	go test ./format -run TestFormats/midi/testdata/format-0-extra-tracks2.fqtest
 
 test: build
 	go test ./format -run TestFormats/midi
@@ -27,6 +39,9 @@ lint:
 
 fuzz: build
 	make -f Makefile fuzz GROUP=midi
+
+godoc:
+	godoc -http=:80	-index_interval=60s
 
 events: build
 	go run . -d midi dv format/midi/testdata/events/sequence-number.mid

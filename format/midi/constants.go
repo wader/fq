@@ -4,6 +4,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
+// Map of note values to note names.
 var notes = scalar.UintMapSymStr{
 	127: "G9",
 	126: "F♯9/G♭9",
@@ -114,6 +115,7 @@ var notes = scalar.UintMapSymStr{
 	21:  "A0",
 }
 
+// Map of key signature values to key signature names.
 const (
 	keyCMajor      = 0x0000
 	keyGMajor      = 0x0100
@@ -182,7 +184,7 @@ var keys = scalar.UintMapSymStr{
 	keyAFlatMinor:  "A♭ minor",
 }
 
-var controllers = scalar.UintMapSymStr{
+var controllersMap = scalar.UintMapSymStr{
 	// High resolution continuous controllers (MSB)
 	0:  "Bank Select (MSB)",
 	1:  "Modulation Wheel (MSB)",
@@ -269,7 +271,7 @@ var controllers = scalar.UintMapSymStr{
 	127: "Poly Mode On",
 }
 
-var manufacturers = scalar.UintMapSymStr{
+var manufacturersMap = scalar.UintMapSymStr{
 	// special purpose
 
 	0x7D: "Non-Commercial",
@@ -318,7 +320,7 @@ var manufacturers = scalar.UintMapSymStr{
 	0x52: "Zoom",
 }
 
-var manufacturers_extended = scalar.UintMapSymStr{
+var manufacturersExtendedMap = scalar.UintMapSymStr{
 	0x0007: "Digital Music Corporation",
 	0x0009: "New England Digital",
 	0x000E: "Alesis",
@@ -361,16 +363,16 @@ var manufacturers_extended = scalar.UintMapSymStr{
 	0x2127: "Expert Sleepers",
 }
 
-var framerates = scalar.UintMapSymUint{
-	0: 24,
-	1: 25,
-	2: 29,
-	3: 30,
+var frameratesMap = scalar.UintMapSymStr{
+	0: "24 FPS",
+	1: "25 FPS",
+	2: "29.97 FPS DF",
+	3: "30 FPS",
 }
 
-var fps = scalar.UintMapSymUint{
-	0xe8: 24,
-	0xe7: 25,
-	0xe6: 29,
-	0xe5: 30,
+var fpsMap = scalar.SintMapSymStr{
+	-24: "SMPTE 24 FPS",
+	-25: "SMPTE 25 FPS",
+	-29: "SMPTE 29.97 FPS DF",
+	-30: "SMPTE 30 FPS",
 }

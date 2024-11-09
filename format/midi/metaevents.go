@@ -5,6 +5,7 @@ import (
 	"github.com/wader/fq/pkg/scalar"
 )
 
+// MIDI meta-event status byte values.
 const (
 	SequenceNumber         uint64 = 0x00
 	Text                   uint64 = 0x01
@@ -26,6 +27,7 @@ const (
 	SequencerSpecificEvent uint64 = 0x7f
 )
 
+// Maps MIDI meta-events to a human readable name.
 var metaevents = scalar.UintMapSymStr{
 	SequenceNumber:         "sequence_number",
 	Text:                   "text",
@@ -47,6 +49,7 @@ var metaevents = scalar.UintMapSymStr{
 	SequencerSpecificEvent: "sequencer_specific_event",
 }
 
+// Internal map of MIDI meta-events to the associated event parser.
 var metafns = map[uint64]func(d *decode.D){
 	SequenceNumber:         decodeSequenceNumber,
 	Text:                   decodeText,
@@ -68,6 +71,7 @@ var metafns = map[uint64]func(d *decode.D){
 	SequencerSpecificEvent: decodeSequencerSpecificEvent,
 }
 
+// decodeMetaEvent extracts the meta-event delta time, event status and event detail.
 func decodeMetaEvent(d *decode.D, event uint8, ctx *context) {
 	ctx.running = 0x00
 	ctx.casio = false
@@ -89,6 +93,8 @@ func decodeMetaEvent(d *decode.D, event uint8, ctx *context) {
 	}
 }
 
+// decodeSequenceNumber parses a Sequence Number MIDI meta event to a struct comprising:
+//   - sequence_number
 func decodeSequenceNumber(d *decode.D) {
 	d.FieldUintFn("length", vlq, d.UintRequire(2))
 	d.FieldU16("sequence_number")
@@ -149,8 +155,8 @@ func decodeSMPTEOffset(d *decode.D) {
 	d.FieldUintFn("length", vlq, d.UintRequire(5))
 
 	d.FieldStruct("smpte_offset", func(d *decode.D) {
-		d.FieldU2("framerate", framerates)
-		d.FieldU6("hour")
+		d.FieldU3("framerate", frameratesMap)
+		d.FieldU5("hour")
 		d.FieldU8("minute")
 		d.FieldU8("second")
 		d.FieldU8("frames")
@@ -195,13 +201,13 @@ func decodeSequencerSpecificEvent(d *decode.D) {
 			b := d.PeekUintBits(8)
 
 			if length > 2 && b == 0 {
-				d.FieldU24("manufacturer", manufacturers_extended)
+				d.FieldU24("manufacturer", manufacturersExtendedMap)
 
 				if length > 3 {
 					d.FieldRawLen("data", 8*(int64(length)-3))
 				}
 			} else if length > 0 {
-				d.FieldU8("manufacturer", manufacturers)
+				d.FieldU8("manufacturer", manufacturersMap)
 
 				if length > 1 {
 					d.FieldRawLen("data", 8*(int64(length)-1))

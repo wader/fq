@@ -58,7 +58,7 @@ func decodeSysExMessage(d *decode.D, ctx *context) {
 	}
 
 	d.FieldStruct("message", func(d *decode.D) {
-		d.FieldU8("manufacturer", manufacturers)
+		d.FieldU8("manufacturer", manufacturersMap)
 
 		if length < 1 {
 			ctx.casio = true
