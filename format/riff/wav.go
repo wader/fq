@@ -94,12 +94,18 @@ func wavDecode(d *decode.D) any {
 				d.FieldU16("block_align")
 				d.FieldU16("bits_per_sample")
 
-				if audioFormat == formatExtensible && d.BitsLeft() > 0 {
-					d.FieldU16("extension_size")
-					d.FieldU16("valid_bits_per_sample")
-					d.FieldU32("channel_mask")
-					d.FieldRawLen("sub_format", 16*8, subFormatNames)
+				if d.BitsLeft() > 0 {
+					if audioFormat == formatExtensible {
+						d.FieldU16("extension_size")
+						d.FieldU16("valid_bits_per_sample")
+						d.FieldU32("channel_mask")
+						d.FieldRawLen("sub_format", 16*8, subFormatNames)
+					} else {
+						cbSize := d.FieldU16("cb_size")
+						d.FieldRawLen("unknown", int64(cbSize)*8)
+					}
 				}
+
 				return false, nil
 
 			case "data":
