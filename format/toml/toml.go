@@ -6,6 +6,7 @@ import (
 	"embed"
 	"fmt"
 	"io"
+	"strings"
 	"unicode/utf8"
 
 	"github.com/BurntSushi/toml"
@@ -31,7 +32,7 @@ func init() {
 			Functions:   []string{"_todisplay"},
 		})
 	interp.RegisterFS(tomlFS)
-	interp.RegisterFunc0("to_toml", toTOML)
+	interp.RegisterFunc1("_to_toml", toTOML)
 }
 
 func decodeTOMLSeekFirstValidRune(br io.ReadSeeker) error {
@@ -88,13 +89,19 @@ func decodeTOML(d *decode.D) any {
 	return nil
 }
 
-func toTOML(_ *interp.Interp, c any) any {
+type ToTOMLOpts struct {
+	Indent int `default:"2"` // 2 is default for BurntSushi/toml
+}
+
+func toTOML(_ *interp.Interp, c any, opts ToTOMLOpts) any {
 	if c == nil {
 		return gojqx.FuncTypeError{Name: "to_toml", V: c}
 	}
 
 	b := &bytes.Buffer{}
-	if err := toml.NewEncoder(b).Encode(gojqx.Normalize(c)); err != nil {
+	e := toml.NewEncoder(b)
+	e.Indent = strings.Repeat(" ", opts.Indent)
+	if err := e.Encode(gojqx.Normalize(c)); err != nil {
 		return err
 	}
 	return b.String()

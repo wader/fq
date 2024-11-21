@@ -682,18 +682,20 @@ name: Afghanistan
 zip> ^D
 ```
 
-- `from_xml`/`from_xml($opts)` Parse XML into jq value.<br>
-  `{seq: true}` preserve element ordering if more than one sibling.<br>
-  `{array: true}` use nested `[name, attributes, children]` arrays to represent elements. Attributes will be `null` if none and children will be `[]` if none, this is to make it easier to work with as the array as 3 values. `to_xml` does not require this.<br>
+- `from_xml`/`from_xml($opts)` Parse XML into jq value. `$opts` are:
+  - `{seq: true}` preserve element ordering if more than one sibling.<br>
+  - `{array: true}` use nested `[name, attributes, children]` arrays to represent elements. Attributes will be `null` if none and children will be `[]` if none, this is to make it easier to work with as the array as 3 values. `to_xml` does not require this.<br>
 - `from_html`/`from_html($opts)` Parse HTML into jq value.<br>
   Similar to `from_xml` but parses html5 in non-script mode. Will always have a `html` root with `head` and `body` elements.<br>
-  `{array: true}` use nested arrays to represent elements.<br>
-  `{seq: true}` preserve element ordering if more than one sibling.<br>
+  `$opts` are:
+  - `{array: true}` use nested arrays to represent elements.<br>
+  - `{seq: true}` preserve element ordering if more than one sibling.<br>
 - `to_xml`/`to_xml($opts})` Serialize jq value into XML.<br>
-  `{indent: number}` indent child elements.<br>
   Assumes object representation if input is an object, and nested arrays if input is an array.<br>
   Will automatically add a root `doc` element if jq value has more then one root element.<br>
   If a `#seq` is found on at least one element all siblings will be sort by sequence number. Attributes are always sorted.<br>
+  `$opts` are:
+  - `{indent: number}` indent child elements.<br>
 
   XML elements can be represented as jq value in two ways, as objects (inspired by [mxj](https://github.com/clbanning/mxj) and [xml.com's Converting Between XML and JSON
 ](https://www.xml.com/pub/a/2006/05/31/converting-between-xml-and-json.html)) or nested arrays. Both representations are lossy and might lose ordering of elements, text nodes and comments. In object representation `from_xml`, `from_html` and `to_xml` support `{seq:true}` option to parse/serialize `{"#seq"=<number>}` attributes to preserve element sibling ordering.
@@ -801,12 +803,11 @@ zip> ^D
 
 JSON and jq-flavoured JSON
 - `fromjson` Parse JSON into jq value.
-- `tojson`/`tojson($opt)`  Serialize jq value into JSON.<br>
-  `{indent: number}` indent array/object values.<br>
+- `tojson`/`tojson($opts)` Serialize jq value into JSON. `$opts` are:
+  - `{indent: number}` Indent depth.
 - `from_jq` Parse jq-flavoured JSON into jq value.
-- `to_jq`/`to_jq($opt)`  Serialize jq value into jq-flavoured JSON<br>
-  `{indent: number}` indent array/object values.<br>
-  jq-flavoured JSON has optional key quotes, `#` comments and can have trailing comma in arrays.
+- `to_jq`/`to_jq($opts)` Serialize jq value into jq-flavoured JSON. jq-flavoured JSON has optional key quotes, `#` comments and can have trailing comma in arrays. `$opts` are:
+    - `{indent: number}` Indent depth.
 - `from_jsonl` Parse JSON lines into jq array.
 - `to_jsonl` Serialize jq array into JSONL.
 
@@ -814,19 +815,22 @@ Note that `fromjson` and `tojson` use different naming conventions as they origi
 
 YAML
 - `from_yaml` Parse YAML into jq value.
-- `to_yaml`  Serialize jq value into YAML.
+- `to_yaml`/`to_yaml($opts)` Serialize jq value into YAML. `$opts` are:
+  - `{indent: number}` Indent depth.
 
 TOML
 - `from_toml` Parse TOML into jq value.
-- `to_toml`  Serialize jq value into TOML.
+- `to_toml`/`to_toml($opts)` Serialize jq value into TOML. `$opts` are:
+  - `{indent: number}` Indent depth.
 
 CSV
 - `from_csv`/`from_cvs($opts)` Parse CSV into jq value.<br>
-  `{comma: string}` field separator, default ",".<br>
-  `{comment: string}` comment line character, default "#".<br>
-  To work with tab separated values you can use `fromcvs({comma: "\t"})` or `fq -d csv -o 'comma="\t"'`
-- `to_csv`/`to_csv($opts)` Serialize jq value into CSV.<br>
-  `{comma: string}` field separator, default ",".<br>
+  To work with tab separated values you can use `fromcvs({comma: "\t"})` or `fq -d csv -o 'comma="\t"'`<br>
+  `$opts` are:
+  - `{comma: string}` field separator, default ",".<br>
+  - `{comment: string}` comment line character, default "#".<br>
+- `to_csv`/`to_csv($opts)` Serialize jq value into CSV. `$opts` are:
+  - `{comma: string}` field separator, default ",".<br>
 
 XML encoding
 - `from_xmlentities` Decode XML entities.
@@ -862,10 +866,10 @@ URL parts and XML encodings
 Binary encodings like hex and base64
 - `from_hex` Decode hex string to binary.
 - `to_hex` Encode binary into hex string.
-- `from_base64`/`from_base64($opts)` Decode base64 encodings into binary.<br>
-  `{encoding:string}` encoding variant: `std` (default), `url`, `rawstd` or `rawurl`
-- `to_base64`/`to_base64($opts)` Encode binary into base64 encodings.<br>
-  `{encoding:string}` encoding variant: `std` (default), `url`, `rawstd` or `rawurl`
+- `from_base64`/`from_base64($opts)` Decode base64 encodings into binary. `$opts` are:
+  - `{encoding:string}` encoding variant: `std` (default), `url`, `rawstd` or `rawurl`
+- `to_base64`/`to_base64($opts)` Encode binary into base64 encodings. `$opts` are:
+  - `{encoding:string}` encoding variant: `std` (default), `url`, `rawstd` or `rawurl`
 
 Hash functions
 - `to_md4` Hash binary using md4.
