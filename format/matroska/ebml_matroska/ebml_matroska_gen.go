@@ -371,7 +371,7 @@ var SegmentUUIDElement = &ebml.Binary{
 		ID:         SegmentUUIDID,
 		ParentID:   InfoID,
 		Name:       "segment_uuid",
-		Definition: "A randomly generated UID that identifies the Segment amongst many others v4 RFC4122 with all bits randomly (or pseudorandomly) chosen",
+		Definition: "A randomly generated UID that identifies the Segment amongst many others v4 RFC9562 with all bits randomly (or pseudorandomly) chosen",
 	},
 }
 var SegmentFilenameElement = &ebml.UTF8{
