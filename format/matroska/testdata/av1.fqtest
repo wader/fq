@@ -155,7 +155,7 @@ $ fq -d matroska dv av1.mkv
 0x00f0|                              4c 61 76 66 35 38|          Lavf58|              value: "Lavf58.45.100" 0xfa-0x107 (13)
 0x0100|2e 34 35 2e 31 30 30                           |.45.100         |
       |                                               |                |            [4]{}: element 0x107-0x11a (19)
-0x0100|                     73 a4                     |       s.       |              id: "segment_uuid" (0x73a4) (A randomly generated UID that identifies the Segment amongst many others v4 RFC4122 with all bits randomly (or pseudorandomly) chosen) 0x107-0x109 (2)
+0x0100|                     73 a4                     |       s.       |              id: "segment_uuid" (0x73a4) (A randomly generated UID that identifies the Segment amongst many others v4 RFC9562 with all bits randomly (or pseudorandomly) chosen) 0x107-0x109 (2)
       |                                               |                |              type: "binary"
 0x0100|                           90                  |         .      |              size: 16 0x109-0x10a (1)
 0x0100|                              46 bd 6f 31 1c 40|          F.o1.@|              value: raw bits 0x10a-0x11a (16)
