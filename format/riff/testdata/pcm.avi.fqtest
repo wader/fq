@@ -70,7 +70,7 @@ $ fq dv pcm.avi
       |                                               |                |            [1]{}: chunk 0xa4-0xbc (24)
 0x00a0|            73 74 72 66                        |    strf        |              id: "strf" (Stream format) 0xa4-0xa8 (4)
 0x00a0|                        10 00 00 00            |        ....    |              size: 16 0xa8-0xac (4)
-0x00a0|                                    01 00      |            ..  |              format_tag: "pcm_s16le" (1) 0xac-0xae (2)
+0x00a0|                                    01 00      |            ..  |              format_tag: "pcm" (1) 0xac-0xae (2)
 0x00a0|                                          01 00|              ..|              channels: 1 0xae-0xb0 (2)
 0x00b0|44 ac 00 00                                    |D...            |              samples_per_sec: 44100 0xb0-0xb4 (4)
 0x00b0|            88 58 01 00                        |    .X..        |              avg_bytes_per_sec: 88200 0xb4-0xb8 (4)
@@ -242,5 +242,5 @@ $ fq dv pcm.avi
 *     |until 0x38b1.7 (628)                           |                |
       |                                               |                |      type: "auds"
       |                                               |                |      handler: "\x01\x00\x00\x00"
-      |                                               |                |      format_tag: "pcm_s16le" (1)
+      |                                               |                |      format_tag: "pcm" (1)
       |                                               |                |  extended_chunks[0:0]: 0x390a-0x390a (0)

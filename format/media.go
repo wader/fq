@@ -246,9 +246,9 @@ var ISO_23091_2_MatrixCoefficients = scalar.UintMap{
 
 // based on ffmpeg libavformat/riff.c
 const (
-	WAVTagPCM_S16LE       = 0x0001
+	WAVTagPCM             = 0x0001
 	WAVTagADPCM_MS        = 0x0002
-	WAVTagPCM_F32LE       = 0x0003
+	WAVTagPCM_Float       = 0x0003
 	WAVTagPCM_ALAW        = 0x0006
 	WAVTagPCM_MULAW       = 0x0007
 	WAVTagWMAVOICE        = 0x000a
@@ -321,9 +321,9 @@ const (
 )
 
 var WAVTagNames = scalar.UintMapSymStr{
-	WAVTagPCM_S16LE:       "pcm_s16le",
+	WAVTagPCM:             "pcm",
 	WAVTagADPCM_MS:        "adpcm_ms",
-	WAVTagPCM_F32LE:       "pcm_f32le",
+	WAVTagPCM_Float:       "pcm_float",
 	WAVTagPCM_ALAW:        "pcm_alaw",
 	WAVTagPCM_MULAW:       "pcm_mulaw",
 	WAVTagWMAVOICE:        "wmavoice",
