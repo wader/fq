@@ -8,7 +8,7 @@ $ fq -d wav dv stereo.wav
      |                                               |                |    [0]{}: chunk 0xc-0x24 (24)
 0x000|                                    66 6d 74 20|            fmt |      id: "fmt" 0xc-0x10 (4)
 0x010|10 00 00 00                                    |....            |      size: 16 0x10-0x14 (4)
-0x010|            01 00                              |    ..          |      audio_format: "pcm_s16le" (1) 0x14-0x16 (2)
+0x010|            01 00                              |    ..          |      audio_format: "pcm" (1) 0x14-0x16 (2)
 0x010|                  02 00                        |      ..        |      num_channels: 2 0x16-0x18 (2)
 0x010|                        44 ac 00 00            |        D...    |      sample_rate: 44100 0x18-0x1c (4)
 0x010|                                    10 b1 02 00|            ....|      byte_rate: 176400 0x1c-0x20 (4)
