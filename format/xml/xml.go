@@ -16,6 +16,7 @@ import (
 	"html"
 	"io"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 	"unicode/utf8"
@@ -28,7 +29,6 @@ import (
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
-	"golang.org/x/exp/slices"
 )
 
 //go:embed xml.jq

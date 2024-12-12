@@ -5,12 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
+	"slices"
 	"strings"
 	"sync"
 
 	"github.com/wader/fq/internal/gojqx"
 	"github.com/wader/fq/pkg/decode"
-	"golang.org/x/exp/slices"
 )
 
 type EnvFuncFn func(env *Interp) gojqx.Function

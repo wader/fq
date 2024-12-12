@@ -4,11 +4,11 @@ import (
 	"cmp"
 	"errors"
 	"fmt"
+	"slices"
 
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/ranges"
 	"github.com/wader/fq/pkg/scalar"
-	"golang.org/x/exp/slices"
 )
 
 type Compound struct {

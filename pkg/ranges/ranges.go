@@ -3,10 +3,9 @@ package ranges
 import (
 	"cmp"
 	"fmt"
+	"slices"
 	"strconv"
 	"strings"
-
-	"golang.org/x/exp/slices"
 )
 
 type Range struct {
