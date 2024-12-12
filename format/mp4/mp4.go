@@ -19,12 +19,12 @@ import (
 	"cmp"
 	"embed"
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
-	"golang.org/x/exp/slices"
 )
 
 //go:embed mp4.jq

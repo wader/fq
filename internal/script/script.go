@@ -11,13 +11,13 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 
 	"github.com/wader/fq/internal/shquote"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/interp"
-	"golang.org/x/exp/slices"
 )
 
 var unescapeRe = regexp.MustCompile(`\\(?:t|b|n|r|0(?:b[01]{8}|x[0-f]{2}))`)
