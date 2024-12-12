@@ -4,12 +4,12 @@ package opentimestamps
 
 import (
 	"embed"
+	"slices"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
-	"golang.org/x/exp/slices"
 )
 
 //go:embed opentimestamps.md

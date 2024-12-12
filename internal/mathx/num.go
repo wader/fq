@@ -1,6 +1,7 @@
 package mathx
 
 import (
+	"cmp"
 	"fmt"
 	"math"
 	"math/big"
@@ -8,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/wader/fq/pkg/ranges"
-	"golang.org/x/exp/constraints"
 )
 
 var BasePrefixMap = map[int]string{
@@ -17,7 +17,7 @@ var BasePrefixMap = map[int]string{
 	16: "0x",
 }
 
-func DigitsInBase[T constraints.Integer](n T, basePrefix bool, base int) int {
+func DigitsInBase[T Integer](n T, basePrefix bool, base int) int {
 	prefixLen := 0
 	if basePrefix {
 		prefixLen = len(BasePrefixMap[base])
@@ -42,11 +42,11 @@ func padFormatNumber(s string, base int, basePrefix bool, width int) string {
 	return prefixStr + padStr + s
 }
 
-func PadFormatInt[T constraints.Signed](i T, base int, basePrefix bool, width int) string {
+func PadFormatInt[T Signed](i T, base int, basePrefix bool, width int) string {
 	return padFormatNumber(strconv.FormatInt(int64(i), base), base, basePrefix, width)
 }
 
-func PadFormatUint[T constraints.Unsigned](i T, base int, basePrefix bool, width int) string {
+func PadFormatUint[T Unsigned](i T, base int, basePrefix bool, width int) string {
 	return padFormatNumber(strconv.FormatUint(uint64(i), base), base, basePrefix, width)
 }
 
@@ -54,7 +54,7 @@ func PadFormatBigInt(i *big.Int, base int, basePrefix bool, width int) string {
 	return padFormatNumber(i.Text(base), base, basePrefix, width)
 }
 
-func Clamp[T constraints.Ordered](a, b, v T) T {
+func Clamp[T cmp.Ordered](a, b, v T) T {
 	return max(a, min(b, v))
 }
 
@@ -83,6 +83,6 @@ func TwosComplement(nBits int, n uint64) int64 {
 
 // decode zigzag encoded integer
 // https://developers.google.com/protocol-buffers/docs/encoding
-func ZigZag[U constraints.Unsigned, S constraints.Signed](n U) S {
+func ZigZag[U Unsigned, S Signed](n U) S {
 	return S(n>>1 ^ -(n & 1))
 }

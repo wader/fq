@@ -1,12 +1,10 @@
 package apple
 
-import (
-	"golang.org/x/exp/constraints"
-)
+import "github.com/wader/fq/internal/mathx"
 
 // PosLoopDetector is used for detecting loops when writing decoders, and can
 // short-circuit infinite recursion that can cause stack overflows.
-type PosLoopDetector[T constraints.Integer] []T
+type PosLoopDetector[T mathx.Integer] []T
 
 // Push adds the current offset to the stack and executes the supplied
 // detection function

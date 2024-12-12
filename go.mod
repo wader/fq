@@ -52,10 +52,6 @@ require (
 	// bump: gomod-golang-x-crypto link "Tags" https://github.com/golang/crypto/tags
 	golang.org/x/crypto v0.31.0
 
-	// has no tags
-	// go get golang.org/x/exp@master && go mod tidy
-	golang.org/x/exp v0.0.0-20240808152545-0cdaa3abc0fa
-
 	// bump: gomod-golang-x-net /golang\.org\/x\/net v(.*)/ https://github.com/golang/net.git|^0
 	// bump: gomod-golang-x-net command go get golang.org/x/net@v$LATEST && go mod tidy
 	// bump: gomod-golang-x-net link "Tags" https://github.com/golang/net/tags
