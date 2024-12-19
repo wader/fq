@@ -122,9 +122,8 @@ $ fq -d elf dv libbbb.so
 0x0dd0|                        f0 05 00 00 00 00 00 00|        ........|      data: raw bits 0xdd8-0x1000 (552)
 0x0de0|90 05 00 00 00 00 00 00 01 00 00 00 00 00 00 00|................|
 *     |until 0xfff.7 (552)                            |                |
-      |                                               |                |  section_headers[0:29]: 0x0-0x2368 (9064)
-      |                                               |                |    [0]{}: section_header 0x0-0x1c68 (7272)
-      |                                               |                |      data: raw bits 0x0-0x0 (0)
+      |                                               |                |  section_headers[0:29]: 0x190-0x2368 (8664)
+      |                                               |                |    [0]{}: section_header 0x1c28-0x1c68 (64)
 0x1c20|                        00 00 00 00            |        ....    |      name: "" (0) 0x1c28-0x1c2c (4)
 0x1c20|                                    00 00 00 00|            ....|      type: "null" (0x0) (Header inactive) 0x1c2c-0x1c30 (4)
       |                                               |                |      flags{}: 0x1c30-0x1c38 (8)

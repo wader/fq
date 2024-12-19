@@ -151,9 +151,8 @@ $ fq -d elf dv a_dynamic
 0x01f0|                        01 00 00 00 00 00 00 00|        ........|      align: 1 0x1f8-0x200 (8)
 0x0d90|90 07 00 00 00 00 00 00 30 07 00 00 00 00 00 00|........0.......|      data: raw bits 0xd90-0x1000 (624)
 *     |until 0xfff.7 (624)                            |                |
-      |                                               |                |  section_headers[0:32]: 0x0-0x2b40 (11072)
-      |                                               |                |    [0]{}: section_header 0x0-0x2380 (9088)
-      |                                               |                |      data: raw bits 0x0-0x0 (0)
+      |                                               |                |  section_headers[0:32]: 0x200-0x2b40 (10560)
+      |                                               |                |    [0]{}: section_header 0x2340-0x2380 (64)
 0x2340|00 00 00 00                                    |....            |      name: "" (0) 0x2340-0x2344 (4)
 0x2340|            00 00 00 00                        |    ....        |      type: "null" (0x0) (Header inactive) 0x2344-0x2348 (4)
       |                                               |                |      flags{}: 0x2348-0x2350 (8)

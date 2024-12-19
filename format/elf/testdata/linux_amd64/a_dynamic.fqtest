@@ -224,9 +224,8 @@ $ fq -d elf dv a_dynamic
 0x2df0|                        ff ff ff ff ff ff ff ff|        ........|      data: raw bits 0x2df8-0x3000 (520)
 0x2e00|00 00 00 00 00 00 00 00 ff ff ff ff ff ff ff ff|................|
 *     |until 0x2fff.7 (520)                           |                |
-      |                                               |                |  section_headers[0:34]: 0x0-0x4710 (18192)
-      |                                               |                |    [0]{}: section_header 0x0-0x3ed0 (16080)
-      |                                               |                |      data: raw bits 0x0-0x0 (0)
+      |                                               |                |  section_headers[0:34]: 0x2e0-0x4710 (17456)
+      |                                               |                |    [0]{}: section_header 0x3e90-0x3ed0 (64)
 0x3e90|00 00 00 00                                    |....            |      name: "" (0) 0x3e90-0x3e94 (4)
 0x3e90|            00 00 00 00                        |    ....        |      type: "null" (0x0) (Header inactive) 0x3e94-0x3e98 (4)
       |                                               |                |      flags{}: 0x3e98-0x3ea0 (8)
