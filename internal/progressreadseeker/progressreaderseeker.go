@@ -39,7 +39,8 @@ func (prs *Reader) Read(p []byte) (n int, err error) {
 	partEnd := newPos / prs.partitionSize
 
 	for i := partStart; i < partEnd; i++ {
-		if prs.partitions[i] {
+		// protect reading from a growing file
+		if i >= int64(len(prs.partitions)) || prs.partitions[i] {
 			continue
 		}
 		prs.partitions[i] = true
