@@ -156,9 +156,8 @@ $ fq -d elf dv a_static
 0x001f0|                        01 00 00 00 00 00 00 00|        ........|      align: 1 0x1f8-0x200 (8)
 0x02fd0|ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00|................|      data: raw bits 0x2fd0-0x3000 (48)
 *      |until 0x2fff.7 (48)                            |                |
-       |                                               |                |  section_headers[0:24]: 0x0-0x144a0 (83104)
-       |                                               |                |    [0]{}: section_header 0x0-0x13ee0 (81632)
-       |                                               |                |      data: raw bits 0x0-0x0 (0)
+       |                                               |                |  section_headers[0:24]: 0x200-0x144a0 (82592)
+       |                                               |                |    [0]{}: section_header 0x13ea0-0x13ee0 (64)
 0x13ea0|00 00 00 00                                    |....            |      name: "" (0) 0x13ea0-0x13ea4 (4)
 0x13ea0|            00 00 00 00                        |    ....        |      type: "null" (0x0) (Header inactive) 0x13ea4-0x13ea8 (4)
        |                                               |                |      flags{}: 0x13ea8-0x13eb0 (8)

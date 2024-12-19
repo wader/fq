@@ -151,9 +151,8 @@ $ fq -d elf dv a_stripped
 0x01f0|                        01 00 00 00 00 00 00 00|        ........|      align: 1 0x1f8-0x200 (8)
 0x0d90|90 07 00 00 00 00 00 00 30 07 00 00 00 00 00 00|........0.......|      data: raw bits 0xd90-0x1000 (624)
 *     |until 0xfff.7 (624)                            |                |
-      |                                               |                |  section_headers[0:22]: 0x0-0x1668 (5736)
-      |                                               |                |    [0]{}: section_header 0x0-0x1128 (4392)
-      |                                               |                |      data: raw bits 0x0-0x0 (0)
+      |                                               |                |  section_headers[0:22]: 0x200-0x1668 (5224)
+      |                                               |                |    [0]{}: section_header 0x10e8-0x1128 (64)
 0x10e0|                        00 00 00 00            |        ....    |      name: "" (0) 0x10e8-0x10ec (4)
 0x10e0|                                    00 00 00 00|            ....|      type: "null" (0x0) (Header inactive) 0x10ec-0x10f0 (4)
       |                                               |                |      flags{}: 0x10f0-0x10f8 (8)

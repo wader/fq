@@ -138,9 +138,8 @@ $ fq -d elf dv a_dynamic
 0x0ec0|                                    7c 05 00 00|            |...|      data: raw bits 0xecc-0x1000 (308)
 0x0ed0|f0 04 00 00 01 00 00 00 a2 00 00 00 01 00 00 00|................|
 *     |until 0xfff.7 (308)                            |                |
-      |                                               |                |  section_headers[0:32]: 0x0-0x255c (9564)
-      |                                               |                |    [0]{}: section_header 0x0-0x2084 (8324)
-      |                                               |                |      data: raw bits 0x0-0x0 (0)
+      |                                               |                |  section_headers[0:32]: 0x114-0x255c (9288)
+      |                                               |                |    [0]{}: section_header 0x205c-0x2084 (40)
 0x2050|                                    00 00 00 00|            ....|      name: "" (0) 0x205c-0x2060 (4)
 0x2060|00 00 00 00                                    |....            |      type: "null" (0x0) (Header inactive) 0x2060-0x2064 (4)
       |                                               |                |      flags{}: 0x2064-0x2068 (4)

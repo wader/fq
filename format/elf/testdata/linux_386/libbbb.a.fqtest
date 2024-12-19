@@ -52,9 +52,8 @@ $ fq -d ar dv libbbb.a
 0x0d0|                                    28 00      |            (.  |          shentsize: 40 0xdc-0xde (2)
 0x0d0|                                          10 00|              ..|          shnum: 16 0xde-0xe0 (2)
 0x0e0|0f 00                                          |..              |          shstrndx: 15 0xe0-0xe2 (2)
-     |                                               |                |        section_headers[0:16]: 0xae-0x5ee (1344)
-     |                                               |                |          [0]{}: section_header 0xae-0x396 (744)
-     |                                               |                |            data: raw bits 0xae-0xae (0)
+     |                                               |                |        section_headers[0:16]: 0xe2-0x5ee (1292)
+     |                                               |                |          [0]{}: section_header 0x36e-0x396 (40)
 0x360|                                          00 00|              ..|            name: "" (0) 0x36e-0x372 (4)
 0x370|00 00                                          |..              |
 0x370|      00 00 00 00                              |  ....          |            type: "null" (0x0) (Header inactive) 0x372-0x376 (4)

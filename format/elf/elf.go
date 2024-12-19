@@ -1055,7 +1055,15 @@ func elfDecodeSectionHeader(d *decode.D, ec elfContext, sh sectionHeader) {
 		entSize = int64(d.FieldU64("entsize") * 8)
 	}
 
-	if typ == SHT_NOBITS {
+	// SHT_NOBITS:
+	// A section of this type occupies no space in the file but otherwise resembles
+	// SHT_PROGBITS. Although this section contains no bytes, the sh_offset member
+	// contains the conceptual file offset.
+	// SHT_NULL:
+	// This value marks the section header as inactive; it does not have an
+	// associated section. Other members of the section header have undefined
+	// values.
+	if typ == SHT_NOBITS || typ == SHT_NULL {
 		// section occupies no space in file
 		return
 	}

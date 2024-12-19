@@ -224,9 +224,8 @@ $ fq -d elf dv a_stripped
 0x2df0|                        ff ff ff ff ff ff ff ff|        ........|      data: raw bits 0x2df8-0x3000 (520)
 0x2e00|00 00 00 00 00 00 00 00 ff ff ff ff ff ff ff ff|................|
 *     |until 0x2fff.7 (520)                           |                |
-      |                                               |                |  section_headers[0:24]: 0x0-0x36f8 (14072)
-      |                                               |                |    [0]{}: section_header 0x0-0x3138 (12600)
-      |                                               |                |      data: raw bits 0x0-0x0 (0)
+      |                                               |                |  section_headers[0:24]: 0x2e0-0x36f8 (13336)
+      |                                               |                |    [0]{}: section_header 0x30f8-0x3138 (64)
 0x30f0|                        00 00 00 00            |        ....    |      name: "" (0) 0x30f8-0x30fc (4)
 0x30f0|                                    00 00 00 00|            ....|      type: "null" (0x0) (Header inactive) 0x30fc-0x3100 (4)
       |                                               |                |      flags{}: 0x3100-0x3108 (8)

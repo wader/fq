@@ -88,9 +88,8 @@ $ fq -d elf dv a_static
 0x01fa0|                                    0c 02 01 00|            ....|      data: raw bits 0x1fac-0x2000 (84)
 0x01fb0|c8 01 01 00 08 20 02 00 f8 25 02 00 00 00 00 00|..... ...%......|
 *      |until 0x1fff.7 (84)                            |                |
-       |                                               |                |  section_headers[0:25]: 0x0-0x14da8 (85416)
-       |                                               |                |    [0]{}: section_header 0x0-0x149e8 (84456)
-       |                                               |                |      data: raw bits 0x0-0x0 (0)
+       |                                               |                |  section_headers[0:25]: 0xb4-0x14da8 (85236)
+       |                                               |                |    [0]{}: section_header 0x149c0-0x149e8 (40)
 0x149c0|00 00 00 00                                    |....            |      name: "" (0) 0x149c0-0x149c4 (4)
 0x149c0|            00 00 00 00                        |    ....        |      type: "null" (0x0) (Header inactive) 0x149c4-0x149c8 (4)
        |                                               |                |      flags{}: 0x149c8-0x149cc (4)
