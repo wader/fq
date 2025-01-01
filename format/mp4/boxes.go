@@ -711,7 +711,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			panic(fmt.Sprintf("expected AvcDcrOut got %#+v", v))
 		}
 		if t := ctx.currentTrack(); t != nil {
-			t.formatInArg = format.AVC_AU_In{LengthSize: avcDcrOut.LengthSize}
+			t.formatInArg = format.AVC_AU_In(avcDcrOut)
 		}
 	case "hvcC":
 		_, v := d.FieldFormat("descriptor", &hevcCDCRGroup, nil)
@@ -720,7 +720,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			panic(fmt.Sprintf("expected HevcDcrOut got %#+v", v))
 		}
 		if t := ctx.currentTrack(); t != nil {
-			t.formatInArg = format.HEVC_AU_In{LengthSize: hevcDcrOut.LengthSize}
+			t.formatInArg = format.HEVC_AU_In(hevcDcrOut)
 		}
 	case "dfLa":
 		d.FieldU8("version")
