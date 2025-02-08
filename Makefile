@@ -77,7 +77,7 @@ cpuprof: prof
 	go tool pprof -http :5555 fq.prof fq.cpu.prof
 
 update-gomod: always
-	GOPROXY=direct go get -d github.com/wader/gojq@fq
+	GOPROXY=direct go get github.com/wader/gojq@fq
 	go mod tidy
 
 # Usage: make fuzz # fuzz all foramts
