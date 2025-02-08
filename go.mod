@@ -30,7 +30,7 @@ require (
 
 	// has no tags
 	// go get github.com/gomarkdown/markdown@master && go mod tidy
-	github.com/gomarkdown/markdown v0.0.0-20241205020045-f7e15b2f3e62
+	github.com/gomarkdown/markdown v0.0.0-20250207164621-7a1f277a159e
 
 	// bump: gomod-gopacket /github\.com\/gopacket\/gopacket v(.*)/ https://github.com/gopacket/gopacket.git|^1
 	// bump: gomod-gopacket command go get github.com/gopacket/gopacket@v$LATEST && go mod tidy
