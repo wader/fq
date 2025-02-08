@@ -1,3 +1,83 @@
+# 0.14.0
+
+## Changes
+
+- More jq compatible `debug/0`/`debug/1` (correct prefix) and `stderr/0` (output raw strings). #1015 #1016
+- Fix crash when decoding a file while it's growing. #1050
+- Clean up some build dependencies. #1047 Thanks @Juneezee
+- gojq update. Changes from upstream: #1070
+  - Fix reduce syntax to emit results for each initial value
+  - Implement skip/2, fix limit/2 to emit error on negative count
+  - Fix last/1 to yield no values when the argument yields no values
+
+## Format changes
+
+- `av1_obu` Decode more fields and derive more values according to spec. #1020 #1021
+- `elf` Handle section header null better. #1051
+- `markdown` Update to latest gomarkdown (Fixes CVE-2024-44337). #1048
+- `matroska` Spec update. #1035
+- `midi` - Mapped SMPTE frame rates to strings and fixed bug in SMPTE offset metaevent decoding and more refactoring. #1023 Thanks @transcriptaze
+- `toml` `to_toml/1` now support indent option. #1033
+- `wav` Decode fmt chunk a bit better and improve format sym names (implied endian not bit size). #1034 #1038
+- `yaml` `to_yaml/1` now support indent option. #1033
+
+## Changelog
+
+* 2b5a52b9 Fixed format 0 filenames in Makefile debug target (cf. https://github.com/wader/fq/pull/1023#discussion_r1833958734)
+* 8f12fc0a Mapped SMPTE frame rates to strings and fixed bug in SMPTE offset metaevent decoding (cf. https://github.com/wader/fq/pull/1023#discussion_r1833943323)
+* a5f3dad8 Moved to doc.go into midi.go (cf. https://github.com/transcriptaze/fq-midi/issues/2)
+* 9f26ed8e Remove `golang.org/x/exp` dependency
+* f7d3bed3 Renamed 'xxx' constant maps to 'xxxMap' (cf. https://github.com/wader/fq/pull/1023#discussion_r1833955733)
+* 6fe91931 Replace `exp/slices` package with standard library
+* c0930b8d Reworked MIDI decoder to decode 'extra' format 0 tracks as data (cf. https://github.com/transcriptaze/fq-midi/issues/6)
+* 552cad26 Reworked MThd SMPTE field decoding to more closely follow the specification (cf. https://github.com/transcriptaze/fq-midi/issues/4)
+* e1e99003 Update docker-golang to 1.23.2 from 1.23.1
+* 120123d0 Update docker-golang to 1.23.4 from 1.23.3
+* b6a1f38c Update docker-golang to 1.23.5 from 1.23.4
+* 2450e6f6 Update docker-golang to 1.23.6 from 1.23.5
+* 45468601 Update github-go-version to 1.23.3 from 1.23.0
+* 513342f6 Update github-go-version to 1.23.4 from 1.23.3
+* 96dc2fa1 Update github-go-version to 1.23.5 from 1.23.4
+* 94d23773 Update github-go-version to 1.23.6 from 1.23.5
+* 80f6c2e2 Update github-golangci-lint to 1.62.0 from 1.60.3
+* f10639c3 Update github-golangci-lint to 1.62.2 from 1.62.0
+* 0eef2f91 Update github-golangci-lint to 1.63.0 from 1.62.2
+* 7b4b7f13 Update github-golangci-lint to 1.63.2 from 1.63.0
+* 7ea76801 Update github-golangci-lint to 1.63.3 from 1.63.2
+* e93b1956 Update github-golangci-lint to 1.63.4 from 1.63.3
+* e4dccb7e Update golang.org/x/{crypto,term,net}
+* a487bfe4 Update gomod-golang-x-crypto to 0.31.0 from 0.30.0
+* bcfb6c26 Update gomod-golang-x-crypto to 0.32.0 from 0.31.0
+* 0d7037c2 Update gomod-golang-x-net to 0.33.0 from 0.32.0
+* d1abf8a8 Update gomod-golang-x-net to 0.34.0 from 0.33.0
+* c0403fde Update gomod-golang-x-term to 0.28.0 from 0.27.0
+* bacb94cc Update gomod-golang-x-term to 0.29.0 from 0.28.0
+* 475babd4 Update gomod-golang/text to 0.21.0 from 0.20.0
+* a96628ef Update gomod-golang/text to 0.22.0 from 0.21.0
+* 6109e02a Update gomod-gopacket to 1.3.1 from 1.2.0
+* 582e769a Update make-golangci-lint to 1.62.0 from 1.61.0
+* d6ef46e9 Update make-golangci-lint to 1.62.2 from 1.62.0
+* 4da087f9 Update make-golangci-lint to 1.63.0 from 1.62.2
+* 849f9c67 Update make-golangci-lint to 1.63.2 from 1.63.0
+* e0f3fbd5 Update make-golangci-lint to 1.63.3 from 1.63.2
+* 12e583be Update make-golangci-lint to 1.63.4 from 1.63.3
+* 5395330f av1_obu: Add more derived values
+* d0c7e800 av1_obu: Decode more of sequence header
+* b9b14c64 doc: Less wide demo image to make it scale down less
+* 7c135170 elf: Handle section header null a bit better
+* f63faf48 gojq: Update fq fork
+* f8bb502e interp: Output raw strings for stderr/0
+* 77da7647 interp: debug/* should use DEBUG: not DEBUG
+* 1d251c31 matroska: Spec update
+* 00ae470d midi: adding godoc (cf. https://github.com/transcriptaze/fq-midi/issues/2)
+* 258dca21 mod: Update github.com/gomarkdown/markdown
+* a1bbd276 mod: Update golang.org/x/{crypto,sys,term,text,net}
+* 41f32a86 mod: Update gomarkdown
+* 8abd6025 progressreaderseeker: Don't index out of bounds for a growing file
+* 4a9f65dc wav: Decode fmt chunk cb_size and bytes
+* 98ded907 wav: format 1 and 3 mean LE PCM but no implied bit size
+* ed872d4b yaml,toml: Add indent option for to_{toml,yaml}
+
 # 0.13.0
 
 ## Changes
