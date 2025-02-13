@@ -86,6 +86,7 @@ cbor                 Concise Binary Object Representation
 csv                  Comma separated values
 dns                  DNS packet
 dns_tcp              DNS packet (TCP)
+dolby_metadata       Dolby Metadata (Atmos, AC3, Dolby Digital)
 elf                  Executable and Linkable Format
 ether8023_frame      Ethernet 802.3 frame
 exif                 Exchangeable Image File Format
