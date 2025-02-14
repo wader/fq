@@ -388,7 +388,8 @@ func toXMLFromObject(c any, opts ToXMLOpts) any {
 				switch {
 				case k == "#seq":
 					hasSeq = true
-					seq, _ = strconv.Atoi(v.(string))
+					s, _ := v.(string)
+					seq, _ = strconv.Atoi(s)
 				case k == "#text":
 					s, _ := v.(string)
 					n.Chardata = []byte(s)
