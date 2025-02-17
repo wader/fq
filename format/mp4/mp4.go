@@ -136,20 +136,21 @@ type stsz struct {
 }
 
 type track struct {
-	seenHdlr           bool
-	fragment           bool
-	id                 int
-	sampleDescriptions []sampleDescription
-	subType            string
-	stco               []int64
-	stsc               []stsc
-	stsz               []stsz
-	formatInArg        any
-	objectType         int // if data format is "mp4a"
-	defaultIVSize      int
-	moofs              []*moof // for fmp4
-	dref               bool
-	drefURL            string
+	seenHdlr             bool
+	fragment             bool
+	id                   int
+	sampleDescriptions   []sampleDescription
+	subType              string
+	stco                 []int64
+	stsc                 []stsc
+	stsz                 []stsz
+	formatInArg          any
+	objectType           int // if data format is "mp4a"
+	defaultIVSize        int
+	moofs                []*moof // for fmp4
+	dref                 bool
+	drefURL              string
+	stsdNumAudioChannels uint64
 }
 
 type pathEntry struct {

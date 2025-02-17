@@ -1,0 +1,10 @@
+$ fq -o force=true -d mp4 dv pcmC
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: pcmC (mp4) 0x0-0xe (14)
+   |                                               |                |  boxes[0:1]: 0x0-0xe (14)
+   |                                               |                |    [0]{}: box 0x0-0xe (14)
+0x0|00 00 00 0e                                    |....            |      size: 14 0x0-0x4 (4)
+0x0|            70 63 6d 43                        |    pcmC        |      type: "pcmC" 0x4-0x8 (4)
+0x0|                        00                     |        .       |      version: 0 0x8-0x9 (1)
+0x0|                           00 00 00            |         ...    |      flags: 0 0x9-0xc (3)
+0x0|                                    01         |            .   |      format_flags: 1 0xc-0xd (1)
+0x0|                                       18|     |             .| |      sample_size: 24 0xd-0xe (1)

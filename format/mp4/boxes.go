@@ -591,13 +591,14 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 				size := d.FieldU32("size")
 				dataFormat := d.FieldUTF8("type", 4, dataFormatNames, scalar.ActualTrimSpace)
 				subType := ""
-				if t := ctx.currentTrack(); t != nil {
-					t.sampleDescriptions = append(t.sampleDescriptions, sampleDescription{
+				track := ctx.currentTrack()
+				if track != nil {
+					track.sampleDescriptions = append(track.sampleDescriptions, sampleDescription{
 						dataFormat: dataFormat,
 					})
 
-					if t.seenHdlr {
-						subType = t.subType
+					if track.seenHdlr {
+						subType = track.subType
 					} else {
 						// TODO: seems to be ffmpeg mov.c, where is this documented in specs?
 						// no hdlr box found, guess using dataFormat
@@ -617,7 +618,6 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 
 					switch subType {
 					case "soun", "vide":
-
 						version := d.FieldU16("version")
 						d.FieldU16("revision_level")
 						d.FieldU32("max_packet_size") // TODO: vendor for some subtype?
@@ -626,9 +626,10 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 						case "soun":
 							// AudioSampleEntry
 							// https://developer.apple.com/library/archive/documentation/QuickTime/QTFF/QTFFChap3/qtff3.html#//apple_ref/doc/uid/TP40000939-CH205-SW1
+							var numAudioChannels uint64
 							switch version {
 							case 0:
-								d.FieldU16("num_audio_channels")
+								numAudioChannels = d.FieldU16("num_audio_channels")
 								d.FieldU16("sample_size")
 								d.FieldU16("compression_id")
 								d.FieldU16("packet_size")
@@ -637,7 +638,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 									decodeBoxes(ctx, d)
 								}
 							case 1:
-								d.FieldU16("num_audio_channels")
+								numAudioChannels = d.FieldU16("num_audio_channels")
 								d.FieldU16("sample_size")
 								d.FieldU16("compression_id")
 								d.FieldU16("packet_size")
@@ -657,7 +658,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 								d.FieldU32("always_65536")
 								d.FieldU32("size_of_struct_only")
 								d.FieldF64("audio_sample_rate")
-								d.FieldU32("num_audio_channels")
+								numAudioChannels = d.FieldU32("num_audio_channels")
 								d.FieldU32("always_7f000000")
 								d.FieldU32("const_bits_per_channel")
 								d.FieldU32("format_specific_flags")
@@ -668,6 +669,9 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 								}
 							default:
 								d.FieldRawLen("data", d.BitsLeft())
+							}
+							if track != nil {
+								track.stsdNumAudioChannels = numAudioChannels
 							}
 						case "vide":
 							// VideoSampleEntry
@@ -1832,6 +1836,87 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 				d.FieldRawLen("uid", 128)
 			}
 		})
+	case "pcmC":
+		d.FieldU8("version")
+		d.FieldU24("flags")
+		d.FieldU8("format_flags")
+		d.FieldU8("sample_size")
+	case "chnl":
+		version := d.FieldU8("version")
+		d.FieldU24("flags")
+
+		if version == 0 {
+			hasObjects := false
+			hasChannels := false
+			d.FieldStruct("stream_structure", func(d *decode.D) {
+				d.FieldRawLen("unused", 6)
+				hasObjects = d.FieldBool("objects")
+				hasChannels = d.FieldBool("channels")
+			})
+			if hasChannels {
+				definedLayout := d.FieldU8("defined_layout")
+				if definedLayout == 0 {
+					track := ctx.currentTrack()
+					if track == nil {
+						d.FieldRawLen("rest", d.BitsLeft())
+						break
+					}
+					d.FieldArray("channels", func(d *decode.D) {
+						for i := 0; i < int(track.stsdNumAudioChannels); i++ {
+							d.FieldStruct("channel", func(d *decode.D) {
+								speakerPosition := d.FieldU8("speaker_position")
+								if speakerPosition == 126 {
+									d.FieldS16("azimuth")
+									d.FieldS8("elevation")
+								}
+							})
+						}
+					})
+				} else {
+					d.FieldU64("omitted_channels_map")
+				}
+			}
+			if hasObjects {
+				d.FieldU8("object_count")
+			}
+		} else {
+			hasChannels := false
+			d.FieldStruct("stream_structure", func(d *decode.D) {
+				d.FieldRawLen("unused", 2)
+				d.FieldBool("objects")
+				hasChannels = d.FieldBool("channels")
+			})
+			d.FieldU4("format_ordering")
+			d.FieldU8("base_channel_count")
+			if hasChannels {
+				definedLayout := d.FieldU8("defined_layout")
+				if definedLayout == 0 {
+					layoutChannelCount := d.FieldU8("layout_channel_count")
+					d.FieldArray("channels", func(d *decode.D) {
+						for i := 0; i < int(layoutChannelCount); i++ {
+							d.FieldStruct("channel", func(d *decode.D) {
+								speakerPosition := d.FieldU8("speaker_position")
+								if speakerPosition == 126 {
+									d.FieldS16("azimuth")
+									d.FieldS8("elevation")
+								}
+							})
+						}
+					})
+				} else {
+					d.FieldRawLen("reserved", 4)
+					d.FieldU3("channel_order_definition")
+					omittedChannelsPresent := d.FieldBool("omitted_channels_present")
+					if omittedChannelsPresent {
+						d.FieldU64("omitted_channels_map")
+					}
+				}
+			}
+			// if hasObjects {
+			//    // ISO/IEC 14496-12:2022:
+			//    // > object_count is derived from baseChannelCount
+			// }
+		}
 
 	default:
 		// there are at least 4 ways to encode udta metadata in mov/mp4 files.
