@@ -320,6 +320,7 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 
 				switch trackSDDataFormat {
 				case "lpcm",
+					"ipcm",
 					"raw ",
 					"twos",
 					"sowt",
