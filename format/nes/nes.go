@@ -368,10 +368,10 @@ func decodeCHRROM(d *decode.D) {
 			msbsStr := []rune(msbsScalar.SymStr())
 			lsbsStr := []rune(lsbsScalar.SymStr())
 
-			for r := 0; r < 8; r++ {
+			for r := range 8 {
 				msbRow := msbsStr[r*8 : r*8+8]
 				lsbRow := lsbsStr[r*8 : r*8+8]
-				for c := 0; c < 8; c++ {
+				for c := range 8 {
 					final[r*24+c*3] = msbRow[c]
 					final[r*24+c*3+1] = lsbRow[c]
 					final[r*24+c*3+2] = rune(' ')

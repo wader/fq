@@ -25,10 +25,7 @@ func bitBufIsZero(s scalar.BitBuf, isValidate bool) (scalar.BitBuf, error) {
 	brPos := int64(0)
 
 	for brLeft > 0 {
-		rl := brLeft
-		if brLeft > bLen {
-			rl = bLen
-		}
+		rl := min(brLeft, bLen)
 		// zero last byte if uneven read
 		if rl%8 != 0 {
 			b[rl/8] = 0
@@ -40,7 +37,7 @@ func bitBufIsZero(s scalar.BitBuf, isValidate bool) (scalar.BitBuf, error) {
 		}
 		nb := int(bitio.BitsByteCount(n))
 
-		for i := 0; i < nb; i++ {
+		for i := range nb {
 			if b[i] != 0 {
 				isZero = false
 				break

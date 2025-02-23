@@ -241,7 +241,7 @@ func tiffDecode(d *decode.D) any {
 		d.Errorf("unmatched strips offset (%d) and byte counts (%d)", len(s.offsets), len(s.byteCounts))
 	} else if len(s.offsets) > 0 {
 		d.FieldArray("strips", func(d *decode.D) {
-			for i := 0; i < len(s.offsets); i++ {
+			for i := range s.offsets {
 				d.RangeFn(s.offsets[i], s.byteCounts[i], func(d *decode.D) {
 					d.FieldRawLen("strip", d.BitsLeft())
 				})

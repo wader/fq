@@ -103,7 +103,7 @@ func (i *Interp) _binaryMatch(c any, pattern any, flags string) gojq.Iter {
 		var captures []any
 		var firstCapture map[string]any
 
-		for i := 0; i < len(l)/2; i++ {
+		for i := range len(l) / 2 {
 			start, end := l[i*2], l[i*2+1]
 			capture := map[string]any{
 				"offset": int(off) + start,

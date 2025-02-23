@@ -4,6 +4,7 @@ package decode
 import (
 	"fmt"
 	"math/big"
+	"slices"
 
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/scalar"
@@ -660,13 +661,11 @@ func (d *D) BigIntValidateRange(start, end *big.Int) scalar.BigIntMapper {
 
 func requireBool(name string, s scalar.Bool, desc bool, fail bool, vs ...bool) (scalar.Bool, error) {
 	a := s.Actual
-	for _, b := range vs {
-		if a == b {
-			if desc {
-				s.Description = "valid"
-			}
-			return s, nil
+	if slices.Contains(vs, a) {
+		if desc {
+			s.Description = "valid"
 		}
+		return s, nil
 	}
 	if desc {
 		s.Description = "invalid"
@@ -698,13 +697,11 @@ func (d *D) BoolValidate(vs ...bool) scalar.BoolMapper {
 
 func requireFlt(name string, s scalar.Flt, desc bool, fail bool, vs ...float64) (scalar.Flt, error) {
 	a := s.Actual
-	for _, b := range vs {
-		if a == b {
-			if desc {
-				s.Description = "valid"
-			}
-			return s, nil
+	if slices.Contains(vs, a) {
+		if desc {
+			s.Description = "valid"
 		}
+		return s, nil
 	}
 	if desc {
 		s.Description = "invalid"
@@ -770,13 +767,11 @@ func (d *D) FltValidateRange(start, end float64) scalar.FltMapper {
 
 func requireSint(name string, s scalar.Sint, desc bool, fail bool, vs ...int64) (scalar.Sint, error) {
 	a := s.Actual
-	for _, b := range vs {
-		if a == b {
-			if desc {
-				s.Description = "valid"
-			}
-			return s, nil
+	if slices.Contains(vs, a) {
+		if desc {
+			s.Description = "valid"
 		}
+		return s, nil
 	}
 	if desc {
 		s.Description = "invalid"
@@ -848,13 +843,11 @@ func (d *D) SintValidateRange(start, end int64) scalar.SintMapper {
 
 func requireStr(name string, s scalar.Str, desc bool, fail bool, vs ...string) (scalar.Str, error) {
 	a := s.Actual
-	for _, b := range vs {
-		if a == b {
-			if desc {
-				s.Description = "valid"
-			}
-			return s, nil
+	if slices.Contains(vs, a) {
+		if desc {
+			s.Description = "valid"
 		}
+		return s, nil
 	}
 	if desc {
 		s.Description = "invalid"
@@ -920,13 +913,11 @@ func (d *D) StrValidateRange(start, end string) scalar.StrMapper {
 
 func requireUint(name string, s scalar.Uint, desc bool, fail bool, vs ...uint64) (scalar.Uint, error) {
 	a := s.Actual
-	for _, b := range vs {
-		if a == b {
-			if desc {
-				s.Description = "valid"
-			}
-			return s, nil
+	if slices.Contains(vs, a) {
+		if desc {
+			s.Description = "valid"
 		}
+		return s, nil
 	}
 	if desc {
 		s.Description = "invalid"

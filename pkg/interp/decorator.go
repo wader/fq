@@ -71,7 +71,7 @@ func decoratorFromOptions(opts Options) Decorator {
 		}
 		byteDefaultColor := ansi.FromString("")
 		byteColors := map[byte]ansi.Code{}
-		for i := 0; i < 256; i++ {
+		for i := range 256 {
 			byteColors[byte(i)] = byteDefaultColor
 		}
 		for _, sr := range opts.ByteColors {

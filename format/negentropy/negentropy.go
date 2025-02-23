@@ -105,7 +105,7 @@ func decodeNegentropyMessage(d *decode.D) any {
 			d.FieldStruct("idlist", func(d *decode.D) {
 				num := d.FieldSintFn("num", decodeVarInt)
 				d.FieldArray("ids", func(d *decode.D) {
-					for i := 0; i < int(num); i++ {
+					for range int(num) {
 						d.FieldRawLen("id", 32*8, scalar.RawHex)
 					}
 				})

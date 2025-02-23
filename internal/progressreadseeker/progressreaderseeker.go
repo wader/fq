@@ -48,10 +48,7 @@ func (prs *Reader) Read(p []byte) (n int, err error) {
 	}
 
 	if lastPartitionsReadCount != prs.partitionsReadCount {
-		readBytes := prs.partitionSize * prs.partitionsReadCount
-		if readBytes > prs.totalSize {
-			readBytes = prs.totalSize
-		}
+		readBytes := min(prs.partitionSize*prs.partitionsReadCount, prs.totalSize)
 		prs.progressFn(readBytes, prs.totalSize)
 	}
 

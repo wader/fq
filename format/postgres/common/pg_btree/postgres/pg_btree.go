@@ -194,7 +194,7 @@ func decodeBTreePage(page *postgres.HeapPage, d *decode.D) {
 
 func decodeIndexTuples(page *postgres.HeapPage, d *decode.D) {
 
-	for i := 0; i < len(page.ItemIds); i++ {
+	for i := range page.ItemIds {
 		id := page.ItemIds[i]
 		if id.Off == 0 || id.Len == 0 {
 			continue

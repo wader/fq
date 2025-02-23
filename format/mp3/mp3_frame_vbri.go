@@ -31,7 +31,7 @@ func mp3FrameTagVBRIDecode(d *decode.D) any {
 	tocEntrySize := d.FieldU16("toc_entry_size", d.UintAssert(1, 2, 3, 4), scalar.UintDescription("Size per table entry"))
 	d.FieldU16("frame_per_entry", scalar.UintDescription("Frames per table entry"))
 	d.FieldArray("toc", func(d *decode.D) {
-		for i := 0; i < int(tocEntries); i++ {
+		for range int(tocEntries) {
 			d.FieldU("entry", int(tocEntrySize)*8)
 		}
 	})

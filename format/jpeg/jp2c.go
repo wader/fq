@@ -112,7 +112,7 @@ func jp2cDecode(d *decode.D) any {
 				d.FieldU32("yto_siz")
 				cSiz := d.FieldU16("c_siz")
 				d.FieldArray("components", func(d *decode.D) {
-					for i := 0; i < int(cSiz); i++ {
+					for range int(cSiz) {
 						d.FieldStruct("component", func(d *decode.D) {
 							d.FieldU8("s_sizi")
 							d.FieldU8("xr_sizi")

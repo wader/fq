@@ -757,7 +757,7 @@ func decodeV128ConstOperand(d *decode.D) {
 
 func decodeI8x16ShuffleOperand(d *decode.D) {
 	d.FieldArray("laneidx", func(d *decode.D) {
-		for i := 0; i < 16; i++ {
+		for range 16 {
 			decodeLaneIdx(d, "l")
 		}
 	})

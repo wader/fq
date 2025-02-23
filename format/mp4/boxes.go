@@ -1270,7 +1270,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		// ISO-639-2/T as 3*5 bit integers - 0x60
 		d.FieldStrFn("language", func(d *decode.D) string {
 			s := ""
-			for i := 0; i < 3; i++ {
+			for range 3 {
 				s += fmt.Sprintf("%c", int(d.U5())+0x60)
 			}
 			return s
@@ -1832,7 +1832,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 	case "ulst":
 		nu := d.FieldU16("nu")
 		d.FieldArray("uids", func(d *decode.D) {
-			for i := 0; i < int(nu); i++ {
+			for range int(nu) {
 				d.FieldRawLen("uid", 128)
 			}
 		})

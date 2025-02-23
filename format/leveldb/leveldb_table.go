@@ -244,7 +244,7 @@ func readKeyValueContents(
 		restartOffset = size*8 - (1+numRestarts)*uint32BitSize
 		d.SeekAbs(start + restartOffset)
 		d.FieldArray("restarts", func(d *decode.D) {
-			for i := 0; i < int(numRestarts); i++ {
+			for range int(numRestarts) {
 				d.FieldU32("restart")
 			}
 		})

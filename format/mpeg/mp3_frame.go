@@ -319,9 +319,9 @@ func frameDecode(d *decode.D) any {
 		}
 
 		d.FieldArray("granules", func(d *decode.D) {
-			for i := 0; i < granuleCount; i++ {
+			for range granuleCount {
 				d.FieldArray("granule", func(d *decode.D) {
-					for j := 0; j < channelCount; j++ {
+					for range channelCount {
 						d.FieldStruct("channel", func(d *decode.D) {
 							// TODO: tables and interpret values a bit
 							d.FieldU12("part2_3_length")

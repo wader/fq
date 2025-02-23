@@ -29,7 +29,7 @@ type MultiLineColumn struct {
 func (c *MultiLineColumn) divideString(s string, l int) []string {
 	var ss []string
 	parts := c.lenFn(s) / l
-	for i := 0; i < parts; i++ {
+	for i := range parts {
 		ss = append(ss, c.sliceFn(s, i*l, (i+1)*l))
 	}
 	if len(s)%l != 0 {
@@ -113,10 +113,7 @@ func (c *MultiLineColumn) FlushLine(w io.Writer, lineNr int, lastColumn bool) er
 			n := c.Width - l
 			for n > 0 {
 				const whitespace = "                                                                                "
-				r := n
-				if r > len(whitespace) {
-					r = len(whitespace)
-				}
+				r := min(n, len(whitespace))
 				n -= r
 
 				if _, err := w.Write([]byte(whitespace[0:r])); err != nil {
@@ -190,7 +187,7 @@ func (w *Writer) Flush() error {
 		c.PreFlush()
 	}
 
-	for line := 0; line < maxLines; line++ {
+	for line := range maxLines {
 		for ci, c := range w.Columns {
 			if err := c.FlushLine(w.w, line, ci == len(w.Columns)-1); err != nil {
 				return err

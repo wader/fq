@@ -44,7 +44,7 @@ func mp3FrameTagXingDecode(d *decode.D) any {
 	}
 	if tocPresent {
 		d.FieldArray("toc", func(d *decode.D) {
-			for i := 0; i < 100; i++ {
+			for range 100 {
 				d.FieldU8("entry")
 			}
 		})

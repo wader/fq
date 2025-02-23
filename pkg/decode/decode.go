@@ -1285,7 +1285,7 @@ func (d *D) RE(re *regexp.Regexp) []ranges.Range {
 
 	var rs []ranges.Range
 	l := len(locs) / 2
-	for i := 0; i < l; i++ {
+	for i := range l {
 		loc := locs[i*2 : i*2+2]
 		if loc[0] == -1 {
 			rs = append(rs, ranges.Range{Start: -1})

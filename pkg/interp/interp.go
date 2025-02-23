@@ -13,6 +13,7 @@ import (
 	"io/fs"
 	"math/big"
 	"path"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -819,7 +820,7 @@ func (i *Interp) Eval(ctx context.Context, c any, expr string, opts EvalOpts) (g
 		}
 	}
 
-	compilerOpts := append([]gojq.CompilerOption{}, funcCompilerOpts...)
+	compilerOpts := slices.Clone(funcCompilerOpts)
 	compilerOpts = append(compilerOpts, gojq.WithEnvironLoader(ni.OS.Environ))
 	compilerOpts = append(compilerOpts, gojq.WithVariables(variableNames))
 	compilerOpts = append(compilerOpts, gojq.WithModuleLoader(loadModule{

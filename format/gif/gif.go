@@ -42,7 +42,7 @@ var extensionNames = scalar.UintMapSymStr{
 
 func fieldColorMap(d *decode.D, name string, bitDepth int) {
 	d.FieldArray(name, func(d *decode.D) {
-		for i := 0; i < 1<<bitDepth; i++ {
+		for range 1 << bitDepth {
 			d.FieldArray("color", func(d *decode.D) {
 				d.FieldU8("r")
 				d.FieldU8("g")

@@ -127,7 +127,7 @@ func wavDecode(d *decode.D) any {
 				numSampleLoops := int(d.FieldU32("number_of_sample_loops"))
 				samplerDataBytes := int(d.FieldU32("sampler_data_bytes"))
 				d.FieldArray("samples_loops", func(d *decode.D) {
-					for i := 0; i < numSampleLoops; i++ {
+					for range numSampleLoops {
 						d.FieldStruct("sample_loop", func(d *decode.D) {
 							d.FieldUTF8("id", 4)
 							d.FieldU32("type", scalar.UintMapSymStr{
