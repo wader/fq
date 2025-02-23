@@ -388,7 +388,7 @@ func dump(v *decode.Value, w io.Writer, opts *Options) error {
 
 	var hexHeader string
 	var asciiHeader string
-	for i := 0; i < opts.LineBytes; i++ {
+	for i := range opts.LineBytes {
 		s := mathx.PadFormatInt(int64(i), opts.Addrbase, false, 2)
 		hexHeader += s
 		if i < opts.LineBytes-1 {

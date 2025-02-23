@@ -45,10 +45,7 @@ func (z *ZeroReadAtSeeker) ReadBitsAt(p []byte, nBits int64, bitOff int64) (n in
 	}
 
 	lBits := z.nBits - bitOff
-	rBits := nBits
-	if rBits > lBits {
-		rBits = lBits
-	}
+	rBits := min(nBits, lBits)
 	rBytes := bitio.BitsByteCount(rBits)
 	for i := int64(0); i < rBytes; i++ {
 		p[i] = 0

@@ -520,7 +520,7 @@ func elfDecodeSymbolHashTable(d *decode.D) {
 
 	repeatFn := func(r int, fn func(d *decode.D)) func(d *decode.D) {
 		return func(d *decode.D) {
-			for i := 0; i < r; i++ {
+			for range r {
 				fn(d)
 			}
 		}
@@ -531,7 +531,7 @@ func elfDecodeSymbolHashTable(d *decode.D) {
 }
 
 func elfDecodeSymbolTable(d *decode.D, ec elfContext, nEntries int, strTab string) {
-	for i := 0; i < nEntries; i++ {
+	for range nEntries {
 		d.FieldStruct("symbol", func(d *decode.D) {
 			switch ec.archBits {
 			case 32:
@@ -566,7 +566,7 @@ func elfDecodeGNUHash(d *decode.D, ec elfContext, size int64, strTab string) {
 
 		repeatFn := func(r int, fn func(d *decode.D)) func(d *decode.D) {
 			return func(d *decode.D) {
-				for i := 0; i < r; i++ {
+				for range r {
 					fn(d)
 				}
 			}
@@ -631,7 +631,7 @@ type symbol struct {
 func elfReadSymbolTable(d *decode.D, ec *elfContext, sh sectionHeader) []symbol {
 	var ss []symbol
 
-	for i := 0; i < int(sh.size/sh.entSize); i++ {
+	for range int(sh.size / sh.entSize) {
 		var name uint64
 		var value uint64
 		switch ec.archBits {
@@ -681,7 +681,7 @@ func readStrTab(d *decode.D, firstBit int64, nBytes int64) string {
 }
 
 func elfReadSectionHeaders(d *decode.D, ec *elfContext) {
-	for i := 0; i < ec.shNum; i++ {
+	for i := range ec.shNum {
 		d.SeekAbs(ec.shOff + int64(i)*ec.shEntSize)
 		var sh sectionHeader
 
@@ -924,7 +924,7 @@ func elfDecodeProgramHeader(d *decode.D, ec elfContext) {
 }
 
 func elfDecodeProgramHeaders(d *decode.D, ec elfContext) {
-	for i := 0; i < ec.phNum; i++ {
+	for i := range ec.phNum {
 		d.FieldStruct("program_header", func(d *decode.D) {
 			d.SeekAbs(ec.phOff + int64(i)*ec.phSize)
 			elfDecodeProgramHeader(d, ec)
@@ -972,7 +972,7 @@ func elfDecodeDynamicTag(d *decode.D, ec elfContext, dc dynamicContext) {
 }
 
 func elfDecodeDynamicTags(d *decode.D, ec elfContext, dc dynamicContext) {
-	for i := 0; i < dc.entries; i++ {
+	for range dc.entries {
 		d.FieldStruct("dynamic_tags", func(d *decode.D) {
 			elfDecodeDynamicTag(d, ec, dc)
 		})
@@ -1100,7 +1100,7 @@ func elfDecodeSectionHeader(d *decode.D, ec elfContext, sh sectionHeader) {
 }
 
 func elfDecodeSectionHeaders(d *decode.D, ec elfContext) {
-	for i := 0; i < ec.shNum; i++ {
+	for i := range ec.shNum {
 		d.SeekAbs(ec.shOff + int64(i)*ec.shEntSize)
 		d.FieldStruct("section_header", func(d *decode.D) {
 			elfDecodeSectionHeader(d, ec, ec.sections[i])

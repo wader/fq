@@ -24,7 +24,7 @@ func profileLayerDecode(d *decode.D, prefix string, profilePresent bool, levelPr
 		generalProfileIdc := d.FieldU5(prefix + "profile_idc")
 		var generalProfileCompatibilityFlags [32]bool
 		d.FieldArray(prefix+"profile_compatibility_flags", func(d *decode.D) {
-			for j := 0; j < 32; j++ {
+			for j := range 32 {
 				generalProfileCompatibilityFlags[j] = d.FieldBool(prefix + "profile_compatibility_flag")
 			}
 		})

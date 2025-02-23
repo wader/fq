@@ -43,7 +43,7 @@ type bitFlipReader struct {
 
 func (bfr bitFlipReader) Read(p []byte) (n int, err error) {
 	n, err = bfr.r.Read(p)
-	for i := 0; i < n; i++ {
+	for i := range n {
 		p[i] = bits.Reverse8(p[i])
 	}
 	return n, err
@@ -77,7 +77,7 @@ func bzip2Decode(d *decode.D) any {
 
 		d.SeekRel(-16)
 		ranges := 0
-		for i := 0; i < 16; i++ {
+		for range 16 {
 			if d.Bool() {
 				ranges++
 			}
@@ -127,7 +127,7 @@ func bzip2Decode(d *decode.D) any {
 		// "It is important to note that none of the fields within a StreamBlock or StreamFooter are necessarily byte-aligned"
 		const footerByteSize = 10
 		compressedSize := (readCompressedSize - compressedStart) - footerByteSize*8
-		for i := 0; i < 8; i++ {
+		for range 8 {
 			d.SeekAbs(compressedStart + compressedSize)
 			if d.PeekUintBits(48) == footerMagic {
 				break

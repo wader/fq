@@ -326,7 +326,7 @@ func frameDecode(d *decode.D) any {
 
 	var channelSamples [][]int64
 	d.FieldArray("subframes", func(d *decode.D) {
-		for channelIndex := 0; channelIndex < channels; channelIndex++ {
+		for channelIndex := range channels {
 			d.FieldStruct("subframe", func(d *decode.D) {
 				// <1> Zero bit padding, to prevent sync-fooling string of 1s
 				d.FieldU1("zero_bit", d.UintAssert(0))
@@ -387,7 +387,7 @@ func frameDecode(d *decode.D) any {
 					}
 
 					d.FieldArray("warmup_samples", func(d *decode.D) {
-						for i := 0; i < n; i++ {
+						for i := range n {
 							samples[i] = d.FieldS("value", sampleSize)
 						}
 					})
@@ -423,7 +423,7 @@ func frameDecode(d *decode.D) any {
 					d.FieldValueUint("rice_partitions", uint64(ricePartitions))
 
 					d.FieldArray("partitions", func(d *decode.D) {
-						for i := 0; i < ricePartitions; i++ {
+						for i := range ricePartitions {
 							d.FieldStruct("partition", func(d *decode.D) {
 								// Encoding parameter:
 								// <4(+5)> Encoding parameter:
@@ -468,14 +468,14 @@ func frameDecode(d *decode.D) any {
 										d.RangeFn(d.Pos(), int64(count*escapeSampleSize), func(d *decode.D) {
 											d.FieldRawLen("samples", int64(count*escapeSampleSize))
 										})
-										for j := 0; j < count; j++ {
+										for range count {
 											samples[n] = d.S(escapeSampleSize)
 											n++
 										}
 									}
 								} else {
 									samplesStart := d.Pos()
-									for j := 0; j < count; j++ {
+									for range count {
 										high := d.Unary(0)
 										low := d.U(riceParameter)
 										samples[n] = mathx.ZigZag[uint64, int64](high<<riceParameter | low)
@@ -495,7 +495,7 @@ func frameDecode(d *decode.D) any {
 				decodeLPC := func(lpcOrder int, samples []int64, coeffs []int64, shift int64) {
 					for i := lpcOrder; i < len(samples); i++ {
 						r := int64(0)
-						for j := 0; j < len(coeffs); j++ {
+						for j := range coeffs {
 							c := coeffs[j]
 							s := samples[i-j-1]
 							r += c * s
@@ -509,7 +509,7 @@ func frameDecode(d *decode.D) any {
 				case SubframeConstant:
 					// <n> Unencoded constant value of the subblock, n = frame's bits-per-sample.
 					v := d.FieldS("value", subframeSampleSize)
-					for i := 0; i < blockSize; i++ {
+					for i := range blockSize {
 						samples[i] = v
 					}
 				case SubframeVerbatim:
@@ -519,7 +519,7 @@ func frameDecode(d *decode.D) any {
 						d.FieldRawLen("samples", d.BitsLeft())
 					})
 
-					for i := 0; i < blockSize; i++ {
+					for i := range blockSize {
 						samples[i] = d.S(subframeSampleSize)
 					}
 				case SubframeFixed:
@@ -550,7 +550,7 @@ func frameDecode(d *decode.D) any {
 					// <n> Unencoded predictor coefficients (n = qlp coeff precision * lpc order) (NOTE: the coefficients are signed two's-complement).
 					var coeffs []int64
 					d.FieldArray("coefficients", func(d *decode.D) {
-						for i := 0; i < lpcOrder; i++ {
+						for range lpcOrder {
 							coeffs = append(coeffs, d.FieldS("value", precision))
 						}
 					})
@@ -560,7 +560,7 @@ func frameDecode(d *decode.D) any {
 				}
 
 				if wastedBitsK != 0 {
-					for i := 0; i < len(samples); i++ {
+					for i := range samples {
 						samples[i] <<= wastedBitsK
 					}
 				}
@@ -578,7 +578,7 @@ func frameDecode(d *decode.D) any {
 	d.FieldRawLen("footer_crc", 16, d.ValidateBitBuf(footerCRC.Sum(nil)), scalar.RawHex)
 
 	streamSamples := len(channelSamples[0])
-	for j := 0; j < len(channelSamples); j++ {
+	for j := range channelSamples {
 		if streamSamples > len(channelSamples[j]) {
 			d.Fatalf("different amount of samples in channels %d != %d", streamSamples, len(channelSamples[j]))
 		}
@@ -589,15 +589,15 @@ func frameDecode(d *decode.D) any {
 	// side = left - right
 	switch channelAssignment {
 	case ChannelLeftSide:
-		for i := 0; i < len(channelSamples[0]); i++ {
+		for i := range channelSamples[0] {
 			channelSamples[1][i] = channelSamples[0][i] - channelSamples[1][i]
 		}
 	case ChannelSideRight:
-		for i := 0; i < len(channelSamples[0]); i++ {
+		for i := range channelSamples[0] {
 			channelSamples[0][i] = channelSamples[1][i] + channelSamples[0][i]
 		}
 	case ChannelMidSide:
-		for i := 0; i < len(channelSamples[0]); i++ {
+		for i := range channelSamples[0] {
 			m := channelSamples[0][i]
 			s := channelSamples[1][i]
 			m = m<<1 | s&1
@@ -623,8 +623,8 @@ func frameDecode(d *decode.D) any {
 	}
 
 	// TODO: speedup by using more cache friendly memory layout for samples
-	for i := 0; i < streamSamples; i++ {
-		for j := 0; j < len(channelSamples); j++ {
+	for i := range streamSamples {
+		for j := range channelSamples {
 
 			s := channelSamples[j][i]
 			switch outSampleSize {

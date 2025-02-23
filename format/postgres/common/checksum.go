@@ -31,25 +31,25 @@ func checksumComp(checksum uint32, value uint32) uint32 {
 
 func pgChecksumBlock(page []byte) uint32 {
 	sums := [nSums]uint32{0}
-	for i := 0; i < nSums; i++ {
+	for i := range nSums {
 		sums[i] = checksumBaseOffsets[i]
 	}
 	result := uint32(0)
 
-	for i := 0; i < mainBlockLen; i++ {
-		for j := 0; j < nSums; j++ {
+	for i := range mainBlockLen {
+		for j := range nSums {
 			v2 := binary.LittleEndian.Uint32(page[i*nSumsSize+j*4:])
 			sums[j] = checksumComp(sums[j], v2)
 		}
 	}
 
-	for i := 0; i < 2; i++ {
-		for j := 0; j < nSums; j++ {
+	for range 2 {
+		for j := range nSums {
 			sums[j] = checksumComp(sums[j], 0)
 		}
 	}
 
-	for i := 0; i < nSums; i++ {
+	for i := range nSums {
 		result = result ^ sums[i]
 	}
 

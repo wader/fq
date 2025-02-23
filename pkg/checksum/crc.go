@@ -12,10 +12,10 @@ func MakeTable(poly uint, bits int) Table {
 	table := [256]uint{}
 	mask := uint((1 << bits) - 1)
 
-	for i := 0; i < 256; i++ {
+	for i := range 256 {
 		// note sure about -8 for > 16 bit crc
 		crc := uint(i << (bits - 8))
-		for j := 0; j < 8; j++ {
+		for range 8 {
 			if crc&(1<<(bits-1)) != 0 {
 				crc = ((crc << 1) ^ poly) & mask
 			} else {

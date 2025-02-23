@@ -104,9 +104,9 @@ func (nss xmlNNStack) lookup(name xml.Name) string {
 }
 
 func (nss xmlNNStack) push(name string, url string) xmlNNStack {
-	n := append([]xmlNS{}, nss...)
+	n := slices.Clone(nss)
 	n = append(n, xmlNS{name: name, url: url})
-	return xmlNNStack(n)
+	return n
 }
 
 func elmName(space, local string) string {

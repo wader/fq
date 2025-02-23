@@ -74,7 +74,7 @@ func rleValue(d *decode.D) (uint64, uint64, int) {
 func decodeLines(d *decode.D, lines int, width int) []string {
 	var ls []string
 
-	for i := 0; i < lines; i++ {
+	for range lines {
 		l := ""
 		for x := 0; x < width; {
 			n, c, b := rleValue(d)

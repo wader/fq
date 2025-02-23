@@ -50,7 +50,7 @@ func (h *Writer) Write(p []byte) (n int, err error) {
 		h.bufOffset = 1
 	}
 
-	for i := 0; i < len(p); i++ {
+	for i := range p {
 		lineOffset := h.offset % h.width
 
 		s := []byte(h.fn(p[i]))

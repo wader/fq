@@ -7,6 +7,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"net"
+	"slices"
 
 	"github.com/gopacket/gopacket"
 	"github.com/gopacket/gopacket/ip4defrag"
@@ -117,14 +118,14 @@ func (fd *Decoder) New(net, transport gopacket.Flow, tcp *layers.TCP, ac reassem
 	stream := &TCPConnection{
 		Client: &TCPDirection{
 			Endpoint: TCPEndpoint{
-				IP:   append([]byte(nil), net.Src().Raw()...),
+				IP:   slices.Clone(net.Src().Raw()),
 				Port: clientPort,
 			},
 			Buffer: &bytes.Buffer{},
 		},
 		Server: &TCPDirection{
 			Endpoint: TCPEndpoint{
-				IP:   append([]byte(nil), net.Dst().Raw()...),
+				IP:   slices.Clone(net.Dst().Raw()),
 				Port: serverPort,
 			},
 			Buffer: &bytes.Buffer{},

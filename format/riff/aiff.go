@@ -62,7 +62,7 @@ func aiffDecode(d *decode.D) any {
 			case "COMT":
 				numComments := d.FieldU16("num_comments")
 				d.FieldArray("comments", func(d *decode.D) {
-					for i := 0; i < int(numComments); i++ {
+					for range int(numComments) {
 						d.FieldStruct("comment", func(d *decode.D) {
 							d.FieldU32("timestamp")
 							d.FieldU16("marker_id")
@@ -91,7 +91,7 @@ func aiffDecode(d *decode.D) any {
 			case "MARK":
 				numMarkers := d.FieldU16("num_markers")
 				d.FieldArray("markers", func(d *decode.D) {
-					for i := 0; i < int(numMarkers); i++ {
+					for range int(numMarkers) {
 						d.FieldStruct("marker", func(d *decode.D) {
 							d.FieldU16("id")
 							d.FieldU32("position")

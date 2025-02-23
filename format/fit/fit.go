@@ -38,7 +38,7 @@ var fitCRCTable = [16]uint16{
 func calcCRC(bytes []byte) uint16 {
 	var crc uint16
 	crc = 0
-	for i := 0; i < len(bytes); i++ {
+	for i := range bytes {
 		// compute checksum of lower four bits of byte
 		var checkByte = bytes[i]
 		var tmp = fitCRCTable[crc&0xf]

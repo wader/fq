@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"reflect"
+	"slices"
 	"sync"
 	"testing"
 	"time"
@@ -42,7 +43,7 @@ func (r *rwcRecorder) Close() (err error) {
 func (r *rwcRecorder) Log() []string {
 	r.RLock()
 	defer r.RUnlock()
-	return append([]string(nil), r.log...)
+	return slices.Clone(r.log)
 }
 
 func TestNormal(t *testing.T) {

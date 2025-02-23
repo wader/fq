@@ -16,6 +16,7 @@ import (
 	"crypto/sha256"
 	"crypto/sha512"
 	"hash"
+	"slices"
 
 	"golang.org/x/crypto/chacha20poly1305"
 )
@@ -206,10 +207,8 @@ func selectCipherSuite(ids, supportedIDs []uint16, ok func(*cipherSuite) bool) *
 			continue
 		}
 
-		for _, suppID := range supportedIDs {
-			if id == suppID {
-				return candidate
-			}
+		if slices.Contains(supportedIDs, id) {
+			return candidate
 		}
 	}
 	return nil

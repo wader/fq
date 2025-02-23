@@ -85,13 +85,9 @@ func extractPadding(payload []byte) (toRemove int, good byte) {
 	good = byte(int32(^t) >> 31)
 
 	// The maximum possible padding length plus the actual length field
-	toCheck := 256
-	// The length of the padded data is public, so we can use an if here
-	if toCheck > len(payload) {
-		toCheck = len(payload)
-	}
+	toCheck := min(256, len(payload))
 
-	for i := 0; i < toCheck; i++ {
+	for i := range toCheck {
 		t := uint(paddingLen) - uint(i)
 		// if i <= paddingLen then the MSB of t is zero
 		mask := byte(int32(^t) >> 31)

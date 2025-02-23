@@ -80,7 +80,7 @@ func avcPPSDecode(d *decode.D) any {
 		picScalingMatrixPresentFlag := d.FieldBool("pic_scaling_matrix_present_flag")
 		if picScalingMatrixPresentFlag {
 			d.FieldArray("pic_scaling_list", func(d *decode.D) {
-				for i := 0; i < 6; i++ {
+				for range 6 {
 					d.Bool()
 				}
 			})

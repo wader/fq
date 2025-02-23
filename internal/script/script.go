@@ -49,7 +49,7 @@ var escapeRe = regexp.MustCompile(`[^[:print:][:space:]]`)
 
 func Escape(s string) string {
 	return string(escapeRe.ReplaceAllFunc([]byte(s), func(r []byte) []byte {
-		return []byte(fmt.Sprintf(`\0x%.2x`, r[0]))
+		return fmt.Appendf(nil, `\0x%.2x`, r[0])
 	}))
 }
 

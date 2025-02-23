@@ -38,7 +38,7 @@ func machoFatDecode(d *decode.D) any {
 
 		narchs := d.FieldU32("narchs")
 		d.FieldArray("archs", func(d *decode.D) {
-			for i := 0; i < int(narchs); i++ {
+			for range int(narchs) {
 				d.FieldStruct("arch", func(d *decode.D) {
 					// beware cputype and cpusubtype changes from ofile header to fat header
 					cpuType := d.FieldU32("cputype", cpuTypes, scalar.UintHex)

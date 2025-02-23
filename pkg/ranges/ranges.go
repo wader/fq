@@ -98,7 +98,7 @@ func Gaps(total Range, ranges []Range) []Range {
 	if merged[0].Start != total.Start {
 		gaps = append(gaps, Range{Start: 0, Len: merged[0].Start})
 	}
-	for i := 0; i < len(merged)-1; i++ {
+	for i := range len(merged) - 1 {
 		gaps = append(gaps, Range{Start: merged[i].Stop(), Len: merged[i+1].Start - merged[i].Stop()})
 	}
 	l := merged[len(merged)-1]

@@ -623,7 +623,7 @@ func machoDecode(d *decode.D) any {
 
 					d.SeekAbs(int64(symOff) * 8)
 					d.FieldArray("symbols", func(d *decode.D) {
-						for i := 0; i < int(nSyms); i++ {
+						for range int(nSyms) {
 							symbolTypeMap := scalar.UintMapSymStr{
 								0x0: "undef",
 								0x1: "abs",

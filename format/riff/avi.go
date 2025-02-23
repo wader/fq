@@ -200,7 +200,7 @@ func aviDecodeChunkIndex(d *decode.D) []ranges.Range {
 	baseOffset := int64(d.FieldU64("base_offset"))
 	d.FieldU32("unused")
 	d.FieldArray("index", func(d *decode.D) {
-		for i := 0; i < int(nEntriesInUse); i++ {
+		for range int(nEntriesInUse) {
 			d.FieldStruct("index", func(d *decode.D) {
 				offset := int64(d.FieldU32("offset"))
 				sizeKeyFrame := d.FieldU32("size_keyframe")
@@ -454,7 +454,7 @@ func aviDecodeEx(d *decode.D, ai format.AVI_In, extendedChunk bool) {
 				d.FieldU64("base")
 				d.FieldU32("unused0")
 				d.FieldArray("index", func(d *decode.D) {
-					for i := 0; i < int(nEntriesInUse); i++ {
+					for range int(nEntriesInUse) {
 						d.FieldStruct("index", func(d *decode.D) {
 							offset := int64(d.FieldU64("offset"))
 							size := int64(d.FieldU32("size"))
@@ -489,7 +489,7 @@ func aviDecodeEx(d *decode.D, ai format.AVI_In, extendedChunk bool) {
 				d.FieldU32("frame_height_in_lines")
 				nbFieldPerFrame := d.FieldU32("nb_field_per_frame")
 				d.FieldArray("field_info", func(d *decode.D) {
-					for i := 0; i < int(nbFieldPerFrame); i++ {
+					for range int(nbFieldPerFrame) {
 						d.FieldStruct("field_info", func(d *decode.D) {
 							d.FieldU32("compressed_bm_height")
 							d.FieldU32("compressed_bm_width")

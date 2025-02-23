@@ -133,7 +133,7 @@ func decodeLacingFn(d *decode.D, lacingType int, fn func(d *decode.D)) {
 	case lacingTypeXiph:
 		numLaces := int(d.FieldU8("num_laces"))
 		d.FieldArray("lace_sizes", func(d *decode.D) {
-			for i := 0; i < numLaces; i++ {
+			for range numLaces {
 				s := int64(d.FieldUintFn("lace_size", decodeXiphLaceSize))
 				laceSizes = append(laceSizes, s)
 			}
@@ -144,7 +144,7 @@ func decodeLacingFn(d *decode.D, lacingType int, fn func(d *decode.D)) {
 		d.FieldArray("lace_sizes", func(d *decode.D) {
 			s := int64(d.FieldUintFn("lace_size", decodeVint)) // first is unsigned, not ranged shifted
 			laceSizes = append(laceSizes, s)
-			for i := 0; i < numLaces-1; i++ {
+			for range numLaces - 1 {
 				d := int64(d.FieldUintFn("lace_size_delta", decodeRawVint))
 				// range shifting
 				switch {
@@ -178,7 +178,7 @@ func decodeLacingFn(d *decode.D, lacingType int, fn func(d *decode.D)) {
 	case lacingTypeFixed:
 		numLaces := int(d.FieldU8("num_laces"))
 		fixedSize := (d.BitsLeft() / 8) / int64(numLaces+1)
-		for i := 0; i < numLaces+1; i++ {
+		for range numLaces + 1 {
 			laceSizes = append(laceSizes, fixedSize)
 		}
 	default:

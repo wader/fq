@@ -109,7 +109,7 @@ func BytesFromBitString(s string) ([]byte, int64) {
 	}
 	buf := make([]byte, bufLen)
 
-	for i := 0; i < len(s); i++ {
+	for i := range len(s) {
 		d := s[i] - '0'
 		if d != 0 && d != 1 {
 			panic(fmt.Sprintf("invalid bit string %q at index %d %q", s, i, s[i]))
@@ -178,10 +178,7 @@ func copyBufBits(dst []byte, dstStart int64, src []byte, srcStart int64, n int64
 	l := n
 	off := int64(0)
 	for l > 0 {
-		c := int64(64)
-		if l < c {
-			c = l
-		}
+		c := min(l, int64(64))
 		u := Read64(src, srcStart+off, c)
 		Write64(u, c, dst, dstStart+off)
 		off += c

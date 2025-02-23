@@ -115,7 +115,7 @@ func Test(t *testing.T) {
 
 		bsBitString := strings.ReplaceAll(tC.bs, "|", "")
 
-		for i := 0; i < len(bsBitString); i++ {
+		for i := range len(bsBitString) {
 			t.Run(fmt.Sprintf("%s_%d", tC.bs, i), func(t *testing.T) {
 				_, err = bsBR.SeekBits(int64(i), io.SeekStart)
 				if err != nil {

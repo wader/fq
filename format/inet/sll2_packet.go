@@ -36,11 +36,7 @@ func decodeSLL2(d *decode.D) any {
 	d.FieldU32("interface_index")
 	arpHdrType := d.FieldU16("arphdr_type", arpHdrTypeMAp)
 	d.FieldU8("packet_type", sllPacketTypeMap)
-	addressLength := d.FieldU8("link_address_length", d.UintValidateRange(0, 8))
-	// "If there are more than 8 bytes, only the first 8 bytes are present"
-	if addressLength > 8 {
-		addressLength = 8
-	}
+	addressLength := min(d.FieldU8("link_address_length", d.UintValidateRange(0, 8)), 8)
 	// TODO: maybe skip padding and always read 8 bytes?
 	d.FieldU("link_address", int(addressLength)*8)
 	addressDiff := 8 - addressLength

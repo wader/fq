@@ -279,7 +279,7 @@ func decodeBlock(d *decode.D) {
 
 			count := d.FieldU8("count")
 			d.FieldArray("selections", func(d *decode.D) {
-				for i := 0; i < int(count); i++ {
+				for range int(count) {
 					d.FieldStruct("selection", func(d *decode.D) {
 						d.FieldS16("offset")          // Relative Offset as `signed` value
 						length := d.FieldU8("length") // Length of description text (max 30 chars)
