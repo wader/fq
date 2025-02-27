@@ -408,3 +408,7 @@ type Pg_Heap_In struct {
 type Pg_BTree_In struct {
 	Page int `doc:"First page number in file, default is 0"`
 }
+
+type YAML_In struct {
+	MultiDocument bool `doc:"Force multi document"`
+}
