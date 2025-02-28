@@ -821,8 +821,6 @@ $ fq -d mp4 dv dash_audio_1.m4s
 0x820|   01                                          | .              |                data_offset_present: true 0x821.7-0x822 (0.1)
 0x820|      00 00 00 01                              |  ....          |              sample_count: 1 0x822-0x826 (4)
 0x820|                  00 00 01 49                  |      ...I      |              data_offset: 329 0x826-0x82a (4)
-     |                                               |                |              samples[0:1]: 0x82a-0x82a (0)
-     |                                               |                |                [0]{}: sample 0x82a-0x82a (0)
      |                                               |                |            [3]{}: box 0x82a-0x846 (28)
 0x820|                              00 00 00 1c      |          ....  |              size: 28 0x82a-0x82e (4)
 0x820|                                          73 62|              sb|              type: "sbgp" (Sample to Group box) 0x82e-0x832 (4)
