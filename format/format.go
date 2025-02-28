@@ -357,7 +357,8 @@ func (t TCP_Stream_In) MustIsPort(fn func(format string, a ...any), ports ...int
 }
 
 type MP4_In struct {
-	DecodeSamples  bool `doc:"Decode samples"`
+	DecodeSamples  bool `doc:"Decode track samples"`
+	SkipSamples    bool `doc:"Skip track samples"`
 	AllowTruncated bool `doc:"Allow box to be truncated"`
 }
 

@@ -336,6 +336,10 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 					return
 				}
 
+				if ctx.opts.SkipSamples {
+					return
+				}
+
 				d.FieldArray("samples", func(d *decode.D) {
 					// TODO: warning? could also be init fragment etc
 

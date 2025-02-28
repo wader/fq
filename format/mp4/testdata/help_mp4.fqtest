@@ -5,7 +5,8 @@ Options
 =======
 
   allow_truncated=false  Allow box to be truncated
-  decode_samples=true    Decode samples
+  decode_samples=true    Decode track samples
+  skip_samples=false     Skip track samples
 
 Decode examples
 ===============
@@ -15,9 +16,9 @@ Decode examples
   # Decode value as mp4
   ... | mp4
   # Decode file using mp4 options
-  $ fq -d mp4 -o allow_truncated=false -o decode_samples=true . file
+  $ fq -d mp4 -o allow_truncated=false -o decode_samples=true -o skip_samples=false . file
   # Decode value as mp4
-  ... | mp4({allow_truncated:false,decode_samples:true})
+  ... | mp4({allow_truncated:false,decode_samples:true,skip_samples:false})
 
 Speed up decoding by not decoding samples
 =========================================
