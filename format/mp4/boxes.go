@@ -268,7 +268,7 @@ func decodeBoxWithParentData(ctx *decodeContext, d *decode.D, parentData any, ex
 
 	if ctx.opts.AllowTruncated && dataSize > uint64(d.BitsLeft()/8) {
 		dataSize = uint64(d.BitsLeft() / 8)
-
+		d.FieldValueUint("truncated_size", dataSize)
 	}
 
 	if parentData != nil {
