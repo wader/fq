@@ -1081,31 +1081,44 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		t := trun{
 			dataOffset: dataOffset,
 		}
-		d.FieldArray("samples", func(d *decode.D) {
-			for i := uint64(0); i < sampleCount; i++ {
-				sampleSize := m.defaultSampleSize
-				d.FieldStruct("sample", func(d *decode.D) {
-					if sampleDurationPresent {
-						d.FieldU32("sample_duration")
-					}
-					if sampleSizePresent {
-						sampleSize = int64(d.FieldU32("sample_size"))
-					}
-					if sampleFlagsPresent {
-						d.FieldStruct("sample_flags", decodeSampleFlags)
-					}
-					if sampleCompositionTimeOffsetsPresent {
-						if version == 0 {
-							d.FieldU32("sample_composition_time_offset")
-						} else {
-							d.FieldS32("sample_composition_time_offset")
-						}
-					}
-				})
 
-				t.samplesSizes = append(t.samplesSizes, sampleSize)
+		hasSampleFlags := (false ||
+			sampleCompositionTimeOffsetsPresent ||
+			sampleFlagsPresent ||
+			sampleSizePresent ||
+			sampleDurationPresent)
+
+		if hasSampleFlags {
+			d.FieldArray("samples", func(d *decode.D) {
+				for i := uint64(0); i < sampleCount; i++ {
+					sampleSize := m.defaultSampleSize
+					d.FieldStruct("sample", func(d *decode.D) {
+						if sampleDurationPresent {
+							d.FieldU32("sample_duration")
+						}
+						if sampleSizePresent {
+							sampleSize = int64(d.FieldU32("sample_size"))
+						}
+						if sampleFlagsPresent {
+							d.FieldStruct("sample_flags", decodeSampleFlags)
+						}
+						if sampleCompositionTimeOffsetsPresent {
+							if version == 0 {
+								d.FieldU32("sample_composition_time_offset")
+							} else {
+								d.FieldS32("sample_composition_time_offset")
+							}
+						}
+					})
+
+					t.samplesSizes = append(t.samplesSizes, sampleSize)
+				}
+			})
+		} else {
+			for i := uint64(0); i < sampleCount; i++ {
+				t.samplesSizes = append(t.samplesSizes, m.defaultSampleSize)
 			}
-		})
+		}
 
 		m.truns = append(m.truns, t)
 	case "tfdt":
