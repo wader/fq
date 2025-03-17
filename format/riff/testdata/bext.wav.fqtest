@@ -5,7 +5,7 @@ $ fq dv bext.wav
 0x000|                        57 41 56 45            |        WAVE    |  format: "WAVE" (valid) 0x8-0xc (4)
      |                                               |                |  chunks[0:1]: 0xc-0x26e (610)
      |                                               |                |    [0]{}: chunk 0xc-0x26e (610)
-0x000|                                    62 65 78 74|            bext|      id: "bext" 0xc-0x10 (4)
+0x000|                                    62 65 78 74|            bext|      id: "bext" (Broadcast extension, e.g. creator, date, etc.) 0xc-0x10 (4)
 0x010|5a 02 00 00                                    |Z...            |      size: 602 0x10-0x14 (4)
 0x010|            00 00 00 00 00 00 00 00 00 00 00 00|    ............|      description: "" 0x14-0x114 (256)
 0x020|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
