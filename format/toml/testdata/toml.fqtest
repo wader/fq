@@ -13,19 +13,19 @@ $ fq -rRs 'fromjson[] | (walk(if type == "array" then map(select(. != null)) end
 to_toml cannot be applied to: null
 ----
 true
-error at position 0x4: toml: line 0: unexpected EOF; expected key separator '='
+error at position 0x4: toml: line 1: unexpected EOF; expected key separator '='
 ----
 false
-error at position 0x5: toml: line 0: unexpected EOF; expected key separator '='
+error at position 0x5: toml: line 1: unexpected EOF; expected key separator '='
 ----
 123
-error at position 0x3: toml: line 0: unexpected EOF; expected key separator '='
+error at position 0x3: toml: line 1: unexpected EOF; expected key separator '='
 ----
 123.123
-error at position 0x7: toml: line 0: unexpected EOF; expected key separator '='
+error at position 0x7: toml: line 1: unexpected EOF; expected key separator '='
 ----
 "string"
-error at position 0x8: toml: line 0: unexpected EOF; expected key separator '='
+error at position 0x8: toml: line 1: unexpected EOF; expected key separator '='
 ----
 [1, 2, 3]
 error at position 0x9: toml: line 1: expected '.' or ']' to end table name, but got ',' instead
