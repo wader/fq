@@ -728,10 +728,7 @@ type pathResolver struct {
 }
 
 func (i *Interp) lookupPathResolver(filename string) (pathResolver, error) {
-	configDir, err := i.OS.ConfigDir()
-	if err != nil {
-		return pathResolver{}, err
-	}
+	configDir, configDirErr := i.OS.ConfigDir()
 
 	resolvePaths := []pathResolver{
 		{
@@ -743,6 +740,9 @@ func (i *Interp) lookupPathResolver(filename string) (pathResolver, error) {
 		},
 		{
 			"@config/", func(filename string) (io.ReadCloser, string, error) {
+				if configDirErr != nil {
+					return nil, "", configDirErr
+				}
 				p := path.Join(configDir, filename)
 				f, err := i.OS.FS().Open(p)
 				return f, p, err
