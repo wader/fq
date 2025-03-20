@@ -166,6 +166,7 @@ func (cr *CaseRun) Environ() []string {
 		"NO_COLOR=1",
 		"NO_DECODE_PROGRESS=1",
 		"COMPLETION_TIMEOUT=10", // increase to make -race work better
+		"CONFIG_DIR=/config",
 	}
 	env = append(env, cr.Env...)
 	env = append(env, cr.ReadlineEnv...)
@@ -187,7 +188,13 @@ func (cr *CaseRun) Environ() []string {
 
 func (cr *CaseRun) Args() []string { return cr.args }
 
-func (cr *CaseRun) ConfigDir() (string, error) { return "/config", nil }
+func (cr *CaseRun) ConfigDir() (string, error) {
+	s := cr.getEnv("CONFIG_DIR")
+	if s == "" {
+		return "", errors.New("CONFIG_DIR empty")
+	}
+	return s, nil
+}
 
 func (cr *CaseRun) FS() fs.FS { return cr.Case }
 
