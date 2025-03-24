@@ -483,10 +483,10 @@ Read string from stdin until ^D. Useful for pasting text. Ex: `paste | from_pem 
 
 Format decode functions are available in two forms, just `mp3` or `mp3($opts)` that returns a decode value even on error and `from_mp3` or `from_mp3($opts)` which throws error on decode error.
 
-The the only general format option currently is `force` to ignore decoder asserts.
+The only general format option currently is `force` to ignore decoder asserts.
 For example to decode as mp3 and ignore assets do `mp3({force: true})` or `decode("mp3"; {force: true})`. From command line you can either do `fq -d mp3 -o force=true . file.mp3` or `fq -d bytes 'mp3({force: true})' file.mp3`.
 
-Some formats has own options that can be specificed as part of `$opts` or as `-o name=value`. Too see options for a format do `fq -h mp3` or `help(mp3)` in a REPL. From command line you can either do `fq -d mp3 -o max_sync_seek=100 . file.mp3` or `fq -d bytes 'mp3({max_sync_seek: 100})' file.mp3`.
+Some formats have own options that can be specificed as part of `$opts` or as `-o name=value`. To see options for a format do `fq -h mp3` or `help(mp3)` in a REPL. From command line you can either do `fq -d mp3 -o max_sync_seek=100 . file.mp3` or `fq -d bytes 'mp3({max_sync_seek: 100})' file.mp3`.
 
 #### `decode`, `decode("<format>")`, `decode("<format>"; $opts)`
 Decode format.
