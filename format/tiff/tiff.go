@@ -135,8 +135,8 @@ func decodeIfd(d *decode.D, s *strips, tagNames scalar.UintMapSymStr) int64 {
 					default:
 
 						d.FieldArray("values", func(d *decode.D) {
-							switch {
-							case typ == UNDEFINED:
+							switch typ {
+							case UNDEFINED:
 								switch tag {
 								case InterColorProfile:
 									d.FieldFormatRange("icc", int64(valueByteOffset)*8, int64(valueByteSize)*8, &tiffIccProfile, nil)
@@ -145,11 +145,11 @@ func decodeIfd(d *decode.D, s *strips, tagNames scalar.UintMapSymStr) int64 {
 										d.FieldRawLen("value", d.BitsLeft())
 									})
 								}
-							case typ == ASCII:
+							case ASCII:
 								d.RangeFn(int64(valueByteOffset*8), int64(valueByteSize*8), func(d *decode.D) {
 									d.FieldUTF8NullFixedLen("value", int(valueByteSize))
 								})
-							case typ == BYTE:
+							case BYTE:
 								d.RangeFn(int64(valueByteOffset*8), int64(valueByteSize*8), func(d *decode.D) {
 									d.FieldRawLen("value", d.BitsLeft())
 								})

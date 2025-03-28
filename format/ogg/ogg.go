@@ -134,8 +134,8 @@ func decodeOgg(d *decode.D) any {
 							return
 						}
 
-						switch {
-						case s.packetBuf[0] == 0x7f:
+						switch s.packetBuf[0] {
+						case 0x7f:
 							s.packetD.FieldStructRootBitBufFn("packet", br, func(d *decode.D) {
 								d.FieldU8("type")
 								d.FieldUTF8("signature", 4)
@@ -150,7 +150,7 @@ func decodeOgg(d *decode.D) any {
 								}
 								s.flacStreamInfo = flacMetadatablockOut.StreamInfo
 							})
-						case s.packetBuf[0] == 0xff:
+						case 0xff:
 							s.packetD.FieldFormatBitBuf("packet", br, &flacFrameGroup, nil)
 						default:
 							s.packetD.FieldFormatBitBuf("packet", br, &flacMetadatablockGroup, nil)

@@ -74,7 +74,7 @@ func decodeEscapeValueAbsFn(b1 int, b2 int, b3 int) func(d *decode.D) uint64 {
 
 // add values and escaped values
 //
-//nolint:deadcode,unused
+//nolint:unused
 func decodeEscapeValueAddFn(b1 int, b2 int, b3 int) func(d *decode.D) uint64 {
 	return decodeEscapeValueFn(0, b1, b2, b3)
 }

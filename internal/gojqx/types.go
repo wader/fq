@@ -1,4 +1,3 @@
-//nolint:gosimple
 package gojqx
 
 import (

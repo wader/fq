@@ -509,10 +509,8 @@ func (d *D) TryPeekFind(nBits int, seekBits int64, maxLen int64, fn func(v uint6
 
 	found := false
 	var v uint64
-	for {
-		if (seekBits > 0 && maxLen > 0 && count >= maxLen) || (seekBits < 0 && maxLen > 0 && count < -maxLen) {
-			break
-		}
+	for !((seekBits > 0 && maxLen > 0 && count >= maxLen) ||
+		(seekBits < 0 && maxLen > 0 && count < -maxLen)) {
 		v, err = d.TryU(nBits)
 		if err != nil {
 			if _, err := d.bitBuf.SeekBits(start, io.SeekStart); err != nil {

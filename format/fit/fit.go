@@ -401,9 +401,9 @@ func decodeFIT(d *decode.D) any {
 	var fc fitContext
 	d.Endian = decode.LittleEndian
 
-	var lmfd localFieldDefMap = make(localFieldDefMap)
-	var dmfd devFieldDefMap = make(devFieldDefMap)
-	var isDevMap localMsgIsDevDef = make(localMsgIsDevDef)
+	lmfd := make(localFieldDefMap)
+	dmfd := make(devFieldDefMap)
+	isDevMap := make(localMsgIsDevDef)
 
 	d.FieldStruct("header", func(d *decode.D) { fitDecodeFileHeader(d, &fc) })
 

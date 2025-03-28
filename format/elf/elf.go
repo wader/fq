@@ -890,8 +890,8 @@ func elfDecodeProgramHeader(d *decode.D, ec elfContext) {
 	}
 
 	d.RangeFn(int64(offset*8), int64(size*8), func(d *decode.D) {
-		switch {
-		case typ == PT_NOTE:
+		switch typ {
+		case PT_NOTE:
 			d.FieldArray("notes", func(d *decode.D) {
 				for !d.End() {
 					d.FieldStruct("note", func(d *decode.D) {

@@ -190,7 +190,7 @@ func decodeASN1BERValue(d *decode.D, bib *bitio.Buffer, sb *strings.Builder, par
 	switch length {
 	case lengthIndefinite:
 		// null has zero length byte
-		if !(class == classUniversal && tag == universalTypeNull) && form == formPrimitive {
+		if (class != classUniversal || tag != universalTypeNull) && form == formPrimitive {
 			d.Fatalf("primitive with indefinite length")
 		}
 		l = d.BitsLeft()
@@ -321,8 +321,8 @@ func decodeASN1BERValue(d *decode.D, bib *bitio.Buffer, sb *strings.Builder, par
 		case class == classUniversal && tag == universalTypeExternal:
 			d.FieldRawLen("value", int64(length)*8)
 		case class == classUniversal && tag == universalTypeReal:
-			switch {
-			case length == 0:
+			switch length {
+			case 0:
 				d.FieldValueUint("value", 0)
 			default:
 				switch d.FieldBool("binary_encoding") {
