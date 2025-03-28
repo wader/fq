@@ -25,7 +25,7 @@ func (r *IOReadSeeker) Read(p []byte) (n int, err error) {
 func (r *IOReadSeeker) Seek(offset int64, whence int) (int64, error) {
 	n, err := r.s.SeekBits(offset*8, whence)
 	// TODO: reset last error on seek. some nicer way?
-	r.IOReader.rErr = nil
+	r.rErr = nil
 	if n != r.sPos {
 		r.b.Reset()
 		r.sPos = n / 8

@@ -50,9 +50,8 @@ linters:
     staticcheck:
       checks:
         - all
-      excludes:
         # allow underscore
-        - "ST1003"
+        - "-ST1003"
   exclusions:
     generated: lax
     presets:
@@ -68,6 +67,7 @@ linters:
       - third_party$
       - builtin$
       - examples$
+      - pkg/decode/decode_gen.go
 formatters:
   enable:
     - goimports
