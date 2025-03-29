@@ -87,9 +87,12 @@ import (
 	{{- range $sym_name, $sym_t := $.types }}
 		// TrySym{{$sym_name}} try assert symbolic value is a {{$sym_name}} and return result
 		func (s {{$name}}) TrySym{{$sym_name}}() ({{$sym_t.go_type}}, bool) {
-			//nolint:gosimple,nolintlint
-			v, ok := s.Sym.({{$sym_t.go_type}})
-			return v, ok
+			{{- if eq $sym_t.go_type "any"}}
+				return s.Sym, true
+			{{- else}}
+				v, ok := s.Sym.({{$sym_t.go_type}})
+				return v, ok
+			{{- end}}
 		}
 
 		// Sym{{$sym_name}} asserts symbolic value is a {{$sym_name}} and returns it

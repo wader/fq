@@ -78,9 +78,7 @@ func (f AnyDescriptionFn) MapAny(s Any) (Any, error) {
 
 // TrySymAny try assert symbolic value is a Any and return result
 func (s Any) TrySymAny() (any, bool) {
-	//nolint:gosimple,nolintlint
-	v, ok := s.Sym.(any)
-	return v, ok
+	return s.Sym, true
 }
 
 // SymAny asserts symbolic value is a Any and returns it
@@ -94,7 +92,6 @@ func (s Any) SymAny() any {
 
 // TrySymBigInt try assert symbolic value is a BigInt and return result
 func (s Any) TrySymBigInt() (*big.Int, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(*big.Int)
 	return v, ok
 }
@@ -110,7 +107,6 @@ func (s Any) SymBigInt() *big.Int {
 
 // TrySymBitBuf try assert symbolic value is a BitBuf and return result
 func (s Any) TrySymBitBuf() (bitio.ReaderAtSeeker, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(bitio.ReaderAtSeeker)
 	return v, ok
 }
@@ -126,7 +122,6 @@ func (s Any) SymBitBuf() bitio.ReaderAtSeeker {
 
 // TrySymBool try assert symbolic value is a Bool and return result
 func (s Any) TrySymBool() (bool, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(bool)
 	return v, ok
 }
@@ -142,7 +137,6 @@ func (s Any) SymBool() bool {
 
 // TrySymFlt try assert symbolic value is a Flt and return result
 func (s Any) TrySymFlt() (float64, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(float64)
 	return v, ok
 }
@@ -158,7 +152,6 @@ func (s Any) SymFlt() float64 {
 
 // TrySymSint try assert symbolic value is a Sint and return result
 func (s Any) TrySymSint() (int64, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(int64)
 	return v, ok
 }
@@ -174,7 +167,6 @@ func (s Any) SymSint() int64 {
 
 // TrySymStr try assert symbolic value is a Str and return result
 func (s Any) TrySymStr() (string, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(string)
 	return v, ok
 }
@@ -190,7 +182,6 @@ func (s Any) SymStr() string {
 
 // TrySymUint try assert symbolic value is a Uint and return result
 func (s Any) TrySymUint() (uint64, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(uint64)
 	return v, ok
 }
@@ -275,9 +266,7 @@ func (f BigIntDescriptionFn) MapBigInt(s BigInt) (BigInt, error) {
 
 // TrySymAny try assert symbolic value is a Any and return result
 func (s BigInt) TrySymAny() (any, bool) {
-	//nolint:gosimple,nolintlint
-	v, ok := s.Sym.(any)
-	return v, ok
+	return s.Sym, true
 }
 
 // SymAny asserts symbolic value is a Any and returns it
@@ -291,7 +280,6 @@ func (s BigInt) SymAny() any {
 
 // TrySymBigInt try assert symbolic value is a BigInt and return result
 func (s BigInt) TrySymBigInt() (*big.Int, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(*big.Int)
 	return v, ok
 }
@@ -307,7 +295,6 @@ func (s BigInt) SymBigInt() *big.Int {
 
 // TrySymBitBuf try assert symbolic value is a BitBuf and return result
 func (s BigInt) TrySymBitBuf() (bitio.ReaderAtSeeker, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(bitio.ReaderAtSeeker)
 	return v, ok
 }
@@ -323,7 +310,6 @@ func (s BigInt) SymBitBuf() bitio.ReaderAtSeeker {
 
 // TrySymBool try assert symbolic value is a Bool and return result
 func (s BigInt) TrySymBool() (bool, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(bool)
 	return v, ok
 }
@@ -339,7 +325,6 @@ func (s BigInt) SymBool() bool {
 
 // TrySymFlt try assert symbolic value is a Flt and return result
 func (s BigInt) TrySymFlt() (float64, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(float64)
 	return v, ok
 }
@@ -355,7 +340,6 @@ func (s BigInt) SymFlt() float64 {
 
 // TrySymSint try assert symbolic value is a Sint and return result
 func (s BigInt) TrySymSint() (int64, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(int64)
 	return v, ok
 }
@@ -371,7 +355,6 @@ func (s BigInt) SymSint() int64 {
 
 // TrySymStr try assert symbolic value is a Str and return result
 func (s BigInt) TrySymStr() (string, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(string)
 	return v, ok
 }
@@ -387,7 +370,6 @@ func (s BigInt) SymStr() string {
 
 // TrySymUint try assert symbolic value is a Uint and return result
 func (s BigInt) TrySymUint() (uint64, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(uint64)
 	return v, ok
 }
@@ -471,9 +453,7 @@ func (f BitBufDescriptionFn) MapBitBuf(s BitBuf) (BitBuf, error) {
 
 // TrySymAny try assert symbolic value is a Any and return result
 func (s BitBuf) TrySymAny() (any, bool) {
-	//nolint:gosimple,nolintlint
-	v, ok := s.Sym.(any)
-	return v, ok
+	return s.Sym, true
 }
 
 // SymAny asserts symbolic value is a Any and returns it
@@ -487,7 +467,6 @@ func (s BitBuf) SymAny() any {
 
 // TrySymBigInt try assert symbolic value is a BigInt and return result
 func (s BitBuf) TrySymBigInt() (*big.Int, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(*big.Int)
 	return v, ok
 }
@@ -503,7 +482,6 @@ func (s BitBuf) SymBigInt() *big.Int {
 
 // TrySymBitBuf try assert symbolic value is a BitBuf and return result
 func (s BitBuf) TrySymBitBuf() (bitio.ReaderAtSeeker, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(bitio.ReaderAtSeeker)
 	return v, ok
 }
@@ -519,7 +497,6 @@ func (s BitBuf) SymBitBuf() bitio.ReaderAtSeeker {
 
 // TrySymBool try assert symbolic value is a Bool and return result
 func (s BitBuf) TrySymBool() (bool, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(bool)
 	return v, ok
 }
@@ -535,7 +512,6 @@ func (s BitBuf) SymBool() bool {
 
 // TrySymFlt try assert symbolic value is a Flt and return result
 func (s BitBuf) TrySymFlt() (float64, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(float64)
 	return v, ok
 }
@@ -551,7 +527,6 @@ func (s BitBuf) SymFlt() float64 {
 
 // TrySymSint try assert symbolic value is a Sint and return result
 func (s BitBuf) TrySymSint() (int64, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(int64)
 	return v, ok
 }
@@ -567,7 +542,6 @@ func (s BitBuf) SymSint() int64 {
 
 // TrySymStr try assert symbolic value is a Str and return result
 func (s BitBuf) TrySymStr() (string, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(string)
 	return v, ok
 }
@@ -583,7 +557,6 @@ func (s BitBuf) SymStr() string {
 
 // TrySymUint try assert symbolic value is a Uint and return result
 func (s BitBuf) TrySymUint() (uint64, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(uint64)
 	return v, ok
 }
@@ -667,9 +640,7 @@ func (f BoolDescriptionFn) MapBool(s Bool) (Bool, error) {
 
 // TrySymAny try assert symbolic value is a Any and return result
 func (s Bool) TrySymAny() (any, bool) {
-	//nolint:gosimple,nolintlint
-	v, ok := s.Sym.(any)
-	return v, ok
+	return s.Sym, true
 }
 
 // SymAny asserts symbolic value is a Any and returns it
@@ -683,7 +654,6 @@ func (s Bool) SymAny() any {
 
 // TrySymBigInt try assert symbolic value is a BigInt and return result
 func (s Bool) TrySymBigInt() (*big.Int, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(*big.Int)
 	return v, ok
 }
@@ -699,7 +669,6 @@ func (s Bool) SymBigInt() *big.Int {
 
 // TrySymBitBuf try assert symbolic value is a BitBuf and return result
 func (s Bool) TrySymBitBuf() (bitio.ReaderAtSeeker, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(bitio.ReaderAtSeeker)
 	return v, ok
 }
@@ -715,7 +684,6 @@ func (s Bool) SymBitBuf() bitio.ReaderAtSeeker {
 
 // TrySymBool try assert symbolic value is a Bool and return result
 func (s Bool) TrySymBool() (bool, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(bool)
 	return v, ok
 }
@@ -731,7 +699,6 @@ func (s Bool) SymBool() bool {
 
 // TrySymFlt try assert symbolic value is a Flt and return result
 func (s Bool) TrySymFlt() (float64, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(float64)
 	return v, ok
 }
@@ -747,7 +714,6 @@ func (s Bool) SymFlt() float64 {
 
 // TrySymSint try assert symbolic value is a Sint and return result
 func (s Bool) TrySymSint() (int64, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(int64)
 	return v, ok
 }
@@ -763,7 +729,6 @@ func (s Bool) SymSint() int64 {
 
 // TrySymStr try assert symbolic value is a Str and return result
 func (s Bool) TrySymStr() (string, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(string)
 	return v, ok
 }
@@ -779,7 +744,6 @@ func (s Bool) SymStr() string {
 
 // TrySymUint try assert symbolic value is a Uint and return result
 func (s Bool) TrySymUint() (uint64, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(uint64)
 	return v, ok
 }
@@ -863,9 +827,7 @@ func (f FltDescriptionFn) MapFlt(s Flt) (Flt, error) {
 
 // TrySymAny try assert symbolic value is a Any and return result
 func (s Flt) TrySymAny() (any, bool) {
-	//nolint:gosimple,nolintlint
-	v, ok := s.Sym.(any)
-	return v, ok
+	return s.Sym, true
 }
 
 // SymAny asserts symbolic value is a Any and returns it
@@ -879,7 +841,6 @@ func (s Flt) SymAny() any {
 
 // TrySymBigInt try assert symbolic value is a BigInt and return result
 func (s Flt) TrySymBigInt() (*big.Int, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(*big.Int)
 	return v, ok
 }
@@ -895,7 +856,6 @@ func (s Flt) SymBigInt() *big.Int {
 
 // TrySymBitBuf try assert symbolic value is a BitBuf and return result
 func (s Flt) TrySymBitBuf() (bitio.ReaderAtSeeker, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(bitio.ReaderAtSeeker)
 	return v, ok
 }
@@ -911,7 +871,6 @@ func (s Flt) SymBitBuf() bitio.ReaderAtSeeker {
 
 // TrySymBool try assert symbolic value is a Bool and return result
 func (s Flt) TrySymBool() (bool, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(bool)
 	return v, ok
 }
@@ -927,7 +886,6 @@ func (s Flt) SymBool() bool {
 
 // TrySymFlt try assert symbolic value is a Flt and return result
 func (s Flt) TrySymFlt() (float64, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(float64)
 	return v, ok
 }
@@ -943,7 +901,6 @@ func (s Flt) SymFlt() float64 {
 
 // TrySymSint try assert symbolic value is a Sint and return result
 func (s Flt) TrySymSint() (int64, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(int64)
 	return v, ok
 }
@@ -959,7 +916,6 @@ func (s Flt) SymSint() int64 {
 
 // TrySymStr try assert symbolic value is a Str and return result
 func (s Flt) TrySymStr() (string, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(string)
 	return v, ok
 }
@@ -975,7 +931,6 @@ func (s Flt) SymStr() string {
 
 // TrySymUint try assert symbolic value is a Uint and return result
 func (s Flt) TrySymUint() (uint64, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(uint64)
 	return v, ok
 }
@@ -1060,9 +1015,7 @@ func (f SintDescriptionFn) MapSint(s Sint) (Sint, error) {
 
 // TrySymAny try assert symbolic value is a Any and return result
 func (s Sint) TrySymAny() (any, bool) {
-	//nolint:gosimple,nolintlint
-	v, ok := s.Sym.(any)
-	return v, ok
+	return s.Sym, true
 }
 
 // SymAny asserts symbolic value is a Any and returns it
@@ -1076,7 +1029,6 @@ func (s Sint) SymAny() any {
 
 // TrySymBigInt try assert symbolic value is a BigInt and return result
 func (s Sint) TrySymBigInt() (*big.Int, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(*big.Int)
 	return v, ok
 }
@@ -1092,7 +1044,6 @@ func (s Sint) SymBigInt() *big.Int {
 
 // TrySymBitBuf try assert symbolic value is a BitBuf and return result
 func (s Sint) TrySymBitBuf() (bitio.ReaderAtSeeker, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(bitio.ReaderAtSeeker)
 	return v, ok
 }
@@ -1108,7 +1059,6 @@ func (s Sint) SymBitBuf() bitio.ReaderAtSeeker {
 
 // TrySymBool try assert symbolic value is a Bool and return result
 func (s Sint) TrySymBool() (bool, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(bool)
 	return v, ok
 }
@@ -1124,7 +1074,6 @@ func (s Sint) SymBool() bool {
 
 // TrySymFlt try assert symbolic value is a Flt and return result
 func (s Sint) TrySymFlt() (float64, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(float64)
 	return v, ok
 }
@@ -1140,7 +1089,6 @@ func (s Sint) SymFlt() float64 {
 
 // TrySymSint try assert symbolic value is a Sint and return result
 func (s Sint) TrySymSint() (int64, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(int64)
 	return v, ok
 }
@@ -1156,7 +1104,6 @@ func (s Sint) SymSint() int64 {
 
 // TrySymStr try assert symbolic value is a Str and return result
 func (s Sint) TrySymStr() (string, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(string)
 	return v, ok
 }
@@ -1172,7 +1119,6 @@ func (s Sint) SymStr() string {
 
 // TrySymUint try assert symbolic value is a Uint and return result
 func (s Sint) TrySymUint() (uint64, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(uint64)
 	return v, ok
 }
@@ -1256,9 +1202,7 @@ func (f StrDescriptionFn) MapStr(s Str) (Str, error) {
 
 // TrySymAny try assert symbolic value is a Any and return result
 func (s Str) TrySymAny() (any, bool) {
-	//nolint:gosimple,nolintlint
-	v, ok := s.Sym.(any)
-	return v, ok
+	return s.Sym, true
 }
 
 // SymAny asserts symbolic value is a Any and returns it
@@ -1272,7 +1216,6 @@ func (s Str) SymAny() any {
 
 // TrySymBigInt try assert symbolic value is a BigInt and return result
 func (s Str) TrySymBigInt() (*big.Int, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(*big.Int)
 	return v, ok
 }
@@ -1288,7 +1231,6 @@ func (s Str) SymBigInt() *big.Int {
 
 // TrySymBitBuf try assert symbolic value is a BitBuf and return result
 func (s Str) TrySymBitBuf() (bitio.ReaderAtSeeker, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(bitio.ReaderAtSeeker)
 	return v, ok
 }
@@ -1304,7 +1246,6 @@ func (s Str) SymBitBuf() bitio.ReaderAtSeeker {
 
 // TrySymBool try assert symbolic value is a Bool and return result
 func (s Str) TrySymBool() (bool, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(bool)
 	return v, ok
 }
@@ -1320,7 +1261,6 @@ func (s Str) SymBool() bool {
 
 // TrySymFlt try assert symbolic value is a Flt and return result
 func (s Str) TrySymFlt() (float64, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(float64)
 	return v, ok
 }
@@ -1336,7 +1276,6 @@ func (s Str) SymFlt() float64 {
 
 // TrySymSint try assert symbolic value is a Sint and return result
 func (s Str) TrySymSint() (int64, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(int64)
 	return v, ok
 }
@@ -1352,7 +1291,6 @@ func (s Str) SymSint() int64 {
 
 // TrySymStr try assert symbolic value is a Str and return result
 func (s Str) TrySymStr() (string, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(string)
 	return v, ok
 }
@@ -1368,7 +1306,6 @@ func (s Str) SymStr() string {
 
 // TrySymUint try assert symbolic value is a Uint and return result
 func (s Str) TrySymUint() (uint64, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(uint64)
 	return v, ok
 }
@@ -1453,9 +1390,7 @@ func (f UintDescriptionFn) MapUint(s Uint) (Uint, error) {
 
 // TrySymAny try assert symbolic value is a Any and return result
 func (s Uint) TrySymAny() (any, bool) {
-	//nolint:gosimple,nolintlint
-	v, ok := s.Sym.(any)
-	return v, ok
+	return s.Sym, true
 }
 
 // SymAny asserts symbolic value is a Any and returns it
@@ -1469,7 +1404,6 @@ func (s Uint) SymAny() any {
 
 // TrySymBigInt try assert symbolic value is a BigInt and return result
 func (s Uint) TrySymBigInt() (*big.Int, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(*big.Int)
 	return v, ok
 }
@@ -1485,7 +1419,6 @@ func (s Uint) SymBigInt() *big.Int {
 
 // TrySymBitBuf try assert symbolic value is a BitBuf and return result
 func (s Uint) TrySymBitBuf() (bitio.ReaderAtSeeker, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(bitio.ReaderAtSeeker)
 	return v, ok
 }
@@ -1501,7 +1434,6 @@ func (s Uint) SymBitBuf() bitio.ReaderAtSeeker {
 
 // TrySymBool try assert symbolic value is a Bool and return result
 func (s Uint) TrySymBool() (bool, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(bool)
 	return v, ok
 }
@@ -1517,7 +1449,6 @@ func (s Uint) SymBool() bool {
 
 // TrySymFlt try assert symbolic value is a Flt and return result
 func (s Uint) TrySymFlt() (float64, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(float64)
 	return v, ok
 }
@@ -1533,7 +1464,6 @@ func (s Uint) SymFlt() float64 {
 
 // TrySymSint try assert symbolic value is a Sint and return result
 func (s Uint) TrySymSint() (int64, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(int64)
 	return v, ok
 }
@@ -1549,7 +1479,6 @@ func (s Uint) SymSint() int64 {
 
 // TrySymStr try assert symbolic value is a Str and return result
 func (s Uint) TrySymStr() (string, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(string)
 	return v, ok
 }
@@ -1565,7 +1494,6 @@ func (s Uint) SymStr() string {
 
 // TrySymUint try assert symbolic value is a Uint and return result
 func (s Uint) TrySymUint() (uint64, bool) {
-	//nolint:gosimple,nolintlint
 	v, ok := s.Sym.(uint64)
 	return v, ok
 }
