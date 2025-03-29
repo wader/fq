@@ -1,0 +1,31 @@
+$ fq dv -d mp4 -o force=true tfxd_tfrf.mp4
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: tfxd_tfrf.mp4 (mp4) 0x0-0x69 (105)
+    |                                               |                |  boxes[0:2]: 0x0-0x69 (105)
+    |                                               |                |    [0]{}: box 0x0-0x2c (44)
+0x00|00 00 00 2c                                    |...,            |      size: 44 0x0-0x4 (4)
+0x00|            75 75 69 64                        |    uuid        |      type: "uuid" (User-extension box) 0x4-0x8 (4)
+0x00|                        6d 1d 9b 05 42 d5 44 e6|        m...B.D.|      uuid: "tfxd" (raw bits) 0x8-0x18 (16)
+0x10|80 e2 14 1d af f7 57 b2                        |......W.        |
+0x10|                        01                     |        .       |      version: 1 0x18-0x19 (1)
+0x10|                           00 00 00            |         ...    |      flags: 0 0x19-0x1c (3)
+    |                                               |                |      fragment{}: 0x1c-0x2c (16)
+0x10|                                    00 00 08 50|            ...P|        absolute_time: 9142701728670 0x1c-0x24 (8)
+0x20|b3 7d 23 9e                                    |.}#.            |
+0x20|            00 00 00 00 00 02 a3 00            |    ........    |        duration: 172800 0x24-0x2c (8)
+    |                                               |                |    [1]{}: box 0x2c-0x69 (61)
+0x20|                                    00 00 00 3d|            ...=|      size: 61 0x2c-0x30 (4)
+0x30|75 75 69 64                                    |uuid            |      type: "uuid" (User-extension box) 0x30-0x34 (4)
+0x30|            d4 80 7e f2 ca 39 46 95 8e 54 26 cb|    ..~..9F..T&.|      uuid: "tfrf" (raw bits) 0x34-0x44 (16)
+0x40|9e 46 a7 9f                                    |.F..            |
+0x40|            01                                 |    .           |      version: 1 0x44-0x45 (1)
+0x40|               00 00 00                        |     ...        |      flags: 0 0x45-0x48 (3)
+0x40|                        02                     |        .       |      fragment_count: 2 0x48-0x49 (1)
+    |                                               |                |      fragments[0:2]: 0x49-0x69 (32)
+    |                                               |                |        [0]{}: fragment 0x49-0x59 (16)
+0x40|                           00 00 08 50 b3 7f c6|         ...P...|          absolute_time: 9142701901470 0x49-0x51 (8)
+0x50|9e                                             |.               |
+0x50|   00 00 00 00 00 02 a3 00                     | ........       |          duration: 172800 0x51-0x59 (8)
+    |                                               |                |        [1]{}: fragment 0x59-0x69 (16)
+0x50|                           00 00 08 50 b3 82 69|         ...P..i|          absolute_time: 9142702074270 0x59-0x61 (8)
+0x60|9e                                             |.               |
+0x60|   00 00 00 00 00 02 a3 00|                    | ........|      |          duration: 172800 0x61-0x69 (8)

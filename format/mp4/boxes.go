@@ -1367,8 +1367,47 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		d.FieldU32("h_spacing")
 		d.FieldU32("v_spacing")
 	case "uuid":
-		d.FieldRawLen("uuid", 16*8, scalar.RawUUID, uuidNames)
-		d.FieldRawLen("data", d.BitsLeft())
+		uuidBR := d.FieldRawLen("uuid", 16*8, scalar.RawUUID, uuidNames)
+		// TODO: make nicer
+		uuid := d.ReadAllBits(uuidBR)
+
+		switch {
+		case bytes.Equal(uuid, uuidTfxdBytes[:]):
+			// TFXD box based on the latest Smooth Streaming specification (v20241119).
+			// https://winprotocoldocs-bhdugrdyduf5h2e4.b02.azurefd.net/MS-SSTR/%5bMS-SSTR%5d.pdf
+			version := d.FieldU8("version")
+			d.FieldU24("flags")
+			d.FieldStruct("fragment", func(d *decode.D) {
+				if version == 1 {
+					d.FieldU64("absolute_time")
+					d.FieldU64("duration")
+				} else {
+					d.FieldU32("absolute_time")
+					d.FieldU32("duration")
+				}
+			})
+		case bytes.Equal(uuid, uuidTfrfBytes[:]):
+			// TFRF box based on the latest Smooth Streaming specification (v20241119).
+			// https://winprotocoldocs-bhdugrdyduf5h2e4.b02.azurefd.net/MS-SSTR/%5bMS-SSTR%5d.pdf
+			version := d.FieldU8("version")
+			d.FieldU24("flags")
+			fragmentCount := d.FieldU8("fragment_count")
+			d.FieldArray("fragments", func(d *decode.D) {
+				for i := uint64(0); i < fragmentCount; i++ {
+					d.FieldStruct("fragment", func(d *decode.D) {
+						if version == 1 {
+							d.FieldU64("absolute_time")
+							d.FieldU64("duration")
+						} else {
+							d.FieldU32("absolute_time")
+							d.FieldU32("duration")
+						}
+					})
+				}
+			})
+		default:
+			d.FieldRawLen("data", d.BitsLeft())
+		}
 	case "keys":
 		mb := ctx.currentMetaBox()
 		var kb *keysBox
