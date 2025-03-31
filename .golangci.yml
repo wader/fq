@@ -1,66 +1,92 @@
+version: "2"
 linters:
-    enable:
-        - asciicheck
-        - bodyclose
-        - durationcheck
-        - errname
-        - errorlint
-        - exhaustive
-        - forcetypeassert
-        - goimports
-        - gosec
-        - makezero
-        - misspell
-        - nakedret
-        - nilerr
-        - noctx
-        - nolintlint
-        - nosprintfhostport
-        - predeclared
-        - revive
-        - tagliatelle
-        - unconvert
-        - unparam
-        - wastedassign
-        - staticcheck
-        - govet
-        - copyloopvar
-
-linters-settings:
-    revive:
-        rules:
-            - name: unused-parameter
-              disabled: true
+  enable:
+    - asciicheck
+    - bodyclose
+    - copyloopvar
+    - durationcheck
+    - errname
+    - errorlint
+    - exhaustive
+    - forcetypeassert
+    - gosec
+    - makezero
+    - misspell
+    - nakedret
+    - nilerr
+    - noctx
+    - nolintlint
+    - nosprintfhostport
+    - predeclared
+    - revive
+    - tagliatelle
+    - unconvert
+    - unparam
+    - wastedassign
+  settings:
     exhaustive:
-        default-signifies-exhaustive: true
+      default-signifies-exhaustive: true
     gosec:
-        excludes:
-            - G401
-            - G501
-            - G115
-            - G406
-            - G506
-    misspell:
-        ignore-words:
-            # elf RELA
-            - rela
-            - equalisation
-            - synchronisation
+      excludes:
+        - G401
+        - G501
+        - G115
+        - G406
+        - G506
     govet:
-        enable-all: true
-        disable:
-            - fieldalignment
-            - shadow
+      disable:
+        - fieldalignment
+        - shadow
+      enable-all: true
+    misspell:
+      ignore-rules:
+        - rela
+        - equalisation
+        - synchronisation
+    revive:
+      rules:
+        - name: unused-parameter
+          disabled: true
     staticcheck:
-        checks: ["all"]
-
-issues:
-    exclude-dirs:
-        # allow md5
-        - dev
-        - doc
-        # ignore warnings in code from crypto/tls and zmap/zcrypto
-        - format/tls/tlsdecrypt
-
-run:
-    timeout: 5m
+      checks:
+        - all
+        # allow underscore
+        - "-ST1003"
+        # don't require De Morgan's law.
+        - "-QF1001"
+        # allow embedded selector
+        - "-QF1008"
+        # type conversion might not be same (same struct members but impl Error)
+        - "-S1016"
+        # don't require if/else-if chain to be tagged switch
+        - "-QF1003"
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - dev
+      - doc
+      - third_party$
+      - builtin$
+      - examples$
+      - pkg/decode/decode_gen.go
+      # vendored
+      - internal/mathx/float80.go
+      # ignore warnings in code from crypto/tls and zmap/zcrypto
+      - format/tls/tlsdecrypt
+formatters:
+  enable:
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - dev
+      - doc
+      - format/tls/tlsdecrypt
+      - third_party$
+      - builtin$
+      - examples$

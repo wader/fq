@@ -71,7 +71,7 @@ func getFlagMapper(flag uint64, descMappers ...scalar.UintMap) scalar.UintFn {
 	return scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
 		s.Sym = s.Actual & flag
 
-		var ds scalar.Uint = s
+		ds := s
 		for _, dm := range descMappers {
 			ds = dm[ds.SymUint()]
 		}

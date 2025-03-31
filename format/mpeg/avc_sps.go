@@ -168,9 +168,10 @@ func avcSPSDecode(d *decode.D) any {
 	d.FieldUintFn("log2_max_frame_num", uEV, scalar.UintActualAdd(4))
 
 	picOrderCntType := d.FieldUintFn("pic_order_cnt_type", uEV)
-	if picOrderCntType == 0 {
+	switch picOrderCntType {
+	case 0:
 		d.FieldUintFn("log2_max_pic_order_cnt_lsb", uEV, scalar.UintActualAdd(4))
-	} else if picOrderCntType == 1 {
+	case 1:
 		d.FieldBool("delta_pic_order_always_zero_flag")
 		d.FieldSintFn("offset_for_non_ref_pic", sEV)
 		d.FieldSintFn("offset_for_top_to_bottom_field", sEV)

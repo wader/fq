@@ -369,21 +369,22 @@ func machoDecode(d *decode.D) any {
 	var ncmds uint64
 	magicBuffer := d.U32LE()
 
-	if magicBuffer == MH_MAGIC || magicBuffer == MH_MAGIC_64 {
+	switch magicBuffer {
+	case MH_MAGIC, MH_MAGIC_64:
 		d.Endian = decode.LittleEndian
 		if magicBuffer == MH_MAGIC {
 			archBits = 32
 		} else {
 			archBits = 64
 		}
-	} else if magicBuffer == MH_CIGAM || magicBuffer == MH_CIGAM_64 {
+	case MH_CIGAM, MH_CIGAM_64:
 		d.Endian = decode.BigEndian
 		if magicBuffer == MH_CIGAM {
 			archBits = 32
 		} else {
 			archBits = 64
 		}
-	} else {
+	default:
 		d.Fatalf("invalid magic")
 	}
 

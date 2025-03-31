@@ -49,15 +49,16 @@ type TimestampMapper struct {
 func (t TimestampMapper) MapSint(s scalar.Sint) (scalar.Sint, error) {
 	v := s.Actual
 	var ts time.Time
-	if t.Precision == SECOND {
+	switch t.Precision {
+	case SECOND:
 		ts = time.Unix(v, 0)
-	} else if t.Precision == MILLISECOND {
+	case MILLISECOND:
 		ts = time.UnixMilli(v)
-	} else if t.Precision == MICROSECOND {
+	case MICROSECOND:
 		ts = time.UnixMicro(v)
-	} else if t.Precision == NANOSECOND {
+	case NANOSECOND:
 		ts = time.Unix(0, v)
-	} else {
+	default:
 		return s, errors.New("unknown precision")
 	}
 	s.Sym = ts.UTC().Format(time.RFC3339Nano)
@@ -70,16 +71,16 @@ type TimeMapper struct {
 
 func (t TimeMapper) MapSint(s scalar.Sint) (scalar.Sint, error) {
 	v := s.Actual
-
-	if t.Precision == SECOND {
+	switch t.Precision {
+	case SECOND:
 		s.Sym = time.Unix(v, 0).UTC().Format("15:04:05")
-	} else if t.Precision == MILLISECOND {
+	case MILLISECOND:
 		s.Sym = time.UnixMilli(v).UTC().Format("15:04:05.000")
-	} else if t.Precision == MICROSECOND {
+	case MICROSECOND:
 		s.Sym = time.UnixMicro(v).UTC().Format("15:04:05.000000")
-	} else if t.Precision == NANOSECOND {
+	case NANOSECOND:
 		s.Sym = time.Unix(0, v).UTC().Format("15:04:05.000000000")
-	} else {
+	default:
 		return s, errors.New("unknown precision")
 	}
 	return s, nil

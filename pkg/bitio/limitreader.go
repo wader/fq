@@ -14,24 +14,24 @@ type LimitReader struct {
 // NewLimitReader returns a new bitio.LimitReader.
 func NewLimitReader(r Reader, n int64) *LimitReader { return &LimitReader{r, n} }
 
-func (l *LimitReader) ReadBits(p []byte, nBits int64) (n int64, err error) {
-	if l.n <= 0 {
+func (r *LimitReader) ReadBits(p []byte, nBits int64) (n int64, err error) {
+	if r.n <= 0 {
 		return 0, io.EOF
 	}
-	if nBits > l.n {
-		nBits = l.n
+	if nBits > r.n {
+		nBits = r.n
 	}
-	n, err = l.r.ReadBits(p, nBits)
-	l.n -= n
+	n, err = r.r.ReadBits(p, nBits)
+	r.n -= n
 	return n, err
 }
 
-func (l *LimitReader) CloneReader() (Reader, error) {
-	rc, err := CloneReader(l.r)
+func (r *LimitReader) CloneReader() (Reader, error) {
+	rc, err := CloneReader(r.r)
 	if err != nil {
 		return nil, err
 	}
-	return &LimitReader{r: rc, n: l.n}, nil
+	return &LimitReader{r: rc, n: r.n}, nil
 }
 
 func (r *LimitReader) Unwrap() any {

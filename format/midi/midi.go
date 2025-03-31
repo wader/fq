@@ -167,14 +167,14 @@ func decodeEvent(d *decode.D, ctx *context) {
 
 // peekEvent retrieves the type of the next event without moving the reader location.
 func peekEvent(d *decode.D) (uint64, uint8, uint8) {
-	var N int = 1
+	n := 1
 
 	for {
-		bytes := d.PeekBytes(N)
+		bytes := d.PeekBytes(n)
 		delta := uint64(0)
 		ix := 0
 
-		for ix < N {
+		for ix < n {
 			b := bytes[ix]
 			ix++
 
@@ -182,7 +182,7 @@ func peekEvent(d *decode.D) (uint64, uint8, uint8) {
 			delta += uint64(b & 0x7f)
 
 			if b&0x80 == 0 {
-				if ix < N {
+				if ix < n {
 					status := bytes[ix]
 					ix++
 
@@ -202,7 +202,7 @@ func peekEvent(d *decode.D) (uint64, uint8, uint8) {
 					}
 
 					// ... meta-event
-					if ix < N {
+					if ix < n {
 						event := bytes[ix]
 						return delta, status, event
 					}
@@ -210,7 +210,7 @@ func peekEvent(d *decode.D) (uint64, uint8, uint8) {
 			}
 		}
 
-		N++
+		n++
 	}
 }
 
@@ -269,8 +269,5 @@ func vlstring(d *decode.D) string {
 // invalid event.
 func flush(d *decode.D, format string, args ...any) {
 	d.Errorf(format, args...)
-
-	var N int = int(d.BitsLeft())
-
-	d.Bits(N)
+	d.Bits(int(d.BitsLeft()))
 }
