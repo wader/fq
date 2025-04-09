@@ -87,10 +87,10 @@ func avcPPSDecode(d *decode.D) any {
 		}
 		d.FieldSintFn("second_chroma_qp_index_offset", sEV)
 	} else {
-		d.FieldBool("rbsp_stop_one_bit")
+		d.FieldBool("stop_one_bit")
 	}
 
-	d.FieldRawLen("rbsp_trailing_bits", d.BitsLeft())
+	d.FieldRawLen("trailing_bits", d.BitsLeft())
 
 	return nil
 }

@@ -495,7 +495,7 @@ func (d *D) TryPeekBits(nBits int) (uint64, error) {
 func (d *D) TryPeekFind(nBits int, seekBits int64, maxLen int64, fn func(v uint64) bool) (int64, uint64, error) {
 	start, err := d.bitBuf.SeekBits(0, io.SeekCurrent)
 	if err != nil {
-		return 0, 0, err
+		return -1, 0, err
 	}
 
 	var count int64
@@ -503,7 +503,7 @@ func (d *D) TryPeekFind(nBits int, seekBits int64, maxLen int64, fn func(v uint6
 	if seekBits < 0 {
 		count = int64(-nBits)
 		if _, err := d.bitBuf.SeekBits(start+count, io.SeekStart); err != nil {
-			return 0, 0, err
+			return -1, 0, err
 		}
 	}
 
@@ -514,9 +514,9 @@ func (d *D) TryPeekFind(nBits int, seekBits int64, maxLen int64, fn func(v uint6
 		v, err = d.TryU(nBits)
 		if err != nil {
 			if _, err := d.bitBuf.SeekBits(start, io.SeekStart); err != nil {
-				return 0, 0, err
+				return -1, 0, err
 			}
-			return 0, 0, err
+			return -1, 0, err
 		}
 		if fn(v) {
 			found = true
@@ -524,11 +524,11 @@ func (d *D) TryPeekFind(nBits int, seekBits int64, maxLen int64, fn func(v uint6
 		}
 		count += seekBits
 		if _, err := d.bitBuf.SeekBits(start+count, io.SeekStart); err != nil {
-			return 0, 0, err
+			return -1, 0, err
 		}
 	}
 	if _, err := d.bitBuf.SeekBits(start, io.SeekStart); err != nil {
-		return 0, 0, err
+		return -1, 0, err
 	}
 
 	if !found {
