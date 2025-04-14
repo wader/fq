@@ -2653,6 +2653,7 @@ var ChapterSkipTypeElement = &ebml.Uinteger{
 		4: {Name: "next_preview", Description: "Preview of the next episode of the content"},
 		5: {Name: "preview", Description: "Preview of the current episode of the content"},
 		6: {Name: "advertisement", Description: "Advertisement within the content"},
+		7: {Name: "intermission", Description: "A pause of content between main parts of the content"},
 	},
 }
 var ChapterSegmentEditionUIDElement = &ebml.Uinteger{
