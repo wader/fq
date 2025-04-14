@@ -1501,6 +1501,9 @@ If the `ChapterAtom` doesn't contain a `ChapterTimeEnd`, the value of the `Chapt
       <enum value="6" label="Advertisement">
         <documentation lang="en" purpose="definition">Advertisement within the content.</documentation>
       </enum>
+      <enum value="7" label="Intermission">
+        <documentation lang="en" purpose="definition">A pause of content between main parts of the content.</documentation>
+      </enum>
     </restriction>
   </element>
   <element name="ChapterSegmentEditionUID" path="\Segment\Chapters\EditionEntry\+ChapterAtom\ChapterSegmentEditionUID" id="0x6EBC" type="uinteger" range="not 0" maxOccurs="1">
