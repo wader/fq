@@ -3,7 +3,7 @@
 FQ="$1"
 
 c() {
-    echo -e "\x1b[97m# $1\x1b[0m"
+    echo -e "\x1b[90m# $1\x1b[0m"
 }
 
 s() {
@@ -18,7 +18,7 @@ c "Show header of first ID3v2 tag inside mp3 file"
 s "fq '.headers[0].header' file.mp3"
 echo
 c "Show encoder software used"
-s "fq -r '.frames[0].tag.encoder | tovalue' file.mp3"
+s "fq -Vr '.frames[0].tag.encoder' file.mp3"
 echo
 c "Decode at two offsets as mp3_frame and show bitrate"
 s "fq -d bytes '.[0xb79,0xc49:] | mp3_frame.header.bitrate' file.mp3"
