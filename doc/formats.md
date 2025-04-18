@@ -909,6 +909,8 @@ fq -d midi 'grep_by(.event=="note_on") | [.time.tick, .note_on.note] | join(" ")
 2. [Standard MIDI Files](https://midi.org/standard-midi-files)
 3. [Standard MIDI File (SMF) Format](http://midi.teragonaudio.com/tech/midifile.htm)
 4. [MIDI Files Specification](http://www.somascape.org/midi/tech/mfile.html)
+5. [MIDI SMPTE Offset meta message](https://www.recordingblogs.com/wiki/midi-smpte-offset-meta-message)
+6. [Somascape MIDI Files Specification](http://www.somascape.org/midi/tech/mfile.html#meta)
 
 ## moc3
 MOC3 file.
@@ -947,18 +949,19 @@ ISOBMFF, QuickTime and similar.
 |Name             |Default|Description|
 |-                |-      |-|
 |`allow_truncated`|false  |Allow box to be truncated|
-|`decode_samples` |true   |Decode samples|
+|`decode_samples` |true   |Decode track samples|
+|`skip_samples`   |false  |Skip track samples|
 
 ### Examples
 
 Decode file using mp4 options
 ```
-$ fq -d mp4 -o allow_truncated=false -o decode_samples=true . file
+$ fq -d mp4 -o allow_truncated=false -o decode_samples=true -o skip_samples=false . file
 ```
 
 Decode value as mp4
 ```
-... | mp4({allow_truncated:false,decode_samples:true})
+... | mp4({allow_truncated:false,decode_samples:true,skip_samples:false})
 ```
 
 ### Speed up decoding by not decoding samples

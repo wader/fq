@@ -25,10 +25,9 @@
         .fa6 { fill: #00bbbb; }
         .fa8 { fill: #555555; }
         .fa12 { fill: #5555ff; }
-        .fa15 { fill: #ffffff; }
     </style>
     <rect width="100%" height="100%" x="0" y="0" style="fill: #000000"/>
-<text x="0ch" y="0.5em"><tspan class="fa15"># Overview of mp3 file</tspan></text>
+<text x="0ch" y="0.5em"><tspan class="fa8"># Overview of mp3 file</tspan></text>
 <text x="0ch" y="1.5em"><tspan>$ fq . file.mp3</tspan></text>
 <text x="0ch" y="2.5em"><tspan>     │</tspan><tspan class="underline fa3">00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f</tspan><tspan>│</tspan><tspan class="underline fa3">0123456789abcdef</tspan><tspan>│.{}: file.mp3 (mp3)</tspan></text>
 <text x="0ch" y="3.5em"><tspan class="fa3">0x000</tspan><tspan>│49 44 33 </tspan><tspan class="bold">04 </tspan><tspan class="fa8">00 00 00 00 </tspan><tspan class="bold">15 </tspan><tspan>39 54 53 53 45 </tspan><tspan class="fa8">00 00</tspan><tspan>│ID3</tspan><tspan class="bold">.</tspan><tspan class="fa8">....</tspan><tspan class="bold">.</tspan><tspan>9TSSE</tspan><tspan class="fa8">..</tspan><tspan>│  </tspan><tspan class="fa12">headers</tspan><tspan>[</tspan><tspan class="fa6">0</tspan><tspan>:</tspan><tspan class="fa6">1</tspan><tspan>]:</tspan></text>
@@ -37,7 +36,7 @@
 <text x="0ch" y="6.5em"><tspan class="fa3">0xad0</tspan><tspan>│</tspan><tspan class="fa8">00 00 00 00 00 00 00 00 </tspan><tspan>49 6e 66 6f </tspan><tspan class="fa8">00 00 00 </tspan><tspan class="bold">0f</tspan><tspan>│</tspan><tspan class="fa8">........</tspan><tspan>Info</tspan><tspan class="fa8">...</tspan><tspan class="bold">.</tspan><tspan>│</tspan></text>
 <text x="0ch" y="7.5em"><tspan class="fa3">*    </tspan><tspan>│until 0xd19.7 (end) (599)                      │                │</tspan></text>
 <text x="0ch" y="8.5em"><tspan>     │                                               │                │  </tspan><tspan class="fa12">footers</tspan><tspan>[</tspan><tspan class="fa6">0</tspan><tspan>:</tspan><tspan class="fa6">0</tspan><tspan>]:</tspan></text>
-<text x="0ch" y="10.5em"><tspan class="fa15"># Show header of first ID3v2 tag inside mp3 file</tspan></text>
+<text x="0ch" y="10.5em"><tspan class="fa8"># Show header of first ID3v2 tag inside mp3 file</tspan></text>
 <text x="0ch" y="11.5em"><tspan>$ fq &#39;.headers[0].header&#39; file.mp3</tspan></text>
 <text x="0ch" y="12.5em"><tspan>   │</tspan><tspan class="underline fa3">00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f</tspan><tspan>│</tspan><tspan class="underline fa3">0123456789abcdef</tspan><tspan>│.</tspan><tspan class="fa12">headers</tspan><tspan>[</tspan><tspan class="fa6">0</tspan><tspan>].</tspan><tspan class="fa12">header</tspan><tspan>{}:</tspan></text>
 <text x="0ch" y="13.5em"><tspan class="fa3">0x0</tspan><tspan>│49 44 33                                       │ID3             │  </tspan><tspan class="fa12">magic</tspan><tspan>: </tspan><tspan class="fa2">&#34;ID3&#34; </tspan><tspan>(valid)</tspan></text>
@@ -45,28 +44,28 @@
 <text x="0ch" y="15.5em"><tspan class="fa3">0x0</tspan><tspan>│            </tspan><tspan class="fa8">00                                 </tspan><tspan>│    </tspan><tspan class="fa8">.           </tspan><tspan>│  </tspan><tspan class="fa12">revision</tspan><tspan>: </tspan><tspan class="fa6">0</tspan></text>
 <text x="0ch" y="16.5em"><tspan class="fa3">0x0</tspan><tspan>│               </tspan><tspan class="fa8">00                              </tspan><tspan>│     </tspan><tspan class="fa8">.          </tspan><tspan>│  </tspan><tspan class="fa12">flags</tspan><tspan>{}:</tspan></text>
 <text x="0ch" y="17.5em"><tspan class="fa3">0x0</tspan><tspan>│                  </tspan><tspan class="fa8">00 00 </tspan><tspan class="bold">15 </tspan><tspan>39                  │      </tspan><tspan class="fa8">..</tspan><tspan class="bold">.</tspan><tspan>9      │  </tspan><tspan class="fa12">size</tspan><tspan>: </tspan><tspan class="fa6">2745</tspan></text>
-<text x="0ch" y="19.5em"><tspan class="fa15"># Show encoder software used</tspan></text>
-<text x="0ch" y="20.5em"><tspan>$ fq -r &#39;.frames[0].tag.encoder | tovalue&#39; file.mp3</tspan></text>
+<text x="0ch" y="19.5em"><tspan class="fa8"># Show encoder software used</tspan></text>
+<text x="0ch" y="20.5em"><tspan>$ fq -Vr &#39;.frames[0].tag.encoder&#39; file.mp3</tspan></text>
 <text x="0ch" y="21.5em"><tspan>Lavc58.13</tspan></text>
-<text x="0ch" y="23.5em"><tspan class="fa15"># Decode at two offsets as mp3_frame and show bitrate</tspan></text>
+<text x="0ch" y="23.5em"><tspan class="fa8"># Decode at two offsets as mp3_frame and show bitrate</tspan></text>
 <text x="0ch" y="24.5em"><tspan>$ fq -d bytes &#39;.[0xb79,0xc49:] | mp3_frame.header.bitrate&#39; file.mp3</tspan></text>
 <text x="0ch" y="25.5em"><tspan>     │</tspan><tspan class="underline fa3">00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f</tspan><tspan>│</tspan><tspan class="underline fa3">0123456789abcdef</tspan><tspan>│</tspan></text>
 <text x="0ch" y="26.5em"><tspan class="fa3">0xb70</tspan><tspan>│                                 50            │           P    │.</tspan><tspan class="fa12">header</tspan><tspan>.</tspan><tspan class="fa12">bitrate</tspan><tspan>: </tspan><tspan class="fa6">64000 </tspan><tspan>(</tspan><tspan class="fa6">5</tspan><tspan>)</tspan></text>
 <text x="0ch" y="27.5em"><tspan>     │</tspan><tspan class="underline fa3">00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f</tspan><tspan>│</tspan><tspan class="underline fa3">0123456789abcdef</tspan><tspan>│</tspan></text>
 <text x="0ch" y="28.5em"><tspan class="fa3">0xc40</tspan><tspan>│                                 52            │           R    │.</tspan><tspan class="fa12">header</tspan><tspan>.</tspan><tspan class="fa12">bitrate</tspan><tspan>: </tspan><tspan class="fa6">64000 </tspan><tspan>(</tspan><tspan class="fa6">5</tspan><tspan>)</tspan></text>
-<text x="0ch" y="30.5em"><tspan class="fa15"># Extract PNG file</tspan></text>
+<text x="0ch" y="30.5em"><tspan class="fa8"># Extract PNG file</tspan></text>
 <text x="0ch" y="31.5em"><tspan>$ fq &#39;.headers[].frames[] | select(.id == &#34;APIC&#34;)?.picture | tobits&#39; file.mp3 &gt;file.png</tspan></text>
 <text x="0ch" y="32.5em"><tspan>$ file file.png</tspan></text>
 <text x="0ch" y="33.5em"><tspan>file.png: PNG image data, 320 x 240, 8-bit/color RGB, non-interlaced</tspan></text>
-<text x="0ch" y="35.5em"><tspan class="fa15"># Grep for PNG header, extract resolution and output as YAML</tspan></text>
+<text x="0ch" y="35.5em"><tspan class="fa8"># Grep for PNG header, extract resolution and output as YAML</tspan></text>
 <text x="0ch" y="36.5em"><tspan>$ fq -r &#39;grep_by(.type == &#34;IHDR&#34;) | {res: {width, height}} | to_yaml&#39; file.mp3</tspan></text>
 <text x="0ch" y="37.5em"><tspan>res:</tspan></text>
 <text x="0ch" y="38.5em"><tspan>    height: 240</tspan></text>
 <text x="0ch" y="39.5em"><tspan>    width: 320</tspan></text>
-<text x="0ch" y="41.5em"><tspan class="fa15"># Add query parameter to URL</tspan></text>
+<text x="0ch" y="41.5em"><tspan class="fa8"># Add query parameter to URL</tspan></text>
 <text x="0ch" y="42.5em"><tspan>$ echo &#39;http://host?a=b&#39; | fq -Rr &#39;from_url | .query.b = &#34;a b c&#34; | to_url&#39;</tspan></text>
 <text x="0ch" y="43.5em"><tspan>http://host?a=b&amp;b=a&#43;b&#43;c</tspan></text>
-<text x="0ch" y="45.5em"><tspan class="fa15"># Extract JSON and base64 encoded query parameter p</tspan></text>
+<text x="0ch" y="45.5em"><tspan class="fa8"># Extract JSON and base64 encoded query parameter p</tspan></text>
 <text x="0ch" y="46.5em"><tspan>$ echo &#39;https://host?p=eyJhIjoiaGVsbG8ifQ%3D%3D&#39; | fq -R &#39;from_url.query.p | from_base64 | fromjson&#39;</tspan></text>
 <text x="0ch" y="47.5em"><tspan>{</tspan></text>
 <text x="0ch" y="48.5em"><tspan>  </tspan><tspan class="fa12">&#34;a&#34;</tspan><tspan>: </tspan><tspan class="fa2">&#34;hello&#34;</tspan></text>
