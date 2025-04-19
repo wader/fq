@@ -220,7 +220,7 @@ Sometimes nested decoding fails then maybe a good way is to change the parent de
 use `d.RawLen()` etc instead of `d.FormatLen()` etc temporary to extract the bits. Hopefully
 there will be some option to do this in the future.
 
-When researching or investinging something I can recommend to use `watchexec`, `modd` etc to
+When researching or investigating something I can recommend to use `watchexec`, `modd` etc to
 make things more comfortable. Also using vscode/delve for debugging should work fine once
 launch `args` are setup etc.
 
@@ -352,9 +352,9 @@ Issues and PR:s related to fq:<br>
 [#56](https://github.com/itchyny/gojq/issues/56) String format query with no operator using %#v or %#+v panics
 [#65](https://github.com/itchyny/gojq/issues/65) Try-catch with custom function<br>
 [#67](https://github.com/itchyny/gojq/pull/67) Add custom iterator function support which enables implementing a REPL in jq<br>
-[#81](https://github.com/itchyny/gojq/issues/81) path/1 behaviour and path expression question<br>
+[#81](https://github.com/itchyny/gojq/issues/81) path/1 behavior and path expression question<br>
 [#86](https://github.com/itchyny/gojq/issues/86) ER: basic TCO
-[#109](https://github.com/itchyny/gojq/issues/109) jq halt_error behaviour difference<br>
+[#109](https://github.com/itchyny/gojq/issues/109) jq halt_error behavior difference<br>
 [#113](https://github.com/itchyny/gojq/issues/113) error/0 and error/1 behavior difference<br>
 [#117](https://github.com/itchyny/gojq/issues/117) Negative number modulus *big.Int behaves differently to int<br>
 [#118](https://github.com/itchyny/gojq/issues/118) Regression introduced by "remove fork analysis from tail call optimization (ref #86)"<br>
