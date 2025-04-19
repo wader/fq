@@ -88,17 +88,27 @@ func hevcNALUDecode(d *decode.D) any {
 	nalType := d.FieldU6("nal_unit_type", hevcNALNames)
 	d.FieldU6("nuh_layer_id")
 	d.FieldU3("nuh_temporal_id_plus1")
-	unescapedBR := d.NewBitBufFromReader(nalUnescapeReader{Reader: bitio.NewIOReader(d.BitBufRange(d.Pos(), d.BitsLeft()))})
 
-	switch nalType {
-	case hevcNALNUTVPS:
-		d.FieldFormatBitBuf("vps", unescapedBR, &hevcVPSGroup, nil)
-	case hevcNALNUTPPS:
-		d.FieldFormatBitBuf("pps", unescapedBR, &hevcPPSGroup, nil)
-	case hevcNALNUTSPS:
-		d.FieldFormatBitBuf("sps", unescapedBR, &hevcSPSGroup, nil)
+	decodeFn := func(d *decode.D) {
+		switch nalType {
+		case hevcNALNUTVPS:
+			d.Format(&hevcVPSGroup, nil)
+		case hevcNALNUTPPS:
+			d.Format(&hevcPPSGroup, nil)
+		case hevcNALNUTSPS:
+			d.Format(&hevcSPSGroup, nil)
+		default:
+			d.FieldRawLen("data", d.BitsLeft())
+		}
 	}
-	d.FieldRawLen("data", d.BitsLeft())
+
+	offset, _, _ := findNALUEmulationCode(d, d.BitsLeft())
+	if offset < 0 {
+		d.FieldStruct("rbsp", decodeFn)
+	} else {
+		unescapedBR := d.NewBitBufFromReader(&nalUnescapeReader{Reader: bitio.NewIOReader(d.BitBufRange(d.Pos(), d.BitsLeft()))})
+		d.FieldStructRootBitBufFn("rbsp", unescapedBR, decodeFn)
+	}
 
 	return nil
 }

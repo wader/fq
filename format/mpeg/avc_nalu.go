@@ -99,34 +99,48 @@ var sliceNames = scalar.UintMapSymStr{
 	9: "si",
 }
 
+func findNALUEmulationCode(d *decode.D, maxLen int64) (int64, uint64, error) {
+	return d.TryPeekFind(24, 8, maxLen, func(v uint64) bool {
+		return v == 0x00_00_03
+	})
+}
+
 func avcNALUDecode(d *decode.D) any {
 	d.FieldBool("forbidden_zero_bit")
 	d.FieldU2("nal_ref_idc")
 	nalType := d.FieldU5("nal_unit_type", avcNALNames)
-	unescapedBR := d.NewBitBufFromReader(nalUnescapeReader{Reader: bitio.NewIOReader(d.BitBufRange(d.Pos(), d.BitsLeft()))})
 
-	switch nalType {
-	case avcNALCodedSliceNonIDR,
-		avcNALCodedSlicePartitionA,
-		avcNALCodedSlicePartitionB,
-		avcNALCodedSlicePartitionC,
-		avcNALCodedSliceIDR,
-		avcNALCodedSliceAuxWithoutPartition,
-		avcNALCodedSliceExtension:
-		d.FieldStruct("slice_header", func(d *decode.D) {
+	decodeFn := func(d *decode.D) {
+		switch nalType {
+		case avcNALCodedSliceNonIDR,
+			avcNALCodedSlicePartitionA,
+			avcNALCodedSlicePartitionB,
+			avcNALCodedSlicePartitionC,
+			avcNALCodedSliceIDR,
+			avcNALCodedSliceAuxWithoutPartition,
+			avcNALCodedSliceExtension:
 			d.FieldUintFn("first_mb_in_slice", uEV)
 			d.FieldUintFn("slice_type", uEV, sliceNames)
 			d.FieldUintFn("pic_parameter_set_id", uEV)
 			// TODO: if ( separate_colour_plane_flag from SPS ) colour_plane_id; frame_num
-		})
-	case avcNALSupplementalEnhancementInformation:
-		d.FieldFormatBitBuf("sei", unescapedBR, &avcSEIFormat, nil)
-	case avcNALSequenceParameterSet:
-		d.FieldFormatBitBuf("sps", unescapedBR, &avcSPSFormat, nil)
-	case avcNALPictureParameterSet:
-		d.FieldFormatBitBuf("pps", unescapedBR, &avcPPSFormat, nil)
+		case avcNALSupplementalEnhancementInformation:
+			d.Format(&avcSEIFormat, nil)
+		case avcNALSequenceParameterSet:
+			d.Format(&avcSPSFormat, nil)
+		case avcNALPictureParameterSet:
+			d.Format(&avcPPSFormat, nil)
+		default:
+			d.FieldRawLen("data", d.BitsLeft())
+		}
 	}
-	d.FieldRawLen("data", d.BitsLeft())
+
+	offset, _, _ := findNALUEmulationCode(d, d.BitsLeft())
+	if offset < 0 {
+		d.FieldStruct("rbsp", decodeFn)
+	} else {
+		unescapedBR := d.NewBitBufFromReader(&nalUnescapeReader{Reader: bitio.NewIOReader(d.BitBufRange(d.Pos(), d.BitsLeft()))})
+		d.FieldStructRootBitBufFn("rbsp", unescapedBR, decodeFn)
+	}
 
 	return nil
 }

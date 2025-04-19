@@ -204,7 +204,7 @@ func avcSPSDecode(d *decode.D) any {
 		d.FieldStruct("vui_parameters", avcVuiParameters)
 	}
 
-	d.FieldRawLen("rbsp_trailing_bits", d.BitsLeft())
+	d.FieldRawLen("trailing_bits", d.BitsLeft())
 
 	return nil
 }

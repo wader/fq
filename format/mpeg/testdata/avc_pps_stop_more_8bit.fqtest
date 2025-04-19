@@ -15,5 +15,5 @@ $ fq -d avc_pps ddv avc_pps_stop_more_8bit
 0x0|   1f                                          | .              |  deblocking_filter_control_present_flag: true 0x1.7-0x2 (0.1)
 0x0|      20                                       |                |  constrained_intra_pred_flag: false 0x2-0x2.1 (0.1)
 0x0|      20                                       |                |  redundant_pic_cnt_present_flag: false 0x2.1-0x2.2 (0.1)
-0x0|      20                                       |                |  rbsp_stop_one_bit: true 0x2.2-0x2.3 (0.1)
-0x0|      20 00|                                   |   .|           |  rbsp_trailing_bits: raw bits 0x2.3-0x4 (1.5)
+0x0|      20                                       |                |  stop_one_bit: true 0x2.2-0x2.3 (0.1)
+0x0|      20 00|                                   |   .|           |  trailing_bits: raw bits 0x2.3-0x4 (1.5)

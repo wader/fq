@@ -91,7 +91,7 @@ type nalUnescapeReader struct {
 	lastTwoZeros [2]bool
 }
 
-func (r nalUnescapeReader) Read(p []byte) (n int, err error) {
+func (r *nalUnescapeReader) Read(p []byte) (n int, err error) {
 	n, err = r.Reader.Read(p)
 
 	ni := 0

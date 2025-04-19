@@ -114,7 +114,7 @@ func avcSEIDecode(d *decode.D) any {
 		d.FieldRawLen("data", d.BitsLeft())
 	})
 
-	d.FieldRawLen("rbsp_trailing_bits", d.BitsLeft())
+	d.FieldRawLen("trailing_bits", d.BitsLeft())
 
 	return nil
 }
