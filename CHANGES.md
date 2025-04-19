@@ -1,3 +1,74 @@
+# 0.15.0
+
+## Changes
+
+- Fix issue running fq without a home directory. #1107 Thanks @phiekl for the report.
+
+## Format changes
+
+- `avc_nalu` Decode payload into a `rbsp` struct (raw byte sequence payload) and only introduce a sub-buffer if de-emulation prevention was done. #1120
+- `hevc_nalu` Decode payload into a `rbsp` struct. See above. #1120
+- `matroska` Update specification. #1124
+- `mp4`
+  - Add a `skip_samples` option to not add fields or decode samples at all. Useful when dealing with broken mp4 files. #1089
+  - Add a `truncated_size` field if allow_truncated is used and we had to truncate. Useful when dealing with broken mp4 files. #1091
+  - `pcmC` Decode box. #1082
+  - `chnl` Decode box. #1082
+  - Don't decode samples for `ipcm` track format. Could end up with a huge array and not be very useful. #1083
+  - `trun` Skip samples array if there are no sample flags
+  - `uuid` Decode `tfxd` and `tfrf` boxes. #1110 Thanks @rafalborczuch
+
+## Changelog
+
+* 4a57b12d Correct a few spelling mistakes.
+* 4116c002 Update docker-golang to 1.24.0 from 1.23.6
+* c3f5faac Update docker-golang to 1.24.1 from 1.24.0
+* ab8cf3a2 Update docker-golang to 1.24.2 from 1.24.1
+* d0c772d8 Update github-go-version to 1.24.0 from 1.23.6
+* 240adf71 Update github-go-version to 1.24.1 from 1.24.0
+* 176fce11 Update github-go-version to 1.24.2 from 1.24.1
+* 35e5248c Update github-golangci-lint to 1.64.2 from 1.63.4
+* 867a3935 Update github-golangci-lint to 1.64.4 from 1.64.2
+* b59fc575 Update github-golangci-lint to 1.64.5 from 1.64.4
+* 2639e8eb Update github-golangci-lint to 1.64.6 from 1.64.5
+* 442bff51 Update github-golangci-lint to 1.64.7 from 1.64.6
+* 58d78f35 Update github-golangci-lint to 1.64.8 from 1.64.7
+* 6f89d45d Update github-golangci-lint to 2.1.2 from 2.1.1
+* d5f5ca00 Update gomod-BurntSushi/toml to 1.5.0 from 1.4.0
+* a161bd53 Update gomod-golang-x-crypto to 0.33.0 from 0.32.0
+* a056193b Update gomod-golang-x-crypto to 0.34.0 from 0.33.0
+* d04a1d26 Update gomod-golang-x-crypto to 0.35.0 from 0.34.0
+* af70b0ae Update gomod-golang-x-crypto to 0.37.0 from 0.36.0
+* 74a4d9e7 Update gomod-golang-x-net to 0.35.0 from 0.34.0
+* 788b39cb Update gomod-golang-x-net to 0.36.0 from 0.35.0
+* a32e6c33 Update gomod-golang-x-net to 0.37.0 from 0.36.0
+* c4149176 Update gomod-golang-x-net to 0.38.0 from 0.37.0
+* b526d0c3 Update gomod-golang-x-net to 0.39.0 from 0.38.0
+* aa2b1a69 Update gomod-golang-x-term to 0.31.0 from 0.30.0
+* 0b2da0d3 Update gomod-golang/text to 0.24.0 from 0.23.0
+* ef00cbb2 Update make-golangci-lint to 1.64.2 from 1.63.4
+* b2cdd4b8 Update make-golangci-lint to 1.64.4 from 1.64.2
+* 6aafdb31 Update make-golangci-lint to 1.64.5 from 1.64.4
+* bc73d2fc Update make-golangci-lint to 1.64.6 from 1.64.5
+* 1419e939 Update make-golangci-lint to 1.64.7 from 1.64.6
+* 5510e025 Update make-golangci-lint to 1.64.8 from 1.64.7
+* e160120b Update make-golangci-lint to 2.1.2 from 2.1.1
+* d5430710 avc,hevc: Only use sub-buffer for rbsp if needed
+* c3b30614 bump,action: Use ^2 for golangci-lint
+* c02bc3af doc: Regenerate
+* fb322412 fq: Don't fail at start if both HOME and XDG_CONFIG_HOME are not set
+* 0fc335b2 gha: Update actions and configs
+* f5a4ea93 go: Run modernize
+* 493ba6bf go: Switch to golangci-lint v2
+* 485dfde9 matroska: Update spec
+* 3ed43136 mp4: Add a "truncated_size" field if allow_truncated is used and we truncate
+* db9c03af mp4: Add skip_samples options
+* 4994c33f mp4: Decode pcmC and chnl box
+* c2481928 mp4: Don't decode samples for ipcm
+* de3c7054 mp4: trun: Skip samples array if there are no sample flags
+* bb0276d7 mp4: uuid: decode tfxd and tfrf boxes
+* 1a3232f3 xml: Fix "right hand must be only type assertion" by igoring cast error more explicitly
+
 # 0.14.0
 
 ## Changes
