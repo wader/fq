@@ -1,3 +1,4 @@
+version: 2
 # to test
 # docker run -ti -v "$PWD:$PWD" -w "$PWD" goreleaser/goreleaser:latest release --snapshot --rm-dist
 project_name: fq
@@ -36,9 +37,9 @@ archives:
       - none*
     format_overrides:
       - goos: windows
-        format: zip
+        formats: ["zip"]
       - goos: darwin
-        format: zip
+        formats: ["zip"]
     # fq_0.2.0_linux_amd64.tar.gz
     # fq_0.2.0_macos_arm64.zip
     name_template: >-
