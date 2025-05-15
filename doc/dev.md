@@ -38,16 +38,27 @@ Flags can be struct with bit-fields.
   - Use commit messages with a context prefix to make it easier to find and understand, ex:<br>
   `mp3: Validate sync correctly`
 - Tests:
-  - If possible use a pair of `testdata/file` and `testdata/file.fqtest` where `file.fqtest` is `$ fq dv file` or `$ fq 'dv,torepr' file` if there is `torepr` support.
+  - If possible, add one or more pairs of example input binary file plus an `.fqtest` file with one or more expected CLI commands and their outputs, with naming like:
+    - `./format/<format_name>/testdata/<format_ex_file_name>.<ext>`, e.g. [`./format/mp4/testdata/aac.mp4`](../format/mp4/testdata/aac.mp4)
+    - and `./format/<format_name>/testdata/<format_ex_file_name>.fqtest`, e.g. [`./format/mp4/testdata/aac.fqtest`](../format/mp4/testdata/aac.fqtest)
+  - The `*.fqtest` files use lines prefixed with `$` of commands to run / test (usually `fq` command style of course), and their expected output below them, e.g. in simple [`./pkg/interp/testdata/version.fqtest`](../pkg/interp/testdata/version.fqtest):
+    ```
+    $ fq -v
+    testversion (testos testarch)
+    ```
+  - A basic test of a (potentially new) format can be specified by creating a single line `./format/<format_name>/testdata/<format_ex_file_name>.fqtest` with `$ fq dv <format_ex_file_name>.<ext>` or `$ fq 'dv,torepr' <format_ex_file_name>.<ext>` if there is `torepr` support. (Note: for the test file, do not use full path like `./format/<format_name>/testdata/<format_ex_file_name>.<ext>`)
+  - You can of course look at your code's current output for a test like this by locally running the same command using `go` and with full path, e.g. `go run . dv ./format/<format_name>/testdata/<format_ex_file_name>.<ext>`
   - If `dv` produces a lof of output maybe use `dv({array_truncate: 50})` etc
-  - Run `go test ./format -run TestFormats/<name>` to test expected output.
-  - Run `go test ./format -run TestFormats/<name> -update` to update current output as expected output.
+  - Run `go test ./format -run TestFormats/<format_name>` to test expected outputs for all tests under format `<format_name>`.
+  - Run `go test ./format -run TestFormats/<format_name> -update` to automatically update current (or create, on initial addition of new test files and lines) expected output with the currently locally executing content.
+  - If you've added a new format, you'll probably also see that the generic `all` test fails, update that as well with: `go test ./format -run TestFormats/all -update`
+  - Double check that your git diff looks sensible for new or updated `*.fqtest` files (e.g. avoiding checking in test failure output like `exitcode: 2 error: wrong_path.mp4: no such file or directory`)
 - If you have format specific documentation:
   - Put it in `format/*/<name>.md` and use `//go:embed <name>.md`/`interp.RegisterFS(..)` to embed/register it.
   - Use simple markdown, just sections (depth starts at 3, `### Section`), paragraphs, lists and links.
-  - No heading section is needs with format name, will be added by `make doc` and fq cli help system.
+  - No heading section is needed with format name, will be added by `make doc` and fq cli help system.
   - Add a `testdata/<name>_help.fqtest` with just `$ fq -h <name>` to test CLI help.
-  - If in doubt look at `mp4.md`/`mp4.go` etc.
+  - If in doubt look at [`mp4.md`](../format/mp4/mp4.md)/[`mp4.go`](../format/mp4/mp4.go) etc.
   - Run `make README.md doc/formats.md` to update md files.
 - Run linter `make lint`
 - Run fuzzer `make fuzz GROUP=<name>`, see usage in Makefile
