@@ -633,7 +633,7 @@ $ fq '...' file.yml
 $ fq -r 'tojson({indent:2})' file.yml
 
 # add token to URL
-$ echo -n "https://host.org" | fq -Rsr 'from_url | .user.username="token" | tourl'
+$ echo -n "https://host.org" | fq -Rsr 'from_url | .user.username="token" | to_url'
 https://token@host.org
 
 # top 3 hosts in src or href attributes:
