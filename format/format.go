@@ -176,6 +176,7 @@ var (
 	Tzif                = &decode.Group{Name: "tzif"}
 	TZX                 = &decode.Group{Name: "tzx"}
 	UDP_Datagram        = &decode.Group{Name: "udp_datagram"}
+	UTF                 = &decode.Group{Name: "utf"}
 	Vorbis_Comment      = &decode.Group{Name: "vorbis_comment"}
 	Vorbis_Packet       = &decode.Group{Name: "vorbis_packet"}
 	VP8_Frame           = &decode.Group{Name: "vp8_frame"}
@@ -408,4 +409,8 @@ type Pg_Heap_In struct {
 
 type Pg_BTree_In struct {
 	Page int `doc:"First page number in file, default is 0"`
+}
+
+type UTF_In struct {
+	Encoding string `doc:"Encoding"`
 }

@@ -14,6 +14,7 @@ import (
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/charmap"
 	"golang.org/x/text/encoding/unicode"
+	"golang.org/x/text/unicode/norm"
 )
 
 //go:embed encoding.jq
@@ -236,6 +237,26 @@ func init() {
 		}
 
 		return bb.String()
+	})
+
+	type unicodeFormOpts struct {
+		Form string
+	}
+	interp.RegisterFunc1("_unicode_form", func(_ *interp.Interp, c string, opts unicodeFormOpts) any {
+		var f norm.Form
+		switch opts.Form {
+		case "nfc":
+			f = norm.NFC
+		case "nfd":
+			f = norm.NFD
+		case "nfkc":
+			f = norm.NFKC
+		case "nfkd":
+			f = norm.NFKD
+		default:
+			return fmt.Errorf("unknown unicode form %s", opts.Form)
+		}
+		return f.String(c)
 	})
 
 	interp.RegisterFS(textFS)
