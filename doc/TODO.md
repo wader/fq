@@ -70,6 +70,7 @@
 - `-n`, `inputs/0` and `input/0` behavior. Same as jq.
 - Mention `empty.something`?
 - Use https://github.com/fadado/JBOL/blob/master/doc/JQ-Distilled.md notation
+- Manual with interactive examples
 
 #### Decode
 
