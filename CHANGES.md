@@ -1,3 +1,44 @@
+# 0.15.1
+
+Minor release to maninly fix golang sum database hash issue.
+
+## Changes
+
+- The v0.15.0 tag was updated during release because it incorrectly had the wrong build version and missing change log. Somehow the first commit hash managed to get into the global golang sum database. This will cause `go get` and `go install` to build a binary that displays the incorrect fq version, and if `GOPROXY=direct` is used it would cause a security error.
+- Update golang and dependencies.
+
+## Changelog
+
+* 447b2ff9 Add Manual to TODO.md
+* 68641869 doc: fix small typo
+* 548b2dab doc: Update macOS manual install instructions
+* 0421780b fix typo
+* 94e3dea0 fix typo in doc
+* 984cf020 Update docker-golang to 1.24.3 from 1.24.2
+* e8d19482 Update docker-golang to 1.24.4 from 1.24.3
+* e8075895 Update docker-golang to 1.24.5 from 1.24.4
+* 5d7e0d6e Update github-go-version to 1.24.3 from 1.24.2
+* aa9a7c55 Update github-go-version to 1.24.4 from 1.24.3
+* ee578f94 Update github-go-version to 1.24.5 from 1.24.4
+* 69b5724c Update github-golangci-lint to 2.1.5 from 2.1.2
+* a1c37d70 Update github-golangci-lint to 2.1.6 from 2.1.5
+* fa8c8814 Update github-golangci-lint to 2.2.0 from 2.1.6
+* 8d0d85a1 Update github-golangci-lint to 2.2.1 from 2.2.0
+* 274d65bc Update github-golangci-lint to 2.2.2 from 2.2.1
+* 9d7bc52d Update gomod-golang-x-crypto to 0.38.0 from 0.37.0
+* f4dda340 Update gomod-golang-x-crypto to 0.39.0 from 0.38.0
+* e401bef6 Update gomod-golang-x-net to 0.40.0 from 0.39.0
+* 92e0a6ad Update gomod-golang-x-net to 0.41.0 from 0.40.0
+* 33863401 Update gomod-golang-x-net to 0.42.0 from 0.41.0
+* c74c0fd3 Update gomod-golang-x-term to 0.33.0 from 0.32.0
+* b8e38059 Update gomod-golang/text to 0.26.0 from 0.25.0
+* e8fdecbb Update gomod-golang/text to 0.27.0 from 0.26.0
+* a900056b Update make-golangci-lint to 2.1.5 from 2.1.2
+* 79997581 Update make-golangci-lint to 2.1.6 from 2.1.5
+* 6272310f Update make-golangci-lint to 2.2.0 from 2.1.6
+* d5942f5d Update make-golangci-lint to 2.2.1 from 2.2.0
+* 4b77bcf2 Update make-golangci-lint to 2.2.2 from 2.2.1
+
 # 0.15.0
 
 ## Changes
