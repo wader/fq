@@ -35,7 +35,7 @@ require (
 	// bump: gomod-gopacket /github\.com\/gopacket\/gopacket v(.*)/ https://github.com/gopacket/gopacket.git|^1
 	// bump: gomod-gopacket command go get github.com/gopacket/gopacket@v$LATEST && go mod tidy
 	// bump: gomod-gopacket link "Release notes" https://github.com/gopacket/gopacket/releases/tag/v$LATEST
-	github.com/gopacket/gopacket v1.3.1
+	github.com/gopacket/gopacket v1.4.0
 
 	// bump: gomod-copystructure /github\.com\/mitchellh\/copystructure v(.*)/ https://github.com/mitchellh/copystructure.git|^1
 	// bump: gomod-copystructure command go get github.com/mitchellh/copystructure@v$LATEST && go mod tidy
