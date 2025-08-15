@@ -28,26 +28,46 @@ func init() {
 			ProbeOrder:  format.ProbeOrderTextFuzzy,
 			Groups:      []*decode.Group{format.Probe},
 			DecodeFn:    decodeYAML,
-			Functions:   []string{"_todisplay"},
+			DefaultInArg: format.YAML_In{
+				MultiDocument: false,
+			},
+			Functions: []string{"_todisplay"},
 		})
 	interp.RegisterFS(yamlFS)
 	interp.RegisterFunc1("_to_yaml", toYAML)
 }
 
 func decodeYAML(d *decode.D) any {
+	var yi format.YAML_In
+	d.ArgAs(&yi)
+
 	br := d.RawLen(d.Len())
-	var r any
+
+	var vs []any
 
 	yd := yaml.NewDecoder(bitio.NewIOReader(br))
-	if err := yd.Decode(&r); err != nil {
-		d.Fatalf("%s", err)
-	}
-	if err := yd.Decode(new(any)); !errors.Is(err, io.EOF) {
-		d.Fatalf("trialing data after top-level value")
+	for {
+		var v any
+		err := yd.Decode(&v)
+		if err != nil {
+			if len(vs) == 0 {
+				d.Fatalf("%s", err)
+			} else if errors.Is(err, io.EOF) {
+				break
+			} else {
+				d.Fatalf("trialing data after document")
+			}
+		}
+
+		vs = append(vs, v)
 	}
 
 	var s scalar.Any
-	s.Actual = gojqx.Normalize(r)
+	if !yi.MultiDocument && len(vs) == 1 {
+		s.Actual = gojqx.Normalize(vs[0])
+	} else {
+		s.Actual = gojqx.Normalize(vs)
+	}
 
 	switch s.Actual.(type) {
 	case map[string]any,
@@ -63,18 +83,32 @@ func decodeYAML(d *decode.D) any {
 }
 
 type ToYAMLOpts struct {
-	Indent int `default:"4"` // 4 is default for gopkg.in/yaml.v3
+	Indent        int  `default:"4"` // 4 is default for gopkg.in/yaml.v3
+	MultiDocument bool `default:"false"`
 }
 
 func toYAML(_ *interp.Interp, c any, opts ToYAMLOpts) any {
+	c = gojqx.Normalize(c)
+
+	cs, isArray := c.([]any)
+	if opts.MultiDocument {
+		if !isArray {
+			return gojqx.FuncTypeError{Name: "to_yaml", V: c}
+		}
+	} else {
+		cs = []any{c}
+	}
+
 	b := &bytes.Buffer{}
 	e := yaml.NewEncoder(b)
-	// yaml.SetIndent panics if < 0
-	if opts.Indent >= 0 {
-		e.SetIndent(opts.Indent)
-	}
-	if err := e.Encode(gojqx.Normalize(c)); err != nil {
-		return err
+	for _, c := range cs {
+		// yaml.SetIndent panics if < 0
+		if opts.Indent >= 0 {
+			e.SetIndent(opts.Indent)
+		}
+		if err := e.Encode(gojqx.Normalize(c)); err != nil {
+			return err
+		}
 	}
 
 	return b.String()
