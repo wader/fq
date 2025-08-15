@@ -16,7 +16,7 @@ var mpegSpuGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
-		format.MPES_PES,
+		format.MPEG_PES,
 		&decode.Format{
 			Description: "MPEG Packetized elementary stream",
 			DecodeFn:    pesDecode,
