@@ -1969,6 +1969,10 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			//    // > object_count is derived from baseChannelCount
 			// }
 		}
+	case "elng":
+		d.FieldU8("version")
+		d.FieldU24("flags")
+		d.FieldUTF8NullFixedLen("extended_language", int(d.BitsLeft())/8)
 
 	default:
 		// there are at least 4 ways to encode udta metadata in mov/mp4 files.

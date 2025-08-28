@@ -1,0 +1,10 @@
+$ fq -o force=true -d mp4 dv elng.mp4
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: elng.mp4 (mp4) 0x0-0x12 (18)
+    |                                               |                |  boxes[0:1]: 0x0-0x12 (18)
+    |                                               |                |    [0]{}: box 0x0-0x12 (18)
+0x00|00 00 00 12                                    |....            |      size: 18 0x0-0x4 (4)
+0x00|            65 6c 6e 67                        |    elng        |      type: "elng" (Extended Language Tag) 0x4-0x8 (4)
+0x00|                        00                     |        .       |      version: 0 0x8-0x9 (1)
+0x00|                           00 00 00            |         ...    |      flags: 0 0x9-0xc (3)
+0x00|                                    65 6e 2d 55|            en-U|      extended_language: "en-US" 0xc-0x12 (6)
+0x10|53 00|                                         |S.|             |
