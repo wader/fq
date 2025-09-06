@@ -25,7 +25,7 @@ $ echo '<a href="url">text</a>' | fq -d html
 ### Element as array
 
 ```sh
-$ '<a href="url">text</a>' | fq -d html -o array=true
+$ echo '<a href="url">text</a>' | fq -d html -o array=true
 [
   "html",
   null,

@@ -44,7 +44,7 @@ Element as object
 
 Element as array
 ================
-  $ '<a href="url">text</a>' | fq -d html -o array=true
+  $ echo '<a href="url">text</a>' | fq -d html -o array=true
   [
     "html",
     null,
