@@ -90,6 +90,7 @@ var (
 	CAFF                = &decode.Group{Name: "caff"}
 	CBOR                = &decode.Group{Name: "cbor"}
 	CSV                 = &decode.Group{Name: "csv"}
+	Decode_Tree         = &decode.Group{Name: "decode_tree"}
 	DNS                 = &decode.Group{Name: "dns"}
 	DNS_TCP             = &decode.Group{Name: "dns_tcp"}
 	ELF                 = &decode.Group{Name: "elf"}
@@ -263,6 +264,10 @@ type Protobuf_In struct {
 
 type Matroska_In struct {
 	DecodeSamples bool `doc:"Decode samples"`
+}
+
+type Decode_Tree_In struct {
+	Tree any
 }
 
 type MP3_In struct {

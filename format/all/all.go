@@ -19,6 +19,7 @@ import (
 	_ "github.com/wader/fq/format/cbor"
 	_ "github.com/wader/fq/format/crypto"
 	_ "github.com/wader/fq/format/csv"
+	_ "github.com/wader/fq/format/decode_tree"
 	_ "github.com/wader/fq/format/dns"
 	_ "github.com/wader/fq/format/elf"
 	_ "github.com/wader/fq/format/fairplay"
