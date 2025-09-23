@@ -22,6 +22,7 @@ import (
 func init() {
 	RegisterFunc1("_tobits", (*Interp)._toBits)
 	RegisterFunc0("open", (*Interp)._open)
+	RegisterFunc2("byteoffset", (*Interp)._byteOffset)
 }
 
 type ToBinary interface {
@@ -184,6 +185,31 @@ func (i *Interp) _toBits(c any, opts toBitsOpts) any {
 		return err
 	}
 	return bb
+}
+
+func (i *Interp) _byteOffset(c any, a any, b any) any {
+	ab, abOk := a.(Binary)
+	if !abOk {
+		return gojqx.FuncArgTypeError{Name: "byteoffset", ArgName: "a", V: c}
+	}
+	bb, bbOk := b.(Binary)
+	if !bbOk {
+		return gojqx.FuncArgTypeError{Name: "byteoffset", ArgName: "b", V: b}
+	}
+	if ab.unit != 8 {
+		return fmt.Errorf("a does not use byte units")
+	}
+	if bb.unit != 8 {
+		return fmt.Errorf("b does not use byte units")
+	}
+	if ab.br != bb.br {
+		return fmt.Errorf("%s does not overlap with %s", gojqx.TypeErrorPreview(ab), gojqx.TypeErrorPreview(bb))
+	}
+
+	offset := (ab.r.Start - bb.r.Start) / int64(bb.unit)
+
+	// TODO: > int offset?
+	return int(offset)
 }
 
 type openFile struct {

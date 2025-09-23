@@ -40,16 +40,14 @@ def update_output2($o; entry):
 # If f yields an error, this adds the error to the I/O object
 # with the appropriate path, and rethrows the I/O object as error.
 def take($k; $w; f):
-  .i[:$w] as $i | assert_len($i; $w) | .i |= .[$w:] |
+  .i[:$w] as $i | debug({take: {$k, $w, l: length}}) | assert_len($i; $w) | .i |= .[$w:] |
   catch_errs($i | f + {o: $i.start, l: $i.stop-$i.start}) as $v |
   update_output($v; $k; {($k): $v});
 
 def take2($w; f):
-  .i[:$w] as $i | assert_len($i; $w) | .i |= .[$w:] |
+  .i[:$w] as $i | debug({take2: {dot: .,$w, l: ($i | length)}})  | .i |= .[$w:] |
   catch_errs($i | f + {o: $i.start, l: $i.stop-$i.start}) as $v |
   update_output2($v; [$v]);
-
-def byteoffset($_): .start;
 
 # Translate from i denoting remaining input to i denoting consumed input.
 def set_consumed($input): .i |= .[:byteoffset($input)];
@@ -67,15 +65,15 @@ def rtrim_nul: (index(0 | tobytes) // length) as $i | .[:$i];
 def u24be($k): take($k; 3; {i: ., v: (.[0]*65366 + .[1]*256 + .[2])});
 def u32be($k): take($k; 4; {i: ., v: (.[0]*16777216 + .[1]*65366 + .[2]*256 + .[3])});
 def str($k; $w): take($k; $w; {i: ., v: rtrim_nul});
-def str($k: take2($w; {i: ., v: rtrim_nul});
+def str($w): take2($w; {i: ., v: rtrim_nul});
 def raw($k; $w): take($k; $w; {i: ., v: null});
 
 def many($k; $w; f): take($k; $w; takes(f));
 
 def decode_box:
   . as $input |
+  {i: ., l:0, o:0} |
   # we use i as remaining input, which we later use to infer consumed input
-  {i: ., o: 0, l: 0} |
   u32be("size") |
   str("type"; 4) |
   (.v.size.v-8) as $size |
@@ -83,8 +81,8 @@ def decode_box:
   if $type == "ftyp" then
     str("major_brand"; 4) |
     u32be("minor_version") |
-    boxes("brands"; $size-8; takes(str(4))
-  elif $type == "moov" then boxes("boxes"; $size; decode_box)
+    many("brands"; $size-8; takes({i: ., l:0, o:0} | str(4)))
+  elif $type == "moov" then many("boxes"; $size; decode_box)
   else raw("data"; $size)
   end
   # raw("data"; .v.size.s) | # use sym (decimal number)
@@ -92,5 +90,5 @@ def decode_box:
 
 def decode_mp4:
   tobytes |
-  {i: ., o:0, l: 0} | boxes("boxes"; .i | length; decode_box)
+  decode_box
 ;
