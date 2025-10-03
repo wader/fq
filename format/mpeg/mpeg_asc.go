@@ -49,8 +49,16 @@ func ascDecoder(d *decode.D) any {
 	objectType := d.FieldUintFn("object_type", decodeEscapeValueCarryFn(5, 6, 0), format.MPEGAudioObjectTypeNames)
 	d.FieldUintFn("sampling_frequency", decodeEscapeValueAbsFn(4, 24, 0), frequencyIndexHzMap)
 	d.FieldU4("channel_configuration", channelConfigurationNames)
+	if objectType == format.MPEGAudioObjectTypeSBR || objectType == format.MPEGAudioObjectTypePS { // SBR or PS hierarchical signalling
+		d.FieldUintFn("extension_sampling_frequency", decodeEscapeValueAbsFn(4, 24, 0), frequencyIndexHzMap)
+		innerObjectType := d.FieldUintFn("inner_object_type", decodeEscapeValueCarryFn(5, 6, 0), format.MPEGAudioObjectTypeNames)
+		if innerObjectType == 22 { // ER BSAC
+			d.FieldU4("extension_channel_configuration", channelConfigurationNames)
+		}
+	}
 	// TODO: GASpecificConfig etc
 	d.FieldRawLen("var_aot_or_byte_align", d.BitsLeft())
+	// TODO: SBR and PS can also be signalled after GASpecificConfig (backward compatible signaling)
 
 	return format.MPEG_ASC_Out{ObjectType: int(objectType)}
 }
