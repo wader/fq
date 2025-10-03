@@ -129,6 +129,8 @@ $ fq -d flac dv picture_seek_gain.flac
 *     |until 0x205f.7 (7868)                          |                |
       |                                               |                |  frames[0:1]: 0x2060-0x2260 (512)
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    [0]{}: frame (flac_frame) 0x2060-0x2260 (512)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+  0x00|7f ab|                                         |..|             |      footer_crc_calculated: raw bits 0x0-0x2 (2)
       |                                               |                |      header{}: 0x2060-0x2068 (8)
 0x2060|ff f8                                          |..              |        sync: 0b11111111111110 (valid) 0x2060-0x2061.6 (1.6)
 0x2060|   f8                                          | .              |        reserved0: 0 (valid) 0x2061.6-0x2061.7 (0.1)
@@ -178,7 +180,7 @@ $ fq -d flac dv picture_seek_gain.flac
       |                                               |                |            [0]{}: partition 0x2089.7-0x225d.3 (467.4)
       |                                               |                |              count: 433
 0x2080|                           80 ee               |         ..     |              rice_parameter: 7 0x2089.7-0x208a.3 (0.4)
-0x2080|                              ee e7 63 a9 cc e0|          ..c...|              samples: raw bits 0x208a.3-0x225d.3 (467)
+0x2080|                              ee e7 63 a9 cc e0|          ..c...|              residuals: raw bits 0x208a.3-0x225d.3 (467)
 0x2090|6d 35 19 8c 25 c2 c9 4c 9a 47 20 bd ba 36 b3 2f|m5..%..L.G ..6./|
 *     |until 0x225d.2 (467)                           |                |
 0x2250|                                       20      |                |      byte_align: 0 (valid) 0x225d.3-0x225e (0.5)

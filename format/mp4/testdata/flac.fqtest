@@ -365,7 +365,7 @@ $ fq -d mp4 dv flac.mp4
      |                                               |                |                [0]{}: partition 0x4e.1-0x284.1 (566)
      |                                               |                |                  count: 2199
 0x040|                                          01   |              . |                  rice_parameter: 0 0x4e.1-0x4e.5 (0.4)
-0x040|                                          01 27|              .'|                  samples: raw bits 0x4e.5-0x284.1 (565.4)
+0x040|                                          01 27|              .'|                  residuals: raw bits 0x4e.5-0x284.1 (565.4)
 0x050|33 32 79 32 64 e6 66 73 24 d3 38 7f 99 27 99 3c|32y2d.fs$.8..'.<|
 *    |until 0x284 (566)                              |                |
      |                                               |                |            [1]{}: subframe 0x284.1-0x287.2 (3.1)
@@ -374,6 +374,8 @@ $ fq -d mp4 dv flac.mp4
 0x280|               00                              |     .          |              wasted_bits_flag: 0 0x285-0x285.1 (0.1)
      |                                               |                |              subframe_sample_size: 17
 0x280|               00 00 00                        |     ...        |              value: 0 0x285.1-0x287.2 (2.1)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+  0x0|82 cb|                                         |..|             |          footer_crc_calculated: raw bits 0x0-0x2 (2)
 0x280|                     00                        |       .        |          byte_align: 0 (valid) 0x287.2-0x288 (0.6)
 0x280|                        82 cb                  |        ..      |          footer_crc: "82cb" (raw bits) (valid) 0x288-0x28a (2)
      |                                               |                |      id: 1
