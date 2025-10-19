@@ -6,6 +6,7 @@
 package gojqx
 
 import (
+	"encoding/json"
 	"fmt"
 	"math"
 	"math/big"
@@ -65,6 +66,8 @@ func ToGoJQValueFn(v any, valueFn func(v any) (any, error)) (any, error) {
 			}
 		}
 		return vv, nil
+	case json.Number:
+		return gojq.ParseNumber(vv), nil
 	case string:
 		return vv, nil
 	case []byte:
