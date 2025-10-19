@@ -9,6 +9,7 @@ import (
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/internal/colorjson"
+	"github.com/wader/fq/internal/gojqx"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
@@ -70,9 +71,9 @@ func decodeJSONEx(d *decode.D, lines bool) any {
 		if len(vs) == 0 {
 			d.Fatalf("not lines found")
 		}
-		s.Actual = gojq.NormalizeNumbers(vs)
+		s.Actual = gojqx.NormalizeNumbers(vs)
 	} else {
-		s.Actual = gojq.NormalizeNumbers(vs[0])
+		s.Actual = gojqx.NormalizeNumbers(vs[0])
 	}
 	d.Value.V = &s
 	d.Value.Range.Len = d.Len()

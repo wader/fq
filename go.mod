@@ -5,7 +5,7 @@ go 1.24.0
 toolchain go1.24.6
 
 // fork of github.com/itchyny/gojq, see github.com/wader/gojq fq branch
-require github.com/wader/gojq v0.12.1-0.20250208151254-0aa7b87b2c2b
+require github.com/wader/gojq v0.12.1-0.20251019091009-98f8efce4ca9
 
 require (
 	// bump: gomod-BurntSushi/toml /github\.com\/BurntSushi\/toml v(.*)/ https://github.com/BurntSushi/toml.git|^1

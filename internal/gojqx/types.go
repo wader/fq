@@ -372,7 +372,7 @@ func (v String) JQValueToNumber() any {
 	if !gojq.ValidNumber(string(v)) {
 		return fmt.Errorf("invalid number: %q", string(v))
 	}
-	return gojq.NormalizeNumber(json.Number(string(v)))
+	return gojq.ParseNumber(json.Number(string(v)))
 }
 func (v String) JQValueToString() any { return string(v) }
 func (v String) JQValueToGoJQ() any   { return string(v) }
