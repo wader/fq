@@ -33,7 +33,6 @@ func init() {
 		&decode.Format{
 			Description: "SafeTensors",
 			DecodeFn:    decodeSafeTensors,
-			Functions:   []string{},
 			Dependencies: []decode.Dependency{
 				{Groups: []*decode.Group{format.JSON}, Out: &jsonFormat},
 			},
@@ -73,9 +72,9 @@ var dataDecoders = map[string]func(d *decode.D){
 	"F32": func(d *decode.D) { d.FieldF32("x") },
 	"F16": func(d *decode.D) { d.FieldF16("x") },
 	"BF16": func(d *decode.D) {
-		bits := uint16(d.U16())
-		value := bfloat16_bits_to_float(bits)
-		d.FieldValueFlt("x", float64(value))
+		d.FieldFltFn("x", func(d *decode.D) float64 {
+			return float64(bfloat16_bits_to_float(uint16(d.U16())))
+		})
 	},
 	"I64":  func(d *decode.D) { d.FieldS64("x") },
 	"I32":  func(d *decode.D) { d.FieldS32("x") },

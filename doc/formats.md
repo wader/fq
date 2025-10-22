@@ -113,6 +113,7 @@
 |`protobuf_widevine`                                             |Widevine&nbsp;protobuf                                                                                       |<sub>`protobuf`</sub>|
 |`pssh_playready`                                                |PlayReady&nbsp;PSSH                                                                                          |<sub></sub>|
 |[`rtmp`](#rtmp)                                                 |Real-Time&nbsp;Messaging&nbsp;Protocol                                                                       |<sub>`amf0` `mpeg_asc`</sub>|
+|`safetensors`                                                   |SafeTensors                                                                                                  |<sub>`json`</sub>|
 |`sll2_packet`                                                   |Linux&nbsp;cooked&nbsp;capture&nbsp;encapsulation&nbsp;v2                                                    |<sub>`inet_packet`</sub>|
 |`sll_packet`                                                    |Linux&nbsp;cooked&nbsp;capture&nbsp;encapsulation                                                            |<sub>`inet_packet`</sub>|
 |[`tap`](#tap)                                                   |TAP&nbsp;tape&nbsp;format&nbsp;for&nbsp;ZX&nbsp;Spectrum&nbsp;computers                                      |<sub></sub>|
