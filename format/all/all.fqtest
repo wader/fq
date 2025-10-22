@@ -158,6 +158,7 @@ protobuf             Protobuf
 protobuf_widevine    Widevine protobuf
 pssh_playready       PlayReady PSSH
 rtmp                 Real-Time Messaging Protocol
+safetensors          SafeTensors
 sll2_packet          Linux cooked capture encapsulation v2
 sll_packet           Linux cooked capture encapsulation
 tap                  TAP tape format for ZX Spectrum computers
