@@ -61,7 +61,7 @@ func (brr RuneReadSeeker) ReadRune() (r rune, size int, err error) {
 		return rune(c), 1, nil
 	}
 
-	ss := utf8Bytes(b[0])
+	ss := utf8Bytes(c)
 	if ss < 0 {
 		return utf8.RuneError, 1, nil
 	}
