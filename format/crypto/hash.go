@@ -14,7 +14,7 @@ import (
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/interp"
 
-	//nolint: staticcheck
+	//nolint: all
 	"golang.org/x/crypto/md4"
 	"golang.org/x/crypto/sha3"
 )
