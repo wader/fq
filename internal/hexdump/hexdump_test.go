@@ -1,16 +1,16 @@
 // TODO: fix tests
 //go:build ignore
-// +build ignore
 
 package hexdump_test
 
 import (
 	"bytes"
 	"fmt"
+	"testing"
+
 	"github.com/wader/fq/internal/asciiwriter"
 	"github.com/wader/fq/internal/hexdump"
 	"github.com/wader/fq/internal/hexpairwriter"
-	"testing"
 )
 
 func TestHexdump(t *testing.T) {
