@@ -50,7 +50,7 @@ require (
 	// bump: gomod-golang-x-crypto /golang\.org\/x\/crypto v(.*)/ https://github.com/golang/crypto.git|^0
 	// bump: gomod-golang-x-crypto command go get golang.org/x/crypto@v$LATEST && go mod tidy
 	// bump: gomod-golang-x-crypto link "Tags" https://github.com/golang/crypto/tags
-	golang.org/x/crypto v0.44.0
+	golang.org/x/crypto v0.45.0
 
 	// bump: gomod-golang-x-net /golang\.org\/x\/net v(.*)/ https://github.com/golang/net.git|^0
 	// bump: gomod-golang-x-net command go get golang.org/x/net@v$LATEST && go mod tidy
