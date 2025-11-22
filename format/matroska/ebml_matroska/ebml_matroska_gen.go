@@ -272,6 +272,7 @@ const (
 	TagEditionUIDID               = 0x63c9
 	TagChapterUIDID               = 0x63c4
 	TagAttachmentUIDID            = 0x63c6
+	TagBlockAddIDValueID          = 0x63c7
 	SimpleTagID                   = 0x67c8
 	TagNameID                     = 0x45a3
 	TagLanguageID                 = 0x447a
@@ -2841,12 +2842,13 @@ var TargetsElement = &ebml.Master{
 		Definition: "Specifies which other elements the metadata represented by the tag value applies to",
 	},
 	Master: map[ebml.ID]ebml.Element{
-		TargetTypeValueID:  TargetTypeValueElement,
-		TargetTypeID:       TargetTypeElement,
-		TagTrackUIDID:      TagTrackUIDElement,
-		TagEditionUIDID:    TagEditionUIDElement,
-		TagChapterUIDID:    TagChapterUIDElement,
-		TagAttachmentUIDID: TagAttachmentUIDElement,
+		TargetTypeValueID:    TargetTypeValueElement,
+		TargetTypeID:         TargetTypeElement,
+		TagTrackUIDID:        TagTrackUIDElement,
+		TagEditionUIDID:      TagEditionUIDElement,
+		TagChapterUIDID:      TagChapterUIDElement,
+		TagAttachmentUIDID:   TagAttachmentUIDElement,
+		TagBlockAddIDValueID: TagBlockAddIDValueElement,
 	},
 }
 var TargetTypeValueElement = &ebml.Uinteger{
@@ -2927,6 +2929,14 @@ var TagAttachmentUIDElement = &ebml.Uinteger{
 		ParentID:   TargetsID,
 		Name:       "tag_attachment_uid",
 		Definition: "A UID that identifies the Attachment(s) that the tags belong to",
+	},
+}
+var TagBlockAddIDValueElement = &ebml.Uinteger{
+	ElementType: ebml.ElementType{
+		ID:         TagBlockAddIDValueID,
+		ParentID:   TargetsID,
+		Name:       "tag_block_add_idvalue",
+		Definition: "A BlockAddIDValuethat identifies the Block Addition Mapping that the tags belong to",
 	},
 }
 
@@ -3257,6 +3267,7 @@ var IDToElement = map[ebml.ID]ebml.Element{
 	TagEditionUIDID:               TagEditionUIDElement,
 	TagChapterUIDID:               TagChapterUIDElement,
 	TagAttachmentUIDID:            TagAttachmentUIDElement,
+	TagBlockAddIDValueID:          TagBlockAddIDValueElement,
 	SimpleTagID:                   SimpleTagElement,
 	TagNameID:                     TagNameElement,
 	TagLanguageID:                 TagLanguageElement,

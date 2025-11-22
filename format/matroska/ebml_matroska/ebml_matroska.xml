@@ -1427,7 +1427,7 @@ For more detailed information, see (#chapters).</documentation>
   </element>
   <element name="EditionLanguageIETF" path="\Segment\Chapters\EditionEntry\EditionDisplay\EditionLanguageIETF" id="0x45E4" type="string" minver="5">
     <documentation lang="en" purpose="definition">One language corresponding to the EditionString,
-in the form defined in [@!RFC5646]; see (#language-codes) on language codes.</documentation>
+in the form defined in [@!RFC5646]; see [@!RFC9559, Section 12] on language codes.</documentation>
   </element>
   <element name="ChapterAtom" path="\Segment\Chapters\EditionEntry\+ChapterAtom" id="0xB6" type="master" minOccurs="1" recursive="1">
     <documentation lang="en" purpose="definition">Contains the atom information to use as the chapter atom (applies to all tracks).</documentation>
@@ -1690,6 +1690,16 @@ If set to any other value, it **MUST** match the `ChapterUID` value of a chapter
     <documentation lang="en" purpose="usage notes">If the value is 0 at this level, the tags apply to all the attachments in
     the `Segment`.  If set to any other value, it **MUST** match
     the `FileUID` value of an attachment found in this `Segment`.</documentation>
+  </element>
+  <element name="TagBlockAddIDValue" path="\Segment\Tags\Tag\Targets\TagBlockAddIDValue" id="0x63C7" type="uinteger" default="0" minver="5">
+    <documentation lang="en" purpose="definition">A `BlockAddIDValue`that identifies the `Block Addition Mapping` that the tags belong to.</documentation>
+    <documentation lang="en" purpose="usage notes">If the value is 0 at this level and if the `TrackUID` value is 0 at this level,
+the tags apply to all block addition mappings in this `Segment`.
+If the value is 0 at this level and if the `TrackUID` value is not 0 at this level, the tags apply to all block addition mappings in the referenced `Track`.
+If the value is not 0 at this level and if the `TrackUID` value is 0 at this level, the tags apply to all block addition mappings with this value in this `Segment`.
+If the value is not 0 at this level and if the `TrackUID` value is not 0 at this level, the value **MUST** match the `BlockAddIDValue` value
+of a block addition mapping found in the referenced `Track`.
+</documentation>
   </element>
   <element name="SimpleTag" path="\Segment\Tags\Tag\+SimpleTag" id="0x67C8" type="master" minOccurs="1" recursive="1">
     <documentation lang="en" purpose="definition">Contains general information about the target.</documentation>
