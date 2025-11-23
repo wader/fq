@@ -451,7 +451,7 @@ type readlineOpts struct {
 
 func (i *Interp) _readline(c any, opts readlineOpts) gojq.Iter {
 	if i.EvalInstance.IsCompleting {
-		return gojq.NewIter()
+		return gojq.NewIter[any]()
 	}
 
 	expr, err := i.OS.Readline(ReadlineOpts{
@@ -604,13 +604,13 @@ func (i *Interp) _stdioWrite(c any, fdName string) gojq.Iter {
 		return gojq.NewIter(fmt.Errorf("%s is not a writeable", fdName))
 	}
 	if i.EvalInstance.IsCompleting {
-		return gojq.NewIter()
+		return gojq.NewIter[any]()
 	}
 
 	if _, err := fmt.Fprint(w, c); err != nil {
 		return gojq.NewIter(err)
 	}
-	return gojq.NewIter()
+	return gojq.NewIter[any]()
 }
 
 func (i *Interp) _stdioInfo(c any, fdName string) any {
@@ -654,7 +654,7 @@ func (i *Interp) _display(c any, v any) gojq.Iter {
 		if err := v.Display(i.EvalInstance.Output, opts); err != nil {
 			return gojq.NewIter(err)
 		}
-		return gojq.NewIter()
+		return gojq.NewIter[any]()
 	default:
 		return gojq.NewIter(fmt.Errorf("%+#v: not displayable", c))
 	}
@@ -679,7 +679,7 @@ func (i *Interp) _hexdump(c any, v any) gojq.Iter {
 		return gojq.NewIter(err)
 	}
 
-	return gojq.NewIter()
+	return gojq.NewIter[any]()
 }
 
 func (i *Interp) _printColorJSON(c any, v any) gojq.Iter {
@@ -715,7 +715,7 @@ func (i *Interp) _printColorJSON(c any, v any) gojq.Iter {
 		return gojq.NewIter(err)
 	}
 
-	return gojq.NewIter()
+	return gojq.NewIter[any]()
 }
 
 func (i *Interp) _isCompleting(c any) any {
