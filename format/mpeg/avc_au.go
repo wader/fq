@@ -18,6 +18,16 @@ func init() {
 			DecodeFn:    avcAUDecode,
 			DefaultInArg: format.AVC_AU_In{
 				LengthSize: 0,
+				AVC_SPS_Info: format.AVC_SPS_Info{
+					SeparateColourPlaneFlag: false,
+					Log2MaxFrameNum:         4,
+					FrameMbsOnlyFlag:        true,
+					PicOrderCntType:         0,
+					Log2MaxPicOrderCntLsb:   4,
+				},
+				AVC_PPS_Info: format.AVC_PPS_Info{
+					BottomFieldPicOrderInFramePresentFlag: false,
+				},
 			},
 			RootArray: true,
 			RootName:  "access_unit",
@@ -40,7 +50,9 @@ func avcAUDecode(d *decode.D) any {
 	for d.NotEnd() {
 		d.FieldStruct("nalu", func(d *decode.D) {
 			l := int64(d.FieldU("length", int(ai.LengthSize)*8)) * 8
-			d.FieldFormatLen("nalu", l, &avcNALUFormat, nil)
+			d.FieldFormatLen("nalu", l, &avcNALUFormat, format.AVC_NALU_In{
+				AVC_SPS_Info: ai.AVC_SPS_Info,
+			})
 		})
 	}
 

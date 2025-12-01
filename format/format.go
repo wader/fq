@@ -198,10 +198,46 @@ type AAC_Frame_In struct {
 }
 type AVC_AU_In struct {
 	LengthSize uint64 `doc:"Length value size"`
+	AVC_SPS_Info
+	AVC_PPS_Info
+}
+
+type AVC_NALU_In struct {
+	AVC_SPS_Info
+	AVC_PPS_Info
+}
+
+type AVC_NALU_Out struct {
+	AVC_SPS_Info
+	AVC_PPS_Info
 }
 
 type AVC_DCR_Out struct {
 	LengthSize uint64
+	AVC_SPS_Info
+	AVC_PPS_Info
+}
+
+type AVC_PPS_Info struct {
+	BottomFieldPicOrderInFramePresentFlag bool `doc:""`
+	RedundantPicCntPresentFlag            bool `doc:""`
+}
+
+type AVC_PPS_Out struct {
+	AVC_PPS_Info
+}
+
+type AVC_SPS_Info struct {
+	SeparateColourPlaneFlag     bool   `doc:""`
+	Log2MaxFrameNum             uint64 `doc:""`
+	FrameMbsOnlyFlag            bool   `doc:""`
+	PicOrderCntType             uint64 `doc:""`
+	Log2MaxPicOrderCntLsb       uint64 `doc:""`
+	DeltaPicOrderAlwaysZeroFlag bool   `doc:""`
+}
+
+type AVC_SPS_Out struct {
+	AVC_SPS_Info
 }
 
 type CAFF_In struct {

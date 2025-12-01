@@ -479,13 +479,16 @@ $ fq -d mp4 dv avc.mp4
 0x02e0|               65                              |     e          |              forbidden_zero_bit: false 0x2e5-0x2e5.1 (0.1)
 0x02e0|               65                              |     e          |              nal_ref_idc: 3 0x2e5.1-0x2e5.3 (0.2)
 0x02e0|               65                              |     e          |              nal_unit_type: "idr_slice" (5) (Coded slice of an IDR picture) 0x2e5.3-0x2e6 (0.5)
-      |                                               |                |              rbsp{}: 0x2e6-0x2e7.1 (1.1)
+      |                                               |                |              rbsp{}: 0x2e6-0x2e8.4 (2.4)
 0x02e0|                  88                           |      .         |                first_mb_in_slice: 0 0x2e6-0x2e6.1 (0.1)
 0x02e0|                  88                           |      .         |                slice_type: "i" (7) 0x2e6.1-0x2e7 (0.7)
 0x02e0|                     84                        |       .        |                pic_parameter_set_id: 0 0x2e7-0x2e7.1 (0.1)
-0x02e0|                     84 00 33 ff fe f6 86 f8 14|       ..3......|              gap0: raw bits 0x2e7.1-0xbfc (2324.7)
+0x02e0|                     84                        |       .        |                frame_num: 0 0x2e7.1-0x2e7.5 (0.4)
+0x02e0|                     84                        |       .        |                idr_pic_id: 0 0x2e7.5-0x2e7.6 (0.1)
+0x02e0|                     84 00                     |       ..       |                pic_order_cnt_lsb: 0 0x2e7.6-0x2e8.4 (0.6)
+0x02e0|                        00 33 ff fe f6 86 f8 14|        .3......|              gap0: raw bits 0x2e8.4-0xbfc (2323.4)
 0x02f0|d8 53 23 af ff f2 50 06 7f 30 02 17 55 d4 5a 6f|.S#...P..0..U.Zo|
-*     |until 0xbfb.7 (2325)                           |                |
+*     |until 0xbfb.7 (2324)                           |                |
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [1][0:1]: sample (avc_au) 0xbfc-0xd49 (333)
       |                                               |                |          [0]{}: nalu 0xbfc-0xd49 (333)
 0x0bf0|                                    00 00 01 49|            ...I|            length: 329 0xbfc-0xc00 (4)
@@ -493,13 +496,15 @@ $ fq -d mp4 dv avc.mp4
 0x0c00|41                                             |A               |              forbidden_zero_bit: false 0xc00-0xc00.1 (0.1)
 0x0c00|41                                             |A               |              nal_ref_idc: 2 0xc00.1-0xc00.3 (0.2)
 0x0c00|41                                             |A               |              nal_unit_type: "slice" (1) (Coded slice of a non-IDR picture) 0xc00.3-0xc01 (0.5)
-      |                                               |                |              rbsp{}: 0xc01-0xc01.7 (0.7)
+      |                                               |                |              rbsp{}: 0xc01-0xc03.1 (2.1)
 0x0c00|   9a                                          | .              |                first_mb_in_slice: 0 0xc01-0xc01.1 (0.1)
 0x0c00|   9a                                          | .              |                slice_type: "p" (5) 0xc01.1-0xc01.6 (0.5)
 0x0c00|   9a                                          | .              |                pic_parameter_set_id: 0 0xc01.6-0xc01.7 (0.1)
-0x0c00|   9a 22 6c 42 bf fe 38 85 de c2 03 1a de 79 0a| ."lB..8......y.|              gap0: raw bits 0xc01.7-0xd49 (327.1)
+0x0c00|   9a 22                                       | ."             |                frame_num: 1 0xc01.7-0xc02.3 (0.4)
+0x0c00|      22 6c                                    |  "l            |                pic_order_cnt_lsb: 4 0xc02.3-0xc03.1 (0.6)
+0x0c00|         6c 42 bf fe 38 85 de c2 03 1a de 79 0a|   lB..8......y.|              gap0: raw bits 0xc03.1-0xd49 (325.7)
 0x0c10|56 fd b3 4b b4 0f 24 7f e9 d3 b6 f2 5e 6f dd b7|V..K..$.....^o..|
-*     |until 0xd48.7 (328)                            |                |
+*     |until 0xd48.7 (326)                            |                |
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [2][0:1]: sample (avc_au) 0xd49-0xd81 (56)
       |                                               |                |          [0]{}: nalu 0xd49-0xd81 (56)
 0x0d40|                           00 00 00 34         |         ...4   |            length: 52 0xd49-0xd4d (4)
@@ -507,12 +512,15 @@ $ fq -d mp4 dv avc.mp4
 0x0d40|                                       01      |             .  |              forbidden_zero_bit: false 0xd4d-0xd4d.1 (0.1)
 0x0d40|                                       01      |             .  |              nal_ref_idc: 0 0xd4d.1-0xd4d.3 (0.2)
 0x0d40|                                       01      |             .  |              nal_unit_type: "slice" (1) (Coded slice of a non-IDR picture) 0xd4d.3-0xd4e (0.5)
-      |                                               |                |              rbsp{}: 0xd4e-0xd4e.7 (0.7)
+      |                                               |                |              rbsp{}: 0xd4e-0xd50.1 (2.1)
 0x0d40|                                          9e   |              . |                first_mb_in_slice: 0 0xd4e-0xd4e.1 (0.1)
 0x0d40|                                          9e   |              . |                slice_type: "b" (6) 0xd4e.1-0xd4e.6 (0.5)
 0x0d40|                                          9e   |              . |                pic_parameter_set_id: 0 0xd4e.6-0xd4e.7 (0.1)
-0x0d40|                                          9e 41|              .A|              gap0: raw bits 0xd4e.7-0xd81 (50.1)
-0x0d50|79 0a ff 01 f9 2d 04 d3 29 fe 4d 76 42 26 f6 cd|y....-..).MvB&..|
-*     |until 0xd80.7 (51)                             |                |
+0x0d40|                                          9e 41|              .A|                frame_num: 2 0xd4e.7-0xd4f.3 (0.4)
+0x0d40|                                             41|               A|                pic_order_cnt_lsb: 2 0xd4f.3-0xd50.1 (0.6)
+0x0d50|79                                             |y               |
+0x0d50|79 0a ff 01 f9 2d 04 d3 29 fe 4d 76 42 26 f6 cd|y....-..).MvB&..|              gap0: raw bits 0xd50.1-0xd81 (48.7)
+0x0d60|13                                             |.               |
+*     |until 0xd80.7 (49)                             |                |
       |                                               |                |      id: 1
       |                                               |                |      data_format: "avc1" (Advanced Video Coding)

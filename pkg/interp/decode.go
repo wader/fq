@@ -86,9 +86,7 @@ func (i *Interp) _registry(c any) any {
 		}
 		if f.DefaultInArg != nil {
 			doc := map[string]any{}
-			st := reflect.TypeOf(f.DefaultInArg)
-			for i := range st.NumField() {
-				f := st.Field(i)
+			for _, f := range mapstruct.StructFieldsSquashed(f.DefaultInArg) {
 				if v, ok := f.Tag.Lookup("doc"); ok {
 					doc[mapstruct.CamelToSnake(f.Name)] = v
 				}

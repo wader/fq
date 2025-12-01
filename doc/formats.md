@@ -19,7 +19,7 @@
 |`avc_annexb`                                                    |H.264/AVC&nbsp;Annex&nbsp;B                                                                                  |<sub>`avc_nalu`</sub>|
 |[`avc_au`](#avc_au)                                             |H.264/AVC&nbsp;Access&nbsp;Unit                                                                              |<sub>`avc_nalu`</sub>|
 |`avc_dcr`                                                       |H.264/AVC&nbsp;Decoder&nbsp;Configuration&nbsp;Record                                                        |<sub>`avc_nalu`</sub>|
-|`avc_nalu`                                                      |H.264/AVC&nbsp;Network&nbsp;Access&nbsp;Layer&nbsp;Unit                                                      |<sub>`avc_sps` `avc_pps` `avc_sei`</sub>|
+|[`avc_nalu`](#avc_nalu)                                         |H.264/AVC&nbsp;Network&nbsp;Access&nbsp;Layer&nbsp;Unit                                                      |<sub>`avc_sps` `avc_pps` `avc_sei`</sub>|
 |`avc_pps`                                                       |H.264/AVC&nbsp;Picture&nbsp;Parameter&nbsp;Set                                                               |<sub></sub>|
 |`avc_sei`                                                       |H.264/AVC&nbsp;Supplemental&nbsp;Enhancement&nbsp;Information                                                |<sub></sub>|
 |`avc_sps`                                                       |H.264/AVC&nbsp;Sequence&nbsp;Parameter&nbsp;Set                                                              |<sub></sub>|
@@ -262,20 +262,56 @@ H.264/AVC Access Unit.
 
 ### Options
 
-|Name         |Default|Description|
-|-            |-      |-|
-|`length_size`|0      |Length value size|
+|Name                                          |Default|Description|
+|-                                             |-      |-|
+|`bottom_field_pic_order_in_frame_present_flag`|false  ||
+|`delta_pic_order_always_zero_flag`            |false  ||
+|`frame_mbs_only_flag`                         |true   ||
+|`length_size`                                 |0      |Length value size|
+|`log2max_frame_num`                           |4      ||
+|`log2max_pic_order_cnt_lsb`                   |4      ||
+|`pic_order_cnt_type`                          |0      ||
+|`redundant_pic_cnt_present_flag`              |false  ||
+|`separate_colour_plane_flag`                  |false  ||
 
 ### Examples
 
 Decode file using avc_au options
 ```
-$ fq -d avc_au -o length_size=0 . file
+$ fq -d avc_au -o bottom_field_pic_order_in_frame_present_flag=false -o delta_pic_order_always_zero_flag=false -o frame_mbs_only_flag=true -o length_size=0 -o log2max_frame_num=4 -o log2max_pic_order_cnt_lsb=4 -o pic_order_cnt_type=0 -o redundant_pic_cnt_present_flag=false -o separate_colour_plane_flag=false . file
 ```
 
 Decode value as avc_au
 ```
-... | avc_au({length_size:0})
+... | avc_au({bottom_field_pic_order_in_frame_present_flag:false,delta_pic_order_always_zero_flag:false,frame_mbs_only_flag:true,length_size:0,log2max_frame_num:4,log2max_pic_order_cnt_lsb:4,pic_order_cnt_type:0,redundant_pic_cnt_present_flag:false,separate_colour_plane_flag:false})
+```
+
+## avc_nalu
+H.264/AVC Network Access Layer Unit.
+
+### Options
+
+|Name                                          |Default|Description|
+|-                                             |-      |-|
+|`bottom_field_pic_order_in_frame_present_flag`|false  ||
+|`delta_pic_order_always_zero_flag`            |false  ||
+|`frame_mbs_only_flag`                         |true   ||
+|`log2max_frame_num`                           |4      ||
+|`log2max_pic_order_cnt_lsb`                   |4      ||
+|`pic_order_cnt_type`                          |0      ||
+|`redundant_pic_cnt_present_flag`              |false  ||
+|`separate_colour_plane_flag`                  |false  ||
+
+### Examples
+
+Decode file using avc_nalu options
+```
+$ fq -d avc_nalu -o bottom_field_pic_order_in_frame_present_flag=false -o delta_pic_order_always_zero_flag=false -o frame_mbs_only_flag=true -o log2max_frame_num=4 -o log2max_pic_order_cnt_lsb=4 -o pic_order_cnt_type=0 -o redundant_pic_cnt_present_flag=false -o separate_colour_plane_flag=false . file
+```
+
+Decode value as avc_nalu
+```
+... | avc_nalu({bottom_field_pic_order_in_frame_present_flag:false,delta_pic_order_always_zero_flag:false,frame_mbs_only_flag:true,log2max_frame_num:4,log2max_pic_order_cnt_lsb:4,pic_order_cnt_type:0,redundant_pic_cnt_present_flag:false,separate_colour_plane_flag:false})
 ```
 
 ## avi
