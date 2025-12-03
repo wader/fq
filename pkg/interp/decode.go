@@ -205,8 +205,8 @@ func (i *Interp) _decode(c any, format string, opts decodeOpts) any {
 				lastProgress = n
 				evalProgress(
 					map[string]any{
-						"approx_read_bytes": approxReadBytes,
-						"total_size":        totalSize,
+						"approx_read_bytes": float64(approxReadBytes),
+						"total_size":        float64(totalSize),
 					},
 				)
 			}
