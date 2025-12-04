@@ -1,3 +1,82 @@
+# 0.16.0
+
+## Changes
+
+- Update gojq fork. Changes from upstream:
+  - Reduced memory usage for long running scripts (restore data offset when popping fork)
+  - Support binding expressions with binary operators, ex `1 // 2 as $v | $v`
+  - Fix repeating string to emit an error when the result is too large
+  - Fix last/1 to be included in builtins/0
+  - Implement toboolean/0 function
+  - Implement trimstr/1 function
+  - Increase the array index limit to 2^29
+  - Round up end index of slicing for jq compatibility
+- Documentation fixes #1185 Thanks @emanuele6
+
+## Format changes
+
+- `avc_nal` Decode slice header frame number and picture order #1227
+- `flac_frame` Add option to decode sample and residuals details #802
+- `matroska` Update to latest spec #1219
+- `mpeg_asc` Decode SBR and PS hierarchical signalling #1192 Thanks @ntrrgc
+- `mp4` Decode `elng` box #1182
+- `safetensors` Add decoder #1203 Thanks @Leowbattle
+
+## Changelog
+
+* 747d5b06 avc_nalu: Decode more frame and poc fields
+* f43486bc avc_sps: Remove debug log
+* 2e5fc7e0 doc: add missing echo commands in examples
+* 6780e0dc flac: Add option to include sample and residuals details
+* 592645f9 gojq: Update fq fork
+* 8292eb50 gojq: Update fq fork
+* 586bc1ff interp: Cleaup query ast code after gojq update (#1223)
+* 4cf6845b matroska: Update spec
+* 01496ba4 mp4: Add elng box
+* 30294eaa mpeg_asc: SBR and PS hierarchical signalling
+* c3a04713 repl: Fix progress reporting
+* f24e1147 safetensors: Add decoder
+* 0c0ca514 Update docker-golang to 1.25.0 from 1.24.5
+* ec48e064 Update docker-golang to 1.25.1 from 1.25.0
+* fd258249 Update docker-golang to 1.25.2 from 1.25.1
+* 1ae5a7a4 Update docker-golang to 1.25.3 from 1.25.2
+* 0e260c4e Update docker-golang to 1.25.4 from 1.25.3
+* 4a147658 Update docker-golang to 1.25.5 from 1.25.4
+* 7f21d1bc Update docs, correct bf16 code
+* 12de02b9 Update github-go-version to 1.24.6 from 1.24.5
+* 0b32758c Update github-go-version to 1.25.0 from 1.24.6
+* 4eef0d84 Update github-go-version to 1.25.1 from 1.25.0
+* a274f09f Update github-go-version to 1.25.2 from 1.25.1
+* a7586b4f Update github-go-version to 1.25.3 from 1.25.2
+* a9bbca3f Update github-go-version to 1.25.4 from 1.25.3
+* 391891cd Update github-go-version to 1.25.5 from 1.25.4
+* d772f1ce Update github-golangci-lint to 2.3.0 from 2.2.2
+* 3e1b0cb7 Update github-golangci-lint to 2.3.1 from 2.3.0
+* 4b808158 Update github-golangci-lint to 2.4.0 from 2.3.1
+* e858be79 Update github-golangci-lint to 2.5.0 from 2.4.0
+* 70817af8 Update github-golangci-lint to 2.7.1 from 2.5.0
+* cd8cbfd3 Update gojq fork
+* 159ecfd6 Update gomod-golang-x-crypto to 0.41.0 from 0.40.0
+* e9ea6025 Update gomod-golang-x-crypto to 0.44.0 from 0.43.0
+* c87fefc8 Update gomod-golang-x-crypto to 0.45.0 from 0.44.0
+* 4e5d2e58 Update gomod-golang-x-net to 0.44.0 from 0.42.0
+* e1722dc5 Update gomod-golang-x-net to 0.45.0 from 0.44.0
+* bd774abf Update gomod-golang-x-net to 0.46.0 from 0.45.0
+* 29e844d0 Update gomod-golang-x-term to 0.34.0 from 0.33.0
+* a1a6db20 Update gomod-golang-x-term to 0.36.0 from 0.35.0
+* a95a3312 Update gomod-golang-x-term to 0.37.0 from 0.36.0
+* 8d82d8a4 Update gomod-golang/text to 0.28.0 from 0.27.0
+* 3b271f7e Update gomod-golang/text to 0.29.0 from 0.28.0
+* f29b7abe Update gomod-golang/text to 0.30.0 from 0.29.0
+* 94ee7542 Update gomod-golang/text to 0.31.0 from 0.30.0
+* 6a2d9b8a Update gomod-gopacket to 1.4.0 from 1.3.1
+* c7e47c0e Update gomod-gopacket to 1.5.0 from 1.4.0
+* e1507ced Update make-golangci-lint to 2.3.0 from 2.2.2
+* e545050d Update make-golangci-lint to 2.3.1 from 2.3.0
+* 0d87d78b Update make-golangci-lint to 2.4.0 from 2.3.1
+* 92dcba3d Update make-golangci-lint to 2.5.0 from 2.4.0
+* 7bced005 Update make-golangci-lint to 2.7.1 from 2.5.0
+
 # 0.15.1
 
 Minor release to maninly fix golang sum database hash issue.
