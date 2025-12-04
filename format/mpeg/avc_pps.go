@@ -25,7 +25,7 @@ func avcPPSDecode(d *decode.D) any {
 	d.FieldUintFn("pic_parameter_set_id", uEV)
 	d.FieldUintFn("seq_parameter_set_id", uEV)
 	d.FieldBool("entropy_coding_mode_flag")
-	d.FieldBool("bottom_field_pic_order_in_frame_present_flag")
+	bottomFieldPicOrderInFramePresentFlag := d.FieldBool("bottom_field_pic_order_in_frame_present_flag")
 	numSliceGroups := d.FieldUintFn("num_slice_groups", uEV, scalar.UintActualAdd(1))
 	if numSliceGroups > 1 {
 		sliceGroupMapType := d.FieldUintFn("slice_group_map_type", uEV)
@@ -73,7 +73,7 @@ func avcPPSDecode(d *decode.D) any {
 	d.FieldSintFn("chroma_qp_index_offset", sEV)
 	d.FieldBool("deblocking_filter_control_present_flag")
 	d.FieldBool("constrained_intra_pred_flag")
-	d.FieldBool("redundant_pic_cnt_present_flag")
+	redundantPicCntPresentFlag := d.FieldBool("redundant_pic_cnt_present_flag")
 
 	if moreRBSPData(d) {
 		d.FieldBool("transform_8x8_mode_flag")
@@ -92,5 +92,10 @@ func avcPPSDecode(d *decode.D) any {
 
 	d.FieldRawLen("trailing_bits", d.BitsLeft())
 
-	return nil
+	return format.AVC_PPS_Out{
+		AVC_PPS_Info: format.AVC_PPS_Info{
+			BottomFieldPicOrderInFramePresentFlag: bottomFieldPicOrderInFramePresentFlag,
+			RedundantPicCntPresentFlag:            redundantPicCntPresentFlag,
+		},
+	}
 }

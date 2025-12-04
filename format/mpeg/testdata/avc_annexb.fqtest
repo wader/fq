@@ -104,10 +104,13 @@ $ fq -d avc_annexb dv avc_annexb
 0x02d0|                              65               |          e     |    forbidden_zero_bit: false 0x2da-0x2da.1 (0.1)
 0x02d0|                              65               |          e     |    nal_ref_idc: 3 0x2da.1-0x2da.3 (0.2)
 0x02d0|                              65               |          e     |    nal_unit_type: "idr_slice" (5) (Coded slice of an IDR picture) 0x2da.3-0x2db (0.5)
-      |                                               |                |    rbsp{}: 0x2db-0x2dc.1 (1.1)
+      |                                               |                |    rbsp{}: 0x2db-0x2dd.2 (2.2)
 0x02d0|                                 88            |           .    |      first_mb_in_slice: 0 0x2db-0x2db.1 (0.1)
 0x02d0|                                 88            |           .    |      slice_type: "i" (7) 0x2db.1-0x2dc (0.7)
 0x02d0|                                    84         |            .   |      pic_parameter_set_id: 0 0x2dc-0x2dc.1 (0.1)
-0x02d0|                                    84 00 2b ff|            ..+.|    gap0: raw bits 0x2dc.1-0xae5 (2056.7)
+0x02d0|                                    84         |            .   |      frame_num: 0 0x2dc.1-0x2dc.5 (0.4)
+0x02d0|                                    84         |            .   |      idr_pic_id: 0 0x2dc.5-0x2dc.6 (0.1)
+0x02d0|                                    84 00      |            ..  |      pic_order_cnt_lsb: 0 0x2dc.6-0x2dd.2 (0.4)
+0x02d0|                                       00 2b ff|             .+.|    gap0: raw bits 0x2dd.2-0xae5 (2055.6)
 0x02e0|fe f5 db f3 2c ac 66 67 3d ff ed 3b 60 00 21 74|....,.fg=..;`.!t|
-*     |until 0xae4.7 (end) (2057)                     |                |
+*     |until 0xae4.7 (end) (2056)                     |                |

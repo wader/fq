@@ -4,7 +4,15 @@ avc_au: H.264/AVC Access Unit decoder
 Options
 =======
 
-  length_size=0  Length value size
+  bottom_field_pic_order_in_frame_present_flag=false  
+  delta_pic_order_always_zero_flag=false              
+  frame_mbs_only_flag=true                            
+  length_size=0                                       Length value size
+  log2max_frame_num=4                                 
+  log2max_pic_order_cnt_lsb=4                         
+  pic_order_cnt_type=0                                
+  redundant_pic_cnt_present_flag=false                
+  separate_colour_plane_flag=false                    
 
 Decode examples
 ===============
@@ -14,7 +22,7 @@ Decode examples
   # Decode value as avc_au
   ... | avc_au
   # Decode file using avc_au options
-  $ fq -d avc_au -o length_size=0 . file
+  $ fq -d avc_au -o bottom_field_pic_order_in_frame_present_flag=false -o delta_pic_order_always_zero_flag=false -o frame_mbs_only_flag=true -o length_size=0 -o log2max_frame_num=4 -o log2max_pic_order_cnt_lsb=4 -o pic_order_cnt_type=0 -o redundant_pic_cnt_present_flag=false -o separate_colour_plane_flag=false . file
   # Decode value as avc_au
-  ... | avc_au({length_size:0})
+  ... | avc_au({bottom_field_pic_order_in_frame_present_flag:false,delta_pic_order_always_zero_flag:false,frame_mbs_only_flag:true,length_size:0,log2max_frame_num:4,log2max_pic_order_cnt_lsb:4,pic_order_cnt_type:0,redundant_pic_cnt_present_flag:false,separate_colour_plane_flag:false})
 

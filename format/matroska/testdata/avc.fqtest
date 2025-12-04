@@ -476,13 +476,16 @@ $ fq -d matroska dv avc.mkv
 0x0520|65                                             |e               |                    forbidden_zero_bit: false 0x520-0x520.1 (0.1)
 0x0520|65                                             |e               |                    nal_ref_idc: 3 0x520.1-0x520.3 (0.2)
 0x0520|65                                             |e               |                    nal_unit_type: "idr_slice" (5) (Coded slice of an IDR picture) 0x520.3-0x521 (0.5)
-      |                                               |                |                    rbsp{}: 0x521-0x522.1 (1.1)
+      |                                               |                |                    rbsp{}: 0x521-0x523.4 (2.4)
 0x0520|   88                                          | .              |                      first_mb_in_slice: 0 0x521-0x521.1 (0.1)
 0x0520|   88                                          | .              |                      slice_type: "i" (7) 0x521.1-0x522 (0.7)
 0x0520|      84                                       |  .             |                      pic_parameter_set_id: 0 0x522-0x522.1 (0.1)
-0x0520|      84 00 2b ff fe f5 db f3 2c ac 66 67 3d ff|  ..+.....,.fg=.|                    gap0: raw bits 0x522.1-0xd2b (2056.7)
+0x0520|      84                                       |  .             |                      frame_num: 0 0x522.1-0x522.5 (0.4)
+0x0520|      84                                       |  .             |                      idr_pic_id: 0 0x522.5-0x522.6 (0.1)
+0x0520|      84 00                                    |  ..            |                      pic_order_cnt_lsb: 0 0x522.6-0x523.4 (0.6)
+0x0520|         00 2b ff fe f5 db f3 2c ac 66 67 3d ff|   .+.....,.fg=.|                    gap0: raw bits 0x523.4-0xd2b (2055.4)
 0x0530|ed 3b 60 00 21 74 ff c0 cf 1f fc 67 ff cd 99 a7|.;`.!t.....g....|
-*     |until 0xd2a.7 (2057)                           |                |
+*     |until 0xd2a.7 (2056)                           |                |
       |                                               |                |        [6]{}: element 0xd2b-0xd47 (28)
 0x0d20|                                 1c 53 bb 6b   |           .S.k |          id: "cues" (0x1c53bb6b) (A Top-Level Element to speed seeking access) 0xd2b-0xd2f (4)
       |                                               |                |          type: "master"

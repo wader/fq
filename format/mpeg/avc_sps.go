@@ -1,6 +1,8 @@
 package mpeg
 
 import (
+	"log"
+
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
@@ -136,6 +138,9 @@ func avcHdrParameters(d *decode.D) {
 }
 
 func avcSPSDecode(d *decode.D) any {
+	separateColourPlaneFlag := false
+	var log2MaxFrameNum uint64
+
 	profileIdc := d.FieldU8("profile_idc", avcProfileNames)
 	d.FieldBool("constraint_set0_flag")
 	d.FieldBool("constraint_set1_flag")
@@ -152,7 +157,7 @@ func avcSPSDecode(d *decode.D) any {
 	case 100, 110, 122, 244, 44, 83, 86, 118, 128, 138, 139, 134, 135:
 		chromaFormatIdc := d.FieldUintFn("chroma_format_idc", uEV, chromaFormatMap)
 		if chromaFormatIdc == 3 {
-			d.FieldBool("separate_colour_plane_flag")
+			separateColourPlaneFlag = d.FieldBool("separate_colour_plane_flag")
 		}
 
 		d.FieldUintFn("bit_depth_luma", uEV, scalar.UintActualAdd(8))
@@ -165,14 +170,17 @@ func avcSPSDecode(d *decode.D) any {
 		}
 	}
 
-	d.FieldUintFn("log2_max_frame_num", uEV, scalar.UintActualAdd(4))
+	log2MaxFrameNum = d.FieldUintFn("log2_max_frame_num", uEV, scalar.UintActualAdd(4))
 
 	picOrderCntType := d.FieldUintFn("pic_order_cnt_type", uEV)
+	var log2MaxPicOrderCntLsb uint64
+	var deltaPicOrderAlwaysZeroFlag bool
 	switch picOrderCntType {
 	case 0:
-		d.FieldUintFn("log2_max_pic_order_cnt_lsb", uEV, scalar.UintActualAdd(4))
+		log2MaxPicOrderCntLsb = d.FieldUintFn("log2_max_pic_order_cnt_lsb", uEV, scalar.UintActualAdd(4))
+		log.Printf("log2MaxPicOrderCntLsb: %#+v\n", log2MaxPicOrderCntLsb)
 	case 1:
-		d.FieldBool("delta_pic_order_always_zero_flag")
+		deltaPicOrderAlwaysZeroFlag = d.FieldBool("delta_pic_order_always_zero_flag")
 		d.FieldSintFn("offset_for_non_ref_pic", sEV)
 		d.FieldSintFn("offset_for_top_to_bottom_field", sEV)
 		numRefFramesInPicOrderCntCycle := d.FieldUintFn("num_ref_frames_in_pic_order_cnt_cycle", uEV)
@@ -206,5 +214,14 @@ func avcSPSDecode(d *decode.D) any {
 
 	d.FieldRawLen("trailing_bits", d.BitsLeft())
 
-	return nil
+	return format.AVC_SPS_Out{
+		AVC_SPS_Info: format.AVC_SPS_Info{
+			SeparateColourPlaneFlag:     separateColourPlaneFlag,
+			Log2MaxFrameNum:             log2MaxFrameNum,
+			FrameMbsOnlyFlag:            frameMbsOnlyFlag,
+			PicOrderCntType:             picOrderCntType,
+			Log2MaxPicOrderCntLsb:       log2MaxPicOrderCntLsb,
+			DeltaPicOrderAlwaysZeroFlag: deltaPicOrderAlwaysZeroFlag,
+		},
+	}
 }

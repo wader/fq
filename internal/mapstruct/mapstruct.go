@@ -5,6 +5,7 @@ package mapstruct
 // TODO: implement own version as we don't need much?
 
 import (
+	"reflect"
 	"regexp"
 	"strings"
 
@@ -28,6 +29,7 @@ func ToStruct(m any, v any) error {
 			return CamelToSnake(fieldName) == mapKey
 		},
 		TagName: "mapstruct",
+		Squash:  true,
 		Result:  v,
 	})
 	if err != nil {
@@ -62,6 +64,7 @@ func ToMap(v any) (map[string]any, error) {
 	m := map[string]any{}
 	ms, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
 		Result: &m,
+		Squash: true,
 	})
 	if err != nil {
 		return nil, err
@@ -75,4 +78,25 @@ func ToMap(v any) (map[string]any, error) {
 	}
 
 	return m, nil
+}
+
+func StructFieldsSquashed(v any) []reflect.StructField {
+	var fs []reflect.StructField
+
+	var r func(v any)
+	r = func(v any) {
+		st := reflect.TypeOf(v)
+		sv := reflect.ValueOf(v)
+		for i := range st.NumField() {
+			f := st.Field(i)
+			if f.Anonymous {
+				r(sv.Field(i).Interface())
+			} else {
+				fs = append(fs, f)
+			}
+		}
+	}
+	r(v)
+
+	return fs
 }

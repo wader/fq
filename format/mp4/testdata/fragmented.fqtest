@@ -1203,11 +1203,13 @@ $ fq -d mp4 dv fragmented.mp4
 0x08c0|      65                                       |  e             |              forbidden_zero_bit: false 0x8c2-0x8c2.1 (0.1)
 0x08c0|      65                                       |  e             |              nal_ref_idc: 3 0x8c2.1-0x8c2.3 (0.2)
 0x08c0|      65                                       |  e             |              nal_unit_type: "idr_slice" (5) (Coded slice of an IDR picture) 0x8c2.3-0x8c3 (0.5)
-      |                                               |                |              rbsp{}: 0x8c3-0x8c4.1 (1.1)
+      |                                               |                |              rbsp{}: 0x8c3-0x8c4.6 (1.6)
 0x08c0|         88                                    |   .            |                first_mb_in_slice: 0 0x8c3-0x8c3.1 (0.1)
 0x08c0|         88                                    |   .            |                slice_type: "i" (7) 0x8c3.1-0x8c4 (0.7)
 0x08c0|            84                                 |    .           |                pic_parameter_set_id: 0 0x8c4-0x8c4.1 (0.1)
-0x08c0|            84 04 bf fe f7 84 7e 05 37 0c ac ff|    ......~.7...|              gap0: raw bits 0x8c4.1-0x13e0 (2843.7)
+0x08c0|            84                                 |    .           |                frame_num: 0 0x8c4.1-0x8c4.5 (0.4)
+0x08c0|            84                                 |    .           |                idr_pic_id: 0 0x8c4.5-0x8c4.6 (0.1)
+0x08c0|            84 04 bf fe f7 84 7e 05 37 0c ac ff|    ......~.7...|              gap0: raw bits 0x8c4.6-0x13e0 (2843.2)
 0x08d0|ea 87 fd 4f 9c 30 95 e0 00 43 0f 7b 8a bb 37 cd|...O.0...C.{..7.|
 *     |until 0x13df.7 (2844)                          |                |
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [1][0:1]: sample (avc_au) 0x171c-0x1fe6 (2250)
@@ -1217,13 +1219,15 @@ $ fq -d mp4 dv fragmented.mp4
 0x1720|65                                             |e               |              forbidden_zero_bit: false 0x1720-0x1720.1 (0.1)
 0x1720|65                                             |e               |              nal_ref_idc: 3 0x1720.1-0x1720.3 (0.2)
 0x1720|65                                             |e               |              nal_unit_type: "idr_slice" (5) (Coded slice of an IDR picture) 0x1720.3-0x1721 (0.5)
-      |                                               |                |              rbsp{}: 0x1721-0x1722.1 (1.1)
+      |                                               |                |              rbsp{}: 0x1721-0x1723 (2)
 0x1720|   88                                          | .              |                first_mb_in_slice: 0 0x1721-0x1721.1 (0.1)
 0x1720|   88                                          | .              |                slice_type: "i" (7) 0x1721.1-0x1722 (0.7)
 0x1720|      82                                       |  .             |                pic_parameter_set_id: 0 0x1722-0x1722.1 (0.1)
-0x1720|      82 03 3f fe f6 86 f8 14 d8 53 23 af ff f2|  ..?......S#...|              gap0: raw bits 0x1722.1-0x1fe6 (2243.7)
+0x1720|      82                                       |  .             |                frame_num: 0 0x1722.1-0x1722.5 (0.4)
+0x1720|      82                                       |  .             |                idr_pic_id: 1 0x1722.5-0x1723 (0.3)
+0x1720|         03 3f fe f6 86 f8 14 d8 53 23 af ff f2|   .?......S#...|              gap0: raw bits 0x1723-0x1fe6 (2243)
 0x1730|50 06 7f 30 02 17 55 d4 5a 6f db ca e6 60 1d 51|P..0..U.Zo...`.Q|
-*     |until 0x1fe5.7 (2244)                          |                |
+*     |until 0x1fe5.7 (2243)                          |                |
       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|        [2][0:1]: sample (avc_au) 0x2235-0x2af5 (2240)
       |                                               |                |          [0]{}: nalu 0x2235-0x2af5 (2240)
 0x2230|               00 00 08 bc                     |     ....       |            length: 2236 0x2235-0x2239 (4)
@@ -1231,11 +1235,13 @@ $ fq -d mp4 dv fragmented.mp4
 0x2230|                           65                  |         e      |              forbidden_zero_bit: false 0x2239-0x2239.1 (0.1)
 0x2230|                           65                  |         e      |              nal_ref_idc: 3 0x2239.1-0x2239.3 (0.2)
 0x2230|                           65                  |         e      |              nal_unit_type: "idr_slice" (5) (Coded slice of an IDR picture) 0x2239.3-0x223a (0.5)
-      |                                               |                |              rbsp{}: 0x223a-0x223b.1 (1.1)
+      |                                               |                |              rbsp{}: 0x223a-0x223b.6 (1.6)
 0x2230|                              88               |          .     |                first_mb_in_slice: 0 0x223a-0x223a.1 (0.1)
 0x2230|                              88               |          .     |                slice_type: "i" (7) 0x223a.1-0x223b (0.7)
 0x2230|                                 84            |           .    |                pic_parameter_set_id: 0 0x223b-0x223b.1 (0.1)
-0x2230|                                 84 0c ff fe f6|           .....|              gap0: raw bits 0x223b.1-0x2af5 (2233.7)
+0x2230|                                 84            |           .    |                frame_num: 0 0x223b.1-0x223b.5 (0.4)
+0x2230|                                 84            |           .    |                idr_pic_id: 0 0x223b.5-0x223b.6 (0.1)
+0x2230|                                 84 0c ff fe f6|           .....|              gap0: raw bits 0x223b.6-0x2af5 (2233.2)
 0x2240|86 f8 14 d8 53 23 af ff f2 50 06 7f 30 02 17 55|....S#...P..0..U|
 *     |until 0x2af4.7 (2234)                          |                |
       |                                               |                |      id: 1

@@ -3,6 +3,8 @@ package mpeg
 // TODO: unescape configurable? merge with AVC_NAL? merge with HEVC?
 
 import (
+	"fmt"
+
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/internal/mathx"
 	"github.com/wader/fq/pkg/bitio"
@@ -21,6 +23,18 @@ func init() {
 		&decode.Format{
 			Description: "H.264/AVC Network Access Layer Unit",
 			DecodeFn:    avcNALUDecode,
+			DefaultInArg: format.AVC_NALU_In{
+				AVC_SPS_Info: format.AVC_SPS_Info{
+					SeparateColourPlaneFlag: false,
+					Log2MaxFrameNum:         4,
+					FrameMbsOnlyFlag:        true,
+					PicOrderCntType:         0,
+					Log2MaxPicOrderCntLsb:   4,
+				},
+				AVC_PPS_Info: format.AVC_PPS_Info{
+					BottomFieldPicOrderInFramePresentFlag: false,
+				},
+			},
 			Dependencies: []decode.Dependency{
 				{Groups: []*decode.Group{format.AVC_SPS}, Out: &avcSPSFormat},
 				{Groups: []*decode.Group{format.AVC_PPS}, Out: &avcPPSFormat},
@@ -46,8 +60,10 @@ func expGolomb(d *decode.D) uint64 {
 	return expN - 1 + d.U(leadingZeroBits)
 }
 
+// ue(v): unsigned integer Exp-Golomb-coded syntax element with the left bit firs
 func uEV(d *decode.D) uint64 { return expGolomb(d) }
 
+// se(v): signed integer Exp-Golomb-coded syntax element with the left bit firs
 func sEV(d *decode.D) int64 {
 	v := expGolomb(d) + 1
 	return mathx.ZigZag[uint64, int64](v) - -int64(v&1)
@@ -106,6 +122,11 @@ func findNALUEmulationCode(d *decode.D, maxLen int64) (int64, uint64, error) {
 }
 
 func avcNALUDecode(d *decode.D) any {
+	var ai format.AVC_NALU_In
+	d.ArgAs(&ai)
+
+	var ao format.AVC_NALU_Out
+
 	d.FieldBool("forbidden_zero_bit")
 	d.FieldU2("nal_ref_idc")
 	nalType := d.FieldU5("nal_unit_type", avcNALNames)
@@ -122,13 +143,52 @@ func avcNALUDecode(d *decode.D) any {
 			d.FieldUintFn("first_mb_in_slice", uEV)
 			d.FieldUintFn("slice_type", uEV, sliceNames)
 			d.FieldUintFn("pic_parameter_set_id", uEV)
-			// TODO: if ( separate_colour_plane_flag from SPS ) colour_plane_id; frame_num
+			if ai.SeparateColourPlaneFlag {
+				d.FieldU2("colour_plane_id")
+			}
+			d.FieldU("frame_num", int(ai.Log2MaxFrameNum))
+			var fieldPicFlag bool
+			if !ai.FrameMbsOnlyFlag {
+				fieldPicFlag = d.FieldBool("field_pic_flag")
+				if fieldPicFlag {
+					d.FieldBool("bottom_field_flag")
+				}
+			}
+			if nalType == avcNALCodedSliceIDR { // idr_flag == 1
+				d.FieldUintFn("idr_pic_id", uEV)
+			}
+			if ai.PicOrderCntType == 0 {
+				d.FieldU("pic_order_cnt_lsb", int(ai.Log2MaxPicOrderCntLsb))
+				if ai.BottomFieldPicOrderInFramePresentFlag && !fieldPicFlag {
+					d.FieldSintFn("delta_pic_order_cnt_bottom", sEV)
+				}
+			}
+			if ai.PicOrderCntType == 1 && !ai.DeltaPicOrderAlwaysZeroFlag {
+				d.FieldSintFn("delta_pic_order_cnt0", sEV)
+				if ai.BottomFieldPicOrderInFramePresentFlag && !fieldPicFlag {
+					d.FieldSintFn("delta_pic_order_cnt1", sEV)
+				}
+			}
+			if ai.RedundantPicCntPresentFlag {
+				d.FieldUintFn("first_mb_in_slice", uEV)
+			}
+			// TODO: more
 		case avcNALSupplementalEnhancementInformation:
 			d.Format(&avcSEIFormat, nil)
 		case avcNALSequenceParameterSet:
-			d.Format(&avcSPSFormat, nil)
+			v := d.Format(&avcSPSFormat, nil)
+			sps, ok := v.(format.AVC_SPS_Out)
+			if !ok {
+				panic(fmt.Sprintf("expected AVC_SPS_Out got %#+v", v))
+			}
+			ao.AVC_SPS_Info = sps.AVC_SPS_Info
 		case avcNALPictureParameterSet:
-			d.Format(&avcPPSFormat, nil)
+			v := d.Format(&avcPPSFormat, nil)
+			pps, ok := v.(format.AVC_PPS_Out)
+			if !ok {
+				panic(fmt.Sprintf("expected AVC_PPS_Out got %#+v", v))
+			}
+			ao.AVC_PPS_Info = pps.AVC_PPS_Info
 		default:
 			d.FieldRawLen("data", d.BitsLeft())
 		}
@@ -142,5 +202,5 @@ func avcNALUDecode(d *decode.D) any {
 		d.FieldStructRootBitBufFn("rbsp", unescapedBR, decodeFn)
 	}
 
-	return nil
+	return ao
 }

@@ -108,30 +108,41 @@ var avcLevelNames = scalar.UintMapSymStr{
 // 	62: {"6.2", 16711680, 139264, 696320, 800000, 800000, 8192, 2, 16},
 // }
 
-func avcDcrParameterSet(d *decode.D, numParamSets uint64) {
-	for i := uint64(0); i < numParamSets; i++ {
-		d.FieldStruct("set", func(d *decode.D) {
-			paramSetLen := d.FieldU16("length")
-			d.FieldFormatLen("nal", int64(paramSetLen)*8, &avcDCRNALFormat, nil)
-		})
-	}
-}
-
 func avcDcrDecode(d *decode.D) any {
+	var ao format.AVC_DCR_Out
+
 	d.FieldU8("configuration_version")
 	d.FieldU8("profile_indication", avcProfileNames)
 	d.FieldU8("profile_compatibility")
 	d.FieldU8("level_indication", avcLevelNames)
 	d.FieldU6("reserved0")
-	lengthSize := d.FieldU2("length_size", scalar.UintActualAdd(1))
+	ao.LengthSize = d.FieldU2("length_size", scalar.UintActualAdd(1))
 	d.FieldU3("reserved1")
 	numSeqParamSets := d.FieldU5("num_of_sequence_parameter_sets")
 	d.FieldArray("sequence_parameter_sets", func(d *decode.D) {
-		avcDcrParameterSet(d, numSeqParamSets)
+		for i := uint64(0); i < numSeqParamSets; i++ {
+			d.FieldStruct("set", func(d *decode.D) {
+				paramSetLen := d.FieldU16("length")
+				_, v := d.FieldFormatLen("nal", int64(paramSetLen)*8, &avcDCRNALFormat, nil)
+				switch v := v.(type) {
+				case format.AVC_NALU_Out:
+					ao.AVC_SPS_Info = v.AVC_SPS_Info
+				}
+			})
+		}
 	})
 	numPicParamSets := d.FieldU8("num_of_picture_parameter_sets")
 	d.FieldArray("picture_parameter_sets", func(d *decode.D) {
-		avcDcrParameterSet(d, numPicParamSets)
+		for i := uint64(0); i < numPicParamSets; i++ {
+			d.FieldStruct("set", func(d *decode.D) {
+				paramSetLen := d.FieldU16("length")
+				_, v := d.FieldFormatLen("nal", int64(paramSetLen)*8, &avcDCRNALFormat, nil)
+				switch v := v.(type) {
+				case format.AVC_NALU_Out:
+					ao.AVC_PPS_Info = v.AVC_PPS_Info
+				}
+			})
+		}
 	})
 
 	if d.BitsLeft() > 0 {
@@ -146,5 +157,5 @@ func avcDcrDecode(d *decode.D) any {
 	// TODO: something wrong here, seen files with profileIdc = 100 with no bytes after picture_parameter_sets
 	// https://github.com/FFmpeg/FFmpeg/blob/069d2b4a50a6eb2f925f36884e6b9bd9a1e54670/libavcodec/h264_ps.c#L333
 
-	return format.AVC_DCR_Out{LengthSize: lengthSize}
+	return ao
 }
