@@ -233,9 +233,6 @@ func decodeHTML(d *decode.D) any {
 	} else {
 		r = fromHTMLToObject(n, hi)
 	}
-	if err != nil {
-		d.Fatalf("%s", err)
-	}
 	var s scalar.Any
 	s.Actual = r
 
