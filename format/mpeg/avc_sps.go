@@ -1,8 +1,6 @@
 package mpeg
 
 import (
-	"log"
-
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
@@ -178,7 +176,6 @@ func avcSPSDecode(d *decode.D) any {
 	switch picOrderCntType {
 	case 0:
 		log2MaxPicOrderCntLsb = d.FieldUintFn("log2_max_pic_order_cnt_lsb", uEV, scalar.UintActualAdd(4))
-		log.Printf("log2MaxPicOrderCntLsb: %#+v\n", log2MaxPicOrderCntLsb)
 	case 1:
 		deltaPicOrderAlwaysZeroFlag = d.FieldBool("delta_pic_order_always_zero_flag")
 		d.FieldSintFn("offset_for_non_ref_pic", sEV)
