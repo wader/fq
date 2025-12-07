@@ -1,6 +1,6 @@
 package matroska
 
-// https://tools.ietf.org/html/draft-ietf-cellar-ebml-00
+// https://www.rfc-editor.org/info/rfc8794
 // https://matroska.org/technical/specs/index.html
 // https://www.matroska.org/technical/basics.html
 // https://www.matroska.org/technical/codec_specs.html
