@@ -130,13 +130,7 @@ def _query_try(b):
 # last query in pipeline
 def _query_pipe_last:
   if .term.suffix_list then
-    ( .term.suffix_list[-1]
-    | if .bind.body then
-        ( .bind.body
-        | _query_pipe_last
-        )
-      end
-    )
+    .term.suffix_list[-1]
   elif .op == "|" then
     ( .right
     | _query_pipe_last
@@ -146,11 +140,7 @@ def _query_pipe_last:
 def _query_transform_pipe_last(f):
   def _f:
     if .term.suffix_list then
-      .term.suffix_list[-1] |=
-        if .bind.body then
-          .bind.body |= _f
-        else f
-        end
+      .term.suffix_list[-1] |= f
     elif .op == "|" then
       .right |= _f
     else f
@@ -160,13 +150,7 @@ def _query_transform_pipe_last(f):
 # last term, the right most
 def _query_last:
   if .term.suffix_list then
-    ( .term.suffix_list[-1]
-    | if .bind.body then
-        ( .bind.body
-        | _query_last
-        )
-      end
-    )
+    .term.suffix_list[-1]
   elif .op then
     ( .right
     | _query_last
@@ -177,12 +161,7 @@ def _query_last:
 def _query_transform_last(f):
   def _f:
     if .term.suffix_list then
-      ( .
-      | if .term.suffix_list[-1].bind.body then
-          .term.suffix_list[-1].bind.body |= _f
-        else f
-        end
-      )
+      f
     elif .op then
       .right |= _f
     else f
