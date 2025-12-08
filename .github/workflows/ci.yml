@@ -7,7 +7,7 @@ on:
   pull_request:
 
 env:
-  GOLANGCILINT_VERSION: "2.7.1"
+  GOLANGCILINT_VERSION: "2.7.2"
 
 jobs:
   lint:
