@@ -227,6 +227,12 @@ You can also build and install the development (VCS) package using an [AUR helpe
 ```sh
 paru -S fq-git
 ```
+### Guix
+
+```sh
+guix shell fq -- fq --help # in develompen shell
+guix install fq            # into current profile
+```
 
 ### Nix
 
