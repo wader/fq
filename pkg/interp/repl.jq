@@ -324,7 +324,7 @@ def _slurp($query):
         _eval_error("compile"; "invalid slurp name \"\($name)\", must be a valid identifier. ex: ... | slurp(\"name\")")
       else
         ( _repl_slurp_eval($query.rewrite) as $v
-        | _slurps(.[$name] |= $v)
+        | _globals(.[$name] |= $v)
         | empty
         )
       end
@@ -335,10 +335,10 @@ def slurp($_): error("slurp must be last in pipeline. ex: ... | slurp(\"name\")"
 def slurp: slurp(null);
 
 def spew($name):
-  ( _slurps[$name]
+  ( _globals[$name]
   | if . then .[]
     else error("no such slurp: \($name)")
     end
   );
 def spew:
-  _slurps;
+  _globals;

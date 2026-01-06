@@ -220,7 +220,7 @@ def _main:
       ( # store some global state
         ( _include_paths($opts.include_path) as $_
         | _input_filenames($opts.filenames) as $_
-        | _slurps(
+        | _globals(
             ( $opts.arg +
               $opts.argjson +
               $opts.raw_file +

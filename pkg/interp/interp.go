@@ -802,7 +802,7 @@ func (i *Interp) Eval(ctx context.Context, c any, expr string, opts EvalOpts) (g
 
 	var variableNames []string
 	var variableValues []any
-	for k, v := range i.slurps() {
+	for k, v := range i.globals() {
 		variableNames = append(variableNames, "$"+k)
 		variableValues = append(variableValues, v)
 	}
@@ -1178,7 +1178,7 @@ func (i *Interp) includePaths() []string {
 	return paths
 }
 
-func (i *Interp) slurps() map[string]any {
-	slurpsAny, _ := i.lookupState("slurps").(map[string]any)
-	return slurpsAny
+func (i *Interp) globals() map[string]any {
+	globalsAny, _ := i.lookupState("globals").(map[string]any)
+	return globalsAny
 }
