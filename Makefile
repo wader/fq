@@ -23,7 +23,8 @@ testgo-race: testgo
 testjq: $(shell find . -name "*.jq.test")
 %.jq.test: fq
 	@echo $@
-	@./fq -rRs -L pkg/interp 'include "jqtest"; run_tests' $@
+# set HOME to something non-existing to not accidentally include from config dir
+	@HOME=/does_not_exist ./fq -rRs -L pkg/interp 'include "jqtest"; run_tests' $@
 
 testcli: fq
 	@pkg/cli/test_exp.sh ./fq pkg/cli/test_repl.exp
