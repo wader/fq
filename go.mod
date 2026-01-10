@@ -60,7 +60,7 @@ require (
 	// bump: gomod-golang-x-term /golang\.org\/x\/term v(.*)/ https://github.com/golang/term.git|^0
 	// bump: gomod-golang-x-term command go get golang.org/x/term@v$LATEST && go mod tidy
 	// bump: gomod-golang-x-term link "Tags" https://github.com/golang/term/tags
-	golang.org/x/term v0.38.0
+	golang.org/x/term v0.39.0
 
 	// bump: gomod-golang/text /golang\.org\/x\/text v(.*)/ https://github.com/golang/text.git|^0
 	// bump: gomod-golang/text command go get golang.org/x/text@v$LATEST && go mod tidy
@@ -77,6 +77,6 @@ require (
 	github.com/itchyny/timefmt-go v0.1.6 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
-	golang.org/x/sys v0.39.0 // indirect
+	golang.org/x/sys v0.40.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 )
