@@ -19,7 +19,7 @@ $ fq -d mp3_frame '(.,input,input,input) | try todescription catch .' a b c
 "c"
 exitcode: 5
 stderr:
-error: c: break
+error: break
 $ fq -d mp3_frame -n '(.,inputs) | try todescription catch .' a b c
 "expected decode value but got: null (null)"
 "a"
@@ -41,7 +41,7 @@ $ fq -d mp3_frame -n '(input,input,input,input) | todescription' a b c
 "c"
 exitcode: 5
 stderr:
-error: c: break
+error: break
 $ fq -d mp3_frame input_filename
 "<stdin>"
 stdin:
