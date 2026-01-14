@@ -20,7 +20,11 @@ include "@config/init?";
 def input:
   def _input($opts; f):
     ( _input_filenames
-    | if length == 0 then error("break") end
+    | if length == 0 then
+        ( _input_filename(null) as $_
+        | error("break")
+        )
+      end
     | [.[0], .[1:]] as [$h, $t]
     | _input_filenames($t)
     | _input_filename(null) as $_
