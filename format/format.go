@@ -89,6 +89,7 @@ var (
 	Bzip2               = &decode.Group{Name: "bzip2"}
 	CAFF                = &decode.Group{Name: "caff"}
 	CBOR                = &decode.Group{Name: "cbor"}
+	COFF                = &decode.Group{Name: "coff"}
 	CSV                 = &decode.Group{Name: "csv"}
 	DNS                 = &decode.Group{Name: "dns"}
 	DNS_TCP             = &decode.Group{Name: "dns_tcp"}
@@ -147,6 +148,7 @@ var (
 	MPEG_SPU            = &decode.Group{Name: "mpeg_spu"}
 	MPEG_TS             = &decode.Group{Name: "mpeg_ts"}
 	MPES_PES            = &decode.Group{Name: "mpeg_pes"}
+	MSDOS_Stub          = &decode.Group{Name: "msdos_stub"}
 	MsgPack             = &decode.Group{Name: "msgpack"}
 	Negentropy          = &decode.Group{Name: "negentropy"}
 	NES                 = &decode.Group{Name: "nes"}
@@ -156,6 +158,7 @@ var (
 	Opus_Packet         = &decode.Group{Name: "opus_packet"}
 	PCAP                = &decode.Group{Name: "pcap"}
 	PCAPNG              = &decode.Group{Name: "pcapng"}
+	PE                  = &decode.Group{Name: "pe"}
 	Pg_BTree            = &decode.Group{Name: "pg_btree"}
 	Pg_Control          = &decode.Group{Name: "pg_control"}
 	Pg_Heap             = &decode.Group{Name: "pg_heap"}
@@ -446,4 +449,12 @@ type Pg_Heap_In struct {
 
 type Pg_BTree_In struct {
 	Page int `doc:"First page number in file, default is 0"`
+}
+
+type MS_DOS_Out struct {
+	LFANew int // logical file address for the New Executable header
+}
+
+type COFF_In struct {
+	FilePointerOffset int `doc:"File pointer offset"`
 }
