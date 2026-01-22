@@ -112,6 +112,7 @@
 |[`protobuf`](#protobuf)                                         |Protobuf                                                                                                     |<sub></sub>|
 |`protobuf_widevine`                                             |Widevine&nbsp;protobuf                                                                                       |<sub>`protobuf`</sub>|
 |`pssh_playready`                                                |PlayReady&nbsp;PSSH                                                                                          |<sub></sub>|
+|[`pyrdp`](#pyrdp)                                               |PyRDP&nbsp;Replay&nbsp;Files                                                                                 |<sub></sub>|
 |[`rtmp`](#rtmp)                                                 |Real-Time&nbsp;Messaging&nbsp;Protocol                                                                       |<sub>`amf0` `mpeg_asc`</sub>|
 |`safetensors`                                                   |SafeTensors                                                                                                  |<sub>`json`</sub>|
 |`sll2_packet`                                                   |Linux&nbsp;cooked&nbsp;capture&nbsp;encapsulation&nbsp;v2                                                    |<sub>`inet_packet`</sub>|
@@ -1313,6 +1314,16 @@ $ fq -d protobuf '.fields[6].wire_value | protobuf | d' file
 
 ### References
 - https://developers.google.com/protocol-buffers/docs/encoding
+
+## pyrdp
+PyRDP Replay Files.
+
+### Authors
+- Olivier Bilodeau <olivier.bilodeau@flare.io>, Maintainer
+- Lisandro Ubiedo, Author
+
+### References
+- https://github.com/GoSecure/pyrdp
 
 ## rtmp
 Real-Time Messaging Protocol.
