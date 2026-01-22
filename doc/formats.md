@@ -41,6 +41,7 @@
 |[`csv`](#csv)                                                   |Comma&nbsp;separated&nbsp;values                                                                             |<sub></sub>|
 |`dns`                                                           |DNS&nbsp;packet                                                                                              |<sub></sub>|
 |`dns_tcp`                                                       |DNS&nbsp;packet&nbsp;(TCP)                                                                                   |<sub></sub>|
+|[`dolby_metadata`](#dolby_metadata)                             |Dolby&nbsp;Metadata&nbsp;(Atmos,&nbsp;AC3,&nbsp;Dolby&nbsp;Digital)                                          |<sub></sub>|
 |`elf`                                                           |Executable&nbsp;and&nbsp;Linkable&nbsp;Format                                                                |<sub></sub>|
 |`ether8023_frame`                                               |Ethernet&nbsp;802.3&nbsp;frame                                                                               |<sub>`inet_packet`</sub>|
 |`exif`                                                          |Exchangeable&nbsp;Image&nbsp;File&nbsp;Format                                                                |<sub></sub>|
@@ -132,7 +133,7 @@
 |`vp9_frame`                                                     |VP9&nbsp;frame                                                                                               |<sub></sub>|
 |`vpx_ccr`                                                       |VPX&nbsp;Codec&nbsp;Configuration&nbsp;Record                                                                |<sub></sub>|
 |[`wasm`](#wasm)                                                 |WebAssembly&nbsp;Binary&nbsp;Format                                                                          |<sub></sub>|
-|`wav`                                                           |WAV&nbsp;file                                                                                                |<sub>`id3v2` `id3v1` `id3v11`</sub>|
+|[`wav`](#wav)                                                   |WAV&nbsp;file                                                                                                |<sub>`id3v2` `id3v1` `id3v11` `dolby_metadata`</sub>|
 |`webp`                                                          |WebP&nbsp;image                                                                                              |<sub>`exif` `vp8_frame` `icc_profile` `xml`</sub>|
 |[`xml`](#xml)                                                   |Extensible&nbsp;Markup&nbsp;Language                                                                         |<sub></sub>|
 |`yaml`                                                          |YAML&nbsp;Ain't&nbsp;Markup&nbsp;Language                                                                    |<sub></sub>|
@@ -628,6 +629,33 @@ $ fq -d csv -o comma="\t" to_csv file.tsv
 ```sh
 $ fq -d csv '.[0] as $t | .[1:] | map(with_entries(.key = $t[.key]))' file.csv
 ```
+
+## dolby_metadata
+Dolby Metadata (Atmos, AC3, Dolby Digital).
+
+Dolby Metadata from `<dbmd>` chunk of RIFF / WAV / Broadcast Wave Format (BWF),
+including Dolby Atmos, AC3, Dolby Digital \[Plus\], and Dolby Audio Info (e.g. LUFS, True Peak).
+
+### Examples
+Decode Dolby metadata from `<dbmd>` chunk:
+```
+$ fq -d wav '.chunks[] | select(.id | IN("dbmd")) | tovalue' adm-bwf.wav
+```
+
+RIFF / WAV / Broadcast Wave Format (BWF) chunks:
+- `<chna>` Track UIDs of Audio Definition Model
+- `<axml>` BWF XML Metadata, e.g. for Audio Definition Model ambisonics and elements
+
+### Authors
+- [@johnnymarnell](https://johnnymarnell.github.io), original author
+
+### References
+- https://adm.ebu.io/background/what_is_the_adm.html
+- https://tech.ebu.ch/publications/tech3285s7
+- https://tech.ebu.ch/publications/tech3285s5
+- https://tech.ebu.ch/files/live/sites/tech/files/shared/tech/tech3285s6.pdf
+- https://github.com/DolbyLaboratories/dbmd-atmos-parser
+- https://github.com/MediaArea/MediaInfoLib/blob/master/Source/MediaInfo/Audio/File_DolbyAudioMetadata.cpp
 
 ## fit
 Garmin Flexible and Interoperable Data Transfer.
@@ -1576,6 +1604,49 @@ $ fq '.sections | {import: map(select(.id == "import_section").content.im.x[].nm
 
 ### References
 - https://webassembly.github.io/spec/core/
+
+## wav
+WAV file.
+
+WAVE audio file format.
+
+Also includes support for [Audio Definition Model](https://adm.ebu.io/background/what_is_the_adm.html) and 3D Audio.
+
+RIFF / WAV / Broadcast Wave Format (BWF) chunks:
+
+- `RIFF`: primary container chunk specifying the file type and containing sub-chunks (e.g., fmt, data)
+- `fmt`: describes format / stream encoding in data chunk
+- `data`: indicates size and contains encoded raw sound data
+- `bext`: broadcast extension chunk, containing broadcast-specific metadata such as description, originator, creation date, time reference, and more
+- `LIST`: organizes additional metadata in sub-chunks, often used to include information like artist, genre, or title in INFO or other standardized formats
+- `smpl`: sample metadata chunk, containing looping and sampling information, such as start and end points for loops, sample rate, and MIDI pitch
+- `fact`: contains metadata on the original uncompressed data, such as the number of samples, typically used in non-PCM (compressed) formats to aid in playback and synchronization
+- `chna`: track UIDs of Audio Definition Model
+- `axml`: XML metadata, e.g. for Audio Definition Model ambisonics and elements as in [EBUCore spec](https://tech.ebu.ch/docs/tech/tech3293.pdf)
+- `dbmd`: Dolby specific metadata like loudness and binaural settings, see also [`dolby_metadata` format](#dolby_metadata)
+
+
+### Examples
+Decode ADM configuration from `<chna>` and `<axml>` chunks:
+```bash
+$ fq -d wav '.chunks[] | select(.id | IN("chna", "axml")) | tovalue' amd-bwf.wav
+
+# Extract ADM <axml> chunk objects definitions xml content
+$ fq -r -d wav '.chunks[] | select(.id | IN("axml")) | .xml | tovalue' amd-bwf.wav | tee axml-content.xml
+```
+
+### Authors
+- [@wader](https://github.com/wader), original author
+- [@johnnymarnell](https://johnnymarnell.github.io), ADM support
+
+### References
+- http://soundfile.sapp.org/doc/WaveFormat/
+- https://github.com/FFmpeg/FFmpeg/blob/master/libavformat/wavdec.c
+- https://tech.ebu.ch/docs/tech/tech3285.pdf
+- http://www-mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/WAVE.html
+- https://adm.ebu.io/background/what_is_the_adm.html
+- https://tech.ebu.ch/docs/tech/tech3285s7.pdf
+- https://tech.ebu.ch/docs/tech/tech3285s5.pdf
 
 ## xml
 Extensible Markup Language.
