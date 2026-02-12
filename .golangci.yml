@@ -33,6 +33,7 @@ linters:
         - G115
         - G406
         - G506
+        - G602 # https://github.com/golangci/golangci-lint/issues/6334
     govet:
       disable:
         - fieldalignment
