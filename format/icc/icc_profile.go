@@ -69,12 +69,37 @@ func multiLocalizedUnicodeType(tagStart int64, d *decode.D) {
 	})
 }
 
+func curvType(_ int64, d *decode.D) {
+	const curvTypeLinearResponse = 0
+	const curvTypeSimpleGamma = 1
+	const curvTypeInterpolation = 2
+	count := d.FieldU32("count", scalar.UintMapSymStr{
+		curvTypeLinearResponse: "linear_response",
+		curvTypeSimpleGamma:    "simple_gamma",
+		curvTypeInterpolation:  "interpolation",
+	})
+	switch count {
+	case curvTypeLinearResponse:
+	case curvTypeSimpleGamma:
+		d.FieldFP16("gamma")
+	case curvTypeInterpolation:
+		fallthrough
+	default:
+		d.FieldArray("curve", func(d *decode.D) {
+			for i := uint64(0); i < count; i++ {
+				d.FieldU16("point")
+			}
+		})
+	}
+}
+
 var typeToDecode = map[string]func(tagStart int64, d *decode.D){
 	"XYZ":  xyzType,
 	"text": textType,
 	"para": paraType,
 	"desc": descType,
 	"mluc": multiLocalizedUnicodeType,
+	"curv": curvType,
 }
 
 func decodeBCDU8(d *decode.D) uint64 {
