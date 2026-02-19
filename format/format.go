@@ -164,6 +164,7 @@ var (
 	Protobuf            = &decode.Group{Name: "protobuf"}
 	ProtobufWidevine    = &decode.Group{Name: "protobuf_widevine"}
 	PSSH_Playready      = &decode.Group{Name: "pssh_playready"}
+	PYRDP               = &decode.Group{Name: "pyrdp"}
 	RTMP                = &decode.Group{Name: "rtmp"}
 	SAFETENSORS         = &decode.Group{Name: "safetensors"}
 	SLL_Packet          = &decode.Group{Name: "sll_packet"}

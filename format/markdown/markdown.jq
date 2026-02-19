@@ -57,7 +57,11 @@ def _markdown_children_to_text($width):
         | join("")
         ) as $text
       | if $text == .destination then $text
-        else "\($text) (\(.destination))"
+        else
+          if .destination | startswith("mailto:") then
+            "<\(.destination[7:])>"
+          else "\($text) (\(.destination))"
+          end
         end
       )
     elif .type == "code_block" then .literal | rtrimstr("\n") | split("\n") | "  " + join("\n  ")

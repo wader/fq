@@ -157,6 +157,7 @@ prores_frame         Apple ProRes frame
 protobuf             Protobuf
 protobuf_widevine    Widevine protobuf
 pssh_playready       PlayReady PSSH
+pyrdp                PyRDP Replay Files
 rtmp                 Real-Time Messaging Protocol
 safetensors          SafeTensors
 sll2_packet          Linux cooked capture encapsulation v2
