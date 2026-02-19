@@ -156,6 +156,7 @@ var (
 	Opus_Packet         = &decode.Group{Name: "opus_packet"}
 	PCAP                = &decode.Group{Name: "pcap"}
 	PCAPNG              = &decode.Group{Name: "pcapng"}
+	PDF                 = &decode.Group{Name: "pdf"}
 	Pg_BTree            = &decode.Group{Name: "pg_btree"}
 	Pg_Control          = &decode.Group{Name: "pg_control"}
 	Pg_Heap             = &decode.Group{Name: "pg_heap"}
