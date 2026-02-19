@@ -8,14 +8,20 @@ package riff
 // TODO: default little endian
 
 import (
+	"embed"
+
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
 )
 
+//go:embed wav.md
+var wavFS embed.FS
+
 var wavHeaderGroup decode.Group
 var wavFooterGroup decode.Group
+var wavDolbyMetadataGroup decode.Group
 
 func init() {
 	interp.RegisterFormat(
@@ -28,8 +34,10 @@ func init() {
 			Dependencies: []decode.Dependency{
 				{Groups: []*decode.Group{format.ID3v2}, Out: &wavHeaderGroup},
 				{Groups: []*decode.Group{format.ID3v1, format.ID3v11}, Out: &wavFooterGroup},
+				{Groups: []*decode.Group{format.Dolby_Metadata}, Out: &wavDolbyMetadataGroup},
 			},
 		})
+	interp.RegisterFS(wavFS)
 }
 
 const (
@@ -162,6 +170,30 @@ func wavDecode(d *decode.D) any {
 				d.FieldU16("max_short_term_loudness")
 				d.FieldRawLen("reserved", 180*8)
 				d.FieldRawLen("coding_history", d.BitsLeft())
+				return false, nil
+
+			case "chna":
+				d.FieldU16("num_tracks")
+				d.FieldU16("num_uids")
+				d.FieldArray("audio_ids", func(d *decode.D) {
+					for !d.End() {
+						d.FieldStruct("audio_id", func(d *decode.D) {
+							d.FieldU16("track_index")
+							d.FieldUTF8("uid", 12)
+							d.FieldUTF8("track_format_id_reference", 14)
+							d.FieldUTF8("pack_format_id_reference", 11)
+							d.FieldRawLen("padding", 8)
+						})
+					}
+				})
+				return false, nil
+			case "axml":
+				d.FieldUTF8("xml", int(d.BitsLeft())/8)
+				return false, nil
+			case "dbmd":
+				// TEMP TEMP TEMP: delete old dolby.go and bring uncomment
+				// old_dbmdDecode(d) //
+				d.Format(&wavDolbyMetadataGroup, nil)
 				return false, nil
 
 			default:

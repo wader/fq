@@ -36,9 +36,9 @@ func riffDecode(d *decode.D, path path, headFn func(d *decode.D, path path) (str
 		}
 	})
 
-	wordAlgin := d.AlignBits(16)
-	if wordAlgin != 0 {
-		d.FieldRawLen("align", int64(wordAlgin))
+	wordAlign := d.AlignBits(16)
+	if wordAlign != 0 {
+		d.FieldRawLen("align", int64(wordAlign))
 	}
 }
 
@@ -57,6 +57,16 @@ var chunkIDDescriptions = scalar.StrMapDescription{
 	"vprp": "Video properties",
 
 	"dmlh": "Extended AVI header",
+
+	"data": "Raw sound encoded data",
+	"bext": "Broadcast extension, e.g. creator, date, etc.",
+	"smpl": "Sample metadata, e.g. loop points",
+	"fact": "Original info used for compression, e.g. sample length",
+
+	// BWF ADM master and Dolby Metadata
+	"chna": "Track UIDs of Audio Definition Model",
+	"axml": "Audio Definition Model ambisonics and elements",
+	"dbmd": "Dolby Metadata, e.g. Atmos, AC3, Dolby Digital [Plus]",
 
 	"ISMP": "SMPTE timecode",
 	"IDIT": "Time and date digitizing commenced",
