@@ -5,7 +5,9 @@ package gz
 // TODO: verify isize?
 
 import (
+	"bytes"
 	"compress/flate"
+	"compress/zlib"
 	"hash/crc32"
 	"io"
 	"time"
@@ -30,6 +32,10 @@ func init() {
 				{Groups: []*decode.Group{format.Probe}, Out: &probeGroup},
 			},
 		})
+	interp.RegisterFunc0("from_deflate", fromDeflate)
+	interp.RegisterFunc0("to_deflate", toDeflate)
+	interp.RegisterFunc0("from_zlib", fromZLib)
+	interp.RegisterFunc0("to_zlib", toZLib)
 }
 
 const deflateMethod = 8
@@ -157,4 +163,92 @@ func gzipDecode(d *decode.D) any {
 	}
 
 	return nil
+}
+
+func fromDeflate(_ *interp.Interp, c any) any {
+	inBR, err := interp.ToBitReader(c)
+	if err != nil {
+		return err
+	}
+
+	fr := flate.NewReader(bitio.NewIOReader(inBR))
+	b := &bytes.Buffer{}
+	//nolint:gosec
+	if _, err := io.Copy(b, fr); err != nil {
+		return err
+	}
+	fr.Close()
+
+	bb, err := interp.NewBinaryFromBitReader(bitio.NewBitReader(b.Bytes(), -1), 8, 0)
+	if err != nil {
+		return err
+	}
+	return bb
+}
+
+func toDeflate(_ *interp.Interp, c any) any {
+	inBR, err := interp.ToBitReader(c)
+	if err != nil {
+		return err
+	}
+
+	bb := &bytes.Buffer{}
+	fw, err := flate.NewWriter(bb, 9) // TODO: level option
+	if err != nil {
+		return err
+	}
+	if _, err := io.Copy(fw, bitio.NewIOReader(inBR)); err != nil {
+		return err
+	}
+	fw.Close()
+
+	bib, err := interp.NewBinaryFromBitReader(bitio.NewBitReader(bb.Bytes(), -1), 8, 0)
+	if err != nil {
+		return err
+	}
+	return bib
+}
+
+func fromZLib(_ *interp.Interp, c any) any {
+	inBR, err := interp.ToBitReader(c)
+	if err != nil {
+		return err
+	}
+
+	fr, err := zlib.NewReader(bitio.NewIOReader(inBR))
+	if err != nil {
+		return err
+	}
+	b := &bytes.Buffer{}
+	//nolint:gosec
+	if _, err := io.Copy(b, fr); err != nil {
+		return err
+	}
+	fr.Close()
+
+	bb, err := interp.NewBinaryFromBitReader(bitio.NewBitReader(b.Bytes(), -1), 8, 0)
+	if err != nil {
+		return err
+	}
+	return bb
+}
+
+func toZLib(_ *interp.Interp, c any) any {
+	inBR, err := interp.ToBitReader(c)
+	if err != nil {
+		return err
+	}
+
+	bb := &bytes.Buffer{}
+	zw := zlib.NewWriter(bb) // TODO: level option
+	if _, err := io.Copy(zw, bitio.NewIOReader(inBR)); err != nil {
+		return err
+	}
+	zw.Close()
+
+	bib, err := interp.NewBinaryFromBitReader(bitio.NewBitReader(bb.Bytes(), -1), 8, 0)
+	if err != nil {
+		return err
+	}
+	return bib
 }
