@@ -1513,7 +1513,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			for i := uint64(0); i < entryCount; i++ {
 				d.FieldStruct("entry", func(d *decode.D) {
 					d.FieldU32("sample_count")
-					d.FieldU32("group_description_index")
+					d.FieldU32("group_description_index", scalar.UintMapDescription{0: "no group"})
 				})
 			}
 		})
