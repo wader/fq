@@ -814,9 +814,12 @@ JSON and jq-flavoured JSON
 Note that `fromjson` and `tojson` use different naming conventions as they originate from jq's standard library.
 
 YAML
-- `from_yaml` Parse YAML into jq value.
+- `from_yaml`/`from_yaml($opts)` Parse YAML into jq value.<br>
+  `$opts` are:
+  - `{multi_document: boolean}` Force multi document mode.<br>
 - `to_yaml`/`to_yaml($opts)` Serialize jq value into YAML. `$opts` are:
   - `{indent: number}` Indent depth.
+  - `{multi_document: boolean}` Force multi document mode.<br>
 
 TOML
 - `from_toml` Parse TOML into jq value.
