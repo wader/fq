@@ -29,7 +29,7 @@ $ fq dv unicode.plist
      |                                               |                |          size: 19
 0x1c0|                              43 6f 72 65 44 65|          CoreDe|          value: "CoreDeviceUtilities" 0x1ca-0x1dd (19)
 0x1d0|76 69 63 65 55 74 69 6c 69 74 69 65 73         |viceUtilities   |
-     |                                               |                |      [1]{}: entry 0xc-0x210 (516)
+     |                                               |                |      [1]{}: entry 0xc-0x240 (564)
 0x000|                                    02         |            .   |        key_index: 2 0xc-0xd (1)
 0x020|   17                                          | .              |        value_index: 23 0x21-0x22 (1)
      |                                               |                |        key{}: 0x42-0x5d (27)
@@ -41,15 +41,15 @@ $ fq dv unicode.plist
      |                                               |                |          size: 24
 0x040|               4e 53 48 75 6d 61 6e 52 65 61 64|     NSHumanRead|          value: "NSHumanReadableCopyright" 0x45-0x5d (24)
 0x050|61 62 6c 65 43 6f 70 79 72 69 67 68 74         |ableCopyright   |
-     |                                               |                |        value{}: 0x1dd-0x210 (51)
+     |                                               |                |        value{}: 0x1dd-0x240 (99)
 0x1d0|                                       6f      |             o  |          type: "unicode_string" (6) (Unicode string) 0x1dd-0x1dd.4 (0.4)
 0x1d0|                                       6f      |             o  |          size_bits: 15 0x1dd.4-0x1de (0.4)
 0x1d0|                                          10   |              . |          large_size_marker: 1 (valid) 0x1de-0x1de.4 (0.4)
 0x1d0|                                          10   |              . |          exponent: 0 0x1de.4-0x1df (0.4)
 0x1d0|                                             30|               0|          size_bigint: 48 0x1df-0x1e0 (1)
      |                                               |                |          size: 48
-0x1e0|00 43 00 6f 00 70 00 79 00 72 00 69 00 67 00 68|.C.o.p.y.r.i.g.h|          value: "Copyright © 2021 Apple I" 0x1e0-0x210 (48)
-*    |until 0x20f.7 (48)                             |                |
+0x1e0|00 43 00 6f 00 70 00 79 00 72 00 69 00 67 00 68|.C.o.p.y.r.i.g.h|          value: "Copyright © 2021 Apple Inc. All rights reserved." 0x1e0-0x240 (96)
+*    |until 0x23f.7 (96)                             |                |
      |                                               |                |      [2]{}: entry 0xd-0x245 (568)
 0x000|                                       03      |             .  |        key_index: 3 0xd-0xe (1)
 0x020|      18                                       |  .             |        value_index: 24 0x22-0x23 (1)
@@ -388,8 +388,6 @@ $ fq dv unicode.plist
 0x260|               55                              |     U          |          size_bits: 5 0x265.4-0x266 (0.4)
      |                                               |                |          size: 5
 0x260|                  31 39 4b 32 34               |      19K24     |          value: "19K24" 0x266-0x26b (5)
-0x210|00 6e 00 63 00 2e 00 20 00 41 00 6c 00 6c 00 20|.n.c... .A.l.l. |  gap0: raw bits 0x210-0x240 (48)
-*    |until 0x23f.7 (48)                             |                |
      |                                               |                |  offset_table[0:42]: 0x31b-0x36f (84)
 0x310|                                 00 08         |           ..   |    [0]: 8 element 0x31b-0x31d (2)
 0x310|                                       00 35   |             .5 |    [1]: 53 element 0x31d-0x31f (2)
