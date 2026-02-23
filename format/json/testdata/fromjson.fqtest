@@ -1,0 +1,3 @@
+# make sure fromjson decode from value instead of binary for a decode_value
+$ fq -n '"\"123\"" | fromjson | fromjson'
+123
