@@ -13,16 +13,31 @@ func init() {
 		&decode.Format{
 			Description: "H.264/AVC Supplemental Enhancement Information",
 			DecodeFn:    avcSEIDecode,
+			DefaultInArg: format.AVC_SPS_Info{
+				SeparateColourPlaneFlag:      false,
+				Log2MaxFrameNum:              4,
+				FrameMbsOnlyFlag:             true,
+				PicOrderCntType:              0,
+				Log2MaxPicOrderCntLsb:        4,
+				NalHrdParametersPresent:      false,
+				VclHrdParametersPresent:      false,
+				InitialCpbRemovalDelayLength: 0,
+				CpbRemovalDelayLength:        0,
+				DpbOutputDelayLength:         0,
+				TimeOffsetLength:             0,
+			},
 		})
 }
 
 const (
+	avcSEIBufferingPeriod      = 0
 	avcSEIUserDataUnregistered = 5
+	avcSEIPicTiming            = 1
 )
 
 var seiNames = scalar.UintMapSymStr{
-	0:                          "buffering_period",
-	1:                          "pic_timing",
+	avcSEIBufferingPeriod:      "buffering_period",
+	avcSEIPicTiming:            "pic_timing",
 	2:                          "pan_scan_rect",
 	3:                          "filler_payload",
 	4:                          "user_data_registered_itu_t_t35",
@@ -102,14 +117,115 @@ func ffSum(d *decode.D) uint64 {
 	return s
 }
 
+type picStructEntry struct {
+	name       string
+	numClockTS int
+}
+
+type picStructMap []picStructEntry
+
+var picStructMapEntries = picStructMap{
+	0: {name: "frame", numClockTS: 1},
+	1: {name: "top_field", numClockTS: 1},
+	2: {name: "bottom_field", numClockTS: 1},
+	3: {name: "top_field,bottom_field,in_that_order", numClockTS: 2},
+	4: {name: "bottom_field,top_field,in_that_order", numClockTS: 2},
+	5: {name: "top_field,bottom_field,top_field_repeated,in_that_order", numClockTS: 3},
+	6: {name: "bottom_field,top_field,bottom_field_repeated,in_that_order", numClockTS: 3},
+	7: {name: "frame_doubling", numClockTS: 2},
+	8: {name: "frame_tripling", numClockTS: 3},
+}
+
+func (m picStructMap) MapUint(s scalar.Uint) (scalar.Uint, error) {
+	if len(m) < int(s.Actual) {
+		s.Sym = m[s.Actual].name
+	}
+	return s, nil
+}
+
 func avcSEIDecode(d *decode.D) any {
+	var ai format.AVC_NALU_In
+	d.ArgAs(&ai)
+
 	payloadType := d.FieldUintFn("payload_type", func(d *decode.D) uint64 { return ffSum(d) }, seiNames)
 	payloadSize := d.FieldUintFn("payload_size", func(d *decode.D) uint64 { return ffSum(d) })
 
 	d.FramedFn(int64(payloadSize)*8, func(d *decode.D) {
 		switch payloadType {
+		case avcSEIBufferingPeriod:
+			d.FieldUintFn("seq_parameter_set_id", uEV)
+			if ai.NalHrdParametersPresent {
+				d.FieldArray("initial_cpb_removal_delays", func(d *decode.D) {
+					d.FieldStruct("initial_cpb_removal_delay", func(d *decode.D) {
+						d.FieldU("initial_cpb_removal_delay", int(ai.InitialCpbRemovalDelayLength))
+						d.FieldU("initial_cpb_removal_delay_offset", int(ai.InitialCpbRemovalDelayLength))
+					})
+				})
+			}
+			if ai.VclHrdParametersPresent {
+				d.FieldArray("initial_cpb_removal_delays", func(d *decode.D) {
+					d.FieldStruct("initial_cpb_removal_delay", func(d *decode.D) {
+						d.FieldU("initial_cpb_removal_delay", int(ai.InitialCpbRemovalDelayLength))
+						d.FieldU("initial_cpb_removal_delay_offset", int(ai.InitialCpbRemovalDelayLength))
+					})
+				})
+			}
 		case avcSEIUserDataUnregistered:
 			d.FieldRawLen("uuid", 16*8, userDataUnregisteredNames)
+		case avcSEIPicTiming:
+			if ai.NalHrdParametersPresent || ai.VclHrdParametersPresent {
+				d.FieldU("cpb_removal_delay", int(ai.CpbRemovalDelayLength))
+				d.FieldU("dpb_output_delay", int(ai.DpbOutputDelayLength))
+			}
+			pic_struct_present_flag := d.FieldBool("pic_struct_present_flag")
+			picStruct := 0
+			if pic_struct_present_flag {
+				picStruct = int(d.FieldU4("pic_struct", picStructMapEntries))
+			}
+			numClockTS := 0
+			if picStruct < len(picStructMapEntries) {
+				numClockTS = picStructMapEntries[picStruct].numClockTS
+			}
+			if numClockTS > 0 {
+				d.FieldArray("clocks", func(d *decode.D) {
+					for i := 0; i < numClockTS; i++ {
+						d.FieldStruct("clock", func(d *decode.D) {
+							clock_timestamp_flag := d.FieldBool("clock_timestamp_flag")
+							if clock_timestamp_flag {
+								d.FieldU2("ct_type")
+								d.FieldBool("nuit_field_based_flag")
+								d.FieldU5("counting_type")
+								full_timestamp_flag := d.FieldBool("full_timestamp_flag")
+								d.FieldBool("discontinuity_flag")
+								d.FieldBool("cnt_dropped_flag")
+								d.FieldU8("nframes")
+								d.FieldU2("ct_type")
+								if full_timestamp_flag {
+									d.FieldU6("seconds_value")
+									d.FieldU5("minutes_value")
+									d.FieldU5("hours_value")
+								} else {
+									seconds_flag := d.FieldBool("seconds_flag")
+									if seconds_flag {
+										d.FieldU6("seconds_value")
+										minutes_flag := d.FieldBool("minutes_flag")
+										if minutes_flag {
+											d.FieldU5("minutes_value")
+											hours_flag := d.FieldBool("minutes_flag")
+											if hours_flag {
+												d.FieldU5("hours_value")
+											}
+										}
+									}
+								}
+								if ai.TimeOffsetLength > 0 {
+									d.FieldS5("time_offset")
+								}
+							}
+						})
+					}
+				})
+			}
 		}
 		d.FieldRawLen("data", d.BitsLeft())
 	})

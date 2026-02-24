@@ -21,7 +21,7 @@
 |`avc_dcr`                                                       |H.264/AVC&nbsp;Decoder&nbsp;Configuration&nbsp;Record                                                        |<sub>`avc_nalu`</sub>|
 |[`avc_nalu`](#avc_nalu)                                         |H.264/AVC&nbsp;Network&nbsp;Access&nbsp;Layer&nbsp;Unit                                                      |<sub>`avc_sps` `avc_pps` `avc_sei`</sub>|
 |`avc_pps`                                                       |H.264/AVC&nbsp;Picture&nbsp;Parameter&nbsp;Set                                                               |<sub></sub>|
-|`avc_sei`                                                       |H.264/AVC&nbsp;Supplemental&nbsp;Enhancement&nbsp;Information                                                |<sub></sub>|
+|[`avc_sei`](#avc_sei)                                           |H.264/AVC&nbsp;Supplemental&nbsp;Enhancement&nbsp;Information                                                |<sub></sub>|
 |`avc_sps`                                                       |H.264/AVC&nbsp;Sequence&nbsp;Parameter&nbsp;Set                                                              |<sub></sub>|
 |[`avi`](#avi)                                                   |Audio&nbsp;Video&nbsp;Interleaved                                                                            |<sub>`avc_au` `hevc_au` `mp3_frame` `flac_frame`</sub>|
 |[`avro_ocf`](#avro_ocf)                                         |Avro&nbsp;object&nbsp;container&nbsp;file                                                                    |<sub></sub>|
@@ -265,25 +265,32 @@ H.264/AVC Access Unit.
 |Name                                          |Default|Description|
 |-                                             |-      |-|
 |`bottom_field_pic_order_in_frame_present_flag`|false  ||
+|`cpb_cnt`                                     |0      ||
+|`cpb_removal_delay_length`                    |0      ||
 |`delta_pic_order_always_zero_flag`            |false  ||
+|`dpb_output_delay_length`                     |0      ||
 |`frame_mbs_only_flag`                         |true   ||
+|`initial_cpb_removal_delay_length`            |0      ||
 |`length_size`                                 |0      |Length value size|
 |`log2max_frame_num`                           |4      ||
 |`log2max_pic_order_cnt_lsb`                   |4      ||
+|`nal_hrd_parameters_present`                  |false  ||
 |`pic_order_cnt_type`                          |0      ||
 |`redundant_pic_cnt_present_flag`              |false  ||
 |`separate_colour_plane_flag`                  |false  ||
+|`time_offset_length`                          |0      ||
+|`vcl_hrd_parameters_present`                  |false  ||
 
 ### Examples
 
 Decode file using avc_au options
 ```
-$ fq -d avc_au -o bottom_field_pic_order_in_frame_present_flag=false -o delta_pic_order_always_zero_flag=false -o frame_mbs_only_flag=true -o length_size=0 -o log2max_frame_num=4 -o log2max_pic_order_cnt_lsb=4 -o pic_order_cnt_type=0 -o redundant_pic_cnt_present_flag=false -o separate_colour_plane_flag=false . file
+$ fq -d avc_au -o bottom_field_pic_order_in_frame_present_flag=false -o cpb_cnt=0 -o cpb_removal_delay_length=0 -o delta_pic_order_always_zero_flag=false -o dpb_output_delay_length=0 -o frame_mbs_only_flag=true -o initial_cpb_removal_delay_length=0 -o length_size=0 -o log2max_frame_num=4 -o log2max_pic_order_cnt_lsb=4 -o nal_hrd_parameters_present=false -o pic_order_cnt_type=0 -o redundant_pic_cnt_present_flag=false -o separate_colour_plane_flag=false -o time_offset_length=0 -o vcl_hrd_parameters_present=false . file
 ```
 
 Decode value as avc_au
 ```
-... | avc_au({bottom_field_pic_order_in_frame_present_flag:false,delta_pic_order_always_zero_flag:false,frame_mbs_only_flag:true,length_size:0,log2max_frame_num:4,log2max_pic_order_cnt_lsb:4,pic_order_cnt_type:0,redundant_pic_cnt_present_flag:false,separate_colour_plane_flag:false})
+... | avc_au({bottom_field_pic_order_in_frame_present_flag:false,cpb_cnt:0,cpb_removal_delay_length:0,delta_pic_order_always_zero_flag:false,dpb_output_delay_length:0,frame_mbs_only_flag:true,initial_cpb_removal_delay_length:0,length_size:0,log2max_frame_num:4,log2max_pic_order_cnt_lsb:4,nal_hrd_parameters_present:false,pic_order_cnt_type:0,redundant_pic_cnt_present_flag:false,separate_colour_plane_flag:false,time_offset_length:0,vcl_hrd_parameters_present:false})
 ```
 
 ## avc_nalu
@@ -294,24 +301,64 @@ H.264/AVC Network Access Layer Unit.
 |Name                                          |Default|Description|
 |-                                             |-      |-|
 |`bottom_field_pic_order_in_frame_present_flag`|false  ||
+|`cpb_cnt`                                     |0      ||
+|`cpb_removal_delay_length`                    |0      ||
 |`delta_pic_order_always_zero_flag`            |false  ||
+|`dpb_output_delay_length`                     |0      ||
 |`frame_mbs_only_flag`                         |true   ||
+|`initial_cpb_removal_delay_length`            |0      ||
 |`log2max_frame_num`                           |4      ||
 |`log2max_pic_order_cnt_lsb`                   |4      ||
+|`nal_hrd_parameters_present`                  |false  ||
 |`pic_order_cnt_type`                          |0      ||
 |`redundant_pic_cnt_present_flag`              |false  ||
 |`separate_colour_plane_flag`                  |false  ||
+|`time_offset_length`                          |0      ||
+|`vcl_hrd_parameters_present`                  |false  ||
 
 ### Examples
 
 Decode file using avc_nalu options
 ```
-$ fq -d avc_nalu -o bottom_field_pic_order_in_frame_present_flag=false -o delta_pic_order_always_zero_flag=false -o frame_mbs_only_flag=true -o log2max_frame_num=4 -o log2max_pic_order_cnt_lsb=4 -o pic_order_cnt_type=0 -o redundant_pic_cnt_present_flag=false -o separate_colour_plane_flag=false . file
+$ fq -d avc_nalu -o bottom_field_pic_order_in_frame_present_flag=false -o cpb_cnt=0 -o cpb_removal_delay_length=0 -o delta_pic_order_always_zero_flag=false -o dpb_output_delay_length=0 -o frame_mbs_only_flag=true -o initial_cpb_removal_delay_length=0 -o log2max_frame_num=4 -o log2max_pic_order_cnt_lsb=4 -o nal_hrd_parameters_present=false -o pic_order_cnt_type=0 -o redundant_pic_cnt_present_flag=false -o separate_colour_plane_flag=false -o time_offset_length=0 -o vcl_hrd_parameters_present=false . file
 ```
 
 Decode value as avc_nalu
 ```
-... | avc_nalu({bottom_field_pic_order_in_frame_present_flag:false,delta_pic_order_always_zero_flag:false,frame_mbs_only_flag:true,log2max_frame_num:4,log2max_pic_order_cnt_lsb:4,pic_order_cnt_type:0,redundant_pic_cnt_present_flag:false,separate_colour_plane_flag:false})
+... | avc_nalu({bottom_field_pic_order_in_frame_present_flag:false,cpb_cnt:0,cpb_removal_delay_length:0,delta_pic_order_always_zero_flag:false,dpb_output_delay_length:0,frame_mbs_only_flag:true,initial_cpb_removal_delay_length:0,log2max_frame_num:4,log2max_pic_order_cnt_lsb:4,nal_hrd_parameters_present:false,pic_order_cnt_type:0,redundant_pic_cnt_present_flag:false,separate_colour_plane_flag:false,time_offset_length:0,vcl_hrd_parameters_present:false})
+```
+
+## avc_sei
+H.264/AVC Supplemental Enhancement Information.
+
+### Options
+
+|Name                              |Default|Description|
+|-                                 |-      |-|
+|`cpb_cnt`                         |0      ||
+|`cpb_removal_delay_length`        |0      ||
+|`delta_pic_order_always_zero_flag`|false  ||
+|`dpb_output_delay_length`         |0      ||
+|`frame_mbs_only_flag`             |true   ||
+|`initial_cpb_removal_delay_length`|0      ||
+|`log2max_frame_num`               |4      ||
+|`log2max_pic_order_cnt_lsb`       |4      ||
+|`nal_hrd_parameters_present`      |false  ||
+|`pic_order_cnt_type`              |0      ||
+|`separate_colour_plane_flag`      |false  ||
+|`time_offset_length`              |0      ||
+|`vcl_hrd_parameters_present`      |false  ||
+
+### Examples
+
+Decode file using avc_sei options
+```
+$ fq -d avc_sei -o cpb_cnt=0 -o cpb_removal_delay_length=0 -o delta_pic_order_always_zero_flag=false -o dpb_output_delay_length=0 -o frame_mbs_only_flag=true -o initial_cpb_removal_delay_length=0 -o log2max_frame_num=4 -o log2max_pic_order_cnt_lsb=4 -o nal_hrd_parameters_present=false -o pic_order_cnt_type=0 -o separate_colour_plane_flag=false -o time_offset_length=0 -o vcl_hrd_parameters_present=false . file
+```
+
+Decode value as avc_sei
+```
+... | avc_sei({cpb_cnt:0,cpb_removal_delay_length:0,delta_pic_order_always_zero_flag:false,dpb_output_delay_length:0,frame_mbs_only_flag:true,initial_cpb_removal_delay_length:0,log2max_frame_num:4,log2max_pic_order_cnt_lsb:4,nal_hrd_parameters_present:false,pic_order_cnt_type:0,separate_colour_plane_flag:false,time_offset_length:0,vcl_hrd_parameters_present:false})
 ```
 
 ## avi

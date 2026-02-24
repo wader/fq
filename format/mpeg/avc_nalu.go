@@ -25,11 +25,17 @@ func init() {
 			DecodeFn:    avcNALUDecode,
 			DefaultInArg: format.AVC_NALU_In{
 				AVC_SPS_Info: format.AVC_SPS_Info{
-					SeparateColourPlaneFlag: false,
-					Log2MaxFrameNum:         4,
-					FrameMbsOnlyFlag:        true,
-					PicOrderCntType:         0,
-					Log2MaxPicOrderCntLsb:   4,
+					SeparateColourPlaneFlag:      false,
+					Log2MaxFrameNum:              4,
+					FrameMbsOnlyFlag:             true,
+					PicOrderCntType:              0,
+					Log2MaxPicOrderCntLsb:        4,
+					NalHrdParametersPresent:      false,
+					VclHrdParametersPresent:      false,
+					InitialCpbRemovalDelayLength: 0,
+					CpbRemovalDelayLength:        0,
+					DpbOutputDelayLength:         0,
+					TimeOffsetLength:             0,
 				},
 				AVC_PPS_Info: format.AVC_PPS_Info{
 					BottomFieldPicOrderInFramePresentFlag: false,
@@ -174,7 +180,7 @@ func avcNALUDecode(d *decode.D) any {
 			}
 			// TODO: more
 		case avcNALSupplementalEnhancementInformation:
-			d.Format(&avcSEIFormat, nil)
+			d.Format(&avcSEIFormat, ai)
 		case avcNALSequenceParameterSet:
 			v := d.Format(&avcSPSFormat, nil)
 			sps, ok := v.(format.AVC_SPS_Out)
