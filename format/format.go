@@ -228,15 +228,26 @@ type AVC_PPS_Out struct {
 }
 
 type AVC_SPS_Info struct {
-	SeparateColourPlaneFlag     bool   `doc:""`
-	Log2MaxFrameNum             uint64 `doc:""`
-	FrameMbsOnlyFlag            bool   `doc:""`
-	PicOrderCntType             uint64 `doc:""`
-	Log2MaxPicOrderCntLsb       uint64 `doc:""`
-	DeltaPicOrderAlwaysZeroFlag bool   `doc:""`
+	SeparateColourPlaneFlag      bool   `doc:""`
+	Log2MaxFrameNum              uint64 `doc:""`
+	FrameMbsOnlyFlag             bool   `doc:""`
+	PicOrderCntType              uint64 `doc:""`
+	Log2MaxPicOrderCntLsb        uint64 `doc:""`
+	DeltaPicOrderAlwaysZeroFlag  bool   `doc:""`
+	NalHrdParametersPresent      bool   `doc:""`
+	VclHrdParametersPresent      bool   `doc:""`
+	CpbCnt                       uint64 `doc:""`
+	InitialCpbRemovalDelayLength uint64 `doc:""`
+	CpbRemovalDelayLength        uint64 `doc:""`
+	DpbOutputDelayLength         uint64 `doc:""`
+	TimeOffsetLength             uint64 `doc:""`
 }
 
 type AVC_SPS_Out struct {
+	AVC_SPS_Info
+}
+
+type AVC_SEI_In struct {
 	AVC_SPS_Info
 }
 

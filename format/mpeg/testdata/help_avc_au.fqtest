@@ -5,14 +5,21 @@ Options
 =======
 
   bottom_field_pic_order_in_frame_present_flag=false  
+  cpb_cnt=0                                           
+  cpb_removal_delay_length=0                          
   delta_pic_order_always_zero_flag=false              
+  dpb_output_delay_length=0                           
   frame_mbs_only_flag=true                            
+  initial_cpb_removal_delay_length=0                  
   length_size=0                                       Length value size
   log2max_frame_num=4                                 
   log2max_pic_order_cnt_lsb=4                         
+  nal_hrd_parameters_present=false                    
   pic_order_cnt_type=0                                
   redundant_pic_cnt_present_flag=false                
   separate_colour_plane_flag=false                    
+  time_offset_length=0                                
+  vcl_hrd_parameters_present=false                    
 
 Decode examples
 ===============
@@ -22,7 +29,7 @@ Decode examples
   # Decode value as avc_au
   ... | avc_au
   # Decode file using avc_au options
-  $ fq -d avc_au -o bottom_field_pic_order_in_frame_present_flag=false -o delta_pic_order_always_zero_flag=false -o frame_mbs_only_flag=true -o length_size=0 -o log2max_frame_num=4 -o log2max_pic_order_cnt_lsb=4 -o pic_order_cnt_type=0 -o redundant_pic_cnt_present_flag=false -o separate_colour_plane_flag=false . file
+  $ fq -d avc_au -o bottom_field_pic_order_in_frame_present_flag=false -o cpb_cnt=0 -o cpb_removal_delay_length=0 -o delta_pic_order_always_zero_flag=false -o dpb_output_delay_length=0 -o frame_mbs_only_flag=true -o initial_cpb_removal_delay_length=0 -o length_size=0 -o log2max_frame_num=4 -o log2max_pic_order_cnt_lsb=4 -o nal_hrd_parameters_present=false -o pic_order_cnt_type=0 -o redundant_pic_cnt_present_flag=false -o separate_colour_plane_flag=false -o time_offset_length=0 -o vcl_hrd_parameters_present=false . file
   # Decode value as avc_au
-  ... | avc_au({bottom_field_pic_order_in_frame_present_flag:false,delta_pic_order_always_zero_flag:false,frame_mbs_only_flag:true,length_size:0,log2max_frame_num:4,log2max_pic_order_cnt_lsb:4,pic_order_cnt_type:0,redundant_pic_cnt_present_flag:false,separate_colour_plane_flag:false})
+  ... | avc_au({bottom_field_pic_order_in_frame_present_flag:false,cpb_cnt:0,cpb_removal_delay_length:0,delta_pic_order_always_zero_flag:false,dpb_output_delay_length:0,frame_mbs_only_flag:true,initial_cpb_removal_delay_length:0,length_size:0,log2max_frame_num:4,log2max_pic_order_cnt_lsb:4,nal_hrd_parameters_present:false,pic_order_cnt_type:0,redundant_pic_cnt_present_flag:false,separate_colour_plane_flag:false,time_offset_length:0,vcl_hrd_parameters_present:false})
 

@@ -19,11 +19,17 @@ func init() {
 			DefaultInArg: format.AVC_AU_In{
 				LengthSize: 0,
 				AVC_SPS_Info: format.AVC_SPS_Info{
-					SeparateColourPlaneFlag: false,
-					Log2MaxFrameNum:         4,
-					FrameMbsOnlyFlag:        true,
-					PicOrderCntType:         0,
-					Log2MaxPicOrderCntLsb:   4,
+					SeparateColourPlaneFlag:      false,
+					Log2MaxFrameNum:              4,
+					FrameMbsOnlyFlag:             true,
+					PicOrderCntType:              0,
+					Log2MaxPicOrderCntLsb:        4,
+					NalHrdParametersPresent:      false,
+					VclHrdParametersPresent:      false,
+					InitialCpbRemovalDelayLength: 0,
+					CpbRemovalDelayLength:        0,
+					DpbOutputDelayLength:         0,
+					TimeOffsetLength:             0,
 				},
 				AVC_PPS_Info: format.AVC_PPS_Info{
 					BottomFieldPicOrderInFramePresentFlag: false,

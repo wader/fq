@@ -54,7 +54,44 @@ var chromaFormatMap = scalar.UintMapSymStr{
 	3: "4:4:4",
 }
 
-func avcVuiParameters(d *decode.D) {
+type avcHdrParametersOut struct {
+	cpbCnt                       uint64
+	initialCpbRemovalDelayLength uint64
+	cpbRemovalDelayLength        uint64
+	dpbOutputDelayLength         uint64
+	timeOffsetLength             uint64
+}
+
+func avcHdrParameters(d *decode.D) avcHdrParametersOut {
+	cpbCnt := d.FieldUintFn("cpb_cnt", uEV, scalar.UintActualAdd(1))
+	d.FieldU4("bit_rate_scale")
+	d.FieldU4("cpb_size_scale")
+	d.FieldArray("sched_sels", func(d *decode.D) {
+		for i := uint64(0); i < cpbCnt; i++ {
+			d.FieldStruct("sched_sel", func(d *decode.D) {
+				d.FieldUintFn("bit_rate_value", uEV, scalar.UintActualAdd(1))
+				d.FieldUintFn("cpb_size_value", uEV, scalar.UintActualAdd(1))
+				d.FieldBool("cbr_flag")
+			})
+		}
+	})
+	var ahdo avcHdrParametersOut
+	ahdo.cpbCnt = cpbCnt
+	ahdo.initialCpbRemovalDelayLength = d.FieldU5("initial_cpb_removal_delay_length", scalar.UintActualAdd(1))
+	ahdo.cpbRemovalDelayLength = d.FieldU5("cpb_removal_delay_length", scalar.UintActualAdd(1))
+	ahdo.dpbOutputDelayLength = d.FieldU5("dpb_output_delay_length", scalar.UintActualAdd(1))
+	ahdo.timeOffsetLength = d.FieldU5("time_offset_length")
+
+	return ahdo
+}
+
+type avcVuiParametersOut struct {
+	ahdo                    avcHdrParametersOut
+	nalHrdParametersPresent bool
+	vclHrdParametersPresent bool
+}
+
+func avcVuiParameters(d *decode.D) avcVuiParametersOut {
 	aspectRatioInfoPresentFlag := d.FieldBool("aspect_ratio_info_present_flag")
 	if aspectRatioInfoPresentFlag {
 		aspectRatioIdc := d.FieldU8("aspect_ratio_idc", avcAspectRatioIdcMap)
@@ -92,13 +129,23 @@ func avcVuiParameters(d *decode.D) {
 		d.FieldU32("time_scale")
 		d.FieldBool("fixed_frame_rate_flag")
 	}
+	var avpo avcVuiParametersOut
 	nalHrdParametersPresentFlag := d.FieldBool("nal_hrd_parameters_present_flag")
 	if nalHrdParametersPresentFlag {
-		d.FieldStruct("nal_hrd_parameters", avcHdrParameters)
+		avpo.nalHrdParametersPresent = true
+		d.FieldStruct("nal_hrd_parameters", func(d *decode.D) {
+			avpo.ahdo = avcHdrParameters(d)
+		})
 	}
+	// NOTE: spec is a bit unclear what delay length fields to pick if both nal and vcl hdr are present
+	// ffmpeg seems to pick the last (vcl), mediainfo the first (hdr)
+	// let's do same as ffmpeg
 	vclHrdParametersPresentFlag := d.FieldBool("vcl_hrd_parameters_present_flag")
 	if vclHrdParametersPresentFlag {
-		d.FieldStruct("vcl_hrd_parameters", avcHdrParameters)
+		avpo.vclHrdParametersPresent = true
+		d.FieldStruct("vcl_hrd_parameters", func(d *decode.D) {
+			avpo.ahdo = avcHdrParameters(d)
+		})
 	}
 	if nalHrdParametersPresentFlag || vclHrdParametersPresentFlag {
 		d.FieldBool("low_delay_hrd_flag")
@@ -114,25 +161,8 @@ func avcVuiParameters(d *decode.D) {
 		d.FieldUintFn("max_num_reorder_frames", uEV)
 		d.FieldUintFn("max_dec_frame_buffering", uEV)
 	}
-}
 
-func avcHdrParameters(d *decode.D) {
-	cpbCnt := d.FieldUintFn("cpb_cnt", uEV, scalar.UintActualAdd(1))
-	d.FieldU4("bit_rate_scale")
-	d.FieldU4("cpb_size_scale")
-	d.FieldArray("sched_sels", func(d *decode.D) {
-		for i := uint64(0); i < cpbCnt; i++ {
-			d.FieldStruct("sched_sel", func(d *decode.D) {
-				d.FieldUintFn("bit_rate_value", uEV, scalar.UintActualAdd(1))
-				d.FieldUintFn("cpb_size_value", uEV, scalar.UintActualAdd(1))
-				d.FieldBool("cbr_flag")
-			})
-		}
-	})
-	d.FieldU5("initial_cpb_removal_delay_length", scalar.UintActualAdd(1))
-	d.FieldU5("cpb_removal_delay_length", scalar.UintActualAdd(1))
-	d.FieldU5("dpb_output_delay_length", scalar.UintActualAdd(1))
-	d.FieldU5("time_offset_length")
+	return avpo
 }
 
 func avcSPSDecode(d *decode.D) any {
@@ -205,20 +235,30 @@ func avcSPSDecode(d *decode.D) any {
 		d.FieldUintFn("frame_crop_bottom_offset", uEV)
 	}
 	vuiParametersPresentFlag := d.FieldBool("vui_parameters_present_flag")
+	var avpo avcVuiParametersOut
 	if vuiParametersPresentFlag {
-		d.FieldStruct("vui_parameters", avcVuiParameters)
+		d.FieldStruct("vui_parameters", func(d *decode.D) {
+			avpo = avcVuiParameters(d)
+		})
 	}
 
 	d.FieldRawLen("trailing_bits", d.BitsLeft())
 
 	return format.AVC_SPS_Out{
 		AVC_SPS_Info: format.AVC_SPS_Info{
-			SeparateColourPlaneFlag:     separateColourPlaneFlag,
-			Log2MaxFrameNum:             log2MaxFrameNum,
-			FrameMbsOnlyFlag:            frameMbsOnlyFlag,
-			PicOrderCntType:             picOrderCntType,
-			Log2MaxPicOrderCntLsb:       log2MaxPicOrderCntLsb,
-			DeltaPicOrderAlwaysZeroFlag: deltaPicOrderAlwaysZeroFlag,
+			SeparateColourPlaneFlag:      separateColourPlaneFlag,
+			Log2MaxFrameNum:              log2MaxFrameNum,
+			FrameMbsOnlyFlag:             frameMbsOnlyFlag,
+			PicOrderCntType:              picOrderCntType,
+			Log2MaxPicOrderCntLsb:        log2MaxPicOrderCntLsb,
+			DeltaPicOrderAlwaysZeroFlag:  deltaPicOrderAlwaysZeroFlag,
+			NalHrdParametersPresent:      avpo.nalHrdParametersPresent,
+			VclHrdParametersPresent:      avpo.vclHrdParametersPresent,
+			CpbCnt:                       avpo.ahdo.cpbCnt,
+			InitialCpbRemovalDelayLength: avpo.ahdo.initialCpbRemovalDelayLength,
+			CpbRemovalDelayLength:        avpo.ahdo.cpbRemovalDelayLength,
+			DpbOutputDelayLength:         avpo.ahdo.dpbOutputDelayLength,
+			TimeOffsetLength:             avpo.ahdo.timeOffsetLength,
 		},
 	}
 }
