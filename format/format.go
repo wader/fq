@@ -147,6 +147,10 @@ var (
 	MPEG_SPU            = &decode.Group{Name: "mpeg_spu"}
 	MPEG_TS             = &decode.Group{Name: "mpeg_ts"}
 	MPES_PES            = &decode.Group{Name: "mpeg_pes"}
+	MPEG_TS_Packet      = &decode.Group{Name: "mpeg_ts_packet"}
+	MPEG_TS_PAT         = &decode.Group{Name: "mpeg_ts_pat"}
+	MPEG_TS_PMT         = &decode.Group{Name: "mpeg_ts_pmt"}
+	MPEG_TS_SDT         = &decode.Group{Name: "mpeg_ts_sdt"}
 	MsgPack             = &decode.Group{Name: "msgpack"}
 	Negentropy          = &decode.Group{Name: "negentropy"}
 	NES                 = &decode.Group{Name: "nes"}
@@ -457,4 +461,42 @@ type Pg_Heap_In struct {
 
 type Pg_BTree_In struct {
 	Page int `doc:"First page number in file, default is 0"`
+}
+
+type MpegTsIn struct {
+	MaxSyncSeek int `doc:"Max byte distance to next sync"`
+}
+
+type MpegTsStream struct {
+	ProgramPid int
+	Type       int
+}
+
+type MpegTsProgram struct {
+	Number     int
+	Pid        int
+	StreamPids []int
+}
+
+type MpegTsPacketIn struct {
+	ProgramMap    map[int]MpegTsProgram
+	StreamMap     map[int]MpegTsStream
+	ContinuityMap map[int]int
+}
+
+type MpegTsPacketOut struct {
+	Pid                        int
+	TransportErrorIndicator    bool
+	ContinuityCounter          int
+	TransportScramblingControl int
+	PayloadUnitStart           bool
+	Payload                    []byte
+}
+
+type MpegTsPatOut struct {
+	PidMap map[int]int // pid to program number that has pmt
+}
+
+type MpegTsPmtOut struct {
+	Streams map[int]MpegTsStream
 }
