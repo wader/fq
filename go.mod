@@ -1,8 +1,6 @@
 module github.com/wader/fq
 
-go 1.24.0
-
-toolchain go1.24.6
+go 1.25.0
 
 // fork of github.com/itchyny/gojq, see github.com/wader/gojq fq branch
 require github.com/wader/gojq v0.12.1-0.20251126153325-72ad386dd708
@@ -55,7 +53,7 @@ require (
 	// bump: gomod-golang-x-net /golang\.org\/x\/net v(.*)/ https://github.com/golang/net.git|^0
 	// bump: gomod-golang-x-net command go get golang.org/x/net@v$LATEST && go mod tidy
 	// bump: gomod-golang-x-net link "Tags" https://github.com/golang/net/tags
-	golang.org/x/net v0.50.0
+	golang.org/x/net v0.51.0
 
 	// bump: gomod-golang-x-term /golang\.org\/x\/term v(.*)/ https://github.com/golang/term.git|^0
 	// bump: gomod-golang-x-term command go get golang.org/x/term@v$LATEST && go mod tidy
