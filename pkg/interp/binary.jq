@@ -30,8 +30,11 @@ def _bytes_or_orig(bfn; fn):
 def _orig_explode: explode;
 def explode: _binary_or_orig([.[range(.size)]]; _orig_explode);
 
+def _orig_split($val): split($val);
+def _orig_split($regex; $flags): split($regex; $flags);
 def _orig_splits($val): splits($val);
 def _orig_splits($regex; $flags): splits($regex; $flags);
+
 def _splits_binary($regex; $flags):
   ( . as $b
   # last null output is to do a last iteration that output from end of last match to end of binary
@@ -49,10 +52,8 @@ def _splits_binary($regex; $flags):
 def splits($val): _bytes_or_orig(_splits_binary($val; "g"); _orig_splits($val));
 def splits($regex; $flags): _bytes_or_orig(_splits_binary($regex; "g"+$flags); _orig_splits($regex; $flags));
 
-def _orig_split($val): split($val);
-def _orig_split($regex; $flags): split($regex; $flags);
 # split/1 splits on string not regexp
-def split($val): [splits($val | _re_quote_meta)];
+def split($val): _bytes_or_orig([_splits_binary($val; "g")]; _orig_split($val));
 def split($regex; $flags): [splits($regex; $flags)];
 
 def _orig_test($val): test($val);
