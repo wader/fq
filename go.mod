@@ -3,7 +3,7 @@ module github.com/wader/fq
 go 1.25.0
 
 // fork of github.com/itchyny/gojq, see github.com/wader/gojq fq branch
-require github.com/wader/gojq v0.12.1-0.20251126153325-72ad386dd708
+require github.com/wader/gojq v0.12.1-0.20260307172723-984bed15fe33
 
 require (
 	// bump: gomod-BurntSushi/toml /github\.com\/BurntSushi\/toml v(.*)/ https://github.com/BurntSushi/toml.git|^1
@@ -72,7 +72,7 @@ require (
 )
 
 require (
-	github.com/itchyny/timefmt-go v0.1.6 // indirect
+	github.com/itchyny/timefmt-go v0.1.7 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	golang.org/x/sys v0.41.0 // indirect
