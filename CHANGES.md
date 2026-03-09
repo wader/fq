@@ -1,3 +1,76 @@
+# 0.17.0
+
+## Changes
+
+- `fromjson` now works more like jq and as one would expect for decode value. `fromjson` used to be implement as normal format decode which returns decode values which in turn when decoding from will decode the backing binary range. This result was expressions like `"123" | fromjson | fromjson` would return `123` instead of failing the second `fromjson`. #1268 Thanks @soberich for reporting
+- `iprint` now support strings in addition to numbers #1246
+  ```sh
+  $ fq -cn '"fq" | iprint'
+  {"bin":"0b1100110","dec":"102","hex":"0x66","oct":"0o146","str":"f"}
+  {"bin":"0b1110001","dec":"113","hex":"0x71","oct":"0o161","str":"q"}
+  ```
+- In REPL mode `input_filename` used to always return the last filename. Now it returns `null` which is wrong but less confusing. The REPL mode needs quite a bit of refactor to fix this properly. #1251
+- Update gojq fork. Changes from upstream:
+  - Fix gsub and sub when the replacement emits multiple values
+  - Improve performance of regexp functions by caching compiled regexps
+  - Implement splits/2 using match/2 for better jq compatibility
+  - Fix fmax, fmin, modf functions against NaN and infinity
+  - Fix join/1 to use add/0 implementation and handle null separator
+  - Fix significand function against subnormal numbers
+  - Fix confusing operator precedence in funcIsnormal
+  - Fix arithmetic operations on the minimum integer
+  - Fix array slice update to validate index types
+  - Fix del and delpaths on null to emit null
+  - Fix flatten/1 to emit error when depth is nan
+  - Fix string repetition boundary check to match jq behavior
+  - Fix type error messages for split and match functions
+- Updated Guix install instructions #1242 Thanks @Hellseher
+
+## Format changes
+
+- `avc_sei` Decode pic_timing and buffering_period. #1271
+- `bplist` Properly decode unicode strings. #1270 Thanks @soberich for reporting
+- `icc_profile` Decode curve type #1265
+
+## Changelog
+
+* 5f2c99ab avc_sei: Decode pic_timing and buffering_period
+* b24187f9 bplist: Unicode string size is in codepoints
+* 7ea80f1e gha: Update golangci-lint action and verison
+* 1c5041ec gojq: Update fq fork
+* edc14c83 gojq: Update fq fork
+* 6f020f06 icc_profile: Decode curve type
+* 4a0b51cc interp: make iprint support strings
+* 12ba0d6d json: Make fromjson less confusing when used with a decode_value
+* 905d0ce9 Mention Guix installation in README.md
+* 01e8edf7 mod: Update github.com/golang/snappy and github.com/gomarkdown/markdown
+* acc350cc repl: Make input_filename output null instead of last filename
+* c076b005 Update docker-golang to 1.25.6 from 1.25.5
+* dbff028b Update docker-golang to 1.25.7 from 1.25.6
+* 984f1373 Update docker-golang to 1.26.0 from 1.25.7
+* 7036a4f8 Update docker-golang to 1.26.1 from 1.26.0
+* e02207a8 update EBML link
+* 94c496ea Update github-go-version to 1.25.6 from 1.25.5
+* 89f47793 Update github-go-version to 1.25.7 from 1.25.6
+* 5ccf8cd9 Update github-go-version to 1.26.0 from 1.25.7
+* d9a77e57 Update github-go-version to 1.26.1 from 1.26.0
+* 34e2cd92 Update github-golangci-lint to 2.11.3 from 2.9.0
+* 391bcccb Update gomod-BurntSushi/toml to 1.6.0 from 1.5.0
+* f6775d8c Update gomod-golang-x-crypto to 0.46.0 from 0.45.0
+* 42d9e21c Update gomod-golang-x-net to 0.48.0 from 0.47.0
+* 0e4e7809 Update gomod-golang-x-net to 0.49.0 from 0.48.0
+* 890989dc Update gomod-golang-x-net to 0.50.0 from 0.49.0
+* 6766021c Update gomod-golang-x-net to 0.51.0 from 0.50.0
+* 45a8de78 Update gomod-golang-x-net to 0.52.0 from 0.51.0
+* f20017ae Update gomod-golang-x-term to 0.38.0 from 0.37.0
+* 44f63284 Update gomod-golang-x-term to 0.39.0 from 0.38.0
+* c4667bda Update gomod-golang-x-term to 0.40.0 from 0.39.0
+* fd826fcc Update gomod-golang/text to 0.32.0 from 0.31.0
+* ad4d6f52 Update gomod-golang/text to 0.33.0 from 0.32.0
+* 5a0ce911 Update gomod-golang/text to 0.34.0 from 0.33.0
+* 39f91013 Update make-golangci-lint to 2.11.3 from 2.9.0
+* 3cf7582f Update make-golangci-lint to 2.9.0 from 2.7.1
+
 # 0.16.0
 
 ## Changes
