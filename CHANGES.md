@@ -1,3 +1,39 @@
+# 0.17.0
+
+## Changes
+
+## Changelog
+
+* 5f2c99ab avc_sei: Decode pic_timing and buffering_period
+* b24187f9 bplist: Unicode string size is in codepoints
+* 7ea80f1e gha: Update golangci-lint action and verison
+* edc14c83 gojq: Update fq fork
+* 6f020f06 icc_profile: Decode curve type
+* 4a0b51cc interp: make iprint support strings
+* 12ba0d6d json: Make fromjson less confusing when used with a decode_value
+* 905d0ce9 Mention Guix installation in README.md
+* acc350cc repl: Make input_filename output null instead of last filename
+* c076b005 Update docker-golang to 1.25.6 from 1.25.5
+* dbff028b Update docker-golang to 1.25.7 from 1.25.6
+* 984f1373 Update docker-golang to 1.26.0 from 1.25.7
+* e02207a8 update EBML link
+* 94c496ea Update github-go-version to 1.25.6 from 1.25.5
+* 89f47793 Update github-go-version to 1.25.7 from 1.25.6
+* 5ccf8cd9 Update github-go-version to 1.26.0 from 1.25.7
+* 391bcccb Update gomod-BurntSushi/toml to 1.6.0 from 1.5.0
+* f6775d8c Update gomod-golang-x-crypto to 0.46.0 from 0.45.0
+* 42d9e21c Update gomod-golang-x-net to 0.48.0 from 0.47.0
+* 0e4e7809 Update gomod-golang-x-net to 0.49.0 from 0.48.0
+* 890989dc Update gomod-golang-x-net to 0.50.0 from 0.49.0
+* 6766021c Update gomod-golang-x-net to 0.51.0 from 0.50.0
+* f20017ae Update gomod-golang-x-term to 0.38.0 from 0.37.0
+* 44f63284 Update gomod-golang-x-term to 0.39.0 from 0.38.0
+* c4667bda Update gomod-golang-x-term to 0.40.0 from 0.39.0
+* fd826fcc Update gomod-golang/text to 0.32.0 from 0.31.0
+* ad4d6f52 Update gomod-golang/text to 0.33.0 from 0.32.0
+* 5a0ce911 Update gomod-golang/text to 0.34.0 from 0.33.0
+* 3cf7582f Update make-golangci-lint to 2.9.0 from 2.7.1
+
 # 0.16.0
 
 ## Changes
