@@ -92,6 +92,7 @@ var (
 	CSV                 = &decode.Group{Name: "csv"}
 	DNS                 = &decode.Group{Name: "dns"}
 	DNS_TCP             = &decode.Group{Name: "dns_tcp"}
+	Dolby_Metadata      = &decode.Group{Name: "dolby_metadata"}
 	ELF                 = &decode.Group{Name: "elf"}
 	Ether_8023_Frame    = &decode.Group{Name: "ether8023_frame"}
 	Exif                = &decode.Group{Name: "exif"}
