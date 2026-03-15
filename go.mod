@@ -21,14 +21,14 @@ require (
 	// bump: gomod-ergochat-readline link "Release notes" https://github.com/ergochat/readline/releases/tag/v$LATEST
 	github.com/ergochat/readline v0.1.3
 
-	// bump: gomod-golang-snappy /github\.com\/golang\/snappy v(.*)/ https://github.com/golang/snappy.git|^0
+	// bump: gomod-golang-snappy /github\.com\/golang\/snappy v(.*)/ https://github.com/golang/snappy.git|^1
 	// bump: gomod-golang-snappy command go get github.com/golang/snappy@v$LATEST && go mod tidy
 	// bump: gomod-golang-snappy link "Source diff $CURRENT..$LATEST" https://github.com/golang/snappy/compare/v$CURRENT..v$LATEST
-	github.com/golang/snappy v0.0.4
+	github.com/golang/snappy v1.0.0
 
 	// has no tags
 	// go get github.com/gomarkdown/markdown@master && go mod tidy
-	github.com/gomarkdown/markdown v0.0.0-20250207164621-7a1f277a159e
+	github.com/gomarkdown/markdown v0.0.0-20260217112301-37c66b85d6ab
 
 	// bump: gomod-gopacket /github\.com\/gopacket\/gopacket v(.*)/ https://github.com/gopacket/gopacket.git|^1
 	// bump: gomod-gopacket command go get github.com/gopacket/gopacket@v$LATEST && go mod tidy
