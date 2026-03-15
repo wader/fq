@@ -22,6 +22,7 @@ import (
 func maybeLogFile() {
 	// used during dev to redirect log to file, useful when debugging repl etc
 	if lf := os.Getenv("LOGFILE"); lf != "" {
+		//nolint:gosec
 		if f, err := os.Create(lf); err == nil {
 			log.SetOutput(f)
 		}

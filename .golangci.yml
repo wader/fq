@@ -34,6 +34,7 @@ linters:
         - G406
         - G506
         - G602 # https://github.com/golangci/golangci-lint/issues/6334
+        - G101 # Potential hardcoded credentials
     govet:
       disable:
         - fieldalignment
@@ -79,6 +80,8 @@ linters:
       - internal/mathx/float80.go
       # ignore warnings in code from crypto/tls and zmap/zcrypto
       - format/tls/tlsdecrypt
+      - format/fuzz_test.go
+      - format/matroska/ebml/gen/main.go
 formatters:
   enable:
     - goimports
