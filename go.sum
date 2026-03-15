@@ -23,8 +23,8 @@ github.com/mitchellh/reflectwalk v1.0.2 h1:G2LzWKi524PWgd3mLHV8Y5k7s6XUvT0Gef6zx
 github.com/mitchellh/reflectwalk v1.0.2/go.mod h1:mSTlrgnPZtwu0c4WaC2kGObEpuNDbx0jmZXqmk4esnw=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e h1:fD57ERR4JtEqsWbfPhv4DMiApHyliiK5xCTNVSPiaAs=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
-github.com/wader/gojq v0.12.1-0.20260307172723-984bed15fe33 h1:m1XDdkB0lfEFigS30OOhG9nbVNGvYeeWocgvwhDvhBI=
-github.com/wader/gojq v0.12.1-0.20260307172723-984bed15fe33/go.mod h1:USEjy5fdczNWD8kQrhsj1EjA0xeCxLtvF1ev8pN2qpE=
+github.com/wader/gojq v0.12.1-0.20260315123642-6d8c75fc0e74 h1:eLFDUQ8b/cmQTT50/+Jm/L8TpMwu6yra+BKz6X9eE/g=
+github.com/wader/gojq v0.12.1-0.20260315123642-6d8c75fc0e74/go.mod h1:USEjy5fdczNWD8kQrhsj1EjA0xeCxLtvF1ev8pN2qpE=
 golang.org/x/crypto v0.49.0 h1:+Ng2ULVvLHnJ/ZFEq4KdcDd/cfjrrjjNSXNzxg0Y4U4=
 golang.org/x/crypto v0.49.0/go.mod h1:ErX4dUh2UM+CFYiXZRTcMpEcN8b/1gxEuv3nODoYtCA=
 golang.org/x/net v0.52.0 h1:He/TN1l0e4mmR3QqHMT2Xab3Aj3L9qjbhRm78/6jrW0=

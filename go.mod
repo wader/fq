@@ -3,7 +3,7 @@ module github.com/wader/fq
 go 1.25.0
 
 // fork of github.com/itchyny/gojq, see github.com/wader/gojq fq branch
-require github.com/wader/gojq v0.12.1-0.20260307172723-984bed15fe33
+require github.com/wader/gojq v0.12.1-0.20260315123642-6d8c75fc0e74
 
 require (
 	// bump: gomod-BurntSushi/toml /github\.com\/BurntSushi\/toml v(.*)/ https://github.com/BurntSushi/toml.git|^1
