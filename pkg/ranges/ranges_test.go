@@ -14,7 +14,8 @@ func TestRangeGaps(t *testing.T) {
 		ranges   string
 		expected string
 	}{
-		{"0:0", "", "0:0"},
+		{"0:0", "", ""},
+		{"0:1", "", "0:1"},
 		{"0:10", "", "0:10"},
 
 		{"0:10", "0:10", ""},

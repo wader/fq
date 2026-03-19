@@ -1165,6 +1165,12 @@ func (d *D) FieldArrayRootBitBufFn(name string, br bitio.ReaderAtSeeker, fn func
 	d.AddChild(cd.Value)
 	fn(cd)
 
+	// TODO: refactor this to share code
+	brLen, err := bitiox.Len(br)
+	if err != nil {
+		d.IOPanic(err, name, "FieldArrayRootBitBufFn: brLen")
+	}
+	cd.FillGaps(ranges.Range{Start: 0, Len: brLen}, "gap")
 	cd.Value.postProcess()
 
 	return cd.Value
@@ -1177,6 +1183,12 @@ func (d *D) FieldStructRootBitBufFn(name string, br bitio.ReaderAtSeeker, fn fun
 	d.AddChild(cd.Value)
 	fn(cd)
 
+	// TODO: refactor this to share code
+	brLen, err := bitiox.Len(br)
+	if err != nil {
+		d.IOPanic(err, name, "FieldStructRootBitBufFn: brLen")
+	}
+	cd.FillGaps(ranges.Range{Start: 0, Len: brLen}, "gap")
 	cd.Value.postProcess()
 
 	return cd.Value

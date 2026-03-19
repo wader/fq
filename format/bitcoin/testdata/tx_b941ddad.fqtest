@@ -11,8 +11,7 @@ $ fq -d bitcoin_transaction dv tx_b941ddad.dat
 0x020|d0 dd 37 15 0f fe 1e                           |..7....         |
 0x020|                     00 00 00 00               |       ....     |      vout: 0 0x27-0x2b (4)
 0x020|                                 00            |           .    |      scriptsig_size: 0 0x2b-0x2c (1)
-     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      scriptsig[0:1]: (bitcoin_script) 0x2c-0x2c (0)
-     |                                               |                |        [0]: raw bits gap0 0x2c-0x2c (0)
+     |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      scriptsig[0:0]: (bitcoin_script) 0x2c-0x2c (0)
 0x020|                                    fd ff ff ff|            ....|      sequence: 0xfffffffd 0x2c-0x30 (4)
 0x030|02                                             |.               |  output_count: 2 0x30-0x31 (1)
      |                                               |                |  outputs[0:2]: 0x31-0x7b (74)

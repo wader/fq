@@ -1,0 +1,31 @@
+# avc nalu with emulation prevention bytes (0x00 0x00 0x03 0x??), make sure we add a proper gap in the sub-buffer
+$ fq -n '"AAAAAgnwAAAAPyHiYhB/AAADAAADAAADAAADAAADAAADAAADAAADAAADAAADAAADAAADAAADAAADAAADAAADAAADAAADAAAqag==" | from_base64 | avc_au({length_size: 4}) | dd'
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.[0:2]: (avc_au)
+      |                                               |                |  [0]{}: nalu
+0x0000|00 00 00 02                                    |....            |    length: 2
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    nalu{}: (avc_nalu)
+0x0000|            09                                 |    .           |      forbidden_zero_bit: false
+0x0000|            09                                 |    .           |      nal_ref_idc: 0
+0x0000|            09                                 |    .           |      nal_unit_type: "aud" (9) (Access unit delimiter)
+      |                                               |                |      rbsp{}:
+0x0000|               f0                              |     .          |        data: raw bits
+      |                                               |                |  [1]{}: nalu
+0x0000|                  00 00 00 3f                  |      ...?      |    length: 63
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|    nalu{}: (avc_nalu)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      rbsp{}:
+  0x00|e2                                             |.               |        first_mb_in_slice: 0
+  0x00|e2                                             |.               |        slice_type: "p" (0)
+  0x00|e2                                             |.               |        pic_parameter_set_id: 0
+  0x00|e2                                             |.               |        frame_num: 1
+  0x00|e2 62                                          |.b              |        pic_order_cnt_lsb: 3
+  0x00|   62 10 7f 00 00 00 00 00 00 00 00 00 00 00 00| b..............|        gap0: raw bits
+  0x01|00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|................|
+  0x02|00 00 00 00 00 00 00 00 00 00 2a 6a|           |..........*j|   |
+0x0000|                              21               |          !     |      forbidden_zero_bit: false
+0x0000|                              21               |          !     |      nal_ref_idc: 1
+0x0000|                              21               |          !     |      nal_unit_type: "slice" (1) (Coded slice of a non-IDR picture)
+0x0000|                                 e2 62 10 7f 00|           .b...|      gap0: raw bits
+0x0010|00 03 00 00 03 00 00 03 00 00 03 00 00 03 00 00|................|
+0x0020|03 00 00 03 00 00 03 00 00 03 00 00 03 00 00 03|................|
+0x0030|00 00 03 00 00 03 00 00 03 00 00 03 00 00 03 00|................|
+0x0040|00 03 00 00 03 00 00 2a 6a|                    |.......*j|      |
