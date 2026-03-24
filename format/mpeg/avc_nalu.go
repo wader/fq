@@ -176,7 +176,7 @@ func avcNALUDecode(d *decode.D) any {
 				}
 			}
 			if ai.RedundantPicCntPresentFlag {
-				d.FieldUintFn("first_mb_in_slice", uEV)
+				d.FieldUintFn("redundant_pic_cnt", uEV)
 			}
 			// TODO: more
 		case avcNALSupplementalEnhancementInformation:
