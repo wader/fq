@@ -31,8 +31,9 @@ func init() {
 
 const (
 	avcSEIBufferingPeriod      = 0
-	avcSEIUserDataUnregistered = 5
 	avcSEIPicTiming            = 1
+	avcSEIUserDataUnregistered = 5
+	avcSEIRecoveryPoint        = 6
 )
 
 var seiNames = scalar.UintMapSymStr{
@@ -42,7 +43,7 @@ var seiNames = scalar.UintMapSymStr{
 	3:                          "filler_payload",
 	4:                          "user_data_registered_itu_t_t35",
 	avcSEIUserDataUnregistered: "user_data_unregistered",
-	6:                          "recovery_point",
+	avcSEIRecoveryPoint:        "recovery_point",
 	7:                          "dec_ref_pic_marking_repetition",
 	8:                          "spare_pic",
 	9:                          "scene_info",
@@ -172,6 +173,17 @@ func avcSEIDecode(d *decode.D) any {
 			}
 		case avcSEIUserDataUnregistered:
 			d.FieldRawLen("uuid", 16*8, userDataUnregisteredNames)
+		case avcSEIRecoveryPoint:
+			// recovery_point( payloadSize ) {
+			//   recovery_frame_cnt 5 ue(v)
+			//   exact_match_flag 5 u(1)
+			//   broken_link_flag 5 u(1)
+			//   changing_slice_group_idc 5 u(2)
+			// }
+			d.FieldUintFn("recovery_frame_cnt", uEV)
+			d.FieldBool("exact_match_flag")
+			d.FieldBool("broken_link_flag")
+			d.FieldU2("changing_slice_group_idc")
 		case avcSEIPicTiming:
 			if ai.NalHrdParametersPresent || ai.VclHrdParametersPresent {
 				d.FieldU("cpb_removal_delay", int(ai.CpbRemovalDelayLength))
