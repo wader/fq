@@ -25,7 +25,7 @@ $ fq -d wav dv end-of-file.wav
 0x030|                        4c 61 76 66 35 38 2e 34|        Lavf58.4|          value: "Lavf58.45.100" 0x38-0x46 (14)
 0x040|35 2e 31 30 30 00                              |5.100.          |
      |                                               |                |    [2]{}: chunk 0x46-0x732 (1772)
-0x040|                  64 61 74 61                  |      data      |      id: "data" 0x46-0x4a (4)
+0x040|                  64 61 74 61                  |      data      |      id: "data" (Raw sound encoded data) 0x46-0x4a (4)
 0x040|                              ff ff ff ff      |          ....  |      size: 0xffffffff (Rest of file) 0x4a-0x4e (4)
 0x040|                                          00 00|              ..|      samples: raw bits 0x4e-0x732 (1764)
 0x050|00 00 b5 00 b5 00 69 01 69 01 1d 02 1d 02 ce 02|......i.i.......|
