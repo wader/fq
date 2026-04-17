@@ -168,6 +168,7 @@ var (
 	SAFETENSORS         = &decode.Group{Name: "safetensors"}
 	SLL_Packet          = &decode.Group{Name: "sll_packet"}
 	SLL2_Packet         = &decode.Group{Name: "sll2_packet"}
+	STL                 = &decode.Group{Name: "stl"}
 	TAP                 = &decode.Group{Name: "tap"}
 	TAR                 = &decode.Group{Name: "tar"}
 	TCP_Segment         = &decode.Group{Name: "tcp_segment"}

@@ -81,7 +81,7 @@ update-gomod: always
 	GOPROXY=direct go get github.com/wader/gojq@fq
 	go mod tidy
 
-# Usage: make fuzz # fuzz all foramts
+# Usage: make fuzz # fuzz all formats
 # Usage: make fuzz GROUP=mp4 # fuzz a group (each format is a group also)
 # TODO: as decode recovers panic and "repanics" unrecoverable errors this is a bit hacky at the moment
 # Retrigger:

@@ -116,6 +116,7 @@
 |`safetensors`                                                   |SafeTensors                                                                                                  |<sub>`json`</sub>|
 |`sll2_packet`                                                   |Linux&nbsp;cooked&nbsp;capture&nbsp;encapsulation&nbsp;v2                                                    |<sub>`inet_packet`</sub>|
 |`sll_packet`                                                    |Linux&nbsp;cooked&nbsp;capture&nbsp;encapsulation                                                            |<sub>`inet_packet`</sub>|
+|[`stl`](#stl)                                                   |Stereolithography                                                                                            |<sub></sub>|
 |[`tap`](#tap)                                                   |TAP&nbsp;tape&nbsp;format&nbsp;for&nbsp;ZX&nbsp;Spectrum&nbsp;computers                                      |<sub></sub>|
 |`tar`                                                           |Tar&nbsp;archive                                                                                             |<sub>`probe`</sub>|
 |`tcp_segment`                                                   |Transmission&nbsp;control&nbsp;protocol&nbsp;segment                                                         |<sub></sub>|
@@ -1374,6 +1375,17 @@ fq '.tcp_connections[] | select(.server.port=="rtmp") | d' file.cap
 ### References
 - https://rtmp.veriskope.com/docs/spec/
 - https://rtmp.veriskope.com/pdf/video_file_format_spec_v10.pdf
+
+## stl
+Stereolithography.
+
+Decode binary STL (Stereolithography, Standard Tesselation Language) files.
+
+### Current limitations
+
+* No support for ASCII STL files
+* No support for VisCAM and SolidView colors
+* No support for Materialise Magics colors
 
 ## tap
 TAP tape format for ZX Spectrum computers.
