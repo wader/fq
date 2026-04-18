@@ -28,7 +28,7 @@ require (
 
 	// has no tags
 	// go get github.com/gomarkdown/markdown@master && go mod tidy
-	github.com/gomarkdown/markdown v0.0.0-20260217112301-37c66b85d6ab
+	github.com/gomarkdown/markdown v0.0.0-20260417124207-7d523f7318df
 
 	// bump: gomod-gopacket /github\.com\/gopacket\/gopacket v(.*)/ https://github.com/gopacket/gopacket.git|^1
 	// bump: gomod-gopacket command go get github.com/gopacket/gopacket@v$LATEST && go mod tidy
@@ -53,7 +53,7 @@ require (
 	// bump: gomod-golang-x-net /golang\.org\/x\/net v(.*)/ https://github.com/golang/net.git|^0
 	// bump: gomod-golang-x-net command go get golang.org/x/net@v$LATEST && go mod tidy
 	// bump: gomod-golang-x-net link "Tags" https://github.com/golang/net/tags
-	golang.org/x/net v0.52.0
+	golang.org/x/net v0.53.0
 
 	// bump: gomod-golang-x-term /golang\.org\/x\/term v(.*)/ https://github.com/golang/term.git|^0
 	// bump: gomod-golang-x-term command go get golang.org/x/term@v$LATEST && go mod tidy
@@ -72,7 +72,7 @@ require (
 )
 
 require (
-	github.com/itchyny/timefmt-go v0.1.7 // indirect
+	github.com/itchyny/timefmt-go v0.1.8 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	golang.org/x/sys v0.43.0 // indirect
