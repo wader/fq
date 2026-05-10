@@ -228,6 +228,15 @@ You can also build and install the development (VCS) package using an [AUR helpe
 ```sh
 paru -S fq-git
 ```
+
+### Gentoo
+
+`fq` can be installed from the Gentoo package repository using `emerge`:
+
+```sh
+emerge dev-util/fq
+```
+
 ### Guix
 
 ```sh
