@@ -140,13 +140,13 @@ func StrSymParseFloat(base int) StrMapper {
 	return strMapToSym(func(s string) (any, error) { return strconv.ParseFloat(s, base) }, false)
 }
 
-type URangeEntry struct {
+type UintRangeEntry struct {
 	Range [2]uint64
 	S     Uint
 }
 
 // UintRangeToScalar maps uint64 ranges to a scalar, first in range is chosen
-type UintRangeToScalar []URangeEntry
+type UintRangeToScalar []UintRangeEntry
 
 func (rs UintRangeToScalar) MapUint(s Uint) (Uint, error) {
 	n := s.Actual
@@ -162,13 +162,13 @@ func (rs UintRangeToScalar) MapUint(s Uint) (Uint, error) {
 }
 
 // SRangeToScalar maps ranges to a scalar, first in range is chosen
-type SRangeEntry struct {
+type SintRangeEntry struct {
 	Range [2]int64
 	S     Sint
 }
 
 // SRangeToScalar maps sint64 ranges to a scalar, first in range is chosen
-type SRangeToScalar []SRangeEntry
+type SRangeToScalar []SintRangeEntry
 
 func (rs SRangeToScalar) MapSint(s Sint) (Sint, error) {
 	n := s.Actual
