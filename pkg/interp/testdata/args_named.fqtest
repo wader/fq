@@ -1,0 +1,9 @@
+# --arg prio
+$ jq -cn --arg a 1 --arg a 2 '$ARGS'
+{"named":{"a":"1"},"positional":[]}
+# --arg vs argjson prio
+$ jq -cn --argjson a 1 --arg a 2 '$ARGS'
+{"named":{"a":1},"positional":[]}
+# $ARGS prio
+$ jq -cn --arg ARGS 1 '$ARGS'
+{"named":{"ARGS":"1"},"positional":[]}

@@ -31,7 +31,11 @@ def _args_parse($args; $opts):
         $r
       else
         if $arg == "--" then
-          $r | .rest += $args[1:]
+          if $r.positional then
+            $r | .parsed[$r.positional] += $args[1:]
+          else
+            $r | .rest += $args[1:]
+          end
         # \d to not see -0, -123 etc as an argument
         elif $arg | test("^--?[^-\\d]") then
           ( $flagmap[$arg] as $optname
@@ -70,6 +74,8 @@ def _args_parse($args; $opts):
               else
                 error("\($arg): needs two argument")
               end
+            elif $opt.positional then
+              _parse($args[1:]; $flagmap; $r | .positional = $optname)
             else
               if $assign_i then error("\($arg): takes no argument")
               else _parse_without_arg($args[1:]; $optname)
@@ -77,7 +83,11 @@ def _args_parse($args; $opts):
             end
           )
         else
-          _parse($args[1:]; $flagmap; ($r | .rest += [$args[0]]))
+          if $r.positional then
+            _parse($args[1:]; $flagmap; $r | .parsed[$r.positional] += [$args[0]])
+          else
+            _parse($args[1:]; $flagmap; ($r | .rest += [$args[0]]))
+          end
         end
       end
     );
@@ -103,7 +113,15 @@ def _args_parse($args; $opts):
     | map({(.key): .value.default})
     | add
     );
-  _parse($args; _flagmap; {parsed: _defaults, rest: []});
+  _parse(
+    $args;
+    _flagmap;
+    { parsed: _defaults
+    , rest: []
+    # which if any --name positional is active
+    , positional: null
+    }
+  );
 
 def args_help_text($opts):
   def _opthelp:

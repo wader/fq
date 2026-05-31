@@ -355,6 +355,7 @@ Notably it adds support for arbitrary-precision integers.
 - Some values can act as an object with keys even when it's an array, number etc.
 - There can be keys hidden from `keys` and `[]`.
 - Some values are readonly and can't be updated or will convert to JSON on update.
+- Mixing `--args` and `--jsonargs` does not behave the same.
 
 ### Types specific to fq
 
