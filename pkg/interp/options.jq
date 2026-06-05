@@ -6,8 +6,10 @@ def _opt_build_default_fixed:
   ( stdout_tty as $stdout
   | { addrbase:       16
     , arg:            []
+    , args:           []
     , argdecode:      []
     , argjson:        []
+    , argsjson:       []
     , array_truncate: 50
     , bits_format:    "string"
     # 0-0xff=brightwhite,0=brightblack,32-126:9-13=default
@@ -74,8 +76,10 @@ def _opt_build_default_fixed:
 def _opt_options:
   { addrbase:           "number"
   , arg:                "array_string_pair"
+  , args:               "array_string"
   , argdecode:          "array_string_pair"
   , argjson:            "array_string_pair"
+  , argsjson:           "array_string"
   , array_truncate:     "number"
   , bits_format:        "string"
   , byte_colors:        "csv_ranges_array"
@@ -155,21 +159,40 @@ def _opt_eval($rest):
         else null
         end
       )
-    , expr: (
+    , args:
+        if $rest[0] == null and .jsonargs[0] == null then .args[1:]
+        else null
+        end
+    , jsonargs:
+        ( if $rest[0] == null and .args[0] == null then .jsonargs[1:]
+          else .jsonargs
+          end
+        | if . then
+            map(
+              ( . as $j
+              | try fromjson
+                catch
+                  ( "--jsonargs \($j): \(.)"
+                  | _fatal_error(_exit_code_args_error)
+                  )
+              )
+            )
+          end
+        )
+    , expr:
         # if -f was used, all rest non-args are filenames
         # otherwise first is expr rest is filenames
-        ( .expr_file
-        | . as $expr_file
+        ( . as {$expr_file, $args, $jsonargs}
+        | $expr_file
         | if . then
             try (open | tobytes | tostring)
             catch ("\($expr_file): \(.)" | _fatal_error(_exit_code_args_error))
-          else $rest[0] // null
+          else ($rest[0] // $args[0] // $jsonargs[0])
           end
         )
-      )
     , expr_given: (
         # was a expr arg given
-        $rest[0] != null
+        $rest[0] != null or .args[0] or .jsonargs[0]
       )
     , expr_eval_path: .expr_file
     , filenames: (
@@ -398,6 +421,16 @@ def _opt_cli_opts:
       , description: "Set variable $NAME to JSON"
       , pairs: "NAME JSON"
       }
+  , args:
+      { long: "--args"
+      , description: "Consume remaining arguments as positional strings"
+      , positional: true
+      }
+  , jsonargs:
+      { long: "--jsonargs"
+      , description: "Consume remaining arguments as positional JSON"
+      , positional: true
+      }
   , compact:
       { short: "-c"
       , long: "--compact-output"
@@ -495,9 +528,9 @@ def _opt_cli_opts:
       }
   , slurp:
       { short: "-s"
-      ,  long: "--slurp"
-      ,  description: "Slurp all inputs into an array or string (-Rs)"
-      ,  bool: true
+      , long: "--slurp"
+      , description: "Slurp all inputs into an array or string (-Rs)"
+      , bool: true
       }
   , unicode_output:
       { short: "-U"
@@ -516,7 +549,7 @@ def _opt_cli_opts:
       , long: "--version"
       , description: "Show version"
       , bool: true
-      },
+      }
   };
 
 def options($opts):

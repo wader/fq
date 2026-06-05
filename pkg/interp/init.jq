@@ -225,12 +225,21 @@ def _main:
         ( _include_paths($opts.include_path) as $_
         | _input_filenames($opts.filenames) as $_
         | _slurps(
-            ( $opts.arg +
-              $opts.argjson +
-              $opts.raw_file +
-              ($opts.argdecode | if . then _map_argdecode end)
-            | map({key: .[0], value: .[1]})
-            | from_entries
+            ( ( $opts.argjson +
+                $opts.arg +
+                $opts.raw_file +
+                ($opts.argdecode | if . then _map_argdecode end)
+              # reverse to make first have priority
+              | reverse
+              | map({key: .[0], value: .[1]})
+              | from_entries
+              ) as $args
+            | $args
+            + { ARGS:
+                  { named: $args
+                  , positional: ($opts.args + $opts.jsonargs)
+                  }
+              }
             )
           )
         ) as $_

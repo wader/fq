@@ -13,6 +13,10 @@ null> 123, 456, error("err"), "bb" | slurp("err")
 error: err
 null> spew
 {
+  "ARGS": {
+    "named": {},
+    "positional": []
+  },
   "a": [
     123
   ],
@@ -35,6 +39,10 @@ null> $a
 null> "aa" | slurp("a")
 null> spew
 {
+  "ARGS": {
+    "named": {},
+    "positional": []
+  },
   "a": [
     "aa"
   ],
@@ -71,6 +79,10 @@ error: err
 > number, ...[0:3][]> ^D
 null> spew
 {
+  "ARGS": {
+    "named": {},
+    "positional": []
+  },
   "b": [
     1,
     2,

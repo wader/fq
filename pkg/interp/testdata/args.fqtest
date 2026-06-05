@@ -27,6 +27,7 @@ Example usages:
 --arg NAME VALUE             Set variable $NAME to string VALUE
 --argdecode NAME PATH        Set variable $NAME to decode of PATH
 --argjson NAME JSON          Set variable $NAME to JSON
+--args                       Consume remaining arguments as positional strings
 --color-output,-C            Force color output
 --compact-output,-c          Compact output
 --decode,-d NAME             Decode format or group (probe)
@@ -34,6 +35,7 @@ Example usages:
 --help,-h [TOPIC]            Show help for TOPIC (ex: -h formats, -h mp4)
 --include-path,-L PATH       Include search path
 --join-output,-j             No newline after each output
+--jsonargs                   Consume remaining arguments as positional JSON
 --monochrome-output,-M       Force monochrome output
 --null-input,-n              Null input (use input and inputs functions to read)
 --option,-o KEY=VALUE/@PATH  Set option (ex: -o color=true, see --help options)
@@ -71,6 +73,8 @@ addrbase            16
 arg                 []
 argdecode           []
 argjson             []
+args                []
+argsjson            []
 array_truncate      50
 bits_format         string
 byte_colors         0-255=default+bold,0=brightblack,32-126:9-13=default

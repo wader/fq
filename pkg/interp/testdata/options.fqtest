@@ -6,6 +6,8 @@ $ fq -n options
   "arg": [],
   "argdecode": [],
   "argjson": [],
+  "args": [],
+  "argsjson": [],
   "array_truncate": 50,
   "bits_format": "string",
   "byte_colors": [

@@ -80,15 +80,15 @@ def run_tests:
     | . as $test
     | try
         ( $test.input
-        | [ eval($test.expr)] as $actual_output
+        | [eval($test.expr)] as $actual_output
         | if $test.output == $actual_output then
             ( empty # "OK: \($test_name)"
             , {ok: true}
             )
           else
             ( "DIFF: \($test_name)"
-            , "  Expected: \($test.output | tojson)"
-            , "    Actual: \($actual_output | tojson)"
+            , "  Expected: \($test.output | map(tojson) | join(", "))"
+            , "    Actual: \($actual_output | map(tojson) | join(", "))"
             , {error: true}
             )
           end

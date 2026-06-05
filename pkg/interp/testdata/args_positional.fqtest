@@ -1,0 +1,21 @@
+# --args collect non-dash-args
+$ fq -cn --args '$ARGS' -n a -n b
+{"named":{},"positional":["a","b"]}
+# --args with -- collects all args
+$ fq -cn --args -- '$ARGS' -n b -n
+{"named":{},"positional":["-n","b","-n"]}
+# --jsonargs collects non-dash-args
+$ fq -cn --jsonargs '$ARGS' -n '"a"' -n '"b"'
+{"named":{},"positional":["a","b"]}
+# --jsonargs with -- collects non-dash-args
+$ fq -cn --jsonargs -- '$ARGS' '"a"' '"b"'
+{"named":{},"positional":["a","b"]}
+$ fq -cn '$ARGS' --args -- a b c
+{"named":{},"positional":["a","b","c"]}
+$ fq -cn --args -- '$ARGS' a b c
+{"named":{},"positional":["a","b","c"]}
+# TODO: mix --args and --jsonargs
+$ fq -cn --jsonargs '$ARGS' '"a"' --args b --jsonargs '"c"'
+exitcode: 2
+stderr:
+error: --jsonargs $ARGS: fromjson cannot be applied to "$ARGS": invalid character '$' looking for beginning of value
