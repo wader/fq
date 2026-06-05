@@ -20,7 +20,6 @@
 
 #### CLI
 
-- `--args` support
 - Reset color at prompt? context cancel
 
 #### CLI and REPL
