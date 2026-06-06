@@ -2,6 +2,8 @@ package crypto
 
 import (
 	"crypto/md5"
+	"crypto/sha3"
+
 	//nolint: gosec
 	"crypto/sha1"
 	"crypto/sha256"
@@ -16,7 +18,6 @@ import (
 
 	//nolint: staticcheck
 	"golang.org/x/crypto/md4"
-	"golang.org/x/crypto/sha3"
 )
 
 //go:embed hash.jq
