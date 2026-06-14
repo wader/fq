@@ -193,6 +193,7 @@ def _main:
         if ($opts.show_help | type) == "boolean" then
           ( # "" to print separators
             ( "banner"
+            , "summary"
             , ""
             , "usage"
             , ""
