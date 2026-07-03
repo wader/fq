@@ -19,6 +19,7 @@ import (
 	"cmp"
 	"embed"
 	"fmt"
+	"iter"
 	"slices"
 	"strings"
 
@@ -102,149 +103,348 @@ func init() {
 	interp.RegisterFS(mp4FS)
 }
 
-type stsc struct {
-	firstChunk      int
-	samplesPerChunk int
-}
-
-type moof struct {
-	offset                        int64
-	defaultSampleSize             int64
-	defaultSampleDescriptionIndex int
-	truns                         []trun
-	sencs                         []senc
-}
-
-// TODO: nothing for now
-type senc struct {
-	entries []struct{}
-}
-
-type trun struct {
-	dataOffset   int64
-	samplesSizes []int64
-}
-
 type sampleDescription struct {
 	dataFormat     string
 	originalFormat string
 }
 
-type stsz struct {
+type stscEntry struct {
+	firstChunk      int
+	samplesPerChunk int
+}
+
+type stszEntry struct {
 	size  int64
 	count int
 }
 
-type track struct {
-	seenHdlr             bool
-	fragment             bool
-	id                   int
-	sampleDescriptions   []sampleDescription
-	subType              string
-	stco                 []int64
-	stsc                 []stsc
-	stsz                 []stsz
-	formatInArg          any
-	objectType           int // if data format is "mp4a"
-	defaultIVSize        int
-	moofs                []*moof // for fmp4
-	dref                 bool
-	drefURL              string
-	stsdNumAudioChannels uint64
+type tkhdBox struct {
+	trackID int
 }
 
-type pathEntry struct {
-	typ  string
-	data any
+type hdlrBox struct {
+	subType string
+}
+
+type stsdBox struct {
+	sampleDescriptions []sampleDescription
+	numAudioChannels   uint64
+}
+
+type stscBox struct {
+	entries []stscEntry
+}
+
+type stszBox struct {
+	entries []stszEntry
+}
+
+type stcoBox struct {
+	entries []int64
+}
+
+type drefBox struct {
+	url string
+}
+
+type tencBox struct {
+	defaultIVSize int
+}
+
+// Fragmented MP4 boxes
+type tfhdBox struct {
+	trackID                       int
+	baseDataOffset                int64
+	defaultSampleSize             int64
+	defaultSampleDescriptionIndex int
+}
+
+type trunBox struct {
+	dataOffset  int64
+	sampleSizes []int64
+}
+
+type sencBox struct {
+	entries []struct{}
+}
+
+type moofBox struct {
+	offset int64
+}
+
+type ftypBox struct {
+	majorBrand string
+}
+
+type avcCBox struct {
+	formatInArg format.AVC_AU_In
+}
+
+type hvcCBox struct {
+	formatInArg format.HEVC_AU_In
+}
+
+type dfLaBox struct {
+	formatInArg format.FLAC_Frame_In
+}
+
+type esdsBox struct {
+	formatInArg format.AAC_Frame_In
+	objectType  int
+}
+
+type frmaBox struct {
+	originalFormat string
+}
+
+type box struct {
+	typ      string
+	data     any
+	parent   *box
+	children []*box
 }
 
 type decodeContext struct {
-	opts   format.MP4_In
-	path   []pathEntry
-	tracks []*track
+	opts    format.MP4_In
+	root    *box
+	current *box
 }
 
-func (ctx *decodeContext) isParent(typ string) bool {
-	return ctx.parent().typ == typ
-}
-
-func (ctx *decodeContext) parent() pathEntry {
-	return ctx.path[len(ctx.path)-2]
-}
-
-func (ctx *decodeContext) findParent(typ string) any {
-	for i := len(ctx.path) - 1; i >= 0; i-- {
-		p := ctx.path[i]
-		if p.typ == typ {
-			return p.data
+// findAll traverses the box tree using a "/"-separated path syntax.
+// Only the last component matches are yielded:
+//
+//	"name"     — immediate child named name
+//	"<name"    — parent named name
+//	"<<name"   — nearest ancestor named name (walks up)
+//	">>name"   — any descendant named name (walks all children recursively)
+//
+//	findAll("moov/trak")  — all trak under moov
+//	find("<moof")         — parent moof
+//	find("<<traf/tfhd")   — nearest traf ancestor, then its child tfhd
+//	find("<<trak/>>tenc") — nearest trak ancestor, then descendant tenc
+//	find("<<stbl/stsd")   — nearest stbl ancestor, then child stsd
+func (n *box) findAll(path string) iter.Seq[*box] {
+	return func(yield func(*box) bool) {
+		if n == nil {
+			return
+		}
+		parts := strings.Split(path, "/")
+		currents := []*box{n}
+		for i, p := range parts {
+			isLast := i == len(parts)-1
+			var next []*box
+			switch {
+			case strings.HasPrefix(p, "<<"):
+				for _, c := range currents {
+					for a := c.parent; a != nil; a = a.parent {
+						if a.typ == p[2:] {
+							if isLast {
+								if !yield(a) {
+									return
+								}
+							} else {
+								next = append(next, a)
+							}
+							break
+						}
+					}
+				}
+			case strings.HasPrefix(p, "<"):
+				for _, c := range currents {
+					if c.parent != nil && c.parent.typ == p[1:] {
+						if isLast {
+							if !yield(c.parent) {
+								return
+							}
+						} else {
+							next = append(next, c.parent)
+						}
+					}
+				}
+			case strings.HasPrefix(p, ">>"):
+				for _, c := range currents {
+					var walk func(*box) bool
+					walk = func(n *box) bool {
+						for _, child := range n.children {
+							if child.typ == p[2:] {
+								if isLast {
+									if !yield(child) {
+										return false
+									}
+								} else {
+									next = append(next, child)
+								}
+							}
+							if !walk(child) {
+								return false
+							}
+						}
+						return true
+					}
+					if !walk(c) {
+						return
+					}
+				}
+			default:
+				for _, c := range currents {
+					for _, child := range c.children {
+						if child.typ == p {
+							if isLast {
+								if !yield(child) {
+									return
+								}
+							} else {
+								next = append(next, child)
+							}
+						}
+					}
+				}
+			}
+			if isLast {
+				return
+			}
+			currents = next
 		}
 	}
-	return nil
 }
 
-func (ctx *decodeContext) rootBox() *rootBox {
-	t, _ := ctx.findParent("").(*rootBox)
-	return t
-}
-
-func (ctx *decodeContext) currentTrakBox() *trakBox {
-	t, _ := ctx.findParent("trak").(*trakBox)
-	return t
-}
-
-func (ctx *decodeContext) currentTrafBox() *trafBox {
-	t, _ := ctx.findParent("traf").(*trafBox)
-	return t
-}
-
-func (ctx *decodeContext) currentMoofBox() *moofBox {
-	t, _ := ctx.findParent("moof").(*moofBox)
-	return t
-}
-
-func (ctx *decodeContext) currentMetaBox() *metaBox {
-	t, _ := ctx.findParent("meta").(*metaBox)
-	return t
-}
-
-func (ctx *decodeContext) currentTrack() *track {
-	if t := ctx.currentTrakBox(); t != nil {
-		return t.track
-	}
-	if t := ctx.currentTrafBox(); t != nil {
-		return t.track
+func (n *box) find(path string) *box {
+	for m := range n.findAll(path) {
+		return m
 	}
 	return nil
 }
 
-func mp4Tracks(d *decode.D, ctx *decodeContext) {
-	type trackCollected struct {
-		track  *track
-		order  int
-		moofss [][]*moof
-	}
+type trackCollected struct {
+	trackID   int
+	trakNode  *box
+	order     int
+	trafNodes []*box
+}
 
+func findData[T any](n *box, path string) T {
+	if n == nil {
+		var zero T
+		return zero
+	}
+	if node := n.find(path); node != nil {
+		if v, ok := node.data.(T); ok {
+			return v
+		}
+	}
+	var zero T
+	return zero
+}
+
+func findAllData[T any](n *box, path string) iter.Seq[T] {
+	return func(yield func(T) bool) {
+		if n == nil {
+			return
+		}
+		for m := range n.findAll(path) {
+			if v, ok := m.data.(T); ok {
+				if !yield(v) {
+					return
+				}
+			}
+		}
+	}
+}
+
+func stblNodeFindFormatInArg(n *box) any {
+	if v := findData[*avcCBox](n, ">>avcC"); v != nil {
+		return v.formatInArg
+	}
+	if v := findData[*hvcCBox](n, ">>hvcC"); v != nil {
+		return v.formatInArg
+	}
+	if v := findData[*dfLaBox](n, ">>dfLa"); v != nil {
+		return v.formatInArg
+	}
+	if v := findData[*esdsBox](n, ">>esds"); v != nil {
+		return v.formatInArg
+	}
+	return nil
+}
+
+func stblNodeFindObjectType(n *box) int {
+	if v := findData[*esdsBox](n, ">>esds"); v != nil {
+		return v.objectType
+	}
+	return 0
+}
+
+func findMajorBrand(root *box) string {
+	if fb := findData[*ftypBox](root, "ftyp"); fb != nil {
+		return fb.majorBrand
+	}
+	if fb := findData[*ftypBox](root, "styp"); fb != nil {
+		return fb.majorBrand
+	}
+	return ""
+}
+
+type trafNodeData struct {
+	moofOffset int64
+	tfhd       *tfhdBox
+	truns      []*trunBox
+	sencs      []*sencBox
+}
+
+func trafNodeSampleData(tn *box) *trafNodeData {
+	td := &trafNodeData{}
+	if mb := findData[*moofBox](tn, "<moof"); mb != nil {
+		td.moofOffset = mb.offset
+	}
+	if tb := findData[*tfhdBox](tn, "tfhd"); tb != nil {
+		td.tfhd = tb
+	}
+	td.truns = slices.Collect(findAllData[*trunBox](tn, "trun"))
+	td.sencs = slices.Collect(findAllData[*sencBox](tn, "senc"))
+	return td
+}
+
+func mp4Tracks(d *decode.D, ctx *decodeContext, trakNodes, moofNodes []*box) {
 	var tracksCollected []*trackCollected
 	tracksCollectedSeen := map[int]*trackCollected{}
-	for i, t := range ctx.tracks {
-		tc, ok := tracksCollectedSeen[t.id]
-		if !ok {
-			tc = &trackCollected{
-				order: i,
-				track: t,
-			}
-			tracksCollectedSeen[t.id] = tc
-			tracksCollected = append(tracksCollected, tc)
+
+	// TODO: error on dup id or mixing fragmend and non-fragmented?
+
+	for i, tn := range trakNodes {
+		trackID := 0
+		if tb := findData[*tkhdBox](tn, "tkhd"); tb != nil {
+			trackID = tb.trackID
 		}
-
-		// TODO: error if not fragmented and seen before?
-
-		tc.moofss = append(tc.moofss, t.moofs)
+		tc := &trackCollected{
+			trackID:  trackID,
+			order:    i,
+			trakNode: tn,
+		}
+		tracksCollectedSeen[trackID] = tc
+		tracksCollected = append(tracksCollected, tc)
 	}
 
-	// sort by id then order in file
+	for _, moofNode := range moofNodes {
+		for trafNode := range moofNode.findAll("traf") {
+			trackID := 0
+			if tb := findData[*tfhdBox](trafNode, "tfhd"); tb != nil {
+				trackID = tb.trackID
+			}
+			tc, ok := tracksCollectedSeen[trackID]
+			if !ok {
+				tc = &trackCollected{
+					trackID: trackID,
+					order:   len(tracksCollected),
+				}
+				tracksCollectedSeen[trackID] = tc
+				tracksCollected = append(tracksCollected, tc)
+			}
+			tc.trafNodes = append(tc.trafNodes, trafNode)
+		}
+	}
+
 	slices.SortStableFunc(tracksCollected, func(a, b *trackCollected) int {
-		if r := cmp.Compare(a.track.id, b.track.id); r != 0 {
+		if r := cmp.Compare(a.trackID, b.trackID); r != 0 {
 			return r
 		}
 		return cmp.Compare(a.order, b.order)
@@ -252,7 +452,7 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 
 	d.FieldArray("tracks", func(d *decode.D) {
 		for _, tc := range tracksCollected {
-			decodeSampleRange := func(d *decode.D, t *track, decodeSample bool, dataFormat string, name string, firstBit int64, nBits int64, inArg any) {
+			decodeSampleRange := func(d *decode.D, objectType int, decodeSample bool, dataFormat string, name string, firstBit int64, nBits int64, inArg any) {
 				d.RangeFn(firstBit, nBits, func(d *decode.D) {
 					if !decodeSample {
 						d.FieldRawLen(name, d.BitsLeft())
@@ -273,17 +473,17 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 						d.FieldFormatLen(name, nBits, &hevcAUGroup, inArg)
 					case dataFormat == "av01":
 						d.FieldFormatLen(name, nBits, &av1FrameGroup, inArg)
-					case dataFormat == "mp4a" && t.objectType == format.MPEGObjectTypeMP3:
+					case dataFormat == "mp4a" && objectType == format.MPEGObjectTypeMP3:
 						d.FieldFormatLen(name, nBits, &mp3FrameGroup, inArg)
-					case dataFormat == "mp4a" && t.objectType == format.MPEGObjectTypeAAC:
+					case dataFormat == "mp4a" && objectType == format.MPEGObjectTypeAAC:
 						d.FieldFormatLen(name, nBits, &aacFrameGroup, inArg)
-					case dataFormat == "mp4a" && t.objectType == format.MPEGObjectTypeVORBIS:
+					case dataFormat == "mp4a" && objectType == format.MPEGObjectTypeVORBIS:
 						d.FieldFormatLen(name, nBits, &vorbisPacketGroup, inArg)
-					case dataFormat == "mp4v" && t.objectType == format.MPEGObjectTypeMPEG2VideoMain:
+					case dataFormat == "mp4v" && objectType == format.MPEGObjectTypeMPEG2VideoMain:
 						d.FieldFormatLen(name, nBits, &mpegPESPacketSampleGroup, inArg)
-					case dataFormat == "mp4v" && t.objectType == format.MPEGObjectTypeMJPEG:
+					case dataFormat == "mp4v" && objectType == format.MPEGObjectTypeMJPEG:
 						d.FieldFormatLen(name, nBits, &jpegGroup, inArg)
-					case dataFormat == "mp4v" && t.objectType == format.MPEGObjectTypePNG:
+					case dataFormat == "mp4v" && objectType == format.MPEGObjectTypePNG:
 						d.FieldFormatLen(name, nBits, &pngGroup, inArg)
 					case dataFormat == "jpeg":
 						d.FieldFormatLen(name, nBits, &jpegGroup, inArg)
@@ -300,13 +500,29 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 			}
 
 			d.FieldStruct("track", func(d *decode.D) {
-				t := tc.track
+				tn := tc.trakNode
 
-				d.FieldValueUint("id", uint64(t.id))
+				d.FieldValueUint("id", uint64(tc.trackID))
+
+				var stblNode *box
+				if tn != nil {
+					stblNode = tn.find("mdia/minf/stbl")
+				}
 
 				trackSDDataFormat := "unknown"
-				if len(t.sampleDescriptions) > 0 {
-					sd := t.sampleDescriptions[0]
+				sampleDescriptions := []sampleDescription(nil)
+				var formatInArg any
+				objectType := 0
+				if stblNode != nil {
+					if sb := findData[*stsdBox](stblNode, "stsd"); sb != nil {
+						sampleDescriptions = sb.sampleDescriptions
+					}
+					formatInArg = stblNodeFindFormatInArg(stblNode)
+					objectType = stblNodeFindObjectType(stblNode)
+				}
+
+				if len(sampleDescriptions) > 0 {
+					sd := sampleDescriptions[0]
 					trackSDDataFormat = sd.dataFormat
 					if sd.originalFormat != "" {
 						trackSDDataFormat = sd.originalFormat
@@ -314,8 +530,8 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 				}
 				d.FieldValueStr("data_format", trackSDDataFormat, dataFormatNames)
 
-				if t.dref && t.drefURL != "" {
-					d.FieldValueStr("data_reference_url", t.drefURL)
+				if db := findData[*drefBox](tn, "minf/dinf/dref"); db != nil && db.url != "" {
+					d.FieldValueStr("data_reference_url", db.url)
 					return
 				}
 
@@ -341,114 +557,113 @@ func mp4Tracks(d *decode.D, ctx *decodeContext) {
 				}
 
 				d.FieldArray("samples", func(d *decode.D) {
-					// TODO: warning? could also be init fragment etc
+					stsz := findData[*stszBox](stblNode, "stsz")
+					if stsz == nil {
+						stsz = findData[*stszBox](stblNode, "stz2")
+					}
+					stsc := findData[*stscBox](stblNode, "stsc")
+					stco := findData[*stcoBox](stblNode, "stco")
+					if stco == nil {
+						stco = findData[*stcoBox](stblNode, "co64")
+					}
 
-					if len(t.stsz) > 0 && len(t.stsc) > 0 && len(t.stco) > 0 {
-						stszIndex := 0
-						stszEntryNr := 0
-						sampleNr := 0
-						stscIndex := 0
-						stscEntryNr := 0
-						stcoIndex := 0
+					if stblNode != nil && stsz != nil && stsc != nil && stco != nil {
+						stszEntries := stsz.entries
+						stscEntries := stsc.entries
+						stcoEntries := stco.entries
 
-						stszEntry := t.stsz[stszIndex]
-						stscEntry := t.stsc[stscIndex]
-						sampleOffset := t.stco[stcoIndex]
+						if len(stszEntries) > 0 && len(stscEntries) > 0 && len(stcoEntries) > 0 {
+							stszIndex := 0
+							stszEntryNr := 0
+							sampleNr := 0
+							stscIndex := 0
+							stscEntryNr := 0
+							stcoIndex := 0
 
-						logStrFn := func() string {
-							return fmt.Sprintf("%d: %s: nr=%d: stsz[%d/%d] nr=%d %#v stsc[%d/%d] nr=%d %#v stco[%d/%d]=%d \n",
-								t.id,
-								trackSDDataFormat,
-								sampleNr,
-								stszIndex, len(t.stsz), stszEntryNr, stszEntry,
-								stscIndex, len(t.stsc), stscEntryNr, stscEntry,
-								stcoIndex, len(t.stco), sampleOffset,
-							)
-						}
+							stszEntry := stszEntries[stszIndex]
+							stscEntry := stscEntries[stscIndex]
+							sampleOffset := stcoEntries[stcoIndex]
 
-						for stszIndex < len(t.stsz) {
-							if stszEntryNr >= stszEntry.count {
-								stszIndex++
-								if stszIndex >= len(t.stsz) {
-									// TODO: warning if unused stsc/stco entries?
-									break
-								}
-
-								stszEntry = t.stsz[stszIndex]
-								stszEntryNr = 0
+							logStrFn := func() string {
+								return fmt.Sprintf("%d: %s: nr=%d: stsz[%d/%d] nr=%d %#v stsc[%d/%d] nr=%d %#v stco[%d/%d]=%d \n",
+									tc.trackID,
+									trackSDDataFormat,
+									sampleNr,
+									stszIndex, len(stszEntries), stszEntryNr, stszEntry,
+									stscIndex, len(stscEntries), stscEntryNr, stscEntry,
+									stcoIndex, len(stcoEntries), sampleOffset,
+								)
 							}
 
-							if stscEntryNr >= stscEntry.samplesPerChunk {
-								stscEntryNr = 0
-								stcoIndex++
-								if stcoIndex >= len(t.stco) {
-									d.Fatalf("outside stco: %s", logStrFn())
-								}
-								sampleOffset = t.stco[stcoIndex]
-
-								if stscIndex < len(t.stsc)-1 && stcoIndex >= t.stsc[stscIndex+1].firstChunk-1 {
-									stscIndex++
-									if stscIndex >= len(t.stsc) {
-										d.Fatalf("outside stsc: %s", logStrFn())
+							for stszIndex < len(stszEntries) {
+								if stszEntryNr >= stszEntry.count {
+									stszIndex++
+									if stszIndex >= len(stszEntries) {
+										break
 									}
-									stscEntry = t.stsc[stscIndex]
+
+									stszEntry = stszEntries[stszIndex]
+									stszEntryNr = 0
 								}
+
+								if stscEntryNr >= stscEntry.samplesPerChunk {
+									stscEntryNr = 0
+									stcoIndex++
+									if stcoIndex >= len(stcoEntries) {
+										d.Fatalf("outside stco: %s", logStrFn())
+									}
+									sampleOffset = stcoEntries[stcoIndex]
+
+									if stscIndex < len(stscEntries)-1 && stcoIndex >= stscEntries[stscIndex+1].firstChunk-1 {
+										stscIndex++
+										if stscIndex >= len(stscEntries) {
+											d.Fatalf("outside stsc: %s", logStrFn())
+										}
+										stscEntry = stscEntries[stscIndex]
+									}
+								}
+
+								decodeSampleRange(d, objectType, ctx.opts.DecodeSamples, trackSDDataFormat, "sample", sampleOffset*8, stszEntry.size*8, formatInArg)
+
+								sampleOffset += stszEntry.size
+								stscEntryNr++
+								stszEntryNr++
+								sampleNr++
 							}
-
-							decodeSampleRange(d, t, ctx.opts.DecodeSamples, trackSDDataFormat, "sample", sampleOffset*8, stszEntry.size*8, t.formatInArg)
-
-							sampleOffset += stszEntry.size
-							stscEntryNr++
-							stszEntryNr++
-							sampleNr++
 						}
 					}
 
 					sampleNr := 0
 
-					for _, ms := range tc.moofss {
-						for _, m := range ms {
-							for trunNr, trun := range m.truns {
-								var senc senc
-								if trunNr < len(m.sencs) {
-									senc = m.sencs[trunNr]
-								}
-								sampleOffset := m.offset + trun.dataOffset
+					for _, trafNode := range tc.trafNodes {
+						td := trafNodeSampleData(trafNode)
+						for trunNr, tr := range td.truns {
+							var sencEntries []struct{}
+							if trunNr < len(td.sencs) {
+								sencEntries = td.sencs[trunNr].entries
+							}
+							sampleOffset := td.moofOffset + tr.dataOffset
 
-								for trunSampleNr, sz := range trun.samplesSizes {
-									dataFormat := trackSDDataFormat
-									if m.defaultSampleDescriptionIndex != 0 && m.defaultSampleDescriptionIndex-1 < len(t.sampleDescriptions) {
-										sd := t.sampleDescriptions[m.defaultSampleDescriptionIndex-1]
-										dataFormat = sd.dataFormat
-										if sd.originalFormat != "" {
-											dataFormat = sd.originalFormat
-										}
+							for trunSampleNr, sz := range tr.sampleSizes {
+								dataFormat := trackSDDataFormat
+								if td.tfhd != nil && td.tfhd.defaultSampleDescriptionIndex != 0 && td.tfhd.defaultSampleDescriptionIndex-1 < len(sampleDescriptions) {
+									sd := sampleDescriptions[td.tfhd.defaultSampleDescriptionIndex-1]
+									dataFormat = sd.dataFormat
+									if sd.originalFormat != "" {
+										dataFormat = sd.originalFormat
 									}
-
-									// logStrFn := func() string {
-									// 	return fmt.Sprintf("%d: %s: %d: (%s): sz=%d %d+%d=%d",
-									// 		t.id,
-									// 		dataFormat,
-									// 		sampleNr,
-									// 		trackSDDataFormat,
-									// 		sz,
-									// 		m.offset,
-									// 		m.dataOffset,
-									// 		sampleOffset,
-									// 	)
-									// }
-
-									decodeSample := ctx.opts.DecodeSamples
-									if trunSampleNr < len(senc.entries) {
-										// TODO: encrypted
-										decodeSample = false
-									}
-
-									decodeSampleRange(d, t, decodeSample, dataFormat, "sample", sampleOffset*8, sz*8, t.formatInArg)
-
-									sampleOffset += sz
-									sampleNr++
 								}
+
+								decodeSample := ctx.opts.DecodeSamples
+								if trunSampleNr < len(sencEntries) {
+									// TODO: encrypted
+									decodeSample = false
+								}
+
+								decodeSampleRange(d, objectType, decodeSample, dataFormat, "sample", sampleOffset*8, sz*8, formatInArg)
+
+								sampleOffset += sz
+								sampleNr++
 							}
 						}
 					}
@@ -462,10 +677,11 @@ func mp4Decode(d *decode.D) any {
 	var mi format.MP4_In
 	d.ArgAs(&mi)
 
+	root := &box{typ: ""}
 	ctx := &decodeContext{
-		opts:   mi,
-		path:   []pathEntry{{typ: "root"}},
-		tracks: []*track{},
+		opts:    mi,
+		root:    root,
+		current: root,
 	}
 
 	// TODO: nicer, validate functions without field?
@@ -488,11 +704,12 @@ func mp4Decode(d *decode.D) any {
 
 	d.SeekRel(-8 * 8)
 
-	ctx.path = []pathEntry{{typ: "", data: &rootBox{}}}
-
 	decodeBoxes(ctx, d)
-	if len(ctx.tracks) > 0 {
-		mp4Tracks(d, ctx)
+
+	trakNodes := slices.Collect(ctx.root.findAll("moov/trak"))
+	moofNodes := slices.Collect(ctx.root.findAll("moof"))
+	if len(trakNodes) > 0 || len(moofNodes) > 0 {
+		mp4Tracks(d, ctx, trakNodes, moofNodes)
 	}
 
 	return nil
