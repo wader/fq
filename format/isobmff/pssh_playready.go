@@ -1,4 +1,4 @@
-package mp4
+package isobmff
 
 import (
 	"github.com/wader/fq/format"

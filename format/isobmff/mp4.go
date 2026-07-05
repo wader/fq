@@ -1,6 +1,6 @@
-package mp4
+package isobmff
 
-// Tries to decode ISOBMFF quicktime mov
+// Tries to decode mp4 and quicktime mov
 // Uses naming from ISOBMFF when possible
 // ISO/IEC 14496-12
 // Quicktime file format https://developer.apple.com/standards/qtff-2001.pdf
@@ -19,9 +19,7 @@ import (
 	"cmp"
 	"embed"
 	"fmt"
-	"iter"
 	"slices"
-	"strings"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/pkg/decode"
@@ -173,7 +171,9 @@ type moofBox struct {
 }
 
 type ftypBox struct {
-	majorBrand string
+	majorBrand   string
+	minorVersion uint32
+	minorBrands  []string
 }
 
 type avcCBox struct {
@@ -197,158 +197,11 @@ type frmaBox struct {
 	originalFormat string
 }
 
-type box struct {
-	typ      string
-	data     any
-	parent   *box
-	children []*box
-}
-
-type decodeContext struct {
-	opts    format.MP4_In
-	root    *box
-	current *box
-}
-
-// findAll traverses the box tree using a "/"-separated path syntax.
-// Only the last component matches are yielded:
-//
-//	"name"     — immediate child named name
-//	"<name"    — parent named name
-//	"<<name"   — nearest ancestor named name (walks up)
-//	">>name"   — any descendant named name (walks all children recursively)
-//
-//	findAll("moov/trak")  — all trak under moov
-//	find("<moof")         — parent moof
-//	find("<<traf/tfhd")   — nearest traf ancestor, then its child tfhd
-//	find("<<trak/>>tenc") — nearest trak ancestor, then descendant tenc
-//	find("<<stbl/stsd")   — nearest stbl ancestor, then child stsd
-func (n *box) findAll(path string) iter.Seq[*box] {
-	return func(yield func(*box) bool) {
-		if n == nil {
-			return
-		}
-		parts := strings.Split(path, "/")
-		currents := []*box{n}
-		for i, p := range parts {
-			isLast := i == len(parts)-1
-			var next []*box
-			switch {
-			case strings.HasPrefix(p, "<<"):
-				for _, c := range currents {
-					for a := c.parent; a != nil; a = a.parent {
-						if a.typ == p[2:] {
-							if isLast {
-								if !yield(a) {
-									return
-								}
-							} else {
-								next = append(next, a)
-							}
-							break
-						}
-					}
-				}
-			case strings.HasPrefix(p, "<"):
-				for _, c := range currents {
-					if c.parent != nil && c.parent.typ == p[1:] {
-						if isLast {
-							if !yield(c.parent) {
-								return
-							}
-						} else {
-							next = append(next, c.parent)
-						}
-					}
-				}
-			case strings.HasPrefix(p, ">>"):
-				for _, c := range currents {
-					var walk func(*box) bool
-					walk = func(n *box) bool {
-						for _, child := range n.children {
-							if child.typ == p[2:] {
-								if isLast {
-									if !yield(child) {
-										return false
-									}
-								} else {
-									next = append(next, child)
-								}
-							}
-							if !walk(child) {
-								return false
-							}
-						}
-						return true
-					}
-					if !walk(c) {
-						return
-					}
-				}
-			default:
-				for _, c := range currents {
-					for _, child := range c.children {
-						if child.typ == p {
-							if isLast {
-								if !yield(child) {
-									return
-								}
-							} else {
-								next = append(next, child)
-							}
-						}
-					}
-				}
-			}
-			if isLast {
-				return
-			}
-			currents = next
-		}
-	}
-}
-
-func (n *box) find(path string) *box {
-	for m := range n.findAll(path) {
-		return m
-	}
-	return nil
-}
-
 type trackCollected struct {
 	trackID   int
 	trakNode  *box
 	order     int
 	trafNodes []*box
-}
-
-func findData[T any](n *box, path string) T {
-	if n == nil {
-		var zero T
-		return zero
-	}
-	if node := n.find(path); node != nil {
-		if v, ok := node.data.(T); ok {
-			return v
-		}
-	}
-	var zero T
-	return zero
-}
-
-func findAllData[T any](n *box, path string) iter.Seq[T] {
-	return func(yield func(T) bool) {
-		if n == nil {
-			return
-		}
-		for m := range n.findAll(path) {
-			if v, ok := m.data.(T); ok {
-				if !yield(v) {
-					return
-				}
-			}
-		}
-	}
 }
 
 func stblNodeFindFormatInArg(n *box) any {
@@ -674,43 +527,26 @@ func mp4Tracks(d *decode.D, ctx *decodeContext, trakNodes, moofNodes []*box) {
 }
 
 func mp4Decode(d *decode.D) any {
-	var mi format.MP4_In
-	d.ArgAs(&mi)
-
-	root := &box{typ: ""}
-	ctx := &decodeContext{
-		opts:    mi,
-		root:    root,
-		current: root,
-	}
-
-	// TODO: nicer, validate functions without field?
-	d.AssertLeastBytesLeft(16)
-	size := d.U32()
-	if size < 8 {
-		d.Fatalf("first box size too small < 8")
-	}
-	firstType := strings.TrimSpace(d.UTF8(4))
-	switch firstType {
-	case "styp", // mp4 segment
-		"ftyp", // mp4 file
-		"free", // seems to happen
-		"moov", // seems to happen
-		"pnot", // video preview file
-		"jP":   // JPEG 2000
-	default:
-		d.Errorf("no styp, ftyp, free or moov box found")
-	}
-
-	d.SeekRel(-8 * 8)
-
-	decodeBoxes(ctx, d)
-
-	trakNodes := slices.Collect(ctx.root.findAll("moov/trak"))
-	moofNodes := slices.Collect(ctx.root.findAll("moof"))
-	if len(trakNodes) > 0 || len(moofNodes) > 0 {
-		mp4Tracks(d, ctx, trakNodes, moofNodes)
-	}
+	isobmffDecode(d, func(firstType string, ftyp ftypBox) {
+		switch firstType {
+		case "free", // seems to happen
+			"moov", // seems to happen
+			"pnot", // video preview file
+			"jP":   // JPEG 2000
+		case "ftyp",
+			"styp": // segment
+			switch ftyp.majorBrand {
+			case "isom", // iso media (mp4ish)
+				"isml",
+				"qt",  // quicktime mov
+				"jp2": // JPEG 2000
+			default:
+				d.Errorf("major_brand not isom, qt or jp2")
+			}
+		default:
+			d.Errorf("type not ftyp, styp or moov")
+		}
+	})
 
 	return nil
 }
