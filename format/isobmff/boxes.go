@@ -266,7 +266,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, extraTypeMappers ...scalar.StrMa
 		dataSize = boxSize - 8
 	}
 
-	if ctx.opts.AllowTruncated && dataSize > uint64(d.BitsLeft()/8) {
+	if ctx.allowTruncated && dataSize > uint64(d.BitsLeft()/8) {
 		dataSize = uint64(d.BitsLeft() / 8)
 		d.FieldValueUint("truncated_size", dataSize)
 	}
@@ -711,14 +711,14 @@ func decodeBoxType(ctx *decodeContext, d *decode.D, typ string) {
 			i++
 		})
 	case "avcC":
-		_, v := d.FieldFormat("descriptor", &avcDCRGroup, nil)
+		_, v := d.FieldFormat("descriptor", &mp4AVCDCRGroup, nil)
 		avcDcrOut, ok := v.(format.AVC_DCR_Out)
 		if !ok {
 			panic(fmt.Sprintf("expected AvcDcrOut got %#+v", v))
 		}
 		ctx.current.data = &avcCBox{formatInArg: format.AVC_AU_In(avcDcrOut)}
 	case "hvcC":
-		_, v := d.FieldFormat("descriptor", &hevcCDCRGroup, nil)
+		_, v := d.FieldFormat("descriptor", &mp4HEVCDCRGroup, nil)
 		hevcDcrOut, ok := v.(format.HEVC_DCR_Out)
 		if !ok {
 			panic(fmt.Sprintf("expected HevcDcrOut got %#+v", v))
@@ -727,7 +727,7 @@ func decodeBoxType(ctx *decodeContext, d *decode.D, typ string) {
 	case "dfLa":
 		d.FieldU8("version")
 		d.FieldU24("flags")
-		_, v := d.FieldFormat("descriptor", &flacMetadatablocksGroup, nil)
+		_, v := d.FieldFormat("descriptor", &mp4FLACMetadatablocksGroup, nil)
 		flacMetadatablockOut, ok := v.(format.FLAC_Metadatablocks_Out)
 		if !ok {
 			panic(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
@@ -736,19 +736,19 @@ func decodeBoxType(ctx *decodeContext, d *decode.D, typ string) {
 			ctx.current.data = &dfLaBox{formatInArg: format.FLAC_Frame_In{BitsPerSample: int(flacMetadatablockOut.StreamInfo.BitsPerSample)}}
 		}
 	case "dOps":
-		d.FieldFormat("descriptor", &opusPacketFrameGroup, nil)
+		d.FieldFormat("descriptor", &mp4OpusPacketFrameGroup, nil)
 	case "av1C":
-		d.FieldFormat("descriptor", &av1CCRGroup, nil)
+		d.FieldFormat("descriptor", &mp4AV1CCRGroup, nil)
 	case "vpcC":
 		d.FieldU8("version")
 		d.FieldU24("flags")
-		d.FieldFormat("descriptor", &vpxCCRGroup, nil)
+		d.FieldFormat("descriptor", &mp4VPXCCRGroup, nil)
 	case "iods":
 		d.FieldU32("version")
-		d.FieldFormat("descriptor", &mpegESGroup, nil)
+		d.FieldFormat("descriptor", &mp4MPEGESGroup, nil)
 	case "esds":
 		d.FieldU32("version")
-		_, v := d.FieldFormat("descriptor", &mpegESGroup, nil)
+		_, v := d.FieldFormat("descriptor", &mp4MPEGESGroup, nil)
 		mpegEsOut, ok := v.(format.MPEG_ES_Out)
 		if !ok {
 			panic(fmt.Sprintf("expected mpegEsOut got %#+v", v))
@@ -959,7 +959,7 @@ func decodeBoxType(ctx *decodeContext, d *decode.D, typ string) {
 		d.FieldU24("flags")
 		d.FieldU32("reserved")
 		if ctx.current.find("<covr") != nil {
-			d.FieldFormatOrRawLen("data", d.BitsLeft(), &imageGroup, nil)
+			d.FieldFormatOrRawLen("data", d.BitsLeft(), &mp4ImageGroup, nil)
 		} else {
 			d.FieldUTF8("data", int(d.BitsLeft()/8))
 		}
@@ -1167,45 +1167,72 @@ func decodeBoxType(ctx *decodeContext, d *decode.D, typ string) {
 		} else {
 			itemCount = d.FieldU32("item_count")
 		}
+
+		ilocBox := &ilocBox{
+			offsetSize:     offsetSize,
+			lengthSize:     lengthSize,
+			baseOffsetSize: baseOffsetSize,
+		}
+		ctx.current.data = ilocBox
+
 		d.FieldArray("items", func(d *decode.D) {
 			for i := uint64(0); i < itemCount; i++ {
 				d.FieldStruct("item", func(d *decode.D) {
+					var itemID uint64
 					switch version {
 					case 0, 1:
-						d.FieldU16("id")
+						itemID = uint64(d.FieldU16("id"))
 					case 2:
-						d.FieldU32("id")
+						itemID = uint64(d.FieldU32("id"))
 					}
+					var constructionMethod uint64
 					switch version {
 					case 1, 2:
 						d.FieldU12("reserved")
-						d.FieldU4("construction_method")
+						constructionMethod = d.FieldU4("construction_method")
 					}
 					d.FieldU16("data_reference_index")
-					d.FieldU("base_offset", int(baseOffsetSize)*8)
+					baseOffset := d.FieldU("base_offset", int(baseOffsetSize)*8)
 					extentCount := d.FieldU16("extent_count")
+
+					ilItem := ilocBoxItem{
+						id:                 itemID,
+						constructionMethod: constructionMethod,
+						baseOffset:         baseOffset,
+					}
+
 					d.FieldArray("extends", func(d *decode.D) {
 						for i := uint64(0); i < extentCount; i++ {
 							d.FieldStruct("extent", func(d *decode.D) {
 								if (version == 1 || version == 2) && indexSize > 0 {
 									d.FieldU("index", int(offsetSize)*8)
 								}
-								d.FieldU("offset", int(offsetSize)*8)
-								d.FieldU("length", int(lengthSize)*8)
+								extOffset := d.FieldU("offset", int(offsetSize)*8)
+								extLength := d.FieldU("length", int(lengthSize)*8)
+								ilItem.extents = append(ilItem.extents, ilocBoxExtent{
+									offset: extOffset,
+									length: extLength,
+								})
 							})
 						}
 					})
+
+					ilocBox.items = append(ilocBox.items, ilItem)
 				})
 			}
 		})
 	case "infe":
 		version := d.FieldU8("version")
 		d.FieldU24("flags")
+		var itemID uint64
+		var itemType string
+		var itemName string
+		var contentType string
 		if version == 0 || version == 1 {
-			d.FieldU16("item_id")
+			itemID = uint64(d.FieldU16("item_id"))
 			d.FieldU16("item_protection_index")
-			d.FieldUTF8Null("item_name")
-			d.FieldUTF8Null("content_type")
+			itemName = d.FieldUTF8Null("item_name")
+			contentType = d.FieldUTF8Null("content_type")
 			if !d.End() {
 				d.FieldUTF8Null("content_encoding")
 			}
@@ -1221,22 +1248,29 @@ func decodeBoxType(ctx *decodeContext, d *decode.D, typ string) {
 		if version >= 2 {
 			switch version {
 			case 2:
-				d.FieldU16("item_id")
+				itemID = uint64(d.FieldU16("item_id"))
 			case 3:
-				d.FieldU32("item_id")
+				itemID = uint64(d.FieldU32("item_id"))
 			}
 			d.FieldU16("item_protection_index")
-			itemType := d.FieldUTF8("item_type", 4)
-			d.FieldUTF8Null("item_name")
+			itemType = d.FieldUTF8("item_type", 4)
+			itemName = d.FieldUTF8Null("item_name")
 			switch itemType {
 			case "mime":
-				d.FieldUTF8Null("content_type")
+				contentType = d.FieldUTF8Null("content_type")
 				if !d.End() {
 					d.FieldUTF8Null("content_encoding")
 				}
 			case "uri":
 				d.FieldUTF8Null("item_uri_type")
 			}
+		}
+
+		ctx.current.data = &infeBox{
+			itemID:      itemID,
+			itemType:    itemType,
+			itemName:    itemName,
+			contentType: contentType,
 		}
 	case "iinf":
 		version := d.FieldU8("version")
@@ -1263,7 +1297,7 @@ func decodeBoxType(ctx *decodeContext, d *decode.D, typ string) {
 			}
 			return s
 		})
-		d.FieldFormat("data", &id3v2Group, nil)
+		d.FieldFormat("data", &mp4ID3v2Group, nil)
 	case "mehd":
 		version := d.FieldU8("version")
 		d.FieldU24("flags")
@@ -1306,9 +1340,9 @@ func decodeBoxType(ctx *decodeContext, d *decode.D, typ string) {
 
 		switch {
 		case bytes.Equal(systemID, systemIDWidevine[:]):
-			d.FieldFormatLen("data", int64(dataLen)*8, &protoBufWidevineGroup, nil)
+			d.FieldFormatLen("data", int64(dataLen)*8, &mp4ProtobufWidevineGroup, nil)
 		case bytes.Equal(systemID, systemIDPlayReady[:]):
-			d.FieldFormatLen("data", int64(dataLen)*8, &psshPlayreadyGroup, nil)
+			d.FieldFormatLen("data", int64(dataLen)*8, &mp4PSSHPlayreadyGroup, nil)
 		default:
 			d.FieldRawLen("data", int64(dataLen)*8)
 		}
@@ -1676,7 +1710,7 @@ func decodeBoxType(ctx *decodeContext, d *decode.D, typ string) {
 				d.FieldU8("color_range")
 			}
 		case "prof":
-			d.FieldFormat("profile", &iccProfileGroup, nil)
+			d.FieldFormat("profile", &mp4ICCProfileGroup, nil)
 		default:
 			d.FieldRawLen("data", d.BitsLeft())
 		}
@@ -1689,27 +1723,42 @@ func decodeBoxType(ctx *decodeContext, d *decode.D, typ string) {
 		version := d.FieldU8("version")
 		flags := d.FieldU24("flags")
 		entryCount := d.FieldU32("entry_count")
+
+		ipmaBox := &ipmaBox{}
+		ctx.current.data = ipmaBox
+
 		d.FieldArray("entries", func(d *decode.D) {
 			for i := uint64(0); i < entryCount; i++ {
 				d.FieldStruct("entry", func(d *decode.D) {
+					var itemID uint64
 					if version < 1 {
-						d.FieldU16("item_id")
+						itemID = uint64(d.FieldU16("item_id"))
 					} else {
-						d.FieldU32("item_id")
+						itemID = uint64(d.FieldU32("item_id"))
 					}
 					associationCount := d.FieldU8("association_count")
+
+					entry := ipmaBoxEntry{itemID: itemID}
+
 					d.FieldArray("associations", func(d *decode.D) {
 						for j := uint64(0); j < associationCount; j++ {
 							d.FieldStruct("association", func(d *decode.D) {
-								d.FieldBool("essential")
+								essential := d.FieldBool("essential")
+								var propertyIndex uint64
 								if flags&0b1 != 0 {
-									d.FieldU15("property_index")
+									propertyIndex = d.FieldU15("property_index")
 								} else {
-									d.FieldU7("item_id")
+									propertyIndex = d.FieldU7("property_index")
 								}
+								entry.associations = append(entry.associations, ipmaBoxAssociation{
+									essential:     essential,
+									propertyIndex: int(propertyIndex),
+								})
 							})
 						}
 					})
+
+					ipmaBox.entries = append(ipmaBox.entries, entry)
 				})
 			}
 		})
@@ -1739,7 +1788,7 @@ func decodeBoxType(ctx *decodeContext, d *decode.D, typ string) {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			d.FieldUTF8("format", 4)
-			d.FieldFormatOrRawLen("image", d.BitsLeft(), &imageGroup, nil)
+			d.FieldFormatOrRawLen("image", d.BitsLeft(), &mp4ImageGroup, nil)
 		}
 	case "cdsc":
 		if ib := findData[*irefBox](ctx.current, "<iref"); ib != nil {
@@ -1813,7 +1862,7 @@ func decodeBoxType(ctx *decodeContext, d *decode.D, typ string) {
 		}
 		switch schemeIdUri {
 		case "https://aomedia.org/emsg/ID3":
-			d.FieldFormat("message_data", &id3v2Group, nil)
+			d.FieldFormat("message_data", &mp4ID3v2Group, nil)
 		default:
 			d.FieldRawLen("message_data", d.BitsLeft())
 		}
@@ -1841,7 +1890,7 @@ func decodeBoxType(ctx *decodeContext, d *decode.D, typ string) {
 	case "jP":
 		d.FieldRawLen("signature", 4*8, d.AssertBitBuf([]byte{0x0d, 0x0a, 0x87, 0x0a}))
 	case "jp2c":
-		d.FieldFormat("segments", &jp2cGroup, nil)
+		d.FieldFormat("segments", &mp4JP2CGroup, nil)
 	case "uinf":
 		decodeBoxes(ctx, d)
 	case "ulst":

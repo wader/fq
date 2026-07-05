@@ -2,10 +2,8 @@ package isobmff
 
 import (
 	"iter"
-	"slices"
 	"strings"
 
-	"github.com/wader/fq/format"
 	"github.com/wader/fq/pkg/decode"
 )
 
@@ -109,6 +107,8 @@ func (n *box) find(path string) *box {
 	return nil
 }
 
+// TODO: maybe in some future when go supports method type parameters
+// these could methods
 func findData[T any](n *box, path string) T {
 	if n == nil {
 		var zero T
@@ -139,20 +139,17 @@ func findAllData[T any](n *box, path string) iter.Seq[T] {
 }
 
 type decodeContext struct {
-	opts    format.MP4_In
-	root    *box
-	current *box
+	allowTruncated bool
+	root           *box
+	current        *box
 }
 
-func isobmffDecode(d *decode.D, brandsFn func(firstType string, ftyp ftypBox)) any {
-	var mi format.MP4_In
-	d.ArgAs(&mi)
-
+func isobmffDecode(d *decode.D, allowTruncated bool, brandsFn func(firstType string, ftyp ftypBox)) *decodeContext {
 	root := &box{typ: ""}
 	ctx := &decodeContext{
-		opts:    mi,
-		root:    root,
-		current: root,
+		allowTruncated: allowTruncated,
+		root:           root,
+		current:        root,
 	}
 
 	// TODO: nicer, validate functions without field?
@@ -178,11 +175,5 @@ func isobmffDecode(d *decode.D, brandsFn func(firstType string, ftyp ftypBox)) a
 	d.SeekAbs(0)
 	decodeBoxes(ctx, d)
 
-	trakNodes := slices.Collect(ctx.root.findAll("moov/trak"))
-	moofNodes := slices.Collect(ctx.root.findAll("moof"))
-	if len(trakNodes) > 0 || len(moofNodes) > 0 {
-		mp4Tracks(d, ctx, trakNodes, moofNodes)
-	}
-
-	return nil
+	return ctx
 }
