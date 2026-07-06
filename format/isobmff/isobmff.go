@@ -114,8 +114,8 @@ func findData[T any](n *box, path string) T {
 		var zero T
 		return zero
 	}
-	if node := n.find(path); node != nil {
-		if v, ok := node.data.(T); ok {
+	if b := n.find(path); b != nil {
+		if v, ok := b.data.(T); ok {
 			return v
 		}
 	}

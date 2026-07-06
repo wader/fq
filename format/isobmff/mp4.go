@@ -198,13 +198,13 @@ type frmaBox struct {
 }
 
 type trackCollected struct {
-	trackID   int
-	trakNode  *box
-	order     int
-	trafNodes []*box
+	trackID int
+	trak    *box
+	order   int
+	trafs   []*box
 }
 
-func stblNodeFindFormatInArg(n *box) any {
+func stblFindFormatInArg(n *box) any {
 	if v := findData[*avcCBox](n, ">>avcC"); v != nil {
 		return v.formatInArg
 	}
@@ -220,7 +220,7 @@ func stblNodeFindFormatInArg(n *box) any {
 	return nil
 }
 
-func stblNodeFindObjectType(n *box) int {
+func stblFindObjectType(n *box) int {
 	if v := findData[*esdsBox](n, ">>esds"); v != nil {
 		return v.objectType
 	}
@@ -237,15 +237,15 @@ func findMajorBrand(root *box) string {
 	return ""
 }
 
-type trafNodeData struct {
+type trafData struct {
 	moofOffset int64
 	tfhd       *tfhdBox
 	truns      []*trunBox
 	sencs      []*sencBox
 }
 
-func trafNodeSampleData(tn *box) *trafNodeData {
-	td := &trafNodeData{}
+func trafSampleData(tn *box) *trafData {
+	td := &trafData{}
 	if mb := findData[*moofBox](tn, "<moof"); mb != nil {
 		td.moofOffset = mb.offset
 	}
@@ -257,30 +257,30 @@ func trafNodeSampleData(tn *box) *trafNodeData {
 	return td
 }
 
-func mp4Tracks(d *decode.D, mi format.MP4_In, trakNodes, moofNodes []*box) {
+func mp4Tracks(d *decode.D, mi format.MP4_In, traks, moofs []*box) {
 	var tracksCollected []*trackCollected
 	tracksCollectedSeen := map[int]*trackCollected{}
 
 	// TODO: error on dup id or mixing fragmend and non-fragmented?
 
-	for i, tn := range trakNodes {
+	for i, tn := range traks {
 		trackID := 0
 		if tb := findData[*tkhdBox](tn, "tkhd"); tb != nil {
 			trackID = tb.trackID
 		}
 		tc := &trackCollected{
-			trackID:  trackID,
-			order:    i,
-			trakNode: tn,
+			trackID: trackID,
+			order:   i,
+			trak:    tn,
 		}
 		tracksCollectedSeen[trackID] = tc
 		tracksCollected = append(tracksCollected, tc)
 	}
 
-	for _, moofNode := range moofNodes {
-		for trafNode := range moofNode.findAll("traf") {
+	for _, moof := range moofs {
+		for traf := range moof.findAll("traf") {
 			trackID := 0
-			if tb := findData[*tfhdBox](trafNode, "tfhd"); tb != nil {
+			if tb := findData[*tfhdBox](traf, "tfhd"); tb != nil {
 				trackID = tb.trackID
 			}
 			tc, ok := tracksCollectedSeen[trackID]
@@ -292,7 +292,7 @@ func mp4Tracks(d *decode.D, mi format.MP4_In, trakNodes, moofNodes []*box) {
 				tracksCollectedSeen[trackID] = tc
 				tracksCollected = append(tracksCollected, tc)
 			}
-			tc.trafNodes = append(tc.trafNodes, trafNode)
+			tc.trafs = append(tc.trafs, traf)
 		}
 	}
 
@@ -353,25 +353,25 @@ func mp4Tracks(d *decode.D, mi format.MP4_In, trakNodes, moofNodes []*box) {
 			}
 
 			d.FieldStruct("track", func(d *decode.D) {
-				tn := tc.trakNode
+				tn := tc.trak
 
 				d.FieldValueUint("id", uint64(tc.trackID))
 
-				var stblNode *box
+				var stblBox *box
 				if tn != nil {
-					stblNode = tn.find("mdia/minf/stbl")
+					stblBox = tn.find("mdia/minf/stbl")
 				}
 
 				trackSDDataFormat := "unknown"
 				sampleDescriptions := []sampleDescription(nil)
 				var formatInArg any
 				objectType := 0
-				if stblNode != nil {
-					if sb := findData[*stsdBox](stblNode, "stsd"); sb != nil {
+				if stblBox != nil {
+					if sb := findData[*stsdBox](stblBox, "stsd"); sb != nil {
 						sampleDescriptions = sb.sampleDescriptions
 					}
-					formatInArg = stblNodeFindFormatInArg(stblNode)
-					objectType = stblNodeFindObjectType(stblNode)
+					formatInArg = stblFindFormatInArg(stblBox)
+					objectType = stblFindObjectType(stblBox)
 				}
 
 				if len(sampleDescriptions) > 0 {
@@ -410,17 +410,17 @@ func mp4Tracks(d *decode.D, mi format.MP4_In, trakNodes, moofNodes []*box) {
 				}
 
 				d.FieldArray("samples", func(d *decode.D) {
-					stsz := findData[*stszBox](stblNode, "stsz")
+					stsz := findData[*stszBox](stblBox, "stsz")
 					if stsz == nil {
-						stsz = findData[*stszBox](stblNode, "stz2")
+						stsz = findData[*stszBox](stblBox, "stz2")
 					}
-					stsc := findData[*stscBox](stblNode, "stsc")
-					stco := findData[*stcoBox](stblNode, "stco")
+					stsc := findData[*stscBox](stblBox, "stsc")
+					stco := findData[*stcoBox](stblBox, "stco")
 					if stco == nil {
-						stco = findData[*stcoBox](stblNode, "co64")
+						stco = findData[*stcoBox](stblBox, "co64")
 					}
 
-					if stblNode != nil && stsz != nil && stsc != nil && stco != nil {
+					if stblBox != nil && stsz != nil && stsc != nil && stco != nil {
 						stszEntries := stsz.entries
 						stscEntries := stsc.entries
 						stcoEntries := stco.entries
@@ -488,8 +488,8 @@ func mp4Tracks(d *decode.D, mi format.MP4_In, trakNodes, moofNodes []*box) {
 
 					sampleNr := 0
 
-					for _, trafNode := range tc.trafNodes {
-						td := trafNodeSampleData(trafNode)
+					for _, traf := range tc.trafs {
+						td := trafSampleData(traf)
 						for trunNr, tr := range td.truns {
 							var sencEntries []struct{}
 							if trunNr < len(td.sencs) {
@@ -551,10 +551,10 @@ func mp4Decode(d *decode.D) any {
 		}
 	})
 
-	trakNodes := slices.Collect(ctx.root.findAll("moov/trak"))
-	moofNodes := slices.Collect(ctx.root.findAll("moof"))
-	if len(trakNodes) > 0 || len(moofNodes) > 0 {
-		mp4Tracks(d, mi, trakNodes, moofNodes)
+	traks := slices.Collect(ctx.root.findAll("moov/trak"))
+	moofs := slices.Collect(ctx.root.findAll("moof"))
+	if len(traks) > 0 || len(moofs) > 0 {
+		mp4Tracks(d, mi, traks, moofs)
 	}
 
 	return nil
