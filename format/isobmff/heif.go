@@ -13,6 +13,14 @@ import (
 
 // TODO: avc, jpeg and jpeg2000 in HEIF
 
+var heifAV1CCRGroup decode.Group
+var heifAV1FrameGroup decode.Group
+var heifHEVCAUGroup decode.Group
+var heifHEVCDCRGroup decode.Group
+
+// TODO: not really used as icc is shared
+var heifICCProfileGroup decode.Group
+
 func init() {
 	interp.RegisterFormat(
 		format.HEIF,
@@ -31,14 +39,10 @@ func init() {
 				{Groups: []*decode.Group{format.AV1_Frame}, Out: &heifAV1FrameGroup},
 				{Groups: []*decode.Group{format.HEVC_AU}, Out: &heifHEVCAUGroup},
 				{Groups: []*decode.Group{format.HEVC_DCR}, Out: &heifHEVCDCRGroup},
+				{Groups: []*decode.Group{format.ICC_Profile}, Out: &heifICCProfileGroup},
 			},
 		})
 }
-
-var heifAV1CCRGroup decode.Group
-var heifAV1FrameGroup decode.Group
-var heifHEVCAUGroup decode.Group
-var heifHEVCDCRGroup decode.Group
 
 type ilocBoxExtent struct {
 	offset uint64

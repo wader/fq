@@ -54,7 +54,7 @@
 |`flac_streaminfo`                                               |FLAC&nbsp;streaminfo                                                                                         |<sub></sub>|
 |`gif`                                                           |Graphics&nbsp;Interchange&nbsp;Format                                                                        |<sub></sub>|
 |`gzip`                                                          |gzip&nbsp;compression                                                                                        |<sub>`probe`</sub>|
-|[`heif`](#heif)                                                 |High&nbsp;Efficiency&nbsp;Image&nbsp;Format                                                                  |<sub>`av1_ccr` `av1_frame` `hevc_au` `hevc_dcr`</sub>|
+|[`heif`](#heif)                                                 |High&nbsp;Efficiency&nbsp;Image&nbsp;Format                                                                  |<sub>`av1_ccr` `av1_frame` `hevc_au` `hevc_dcr` `icc_profile`</sub>|
 |`hevc_annexb`                                                   |H.265/HEVC&nbsp;Annex&nbsp;B                                                                                 |<sub>`hevc_nalu`</sub>|
 |[`hevc_au`](#hevc_au)                                           |H.265/HEVC&nbsp;Access&nbsp;Unit                                                                             |<sub>`hevc_nalu`</sub>|
 |`hevc_dcr`                                                      |H.265/HEVC&nbsp;Decoder&nbsp;Configuration&nbsp;Record                                                       |<sub>`hevc_nalu`</sub>|
