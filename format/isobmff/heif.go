@@ -193,6 +193,11 @@ func heifDecode(d *decode.D) any {
 	})
 
 	heifItems(d, ctx)
+	traks := slices.Collect(ctx.root.findAll("moov/trak"))
+	if len(traks) > 0 {
+		// TODO: replace MP4_In with some shared struct
+		mp4Tracks(d, format.MP4_In{DecodeSamples: true}, traks, nil)
+	}
 
 	return nil
 }
