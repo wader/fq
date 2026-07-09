@@ -106,6 +106,7 @@ var (
 	FLV                 = &decode.Group{Name: "flv"}
 	GIF                 = &decode.Group{Name: "gif"}
 	Gzip                = &decode.Group{Name: "gzip"}
+	HEIF                = &decode.Group{Name: "heif"}
 	HEVC_Annexb         = &decode.Group{Name: "hevc_annexb"}
 	HEVC_AU             = &decode.Group{Name: "hevc_au"}
 	HEVC_DCR            = &decode.Group{Name: "hevc_dcr"}
@@ -296,6 +297,10 @@ type HEVC_AU_In struct {
 
 type HEVC_DCR_Out struct {
 	LengthSize uint64
+}
+
+type HEIF_In struct {
+	AllowTruncated bool `doc:"Allow box to be truncated"`
 }
 
 type Ogg_Page_Out struct {

@@ -54,6 +54,7 @@
 |`flac_streaminfo`                                               |FLAC&nbsp;streaminfo                                                                                         |<sub></sub>|
 |`gif`                                                           |Graphics&nbsp;Interchange&nbsp;Format                                                                        |<sub></sub>|
 |`gzip`                                                          |gzip&nbsp;compression                                                                                        |<sub>`probe`</sub>|
+|[`heif`](#heif)                                                 |High&nbsp;Efficiency&nbsp;Image&nbsp;Format                                                                  |<sub>`av1_ccr` `av1_frame` `hevc_au` `hevc_dcr` `icc_profile`</sub>|
 |`hevc_annexb`                                                   |H.265/HEVC&nbsp;Annex&nbsp;B                                                                                 |<sub>`hevc_nalu`</sub>|
 |[`hevc_au`](#hevc_au)                                           |H.265/HEVC&nbsp;Access&nbsp;Unit                                                                             |<sub>`hevc_nalu`</sub>|
 |`hevc_dcr`                                                      |H.265/HEVC&nbsp;Decoder&nbsp;Configuration&nbsp;Record                                                       |<sub>`hevc_nalu`</sub>|
@@ -138,12 +139,12 @@
 |[`xml`](#xml)                                                   |Extensible&nbsp;Markup&nbsp;Language                                                                         |<sub></sub>|
 |`yaml`                                                          |YAML&nbsp;Ain't&nbsp;Markup&nbsp;Language                                                                    |<sub></sub>|
 |[`zip`](#zip)                                                   |ZIP&nbsp;archive                                                                                             |<sub>`probe`</sub>|
-|`image`                                                         |Group                                                                                                        |<sub>`gif` `jp2c` `jpeg` `mp4` `png` `tiff` `webp`</sub>|
+|`image`                                                         |Group                                                                                                        |<sub>`gif` `heif` `jp2c` `jpeg` `mp4` `png` `tiff` `webp`</sub>|
 |`inet_packet`                                                   |Group                                                                                                        |<sub>`ipv4_packet` `ipv6_packet`</sub>|
 |`ip_packet`                                                     |Group                                                                                                        |<sub>`icmp` `icmpv6` `tcp_segment` `udp_datagram`</sub>|
 |`link_frame`                                                    |Group                                                                                                        |<sub>`bsd_loopback_frame` `ether8023_frame` `ipv4_packet` `ipv6_packet` `sll2_packet` `sll_packet`</sub>|
 |`mp3_frame_tags`                                                |Group                                                                                                        |<sub>`mp3_frame_vbri` `mp3_frame_xing`</sub>|
-|`probe`                                                         |Group                                                                                                        |<sub>`adts` `aiff` `apple_bookmark` `ar` `avi` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `caff` `elf` `fit` `flac` `gif` `gzip` `html` `jp2c` `jpeg` `json` `jsonl` `leveldb_table` `luajit` `macho` `macho_fat` `matroska` `midi` `moc3` `mp3` `mp4` `mpeg_ts` `nes` `ogg` `opentimestamps` `pcap` `pcapng` `png` `tar` `tiff` `toml` `tzif` `tzx` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
+|`probe`                                                         |Group                                                                                                        |<sub>`adts` `aiff` `apple_bookmark` `ar` `avi` `avro_ocf` `bitcoin_blkdat` `bplist` `bzip2` `caff` `elf` `fit` `flac` `gif` `gzip` `heif` `html` `jp2c` `jpeg` `json` `jsonl` `leveldb_table` `luajit` `macho` `macho_fat` `matroska` `midi` `moc3` `mp3` `mp4` `mpeg_ts` `nes` `ogg` `opentimestamps` `pcap` `pcapng` `png` `tar` `tiff` `toml` `tzif` `tzx` `wasm` `wav` `webp` `xml` `yaml` `zip`</sub>|
 |`tcp_stream`                                                    |Group                                                                                                        |<sub>`dns_tcp` `rtmp` `tls`</sub>|
 |`udp_payload`                                                   |Group                                                                                                        |<sub>`dns`</sub>|
 
@@ -720,6 +721,27 @@ $ fq -d flac_frame -o bits_per_sample=16 -o sample_details=false . file
 Decode value as flac_frame
 ```
 ... | flac_frame({bits_per_sample:16,sample_details:false})
+```
+
+## heif
+High Efficiency Image Format.
+
+### Options
+
+|Name             |Default|Description|
+|-                |-      |-|
+|`allow_truncated`|false  |Allow box to be truncated|
+
+### Examples
+
+Decode file using heif options
+```
+$ fq -d heif -o allow_truncated=false . file
+```
+
+Decode value as heif
+```
+... | heif({allow_truncated:false})
 ```
 
 ## hevc_au

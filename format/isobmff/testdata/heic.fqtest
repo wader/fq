@@ -1,7 +1,7 @@
 # ffmpeg -f lavfi -i testsrc=size=16x16:r=1 -preset slower -r 1 -t 1s -pix_fmt yuv420p -f hevc heic.hvc
 # MP4Box -add-image heic.hvc -ab heic -new heic.mp4
-$ fq -d mp4 dv heic.mp4
-      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: heic.mp4 (mp4) 0x0-0xb2d (2861)
+$ fq -d heif dv heic.mp4
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: heic.mp4 (heif) 0x0-0xb2d (2861)
       |                                               |                |  boxes[0:4]: 0x0-0xb2d (2861)
       |                                               |                |    [0]{}: box 0x0-0x18 (24)
 0x0000|00 00 00 18                                    |....            |      size: 24 0x0-0x4 (4)
@@ -375,16 +375,16 @@ $ fq -d mp4 dv heic.mp4
       |                                               |                |                  associations[0:4]: 0x168-0x16c (4)
       |                                               |                |                    [0]{}: association 0x168-0x169 (1)
 0x0160|                        01                     |        .       |                      essential: false 0x168-0x168.1 (0.1)
-0x0160|                        01                     |        .       |                      item_id: 1 0x168.1-0x169 (0.7)
+0x0160|                        01                     |        .       |                      property_index: 1 0x168.1-0x169 (0.7)
       |                                               |                |                    [1]{}: association 0x169-0x16a (1)
 0x0160|                           02                  |         .      |                      essential: false 0x169-0x169.1 (0.1)
-0x0160|                           02                  |         .      |                      item_id: 2 0x169.1-0x16a (0.7)
+0x0160|                           02                  |         .      |                      property_index: 2 0x169.1-0x16a (0.7)
       |                                               |                |                    [2]{}: association 0x16a-0x16b (1)
 0x0160|                              83               |          .     |                      essential: true 0x16a-0x16a.1 (0.1)
-0x0160|                              83               |          .     |                      item_id: 3 0x16a.1-0x16b (0.7)
+0x0160|                              83               |          .     |                      property_index: 3 0x16a.1-0x16b (0.7)
       |                                               |                |                    [3]{}: association 0x16b-0x16c (1)
 0x0160|                                 84            |           .    |                      essential: true 0x16b-0x16b.1 (0.1)
-0x0160|                                 84            |           .    |                      item_id: 4 0x16b.1-0x16c (0.7)
+0x0160|                                 84            |           .    |                      property_index: 4 0x16b.1-0x16c (0.7)
       |                                               |                |    [2]{}: box 0x16c-0xaf3 (2439)
 0x0160|                                    00 00 09 87|            ....|      size: 2439 0x16c-0x170 (4)
 0x0170|6d 64 61 74                                    |mdat            |      type: "mdat" (Media data container) 0x170-0x174 (4)
@@ -397,3 +397,48 @@ $ fq -d mp4 dv heic.mp4
 0x0af0|                                 49 73 6f 4d 65|           IsoMe|      data: raw bits 0xafb-0xb2d (50)
 0x0b00|64 69 61 20 46 69 6c 65 20 50 72 6f 64 75 63 65|dia File Produce|
 *     |until 0xb2c.7 (end) (50)                       |                |
+      |                                               |                |  items[0:1]: 0x174-0xb2d (2489)
+      |                                               |                |    [0]{}: item 0x174-0xb2d (2489)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|      data[0:2]: (hevc_au) 0x174-0xaf3 (2431)
+      |                                               |                |        [0]{}: nalu 0x174-0xa31 (2237)
+0x0170|            00 00 08 b9                        |    ....        |          length: 2233 0x174-0x178 (4)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|          nalu{}: (hevc_nalu) 0x178-0xa31 (2233)
+0x0170|                        4e                     |        N       |            forbidden_zero_bit: false 0x178-0x178.1 (0.1)
+0x0170|                        4e                     |        N       |            nal_unit_type: "PREFIX_SEI_NUT" (39) 0x178.1-0x178.7 (0.6)
+0x0170|                        4e 01                  |        N.      |            nuh_layer_id: 0 0x178.7-0x179.5 (0.6)
+0x0170|                           01                  |         .      |            nuh_temporal_id_plus1: 1 0x179.5-0x17a (0.3)
+      |                                               |                |            rbsp{}: 0x17a-0xa31 (2231)
+0x0170|                              05 ff ff ff ff ff|          ......|              data: raw bits 0x17a-0xa31 (2231)
+0x0180|ff ff ff b4 2c a2 de 09 b5 17 47 db bb 55 a4 fe|....,.....G..U..|
+*     |until 0xa30.7 (2231)                           |                |
+      |                                               |                |        [1]{}: nalu 0xa31-0xaf3 (194)
+0x0a30|   00 00 00 be                                 | ....           |          length: 190 0xa31-0xa35 (4)
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|          nalu{}: (hevc_nalu) 0xa35-0xaf3 (190)
+0x0a30|               28                              |     (          |            forbidden_zero_bit: false 0xa35-0xa35.1 (0.1)
+0x0a30|               28                              |     (          |            nal_unit_type: "IDR_N_LP" (20) 0xa35.1-0xa35.7 (0.6)
+0x0a30|               28 01                           |     (.         |            nuh_layer_id: 0 0xa35.7-0xa36.5 (0.6)
+0x0a30|                  01                           |      .         |            nuh_temporal_id_plus1: 1 0xa36.5-0xa37 (0.3)
+      |                                               |                |            rbsp{}: 0xa37-0xaf3 (188)
+0x0a30|                     af 13 80 97 02 8a 75 80 1b|       ......u..|              data: raw bits 0xa37-0xaf3 (188)
+0x0a40|cd 1a ac 8d 2a bf 33 2a 88 72 0e 22 ce 68 e7 3b|....*.3*.r.".h.;|
+*     |until 0xaf2.7 (188)                            |                |
+      |                                               |                |      id: 1
+      |                                               |                |      type: "hvc1"
+      |                                               |                |      name: "Image"
+      |                                               |                |      properties[0:4]: 0xb2d-0xb2d (0)
+      |                                               |                |        [0]{}: property 0xb2d-0xb2d (0)
+      |                                               |                |          index: 1
+      |                                               |                |          essential: false
+      |                                               |                |          type: "ispe"
+      |                                               |                |        [1]{}: property 0xb2d-0xb2d (0)
+      |                                               |                |          index: 2
+      |                                               |                |          essential: false
+      |                                               |                |          type: "pasp"
+      |                                               |                |        [2]{}: property 0xb2d-0xb2d (0)
+      |                                               |                |          index: 3
+      |                                               |                |          essential: true
+      |                                               |                |          type: "hvcC"
+      |                                               |                |        [3]{}: property 0xb2d-0xb2d (0)
+      |                                               |                |          index: 4
+      |                                               |                |          essential: true
+      |                                               |                |          type: "pixi"

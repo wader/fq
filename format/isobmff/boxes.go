@@ -1,4 +1,4 @@
-package mp4
+package isobmff
 
 import (
 	"bytes"
@@ -246,7 +246,7 @@ func decodeSampleFlags(d *decode.D) {
 	d.FieldU16("sample_degradation_priority")
 }
 
-func decodeBoxWithParentData(ctx *decodeContext, d *decode.D, parentData any, extraTypeMappers ...scalar.StrMapper) {
+func decodeBox(ctx *decodeContext, d *decode.D, extraTypeMappers ...scalar.StrMapper) {
 	var dataSize uint64
 	typeMappers := []scalar.StrMapper{scalar.ActualTrimSpace, boxDescriptions}
 	if len(extraTypeMappers) > 0 {
@@ -266,30 +266,25 @@ func decodeBoxWithParentData(ctx *decodeContext, d *decode.D, parentData any, ex
 		dataSize = boxSize - 8
 	}
 
-	if ctx.opts.AllowTruncated && dataSize > uint64(d.BitsLeft()/8) {
+	if ctx.allowTruncated && dataSize > uint64(d.BitsLeft()/8) {
 		dataSize = uint64(d.BitsLeft() / 8)
 		d.FieldValueUint("truncated_size", dataSize)
 	}
 
-	if parentData != nil {
-		ctx.path[len(ctx.path)-1].data = parentData
-	}
-	ctx.path = append(ctx.path, pathEntry{typ: typ, data: parentData})
+	b := &box{typ: typ, parent: ctx.current}
+	ctx.current.children = append(ctx.current.children, b)
+	ctx.current = b
 	d.FramedFn(int64(dataSize*8), func(d *decode.D) {
-		decodeBox(ctx, d, typ)
+		decodeBoxType(ctx, d, typ)
 	})
-	ctx.path = ctx.path[0 : len(ctx.path)-1]
+	ctx.current = ctx.current.parent
 }
 
 func decodeBoxes(ctx *decodeContext, d *decode.D, extraTypeMappers ...scalar.StrMapper) {
-	decodeBoxesWithParentData(ctx, d, nil, extraTypeMappers...)
-}
-
-func decodeBoxesWithParentData(ctx *decodeContext, d *decode.D, parentData any, extraTypeMappers ...scalar.StrMapper) {
 	d.FieldStructArrayLoop("boxes", "box",
 		func() bool { return d.BitsLeft() >= 8*8 },
 		func(d *decode.D) {
-			decodeBoxWithParentData(ctx, d, parentData, extraTypeMappers...)
+			decodeBox(ctx, d, extraTypeMappers...)
 		})
 
 	if d.BitsLeft() > 0 {
@@ -303,31 +298,8 @@ func decodeBoxesWithParentData(ctx *decodeContext, d *decode.D, parentData any, 
 	}
 }
 
-type rootBox struct {
-	ftypMajorBrand string
-}
-
 type irefBox struct {
 	version int
-}
-
-type trakBox struct {
-	track *track
-}
-
-type moofBox struct {
-	offset int64
-}
-
-type trafBox struct {
-	track          *track
-	baseDataOffset int64
-	moof           *moof
-}
-
-type metaBox struct {
-	subType string
-	keys    *keysBox
 }
 
 type keysBoxKey struct {
@@ -356,10 +328,8 @@ func decodeBoxIrefEntry(irefBox *irefBox, d *decode.D) {
 }
 
 func decodeBoxFtyp(ctx *decodeContext, d *decode.D) {
-	root := ctx.rootBox()
-
 	brand := d.FieldUTF8("major_brand", 4, scalar.ActualTrimSpace)
-	root.ftypMajorBrand = brand
+	ctx.current.data = &ftypBox{majorBrand: brand}
 
 	d.FieldU32("minor_version", scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
 		switch brand {
@@ -380,11 +350,9 @@ func decodeBoxFtyp(ctx *decodeContext, d *decode.D) {
 	})
 }
 
-func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
+func decodeBoxType(ctx *decodeContext, d *decode.D, typ string) {
 	switch typ {
-	case "ftyp":
-		decodeBoxFtyp(ctx, d)
-	case "styp":
+	case "ftyp", "styp":
 		decodeBoxFtyp(ctx, d)
 	case "mvhd":
 		version := d.FieldU8("version")
@@ -415,11 +383,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		d.FieldU32("current_time")
 		d.FieldU32("next_track_id")
 	case "trak":
-		t := &track{}
-		ctx.tracks = append(ctx.tracks, t)
-		decodeBoxesWithParentData(ctx, d, &trakBox{
-			track: t,
-		})
+		decodeBoxes(ctx, d)
 	case "edts":
 		decodeBoxes(ctx, d)
 	case "elst":
@@ -478,9 +442,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		d.FieldFP32("track_width")
 		d.FieldFP32("track_height")
 
-		if t := ctx.currentTrakBox(); t != nil {
-			t.track.id = trackID
-		}
+		ctx.current.data = &tkhdBox{trackID: trackID}
 	case "mdia":
 		decodeBoxes(ctx, d)
 	case "mdhd":
@@ -514,7 +476,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			d.FieldU16("value")
 		})
 	case "hdlr":
-		majorBrand := ctx.rootBox().ftypMajorBrand
+		majorBrand := findMajorBrand(ctx.root)
 
 		d.FieldU8("version")
 		d.FieldU24("flags")
@@ -537,16 +499,8 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			d.FieldUTF8NullFixedLen("component_name", int(d.BitsLeft()/8))
 		}
 
-		if t := ctx.currentTrack(); t != nil {
-			t.seenHdlr = true
-			// component_type seems to be all zero sometimes so can't look for "mhlr"
-			switch subType {
-			case "vide", "soun":
-				t.subType = subType
-			}
-		} else if m := ctx.currentMetaBox(); m != nil {
-			m.subType = subType
-		}
+		ctx.current.data = &hdlrBox{subType: subType}
+
 	case "minf":
 		decodeBoxes(ctx, d)
 	case "dinf":
@@ -572,11 +526,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			i++
 		})
 
-		if t := ctx.currentTrack(); t != nil {
-			t.dref = true
-			t.drefURL = drefURL
-		}
-
+		ctx.current.data = &drefBox{url: drefURL}
 	case "stbl":
 		decodeBoxes(ctx, d)
 	case "stsd":
@@ -584,31 +534,31 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		d.FieldU24("flags")
 		entryCount := d.FieldU32("entry_count")
 		var i uint64
+		stsdBox := &stsdBox{}
+		ctx.current.data = stsdBox
 		// note called "boxes" here instead of "sample_descriptions" and data format is named "type".
 		// this is to make it easier to threat them as normal boxes
 		d.FieldArrayLoop("boxes", func() bool { return i < entryCount }, func(d *decode.D) {
 			d.FieldStruct("box", func(d *decode.D) {
 				size := d.FieldU32("size")
 				dataFormat := d.FieldUTF8("type", 4, dataFormatNames, scalar.ActualTrimSpace)
-				subType := ""
-				track := ctx.currentTrack()
-				if track != nil {
-					track.sampleDescriptions = append(track.sampleDescriptions, sampleDescription{
-						dataFormat: dataFormat,
-					})
+				stsdBox.sampleDescriptions = append(stsdBox.sampleDescriptions, sampleDescription{
+					dataFormat: dataFormat,
+				})
 
-					if track.seenHdlr {
-						subType = track.subType
-					} else {
-						// TODO: seems to be ffmpeg mov.c, where is this documented in specs?
-						// no hdlr box found, guess using dataFormat
-						// ex PNG samples but there is no hdlr box saying it's video, but the esds says MPEGObjectTypePNG
-						switch dataFormat {
-						case "mp4v":
-							subType = "vide"
-						case "mp4a":
-							subType = "soun"
-						}
+				subType := ""
+				if hb := findData[*hdlrBox](ctx.current, "<<trak/mdia/hdlr"); hb != nil {
+					subType = hb.subType
+				}
+				if subType == "" {
+					// TODO: seems to be ffmpeg mov.c, where is this documented in specs?
+					// no hdlr box found, guess using dataFormat
+					// ex PNG samples but there is no hdlr box saying it's video, but the esds says MPEGObjectTypePNG
+					switch dataFormat {
+					case "mp4v":
+						subType = "vide"
+					case "mp4a":
+						subType = "soun"
 					}
 				}
 
@@ -621,8 +571,9 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 						switch subType {
 						case "soun":
 							var numAudioChannels uint64
+							majorBrand := findMajorBrand(ctx.root)
 							// same condition as ffmpeg mov.c uses (strcmp(type, "qt  "))
-							isISOM := ctx.rootBox().ftypMajorBrand != "qt"
+							isISOM := majorBrand != "qt"
 
 							if isISOM {
 								switch stsdVersion {
@@ -719,9 +670,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 									d.FieldRawLen("data", d.BitsLeft())
 								}
 							}
-							if track != nil {
-								track.stsdNumAudioChannels = numAudioChannels
-							}
+							stsdBox.numAudioChannels = numAudioChannels
 						case "vide":
 							version := d.FieldU16("version")
 							d.FieldU16("revision_level")
@@ -749,10 +698,10 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 							default:
 								d.FieldRawLen("data", d.BitsLeft())
 							}
-							// case "hint": TODO: Hint entry
 						default:
 							d.FieldRawLen("data", d.BitsLeft())
 						}
+					// case "hint": TODO: Hint entry
 					default:
 						d.FieldRawLen("data", d.BitsLeft())
 					}
@@ -762,59 +711,55 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			i++
 		})
 	case "avcC":
-		_, v := d.FieldFormat("descriptor", &avcDCRGroup, nil)
+		_, v := d.FieldFormat("descriptor", &mp4AVCDCRGroup, nil)
 		avcDcrOut, ok := v.(format.AVC_DCR_Out)
 		if !ok {
 			panic(fmt.Sprintf("expected AvcDcrOut got %#+v", v))
 		}
-		if t := ctx.currentTrack(); t != nil {
-			t.formatInArg = format.AVC_AU_In(avcDcrOut)
-		}
+		ctx.current.data = &avcCBox{formatInArg: format.AVC_AU_In(avcDcrOut)}
 	case "hvcC":
-		_, v := d.FieldFormat("descriptor", &hevcCDCRGroup, nil)
+		_, v := d.FieldFormat("descriptor", &mp4HEVCDCRGroup, nil)
 		hevcDcrOut, ok := v.(format.HEVC_DCR_Out)
 		if !ok {
 			panic(fmt.Sprintf("expected HevcDcrOut got %#+v", v))
 		}
-		if t := ctx.currentTrack(); t != nil {
-			t.formatInArg = format.HEVC_AU_In(hevcDcrOut)
-		}
+		ctx.current.data = &hvcCBox{formatInArg: format.HEVC_AU_In(hevcDcrOut)}
 	case "dfLa":
 		d.FieldU8("version")
 		d.FieldU24("flags")
-		_, v := d.FieldFormat("descriptor", &flacMetadatablocksGroup, nil)
+		_, v := d.FieldFormat("descriptor", &mp4FLACMetadatablocksGroup, nil)
 		flacMetadatablockOut, ok := v.(format.FLAC_Metadatablocks_Out)
 		if !ok {
 			panic(fmt.Sprintf("expected FlacMetadatablockOut got %#+v", v))
 		}
 		if flacMetadatablockOut.HasStreamInfo {
-			if t := ctx.currentTrack(); t != nil {
-				t.formatInArg = format.FLAC_Frame_In{BitsPerSample: int(flacMetadatablockOut.StreamInfo.BitsPerSample)}
-			}
+			ctx.current.data = &dfLaBox{formatInArg: format.FLAC_Frame_In{BitsPerSample: int(flacMetadatablockOut.StreamInfo.BitsPerSample)}}
 		}
 	case "dOps":
-		d.FieldFormat("descriptor", &opusPacketFrameGroup, nil)
+		d.FieldFormat("descriptor", &mp4OpusPacketFrameGroup, nil)
 	case "av1C":
-		d.FieldFormat("descriptor", &av1CCRGroup, nil)
+		d.FieldFormat("descriptor", &mp4AV1CCRGroup, nil)
 	case "vpcC":
 		d.FieldU8("version")
 		d.FieldU24("flags")
-		d.FieldFormat("descriptor", &vpxCCRGroup, nil)
+		d.FieldFormat("descriptor", &mp4VPXCCRGroup, nil)
 	case "iods":
 		d.FieldU32("version")
-		d.FieldFormat("descriptor", &mpegESGroup, nil)
+		d.FieldFormat("descriptor", &mp4MPEGESGroup, nil)
 	case "esds":
 		d.FieldU32("version")
-		_, v := d.FieldFormat("descriptor", &mpegESGroup, nil)
+		_, v := d.FieldFormat("descriptor", &mp4MPEGESGroup, nil)
 		mpegEsOut, ok := v.(format.MPEG_ES_Out)
 		if !ok {
 			panic(fmt.Sprintf("expected mpegEsOut got %#+v", v))
 		}
 
-		if t := ctx.currentTrack(); t != nil && len(mpegEsOut.DecoderConfigs) > 0 {
+		if len(mpegEsOut.DecoderConfigs) > 0 {
 			dc := mpegEsOut.DecoderConfigs[0]
-			t.objectType = dc.ObjectType
-			t.formatInArg = format.AAC_Frame_In{ObjectType: dc.ASCObjectType}
+			ctx.current.data = &esdsBox{
+				formatInArg: format.AAC_Frame_In{ObjectType: dc.ASCObjectType},
+				objectType:  dc.ObjectType,
+			}
 		}
 	case "stts":
 		d.FieldU8("version")
@@ -831,17 +776,17 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		d.FieldU24("flags")
 		entryCount := d.FieldU32("entry_count")
 		var i uint64
+		stscBox := &stscBox{}
+		ctx.current.data = stscBox
 		d.FieldStructArrayLoop("entries", "entry", func() bool { return i < entryCount }, func(d *decode.D) {
 			firstChunk := uint32(d.FieldU32("first_chunk"))
 			samplesPerChunk := uint32(d.FieldU32("samples_per_chunk"))
 			d.FieldU32("sample_description_id")
 
-			if t := ctx.currentTrack(); t != nil {
-				t.stsc = append(t.stsc, stsc{
-					firstChunk:      int(firstChunk),
-					samplesPerChunk: int(samplesPerChunk),
-				})
-			}
+			stscBox.entries = append(stscBox.entries, stscEntry{
+				firstChunk:      int(firstChunk),
+				samplesPerChunk: int(samplesPerChunk),
+			})
 			i++
 		})
 	case "stsz":
@@ -851,30 +796,23 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		sampleSize := d.FieldU32("sample_size")
 		entryCount := d.FieldU32("entry_count")
 
-		t := ctx.currentTrack()
-
-		if t != nil && len(t.stsz) > 0 {
-			d.Errorf("multiple stsz or stz2 boxes")
-		}
+		stszBox := &stszBox{}
+		ctx.current.data = stszBox
 		if sampleSize == 0 {
 			var i uint64
 			d.FieldArrayLoop("entries", func() bool { return i < entryCount }, func(d *decode.D) {
 				size := uint32(d.FieldU32("size"))
-				if t != nil {
-					t.stsz = append(t.stsz, stsz{
-						size:  int64(size),
-						count: 1,
-					})
-				}
+				stszBox.entries = append(stszBox.entries, stszEntry{
+					size:  int64(size),
+					count: 1,
+				})
 				i++
 			})
 		} else {
-			if t != nil {
-				t.stsz = append(t.stsz, stsz{
-					size:  int64(sampleSize),
-					count: int(entryCount),
-				})
-			}
+			stszBox.entries = append(stszBox.entries, stszEntry{
+				size:  int64(sampleSize),
+				count: int(entryCount),
+			})
 		}
 	case "stz2":
 		d.FieldU8("version")
@@ -885,18 +823,14 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		}
 		entryCount := d.FieldU32("entry_count")
 		var i uint64
-		t := ctx.currentTrack()
-		if t != nil && len(t.stsz) > 0 {
-			d.Errorf("multiple stsz or stz2 boxes")
-		}
+		stszBox := &stszBox{}
+		ctx.current.data = stszBox
 		d.FieldArrayLoop("entries", func() bool { return i < entryCount }, func(d *decode.D) {
 			size := uint32(d.FieldU("size", int(fieldSize)))
-			if t != nil {
-				t.stsz = append(t.stsz, stsz{
-					size:  int64(size),
-					count: 1,
-				})
-			}
+			stszBox.entries = append(stszBox.entries, stszEntry{
+				size:  int64(size),
+				count: 1,
+			})
 			i++
 		})
 	case "stco":
@@ -904,12 +838,11 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		d.FieldU24("flags")
 		entryCount := d.FieldU32("entry_count")
 		var i uint64
-		t := ctx.currentTrack()
+		stcoBox := &stcoBox{}
+		ctx.current.data = stcoBox
 		d.FieldArrayLoop("entries", func() bool { return i < entryCount }, func(d *decode.D) {
 			chunkOffset := d.FieldU32("chunk_offset")
-			if t != nil {
-				t.stco = append(t.stco, int64(chunkOffset))
-			}
+			stcoBox.entries = append(stcoBox.entries, int64(chunkOffset))
 			i++
 		})
 	case "stss":
@@ -962,12 +895,11 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		d.FieldU24("flags")
 		entryCount := d.FieldU32("entry_count")
 		var i uint64
-		t := ctx.currentTrack()
+		stcoBox := &stcoBox{}
+		ctx.current.data = stcoBox
 		d.FieldArrayLoop("entries", func() bool { return i < entryCount }, func(d *decode.D) {
 			offset := d.FieldU64("offset")
-			if t != nil {
-				t.stco = append(t.stco, int64(offset))
-			}
+			stcoBox.entries = append(stcoBox.entries, int64(offset))
 			i++
 		})
 	case "sidx":
@@ -1003,13 +935,15 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			// TODO: rename?
 			d.FieldU32("maybe_flags")
 		}
-		decodeBoxesWithParentData(ctx, d, &metaBox{})
+		decodeBoxes(ctx, d)
 	case "ilst":
-		if mb := ctx.currentMetaBox(); mb != nil && mb.keys != nil && len(mb.keys.keys) > 0 {
+		kb := findData[*keysBox](ctx.current.parent, "keys")
+		foundKeys := kb != nil
+		if foundKeys && len(kb.keys) > 0 {
 			// meta box had a keys box
 			var b [4]byte
 			typeSymMapper := scalar.StrMapSymStr{}
-			for k, v := range mb.keys.keys {
+			for k, v := range kb.keys {
 				// type will be a uint32 be integer
 				// +1 as they seem to be counted from 1
 				binary.BigEndian.PutUint32(b[:], uint32(k+1))
@@ -1024,8 +958,8 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		d.FieldU8("version")
 		d.FieldU24("flags")
 		d.FieldU32("reserved")
-		if ctx.isParent("covr") {
-			d.FieldFormatOrRawLen("data", d.BitsLeft(), &imageGroup, nil)
+		if ctx.current.find("<covr") != nil {
+			d.FieldFormatOrRawLen("data", d.BitsLeft(), &mp4ImageGroup, nil)
 		} else {
 			d.FieldUTF8("data", int(d.BitsLeft()/8))
 		}
@@ -1033,13 +967,11 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		decodeBoxes(ctx, d)
 	case "moof":
 		offset := (d.Pos() / 8) - 8
-		decodeBoxesWithParentData(ctx, d, &moofBox{offset: offset})
+		moofBox := &moofBox{offset: offset}
+		ctx.current.data = moofBox
+		decodeBoxes(ctx, d)
 	case "traf": // Track Fragment
-		t := &track{fragment: true}
-		ctx.tracks = append(ctx.tracks, t)
-		decodeBoxesWithParentData(ctx, d, &trafBox{
-			track: t,
-		})
+		decodeBoxes(ctx, d)
 	case "mfhd": // Movie Fragment Header
 		d.FieldU8("version")
 		d.FieldU24("flags")
@@ -1064,40 +996,30 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		})
 		trackID := int(d.FieldU32("track_id"))
 
-		m := &moof{}
-		if mb := ctx.currentMoofBox(); mb != nil {
-			m.offset = mb.offset
-		}
+		tfhdBox := &tfhdBox{}
+		tfhdBox.trackID = trackID
 
-		baseDataOffset := int64(0)
 		if baseDataOffsetPresent {
-			baseDataOffset = int64(d.FieldU64("base_data_offset"))
+			tfhdBox.baseDataOffset = int64(d.FieldU64("base_data_offset"))
 		}
 		if sampleDescriptionIndexPresent {
-			m.defaultSampleDescriptionIndex = int(d.FieldU32("sample_description_index"))
+			tfhdBox.defaultSampleDescriptionIndex = int(d.FieldU32("sample_description_index"))
 		}
 		if defaultSampleDurationPresent {
 			d.FieldU32("default_sample_duration")
 		}
 		if defaultSampleSizePresent {
-			m.defaultSampleSize = int64(d.FieldU32("default_sample_size"))
+			tfhdBox.defaultSampleSize = int64(d.FieldU32("default_sample_size"))
 		}
 		if defaultSampleFlagsPresent {
 			d.FieldStruct("default_sample_flags", decodeSampleFlags)
 		}
 
-		if t := ctx.currentTrafBox(); t != nil {
-			t.track.id = trackID
-			t.moof = m
-			t.baseDataOffset = baseDataOffset
-		}
-		if t := ctx.currentTrack(); t != nil {
-			t.moofs = append(t.moofs, m)
-		}
+		ctx.current.data = tfhdBox
 	case "trun": // Track Fragment Run
-		m := &moof{}
-		if t := ctx.currentTrafBox(); t != nil {
-			m = t.moof
+		defaultSampleSize := int64(0)
+		if tfhdBox := findData[*tfhdBox](ctx.current, "<<traf/tfhd"); tfhdBox != nil {
+			defaultSampleSize = tfhdBox.defaultSampleSize
 		}
 
 		version := d.FieldU8("version")
@@ -1131,20 +1053,20 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			d.Errorf("too many sample trun entries %d > %d", sampleCount, maxSampleEntryCount)
 		}
 
-		t := trun{
+		trunBox := &trunBox{
 			dataOffset: dataOffset,
 		}
 
-		hasSampleFlags := (false ||
+		hasSampleFlags :=
 			sampleCompositionTimeOffsetsPresent ||
-			sampleFlagsPresent ||
-			sampleSizePresent ||
-			sampleDurationPresent)
+				sampleFlagsPresent ||
+				sampleSizePresent ||
+				sampleDurationPresent
 
 		if hasSampleFlags {
 			d.FieldArray("samples", func(d *decode.D) {
 				for i := uint64(0); i < sampleCount; i++ {
-					sampleSize := m.defaultSampleSize
+					sampleSize := defaultSampleSize
 					d.FieldStruct("sample", func(d *decode.D) {
 						if sampleDurationPresent {
 							d.FieldU32("sample_duration")
@@ -1164,16 +1086,16 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 						}
 					})
 
-					t.samplesSizes = append(t.samplesSizes, sampleSize)
+					trunBox.sampleSizes = append(trunBox.sampleSizes, sampleSize)
 				}
 			})
 		} else {
 			for i := uint64(0); i < sampleCount; i++ {
-				t.samplesSizes = append(t.samplesSizes, m.defaultSampleSize)
+				trunBox.sampleSizes = append(trunBox.sampleSizes, defaultSampleSize)
 			}
 		}
 
-		m.truns = append(m.truns, t)
+		ctx.current.data = trunBox
 	case "tfdt":
 		version := d.FieldU8("version")
 		d.FieldU24("flags")
@@ -1245,45 +1167,72 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		} else {
 			itemCount = d.FieldU32("item_count")
 		}
+
+		ilocBox := &ilocBox{
+			offsetSize:     offsetSize,
+			lengthSize:     lengthSize,
+			baseOffsetSize: baseOffsetSize,
+		}
+		ctx.current.data = ilocBox
+
 		d.FieldArray("items", func(d *decode.D) {
 			for i := uint64(0); i < itemCount; i++ {
 				d.FieldStruct("item", func(d *decode.D) {
+					var itemID uint64
 					switch version {
 					case 0, 1:
-						d.FieldU16("id")
+						itemID = d.FieldU16("id")
 					case 2:
-						d.FieldU32("id")
+						itemID = d.FieldU32("id")
 					}
+					var constructionMethod uint64
 					switch version {
 					case 1, 2:
 						d.FieldU12("reserved")
-						d.FieldU4("construction_method")
+						constructionMethod = d.FieldU4("construction_method")
 					}
 					d.FieldU16("data_reference_index")
-					d.FieldU("base_offset", int(baseOffsetSize)*8)
+					baseOffset := d.FieldU("base_offset", int(baseOffsetSize)*8)
 					extentCount := d.FieldU16("extent_count")
+
+					ilItem := ilocBoxItem{
+						id:                 itemID,
+						constructionMethod: constructionMethod,
+						baseOffset:         baseOffset,
+					}
+
 					d.FieldArray("extends", func(d *decode.D) {
 						for i := uint64(0); i < extentCount; i++ {
 							d.FieldStruct("extent", func(d *decode.D) {
 								if (version == 1 || version == 2) && indexSize > 0 {
 									d.FieldU("index", int(offsetSize)*8)
 								}
-								d.FieldU("offset", int(offsetSize)*8)
-								d.FieldU("length", int(lengthSize)*8)
+								extOffset := d.FieldU("offset", int(offsetSize)*8)
+								extLength := d.FieldU("length", int(lengthSize)*8)
+								ilItem.extents = append(ilItem.extents, ilocBoxExtent{
+									offset: extOffset,
+									length: extLength,
+								})
 							})
 						}
 					})
+
+					ilocBox.items = append(ilocBox.items, ilItem)
 				})
 			}
 		})
 	case "infe":
 		version := d.FieldU8("version")
 		d.FieldU24("flags")
+		var itemID uint64
+		var itemType string
+		var itemName string
+		var contentType string
 		if version == 0 || version == 1 {
-			d.FieldU16("item_id")
+			itemID = d.FieldU16("item_id")
 			d.FieldU16("item_protection_index")
-			d.FieldUTF8Null("item_name")
-			d.FieldUTF8Null("content_type")
+			itemName = d.FieldUTF8Null("item_name")
+			contentType = d.FieldUTF8Null("content_type")
 			if !d.End() {
 				d.FieldUTF8Null("content_encoding")
 			}
@@ -1299,22 +1248,29 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		if version >= 2 {
 			switch version {
 			case 2:
-				d.FieldU16("item_id")
+				itemID = d.FieldU16("item_id")
 			case 3:
-				d.FieldU32("item_id")
+				itemID = d.FieldU32("item_id")
 			}
 			d.FieldU16("item_protection_index")
-			itemType := d.FieldUTF8("item_type", 4)
-			d.FieldUTF8Null("item_name")
+			itemType = d.FieldUTF8("item_type", 4)
+			itemName = d.FieldUTF8Null("item_name")
 			switch itemType {
 			case "mime":
-				d.FieldUTF8Null("content_type")
+				contentType = d.FieldUTF8Null("content_type")
 				if !d.End() {
 					d.FieldUTF8Null("content_encoding")
 				}
 			case "uri":
 				d.FieldUTF8Null("item_uri_type")
 			}
+		}
+
+		ctx.current.data = &infeBox{
+			itemID:      itemID,
+			itemType:    itemType,
+			itemName:    itemName,
+			contentType: contentType,
 		}
 	case "iinf":
 		version := d.FieldU8("version")
@@ -1341,7 +1297,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			}
 			return s
 		})
-		d.FieldFormat("data", &id3v2Group, nil)
+		d.FieldFormat("data", &mp4ID3v2Group, nil)
 	case "mehd":
 		version := d.FieldU8("version")
 		d.FieldU24("flags")
@@ -1384,11 +1340,9 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 
 		switch {
 		case bytes.Equal(systemID, systemIDWidevine[:]):
-			d.FieldFormatLen("data", int64(dataLen)*8, &protoBufWidevineGroup, nil)
+			d.FieldFormatLen("data", int64(dataLen)*8, &mp4ProtobufWidevineGroup, nil)
 		case bytes.Equal(systemID, systemIDPlayReady[:]):
-			d.FieldFormatLen("data", int64(dataLen)*8, &psshPlayreadyGroup, nil)
-		case systemID == nil:
-			fallthrough
+			d.FieldFormatLen("data", int64(dataLen)*8, &mp4PSSHPlayreadyGroup, nil)
 		default:
 			d.FieldRawLen("data", int64(dataLen)*8)
 		}
@@ -1399,8 +1353,9 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 
 		// set to original data format
 		// TODO: how to handle multiple descriptors? track current?
-		if t := ctx.currentTrack(); t != nil && len(t.sampleDescriptions) > 0 {
-			t.sampleDescriptions[0].originalFormat = format
+		ctx.current.data = &frmaBox{originalFormat: format}
+		if sb := findData[*stsdBox](ctx.current, "<<stsd"); sb != nil && len(sb.sampleDescriptions) > 0 {
+			sb.sampleDescriptions[0].originalFormat = format
 		}
 	case "schm":
 		d.FieldU8("version")
@@ -1462,12 +1417,8 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			d.FieldRawLen("data", d.BitsLeft())
 		}
 	case "keys":
-		mb := ctx.currentMetaBox()
-		var kb *keysBox
-		if mb != nil {
-			kb = &keysBox{}
-			mb.keys = kb
-		}
+		keysBox := &keysBox{}
+		ctx.current.data = keysBox
 
 		d.FieldU8("version")
 		d.FieldU24("flags")
@@ -1478,12 +1429,10 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 					keySize := d.FieldU32("key_size")
 					namespace := d.FieldUTF8("key_namespace", 4)
 					name := d.FieldUTF8("key_name", int(keySize)-8)
-					if kb != nil {
-						kb.keys = append(kb.keys, keysBoxKey{
-							namespace: namespace,
-							name:      name,
-						})
-					}
+					keysBox.keys = append(keysBox.keys, keysBoxKey{
+						namespace: namespace,
+						name:      name,
+					})
 				})
 			}
 		})
@@ -1592,23 +1541,19 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		d.FieldU8("version")
 		flags := d.FieldU24("flags")
 
-		t := ctx.currentTrack()
-		if t == nil {
-			// need to know iv size
-			return
-		}
-		m := &moof{}
-		if t := ctx.currentTrafBox(); t != nil {
-			m = t.moof
+		// need to know iv size
+		defaultIVSize := 0
+		if tc := findData[*tencBox](ctx.current, "<<trak/>>tenc"); tc != nil {
+			defaultIVSize = tc.defaultIVSize
 		}
 
-		s := senc{}
+		sencBox := &sencBox{}
 		sampleCount := d.FieldU32("sample_count")
 		d.FieldArray("samples", func(d *decode.D) {
 			for i := uint64(0); i < sampleCount; i++ {
 				d.FieldStruct("entry", func(d *decode.D) {
-					if t.defaultIVSize != 0 {
-						d.FieldRawLen("iv", int64(t.defaultIVSize*8))
+					if defaultIVSize != 0 {
+						d.FieldRawLen("iv", int64(defaultIVSize*8))
 					}
 					if flags&0b10 != 0 {
 						subSampleCount := d.FieldU16("subsample_count")
@@ -1624,10 +1569,10 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 				})
 
 				// TODO: add iv etc
-				s.entries = append(s.entries, struct{}{})
+				sencBox.entries = append(sencBox.entries, struct{}{})
 			}
 		})
-		m.sencs = append(m.sencs, s)
+		ctx.current.data = sencBox
 	case "tenc":
 		version := d.FieldU8("version")
 		d.FieldU24("flags")
@@ -1649,9 +1594,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			defaultConstantIVSize := d.FieldU8("default_constant_iv_size")
 			d.FieldRawLen("default_constant_iv", int64(defaultConstantIVSize)*8)
 		}
-		if t := ctx.currentTrack(); t != nil {
-			t.defaultIVSize = int(defaultIVSize)
-		}
+		ctx.current.data = &tencBox{defaultIVSize: int(defaultIVSize)}
 	case "covr":
 		decodeBoxes(ctx, d)
 	case "dec3":
@@ -1767,7 +1710,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 				d.FieldU8("color_range")
 			}
 		case "prof":
-			d.FieldFormat("profile", &iccProfileGroup, nil)
+			d.FieldFormat("profile", &mp4ICCProfileGroup, nil)
 		default:
 			d.FieldRawLen("data", d.BitsLeft())
 		}
@@ -1780,27 +1723,42 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		version := d.FieldU8("version")
 		flags := d.FieldU24("flags")
 		entryCount := d.FieldU32("entry_count")
+
+		ipmaBox := &ipmaBox{}
+		ctx.current.data = ipmaBox
+
 		d.FieldArray("entries", func(d *decode.D) {
 			for i := uint64(0); i < entryCount; i++ {
 				d.FieldStruct("entry", func(d *decode.D) {
+					var itemID uint64
 					if version < 1 {
-						d.FieldU16("item_id")
+						itemID = d.FieldU16("item_id")
 					} else {
-						d.FieldU32("item_id")
+						itemID = d.FieldU32("item_id")
 					}
 					associationCount := d.FieldU8("association_count")
+
+					entry := ipmaBoxEntry{itemID: itemID}
+
 					d.FieldArray("associations", func(d *decode.D) {
 						for j := uint64(0); j < associationCount; j++ {
 							d.FieldStruct("association", func(d *decode.D) {
-								d.FieldBool("essential")
+								essential := d.FieldBool("essential")
+								var propertyIndex uint64
 								if flags&0b1 != 0 {
-									d.FieldU15("property_index")
+									propertyIndex = d.FieldU15("property_index")
 								} else {
-									d.FieldU7("item_id")
+									propertyIndex = d.FieldU7("property_index")
 								}
+								entry.associations = append(entry.associations, ipmaBoxAssociation{
+									essential:     essential,
+									propertyIndex: int(propertyIndex),
+								})
 							})
 						}
 					})
+
+					ipmaBox.entries = append(ipmaBox.entries, entry)
 				})
 			}
 		})
@@ -1815,25 +1773,26 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 	case "iref":
 		version := d.FieldU8("version")
 		d.FieldU24("flags")
-		decodeBoxesWithParentData(ctx, d, &irefBox{version: int(version)})
+		ctx.current.data = &irefBox{version: int(version)}
+		decodeBoxes(ctx, d)
 	case "dimg":
-		if irefBox, ok := ctx.parent().data.(*irefBox); ok {
-			decodeBoxIrefEntry(irefBox, d)
+		if ib := findData[*irefBox](ctx.current, "<iref"); ib != nil {
+			decodeBoxIrefEntry(ib, d)
 		} else {
 			d.FieldRawLen("data", d.BitsLeft())
 		}
 	case "thmb":
-		if irefBox, ok := ctx.parent().data.(*irefBox); ok {
-			decodeBoxIrefEntry(irefBox, d)
+		if ib := findData[*irefBox](ctx.current, "<iref"); ib != nil {
+			decodeBoxIrefEntry(ib, d)
 		} else {
 			d.FieldU8("version")
 			d.FieldU24("flags")
 			d.FieldUTF8("format", 4)
-			d.FieldFormatOrRawLen("image", d.BitsLeft(), &imageGroup, nil)
+			d.FieldFormatOrRawLen("image", d.BitsLeft(), &mp4ImageGroup, nil)
 		}
 	case "cdsc":
-		if irefBox, ok := ctx.parent().data.(*irefBox); ok {
-			decodeBoxIrefEntry(irefBox, d)
+		if ib := findData[*irefBox](ctx.current, "<iref"); ib != nil {
+			decodeBoxIrefEntry(ib, d)
 		} else {
 			d.FieldRawLen("data", d.BitsLeft())
 		}
@@ -1903,7 +1862,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		}
 		switch schemeIdUri {
 		case "https://aomedia.org/emsg/ID3":
-			d.FieldFormat("message_data", &id3v2Group, nil)
+			d.FieldFormat("message_data", &mp4ID3v2Group, nil)
 		default:
 			d.FieldRawLen("message_data", d.BitsLeft())
 		}
@@ -1931,7 +1890,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 	case "jP":
 		d.FieldRawLen("signature", 4*8, d.AssertBitBuf([]byte{0x0d, 0x0a, 0x87, 0x0a}))
 	case "jp2c":
-		d.FieldFormat("segments", &jp2cGroup, nil)
+		d.FieldFormat("segments", &mp4JP2CGroup, nil)
 	case "uinf":
 		decodeBoxes(ctx, d)
 	case "ulst":
@@ -1965,13 +1924,16 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 			if hasChannels {
 				definedLayout := d.FieldU8("defined_layout")
 				if definedLayout == 0 {
-					track := ctx.currentTrack()
-					if track == nil {
+					numAudioChannels := uint64(0)
+					if sd := findData[*stsdBox](ctx.current, "<<stbl/stsd"); sd != nil {
+						numAudioChannels = sd.numAudioChannels
+					}
+					if numAudioChannels == 0 {
 						d.FieldRawLen("rest", d.BitsLeft())
 						break
 					}
 					d.FieldArray("channels", func(d *decode.D) {
-						for i := 0; i < int(track.stsdNumAudioChannels); i++ {
+						for i := 0; i < int(numAudioChannels); i++ {
 							d.FieldStruct("channel", func(d *decode.D) {
 								speakerPosition := d.FieldU8("speaker_position")
 								if speakerPosition == 126 {
@@ -2064,11 +2026,12 @@ func decodeBox(ctx *decodeContext, d *decode.D, typ string) {
 		// udta
 		//   <name>
 		//     value rest of box
-		if mb := ctx.currentMetaBox(); mb != nil && ctx.parent().typ == "ilst" {
+		hasMetaParent := ctx.current.find("<<meta") != nil
+		if hasMetaParent && ctx.current.find("<ilst") != nil {
 			// unknown type under a meta box with ilst as parent, decode as boxes
 			// is probably one or more data boxes
 			decodeBoxes(ctx, d)
-		} else if ctx.parent().typ == "udta" {
+		} else if ctx.current.find("<udta") != nil {
 			// TODO: better probe? ffmpeg uses box name heuristics?
 			// if 16 length field seems to match assume box with length, language and value
 			// otherwise decode as box with value rest of box

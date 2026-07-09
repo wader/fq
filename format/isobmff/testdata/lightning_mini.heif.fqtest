@@ -1,0 +1,17 @@
+# HEIF image with mif3 major brand and no compatible brands (private mini box)
+# https://github.com/strukturag/libheif/blob/master/tests/data/lightning_mini.heif
+$ fq -d heif dv lightning_mini.heif
+      |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: lightning_mini.heif (heif) 0x0-0x4b2d (19245)
+      |                                               |                |  boxes[0:2]: 0x0-0x4b2d (19245)
+      |                                               |                |    [0]{}: box 0x0-0x10 (16)
+0x0000|00 00 00 10                                    |....            |      size: 16 0x0-0x4 (4)
+0x0000|            66 74 79 70                        |    ftyp        |      type: "ftyp" (File type and compatibility) 0x4-0x8 (4)
+0x0000|                        6d 69 66 33            |        mif3    |      major_brand: "mif3" 0x8-0xc (4)
+0x0000|                                    68 65 69 63|            heic|      minor_version: 1751476579 0xc-0x10 (4)
+      |                                               |                |      brands[0:0]: 0x10-0x10 (0)
+      |                                               |                |    [1]{}: box 0x10-0x4b2d (19229)
+0x0010|00 00 4b 1d                                    |..K.            |      size: 19229 0x10-0x14 (4)
+0x0010|            6d 69 6e 69                        |    mini        |      type: "mini" 0x14-0x18 (4)
+0x0010|                        08 08 80 ff 01 fe 20 71|        ...... q|      data: raw bits 0x18-0x4b2d (19221)
+0x0020|95 32 01 03 70 00 00 00 00 00 00 00 00 00 3c f0|.2..p.........<.|
+*     |until 0x4b2c.7 (end) (19221)                   |                |
