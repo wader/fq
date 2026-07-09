@@ -1181,9 +1181,9 @@ func decodeBoxType(ctx *decodeContext, d *decode.D, typ string) {
 					var itemID uint64
 					switch version {
 					case 0, 1:
-						itemID = uint64(d.FieldU16("id"))
+						itemID = d.FieldU16("id")
 					case 2:
-						itemID = uint64(d.FieldU32("id"))
+						itemID = d.FieldU32("id")
 					}
 					var constructionMethod uint64
 					switch version {
@@ -1229,7 +1229,7 @@ func decodeBoxType(ctx *decodeContext, d *decode.D, typ string) {
 		var itemName string
 		var contentType string
 		if version == 0 || version == 1 {
-			itemID = uint64(d.FieldU16("item_id"))
+			itemID = d.FieldU16("item_id")
 			d.FieldU16("item_protection_index")
 			itemName = d.FieldUTF8Null("item_name")
 			contentType = d.FieldUTF8Null("content_type")
@@ -1248,9 +1248,9 @@ func decodeBoxType(ctx *decodeContext, d *decode.D, typ string) {
 		if version >= 2 {
 			switch version {
 			case 2:
-				itemID = uint64(d.FieldU16("item_id"))
+				itemID = d.FieldU16("item_id")
 			case 3:
-				itemID = uint64(d.FieldU32("item_id"))
+				itemID = d.FieldU32("item_id")
 			}
 			d.FieldU16("item_protection_index")
 			itemType = d.FieldUTF8("item_type", 4)
@@ -1732,9 +1732,9 @@ func decodeBoxType(ctx *decodeContext, d *decode.D, typ string) {
 				d.FieldStruct("entry", func(d *decode.D) {
 					var itemID uint64
 					if version < 1 {
-						itemID = uint64(d.FieldU16("item_id"))
+						itemID = d.FieldU16("item_id")
 					} else {
-						itemID = uint64(d.FieldU32("item_id"))
+						itemID = d.FieldU32("item_id")
 					}
 					associationCount := d.FieldU8("association_count")
 
