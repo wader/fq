@@ -9,7 +9,7 @@ $ fq -d webp dv 4x4.lossless.webp
 0x00|                                    56 50 38 4c|            VP8L|      id: "VP8L" 0xc-0x10 (4)
 0x10|0e 00 00 00                                    |....            |      size: 14 0x10-0x14 (4)
 0x10|            2f                                 |    /           |      signature: 0x2f (valid) 0x14-0x15 (1)
-0x10|               03 c0 00 00                     |     ....       |      width_height_flags: 49155 0x15-0x19 (4)
+0x10|               03 c0 00 00                     |     ....       |      width_height_flags: 0xc003 0x15-0x19 (4)
     |                                               |                |      width: 4
     |                                               |                |      height: 4
     |                                               |                |      alpha_is_used: false

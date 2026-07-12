@@ -1,0 +1,31 @@
+# for s in 1x1 1x7 7x1 616x232 10921x10921 16383x16383; do gm convert -size $s 'xc:#ffffff' -define webp:lossless=true vp8l-$s.webp ; done
+$ fq -rV '.chunks[0] | .id, "\(.width)x\(.height)", .alpha_is_used, .version_number' vp8l-1x1.webp
+VP8L
+1x1
+false
+0
+$ fq -rV '.chunks[0] | .id, "\(.width)x\(.height)", .alpha_is_used, .version_number' vp8l-1x7.webp
+VP8L
+1x7
+false
+0
+$ fq -rV '.chunks[0] | .id, "\(.width)x\(.height)", .alpha_is_used, .version_number' vp8l-7x1.webp
+VP8L
+7x1
+false
+0
+$ fq -rV '.chunks[0] | .id, "\(.width)x\(.height)", .alpha_is_used, .version_number' vp8l-616x232.webp
+VP8L
+616x232
+false
+0
+$ fq -rV '.chunks[0] | .id, "\(.width)x\(.height)", .alpha_is_used, .version_number' vp8l-10921x10921.webp
+VP8L
+10921x10921
+false
+0
+$ fq -rV '.chunks[0] | .id, "\(.width)x\(.height)", .alpha_is_used, .version_number' vp8l-16383x16383.webp
+VP8L
+16383x16383
+false
+0

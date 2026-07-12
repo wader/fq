@@ -54,18 +54,33 @@ func webpDecode(d *decode.D) any {
 				return false, nil
 			case "VP8L":
 				d.FieldU8("signature", d.UintAssert(0x2f), scalar.UintHex)
-				n := d.FieldU32("width_height_flags")
-				// TODO: replace with "bit endian" decoding
+
+				// From https://developers.google.com/speed/webp/docs/webp_lossless_bitstream_specification
+				// > The bytes are read in the natural order of the stream containing them,
+				// > and bits of each byte are read in least-significant-bit-first order.
+				// > When multiple bits are read at the same time, the integer is constructed
+				// > from the original data in the original order. The most significant bits
+				// > of the returned integer are also the most significant bits of the original
+				// > data.
+				//
+				// Not sure how much wiser i got reading that but by trail and error i think it's
+				// encoded like this if read as a 32 LE number:
+				// 01234567|01234567|01234567|01234567
+				// vvvahhhh|hhhhhhhh|hhwwwwww|wwwwwwww
+				//
+				// TODO: replace with "bit endian" decoding?
+
+				n := d.FieldU32("width_height_flags", scalar.UintHex)
 				b0 := (n >> 24) & 0xff
 				b1 := (n >> 16) & 0xff
 				b2 := (n >> 8) & 0xff
-				b3 := (n >> 0) & 0xf
-				width := b3 | (b2&0b0011_111)<<8
-				width += 1
-				height := (b2&0b1100_0000)>>6 | b1<<8 | (b0&0b0000_1111)<<16
-				height += 1
-				alphaIsUsed := b3&0b0001_0000 != 0
-				versionNumber := (b3 & 0b1110_0000) >> 5
+				b3 := (n >> 0) & 0xff
+
+				width := ((b2&0b0011_1111)<<8 | b3) + 1
+				height := ((b0&0b0000_1111)<<10 | (b1 << 2) | ((b2 & 0b1100_0000) >> 6)) + 1
+				alphaIsUsed := b0&0b0001_0000 != 0
+				versionNumber := (b0 & 0b1110_0000) >> 5
+
 				d.FieldValueUint("width", width)
 				d.FieldValueUint("height", height)
 				d.FieldValueBool("alpha_is_used", alphaIsUsed)
