@@ -1,0 +1,6 @@
+# gm convert 'xc:transparent' -define webp:lossless=true vp8l-alpha.webp
+$ fq -rV '.chunks[0] | .id, "\(.width)x\(.height)", .alpha_is_used, .version_number' vp8l-alpha.webp
+VP8L
+1x1
+true
+0
