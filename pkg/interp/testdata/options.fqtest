@@ -74,7 +74,7 @@ $ fq -n options
     null
   ],
   "force": false,
-  "include_path": null,
+  "include_path": [],
   "join_string": "\n",
   "line_bytes": 16,
   "null_input": true,
@@ -82,7 +82,6 @@ $ fq -n options
   "raw_output": false,
   "raw_string": false,
   "repl": false,
-  "show_formats": false,
   "show_help": false,
   "sizebase": 10,
   "skip_gaps": false,
@@ -153,7 +152,7 @@ $ fq -o 'filenames=["test.mp3"]' format
 $ fq -o 'force=true' -n options.force
 true
 $ fq -o include_path=path -n options.include_path
-"path"
+[]
 $ fq -o 'join_string=aaa\n' -n options.join_string
 "aaa\n"aaa
 $ fq -o line_bytes=true -n options.line_bytes

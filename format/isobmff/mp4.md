@@ -1,7 +1,7 @@
 ### Speed up decoding by not decoding samples
 
 ```sh
-# manually decode first sample as a aac_frame
+# manually decode first sample as an aac_frame
 $ fq -o decode_samples=false '.tracks[0].samples[0] | aac_frame | d' file.mp4
 ```
 
@@ -23,14 +23,14 @@ $ fq 'del(.tracks) | grep_by(.type=="mdat").data = "<excluded>" | tovalue' file.
 $ fq -n '"AAAAHGVsc3QAAAAAAAAAAQAAADIAAAQAAAEAAA==" | from_base64 | mp4({force:true}) | d'
 ```
 
-### Lookup mp4 box using a mp4 box path.
+### Lookup mp4 box using an mp4 box path
 
 ```sh
 # <decode value box> | mp4_path($path) -> <decode value box>
 $ fq 'mp4_path(".moov.trak[1]")' file.mp4
 ```
 
-### Get mp4 box path for a decode value box.
+### Get mp4 box path for a decode value box
 
 ```sh
 # <decode value box> | mp4_path -> string

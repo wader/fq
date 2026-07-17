@@ -92,3 +92,42 @@ def _markdown_to_text($width; $header_depth):
   ][:-1] | join("\n");
 def _markdown_to_text:
   _markdown_to_text(-1; 0);
+
+def _markdown_to_asciidoc:
+  def _f:
+    def _collect:
+      ( [.children[] | _f]
+      | join("")
+      );
+    if type == "string" then gsub("\n"; " ")
+    elif .type == "document" then .children[] | _f
+    elif .type == "heading" then
+      ( (.children | map(_markdown_children_to_text(0)) | join(" ")) as $h
+      | ""
+      , $h + ":::"
+      , ""
+      )
+    elif .type == "paragraph" then _collect
+    elif .type | . == "em" or . == "strong" then "_" + _collect + "_"
+    elif .type == "link" then
+      ( _collect as $text
+      | if $text == .destination then $text
+        else "\(.destination)[\($text)]"
+        end
+      )
+    elif .type == "code_block" then
+      ( .literal
+      | rtrimstr("\n")
+      | "[source,console]"
+      , "----"
+      , .
+      , "----"
+      )
+    elif .type == "code" then "`" + .literal + "`"
+    elif .type == "list" then "", ([.children[] | _f] | join("\n")), "", "//-" # TODO: delim
+    elif .type == "list_item" then "\(.bullet_char) \(.children[] | _f)"
+    elif .type == "html_span" then .literal | gsub("<br>"; "\n") # TODO: more?
+    else empty
+    end;
+  [_f] | join("\n");
+

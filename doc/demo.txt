@@ -1,0 +1,50 @@
+[90m# Overview of mp3 file[0m
+$ fq . file.mp3
+     │00 01 02 03 04 05 06 07 08 09│0123456789│.{}: file.mp3 (mp3)
+0x000│49 44 33 04 00 00 00 00 15 39│ID3......9│  headers[0:1]:
+*    │until 0xac2.7 (2755)         │          │
+0xabe│               ff fb 40 c0 00│     ..@..│  frames[0:3]:
+0xac8│00 00 00 00 00 00 00 00 00 00│..........│
+*    │until 0xd19.7 (end) (599)    │          │
+     │                             │          │  footers[0:0]:
+
+[90m# Show header of first ID3v2 tag inside mp3 file[0m
+$ fq '.headers[0].header' file.mp3
+   │00 01 02 03 04 05 06 07 08 09│0123456789│.headers[0].header{}:
+0x0│49 44 33                     │ID3       │  magic: "ID3" (valid)
+0x0│         04                  │   .      │  version: 4 (valid)
+0x0│            00               │    .     │  revision: 0
+0x0│               00            │     .    │  flags{}:
+0x0│                  00 00 15 39│      ...9│  size: 2745
+
+[90m# Show encoder software used[0m
+$ fq -Vr '.frames[0].tag.encoder' file.mp3
+Lavc58.13
+
+[90m# Decode at two offsets as mp3_frame and show bitrate[0m
+$ fq -d bytes '.[0xb79,0xc49:] | mp3_frame.header.bitrate' file.mp3
+     │00 01 02 03 04 05 06 07 08 09│0123456789│
+0xb72│                           50│         P│.header.bitrate: 64000 (5)
+     │00 01 02 03 04 05 06 07 08 09│0123456789│
+0xc44│                     52      │       R  │.header.bitrate: 64000 (5)
+
+[90m# Extract PNG file[0m
+$ fq '.headers[].frames[] | select(.id == "APIC")?.picture | tobits' file.mp3 >file.png
+$ file file.png
+file.png: PNG image data, 320 x 240, 8-bit/color RGB, non-interlaced
+
+[90m# Grep for PNG header, extract resolution and output as YAML[0m
+$ fq -r 'grep_by(.type == "IHDR") | {res: {width, height}} | to_yaml' file.mp3
+res:
+    height: 240
+    width: 320
+
+[90m# Add query parameter to URL[0m
+$ echo 'http://host?a=b' | fq -Rr 'from_url | .query.b = "a b c" | to_url'
+http://host?a=b&b=a+b+c
+
+[90m# Extract JSON and base64 encoded query parameter p[0m
+$ echo 'https://host?p=eyJhIjoiaGVsbG8ifQ%3D%3D' | fq -R 'from_url.query.p | from_base64 | fromjson'
+{
+  "a": "hello"
+}

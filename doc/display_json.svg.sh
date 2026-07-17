@@ -4,7 +4,7 @@ FQ="$1"
 
 s() {
     echo "\$ $1"
-    sh -c "${1/fq/$FQ -o unicode=true -C}"
+    sh -c "${1/fq/$FQ}"
 }
 
 s "fq -n '\"hello\"'"

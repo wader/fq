@@ -19,7 +19,7 @@ $ fq -d asn1_ber '.constructed[1].value | asn1_ber' file.ber
 ### Manual schema
 
 ```sh
-$ fq -d asn1_ber 'torepr as $r | ["version", "modulus", "private_exponent", "private_exponen", "prime1", "prime2", "exponent1", "exponent2", "coefficient"] | with_entries({key: .value, value: $r[.key]})' pkcs1.der
+$ fq -d asn1_ber 'torepr as $r | ["version", "modulus", "private_exponent", "prime1", "prime2", "exponent1", "exponent2", "coefficient"] | with_entries({key: .value, value: $r[.key]})' pkcs1.der
 ```
 
 ### References

@@ -1,6 +1,6 @@
-Supports decoding of most standard records, messages and extensions. Can also decrypt most standard cipher suits in a PCAP with traffic in both directions if a NSS key log is provided.
+Supports decoding of most standard records, messages and extensions. Can also decrypt most standard cipher suites in a PCAP with traffic in both directions if a NSS key log is provided.
 
-### Decode and decrypt provding a PCAP and key log
+### Decode and decrypt providing a PCAP and key log
 
 Write traffic to a PCAP file:
 
@@ -8,7 +8,7 @@ Write traffic to a PCAP file:
 $ tcpdump -i <iface> -w traffic.pcap
 ```
 
-Make sure your curl TLS backend support `SSLKEYLOGFILE` and do:
+Make sure your curl TLS backend supports `SSLKEYLOGFILE` and do:
 ```sh
 $ SSLKEYLOGFILE=traffic.keylog curl --tls-max 1.2 https://host/path
 ```
@@ -69,33 +69,26 @@ $ fq -o keylog=@traffic.keylog  'first(grep_by(.server.stream | format == "tls")
 `TLS_ECDH_RSA_WITH_RC4_128_SHA`,
 `TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA`,
 `TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA`,
-`TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA`,
 `TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256`,
 `TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256`,
 `TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA`,
-`TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA`,
 `TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384`,
-`TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384eadAESGCM`,
+`TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384`,
 `TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256`,
 `TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305`,
-`TLS_ECDHE_ECDSA_WITH_RC4_128_SHA`,
 `TLS_ECDHE_ECDSA_WITH_RC4_128_SHA`,
 `TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA`,
 `TLS_ECDHE_PSK_WITH_AES_128_GCM_SHA256`,
 `TLS_ECDHE_PSK_WITH_AES_256_CBC_SHA`,
 `TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA`,
-`TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA`,
-`TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA`,
 `TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA`,
 `TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256`,
 `TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256`,
-`TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA`,
 `TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA`,
 `TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384`,
 `TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384`,
 `TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256`,
 `TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305`,
-`TLS_ECDHE_RSA_WITH_RC4_128_SHA`,
 `TLS_ECDHE_RSA_WITH_RC4_128_SHA`,
 `TLS_PSK_WITH_AES_128_CBC_SHA`,
 `TLS_PSK_WITH_AES_256_CBC_SHA`,
@@ -103,24 +96,17 @@ $ fq -o keylog=@traffic.keylog  'first(grep_by(.server.stream | format == "tls")
 `TLS_RSA_EXPORT_WITH_DES40_CBC_SHA`,
 `TLS_RSA_EXPORT_WITH_RC4_40_MD5`,
 `TLS_RSA_WITH_3DES_EDE_CBC_SHA`,
-`TLS_RSA_WITH_3DES_EDE_CBC_SHA`,
-`TLS_RSA_WITH_AES_128_CBC_SHA`,
 `TLS_RSA_WITH_AES_128_CBC_SHA`,
 `TLS_RSA_WITH_AES_128_CBC_SHA256`,
-`TLS_RSA_WITH_AES_128_CBC_SHA256`,
 `TLS_RSA_WITH_AES_128_GCM_SHA256`,
-`TLS_RSA_WITH_AES_128_GCM_SHA256`,
-`TLS_RSA_WITH_AES_256_CBC_SHA`,
 `TLS_RSA_WITH_AES_256_CBC_SHA`,
 `TLS_RSA_WITH_AES_256_CBC_SHA256`,
 `TLS_RSA_WITH_AES_256_GCM_SHA384`,
-`TLS_RSA_WITH_AES_256_GCM_SHA384`,
 `TLS_RSA_WITH_DES_CBC_SHA`,
 `TLS_RSA_WITH_RC4_128_MD5`,
-`TLS_RSA_WITH_RC4_128_SHA`,
 `TLS_RSA_WITH_RC4_128_SHA`
 
 ### References
 
 - [RFC 5246: The Transport Layer Security (TLS) Protocol](https://www.rfc-editor.org/rfc/rfc5246)
-- [RFC 6101: The Secure Sockets Layer (SSL) Protocol Version 3.0](https://www.rfc-editor.org/rfc/rfc)
+- [RFC 6101: The Secure Sockets Layer (SSL) Protocol Version 3.0](https://www.rfc-editor.org/rfc/rfc6101)

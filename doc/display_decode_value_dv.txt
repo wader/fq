@@ -1,0 +1,15 @@
+$ fq 'first(grep_by(.type == "elst")) | dv' file.mp4
+     |00 01 02 03 04 05 06 07 08 09|0123456789|.boxes[3].boxes[1].boxes[1].boxes[0]{}: box 0xd65-0xd81 (28)
+0xd5c|                           00|         .|  size: 28 0xd65-0xd69 (4)
+0xd66|00 00 1c                     |...       |
+0xd66|         65 6c 73 74         |   elst   |  type: "elst" (An edit list) 0xd69-0xd6d (4)
+0xd66|                     00      |       .  |  version: 0 0xd6d-0xd6e (1)
+0xd66|                        00 00|        ..|  flags: 0 0xd6e-0xd71 (3)
+0xd70|00                           |.         |
+0xd70|   00 00 00 01               | ....     |  entry_count: 1 0xd71-0xd75 (4)
+     |                             |          |  entries[0:1]: 0xd75-0xd81 (12)
+     |                             |          |    [0]{}: entry 0xd75-0xd81 (12)
+0xd70|               00 00 00 28   |     ...( |      segment_duration: 40 0xd75-0xd79 (4)
+0xd70|                           00|         .|      media_time: 0 0xd79-0xd7d (4)
+0xd7a|00 00 00                     |...       |
+0xd7a|         00 01 00 00         |   ....   |      media_rate: 1 0xd7d-0xd81 (4)

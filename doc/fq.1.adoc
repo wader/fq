@@ -1,0 +1,3227 @@
+= fq(1)
+Mattias Wadman
+v0.17.0
+:doctype: manpage
+:manmanual: FQ
+:mansource: FQ
+:toc: left
+:toclevels: 3
+:sectanchors:
+:reproducible:
+
+== Name
+
+fq - tool, language and decoders for working with binary formats
+
+== Synopsis
+
+`*fq [_OPTIONS_] [--] [_EXPRESSION_] [_FILE_...]*`
+
+== Description
+
+**fq** is a tool, language, and decoders for working with binary formats and data.
+In most cases it behaves and feels similar to https://jqlang.github.io/jq/[jq] and it
+also uses the same expression language.
+To get the most out of fq it's recommended to learn more about jq.
+
+It features a structural hex viewer, nested format decoding, slicing and concatenating
+binary data, bit-level decoding and an interactive REPL with auto-completion.
+
+[source,console]
+----
+# Evaluate "d" for file.mp4
+$ fq d file.mp4
+
+# Evaluate ".boxes[0].type" for all *.mp4 files
+$ fq '.boxes[0].type' *.mp4
+
+# Evaluate "1+2" without reading any input
+$ fq -n 1+2
+----
+
+For more advanced usage see `--arg`, `--slurp`, `--raw-file`, `-n` etc and examples at the end of the documentation.
+
+== Options
+
+`*--arg NAME VALUE*`::
+  Set $NAME to string VALUE
+
+`*--argdecode NAME PATH*`::
+  Set $NAME to decode of PATH
+
+`*--argjson NAME JSON*`::
+  Set $NAME to JSON
+
+`*--args*`::
+  Consume remaining arguments as positional strings
+
+`*--color-output*`, `*-C*`::
+  Force color output
+
+`*--compact-output*`, `*-c*`::
+  Use compact output
+
+`*--decode*`, `*-d NAME*`::
+  Decode format or group (probe)
+
+`*--from-file*`, `*-f PATH*`::
+  Read EXPRESSION from file
+
+`*--help*`, `*-h [TOPIC]*`::
+  Show help for TOPIC (ex: -h formats, -h mp4)
+
+`*--include-path*`, `*-L PATH*`::
+  Add PATH to include search paths
+
+`*--join-output*`, `*-j*`::
+  No newline after each output
+
+`*--jsonargs*`::
+  Consume remaining arguments as positional JSON
+
+`*--monochrome-output*`, `*-M*`::
+  Force monochrome output
+
+`*--null-input*`, `*-n*`::
+  Null input (use input and inputs to read)
+
+`*--option*`, `*-o NAME=VALUE/@PATH*`::
+  Set option (ex: -o color=true, see --help options)
+`*-o addrbase=number*`:::
+  Number base for addresses
+
+`*-o array_truncate=number*`:::
+  Array display length to truncate
+
+`*-o bits_format=string*`:::
+  Raw bits representation
+`*-o bits_format=base64*`::::
+  Base64 string.
+`*-o bits_format=byte_array*`::::
+  Array of bytes (zero bit padded if size is not byte aligned).
+`*-o bits_format=hex*`::::
+  Hex string.
+`*-o bits_format=md5*`::::
+  MD5 hex string (zero bit padded).
+`*-o bits_format=snippet*`::::
+  Truncated Base64 string prefixed with bit length.
+`*-o bits_format=string*`::::
+  String with raw bytes (zero bit padded if size is not byte aligned). The string is binary safe internally in fq but bytes not representable as UTF-8 will be lost if turned into JSON (default).
+`*-o bits_format=truncate*`::::
+  Truncated string.
+
+`*-o byte_colors=ranges=string,...*`:::
+  Byte value colorization
+
+`*-o color=true|false*`:::
+  Use color
+
+`*-o colors=key=value,...*`:::
+  Color scheme
+
+`*-o compact=true|false*`:::
+  Use compact JSON
+
+`*-o completion_timeout=number*`:::
+  Seconds to wait for completion results
+
+`*-o depth=number*`:::
+  Display tree depth limit
+
+`*-o display_bytes=number*`:::
+  Display bytes limit
+
+`*-o force=true|false*`:::
+  Force decode
+
+`*-o join_string=string*`:::
+  String used to join outputs
+
+`*-o line_bytes=number*`:::
+  Number of bytes per display line
+
+`*-o raw_string=true|false*`:::
+  Raw string output
+
+`*-o sizebase=number*`:::
+  Number base for sizes
+
+`*-o skip_gaps=true|false*`:::
+  Skip gaps when representing decode value (arrays) as JSON
+
+`*-o string_truncate=number*`:::
+  String display length truncate
+
+`*-o unicode=true|false*`:::
+  Use unicode
+
+`*-o verbose=true|false*`:::
+  Verbose display
+
+`*-o width=number*`:::
+  Terminal width
+
+
+`*--raw-file NAME PATH*`::
+  Set $NAME to string content of file
+
+`*--raw-input*`, `*-R*`::
+  Read raw input strings (don't decode)
+
+`*--raw-output*`, `*-r*`::
+  Raw string output (without quotes)
+
+`*--raw-output0*`::
+  NUL (zero) byte after each output
+
+`*--repl*`, `*-i*`::
+  Interactive REPL
+
+`*--slurp*`, `*-s*`::
+  Slurp all inputs into an array or string (-Rs)
+
+`*--unicode-output*`, `*-U*`::
+  Force unicode output
+
+`*--value-output*`, `*-V*`::
+  Output JSON value (-Vr for raw string)
+
+`*--version*`, `*-v*`::
+  Show version
+
+
+== Configuration
+
+=== Init files
+
+To add your own functions you can use `init.jq` that is read from:
+
+macOS::
+  `$HOME/Library/Application Support/fq/init.jq` or +
+  `$HOME/.config/fq/init.jq`
+Linux and BSD::
+  `$HOME/.config/fq/init.jq`
+Windows::
+  `%AppData%\fq\init.jq`
+
+=== Environment
+
+`*NO_COLOR*`::
+  Non-empty string disables color output.
+`*CLIUNICODE*`::
+  Enables use of unicode output characters.
+`*COMPLETION_TIMEOUT*`::
+  REPL completion timeout in seconds.
+`*NO_DECODE_PROGRESS*`::
+  Disables decode progress indicator.
+
+== Expression
+
+=== Syntax
+
+See *jq*(1) for syntax details. But here are some common beginner gotchas:
+
+- Functions that take no arguments are called using `name` instead of `name()`.
+- Arguments are separated by `;` instead of `,`. Comma is used to concatenate output streams.
+To call a function `f` with two arguments use `f(1; 2)`. If you do `f(1, 2)`
+you pass a single argument `1, 2`, a filter that outputs `1` and then `2`, to `f`.
+- Expressions can return or "output" zero or more values. This is how iteration etc is done, `1, 2` outputs `1` then `2`.
+- Similar to shell pipelines, implicit input and output are used and piped together using `|`. `.` is used to refer to
+current input. Ex `1 | . + 2` outputs `3`, `1, 2 | . + 2` outputs `3` and `4`.
+- In the jq manual and other jq related documentation you might see `name/2`, this means the
+function `name` takes two arguments (arity).
+
+=== Additional features
+
+fq uses an extended variant of the jq language with a few extra features:
+
+* Arbitrary-precision integers and arithmetics.
+* Supports raw strings using back-ticks. String interpolation and codepoint escapes are not processed.
++
+----
+`hello \("world")\ud83c\udf0d`
+----
+results in the string `hello \("world")\ud83c\udf0d` or as JSON `"hello \\(\"world\")\\ud83c\\udf0d"`.
+In contrast
++
+----
+"hello \("world")\ud83c\udf0d"
+----
+results in the string `hello world🌍` or as JSON `"hello world🌍"`.
++
+* Supports more number bases in integer literals.
+** `0xabcd` (Hexadecimal).
+** `0o125715` (Octal).
+** `0b1010101111001101` (Binary).
+** Grouping using underscore `0xab_cd`.
+* Binary and decode value types, see below.
+* Try include using an ending question mark `include "file?";` that doesn't fail if file is missing or has errors.
+* Some values can act as an object with keys even when they are arrays, numbers etc.
+* There can be keys hidden from `keys` and `[]`.
+* Some values are readonly and can't be updated or will convert to JSON on update.
+* Mixing `--args` and `--jsonargs` does not behave the same.
+
+=== Additional functions
+
+`*band*`, `*bor*`, `*bxor*`, `*bsl*`, `*bsr*`, `*bnot*`::
+  Bitwise operations as functions. Works the same as jq's math functions. Functions that take one argument use
+  input, `1 | bnot`, and functions with more arguments ignore the input and use formal arguments `bsl(1; 3)`.
+
+`*chunk($size)*`::
+  Split array or string into `$size` length chunks. Last chunk might be shorter.
+
+`*count*`, `*count_by(f)*`::
+  Like `group` but outputs array of `[value, count]` pairs.
+
+`*delta*`, `*delta_by(f)*`::
+  Array with difference between consecutive. `delta` is the same as `delta_by(.b - .a)`.
+
+`*diff($a; $b)*`::
+  Produce a diff between `$a` and `$b`. Differences are represented as an object `{a: <value from a>, b: <value from b>}`.
+
+`*expr_to_path*`::
+  Converts from a string `".key[1]"` to a path value `["key", 1]`.
+
+`*grep_by(f)*`::
+  Recursively select using a filter and ignore any errors.
+  Ex: `grep_by(. > 180 and . < 200)`, `first(grep_by(format == "id3v2"))`.
+  This is the same as doing `.. | select(f)?`.
+
+`*group*`::
+  Group values, same as `group_by(.)`.
+
+`*path_to_expr*`::
+  Converts a path value `["key", 1]` to a string `".key[1]"`.
+
+`*paste*`::
+  Read string from stdin until ^D. Useful for pasting text. Ex: `paste | from_pem | asn1_ber | repl` read from stdin then decode and start a new sub-REPL with result.
+
+`*streaks*`, `*streaks_by(f)*`::
+  Like `group` but groups streaks based on condition.
+
+`*repl*`, `*repl($opts)*`::
+  Nested REPL. Must be last in a pipeline. `repl` can "slurp" outputs, ex: `1, 2, 3 | repl`, and supports options, ex: `[1,2,3] | repl({compact: true})`.
+
+`*slurp("<name>")*`::
+  Slurp outputs and saves them to `$name`. Must be last in the pipeline. Will be available as a global array `$name`. Ex `1,2,3 | slurp("a")`, `$a[]` same as `spew("a")`.
+
+`*spew*`, `*spew("<name>")*`::
+  Outputs all or a specific slurp. Ex: `spew("a")`.
+
+`*println*`, `*print*`::
+Print string or compact JSON to stdout with and without new line.
+
+`*printerrln*`, `*printerr*`::
+Print string or compact JSON to stderr with and without new line.
+
+=== Decode value
+
+A decode value is the type returned from decoding a format and used to represent values produced by a decoder.
+It can be seen as representing any standard jq type but with some additional properties attached.
+
+Each decode value has these properties:
+
+* Bit range in the input. Can be used as a binary using `tobytes`, `tobytesrange`, `tobits` and `tobitsrange`.
+* If scalar type, an actual value:
+** This is the decoded representation of the bits, a number, string, bool etc.
+** Can be accessed using `toactual`.
+* If scalar type, an optional symbolic value:
+** Is usually a mapping of the actual to symbolic value, ex: map number to a string value.
+** Can be accessed using `tosym`.
+* An optional description:
+** Can be accessed using `todescription`.
+* `parent` is the parent decode value
+* `parents` is all the parent decode values
+* `topath` is the jq path for the decode value
+* `torepr` converts decode value to its representation if possible
+
+The value of a decode value is the symbolic value if available and otherwise the actual value. To explicitly access the value use `tovalue`. In most expressions this is not needed as it will be done automatically.
+
+==== Decode value functions
+
+`*root*`::
+  Root decode value for decode value.
+
+`*buffer_root*`::
+  Root decode value of sub buffer for decode value.
+
+`*format_root*`::
+  Root decode value of nested format for decode value.
+
+`*parent*`::
+  Parent decode value for decode value.
+
+`*parents*`::
+  Outputs all parent decode values from decode value.
+
+`*topath*`::
+  Path for decode value. Use `path_to_expr` to get a string representation.
+
+`*tovalue`, `tovalue($opts)*`::
+  Symbolic, if available, or actual value for decode value.
+
+`*toactual`, `toactual($opts)*`::
+  Actual value for decode value.
+
+`*tosym`, `tosym($opts)*`::
+  Symbolic value for decode value.
+
+`*todescription*`::
+  Description for decode value.
+
+`*torepr*`::
+  Converts decode value into what it represents. For example converts msgpack decode value into a value representing its JSON representation.
+
+`tobytes`, `tobytesrange`, `tobits` and `tobitsrange` on a decode value will return the raw source bits as a binary.
+
+=== Binary
+
+Binary type is used to store raw bits or bytes. Raw bits will act as zero bits padded strings in standard jq expressions.
+
+Use `tobits` and `tobytes` to create them from decode value, string, number or binary array. `tobytes` will if needed zero pad most significant bits to be byte aligned.
+
+There is also `tobitsrange` and `tobytesrange` which do the same thing but will preserve source range when displayed.
+
+- `"string" | tobytes` produces a binary with UTF8 bytes.
+- `1234 | tobits` produces a binary with the unsigned big-endian integer 1234 with enough bits to represent the number. Use `tobytes` to get the same but with enough bytes to represent the number. This is different to how numbers work inside binary arrays where they are limited to 0-255.
+- `["abc", 123, ...] | tobytes` produces a binary from a binary array. See <<binary_array>> below.
+- `.[index]` access bit or byte at index `index`. Index is in units.
+  - `[0x12, 0x34, 0x56] | tobytes[1]` is `0x34`
+  - `[0x12, 0x34, 0x56] | tobits[3]` is `1`
+- `.[start:]`, `.[start:end]` or `.[:end]` is normal jq slice syntax and will slice the binary from `start` to `end`. `start` and `end` are in units.
+  - `[0x12, 0x34, 0x56] | tobytes[1:2]` will be a binary with the byte `0x34`
+  - `[0x12, 0x34, 0x56] | tobits[4:12]` will be a binary with the byte `0x23`
+  - `[0x12, 0x34, 0x56] | tobits[4:20]` will be a binary with the bytes `0x23`, `0x45`
+  - `[0x12, 0x34, 0x56] | tobits[4:20] | tobytes[1:]` will be a binary with the byte `0x45`
+  - Both `.[index]` and `.[start:end]` support negative indices to index from end.
+- `explode` outputs an array with all bytes or bits as integers.
+
+==== Binary functions
+
+`*grep($v)*`, `*grep($v; $flags)*`, `*vgrep($v)*`, `*vgrep($v; $flags)*`, `*bgrep($v)*`, `*bgrep($v; $flags)*`::
+  Recursively match `$v`.
+  `$v` is a scalar to match, where a string is treated as a regexp. A binary will match exact bytes.
+  `$flags` arguments are regexp flags with additional flag "b" that will treat each byte in the input binary
+  as a code point. This makes it possible to match exact bytes.
+
+`*fgrep($v)*`, `*fgrep($v; $flags)*`::
+  Recursively match field name in a decode value.
+
+`*tobits*`::
+  Transform input to binary with bit as unit and don't preserve source range.
+
+`*tobitsrange*`::
+  Transform input to binary with bit as unit and preserve source range.
+
+`*tobytes*`::
+  Transform input to binary with byte as unit and don't preserve source range.
+
+`*tobytesrange*`::
+  Transform input to binary with byte as unit and preserve source range.
+
+`*open*`::
+  Open file for reading.
+
+=== Binary array [[binary_array]]
+
+Binary array is a value "shape" and not a new type. It's an array of numbers, strings, binaries or other
+binary arrays. They can be used as input to `tobits`, `tobytes` or other function that accept a binary as input.
+
+- Number is a byte with value 0-255
+- String as UTF8 bytes
+- Binary as is
+- Binary array used recursively
+
+Binary arrays are similar to and inspired by https://www.erlang.org/doc/man/erlang.html#type-iolist[Erlang iolist].
+
+Some examples:
+
+- `[0, 123, 255] | tobytes` will be binary with 3 bytes 0, 123 and 255.
+- `[0, [123, 255]] | tobytes` same as above.
+- `[0, 1, 1, 0, 0, 1, 1, 0 | tobits] | tobytes` will be binary with 1 byte, 0x66.
+- `[(.a | tobytes[-10:]), 255, (.b | tobits[:10])] | tobytes` the concatenation of the last 10 bytes of `.a`, byte of value 255 and the first 10 bits of `.b`.
+
+=== Differences to jq
+
+See https://github.com/itchyny/gojq#difference-to-jq[gojq's differences to jq].
+
+=== Naming inconsistencies
+
+jq's naming convention is a bit inconsistent. Some standard library functions are named `tojson` while others `from_entries`. fq follows this tradition but tries to use `snake_case` unless there is a good reason.
+
+Here are all the non-snake_case functions added by fq. Most of them deal with decode and binary values which are new "primitive" types:
+
+- `toactual`
+- `tobits`
+- `tobitsrange`
+- `tobytes`
+- `tobytesrange`
+- `todescription`
+- `topath`
+- `torepr`
+- `tosym`
+- `tovalue`
+
+== Display output
+
+`display` or `d` is the main function for displaying values and is also the function that will be used if no other output function is explicitly used. If its input is a decode value it will output a dump and tree structure or otherwise it will output as JSON.
+
+Below demonstrates some usages:
+
+The first and second examples do the same thing, inputting `"hello"` to `display`.
+
+[source,shell]
+----
+$ fq -n '"hello"'
+"hello"
+
+$ fq -n '"hello" | d'
+"hello"
+----
+
+
+In the next few examples we select out the first "edit list" box in an mp4 file and display it in various ways.
+
+By default, display will only show the root level:
+
+[source,shell]
+----
+$ fq 'first(grep_by(.type == "elst"))' file.mp4
+     |00 01 02 03 04 05 06 07 08 09|0123456789|.boxes[3].boxes[1].boxes[1].boxes[0]{}: box
+0xd5c|                           00|         .|  size: 28
+0xd66|00 00 1c                     |...       |
+0xd66|         65 6c 73 74         |   elst   |  type: "elst" (An edit list)
+0xd66|                     00      |       .  |  version: 0
+0xd66|                        00 00|        ..|  flags: 0
+0xd70|00                           |.         |
+0xd70|   00 00 00 01               | ....     |  entry_count: 1
+0xd70|               00 00 00 28 00|     ...(.|  entries[0:1]:
+0xd7a|00 00 00 00 01 00 00         |.......   |
+----
+
+
+First row shows a ruler with byte offset into the line and jq path for the value.
+
+The columns are:
+
+- Start address for the line. For example we see that `size` starts at `0xd5c` (row) + `0x09` (column) = `0xd65`.
+- Hex representation of input bits for value. Will show the whole byte even if the value only partially uses bits from it.
+- ASCII representation of input bits for value. Will show the whole byte even if the value only partially uses bits from it.
+- Tree structure of decoded value, symbolic value and description.
+
+Notation:
+
+- `{}` value is an object that might have nested values.
+- `[start:end]` value is an array with index starting at `start` and ending at `end` (exclusive).
+
+With `display` or `d` it will recursively show the whole tree:
+
+[source,shell]
+----
+$ fq 'first(grep_by(.type == "elst")) | d' file.mp4
+     |00 01 02 03 04 05 06 07 08 09|0123456789|.boxes[3].boxes[1].boxes[1].boxes[0]{}: box
+0xd5c|                           00|         .|  size: 28
+0xd66|00 00 1c                     |...       |
+0xd66|         65 6c 73 74         |   elst   |  type: "elst" (An edit list)
+0xd66|                     00      |       .  |  version: 0
+0xd66|                        00 00|        ..|  flags: 0
+0xd70|00                           |.         |
+0xd70|   00 00 00 01               | ....     |  entry_count: 1
+     |                             |          |  entries[0:1]:
+     |                             |          |    [0]{}: entry
+0xd70|               00 00 00 28   |     ...( |      segment_duration: 40
+0xd70|                           00|         .|      media_time: 0
+0xd7a|00 00 00                     |...       |
+0xd7a|         00 01 00 00         |   ....   |      media_rate: 1
+----
+
+
+Same but verbose `dv`:
+
+[source,shell]
+----
+$ fq 'first(grep_by(.type == "elst")) | dv' file.mp4
+     |00 01 02 03 04 05 06 07 08 09|0123456789|.boxes[3].boxes[1].boxes[1].boxes[0]{}: box 0xd65-0xd81 (28)
+0xd5c|                           00|         .|  size: 28 0xd65-0xd69 (4)
+0xd66|00 00 1c                     |...       |
+0xd66|         65 6c 73 74         |   elst   |  type: "elst" (An edit list) 0xd69-0xd6d (4)
+0xd66|                     00      |       .  |  version: 0 0xd6d-0xd6e (1)
+0xd66|                        00 00|        ..|  flags: 0 0xd6e-0xd71 (3)
+0xd70|00                           |.         |
+0xd70|   00 00 00 01               | ....     |  entry_count: 1 0xd71-0xd75 (4)
+     |                             |          |  entries[0:1]: 0xd75-0xd81 (12)
+     |                             |          |    [0]{}: entry 0xd75-0xd81 (12)
+0xd70|               00 00 00 28   |     ...( |      segment_duration: 40 0xd75-0xd79 (4)
+0xd70|                           00|         .|      media_time: 0 0xd79-0xd7d (4)
+0xd7a|00 00 00                     |...       |
+0xd7a|         00 01 00 00         |   ....   |      media_rate: 1 0xd7d-0xd81 (4)
+----
+
+
+In verbose mode bit ranges and array element names are shown.
+
+Bit ranges use `<start-byte>[.<bits>]-<end-byte>[.<bits>]` as notation where `.<bits>` is left out if byte aligned. For example `type` starts at byte `0xd69` bit `0` (`.0` is left out) and ends at `0xd6d` bit `0` (exclusive) and has a size of `4` bytes.
+
+This verbosely displays the header of the second frame in an mp3 file which has a bunch of non-byte-aligned fields:
+
+[source,shell]
+----
+$ fq '.frames[1].header | dv' file.mp3
+     |00 01 02 03 04 05 06 07 08 09|0123456789|.frames[1].header{}: 0xb79-0xb7d (4)
+0xb72|                     ff fb   |       .. |  sync: 0b11111111111 (valid) 0xb79-0xb7a.3 (1.3)
+0xb72|                        fb   |        . |  mpeg_version: "1" (3) (MPEG Version 1) 0xb7a.3-0xb7a.5 (0.2)
+0xb72|                        fb   |        . |  layer: 3 (1) (MPEG Layer 3) 0xb7a.5-0xb7a.7 (0.2)
+     |                             |          |  sample_count: 1152
+0xb72|                        fb   |        . |  protection_absent: true (No CRC) 0xb7a.7-0xb7b (0.1)
+0xb72|                           50|         P|  bitrate: 64000 (5) 0xb7b-0xb7b.4 (0.4)
+0xb72|                           50|         P|  sample_rate: 44100 (0) 0xb7b.4-0xb7b.6 (0.2)
+0xb72|                           50|         P|  padding: "not_padded" (0b0) 0xb7b.6-0xb7b.7 (0.1)
+0xb72|                           50|         P|  private: 0 0xb7b.7-0xb7c (0.1)
+0xb7c|c4                           |.         |  channels: "mono" (0b11) 0xb7c-0xb7c.2 (0.2)
+0xb7c|c4                           |.         |  channel_mode: "none" (0b0) 0xb7c.2-0xb7c.4 (0.2)
+0xb7c|c4                           |.         |  copyright: 0 0xb7c.4-0xb7c.5 (0.1)
+0xb7c|c4                           |.         |  original: 1 0xb7c.5-0xb7c.6 (0.1)
+0xb7c|c4                           |.         |  emphasis: "none" (0b0) 0xb7c.6-0xb7d (0.2)
+----
+
+
+Here the `sync` pattern starts at `0xb79` (bit `0`) and ends at `0xb7a.3` (exclusive) and has a size of `1` byte and `3` bits, `11` bits in total (`8+3`).
+
+There are also some other `display` aliases:
+
+- `da` is `display({array_truncate: 0, string_truncate: 0})` don't truncate array and strings.
+- `dd` is `display({array_truncate: 0, string_truncate: 0, display_bytes: 0})` don't truncate array and strings, show all raw bytes.
+- `dv` is `display({array_truncate: 0, string_truncate: 0, verbose: true})` don't truncate array and strings and display verbosely.
+- `ddv` is `display({array_truncate: 0, string_truncate: 0, display_bytes: 0, verbose: true})` don't truncate array and strings, show all raw bytes and display verbosely.
+
+== Formats
+
+By default fq will try to automatically determine input format. In some cases this might fail or is not
+possible, then a format can be specified using `-d NAME`. It's possible sometimes to force decode and get
+a partial or broken result using `-o force=true`.
+
+[source,console]
+----
+# decode as msgpack
+$ fq -d msgpack d file
+# force decode as msgpack
+$ fq -d msgpack -o force=true d file
+# see msgpack format help
+$ fq -h msgpack
+# list supported formats
+$ fq -h formats
+----
+
+=== Format options
+
+Some formats has own options that can be set using `-o`. For
+example the `mp4` format has a `decode_samples` option that controls
+if individual samples should be decoded. To disable it one can do
+`fq -o decode_samples=false . file.mp4`. See format list for options.
+
+=== Format functions
+
+In addition to using `-d` all format decoders are also available as normal jq functions.
+Each format provides multiple functions:
+
+`<name>`::
+  Decode and return a decode value even on error. Ex: `... | mp4`
+
+`<name>($options)`::
+  Same as above with format options. Ex: `... | mp4({decode_samples: false})`
+
+`from_<name>`::
+  Decode or throw on error. Ex: `... | from_mp4`
+
+`from_<name>($options)`::
+  Same as above with format options Ex: `... | from_mp4({decode_samples: false})`
+
+Example usage:
+
+[source,console]
+----
+# decode jpeg found inside some other format
+$ fq '.some[].query | jpeg' file
+
+# decode jpeg at byte range 100-200
+$ fq -d bytes '.[100:200] | jpeg' file
+----
+
+=== Supported formats
+
+`*aac_frame*`::
+  Advanced Audio Coding frame
++
+--
+
+.Options
+`*-o object_type=1*`:::
+  Audio object type
+
+--
++
+
+`*adts*`::
+  Audio Data Transport Stream
+
+`*adts_frame*`::
+  Audio Data Transport Stream frame
+
+`*aiff*`::
+  Audio Interchange File Format
+
+`*amf0*`::
+  Action Message Format 0
+
+`*apev2*`::
+  APEv2 metadata tag
+
+`*apple_bookmark*`::
+  Apple BookmarkData
++
+--
+Apple's `bookmarkData` format is used to encode information that can be resolved into a `URL` object for a file even if the user moves or renames it. Can also contain security scoping information for App Sandbox support.
+These `bookmarkData` blobs are often found encoded in data fields of Binary Property Lists. Notable examples include:
+
+- `com.apple.finder.plist` - contains an `FXRecentFolders` value, which is an array of ten objects, each of which consists of a `name` and `file-bookmark` field, which is a `bookmarkData` object for each recently accessed folder location.
+- `com.apple.LSSharedFileList.RecentApplications.sfl2` - `sfl2` files are actually `plist` files of the `NSKeyedArchiver` format. They can be parsed the same as `plist` files, but they have a more complicated tree-like structure than would typically be found, which can make locating and retrieving specific values difficult, even once it has been converted to a JSON representation. For more information about these types of files, see Sarah Edwards' excellent research on the subject (link in references).
+
+//-
+`fq`'s `grep_by` function can be used to recursively descend through the decoded tree, probing for and selecting any `bookmark` blobs, then converting them to readable JSON with `torepr`:
+[source,console]
+----
+fq 'grep_by(.type=="data" and .value[0:4] == "book") | .value | apple_bookmark |
+torepr' <sfl2 file>
+----
+
+Authors:::
+
+
+- David McDonald https://github.com/dgmcdona[@dgmcdona] https://twitter.com/river_rat_504[@river_rat_504]
+
+//-
+
+References:::
+
+
+- https://developer.apple.com/documentation/foundation/url/2143023-bookmarkdata
+- https://mac-alias.readthedocs.io/en/latest/bookmark_fmt.html
+- https://www.mac4n6.com/blog/2016/1/1/manual-analysis-of-nskeyedarchiver-formatted-plist-files-a-review-of-the-new-os-x-1011-recent-items
+- https://michaellynn.github.io/2015/10/24/apples-bookmarkdata-exposed/
+
+//-
+--
++
+
+`*ar*`::
+  Unix archive
+
+`*asn1_ber*`::
+  ASN1 BER (basic encoding rules, also CER and DER)
++
+--
+Supports decoding BER, CER and DER (X.690).
+
+- Currently no extra validation is done for CER and DER.
+- Does not support specifying a schema.
+- Supports `torepr` but without schema all sequences and sets will be arrays.
+
+//-
+
+Can be used to decode certificates etc:::
+
+[source,console]
+----
+$ fq -d bytes 'from_pem | asn1_ber | d' cert.pem
+----
+
+Can decode nested values:::
+
+[source,console]
+----
+$ fq -d asn1_ber '.constructed[1].value | asn1_ber' file.ber
+----
+
+Manual schema:::
+
+[source,console]
+----
+$ fq -d asn1_ber 'torepr as $r | ["version", "modulus", "private_exponent", "prime1", "prime2", "exponent1", "exponent2", "coefficient"] | with_entries({key: .value, value: $r[.key]})' pkcs1.der
+----
+
+References:::
+
+
+- https://www.itu.int/ITU-T/studygroups/com10/languages/X.690_1297.pdf
+- https://en.wikipedia.org/wiki/X.690
+- https://letsencrypt.org/docs/a-warm-welcome-to-asn1-and-der/
+- https://lapo.it/asn1js/
+
+//-
+--
++
+
+`*av1_ccr*`::
+  AV1 Codec Configuration Record
+
+`*av1_frame*`::
+  AV1 frame
+
+`*av1_obu*`::
+  AV1 Open Bitstream Unit
+
+`*avc_annexb*`::
+  H.264/AVC Annex B
+
+`*avc_au*`::
+  H.264/AVC Access Unit
++
+--
+
+.Options
+`*-o bottom_field_pic_order_in_frame_present_flag=false*`:::
+  No description
+
+`*-o cpb_cnt=0*`:::
+  No description
+
+`*-o cpb_removal_delay_length=0*`:::
+  No description
+
+`*-o delta_pic_order_always_zero_flag=false*`:::
+  No description
+
+`*-o dpb_output_delay_length=0*`:::
+  No description
+
+`*-o frame_mbs_only_flag=true*`:::
+  No description
+
+`*-o initial_cpb_removal_delay_length=0*`:::
+  No description
+
+`*-o length_size=0*`:::
+  Length value size
+
+`*-o log2max_frame_num=4*`:::
+  No description
+
+`*-o log2max_pic_order_cnt_lsb=4*`:::
+  No description
+
+`*-o nal_hrd_parameters_present=false*`:::
+  No description
+
+`*-o pic_order_cnt_type=0*`:::
+  No description
+
+`*-o redundant_pic_cnt_present_flag=false*`:::
+  No description
+
+`*-o separate_colour_plane_flag=false*`:::
+  No description
+
+`*-o time_offset_length=0*`:::
+  No description
+
+`*-o vcl_hrd_parameters_present=false*`:::
+  No description
+
+--
++
+
+`*avc_dcr*`::
+  H.264/AVC Decoder Configuration Record
+
+`*avc_nalu*`::
+  H.264/AVC Network Access Layer Unit
++
+--
+
+.Options
+`*-o bottom_field_pic_order_in_frame_present_flag=false*`:::
+  No description
+
+`*-o cpb_cnt=0*`:::
+  No description
+
+`*-o cpb_removal_delay_length=0*`:::
+  No description
+
+`*-o delta_pic_order_always_zero_flag=false*`:::
+  No description
+
+`*-o dpb_output_delay_length=0*`:::
+  No description
+
+`*-o frame_mbs_only_flag=true*`:::
+  No description
+
+`*-o initial_cpb_removal_delay_length=0*`:::
+  No description
+
+`*-o log2max_frame_num=4*`:::
+  No description
+
+`*-o log2max_pic_order_cnt_lsb=4*`:::
+  No description
+
+`*-o nal_hrd_parameters_present=false*`:::
+  No description
+
+`*-o pic_order_cnt_type=0*`:::
+  No description
+
+`*-o redundant_pic_cnt_present_flag=false*`:::
+  No description
+
+`*-o separate_colour_plane_flag=false*`:::
+  No description
+
+`*-o time_offset_length=0*`:::
+  No description
+
+`*-o vcl_hrd_parameters_present=false*`:::
+  No description
+
+--
++
+
+`*avc_pps*`::
+  H.264/AVC Picture Parameter Set
+
+`*avc_sei*`::
+  H.264/AVC Supplemental Enhancement Information
++
+--
+
+.Options
+`*-o cpb_cnt=0*`:::
+  No description
+
+`*-o cpb_removal_delay_length=0*`:::
+  No description
+
+`*-o delta_pic_order_always_zero_flag=false*`:::
+  No description
+
+`*-o dpb_output_delay_length=0*`:::
+  No description
+
+`*-o frame_mbs_only_flag=true*`:::
+  No description
+
+`*-o initial_cpb_removal_delay_length=0*`:::
+  No description
+
+`*-o log2max_frame_num=4*`:::
+  No description
+
+`*-o log2max_pic_order_cnt_lsb=4*`:::
+  No description
+
+`*-o nal_hrd_parameters_present=false*`:::
+  No description
+
+`*-o pic_order_cnt_type=0*`:::
+  No description
+
+`*-o separate_colour_plane_flag=false*`:::
+  No description
+
+`*-o time_offset_length=0*`:::
+  No description
+
+`*-o vcl_hrd_parameters_present=false*`:::
+  No description
+
+--
++
+
+`*avc_sps*`::
+  H.264/AVC Sequence Parameter Set
+
+`*avi*`::
+  Audio Video Interleaved
++
+--
+
+Samples:::
+
+AVI has many redundant ways to index samples so currently `.streams[].samples` will only include samples the most "modern" way used in the file. That is in order of stream super index, movi ix index then idx1 index.
+
+Extract samples for stream 1:::
+
+[source,console]
+----
+$ fq '.streams[1].samples[] | tobytes' file.avi > stream01.mp3
+----
+
+Show stream summary:::
+
+[source,console]
+----
+$ fq -o decode_samples=false '[.chunks[0] | grep_by(.id=="LIST" and .type=="strl") | grep_by(.id=="strh") as {$type} | grep_by(.id=="strf") as {$format_tag, $compression} | {$type,$format_tag,$compression}]' *.avi
+----
+
+Speed up decoding by disabling sample and extended chunks decoding:::
+
+If you're not interested in sample details or extended chunks you can speed up decoding by using:
+[source,console]
+----
+$ fq -o decode_samples=false -o decode_extended_chunks=false d file.avi
+----
+
+References:::
+
+
+- https://learn.microsoft.com/en-us/windows/win32/directshow/avi-riff-file-reference[AVI RIFF File Reference]
+- http://www.jmcgowan.com/odmlff2.pdf[OpenDML AVI File Format Extensions]
+
+//-
+
+.Options
+`*-o decode_extended_chunks=true*`:::
+  Decode extended chunks
+
+`*-o decode_samples=true*`:::
+  Decode samples
+
+--
++
+
+`*avro_ocf*`::
+  Avro object container file
++
+--
+Supports reading Avro Object Container Format (OCF) files based on the 1.11.0 specification.
+Capable of handling null, deflate, and snappy codecs for data compression.
+Limitations:
+
+- Schema does not support self-referential types, only built-in types.
+- Decimal logical types are not supported for decoding, will just be treated as their primitive type
+
+//-
+
+References:::
+
+
+- https://avro.apache.org/docs/current/spec.html#Object+Container+Files
+
+//-
+
+Authors:::
+
+
+- Xentripetal xentripetal@fastmail.com https://github.com/xentripetal[@xentripetal]
+
+//-
+--
++
+
+`*bencode*`::
+  BitTorrent bencoding
++
+--
+
+Convert represented value to JSON:::
+
+[source,console]
+----
+$ fq -d bencode torepr file.torrent
+----
+
+References:::
+
+
+- https://wiki.theory.org/BitTorrentSpecification#Bencoding
+
+//-
+--
++
+
+`*bitcoin_blkdat*`::
+  Bitcoin blk.dat
+
+`*bitcoin_block*`::
+  Bitcoin block
++
+--
+
+.Options
+`*-o has_header=false*`:::
+  Has blkdat header
+
+--
++
+
+`*bitcoin_script*`::
+  Bitcoin script
+
+`*bitcoin_transaction*`::
+  Bitcoin transaction
+
+`*bits*`::
+  Raw bits
++
+--
+Decode to a slice and indexable binary of bits.
+
+Slice and decode bit range:::
+
+[source,console]
+----
+$ echo 'some {"a":1} json' | fq -d bits '.[40:-48] | fromjson'
+{
+  "a": 1
+}
+----
+
+Index bits:::
+
+[source,console]
+----
+$ echo 'hello' | fq -d bits '.[4]'
+1
+$ echo 'hello' | fq -c -d bits '[.[range(8)]]'
+[0,1,1,0,1,0,0,0]
+----
+--
++
+
+`*bplist*`::
+  Apple Binary Property List
++
+--
+
+Show full decoding:::
+
+[source,console]
+----
+$ fq d Info.plist
+----
+
+Timestamps:::
+
+Timestamps in Apple Binary Property Lists are encoded as Cocoa Core Data timestamps, where the raw value is the floating point number of seconds since January 1, 2001. By default, `fq` will render the raw floating point value. In order to get the raw value or the string description, use the `tovalue` or `todescription` functions:
+[source,console]
+----
+$ fq 'torepr.SomeTimeStamp | tovalue' Info.plist
+685135328
+
+$ fq 'torepr.SomeTimeStamp | todescription' Info.plist
+"2022-09-17T19:22:08Z"
+----
+
+Get JSON representation:::
+
+`bplist` files can be converted to a JSON representation using the `torepr` filter:
+[source,console]
+----
+$ fq torepr com.apple.UIAutomation.plist
+{
+  "UIAutomationEnabled": true
+}
+----
+
+Decoding NSKeyedArchiver serialized objects:::
+
+A common way that Swift and Objective-C libraries on macOS serialize objects is through the NSKeyedArchiver API, which flattens objects into a list of elements and class descriptions that are reconstructed into an object graph using CFUID elements in the property list. `fq` includes a function, `from_ns_keyed_archiver`, which will rebuild this object graph into a friendly representation.
+If no parameters are supplied, it will assume that there is a CFUID located at `."$top".root` that specifies the root from which decoding should occur. If this is not present, an error will be produced, asking the user to specify a root object in the `.$objects` list from which to decode.
+The following examples show how this might be used (in this case, within the `fq` REPL):
+[source,console]
+----
+# Assume $top.root is present
+bplist> from_ns_keyed_archiver
+
+# Specify optional root
+bplist> from_ns_keyed_archiver(1)
+----
+
+Authors:::
+
+
+- David McDonald https://github.com/dgmcdona[@dgmcdona]
+
+//-
+
+References:::
+
+
+- http://fileformats.archiveteam.org/wiki/Property_List/Binary
+- https://medium.com/@karaiskc/understanding-apples-binary-property-list-format-281e6da00dbd
+- https://opensource.apple.com/source/CF/CF-550/CFBinaryPList.c
+
+//-
+--
++
+
+`*bsd_loopback_frame*`::
+  BSD loopback frame
+
+`*bson*`::
+  Binary JSON
++
+--
+
+Limitations:::
+
+
+- The decimal128 type is not supported for decoding, will just be treated as binary
+
+//-
+
+Convert represented value to JSON:::
+
+[source,console]
+----
+$ fq -d bson torepr file.bson
+----
+
+Filter represented value:::
+
+[source,console]
+----
+$ fq -d bson 'torepr | select(.name=="bob")' file.bson
+----
+
+Authors:::
+
+
+- Mattias Wadman mattias.wadman@gmail.com, original author
+- Matt Dale https://github.com/matthewdale[@matthewdale], additional types and bug fixes
+
+//-
+
+References:::
+
+
+- https://bsonspec.org/spec.html
+
+//-
+--
++
+
+`*bytes*`::
+  Raw bytes
++
+--
+Decode to a slice and indexable binary of bytes.
+
+Slice out byte ranges:::
+
+[source,console]
+----
+$ echo -n 'hello' | fq -d bytes '.[-3:]' > last_3_bytes
+$ echo -n 'hello' | fq -d bytes '[.[-2:], .[0:2]] | tobytes' > first_last_2_bytes_swapped
+----
+
+Slice and decode byte range:::
+
+[source,console]
+----
+$ echo 'some {"a":1} json' | fq -d bytes '.[5:-6] | fromjson'
+{
+  "a": 1
+}
+----
+
+Index bytes:::
+
+[source,console]
+----
+$ echo 'hello' | fq -d bytes '.[1]'
+101
+----
+--
++
+
+`*bzip2*`::
+  bzip2 compression
+
+`*caff*`::
+  Live2D Cubism archive
++
+--
+
+Authors:::
+
+
+- https://github.com/ronsor[@ronsor]
+
+//-
+
+.Options
+`*-o uncompress=true*`:::
+  Uncompress and probe files
+
+--
++
+
+`*cbor*`::
+  Concise Binary Object Representation
++
+--
+
+Convert represented value to JSON:::
+
+[source,console]
+----
+$ fq -d cbor torepr file.cbor
+----
+
+References:::
+
+
+- https://en.wikipedia.org/wiki/CBOR
+- https://www.rfc-editor.org/rfc/rfc8949.html
+
+//-
+--
++
+
+`*csv*`::
+  Comma separated values
++
+--
+
+TSV to CSV:::
+
+[source,console]
+----
+$ fq -d csv -o comma="\t" to_csv file.tsv
+----
+
+Convert rows to objects based on header row:::
+
+[source,console]
+----
+$ fq -d csv '.[0] as $t | .[1:] | map(with_entries(.key = $t[.key]))' file.csv
+----
+
+.Options
+`*-o comma=","*`:::
+  Separator character
+
+`*-o comment="#"*`:::
+  Comment line character
+
+--
++
+
+`*dns*`::
+  DNS packet
+
+`*dns_tcp*`::
+  DNS packet (TCP)
+
+`*elf*`::
+  Executable and Linkable Format
+
+`*ether8023_frame*`::
+  Ethernet 802.3 frame
+
+`*exif*`::
+  Exchangeable Image File Format
+
+`*fairplay_spc*`::
+  FairPlay Server Playback Context
+
+`*fit*`::
+  Garmin Flexible and Interoperable Data Transfer
++
+--
+
+Limitations:::
+
+
+- Fields with subcomponents, such as "compressed_speed_distance" field on globalMessageNumber 20 is not represented correctly. The field is read as 3 separate bytes where the first 12 bits are speed and the last 12 bits are distance.
+- There are still lots of UNKNOWN fields due to gaps in Garmin's SDK Profile documentation. (Currently FIT SDK 21.126)
+- Compressed timestamp messages are not accumulated against last known full timestamp.
+
+//-
+
+Convert stream of data messages to JSON array:::
+
+[source,console]
+----
+$ fq '[.data_records[] | select(.record_header.message_type == "data").data_message]' file.fit 
+----
+
+Authors:::
+
+
+- Mikael Lofjärd mikael.lofjard@gmail.com, original author
+
+//-
+
+References:::
+
+
+- https://developer.garmin.com/fit/protocol/
+- https://developer.garmin.com/fit/cookbook/decoding-activity-files/
+
+//-
+--
++
+
+`*flac*`::
+  Free Lossless Audio Codec file
+
+`*flac_frame*`::
+  FLAC frame
++
+--
+
+.Options
+`*-o bits_per_sample=16*`:::
+  Bits per sample
+
+`*-o sample_details=false*`:::
+  Decode more sample details like residuals etc
+
+--
++
+
+`*flac_metadatablock*`::
+  FLAC metadatablock
+
+`*flac_metadatablocks*`::
+  FLAC metadatablocks
+
+`*flac_picture*`::
+  FLAC metadatablock picture
+
+`*flac_streaminfo*`::
+  FLAC streaminfo
+
+`*gif*`::
+  Graphics Interchange Format
+
+`*gzip*`::
+  gzip compression
+
+`*heif*`::
+  High Efficiency Image Format
++
+--
+
+.Options
+`*-o allow_truncated=false*`:::
+  Allow box to be truncated
+
+--
++
+
+`*hevc_annexb*`::
+  H.265/HEVC Annex B
+
+`*hevc_au*`::
+  H.265/HEVC Access Unit
++
+--
+
+.Options
+`*-o length_size=4*`:::
+  Length value size
+
+--
++
+
+`*hevc_dcr*`::
+  H.265/HEVC Decoder Configuration Record
+
+`*hevc_nalu*`::
+  H.265/HEVC Network Access Layer Unit
+
+`*hevc_pps*`::
+  H.265/HEVC Picture Parameter Set
+
+`*hevc_sps*`::
+  H.265/HEVC Sequence Parameter Set
+
+`*hevc_vps*`::
+  H.265/HEVC Video Parameter Set
+
+`*html*`::
+  HyperText Markup Language
++
+--
+HTML is decoded in HTML5 mode and will always include `<html>`, `<body>` and `<head>` elements.
+See xml format for more examples and how to preserve element order and how to encode to xml.
+There is no `to_html` function, see `to_xml` instead.
+
+Element as object:::
+
+[source,console]
+----
+# decode as object is the default
+$ echo '<a href="url">text</a>' | fq -d html
+{
+  "html": {
+    "body": {
+      "a": {
+        "#text": "text",
+        "@href": "url"
+      }
+    },
+    "head": ""
+  }
+}
+----
+
+Element as array:::
+
+[source,console]
+----
+$ echo '<a href="url">text</a>' | fq -d html -o array=true
+[
+  "html",
+  null,
+  [
+    [
+      "head",
+      null,
+      []
+    ],
+    [
+      "body",
+      null,
+      [
+        [
+          "a",
+          {
+            "#text": "text",
+            "href": "url"
+          },
+          []
+        ]
+      ]
+    ]
+  ]
+]
+
+# decode html files to a {file: "title", ...} object
+$ fq -n -d html '[inputs | {key: input_filename, value: .html.head.title?}] | from_entries' *.html
+
+# <a> href:s in file
+$ fq -r -o array=true -d html '.. | select(.[0] == "a" and .[1].href)?.[1].href' file.html
+----
+
+.Options
+`*-o array=false*`:::
+  Decode as nested arrays
+
+`*-o attribute_prefix="@"*`:::
+  Prefix for attribute keys
+
+`*-o seq=false*`:::
+  Use seq attribute to preserve element order
+
+--
++
+
+`*icc_profile*`::
+  International Color Consortium profile
+
+`*icmp*`::
+  Internet Control Message Protocol
+
+`*icmpv6*`::
+  Internet Control Message Protocol v6
+
+`*id3v1*`::
+  ID3v1 metadata
+
+`*id3v11*`::
+  ID3v1.1 metadata
+
+`*id3v2*`::
+  ID3v2 metadata
+
+`*ipv4_packet*`::
+  Internet protocol v4 packet
+
+`*ipv6_packet*`::
+  Internet protocol v6 packet
+
+`*jp2c*`::
+  JPEG 2000 codestream
+
+`*jpeg*`::
+  Joint Photographic Experts Group file
+
+`*json*`::
+  JavaScript Object Notation
+
+`*jsonl*`::
+  JavaScript Object Notation Lines
+
+`*leveldb_descriptor*`::
+  LevelDB Descriptor
++
+--
+
+Limitations:::
+
+
+- fragmented non-"full" records are not merged and decoded further.
+
+//-
+
+Authors:::
+
+
+- https://github.com/mikez[@mikez], original author
+
+//-
+
+References:::
+
+
+- https://github.com/google/leveldb/blob/main/doc/impl.md#manifest
+- https://github.com/google/leveldb/blob/main/doc/log_format.md
+- https://github.com/google/leveldb/blob/main/db/version_edit.cc
+
+//-
+--
++
+
+`*leveldb_log*`::
+  LevelDB Log
++
+--
+
+Limitations:::
+
+
+- fragmented non-"full" records are not merged and decoded further.
+
+//-
+
+Authors:::
+
+
+- https://github.com/mikez[@mikez], original author
+
+//-
+
+References:::
+
+
+- https://github.com/google/leveldb/blob/main/doc/impl.md#log-files
+- https://github.com/google/leveldb/blob/main/doc/log_format.md
+- https://github.com/google/leveldb/blob/main/db/write_batch.cc
+
+//-
+--
++
+
+`*leveldb_table*`::
+  LevelDB Table
++
+--
+
+Limitations:::
+
+
+- no Meta Blocks (like "filter") are decoded yet.
+- Zstandard uncompression is not implemented yet.
+
+//-
+
+Authors:::
+
+
+- https://github.com/mikez[@mikez], original author
+
+//-
+
+References:::
+
+
+- https://github.com/google/leveldb/blob/main/doc/table_format.md
+- https://github.com/google/leveldb/blob/main/doc/impl.md
+- https://github.com/google/leveldb/blob/main/doc/index.md
+
+//-
+--
++
+
+`*luajit*`::
+  LuaJIT 2.0 bytecode
++
+--
+
+Authors:::
+
+
+- https://github.com/dlatchx[@dlatchx]
+
+//-
+
+References:::
+
+
+- https://github.com/LuaJIT/LuaJIT/blob/v2.1/src/lj_bcdump.h
+- http://scm.zoomquiet.top/data/20131216145900/index.html
+
+//-
+--
++
+
+`*macho*`::
+  Mach-O macOS executable
++
+--
+Supports decoding vanilla and FAT Mach-O binaries.
+
+Select 64bit load segments:::
+
+[source,console]
+----
+$ fq '.load_commands[] | select(.cmd=="segment_64")' file
+----
+
+References:::
+
+
+- https://github.com/aidansteele/osx-abi-macho-file-format-reference
+
+//-
+
+Authors:::
+
+
+- Sıddık AÇIL acils@itu.edu.tr https://github.com/Akaame[@Akaame]
+
+//-
+--
++
+
+`*macho_fat*`::
+  Fat Mach-O macOS executable (multi-architecture)
+
+`*markdown*`::
+  Markdown
++
+--
+
+Array with all level 1 and 2 headers:::
+
+[source,console]
+----
+$ fq -d markdown '[.. | select(.type=="heading" and .level<=2)?.children[0]]' file.md
+----
+--
++
+
+`*matroska*`::
+  Matroska file
++
+--
+
+Lookup element using path:::
+
+[source,console]
+----
+$ fq 'matroska_path(".Segment.Tracks[0]")' file.mkv
+----
+
+Get path to element:::
+
+[source,console]
+----
+$ fq 'grep_by(.id == "Tracks") | matroska_path' file.mkv
+----
+
+References:::
+
+
+- https://www.rfc-editor.org/info/rfc8794
+- https://matroska.org/technical/specs/index.html
+- https://www.matroska.org/technical/basics.html
+- https://www.matroska.org/technical/codec_specs.html
+- https://wiki.xiph.org/MatroskaOpus
+
+//-
+
+.Options
+`*-o decode_samples=true*`:::
+  Decode samples
+
+--
++
+
+`*midi*`::
+  Standard MIDI file
++
+--
+
+Notes:::
+
+
+* Only supports the MIDI 1.0 MIDI file specification.
+* Only supports _MThd_ and _MTrk_ chunks.
+* Does only basic validation on the MIDI data.
+
+//-
+
+Sample queries:::
+
+
+* Extract the track names from a MIDI file
+
+//-
+[source,console]
+----
+fq -d midi '.. | select(.event=="track_name")? | "\(.track_name)"' midi/twinkle.mid 
+----
+
+* Extract the tempo changes from a MIDI file
+
+//-
+[source,console]
+----
+fq -d midi '.. | select(.event=="tempo")?.tempo' midi/twinkle.mid
+----
+
+* Extract the key changes from a MIDI file
+
+//-
+[source,console]
+----
+fq -d midi '.. | select(.event=="key_signature")?.key_signature' midi/twinkle.mid
+----
+
+* Extract NoteOn events:
+
+//-
+[source,console]
+----
+fq -d midi 'grep_by(.event=="note_on") | [.time.tick, .note_on.note] | join(" ")' midi/twinkle.mid
+----
+
+Authors:::
+
+
+- https://github.com/transcriptaze[transcriptaze]
+
+//-
+
+References:::
+
+
+* https://www.midi.org/specifications/item/the-midi-1-0-specification[The Complete MIDI 1.0 Detailed Specification]
+* https://midi.org/standard-midi-files[Standard MIDI Files]
+* http://midi.teragonaudio.com/tech/midifile.htm[Standard MIDI File (SMF) Format]
+* http://www.somascape.org/midi/tech/mfile.html[MIDI Files Specification]
+* https://www.recordingblogs.com/wiki/midi-smpte-offset-meta-message[MIDI SMPTE Offset meta message]
+* http://www.somascape.org/midi/tech/mfile.html#meta[Somascape MIDI Files Specification]
+
+//-
+--
++
+
+`*moc3*`::
+  MOC3 file
++
+--
+
+Authors:::
+
+
+- https://github.com/ronsor[@ronsor]
+
+//-
+--
++
+
+`*mp3*`::
+  MP3 file
++
+--
+
+.Options
+`*-o max_sync_seek=32768*`:::
+  Max byte distance to next sync
+
+`*-o max_unique_header_configs=5*`:::
+  Max number of unique frame header configs allowed
+
+`*-o max_unknown=50*`:::
+  Max percent (0-100) unknown bits
+
+--
++
+
+`*mp3_frame*`::
+  MPEG audio layer 3 frame
+
+`*mp3_frame_vbri*`::
+  MP3 frame Fraunhofer encoder variable bitrate tag
+
+`*mp3_frame_xing*`::
+  MP3 frame Xing/Info tag
+
+`*mp4*`::
+  ISOBMFF, QuickTime and similar
++
+--
+
+Speed up decoding by not decoding samples:::
+
+[source,console]
+----
+# manually decode first sample as an aac_frame
+$ fq -o decode_samples=false '.tracks[0].samples[0] | aac_frame | d' file.mp4
+----
+
+Entries for first edit list as values:::
+
+[source,console]
+----
+$ fq 'first(grep_by(.type=="elst").entries) | tovalue' file.mp4
+----
+
+Whole box tree as JSON (exclude mdat data and tracks):::
+
+[source,console]
+----
+$ fq 'del(.tracks) | grep_by(.type=="mdat").data = "<excluded>" | tovalue' file.mp4
+----
+
+Force decode a single box:::
+
+[source,console]
+----
+$ fq -n '"AAAAHGVsc3QAAAAAAAAAAQAAADIAAAQAAAEAAA==" | from_base64 | mp4({force:true}) | d'
+----
+
+Lookup mp4 box using an mp4 box path:::
+
+[source,console]
+----
+# <decode value box> | mp4_path($path) -> <decode value box>
+$ fq 'mp4_path(".moov.trak[1]")' file.mp4
+----
+
+Get mp4 box path for a decode value box:::
+
+[source,console]
+----
+# <decode value box> | mp4_path -> string
+$ fq 'grep_by(.type == "trak") | mp4_path' file.mp4
+----
+
+References:::
+
+
+- https://en.wikipedia.org/wiki/ISO/IEC_base_media_file_format[ISO/IEC base media file format (MPEG-4 Part 12)]
+- https://developer.apple.com/standards/qtff-2001.pdf[Quicktime file format]
+
+//-
+
+.Options
+`*-o allow_truncated=false*`:::
+  Allow box to be truncated
+
+`*-o decode_samples=true*`:::
+  Decode track samples
+
+`*-o skip_samples=false*`:::
+  Skip track samples
+
+--
++
+
+`*mpeg_asc*`::
+  MPEG-4 Audio Specific Config
+
+`*mpeg_es*`::
+  MPEG Elementary Stream
+
+`*mpeg_pes*`::
+  MPEG Packetized elementary stream
+
+`*mpeg_pes_packet*`::
+  MPEG Packetized elementary stream packet
+
+`*mpeg_spu*`::
+  Sub Picture Unit (DVD subtitle)
+
+`*mpeg_ts*`::
+  MPEG Transport Stream
+
+`*msgpack*`::
+  MessagePack
++
+--
+
+Convert represented value to JSON:::
+
+[source,console]
+----
+$ fq -d msgpack torepr file.msgpack
+----
+
+References:::
+
+
+- https://github.com/msgpack/msgpack/blob/master/spec.md
+
+//-
+--
++
+
+`*negentropy*`::
+  Negentropy message
++
+--
+
+View a full Negentropy message:::
+
+[source,console]
+----
+$ fq -d negentropy dd file
+----
+
+Or from hex:::
+
+[source,console]
+----
+$ echo '6186b7abb47c0001108e4206828ee3bf34258465809a337c6c00019a68e37b177a50b3ae7164ccc628b962020114019c1381281c9e3849d5fbd514b7bb65ad0101e601fbf7451f5d22e7fa36ae3e910e9f5215020157014a1b26853e06e9c32eb41b1df4f9ab300201e6011840e273c84bb1344f1d4e15d9aa67920200016f12ee2340888653f10b0ec2d438ac9f0101840156d2d796f4dff004ab369b9bcfa4d81e020187013f1b3c8a019800d5764e2de6bdfd2785020114017caaf0acb5dfe249aa0f7f742402168a01018301e7b8c4decb1eae455ca5714281e3245302017a01409c22636b097362df125ddffb6d944302015b01f332208bee82acf8ed922853ee54057f020001fc3e51fdb0b92966e38017f7959903850101cc01428ce0c96d49f15b50143e4fb228cb9300000131712d30e5296a7a45d07bba452d61cd' | fq -R 'from_hex | negentropy | dd'
+----
+
+Check how many ranges the message has and how many of those are of 'fingerprint' mode:::
+
+[source,console]
+----
+$ fq -d negentropy '.bounds | length as $total | map(select(.mode == "fingerprint")) | length | {$total, fingerprint: .}' message
+----
+
+Check get all ids in all idlists:::
+
+[source,console]
+----
+$ fq -d negentropy '.bounds | map(select(.mode == "idlist") | .idlist | .ids) | flatten' message
+----
+
+Authors:::
+
+
+- fiatjaf, https://fiatjaf.com
+
+//-
+
+References:::
+
+
+- https://github.com/hoytech/negentropy
+
+//-
+--
++
+
+`*nes*`::
+  iNES/NES 2.0 cartridge ROM format
++
+--
+
+Limitations:::
+
+
+- `prg_rom`, `chr_rom` and `trainer` fields may contain data that is just random junk from the memory chips, since they are of a fixed size.
+- The `nes_toasm` function outputs ALL opcodes, including the unofficial ones, which means that none of the regular assemblers can recompile it.
+- The `nes_tokitty` function works on tiles in `chr_rom` but only outputs a Kitty graphics compatible string. You need to manually `printf` that string to get Kitty (or another compatible terminal) to output the graphics.
+
+//-
+
+Decompile PRG ROM:::
+
+[source,console]
+----
+$ fq -r '.prg_rom[] | nes_toasm' file.nes
+----
+
+Print out first CHR ROM tile in Kitty (or Konsole, wayst, WezTerm) at size 5:::
+
+[source,console]
+----
+$ printf $(fq -r -d nes '.chr_rom[0] | nes_tokitty(5)' file.nes)
+----
+
+Print out all CHR ROM tiles in Kitty (with Bash) at size 5:::
+
+[source,console]
+----
+$ for line in $(fq -r '.chr_rom[] | nes_tokitty(5)' file.nes);do printf "%b%s" "$line";done
+----
+
+Authors:::
+
+
+- Mikael Lofjärd mikael.lofjard@gmail.com, original author
+
+//-
+
+References:::
+
+
+- https://www.nesdev.org/wiki/INES
+- https://www.nesdev.org/wiki/NES_2.0
+- https://www.nesdev.org/wiki/CPU
+- https://bugzmanov.github.io/nes_ebook/chapter_6_3.html
+
+//-
+--
++
+
+`*ogg*`::
+  OGG file
+
+`*ogg_page*`::
+  OGG page
+
+`*opentimestamps*`::
+  OpenTimestamps file
++
+--
+
+View a full OpenTimestamps file:::
+
+[source,console]
+----
+$ fq dd file.ots
+----
+
+List the names of the Calendar servers used:::
+
+[source,console]
+----
+$ fq '.operations | map(select(.attestation_type == "calendar") | .url)' file.ots
+----
+
+Check if there are Bitcoin attestations present:::
+
+[source,console]
+----
+$ fq '.operations | map(select(.attestation_type == "bitcoin")) | length > 0' file.ots
+----
+
+Authors:::
+
+
+- fiatjaf, https://fiatjaf.com
+
+//-
+
+References:::
+
+
+- https://opentimestamps.org/
+- https://github.com/opentimestamps/python-opentimestamps
+
+//-
+--
++
+
+`*opus_packet*`::
+  Opus packet
+
+`*pcap*`::
+  PCAP packet capture
++
+--
+
+Build object with number of (reassembled) TCP bytes sent to/from client IP:::
+
+[source,console]
+----
+# for a pcapng file you would use .[0].tcp_connections for first section
+$ fq '.tcp_connections | group_by(.client.ip) | map({key: .[0].client.ip, value: map(.client.stream, .server.stream | tobytes.size) | add}) | from_entries'
+{
+  "10.1.0.22": 15116,
+  "10.99.12.136": 234,
+  "10.99.12.150": 218
+}
+----
+--
++
+
+`*pcapng*`::
+  PCAPNG packet capture
+
+`*pg_btree*`::
+  PostgreSQL btree index file
++
+--
+
+Btree index meta page:::
+
+[source,console]
+----
+$ fq -d pg_btree -o flavour=postgres14 ".[0] | d" 16404
+----
+
+Btree index page:::
+
+[source,console]
+----
+$ fq -d pg_btree -o flavour=postgres14 ".[1]" 16404
+----
+
+Authors:::
+
+
+- Pavel Safonov p.n.safonov@gmail.com https://github.com/pnsafonov[@pnsafonov]
+
+//-
+
+References:::
+
+
+- https://www.postgresql.org/docs/current/storage-page-layout.html
+
+//-
+
+.Options
+`*-o page=0*`:::
+  First page number in file, default is 0
+
+--
++
+
+`*pg_control*`::
+  PostgreSQL control file
++
+--
+
+Decode content of pg_control file:::
+
+[source,console]
+----
+$ fq -d pg_control -o flavour=postgres14 d pg_control
+----
+
+Specific fields can be got by request:::
+
+[source,console]
+----
+$ fq -d pg_control -o flavour=postgres14 ".state, .check_point_copy.redo, .wal_level" pg_control
+----
+
+Authors:::
+
+
+- Pavel Safonov p.n.safonov@gmail.com https://github.com/pnsafonov[@pnsafonov]
+
+//-
+
+References:::
+
+
+- https://github.com/postgres/postgres/blob/REL_14_2/src/include/catalog/pg_control.h
+
+//-
+
+.Options
+`*-o flavour=""*`:::
+  PostgreSQL flavour: postgres14, pgproee14, postgres10
+
+--
++
+
+`*pg_heap*`::
+  PostgreSQL heap file
++
+--
+
+To see heap page's content:::
+
+[source,console]
+----
+$ fq -d pg_heap -o flavour=postgres14 ".[0]" 16994
+----
+
+To see page's header:::
+
+[source,console]
+----
+$ fq -d pg_heap -o flavour=postgres14 ".[0].page_header" 16994
+----
+
+First and last item pointers on first page:::
+
+[source,console]
+----
+$ fq -d pg_heap -o flavour=postgres14 ".[0].pd_linp[0, -1]" 16994
+----
+
+First and last tuple on first page:::
+
+[source,console]
+----
+$ fq -d pg_heap -o flavour=postgres14 ".[0].tuples[0, -1]" 16994
+----
+
+Authors:::
+
+
+- Pavel Safonov p.n.safonov@gmail.com https://github.com/pnsafonov[@pnsafonov]
+
+//-
+
+References:::
+
+
+- https://www.postgresql.org/docs/current/storage-page-layout.html
+
+//-
+
+.Options
+`*-o flavour="postgres14"*`:::
+  PostgreSQL flavour: postgres14, pgproee14, postgres10
+
+`*-o page=0*`:::
+  First page number in file, default is 0
+
+`*-o segment=0*`:::
+  Segment file number (16790.1 is 1), default is 0
+
+--
++
+
+`*png*`::
+  Portable Network Graphics file
+
+`*prores_frame*`::
+  Apple ProRes frame
+
+`*protobuf*`::
+  Protobuf
++
+--
+
+Can decode sub messages:::
+
+[source,console]
+----
+$ fq -d protobuf '.fields[6].wire_value | protobuf | d' file
+----
+
+References:::
+
+
+- https://developers.google.com/protocol-buffers/docs/encoding
+
+//-
+--
++
+
+`*protobuf_widevine*`::
+  Widevine protobuf
+
+`*pssh_playready*`::
+  PlayReady PSSH
+
+`*rtmp*`::
+  Real-Time Messaging Protocol
++
+--
+Currently only supports plain RTMP (not RTMPT or encrypted variants etc) with AMF0 (not AMF3).
+
+Show rtmp streams in PCAP file:::
+
+[source,console]
+----
+fq '.tcp_connections[] | select(.server.port=="rtmp") | d' file.cap
+----
+
+References:::
+
+
+- https://rtmp.veriskope.com/docs/spec/
+- https://rtmp.veriskope.com/pdf/video_file_format_spec_v10.pdf
+
+//-
+--
++
+
+`*safetensors*`::
+  SafeTensors
+
+`*sll2_packet*`::
+  Linux cooked capture encapsulation v2
+
+`*sll_packet*`::
+  Linux cooked capture encapsulation
+
+`*stl*`::
+  Stereolithography
++
+--
+Decode binary STL (Stereolithography, Standard Tesselation Language) files.
+
+Current limitations:::
+
+
+* No support for ASCII STL files
+* No support for VisCAM and SolidView colors
+* No support for Materialise Magics colors
+
+//-
+--
++
+
+`*tap*`::
+  TAP tape format for ZX Spectrum computers
++
+--
+The TAP- (and BLK-) format is nearly a direct copy of the data that is stored in real tapes, as it is written by the ROM save routine of the ZX-Spectrum. A TAP file is simply one data block or a group of 2 or more data blocks, one followed after the other. The TAP file may be empty.
+You will often find this format embedded inside the TZX tape format.
+The default file extension is `.tap`.
+
+Processing JSON files:::
+
+When needing to process a generated JSON file it's recommended to convert the plain data bytes to an array by setting `bits_format=byte_array`:
+[source,console]
+----
+fq -o bits_format=byte_array -d tap -V d /path/to/file.tap
+----
+
+Authors:::
+
+
+- Michael R. Cook work.mrc@pm.me, original author
+
+//-
+
+References:::
+
+
+- https://worldofspectrum.net/zx-modules/fileformats/tapformat.html
+
+//-
+--
++
+
+`*tar*`::
+  Tar archive
+
+`*tcp_segment*`::
+  Transmission control protocol segment
+
+`*tiff*`::
+  Tag Image File Format
+
+`*tls*`::
+  Transport layer security
++
+--
+Supports decoding of most standard records, messages and extensions. Can also decrypt most standard cipher suites in a PCAP with traffic in both directions if a NSS key log is provided.
+
+Decode and decrypt providing a PCAP and key log:::
+
+Write traffic to a PCAP file:
+[source,console]
+----
+$ tcpdump -i <iface> -w traffic.pcap
+----
+Make sure your curl TLS backend supports `SSLKEYLOGFILE` and do:
+[source,console]
+----
+$ SSLKEYLOGFILE=traffic.keylog curl --tls-max 1.2 https://host/path
+----
+Decode, decrypt and query. Uses `keylog=@<path>` to read option value from keylog file:
+[source,console]
+----
+# decode and show whole tree
+$ fq -o keylog=@traffic.keylog d traffic.pcap
+
+# write unencrypted server response to a file.
+# first .stream is the TCP stream, second .stream is TLS application data stream
+#
+# first TCP connections:
+$ fq -o keylog=@traffic.keylog '.tcp_connections[0].server.stream.stream | tobytes' traffic.pcap > data
+# first TLS connection:
+$ fq -o keylog=@traffic.keylog  'first(grep_by(.server.stream | format == "tls")).server.stream.stream | tobytes' > data
+----
+
+Supported cipher suites for decryption:::
+
+`TLS_DH_ANON_EXPORT_WITH_DES40_CBC_SHA`, `TLS_DH_ANON_EXPORT_WITH_RC4_40_MD5`, `TLS_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA`, `TLS_DHE_DSS_WITH_3DES_EDE_CBC_SHA`, `TLS_DHE_DSS_WITH_AES_128_CBC_SHA`, `TLS_DHE_DSS_WITH_AES_128_CBC_SHA256`, `TLS_DHE_DSS_WITH_AES_128_GCM_SHA256`, `TLS_DHE_DSS_WITH_AES_256_CBC_SHA`, `TLS_DHE_DSS_WITH_AES_256_CBC_SHA256`, `TLS_DHE_DSS_WITH_AES_256_GCM_SHA384`, `TLS_DHE_DSS_WITH_DES_CBC_SHA`, `TLS_DHE_DSS_WITH_RC4_128_SHA`, `TLS_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA`, `TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA`, `TLS_DHE_RSA_WITH_AES_128_CBC_SHA`, `TLS_DHE_RSA_WITH_AES_128_CBC_SHA256`, `TLS_DHE_RSA_WITH_AES_128_GCM_SHA256`, `TLS_DHE_RSA_WITH_AES_256_CBC_SHA`, `TLS_DHE_RSA_WITH_AES_256_CBC_SHA256`, `TLS_DHE_RSA_WITH_AES_256_GCM_SHA384`, `TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256`, `TLS_DHE_RSA_WITH_DES_CBC_SHA`, `TLS_ECDH_ECDSA_WITH_3DES_EDE_CBC_SHA`, `TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA`, `TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256`, `TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256`, `TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA`, `TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384`, `TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384`, `TLS_ECDH_ECDSA_WITH_RC4_128_SHA`, `TLS_ECDH_RSA_WITH_3DES_EDE_CBC_SHA`, `TLS_ECDH_RSA_WITH_AES_128_CBC_SHA`, `TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256`, `TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256`, `TLS_ECDH_RSA_WITH_AES_256_CBC_SHA`, `TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384`, `TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384`, `TLS_ECDH_RSA_WITH_RC4_128_SHA`, `TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA`, `TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA`, `TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256`, `TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256`, `TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA`, `TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384`, `TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384`, `TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256`, `TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305`, `TLS_ECDHE_ECDSA_WITH_RC4_128_SHA`, `TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA`, `TLS_ECDHE_PSK_WITH_AES_128_GCM_SHA256`, `TLS_ECDHE_PSK_WITH_AES_256_CBC_SHA`, `TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA`, `TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA`, `TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256`, `TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256`, `TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA`, `TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384`, `TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384`, `TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256`, `TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305`, `TLS_ECDHE_RSA_WITH_RC4_128_SHA`, `TLS_PSK_WITH_AES_128_CBC_SHA`, `TLS_PSK_WITH_AES_256_CBC_SHA`, `TLS_PSK_WITH_RC4_128_SHA`, `TLS_RSA_EXPORT_WITH_DES40_CBC_SHA`, `TLS_RSA_EXPORT_WITH_RC4_40_MD5`, `TLS_RSA_WITH_3DES_EDE_CBC_SHA`, `TLS_RSA_WITH_AES_128_CBC_SHA`, `TLS_RSA_WITH_AES_128_CBC_SHA256`, `TLS_RSA_WITH_AES_128_GCM_SHA256`, `TLS_RSA_WITH_AES_256_CBC_SHA`, `TLS_RSA_WITH_AES_256_CBC_SHA256`, `TLS_RSA_WITH_AES_256_GCM_SHA384`, `TLS_RSA_WITH_DES_CBC_SHA`, `TLS_RSA_WITH_RC4_128_MD5`, `TLS_RSA_WITH_RC4_128_SHA`
+
+References:::
+
+
+- https://www.rfc-editor.org/rfc/rfc5246[RFC 5246: The Transport Layer Security (TLS) Protocol]
+- https://www.rfc-editor.org/rfc/rfc6101[RFC 6101: The Secure Sockets Layer (SSL) Protocol Version 3.0]
+
+//-
+
+.Options
+`*-o keylog=""*`:::
+  NSS Key Log content
+
+--
++
+
+`*toml*`::
+  Tom's Obvious, Minimal Language
+
+`*tzif*`::
+  Time Zone Information Format
++
+--
+
+Get last transition time:::
+
+[source,console]
+----
+fq '.v2plusdatablock.transition_times[-1] | tovalue' tziffile
+----
+
+Count leap second records:::
+
+[source,console]
+----
+fq '.v2plusdatablock.leap_second_records | length' tziffile
+----
+
+Authors:::
+
+
+- Takashi Oguma https://github.com/bitbears-dev[@bitbears-dev] https://twitter.com/0xb17bea125[@0xb17bea125]
+
+//-
+
+References:::
+
+
+- https://datatracker.ietf.org/doc/html/rfc8536
+
+//-
+--
++
+
+`*tzx*`::
+  TZX tape format for ZX Spectrum computers
++
+--
+`TZX` is a file format designed to preserve cassette tapes compatible with the ZX Spectrum computers, although some specialized versions of the format have been defined for other machines such as the Amstrad CPC and C64.
+The format was originally created by Tomaz Kac, who was the maintainer until `revision 1.13`, before passing it to Martijn v.d. Heide. For a brief period the company Ramsoft became the maintainers, and created revision `v1.20`.
+The default file extension is `.tzx`.
+
+Processing JSON files:::
+
+When needing to process a generated JSON file it's recommended to convert the plain data bytes to an array by setting `bits_format=byte_array`:
+[source,console]
+----
+fq -o bits_format=byte_array -d tzx -V d /path/to/file.tzx
+----
+
+Authors:::
+
+
+- Michael R. Cook work.mrc@pm.me, original author
+
+//-
+
+References:::
+
+
+- https://worldofspectrum.net/TZXformat.html
+
+//-
+--
++
+
+`*udp_datagram*`::
+  User datagram protocol
+
+`*vorbis_comment*`::
+  Vorbis comment
+
+`*vorbis_packet*`::
+  Vorbis packet
+
+`*vp8_frame*`::
+  VP8 frame
+
+`*vp9_cfm*`::
+  VP9 Codec Feature Metadata
+
+`*vp9_frame*`::
+  VP9 frame
+
+`*vpx_ccr*`::
+  VPX Codec Configuration Record
+
+`*wasm*`::
+  WebAssembly Binary Format
++
+--
+
+Count opcode usage:::
+
+[source,console]
+----
+$ fq '.sections[] | select(.id == "code_section") | [.. | .opcode? // empty] | count | map({key: .[0], value: .[1]}) | from_entries' file.wasm
+----
+
+List exports and imports:::
+
+[source,console]
+----
+$ fq '.sections | {import: map(select(.id == "import_section").content.im.x[].nm.b), export: map(select(.id == "export_section").content.ex.x[].nm.b)}' file.wasm
+----
+
+Authors:::
+
+
+- Takashi Oguma https://github.com/bitbears-dev[@bitbears-dev] https://twitter.com/0xb17bea125[@0xb17bea125]
+
+//-
+
+References:::
+
+
+- https://webassembly.github.io/spec/core/
+
+//-
+--
++
+
+`*wav*`::
+  WAV file
+
+`*webp*`::
+  WebP image
+
+`*xml*`::
+  Extensible Markup Language
++
+--
+XML can be decoded and encoded into jq values in two ways, elements as object or array. The object variant might be easier to query for a specific value but array might be easier to use to generate xml or to query after all elements of some kind etc.
+Encoding is done using the `to_xml` function and it will figure what variant that is used based on the input value. It has two optional options `indent` and `attribute_prefix`.
+
+Elements as object:::
+
+Element can have different shapes depending on body text, attributes and children:
+
+- `<a key="value">text</a>` is `{"a":{"#text":"text","@key":"value"}}`, has text (`#text`) and attributes (`@key`)
+- `<a>text</a>` is `{"a":"text"}`
+- `<a><b>text</b></a>` is `{"a":{"b":"text"}}` one child with only text and no attributes
+- `<a><b/><b>text</b></a>` is `{"a":{"b":["","text"]}}` two children with same name end up in an array
+- `<a><b/><b key="value">text</b></a>` is `{"a":{"b":["",{"#text":"text","@key":"value"}]}}`
+
+//-
+If there is `#seq` attribute it encodes the child element order. Use `-o seq=true` to include sequence number when decoding, otherwise order might be lost.
+[source,console]
+----
+# decode as object is the default
+$ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -d xml -o seq=true
+{
+  "a": {
+    "b": [
+      {
+        "#seq": 0
+      },
+      {
+        "#seq": 1,
+        "#text": "bbb"
+      }
+    ],
+    "c": {
+      "#seq": 2,
+      "#text": "ccc",
+      "@attr": "value"
+    }
+  }
+}
+
+# access text of the <c> element
+$ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq '.a.c["#text"]'
+"ccc"
+
+# decode to object and encode to xml
+$ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -r -d xml -o seq=true 'to_xml({indent:2})'
+<a>
+  <b></b>
+  <b>bbb</b>
+  <c attr="value">ccc</c>
+</a>
+----
+
+Elements as array:::
+
+Elements are arrays of the shape `["name", null|{#text|attribute: "value"}, [<child element>, ...]]`.
+[source,console]
+----
+# decode as array
+$ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -d xml -o array=true
+[
+  "a",
+  null,
+  [
+    [
+      "b",
+      null,
+      []
+    ],
+    [
+      "b",
+      {
+        "#text": "bbb"
+      },
+      []
+    ],
+    [
+      "c",
+      {
+        "#text": "ccc",
+        "attr": "value"
+      },
+      []
+    ]
+  ]
+]
+
+# decode to array and encode to xml
+$ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -r -d xml -o array=true -o seq=true 'to_xml({indent:2})'
+<a>
+  <b></b>
+  <b>bbb</b>
+  <c attr="value">ccc</c>
+</a>
+
+# access text of the <c> element, the object variant above is probably easier to use
+$ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -o array=true '.[2][2][1]["#text"]'
+"ccc"
+----
+
+References:::
+
+
+- https://www.xml.com/pub/a/2006/05/31/converting-between-xml-and-json.html[xml.com's Converting Between XML and JSON]
+
+//-
+
+.Options
+`*-o array=false*`:::
+  Decode as nested arrays
+
+`*-o attribute_prefix="@"*`:::
+  Prefix for attribute keys
+
+`*-o seq=false*`:::
+  Use seq attribute to preserve element order
+
+--
++
+
+`*yaml*`::
+  YAML Ain't Markup Language
+
+`*zip*`::
+  ZIP archive
++
+--
+Supports ZIP64.
+
+Timestamp and time zones:::
+
+The timestamp accessed via `.local_files[].last_modification` is encoded in ZIP files using https://learn.microsoft.com/en-us/windows/win32/api/oleauto/nf-oleauto-dosdatetimetovarianttime[MS-DOS representation] which lacks a known time zone. Probably the local time/date was used at creation. The `unix_guess` field in `last_modification` is a guess assuming the local time zone was UTC at creation.
+
+References:::
+
+
+- https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
+- https://opensource.apple.com/source/zip/zip-6/unzip/unzip/proginfo/extra.fld
+- https://formats.kaitai.io/dos_datetime/
+- https://learn.microsoft.com/en-us/windows/win32/api/oleauto/nf-oleauto-dosdatetimetovarianttime
+
+//-
+
+.Options
+`*-o uncompress=true*`:::
+  Uncompress and probe files
+
+--
++
+
+
+== Encodings, serializations and hashes
+
+In addition to binary formats fq also supports various encodings and serialization formats.
+
+At the moment fq does not have any dedicated argument for serialization formats but raw string input `-R` slurp `-s` and raw string output `-r` can make things easier. The combination `-Rs` will read all inputs into one string (same as jq).
+
+Note that `from*` functions output jq values and `to*` functions take jq values as input so in some cases not all information will be properly preserved. For example, the element and attribute order might change and text and comment nodes might move or be merged. https://github.com/mikefarah/yq[yq] might be a better tool if that is needed.
+
+Some example usages:
+
+[source,console]
+----
+# read yml (format is probed, use -d yaml to force) and do some query
+$ fq '...' file.yml
+
+# convert YAML to JSON
+# note the -r for raw string output, without it a JSON string with escaped JSON would be output
+$ fq -r 'tojson({indent:2})' file.yml
+
+# add token to URL
+$ echo -n "https://host.org" | fq -Rsr 'from_url | .user.username="token" | to_url'
+https://token@host.org
+
+# top 3 hosts in src or href attributes:
+# -d to decode as html, can't be probed as html5 parsers always produce some parse tree
+# [...] to start collect values into an array
+# .. | ."@src"?, ."@href"? | values, recurse and try (?) to get src and href attributes and filter out nulls
+# from_url.host | values, parse as url and filter out those without a host
+# count to count unique values, returns [[key, count], ...]
+# reverse sort by count and pick first 3
+# map [key, count] tuples into {key: key, value: count}
+# from_entries, convert into object
+$ curl -s https://www.discogs.com/ | fq -d html '[.. | ."@src"?, ."@href"? | values | from_url.host | values] | count | sort_by(-.[1])[0:3] | map({key: .[0], value: .[1]}) | from_entries'
+{
+  "blog.discogs.com": 9,
+  "st.discogs.com": 10,
+  "www.discogs.com": 14
+}
+
+# shows how serialization functions can be used on any string, how to transform values and output some other format
+# read and decode zip file and start an interactive REPL
+$ fq  -i . <(curl -sL https://github.com/stefangabos/world_countries/archive/master.zip)
+# select from interesting xml file
+zip> .local_files[] | select(.file_name == "world_countries-master/data/countries/en/world.xml").uncompressed | repl
+# convert xml into jq value
+> .local_files[95].uncompressed string> from_xml | repl
+# sort countries by and select the first one
+>> object> .countries.country | sort_by(."@name") | first | repl
+# see what current input is
+>>> object> .
+{
+  "@alpha2": "af",
+  "@alpha3": "afg",
+  "@id": "4",
+  "@name": "Afghanistan"
+}
+# remove "@" prefix from keys and convert to YAML and print it
+>>> object> with_entries(.key |= .[1:]) | to_yaml | print
+alpha2: af
+alpha3: afg
+id: "4"
+name: Afghanistan
+# exit all REPLs back to shell
+>>> object> ^D
+>> object> ^D
+> .local_files[95].uncompressed string> ^D
+zip> ^D
+----
+
+=== XML and HTML
+
+* `from_xml`/`from_xml($opts)` Parse XML into jq value. `$opts` are:
+** `{seq: true}` preserve element ordering if more than one sibling. +
+** `{array: true}` use nested `[name, attributes, children]` arrays to represent elements. Attributes will be `null` if none and children will be `[]` if none, this is to make it easier to work with as the array always has 3 values. `to_xml` does not require this. +
+* `from_html`/`from_html($opts)` Parse HTML into jq value. +
+  Similar to `from_xml` but parses html5 in non-script mode. Will always have a `html` root with `head` and `body` elements.
+  + 
+  `$opts` are:
+** `{array: true}` use nested arrays to represent elements. +
+** `{seq: true}` preserve element ordering if more than one sibling. +
+* `to_xml`/`to_xml($opts)` Serialize jq value into XML. +
+  Assumes object representation if input is an object, and nested arrays if input is an array. +
+  Will automatically add a root `doc` element if jq value has more than one root element. +
+  If a `#seq` is found on at least one element all siblings will be sorted by sequence number. Attributes are always sorted.
+  +
+  `$opts` are:
+** `{indent: number}` indent child elements.
+
+XML elements can be represented as jq value in two ways, as objects (inspired by https://github.com/clbanning/mxj[mxj] and https://www.xml.com/pub/a/2006/05/31/converting-between-xml-and-json.html[xml.com's Converting Between XML and JSON]) or nested arrays. Both representations are lossy and might lose ordering of elements, text nodes and comments. In object representation `from_xml`, `from_html` and `to_xml` support `{seq: true}` option to parse/serialize `{"#seq": <number>}` attributes to preserve element sibling ordering.
+
+The object version is denser and convenient to query, the nested arrays version is probably easier to use when generating XML.
+
+Let's assume `$xml` is this XML document as a string:
+[source,xml]
+----
+<doc>
+  <child attr="1"></child>
+  <child attr="2">text</child>
+  <other>text</other>
+</doc>
+----
+
+With object representation an element is represented as:
+
+** Attributes as `@` prefixed `@<key>` keys.
+** Text nodes as `#text`.
+** Comment nodes as `#comment` keys.
+** For explicit sibling ordering `#seq` keys with a number, can be negative, assumed zero if missing.
+** Child element with only text as `<name>` key with text as value.
+** Child element with more than just text as `<name>` key with value an object.
+** Multiple child element siblings with same name as `<name>` key with value as array with strings and objects.
+
+[source,console]
+----
+> $xml | from_xml
+{
+  "doc": {
+    "child": [
+      {
+        "@attr": "1"
+      },
+      {
+        "#text": "text",
+        "@attr": "2"
+      }
+    ],
+    "other": "text"
+  }
+}
+----
+
+With nested array representation, an array with these values `["<name>", {attributes...}, [children...]]`.
+
+- Index 0 is an element name.
+- Index 1 object attributes (including `#text` and `#comment` keys).
+- Index 2 array of child elements.
+
+[source,console]
+----
+> $xml | from_xml({array: true})
+[
+  "doc",
+  null,
+  [
+    [
+      "child",
+      {
+        "attr": "1"
+      },
+      []
+    ],
+    [
+      "child",
+      {
+        "#text": "text",
+        "attr": "2"
+      },
+      []
+    ],
+    [
+      "other",
+      {
+        "#text": "text"
+      },
+      []
+    ]
+  ]
+]
+----
+
+Parse and include `#seq` attributes if needed:
+
+[source,console]
+----
+> $xml | from_xml({seq:true})
+{
+  "doc": {
+    "child": [
+      {
+        "#seq": 0,
+        "@attr": "1"
+      },
+      {
+        "#seq": 1,
+        "#text": "text",
+        "@attr": "2"
+      }
+    ],
+    "other": {
+      "#seq": 2,
+      "#text": "text"
+    }
+  }
+}
+----
+
+Select values in `<doc>`, remove `<child>`, add a `<new>` element, serialize to xml with 2 space indent and print the string
+
+[source,console]
+----
+> $xml | from_xml.doc | del(.child) | .new = "abc" | {root: .} | to_xml({indent: 2}) | println
+<root>
+  <new>abc</new>
+  <other>text</other>
+</root>
+----
+
+=== JSON
+
+* `fromjson` Parse JSON into jq value.
+* `tojson`/`tojson($opts)` Serialize jq value into JSON. `$opts` are:
+** `{indent: number}` Indent depth.
+* `from_jsonl` Parse JSON lines into jq array.
+* `to_jsonl` Serialize jq array into JSONL.
+
+=== jq-flavoured JSON
+
+* `from_jq` Parse jq-flavoured JSON into jq value.
+* `to_jq`/`to_jq($opts)` Serialize jq value into jq-flavoured JSON. jq-flavoured JSON has optional key quotes, `#` comments and can have trailing comma in objects. `$opts` are:
+** `{indent: number}` Indent depth.
+
+Note that `fromjson` and `tojson` use different naming conventions as they originate from jq's standard library.
+
+=== YAML
+
+* `from_yaml` Parse YAML into jq value.
+* `to_yaml`/`to_yaml($opts)` Serialize jq value into YAML. `$opts` are:
+** `{indent: number}` Indent depth.
+
+=== TOML
+
+* `from_toml` Parse TOML into jq value.
+* `to_toml`/`to_toml($opts)` Serialize jq value into TOML. `$opts` are:
+** `{indent: number}` Indent depth.
+
+=== CSV
+
+* `from_csv`/`from_csv($opts)` Parse CSV into jq value. +
+  To work with tab separated values you can use `from_csv({comma: "\t"})` or `fq -d csv -o 'comma="\t"'`. +
+  `$opts` are:
+** `{comma: string}` field separator, default ",". +
+** `{comment: string}` comment line character, default "#". +
+* `to_csv`/`to_csv($opts)` Serialize jq value into CSV. `$opts` are:
+** `{comma: string}` field separator, default ",". +
+
+=== XML entities
+
+- `from_xmlentities` Decode XML entities.
+- `to_xmlentities` Encode XML entities.
+
+=== URL
+
+- `from_urlpath` Decode URL path component.
+- `to_urlpath` Encode URL path component. Whitespace as %20.
+- `from_urlencode` Decode URL query encoding.
+- `to_urlencode` Encode URL to query encoding. Whitespace as "+".
+- `from_urlquery` Decode URL query into object. For duplicate keys value will be an array.
+- `to_urlquery` Encode object into query string.
+- `from_url` Decode URL into object.
++
+--
+[source,console]
+----
+> "schema://user:pass@host/path?key=value#fragment" | from_url
+{
+  "fragment": "fragment",
+  "host": "host",
+  "path": "/path",
+  "query": {
+    "key": "value"
+  },
+  "rawquery": "key=value",
+  "scheme": "schema",
+  "user": {
+    "password": "pass",
+    "username": "user"
+  }
+}
+----
+--
+- `to_url` Encode object into URL string.
+
+=== Hex and base64
+
+- `from_hex` Decode hex string to binary.
+- `to_hex` Encode binary into hex string.
+- `from_base64`/`from_base64($opts)` Decode base64 encodings into binary. `$opts` are:
+  - `{encoding:string}` encoding variant: `std` (default), `url`, `rawstd` or `rawurl`
+- `to_base64`/`to_base64($opts)` Encode binary into base64 encodings. `$opts` are:
+  - `{encoding:string}` encoding variant: `std` (default), `url`, `rawstd` or `rawurl`
+
+=== Hash functions
+
+- `to_md4` Hash binary using md4.
+- `to_md5` Hash binary using md5.
+- `to_sha1` Hash binary using sha1.
+- `to_sha256` Hash binary using sha256.
+- `to_sha512` Hash binary using sha512.
+- `to_sha3_224` Hash binary using sha3 224.
+- `to_sha3_256` Hash binary using sha3 256.
+- `to_sha3_384` Hash binary using sha3 384.
+- `to_sha3_512` Hash binary using sha3 512.
+
+=== Text encodings
+
+- `to_iso8859_1` Encode string as ISO8859-1 into binary.
+- `from_iso8859_1` Decode binary as ISO8859-1 into string.
+- `to_utf8` Encode string as UTF8 into binary.
+- `from_utf8` Decode binary as UTF8 into string.
+- `to_utf16` Encode string as UTF16 into binary.
+- `from_utf16` Decode binary as UTF16 into string.
+- `to_utf16le` Encode string as UTF16 little-endian into binary.
+- `from_utf16le` Decode binary as UTF16 little-endian into string.
+- `to_utf16be` Encode string as UTF16 big-endian into binary.
+- `from_utf16be` Decode binary as UTF16 big-endian into string.
+
+== Interactive REPL
+
+The REPL can be useful in some scenarios:
+
+- When decoding is slow you can reuse the decode result.
+- Dig thru a file using sub-REPL to cut down on typing.
+- Use auto-completion to speed up typing.
+
+[source,console]
+----
+# start REPL with no (null) input
+$ fq -i
+null>
+# same as
+$ fq -ni
+null>
+
+# in the REPL you will see a prompt indicating current input and you can type a jq expression to evaluate.
+
+# start REPL with one file as input
+$ fq -i . doc/file.mp3
+mp3>
+# basic arithmetic and jq expressions
+mp3> 1+1
+2
+mp3> 1, 2, 3 | . * 2
+2
+4
+6
+mp3> [1, 2, 3] | add
+6
+# "." is the identity function which just returns current input, the mp3 file.
+mp3> .
+# access the first frame in the mp3 file
+mp3> .frames[0]
+# start a new nested REPL with first frame as input
+mp3> .frames[0] | repl
+# prompt shows "path" to current input and that it's an mp3_frame.
+# Ctrl-D to exit REPL or to shell if last REPL
+> .frames[0] mp3_frame> ^D
+# "jq" value of layer in first frame
+mp3> .frames[0].header.layer | tovalue
+3
+mp3> .frames[0].header.layer * 2
+6
+# symbolic value, same as "jq" value
+mp3> .frames[0].header.layer | tosym
+3
+# actual underlying decoded value
+mp3> .frames[0].header.layer | toactual
+1
+# description of value
+mp3> .frames[0].header.layer | todescription
+"MPEG Layer 3"
+mp3> ^D
+$
+----
+
+Use Ctrl-D to exit and Ctrl-C to interrupt current evaluation.
+
+== Examples
+
+=== Basic usage
+
+fq tries to behave the same way as jq as much as possible, so you can do:
+
+[source,console]
+----
+fq . file
+fq < file
+cat file | fq
+fq . < file
+fq . *.png *.mp3
+fq '.frames[0]' *.mp3
+fq '.frames[-1] | tobytes' file.mp3 > last_frame
+----
+
+=== Common usages
+
+[source,console]
+----
+# recursively display decode tree but truncate long arrays
+fq d file
+# same as
+fq display file
+
+# display all bytes for each value
+fq dd file
+# same as
+fq 'd({array_truncate: 0, string_truncate: 0, display_bytes: 0})' file
+
+# display 200 bytes for each value
+fq 'd({display_bytes: 200})' file
+
+# recursively display decode tree without truncating
+fq da file
+# same as
+fq 'd({array_truncate: 0, string_truncate: 0})' file
+
+# display a specific decode tree one level
+fq '.path[1].to.value' file
+# display a specific decode tree all levels
+fq '.path[1].to.value | d' file
+fq '.path[1].to.value | dd' file
+fq '.path[1].to.value | da' file
+
+# recursively and verbosely display decode tree
+fq dv file
+# same as
+fq 'd({array_truncate: 0, string_truncate: 0, verbose: true})' file
+
+# JSON representation for whole file
+fq tovalue file
+# or use -V (--value-output) that does tovalue automatically
+fq -V . file
+# or -Vr if the value is a string and you want a "raw" string
+fq -Vr .path.to.string file
+# JSON but raw bit fields truncated
+fq -o bits_format=truncate tovalue file
+# JSON but raw bit fields as md5 hex string
+fq -o bits_format=md5 tovalue file
+# JSON but raw bit fields as byte arrays
+fq -o bits_format=byte_array tovalue file
+# look up a path
+fq '.some[1].path' file
+# look up a path and output JSON
+fq -V '.some[1].path' file
+# can be a query that outputs multiple values
+# this outputs first and last value in .some array and .path, three values in total
+fq -V '.some[0,-1], .path' file
+
+# grep whole tree by value
+fq 'grep("^prefix")' file
+fq 'grep(123)' file
+# grep whole tree by condition
+fq 'grep_by(. >= 100 and . <= 100)' file
+
+# recursively look for values fulfilling some condition
+fq '.. | select(.type=="trak")?' file
+fq 'grep_by(.type=="trak")' file
+# grep_by(f) is an alias for .. | select(f)?, that is: recurse, select and ignore errors
+
+# recursively look for decode value roots for a format
+fq '.. | select(format=="jpeg")' file
+# can also use grep_by
+fq 'grep_by(format=="jpeg")' file
+
+# recursively look for first decode value root for a format
+fq 'first(.. | select(format=="jpeg"))' file
+fq 'first(grep_by(format=="jpeg"))' file
+
+# decode file as mp4 and return a result even if there are some errors
+fq -d mp4 file.mp4
+# decode file as mp4 and also ignore validity assertions
+fq -o force=true -d mp4 file.mp4
+----
+

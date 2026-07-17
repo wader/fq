@@ -20,11 +20,10 @@ Decode examples
   # Decode value as xml
   ... | xml({array:false,attribute_prefix:"@",seq:false})
 
-XML can be decoded and encoded into jq values in two ways, elements as object or array. Which variant to use depends a bit what you
-want to do. The object variant might be easier to query for a specific value but array might be easier to use to generate xml or to
-query after all elements of some kind etc.
+XML can be decoded and encoded into jq values in two ways, elements as object or array. The object variant might be easier to query
+for a specific value but array might be easier to use to generate xml or to query after all elements of some kind etc.
 
-Encoding is done using the to_xml function and it will figure what variant that is used based on the input value. Is has two optional
+Encoding is done using the to_xml function and it will figure what variant that is used based on the input value. It has two optional
 options indent and attribute_prefix.
 
 Elements as object
@@ -75,7 +74,7 @@ order might be lost.
 
 Elements as array
 =================
-Elements are arrays of the shape ["#text": "body text", "attr_name", {key: "attr value"}|null, [<child element>, ...]].
+Elements are arrays of the shape ["name", null|{#text|attribute: "value"}, [<child element>, ...]].
 
   # decode as array
   $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -d xml -o array=true

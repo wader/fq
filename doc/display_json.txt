@@ -1,0 +1,5 @@
+$ fq -n '"hello"'
+"hello"
+
+$ fq -n '"hello" | d'
+"hello"

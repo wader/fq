@@ -7,8 +7,8 @@ $ fq d Info.plist
 Timestamps in Apple Binary Property Lists are encoded as Cocoa Core Data
 timestamps, where the raw value is the floating point number of seconds since
 January 1, 2001. By default, `fq` will render the raw floating point value. In
-order to get the raw value or string description, use the `todescription`
-function, you can use the `tovalue` and `todescription` functions:
+order to get the raw value or the string description, use the `tovalue` or
+`todescription` functions:
 
 ```sh
 $ fq 'torepr.SomeTimeStamp | tovalue' Info.plist

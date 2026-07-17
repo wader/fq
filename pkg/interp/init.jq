@@ -172,7 +172,9 @@ def _main:
           )
       )
     );
-  ( . as {$version, $os, $arch, $go_version, $args, args: [$arg0]}
+  ( . as $main_input
+  | _main_input($main_input) as $_
+  | . as {$version, $os, $arch, $go_version, $args, args: [$arg0]}
   # make sure we don't unintentionally use . to make things clearer
   | null
   | ( try _args_parse($args[1:]; _opt_cli_opts)

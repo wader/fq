@@ -53,14 +53,13 @@ def _opt_build_default_fixed:
     , expr:               "."
     , filenames:          null
     , force:              false
-    , include_path:       null
+    , include_path:       []
     , join_string:        "\n"
     , null_input:         false
     , raw_file:           []
     , raw_output:         ($stdout.is_terminal | not)
     , raw_string:         false
     , repl:               false
-    , show_formats:       false
     , show_help:          false
     , sizebase:           10
     , skip_gaps:          false
@@ -74,48 +73,59 @@ def _opt_build_default_fixed:
   );
 
 def _opt_options:
-  { addrbase:           "number"
-  , arg:                "array_string_pair"
-  , args:               "array_string"
-  , argdecode:          "array_string_pair"
-  , argjson:            "array_string_pair"
-  , argsjson:           "array_string"
-  , array_truncate:     "number"
-  , bits_format:        "string"
-  , byte_colors:        "csv_ranges_array"
-  , color:              "boolean"
-  , colors:             "csv_kv_obj"
-  , compact:            "boolean"
-  , completion_timeout: "number"
-  , decode_group:       "string"
-  , decode_progress:    "boolean"
-  , depth:              "number"
-  , display_bytes:      "number"
-  , expr_eval_path:     "string"
-  , expr_file:          "string"
-  , expr_given:         "boolean"
-  , expr:               "string"
-  , filenames:          "array_string"
-  , force:              "boolean"
-  , include_path:       "string"
-  , join_string:        "string"
-  , line_bytes:         "number"
-  , null_input:         "boolean"
-  , raw_file:           "array_string_pair"
-  , raw_output:         "boolean"
-  , raw_string:         "boolean"
-  , repl:               "boolean"
-  , show_formats:       "boolean"
-  , show_help:          "boolean"
-  , sizebase:           "number"
-  , skip_gaps:          "boolean"
-  , slurp:              "boolean"
-  , string_input:       "boolean"
-  , string_truncate:    "number"
-  , unicode:            "boolean"
-  , value_output:       "boolean"
-  , verbose:            "boolean"
-  , width:              "number"
+  { addrbase:           {type: "number",            description: "Number base for addresses"}
+  , arg:                {type: "array_string_pair", description: "--arg pairs", internal: true}
+  , args:               {type: "array_string",      description: "--args arguments", internal: true}
+  , argdecode:          {type: "array_string_pair", description: "--argdecode pairs", internal: true}
+  , argjson:            {type: "array_string_pair", description: "--argjson pairs", internal: true}
+  , argsjson:           {type: "array_string",      description: "--argsjson arguments", internal :true}
+  , array_truncate:     {type: "number",            description: "Array display length to truncate"}
+  , bits_format:
+    { type: "string"
+    , description: "Raw bits representation"
+    , values:
+      { "base64": "Base64 string."
+      , "byte_array": "Array of bytes (zero bit padded if size is not byte aligned)."
+      , "hex": "Hex string."
+      , "md5": "MD5 hex string (zero bit padded)."
+      , "snippet": "Truncated Base64 string prefixed with bit length."
+      , "string": "String with raw bytes (zero bit padded if size is not byte aligned). The string is binary safe internally in fq but bytes not representable as UTF-8 will be lost if turned into JSON (default)."
+      , "truncate": "Truncated string."
+      }
+    }
+  , byte_colors:        {type: "csv_ranges_array",  description: "Byte value colorization"}
+  , color:              {type: "boolean",           description: "Use color"}
+  , colors:             {type: "csv_kv_obj",        description: "Color scheme"}
+  , compact:            {type: "boolean",           description: "Use compact JSON"}
+  , completion_timeout: {type: "number",            description: "Seconds to wait for completion results"}
+  , decode_group:       {type: "string",            description: "Format to decode", internal: true}
+  , decode_progress:    {type: "boolean",           description: "Show decode progress", internal: true}
+  , depth:              {type: "number",            description: "Display tree depth limit"}
+  , display_bytes:      {type: "number",            description: "Display bytes limit"}
+  , expr_eval_path:     {type: "string",            description: "Where does expression come from", internal: true}
+  , expr_file:          {type: "string",            description: "Read expression from file", internal: true}
+  , expr_given:         {type: "boolean",           description: "An expression arg as given", internal: true}
+  , expr:               {type: "string",            description: "Expression to evaluate", internal: true}
+  , filenames:          {type: "array_string",      description: "Filenames arguments", internal: true}
+  , force:              {type: "boolean",           description: "Force decode"}
+  , include_path:       {type: "array_string",      description: "Include paths", internal: true}
+  , join_string:        {type: "string",            description: "String used to join outputs"}
+  , line_bytes:         {type: "number",            description: "Number of bytes per display line"}
+  , null_input:         {type: "boolean",           description: "Null input", internal: true}
+  , raw_file:           {type: "array_string_pair", description: "--raw-file pairs", internal: true}
+  , raw_output:         {type: "boolean",           description: "Raw output is safe", internal: true}
+  , raw_string:         {type: "boolean",           description: "Raw string output"}
+  , repl:               {type: "boolean",           description: "Invole REPL", internal: true}
+  , show_help:          {type: "boolean",           description: "Show help", internal: true}
+  , sizebase:           {type: "number",            description: "Number base for sizes"}
+  , skip_gaps:          {type: "boolean",           description: "Skip gaps when representing decode value (arrays) as JSON"}
+  , slurp:              {type: "boolean",           description: "Slurp inputs into an array", internal: true}
+  , string_input:       {type: "boolean",           description: "Raw string input", internal: true}
+  , string_truncate:    {type: "number",            description: "String display length truncate"}
+  , unicode:            {type: "boolean",           description: "Use unicode"}
+  , value_output:       {type: "boolean",           description: "Output decode value as JSON", internal: true}
+  , verbose:            {type: "boolean",           description: "Verbose display"}
+  , width:              {type: "number",            description: "Terminal width"}
   };
 
 def _opt_eval($rest):
@@ -389,7 +399,7 @@ def _opt_cli_arg_to_options:
   ( _opt_options as $opts
   | with_entries(
       ( .key as $k
-      | .value |= _opt_to($opts[$k] // "fuzzy")
+      | .value |= _opt_to($opts[$k].type // "fuzzy")
       | select(.value != null)
       )
     )
@@ -399,7 +409,8 @@ def _opt_cli_arg_from_options:
   ( _opt_options as $opts
   | with_entries(
       ( .key as $k
-      | .value |= _opt_from($opts[$k] // "string")
+      | select($opts[$k].internal | not)
+      | .value |= _opt_from($opts[$k].type // "string")
       | select(.value != null)
       )
     )
@@ -408,19 +419,19 @@ def _opt_cli_arg_from_options:
 def _opt_cli_opts:
   { arg:
       { long: "--arg"
-      , description: "Set variable $NAME to string VALUE"
+      , description: "Set $NAME to string VALUE"
       , pairs: "NAME VALUE"
       }
   , argdecode:
       { long: "--argdecode"
       # TODO: remove at some point
       , aliases: ["--decode-file"]
-      , description: "Set variable $NAME to decode of PATH"
+      , description: "Set $NAME to decode of PATH"
       , pairs: "NAME PATH"
       }
   , argjson:
       { long: "--argjson"
-      , description: "Set variable $NAME to JSON"
+      , description: "Set $NAME to JSON"
       , pairs: "NAME JSON"
       }
   , args:
@@ -436,7 +447,7 @@ def _opt_cli_opts:
   , compact:
       { short: "-c"
       , long: "--compact-output"
-      , description: "Compact output"
+      , description: "Use compact output"
       , bool: true
       }
   , color_output:
@@ -454,7 +465,7 @@ def _opt_cli_opts:
   , expr_file:
       { short: "-f"
       , long: "--from-file"
-      , description: "Read EXPR from file"
+      , description: "Read EXPRESSION from file"
       , string: "PATH"
       }
   , show_help:
@@ -473,7 +484,7 @@ def _opt_cli_opts:
   , include_path:
       { short: "-L"
       , long: "--include-path"
-      , description: "Include search path"
+      , description: "Add PATH to include search paths"
       , array: "PATH"
       }
   , null_output:
@@ -486,7 +497,7 @@ def _opt_cli_opts:
   , null_input:
       { short: "-n"
       , long: "--null-input"
-      , description: "Null input (use input and inputs functions to read)"
+      , description: "Null input (use input and inputs to read)"
       , bool: true
       }
   , monochrome_output:
@@ -499,7 +510,7 @@ def _opt_cli_opts:
       { short: "-o"
       , long: "--option"
       , description: "Set option (ex: -o color=true, see --help options)"
-      , object: "KEY=VALUE/@PATH",
+      , object: "NAME=VALUE/@PATH",
       }
   , string_input:
       { short: "-R"
@@ -511,7 +522,7 @@ def _opt_cli_opts:
       { long: "--raw-file"
       # for jq compatibility
       , aliases: ["--raw-file"]
-      , description: "Set variable $NAME to string content of file"
+      , description: "Set $NAME to string content of file"
       , pairs: "NAME PATH"
       }
   , raw_string:

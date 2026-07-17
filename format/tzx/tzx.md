@@ -2,7 +2,7 @@
 ZX Spectrum computers, although some specialized versions of the format have
 been defined for other machines such as the Amstrad CPC and C64.
 
-The format was originally created by Tomaz Kac, who was maintainer until
+The format was originally created by Tomaz Kac, who was the maintainer until
 `revision 1.13`, before passing it to Martijn v.d. Heide. For a brief period
 the company Ramsoft became the maintainers, and created revision `v1.20`.
 
