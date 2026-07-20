@@ -1,3 +1,112 @@
+# 0.18.0
+
+## Changes
+
+- Add man page and rework and improve documentation. #1346
+  - Man page path `doc/fq.1`.
+  - AsciiDoc source path `doc/fq.1.adoc`.
+  - HTML version available at https://wader.github.io/fq/.
+- jq compatibility: Add `$ARGS`, `--args` and `--jsonargs` support. #1321
+  ```sh
+  $ fq -n --arg a a --argjson b 1 '$ARGS'
+  {
+    "named": {
+      "a": "a",
+      "b": 1
+    },
+    "positional": []
+  }
+
+  $ fq -cn '$ARGS' --args a b c
+  {"named":{},"positional":["a","b","c"]}
+
+  $ fq -cn '$ARGS' --jsonargs 1 2 3
+  {"named":{},"positional":[1,2,3]}
+  ```
+- jq compatibility: Using `-` as input filename reads from stdin. Previously leaving out any filename argument would be the only way to read from stdin. #1344
+  ```sh
+  $ echo 123 | fq . - 
+  123
+  ```
+- Add gaps for struct/array bitbufs and skip adding single empty gap. #1289
+- Faster format options handling during decode. Will speeds up decoding of formats that might use lots of sub-formats, for example big mp4 files. #1352 #1353
+
+## Format changes
+
+- `avc_nalu` Remove redundant_pic_cnt name in nalu. #1292
+- `avc_sei` Decode SEI recovery point. #1292
+- `heif` Add High Efficiency Image Format decoder #1336
+  - Generic item support
+  - Partial item decode for HEIC (HEVC) and AVIF (AV1)
+- `mp4` Make stsd decode aware of qt/isom difference. #1305
+- `stl` Add Standard Tessellation Language decoder. #1299 Thanks @knittl
+- `webp` Fix incorrect decoding of size for lossless (vp8l). #1341 Reported by @xnuk
+
+## Changelog
+
+* b7340ad1 avc_sei,avc_nalu: Decode SEI recovery point and fix redundant_pic_cnt name in nalu
+* b15e9e66 crypto: fix lint warning by using std sha3
+* f88f180a decode: Add gaps for struct/array bitbuf
+* 60351a5c decode: Fast path if no remain opts match format opts
+* 07c982bc decode: Speed up and cache snake case result
+* 882d3a41 doc,gha: Add workflow_dispatch
+* 02a2aa55 doc,gha: Install correct debian package
+* f02172d8 doc,gha: Run apt as root
+* ac3b86e3 doc: Add man page and rework/improve documentation
+* 6a8de262 doc: Fix style for some function names
+* 0c1c7b94 doc: Improve examples, meta and highlighting
+* 5173a4a2 doc: Revert page test
+* a90f6add doc: Try pages
+* 2932f59e doc: Typos and improvements
+* 9c14a698 doc: Update formats.svg
+* d9018fad docs: add Gentoo installation instructions
+* c332a031 fq: Modernize code for go 1.25
+* 43e31a6f fq: Remove not very useful list all formats test
+* abbaef2e fq: Update golang/x/{net,term}, gomarkdown
+* d4b4647f gojq: Update fq fork
+* 1985621c heif: Add HEIF support
+* d4ea560d heif: Add icc profile dep
+* e1571160 heif: Sequnce support
+* 27f8ff15 interp: "-" filename means stdin (jq compat)
+* d69acef7 interp: Add $ARGS, --args and --jsonargs suppport
+* 7938597c isobmff: Cleanup old terminology
+* e24714c0 mod: Update x/net and gomarkdown/markdown
+* 8f66c1e6 mp4,heif: Fix unnecessary conversion lint errors
+* c4b38e80 mp4,isobmff: Refactor out isobmff code
+* 36c65f6a mp4: Make stsd decode aware of qt/isom difference
+* cf7943f7 mp4: Refactor to use box tree to store sample and track info etc
+* 481a4c0e Remove --args from TODO
+* 94bcd026 stl: Implement STL format
+* 9b6922b7 Update docker-golang to 1.26.2 from 1.26.1
+* dac6c282 Update docker-golang to 1.26.3 from 1.26.2
+* ceff6519 Update docker-golang to 1.26.4 from 1.26.3
+* 04c16234 Update docker-golang to 1.26.5 from 1.26.4
+* 3b7baf48 Update github-go-version to 1.26.2 from 1.26.1
+* ccf95d30 Update github-go-version to 1.26.3 from 1.26.2
+* 4c50daac Update github-go-version to 1.26.4 from 1.26.3
+* 48e4bc21 Update github-go-version to 1.26.5 from 1.26.4
+* c113dfa7 Update github-golangci-lint to 2.11.4 from 2.11.3
+* b27191d7 Update github-golangci-lint to 2.12.2 from 2.11.4
+* 6ee04ae1 Update gomod-golang-x-crypto to 0.50.0 from 0.49.0
+* 8cb2f99e Update gomod-golang-x-crypto to 0.53.0 from 0.51.0
+* 6014effa Update gomod-golang-x-crypto to 0.54.0 from 0.53.0
+* 53dcfa27 Update gomod-golang-x-crypto to 0.55.0 from 0.54.0
+* bf35f953 Update gomod-golang-x-net to 0.53.0 from 0.52.0
+* 7b620b4f Update gomod-golang-x-net to 0.54.0 from 0.53.0
+* e7e53d84 Update gomod-golang-x-net to 0.55.0 from 0.54.0
+* 26ba3961 Update gomod-golang-x-net to 0.56.0 from 0.55.0
+* 19d84a47 Update gomod-golang-x-net to 0.58.0 from 0.57.0
+* 1826f7a0 Update gomod-golang/text to 0.37.0 from 0.36.0
+* 476e70fd Update gomod-golang/text to 0.39.0 from 0.38.0
+* a565d9fc Update gomod-golang/text to 0.41.0 from 0.40.0
+* 82753a57 Update gomod-gopacket to 1.6.0 from 1.5.0
+* c9029ad9 Update gomod-gopacket to 1.6.1 from 1.6.0
+* 3d311465 Update gomod-gopacket to 1.7.0 from 1.6.1
+* 7c433c16 Update gomod-gopacket to 1.7.1 from 1.7.0
+* 718c0054 Update make-golangci-lint to 2.11.4 from 2.11.3
+* 308eeeec Update make-golangci-lint to 2.12.2 from 2.11.4
+* 6578e79f webp: Fix wrong size for lossless (vp8l)
+
 # 0.17.0
 
 ## Changes
