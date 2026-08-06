@@ -200,7 +200,9 @@ def _opt_eval($rest):
           elif .expr_file then $rest
           else $rest[1:]
           end
-        # null means stdin
+        # "-" means stdin
+        | map(if . == "-" then null end)
+        # if no filenames, assume stdin
         | if . == [] then [null] end
         )
       )

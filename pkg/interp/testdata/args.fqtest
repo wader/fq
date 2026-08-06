@@ -127,7 +127,23 @@ $ fq -0
 0
 stdin:
 "abc"
+# make sure -123 is not treated as an option
 $ fq -123
 -123
+stdin:
+"abc"
+# default "." and stdin
+$ fq
+"abc"
+stdin:
+"abc"
+# default stdin
+$ fq .
+"abc"
+stdin:
+"abc"
+# "-" means stdin
+$ fq . -
+"abc"
 stdin:
 "abc"
