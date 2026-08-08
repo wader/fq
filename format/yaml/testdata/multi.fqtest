@@ -1,0 +1,44 @@
+$ fq -d yaml . single.yaml
+[]
+$ fq -d yaml . multi.yaml
+[
+  1,
+  2,
+  3
+]
+$ fq -o multi_document=true -d yaml . single.yaml
+[
+  []
+]
+$ fq -o multi_document=true -d yaml . multi.yaml
+[
+  1,
+  2,
+  3
+]
+$ fq -o multi_document=false -d yaml . single.yaml
+[]
+$ fq -o multi_document=false -d yaml . multi.yaml
+[
+  1,
+  2,
+  3
+]
+$ fq -r -o multi_document=true -d yaml '. as $i | to_yaml({multi_document: true}), $i == from_yaml' multi.yaml
+1
+---
+2
+---
+3
+
+true
+$ fq -nr '"[]" | from_yaml({multi_document: true})'
+[
+  []
+]
+$ fq -nr '"[]" | from_yaml({multi_document: false})'
+[]
+$ fq -n '123 | to_yaml({multi_document: true})'
+exitcode: 5
+stderr:
+error: to_yaml cannot be applied to: number (123)
