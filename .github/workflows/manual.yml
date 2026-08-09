@@ -5,6 +5,8 @@ on:
       - master
     paths:
       - 'doc/fq.1.adoc'
+  # enable manual trigger of version updates
+  workflow_dispatch:
 concurrency: gh-pages
 
 jobs:
