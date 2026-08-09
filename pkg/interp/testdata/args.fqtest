@@ -1,7 +1,7 @@
 $ fq
 exitcode: 2
 stderr:
-Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
+Usage: fq [OPTIONS] [--] [EXPRESSION] [FILE...]
 $ _STDIN_IS_TERMINAL=1 fq type
 "number"
 stdin:
@@ -11,7 +11,7 @@ fq - jq for binary formats
 Tool, language and decoders for working with binary data.
 For more information see https://github.com/wader/fq
 
-Usage: fq [OPTIONS] [--] [EXPR] [FILE...]
+Usage: fq [OPTIONS] [--] [EXPRESSION] [FILE...]
 
 Example usages:
   fq . file
@@ -24,30 +24,30 @@ Example usages:
   fq 'grep("^main$") | parent' /bin/ls
   fq -i
 
---arg NAME VALUE             Set variable $NAME to string VALUE
---argdecode NAME PATH        Set variable $NAME to decode of PATH
---argjson NAME JSON          Set variable $NAME to JSON
---args                       Consume remaining arguments as positional strings
---color-output,-C            Force color output
---compact-output,-c          Compact output
---decode,-d NAME             Decode format or group (probe)
---from-file,-f PATH          Read EXPR from file
---help,-h [TOPIC]            Show help for TOPIC (ex: -h formats, -h mp4)
---include-path,-L PATH       Include search path
---join-output,-j             No newline after each output
---jsonargs                   Consume remaining arguments as positional JSON
---monochrome-output,-M       Force monochrome output
---null-input,-n              Null input (use input and inputs functions to read)
---option,-o KEY=VALUE/@PATH  Set option (ex: -o color=true, see --help options)
---raw-file NAME PATH         Set variable $NAME to string content of file
---raw-input,-R               Read raw input strings (don't decode)
---raw-output,-r              Raw string output (without quotes)
---raw-output0                NUL (zero) byte after each output
---repl,-i                    Interactive REPL
---slurp,-s                   Slurp all inputs into an array or string (-Rs)
---unicode-output,-U          Force unicode output
---value-output,-V            Output JSON value (-Vr for raw string)
---version,-v                 Show version
+--arg NAME VALUE              Set $NAME to string VALUE
+--argdecode NAME PATH         Set $NAME to decode of PATH
+--argjson NAME JSON           Set $NAME to JSON
+--args                        Consume remaining arguments as positional strings
+--color-output,-C             Force color output
+--compact-output,-c           Use compact output
+--decode,-d NAME              Decode format or group (probe)
+--from-file,-f PATH           Read EXPRESSION from file
+--help,-h [TOPIC]             Show help for TOPIC (ex: -h formats, -h mp4)
+--include-path,-L PATH        Add PATH to include search paths
+--join-output,-j              No newline after each output
+--jsonargs                    Consume remaining arguments as positional JSON
+--monochrome-output,-M        Force monochrome output
+--null-input,-n               Null input (use input and inputs to read)
+--option,-o NAME=VALUE/@PATH  Set option (ex: -o color=true, see --help options)
+--raw-file NAME PATH          Set $NAME to string content of file
+--raw-input,-R                Read raw input strings (don't decode)
+--raw-output,-r               Raw string output (without quotes)
+--raw-output0                 NUL (zero) byte after each output
+--repl,-i                     Interactive REPL
+--slurp,-s                    Slurp all inputs into an array or string (-Rs)
+--unicode-output,-U           Force unicode output
+--value-output,-V             Output JSON value (-Vr for raw string)
+--version,-v                  Show version
 $ fq -i
 null> ^D
 $ fq -i . test.mp3
@@ -70,11 +70,6 @@ $ fq -nc "[1,2,3]"
 [1,2,3]
 $ fq --help options
 addrbase            16
-arg                 []
-argdecode           []
-argjson             []
-args                []
-argsjson            []
 array_truncate      50
 bits_format         string
 byte_colors         0-255=default+bold,0=brightblack,32-126:9-13=default
@@ -82,33 +77,16 @@ color               false
 colors              array=default,dumpaddr=yellow,dumpheader=yellow+underline,error=brightred,false=yellow,index=default,null=brightblack,number=cyan,object=default,objectkey=brightblue,prompt_repl_level=brightblack,prompt_value=default,string=green,true=yellow,value=default
 compact             false
 completion_timeout  10
-decode_group        probe
-decode_progress     false
 depth               0
 display_bytes       16
-expr                .
-expr_eval_path      arg
-expr_file           
-expr_given          false
-filenames           [null]
 force               false
-include_path        
 join_string         \n
 line_bytes          16
-null_input          false
-raw_file            []
-raw_output          false
 raw_string          false
-repl                false
-show_formats        false
-show_help           options
 sizebase            10
 skip_gaps           false
-slurp               false
-string_input        false
 string_truncate     50
 unicode             false
-value_output        false
 verbose             false
 width               135
 $ fq -X

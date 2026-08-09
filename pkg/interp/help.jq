@@ -79,7 +79,7 @@ def help: help(null);
 def _help($arg0; $topic):
   ( $topic
   | if  . == "usage" then
-      "Usage: \($arg0) [OPTIONS] [--] [EXPR] [FILE...]"
+      "Usage: \($arg0) [OPTIONS] [--] [EXPRESSION] [FILE...]"
     elif . == "example_usage" then
       ( "Example usages:"
       , "  fq . file"

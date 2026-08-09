@@ -1,20 +1,22 @@
 # fq
 
-Tool, language and decoders for working with binary data.
-
-TLDR: it aims to be jq, hexdump, dd and gdb for files combined into one.
+Tool, language and decoders for working with binary formats.
 
 ![fq demo](doc/demo.svg)
 
 Basic usage is `fq . file`, `fq d file` or `fq 'some query' file ...`.
 
-For details see [usage.md](doc/usage.md).
+For details see [the manual](https://wader.github.io/fq/), also available as `man fq` and as [AsciiDoc](doc/fq.1.adoc).
 
 ### Background
 
-fq is inspired by the [jq](https://jqlang.github.io/jq/) tool and language and allows you to work with binary formats in the same way. In addition to using jq expressions it can also present decoded tree structures, transform, slice and concatenate binary data. It also supports nested formats and features an interactive REPL with auto-completion of functions and names.
+fq is a tool, language, and decoders for working with binary formats and data.
+In most cases it behaves and feels similar to [jq](https://jqlang.github.io/jq/) and it
+also uses the same expression language.
+To get the most out of fq it's recommended to learn more about jq.
 
-It was originally designed to query, inspect and debug media codecs and containers like MP4, FLAC and JPEG but has since been extended to support a variety of formats like executables, packet captures (with TCP reassembly) and serialization formats like JSON, YAML, XML, CBOR, protobuf. In addition it also has functions to work with URLs, convert to/from hex, number bases, search for patterns etc.
+It features a structural hex viewer, nested format decoding, slicing and concatenating
+binary data, bit-level decoding and an interactive REPL with auto-completion.
 
 ### Goals
 
@@ -32,65 +34,65 @@ It was originally designed to query, inspect and debug media codecs and containe
 
 [fq -rn -L doc 'include "formats"; formats_list']: sh-start
 
-[aac_frame](doc/formats.md#aac_frame),
+aac_frame,
 adts,
 adts_frame,
 aiff,
 amf0,
 apev2,
-[apple_bookmark](doc/formats.md#apple_bookmark),
+apple_bookmark,
 ar,
-[asn1_ber](doc/formats.md#asn1_ber),
+asn1_ber,
 av1_ccr,
 av1_frame,
 av1_obu,
 avc_annexb,
-[avc_au](doc/formats.md#avc_au),
+avc_au,
 avc_dcr,
-[avc_nalu](doc/formats.md#avc_nalu),
+avc_nalu,
 avc_pps,
-[avc_sei](doc/formats.md#avc_sei),
+avc_sei,
 avc_sps,
-[avi](doc/formats.md#avi),
-[avro_ocf](doc/formats.md#avro_ocf),
-[bencode](doc/formats.md#bencode),
+avi,
+avro_ocf,
+bencode,
 bitcoin_blkdat,
-[bitcoin_block](doc/formats.md#bitcoin_block),
+bitcoin_block,
 bitcoin_script,
 bitcoin_transaction,
-[bits](doc/formats.md#bits),
-[bplist](doc/formats.md#bplist),
+bits,
+bplist,
 bsd_loopback_frame,
-[bson](doc/formats.md#bson),
-[bytes](doc/formats.md#bytes),
+bson,
+bytes,
 bzip2,
-[caff](doc/formats.md#caff),
-[cbor](doc/formats.md#cbor),
-[csv](doc/formats.md#csv),
+caff,
+cbor,
+csv,
 dns,
 dns_tcp,
 elf,
 ether8023_frame,
 exif,
 fairplay_spc,
-[fit](doc/formats.md#fit),
+fit,
 flac,
-[flac_frame](doc/formats.md#flac_frame),
+flac_frame,
 flac_metadatablock,
 flac_metadatablocks,
 flac_picture,
 flac_streaminfo,
 gif,
 gzip,
-[heif](doc/formats.md#heif),
+heif,
 hevc_annexb,
-[hevc_au](doc/formats.md#hevc_au),
+hevc_au,
 hevc_dcr,
 hevc_nalu,
 hevc_pps,
 hevc_sps,
 hevc_vps,
-[html](doc/formats.md#html),
+html,
 icc_profile,
 icmp,
 icmpv6,
@@ -103,57 +105,57 @@ jp2c,
 jpeg,
 json,
 jsonl,
-[leveldb_descriptor](doc/formats.md#leveldb_descriptor),
-[leveldb_log](doc/formats.md#leveldb_log),
-[leveldb_table](doc/formats.md#leveldb_table),
-[luajit](doc/formats.md#luajit),
-[macho](doc/formats.md#macho),
+leveldb_descriptor,
+leveldb_log,
+leveldb_table,
+luajit,
+macho,
 macho_fat,
-[markdown](doc/formats.md#markdown),
-[matroska](doc/formats.md#matroska),
-[midi](doc/formats.md#midi),
-[moc3](doc/formats.md#moc3),
-[mp3](doc/formats.md#mp3),
+markdown,
+matroska,
+midi,
+moc3,
+mp3,
 mp3_frame,
 mp3_frame_vbri,
 mp3_frame_xing,
-[mp4](doc/formats.md#mp4),
+mp4,
 mpeg_asc,
 mpeg_es,
 mpeg_pes,
 mpeg_pes_packet,
 mpeg_spu,
 mpeg_ts,
-[msgpack](doc/formats.md#msgpack),
-[negentropy](doc/formats.md#negentropy),
-[nes](doc/formats.md#nes),
+msgpack,
+negentropy,
+nes,
 ogg,
 ogg_page,
-[opentimestamps](doc/formats.md#opentimestamps),
+opentimestamps,
 opus_packet,
-[pcap](doc/formats.md#pcap),
+pcap,
 pcapng,
-[pg_btree](doc/formats.md#pg_btree),
-[pg_control](doc/formats.md#pg_control),
-[pg_heap](doc/formats.md#pg_heap),
+pg_btree,
+pg_control,
+pg_heap,
 png,
 prores_frame,
-[protobuf](doc/formats.md#protobuf),
+protobuf,
 protobuf_widevine,
 pssh_playready,
-[rtmp](doc/formats.md#rtmp),
+rtmp,
 safetensors,
 sll2_packet,
 sll_packet,
-[stl](doc/formats.md#stl),
-[tap](doc/formats.md#tap),
+stl,
+tap,
 tar,
 tcp_segment,
 tiff,
-[tls](doc/formats.md#tls),
+tls,
 toml,
-[tzif](doc/formats.md#tzif),
-[tzx](doc/formats.md#tzx),
+tzif,
+tzx,
 udp_datagram,
 vorbis_comment,
 vorbis_packet,
@@ -161,18 +163,18 @@ vp8_frame,
 vp9_cfm,
 vp9_frame,
 vpx_ccr,
-[wasm](doc/formats.md#wasm),
+wasm,
 wav,
 webp,
-[xml](doc/formats.md#xml),
+xml,
 yaml,
-[zip](doc/formats.md#zip)
+zip
 
 [#]: sh-end
 
 It can also work with some common text formats like URLs, hex, base64, PEM etc and for some serialization formats like XML, YAML, etc. it can transform both from and to jq values.
 
-For details see [formats.md](doc/formats.md) and [usage.md](doc/usage.md).
+For details see [the manual](https://wader.github.io/fq/).
 
 ## Presentations and media
 

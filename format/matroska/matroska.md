@@ -1,7 +1,7 @@
 ### Lookup element using path
 
 ```sh
-$ fq 'matroska_path(".Segment.Tracks[0)")' file.mkv
+$ fq 'matroska_path(".Segment.Tracks[0]")' file.mkv
 ```
 
 ### Get path to element

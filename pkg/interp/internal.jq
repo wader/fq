@@ -81,6 +81,9 @@ def _input_decode_errors(f): _global_var("input_decode_errors"; f);
 def _slurps: _global_var("slurps");
 def _slurps(f): _global_var("slurps"; f);
 
+def _main_input: _global_var("main_input");
+def _main_input(f): _global_var("main_input"; f );
+
 # call f and finally eval fin even if empty or error.
 # _finally(1; debug)
 # _finally(null; debug)

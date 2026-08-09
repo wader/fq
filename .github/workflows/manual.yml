@@ -1,0 +1,40 @@
+name: Update github pages manual
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'doc/fq.1.adoc'
+concurrency: gh-pages
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+      - name: Install asciidoc
+        run: apt install -y asciidoc
+      - name: Build website
+        run: |
+          make doc/fq.1.html
+          mkdir site
+          mv doc/fq.1.html site/index.html
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v5
+        id: deployment

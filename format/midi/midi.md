@@ -8,7 +8,7 @@
 
 1. Extract the track names from a MIDI file
 ```
-fq -d midi -d midi '.. | select(.event=="track_name")? | "\(.track_name)"' midi/twinkle.mid 
+fq -d midi '.. | select(.event=="track_name")? | "\(.track_name)"' midi/twinkle.mid 
 ```
 
 2. Extract the tempo changes from a MIDI file

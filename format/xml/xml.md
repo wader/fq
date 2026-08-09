@@ -1,10 +1,10 @@
 XML can be decoded and encoded into jq values in two ways, elements as object or array.
-Which variant to use depends a bit what you want to do. The object variant might be easier
+The object variant might be easier
 to query for a specific value but array might be easier to use to generate xml or to query
 after all elements of some kind etc.
 
 Encoding is done using the `to_xml` function and it will figure what variant that is used based on the input value.
-Is has two optional options `indent` and `attribute_prefix`.
+It has two optional options `indent` and `attribute_prefix`.
 
 ### Elements as object
 
@@ -56,7 +56,7 @@ $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -r -d xml -o seq=true
 
 ### Elements as array
 
-Elements are arrays of the shape `["#text": "body text", "attr_name", {key: "attr value"}|null, [<child element>, ...]]`.
+Elements are arrays of the shape `["name", null|{#text|attribute: "value"}, [<child element>, ...]]`.
 
 ```sh
 # decode as array

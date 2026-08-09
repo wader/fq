@@ -9,7 +9,7 @@ Decode examples
   # Decode value as rtmp
   ... | rtmp
 
-Current only supports plain RTMP (not RTMPT or encrypted variants etc) with AMF0 (not AMF3).
+Currently only supports plain RTMP (not RTMPT or encrypted variants etc) with AMF0 (not AMF3).
 
 Show rtmp streams in PCAP file
 ==============================

@@ -48,7 +48,7 @@ Flags can be struct with bit-fields.
   - No heading section is needs with format name, will be added by `make doc` and fq cli help system.
   - Add a `testdata/<name>_help.fqtest` with just `$ fq -h <name>` to test CLI help.
   - If in doubt look at `mp4.md`/`mp4.go` etc.
-  - Run `make README.md doc/formats.md` to update md files.
+  - Run `make README.md doc/fq.1.adoc doc/fq.1` to update md files.
 - Run linter `make lint`
 - Run fuzzer `make fuzz GROUP=<name>`, see usage in Makefile
 

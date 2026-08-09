@@ -44,7 +44,8 @@ doc: $(wildcard *.md doc/*.md)
 	@doc/mdsh.sh ./fq $@
 
 doc/%.svg.sh: fq
-	(cd doc ; ../$@ ../fq) | go run github.com/wader/ansisvg@master > $(@:.svg.sh=.svg)
+	(cd doc ; ../$@ "../fq -C -o width=80 -o unicode=true") | go run github.com/wader/ansisvg@master > $(@:.svg.sh=.svg)
+	(cd doc ; ../$@ "../fq -M -o width=80") > $(@:.svg.sh=.txt)
 
 doc/formats.svg: fq
 	@# ignore graphviz version as it causes diff when nothing has changed
@@ -55,6 +56,15 @@ doc/file.mp3: Makefile
 
 doc/file.mp4: Makefile
 	ffmpeg -y -f lavfi -i sine -f lavfi -i testsrc -c:a aac -c:v h264 -f mp4 -t 20ms "$@"
+
+doc/fq.1.adoc: fq
+	cd doc && (../fq -Rrs -L . 'include "fq.1.tmpl.adoc"; fq_tmpl_adoc(true)' fq.1.tmpl.adoc > fq.1.adoc)
+
+doc/fq.1: doc/fq.1.adoc
+	asciidoctor -b manpage doc/fq.1.adoc > doc/fq.1
+
+doc/fq.1.html: doc/fq.1.adoc
+	asciidoctor -b html5 -a webfonts! doc/fq.1.adoc > doc/fq.1.html
 
 gogenerate: always
 	go generate -x ./...

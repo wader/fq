@@ -2,7 +2,7 @@ Apple's `bookmarkData` format is used to encode information that can be resolved
 into a `URL` object for a file even if the user moves or renames it. Can also
 contain security scoping information for App Sandbox support.
 
-These `bookmarkData` blobs are often found endcoded in data fields of Binary
+These `bookmarkData` blobs are often found encoded in data fields of Binary
 Property Lists. Notable examples include:
 
 - `com.apple.finder.plist` - contains an `FXRecentFolders` value, which is an

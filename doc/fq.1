@@ -1,0 +1,6702 @@
+'\" t
+.\"     Title: fq
+.\"    Author: Mattias Wadman
+.\" Generator: Asciidoctor 2.0.26
+.\"    Manual: FQ
+.\"    Source: FQ
+.\"  Language: English
+.\"
+.TH "FQ" "1" "" "FQ" "FQ"
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.ss \n[.ss] 0
+.nh
+.ad l
+.de URL
+\fI\\$2\fP <\\$1>\\$3
+..
+.als MTO URL
+.if \n[.g] \{\
+.  mso www.tmac
+.  am URL
+.    ad l
+.  .
+.  am MTO
+.    ad l
+.  .
+.  LINKSTYLE blue R < >
+.\}
+.SH "NAME"
+fq \- tool, language and decoders for working with binary formats
+.SH "SYNOPSIS"
+.sp
+\f(CR\fBfq [\fIOPTIONS\fP] [\-\-] [\fIEXPRESSION\fP] [\fIFILE\fP.\|.\|.]\fP\fP
+.SH "DESCRIPTION"
+.sp
+\fBfq\fP is a tool, language, and decoders for working with binary formats and data.
+In most cases it behaves and feels similar to \c
+.URL "https://jqlang.github.io/jq/" "jq" ""
+and it
+also uses the same expression language.
+To get the most out of fq it\(cqs recommended to learn more about jq.
+.sp
+It features a structural hex viewer, nested format decoding, slicing and concatenating
+binary data, bit\-level decoding and an interactive REPL with auto\-completion.
+.sp
+.if n .RS 4
+.nf
+.fam C
+# Evaluate "d" for file.mp4
+$ fq d file.mp4
+
+# Evaluate ".boxes[0].type" for all *.mp4 files
+$ fq \*(Aq.boxes[0].type\*(Aq *.mp4
+
+# Evaluate "1+2" without reading any input
+$ fq \-n 1+2
+.fam
+.fi
+.if n .RE
+.sp
+For more advanced usage see \f(CR\-\-arg\fP, \f(CR\-\-slurp\fP, \f(CR\-\-raw\-file\fP, \f(CR\-n\fP etc and examples at the end of the documentation.
+.SH "OPTIONS"
+.sp
+\f(CR\fB\-\-arg NAME VALUE\fP\fP
+.RS 4
+Set $NAME to string VALUE
+.RE
+.sp
+\f(CR\fB\-\-argdecode NAME PATH\fP\fP
+.RS 4
+Set $NAME to decode of PATH
+.RE
+.sp
+\f(CR\fB\-\-argjson NAME JSON\fP\fP
+.RS 4
+Set $NAME to JSON
+.RE
+.sp
+\f(CR\fB\-\-args\fP\fP
+.RS 4
+Consume remaining arguments as positional strings
+.RE
+.sp
+\f(CR\fB\-\-color\-output\fP\fP, \f(CR\fB\-C\fP\fP
+.RS 4
+Force color output
+.RE
+.sp
+\f(CR\fB\-\-compact\-output\fP\fP, \f(CR\fB\-c\fP\fP
+.RS 4
+Use compact output
+.RE
+.sp
+\f(CR\fB\-\-decode\fP\fP, \f(CR\fB\-d NAME\fP\fP
+.RS 4
+Decode format or group (probe)
+.RE
+.sp
+\f(CR\fB\-\-from\-file\fP\fP, \f(CR\fB\-f PATH\fP\fP
+.RS 4
+Read EXPRESSION from file
+.RE
+.sp
+\f(CR\fB\-\-help\fP\fP, \f(CR\fB\-h [TOPIC]\fP\fP
+.RS 4
+Show help for TOPIC (ex: \-h formats, \-h mp4)
+.RE
+.sp
+\f(CR\fB\-\-include\-path\fP\fP, \f(CR\fB\-L PATH\fP\fP
+.RS 4
+Add PATH to include search paths
+.RE
+.sp
+\f(CR\fB\-\-join\-output\fP\fP, \f(CR\fB\-j\fP\fP
+.RS 4
+No newline after each output
+.RE
+.sp
+\f(CR\fB\-\-jsonargs\fP\fP
+.RS 4
+Consume remaining arguments as positional JSON
+.RE
+.sp
+\f(CR\fB\-\-monochrome\-output\fP\fP, \f(CR\fB\-M\fP\fP
+.RS 4
+Force monochrome output
+.RE
+.sp
+\f(CR\fB\-\-null\-input\fP\fP, \f(CR\fB\-n\fP\fP
+.RS 4
+Null input (use input and inputs to read)
+.RE
+.sp
+\f(CR\fB\-\-option\fP\fP, \f(CR\fB\-o NAME=VALUE/@PATH\fP\fP
+.RS 4
+Set option (ex: \-o color=true, see \-\-help options)
+.sp
+\f(CR\fB\-o addrbase=number\fP\fP
+.RS 4
+Number base for addresses
+.RE
+.sp
+\f(CR\fB\-o array_truncate=number\fP\fP
+.RS 4
+Array display length to truncate
+.RE
+.sp
+\f(CR\fB\-o bits_format=string\fP\fP
+.RS 4
+Raw bits representation
+.sp
+\f(CR\fB\-o bits_format=base64\fP\fP
+.RS 4
+Base64 string.
+.RE
+.sp
+\f(CR\fB\-o bits_format=byte_array\fP\fP
+.RS 4
+Array of bytes (zero bit padded if size is not byte aligned).
+.RE
+.sp
+\f(CR\fB\-o bits_format=hex\fP\fP
+.RS 4
+Hex string.
+.RE
+.sp
+\f(CR\fB\-o bits_format=md5\fP\fP
+.RS 4
+MD5 hex string (zero bit padded).
+.RE
+.sp
+\f(CR\fB\-o bits_format=snippet\fP\fP
+.RS 4
+Truncated Base64 string prefixed with bit length.
+.RE
+.sp
+\f(CR\fB\-o bits_format=string\fP\fP
+.RS 4
+String with raw bytes (zero bit padded if size is not byte aligned). The string is binary safe internally in fq but bytes not representable as UTF\-8 will be lost if turned into JSON (default).
+.RE
+.sp
+\f(CR\fB\-o bits_format=truncate\fP\fP
+.RS 4
+Truncated string.
+.RE
+.RE
+.sp
+\f(CR\fB\-o byte_colors=ranges=string,.\|.\|.\fP\fP
+.RS 4
+Byte value colorization
+.RE
+.sp
+\f(CR\fB\-o color=true|false\fP\fP
+.RS 4
+Use color
+.RE
+.sp
+\f(CR\fB\-o colors=key=value,.\|.\|.\fP\fP
+.RS 4
+Color scheme
+.RE
+.sp
+\f(CR\fB\-o compact=true|false\fP\fP
+.RS 4
+Use compact JSON
+.RE
+.sp
+\f(CR\fB\-o completion_timeout=number\fP\fP
+.RS 4
+Seconds to wait for completion results
+.RE
+.sp
+\f(CR\fB\-o depth=number\fP\fP
+.RS 4
+Display tree depth limit
+.RE
+.sp
+\f(CR\fB\-o display_bytes=number\fP\fP
+.RS 4
+Display bytes limit
+.RE
+.sp
+\f(CR\fB\-o force=true|false\fP\fP
+.RS 4
+Force decode
+.RE
+.sp
+\f(CR\fB\-o join_string=string\fP\fP
+.RS 4
+String used to join outputs
+.RE
+.sp
+\f(CR\fB\-o line_bytes=number\fP\fP
+.RS 4
+Number of bytes per display line
+.RE
+.sp
+\f(CR\fB\-o raw_string=true|false\fP\fP
+.RS 4
+Raw string output
+.RE
+.sp
+\f(CR\fB\-o sizebase=number\fP\fP
+.RS 4
+Number base for sizes
+.RE
+.sp
+\f(CR\fB\-o skip_gaps=true|false\fP\fP
+.RS 4
+Skip gaps when representing decode value (arrays) as JSON
+.RE
+.sp
+\f(CR\fB\-o string_truncate=number\fP\fP
+.RS 4
+String display length truncate
+.RE
+.sp
+\f(CR\fB\-o unicode=true|false\fP\fP
+.RS 4
+Use unicode
+.RE
+.sp
+\f(CR\fB\-o verbose=true|false\fP\fP
+.RS 4
+Verbose display
+.RE
+.sp
+\f(CR\fB\-o width=number\fP\fP
+.RS 4
+Terminal width
+.RE
+.RE
+.sp
+\f(CR\fB\-\-raw\-file NAME PATH\fP\fP
+.RS 4
+Set $NAME to string content of file
+.RE
+.sp
+\f(CR\fB\-\-raw\-input\fP\fP, \f(CR\fB\-R\fP\fP
+.RS 4
+Read raw input strings (don\(cqt decode)
+.RE
+.sp
+\f(CR\fB\-\-raw\-output\fP\fP, \f(CR\fB\-r\fP\fP
+.RS 4
+Raw string output (without quotes)
+.RE
+.sp
+\f(CR\fB\-\-raw\-output0\fP\fP
+.RS 4
+NUL (zero) byte after each output
+.RE
+.sp
+\f(CR\fB\-\-repl\fP\fP, \f(CR\fB\-i\fP\fP
+.RS 4
+Interactive REPL
+.RE
+.sp
+\f(CR\fB\-\-slurp\fP\fP, \f(CR\fB\-s\fP\fP
+.RS 4
+Slurp all inputs into an array or string (\-Rs)
+.RE
+.sp
+\f(CR\fB\-\-unicode\-output\fP\fP, \f(CR\fB\-U\fP\fP
+.RS 4
+Force unicode output
+.RE
+.sp
+\f(CR\fB\-\-value\-output\fP\fP, \f(CR\fB\-V\fP\fP
+.RS 4
+Output JSON value (\-Vr for raw string)
+.RE
+.sp
+\f(CR\fB\-\-version\fP\fP, \f(CR\fB\-v\fP\fP
+.RS 4
+Show version
+.RE
+.SH "CONFIGURATION"
+.SS "Init files"
+.sp
+To add your own functions you can use \f(CRinit.jq\fP that is read from:
+.sp
+macOS
+.RS 4
+\f(CR$HOME/Library/Application Support/fq/init.jq\fP or
+.br
+\f(CR$HOME/.config/fq/init.jq\fP
+.RE
+.sp
+Linux and BSD
+.RS 4
+\f(CR$HOME/.config/fq/init.jq\fP
+.RE
+.sp
+Windows
+.RS 4
+\f(CR%AppData%\(rsfq\(rsinit.jq\fP
+.RE
+.SS "Environment"
+.sp
+\f(CR\fBNO_COLOR\fP\fP
+.RS 4
+Non\-empty string disables color output.
+.RE
+.sp
+\f(CR\fBCLIUNICODE\fP\fP
+.RS 4
+Enables use of unicode output characters.
+.RE
+.sp
+\f(CR\fBCOMPLETION_TIMEOUT\fP\fP
+.RS 4
+REPL completion timeout in seconds.
+.RE
+.sp
+\f(CR\fBNO_DECODE_PROGRESS\fP\fP
+.RS 4
+Disables decode progress indicator.
+.RE
+.SH "EXPRESSION"
+.SS "Syntax"
+.sp
+See \fBjq\fP(1) for syntax details. But here are some common beginner gotchas:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Functions that take no arguments are called using \f(CRname\fP instead of \f(CRname()\fP.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Arguments are separated by \f(CR;\fP instead of \f(CR,\fP. Comma is used to concatenate output streams.
+To call a function \f(CRf\fP with two arguments use \f(CRf(1; 2)\fP. If you do \f(CRf(1, 2)\fP
+you pass a single argument \f(CR1, 2\fP, a filter that outputs \f(CR1\fP and then \f(CR2\fP, to \f(CRf\fP.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Expressions can return or "output" zero or more values. This is how iteration etc is done, \f(CR1, 2\fP outputs \f(CR1\fP then \f(CR2\fP.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Similar to shell pipelines, implicit input and output are used and piped together using \f(CR|\fP. \f(CR.\fP is used to refer to
+current input. Ex \f(CR1 | . + 2\fP outputs \f(CR3\fP, \f(CR1, 2 | . + 2\fP outputs \f(CR3\fP and \f(CR4\fP.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+In the jq manual and other jq related documentation you might see \f(CRname/2\fP, this means the
+function \f(CRname\fP takes two arguments (arity).
+.RE
+.SS "Additional features"
+.sp
+fq uses an extended variant of the jq language with a few extra features:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Arbitrary\-precision integers and arithmetics.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Supports raw strings using back\-ticks. String interpolation and codepoint escapes are not processed.
+.sp
+.if n .RS 4
+.nf
+.fam C
+`hello \(rs("world")\(rsud83c\(rsudf0d`
+.fam
+.fi
+.if n .RE
+.sp
+results in the string \f(CRhello \(rs("world")\(rsud83c\(rsudf0d\fP or as JSON \f(CR"hello \(rs\(rs(\(rs"world\(rs")\(rs\(rsud83c\(rs\(rsudf0d"\fP.
+In contrast
+.sp
+.if n .RS 4
+.nf
+.fam C
+"hello \(rs("world")\(rsud83c\(rsudf0d"
+.fam
+.fi
+.if n .RE
+.sp
+results in the string \f(CRhello world🌍\fP or as JSON \f(CR"hello world🌍"\fP.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Supports more number bases in integer literals.
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR0xabcd\fP (Hexadecimal).
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR0o125715\fP (Octal).
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR0b1010101111001101\fP (Binary).
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Grouping using underscore \f(CR0xab_cd\fP.
+.RE
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Binary and decode value types, see below.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Try include using an ending question mark \f(CRinclude "file?";\fP that doesn\(cqt fail if file is missing or has errors.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Some values can act as an object with keys even when they are arrays, numbers etc.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+There can be keys hidden from \f(CRkeys\fP and \f(CR[]\fP.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Some values are readonly and can\(cqt be updated or will convert to JSON on update.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Mixing \f(CR\-\-args\fP and \f(CR\-\-jsonargs\fP does not behave the same.
+.RE
+.SS "Additional functions"
+.sp
+\f(CR\fBband\fP\fP, \f(CR\fBbor\fP\fP, \f(CR\fBbxor\fP\fP, \f(CR\fBbsl\fP\fP, \f(CR\fBbsr\fP\fP, \f(CR\fBbnot\fP\fP
+.RS 4
+Bitwise operations as functions. Works the same as jq\(cqs math functions. Functions that take one argument use
+input, \f(CR1 | bnot\fP, and functions with more arguments ignore the input and use formal arguments \f(CRbsl(1; 3)\fP.
+.RE
+.sp
+\f(CR\fBchunk($size)\fP\fP
+.RS 4
+Split array or string into \f(CR$size\fP length chunks. Last chunk might be shorter.
+.RE
+.sp
+\f(CR\fBcount\fP\fP, \f(CR\fBcount_by(f)\fP\fP
+.RS 4
+Like \f(CRgroup\fP but outputs array of \f(CR[value, count]\fP pairs.
+.RE
+.sp
+\f(CR\fBdelta\fP\fP, \f(CR\fBdelta_by(f)\fP\fP
+.RS 4
+Array with difference between consecutive. \f(CRdelta\fP is the same as \f(CRdelta_by(.b \- .a)\fP.
+.RE
+.sp
+\f(CR\fBdiff($a; $b)\fP\fP
+.RS 4
+Produce a diff between \f(CR$a\fP and \f(CR$b\fP. Differences are represented as an object \f(CR{a: <value from a>, b: <value from b>}\fP.
+.RE
+.sp
+\f(CR\fBexpr_to_path\fP\fP
+.RS 4
+Converts from a string \f(CR".key[1]"\fP to a path value \f(CR["key", 1]\fP.
+.RE
+.sp
+\f(CR\fBgrep_by(f)\fP\fP
+.RS 4
+Recursively select using a filter and ignore any errors.
+Ex: \f(CRgrep_by(. > 180 and . < 200)\fP, \f(CRfirst(grep_by(format == "id3v2"))\fP.
+This is the same as doing \f(CR.. | select(f)?\fP.
+.RE
+.sp
+\f(CR\fBgroup\fP\fP
+.RS 4
+Group values, same as \f(CRgroup_by(.)\fP.
+.RE
+.sp
+\f(CR\fBpath_to_expr\fP\fP
+.RS 4
+Converts a path value \f(CR["key", 1]\fP to a string \f(CR".key[1]"\fP.
+.RE
+.sp
+\f(CR\fBpaste\fP\fP
+.RS 4
+Read string from stdin until ^D. Useful for pasting text. Ex: \f(CRpaste | from_pem | asn1_ber | repl\fP read from stdin then decode and start a new sub\-REPL with result.
+.RE
+.sp
+\f(CR\fBstreaks\fP\fP, \f(CR\fBstreaks_by(f)\fP\fP
+.RS 4
+Like \f(CRgroup\fP but groups streaks based on condition.
+.RE
+.sp
+\f(CR\fBrepl\fP\fP, \f(CR\fBrepl($opts)\fP\fP
+.RS 4
+Nested REPL. Must be last in a pipeline. \f(CRrepl\fP can "slurp" outputs, ex: \f(CR1, 2, 3 | repl\fP, and supports options, ex: \f(CR[1,2,3] | repl({compact: true})\fP.
+.RE
+.sp
+\f(CR\fBslurp("<name>")\fP\fP
+.RS 4
+Slurp outputs and saves them to \f(CR$name\fP. Must be last in the pipeline. Will be available as a global array \f(CR$name\fP. Ex \f(CR1,2,3 | slurp("a")\fP, \f(CR$a[]\fP same as \f(CRspew("a")\fP.
+.RE
+.sp
+\f(CR\fBspew\fP\fP, \f(CR\fBspew("<name>")\fP\fP
+.RS 4
+Outputs all or a specific slurp. Ex: \f(CRspew("a")\fP.
+.RE
+.sp
+\f(CR\fBprintln\fP\fP, \f(CR\fBprint\fP\fP
+.RS 4
+Print string or compact JSON to stdout with and without new line.
+.RE
+.sp
+\f(CR\fBprinterrln\fP\fP, \f(CR\fBprinterr\fP\fP
+.RS 4
+Print string or compact JSON to stderr with and without new line.
+.RE
+.SS "Decode value"
+.sp
+A decode value is the type returned from decoding a format and used to represent values produced by a decoder.
+It can be seen as representing any standard jq type but with some additional properties attached.
+.sp
+Each decode value has these properties:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Bit range in the input. Can be used as a binary using \f(CRtobytes\fP, \f(CRtobytesrange\fP, \f(CRtobits\fP and \f(CRtobitsrange\fP.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+If scalar type, an actual value:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+This is the decoded representation of the bits, a number, string, bool etc.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Can be accessed using \f(CRtoactual\fP.
+.RE
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+If scalar type, an optional symbolic value:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Is usually a mapping of the actual to symbolic value, ex: map number to a string value.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Can be accessed using \f(CRtosym\fP.
+.RE
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+An optional description:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Can be accessed using \f(CRtodescription\fP.
+.RE
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRparent\fP is the parent decode value
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRparents\fP is all the parent decode values
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRtopath\fP is the jq path for the decode value
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRtorepr\fP converts decode value to its representation if possible
+.RE
+.sp
+The value of a decode value is the symbolic value if available and otherwise the actual value. To explicitly access the value use \f(CRtovalue\fP. In most expressions this is not needed as it will be done automatically.
+.SS "Decode value functions"
+.sp
+\f(CR\fBroot\fP\fP
+.RS 4
+Root decode value for decode value.
+.RE
+.sp
+\f(CR\fBbuffer_root\fP\fP
+.RS 4
+Root decode value of sub buffer for decode value.
+.RE
+.sp
+\f(CR\fBformat_root\fP\fP
+.RS 4
+Root decode value of nested format for decode value.
+.RE
+.sp
+\f(CR\fBparent\fP\fP
+.RS 4
+Parent decode value for decode value.
+.RE
+.sp
+\f(CR\fBparents\fP\fP
+.RS 4
+Outputs all parent decode values from decode value.
+.RE
+.sp
+\f(CR\fBtopath\fP\fP
+.RS 4
+Path for decode value. Use \f(CRpath_to_expr\fP to get a string representation.
+.RE
+.sp
+\f(CR\fBtovalue\fP, \f(CRtovalue($opts)\fP\fP
+.RS 4
+Symbolic, if available, or actual value for decode value.
+.RE
+.sp
+\f(CR\fBtoactual\fP, \f(CRtoactual($opts)\fP\fP
+.RS 4
+Actual value for decode value.
+.RE
+.sp
+\f(CR\fBtosym\fP, \f(CRtosym($opts)\fP\fP
+.RS 4
+Symbolic value for decode value.
+.RE
+.sp
+\f(CR\fBtodescription\fP\fP
+.RS 4
+Description for decode value.
+.RE
+.sp
+\f(CR\fBtorepr\fP\fP
+.RS 4
+Converts decode value into what it represents. For example converts msgpack decode value into a value representing its JSON representation.
+.RE
+.sp
+\f(CRtobytes\fP, \f(CRtobytesrange\fP, \f(CRtobits\fP and \f(CRtobitsrange\fP on a decode value will return the raw source bits as a binary.
+.SS "Binary"
+.sp
+Binary type is used to store raw bits or bytes. Raw bits will act as zero bits padded strings in standard jq expressions.
+.sp
+Use \f(CRtobits\fP and \f(CRtobytes\fP to create them from decode value, string, number or binary array. \f(CRtobytes\fP will if needed zero pad most significant bits to be byte aligned.
+.sp
+There is also \f(CRtobitsrange\fP and \f(CRtobytesrange\fP which do the same thing but will preserve source range when displayed.
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR"string" | tobytes\fP produces a binary with UTF8 bytes.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR1234 | tobits\fP produces a binary with the unsigned big\-endian integer 1234 with enough bits to represent the number. Use \f(CRtobytes\fP to get the same but with enough bytes to represent the number. This is different to how numbers work inside binary arrays where they are limited to 0\-255.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR["abc", 123, .\|.\|.] | tobytes\fP produces a binary from a binary array. See Binary array below.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR.[index]\fP access bit or byte at index \f(CRindex\fP. Index is in units.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR[0x12, 0x34, 0x56] | tobytes[1]\fP is \f(CR0x34\fP
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR[0x12, 0x34, 0x56] | tobits[3]\fP is \f(CR1\fP
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR.[start:]\fP, \f(CR.[start:end]\fP or \f(CR.[:end]\fP is normal jq slice syntax and will slice the binary from \f(CRstart\fP to \f(CRend\fP. \f(CRstart\fP and \f(CRend\fP are in units.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR[0x12, 0x34, 0x56] | tobytes[1:2]\fP will be a binary with the byte \f(CR0x34\fP
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR[0x12, 0x34, 0x56] | tobits[4:12]\fP will be a binary with the byte \f(CR0x23\fP
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR[0x12, 0x34, 0x56] | tobits[4:20]\fP will be a binary with the bytes \f(CR0x23\fP, \f(CR0x45\fP
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR[0x12, 0x34, 0x56] | tobits[4:20] | tobytes[1:]\fP will be a binary with the byte \f(CR0x45\fP
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Both \f(CR.[index]\fP and \f(CR.[start:end]\fP support negative indices to index from end.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRexplode\fP outputs an array with all bytes or bits as integers.
+.RE
+.SS "Binary functions"
+.sp
+\f(CR\fBgrep($v)\fP\fP, \f(CR\fBgrep($v; $flags)\fP\fP, \f(CR\fBvgrep($v)\fP\fP, \f(CR\fBvgrep($v; $flags)\fP\fP, \f(CR\fBbgrep($v)\fP\fP, \f(CR\fBbgrep($v; $flags)\fP\fP
+.RS 4
+Recursively match \f(CR$v\fP.
+\f(CR$v\fP is a scalar to match, where a string is treated as a regexp. A binary will match exact bytes.
+\f(CR$flags\fP arguments are regexp flags with additional flag "b" that will treat each byte in the input binary
+as a code point. This makes it possible to match exact bytes.
+.RE
+.sp
+\f(CR\fBfgrep($v)\fP\fP, \f(CR\fBfgrep($v; $flags)\fP\fP
+.RS 4
+Recursively match field name in a decode value.
+.RE
+.sp
+\f(CR\fBtobits\fP\fP
+.RS 4
+Transform input to binary with bit as unit and don\(cqt preserve source range.
+.RE
+.sp
+\f(CR\fBtobitsrange\fP\fP
+.RS 4
+Transform input to binary with bit as unit and preserve source range.
+.RE
+.sp
+\f(CR\fBtobytes\fP\fP
+.RS 4
+Transform input to binary with byte as unit and don\(cqt preserve source range.
+.RE
+.sp
+\f(CR\fBtobytesrange\fP\fP
+.RS 4
+Transform input to binary with byte as unit and preserve source range.
+.RE
+.sp
+\f(CR\fBopen\fP\fP
+.RS 4
+Open file for reading.
+.RE
+.SS "Binary array"
+.sp
+Binary array is a value "shape" and not a new type. It\(cqs an array of numbers, strings, binaries or other
+binary arrays. They can be used as input to \f(CRtobits\fP, \f(CRtobytes\fP or other function that accept a binary as input.
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Number is a byte with value 0\-255
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+String as UTF8 bytes
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Binary as is
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Binary array used recursively
+.RE
+.sp
+Binary arrays are similar to and inspired by \c
+.URL "https://www.erlang.org/doc/man/erlang.html#type\-iolist" "Erlang iolist" "."
+.sp
+Some examples:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR[0, 123, 255] | tobytes\fP will be binary with 3 bytes 0, 123 and 255.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR[0, [123, 255]] | tobytes\fP same as above.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR[0, 1, 1, 0, 0, 1, 1, 0 | tobits] | tobytes\fP will be binary with 1 byte, 0x66.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR[(.a | tobytes[\-10:]), 255, (.b | tobits[:10])] | tobytes\fP the concatenation of the last 10 bytes of \f(CR.a\fP, byte of value 255 and the first 10 bits of \f(CR.b\fP.
+.RE
+.SS "Differences to jq"
+.sp
+See \c
+.URL "https://github.com/itchyny/gojq#difference\-to\-jq" "gojq\(cqs differences to jq" "."
+.SS "Naming inconsistencies"
+.sp
+jq\(cqs naming convention is a bit inconsistent. Some standard library functions are named \f(CRtojson\fP while others \f(CRfrom_entries\fP. fq follows this tradition but tries to use \f(CRsnake_case\fP unless there is a good reason.
+.sp
+Here are all the non\-snake_case functions added by fq. Most of them deal with decode and binary values which are new "primitive" types:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRtoactual\fP
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRtobits\fP
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRtobitsrange\fP
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRtobytes\fP
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRtobytesrange\fP
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRtodescription\fP
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRtopath\fP
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRtorepr\fP
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRtosym\fP
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRtovalue\fP
+.RE
+.SH "DISPLAY OUTPUT"
+.sp
+\f(CRdisplay\fP or \f(CRd\fP is the main function for displaying values and is also the function that will be used if no other output function is explicitly used. If its input is a decode value it will output a dump and tree structure or otherwise it will output as JSON.
+.sp
+Below demonstrates some usages:
+.sp
+The first and second examples do the same thing, inputting \f(CR"hello"\fP to \f(CRdisplay\fP.
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-n \*(Aq"hello"\*(Aq
+"hello"
+
+$ fq \-n \*(Aq"hello" | d\*(Aq
+"hello"
+.fam
+.fi
+.if n .RE
+.sp
+In the next few examples we select out the first "edit list" box in an mp4 file and display it in various ways.
+.sp
+By default, display will only show the root level:
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \*(Aqfirst(grep_by(.type == "elst"))\*(Aq file.mp4
+     |00 01 02 03 04 05 06 07 08 09|0123456789|.boxes[3].boxes[1].boxes[1].boxes[0]{}: box
+0xd5c|\&                           00|\&         .|\&  size: 28
+0xd66|00 00 1c\&                     |...\&       |
+0xd66|\&         65 6c 73 74\&         |\&   elst\&   |\&  type: "elst" (An edit list)
+0xd66|\&                     00\&      |\&       .\&  |\&  version: 0
+0xd66|\&                        00 00|\&        ..|\&  flags: 0
+0xd70|00\&                           |.\&         |
+0xd70|\&   00 00 00 01\&               | ....\&     |\&  entry_count: 1
+0xd70|\&               00 00 00 28 00|\&     ...(.|\&  entries[0:1]:
+0xd7a|00 00 00 00 01 00 00\&         |.......\&   |
+.fam
+.fi
+.if n .RE
+.sp
+First row shows a ruler with byte offset into the line and jq path for the value.
+.sp
+The columns are:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Start address for the line. For example we see that \f(CRsize\fP starts at \f(CR0xd5c\fP (row) + \f(CR0x09\fP (column) = \f(CR0xd65\fP.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Hex representation of input bits for value. Will show the whole byte even if the value only partially uses bits from it.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+ASCII representation of input bits for value. Will show the whole byte even if the value only partially uses bits from it.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Tree structure of decoded value, symbolic value and description.
+.RE
+.sp
+Notation:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR{}\fP value is an object that might have nested values.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR[start:end]\fP value is an array with index starting at \f(CRstart\fP and ending at \f(CRend\fP (exclusive).
+.RE
+.sp
+With \f(CRdisplay\fP or \f(CRd\fP it will recursively show the whole tree:
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \*(Aqfirst(grep_by(.type == "elst")) | d\*(Aq file.mp4
+     |00 01 02 03 04 05 06 07 08 09|0123456789|.boxes[3].boxes[1].boxes[1].boxes[0]{}: box
+0xd5c|\&                           00|\&         .|\&  size: 28
+0xd66|00 00 1c\&                     |...\&       |
+0xd66|\&         65 6c 73 74\&         |\&   elst\&   |\&  type: "elst" (An edit list)
+0xd66|\&                     00\&      |\&       .\&  |\&  version: 0
+0xd66|\&                        00 00|\&        ..|\&  flags: 0
+0xd70|00\&                           |.\&         |
+0xd70|\&   00 00 00 01\&               | ....\&     |\&  entry_count: 1
+     |\&                             |\&          |\&  entries[0:1]:
+     |\&                             |\&          |\&    [0]{}: entry
+0xd70|\&               00 00 00 28\&   |\&     ...( |\&      segment_duration: 40
+0xd70|\&                           00|\&         .|\&      media_time: 0
+0xd7a|00 00 00\&                     |...\&       |
+0xd7a|\&         00 01 00 00\&         |\&   ....\&   |\&      media_rate: 1
+.fam
+.fi
+.if n .RE
+.sp
+Same but verbose \f(CRdv\fP:
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \*(Aqfirst(grep_by(.type == "elst")) | dv\*(Aq file.mp4
+     |00 01 02 03 04 05 06 07 08 09|0123456789|.boxes[3].boxes[1].boxes[1].boxes[0]{}: box 0xd65\-0xd81 (28)
+0xd5c|\&                           00|\&         .|\&  size: 28 0xd65\-0xd69 (4)
+0xd66|00 00 1c\&                     |...\&       |
+0xd66|\&         65 6c 73 74\&         |\&   elst\&   |\&  type: "elst" (An edit list) 0xd69\-0xd6d (4)
+0xd66|\&                     00\&      |\&       .\&  |\&  version: 0 0xd6d\-0xd6e (1)
+0xd66|\&                        00 00|\&        ..|\&  flags: 0 0xd6e\-0xd71 (3)
+0xd70|00\&                           |.\&         |
+0xd70|\&   00 00 00 01\&               | ....\&     |\&  entry_count: 1 0xd71\-0xd75 (4)
+     |\&                             |\&          |\&  entries[0:1]: 0xd75\-0xd81 (12)
+     |\&                             |\&          |\&    [0]{}: entry 0xd75\-0xd81 (12)
+0xd70|\&               00 00 00 28\&   |\&     ...( |\&      segment_duration: 40 0xd75\-0xd79 (4)
+0xd70|\&                           00|\&         .|\&      media_time: 0 0xd79\-0xd7d (4)
+0xd7a|00 00 00\&                     |...\&       |
+0xd7a|\&         00 01 00 00\&         |\&   ....\&   |\&      media_rate: 1 0xd7d\-0xd81 (4)
+.fam
+.fi
+.if n .RE
+.sp
+In verbose mode bit ranges and array element names are shown.
+.sp
+Bit ranges use \f(CR<start\-byte>[.<bits>]\-<end\-byte>[.<bits>]\fP as notation where \f(CR.<bits>\fP is left out if byte aligned. For example \f(CRtype\fP starts at byte \f(CR0xd69\fP bit \f(CR0\fP (\f(CR.0\fP is left out) and ends at \f(CR0xd6d\fP bit \f(CR0\fP (exclusive) and has a size of \f(CR4\fP bytes.
+.sp
+This verbosely displays the header of the second frame in an mp3 file which has a bunch of non\-byte\-aligned fields:
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \*(Aq.frames[1].header | dv\*(Aq file.mp3
+     |00 01 02 03 04 05 06 07 08 09|0123456789|.frames[1].header{}: 0xb79\-0xb7d (4)
+0xb72|\&                     ff fb\&   |\&       .. |\&  sync: 0b11111111111 (valid) 0xb79\-0xb7a.3 (1.3)
+0xb72|\&                        fb\&   |\&        . |\&  mpeg_version: "1" (3) (MPEG Version 1) 0xb7a.3\-0xb7a.5 (0.2)
+0xb72|\&                        fb\&   |\&        . |\&  layer: 3 (1) (MPEG Layer 3) 0xb7a.5\-0xb7a.7 (0.2)
+     |\&                             |\&          |\&  sample_count: 1152
+0xb72|\&                        fb\&   |\&        . |\&  protection_absent: true (No CRC) 0xb7a.7\-0xb7b (0.1)
+0xb72|\&                           50|\&         P|\&  bitrate: 64000 (5) 0xb7b\-0xb7b.4 (0.4)
+0xb72|\&                           50|\&         P|\&  sample_rate: 44100 (0) 0xb7b.4\-0xb7b.6 (0.2)
+0xb72|\&                           50|\&         P|\&  padding: "not_padded" (0b0) 0xb7b.6\-0xb7b.7 (0.1)
+0xb72|\&                           50|\&         P|\&  private: 0 0xb7b.7\-0xb7c (0.1)
+0xb7c|c4\&                           |.\&         |\&  channels: "mono" (0b11) 0xb7c\-0xb7c.2 (0.2)
+0xb7c|c4\&                           |.\&         |\&  channel_mode: "none" (0b0) 0xb7c.2\-0xb7c.4 (0.2)
+0xb7c|c4\&                           |.\&         |\&  copyright: 0 0xb7c.4\-0xb7c.5 (0.1)
+0xb7c|c4\&                           |.\&         |\&  original: 1 0xb7c.5\-0xb7c.6 (0.1)
+0xb7c|c4\&                           |.\&         |\&  emphasis: "none" (0b0) 0xb7c.6\-0xb7d (0.2)
+.fam
+.fi
+.if n .RE
+.sp
+Here the \f(CRsync\fP pattern starts at \f(CR0xb79\fP (bit \f(CR0\fP) and ends at \f(CR0xb7a.3\fP (exclusive) and has a size of \f(CR1\fP byte and \f(CR3\fP bits, \f(CR11\fP bits in total (\f(CR8+3\fP).
+.sp
+There are also some other \f(CRdisplay\fP aliases:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRda\fP is \f(CRdisplay({array_truncate: 0, string_truncate: 0})\fP don\(cqt truncate array and strings.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRdd\fP is \f(CRdisplay({array_truncate: 0, string_truncate: 0, display_bytes: 0})\fP don\(cqt truncate array and strings, show all raw bytes.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRdv\fP is \f(CRdisplay({array_truncate: 0, string_truncate: 0, verbose: true})\fP don\(cqt truncate array and strings and display verbosely.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRddv\fP is \f(CRdisplay({array_truncate: 0, string_truncate: 0, display_bytes: 0, verbose: true})\fP don\(cqt truncate array and strings, show all raw bytes and display verbosely.
+.RE
+.SH "FORMATS"
+.sp
+By default fq will try to automatically determine input format. In some cases this might fail or is not
+possible, then a format can be specified using \f(CR\-d NAME\fP. It\(cqs possible sometimes to force decode and get
+a partial or broken result using \f(CR\-o force=true\fP.
+.sp
+.if n .RS 4
+.nf
+.fam C
+# decode as msgpack
+$ fq \-d msgpack d file
+# force decode as msgpack
+$ fq \-d msgpack \-o force=true d file
+# see msgpack format help
+$ fq \-h msgpack
+# list supported formats
+$ fq \-h formats
+.fam
+.fi
+.if n .RE
+.SS "Format options"
+.sp
+Some formats has own options that can be set using \f(CR\-o\fP. For
+example the \f(CRmp4\fP format has a \f(CRdecode_samples\fP option that controls
+if individual samples should be decoded. To disable it one can do
+\f(CRfq \-o decode_samples=false . file.mp4\fP. See format list for options.
+.SS "Format functions"
+.sp
+In addition to using \f(CR\-d\fP all format decoders are also available as normal jq functions.
+Each format provides multiple functions:
+.sp
+\f(CR<name>\fP
+.RS 4
+Decode and return a decode value even on error. Ex: \f(CR.\|.\|. | mp4\fP
+.RE
+.sp
+\f(CR<name>($options)\fP
+.RS 4
+Same as above with format options. Ex: \f(CR.\|.\|. | mp4({decode_samples: false})\fP
+.RE
+.sp
+\f(CRfrom_<name>\fP
+.RS 4
+Decode or throw on error. Ex: \f(CR.\|.\|. | from_mp4\fP
+.RE
+.sp
+\f(CRfrom_<name>($options)\fP
+.RS 4
+Same as above with format options Ex: \f(CR.\|.\|. | from_mp4({decode_samples: false})\fP
+.RE
+.sp
+Example usage:
+.sp
+.if n .RS 4
+.nf
+.fam C
+# decode jpeg found inside some other format
+$ fq \*(Aq.some[].query | jpeg\*(Aq file
+
+# decode jpeg at byte range 100\-200
+$ fq \-d bytes \*(Aq.[100:200] | jpeg\*(Aq file
+.fam
+.fi
+.if n .RE
+.SS "Supported formats"
+.sp
+\f(CR\fBaac_frame\fP\fP
+.RS 4
+Advanced Audio Coding frame
+.sp
+.B Options
+.br
+.sp
+\f(CR\fB\-o object_type=1\fP\fP
+.RS 4
+Audio object type
+.RE
+.RE
+.sp
+\f(CR\fBadts\fP\fP
+.RS 4
+Audio Data Transport Stream
+.RE
+.sp
+\f(CR\fBadts_frame\fP\fP
+.RS 4
+Audio Data Transport Stream frame
+.RE
+.sp
+\f(CR\fBaiff\fP\fP
+.RS 4
+Audio Interchange File Format
+.RE
+.sp
+\f(CR\fBamf0\fP\fP
+.RS 4
+Action Message Format 0
+.RE
+.sp
+\f(CR\fBapev2\fP\fP
+.RS 4
+APEv2 metadata tag
+.RE
+.sp
+\f(CR\fBapple_bookmark\fP\fP
+.RS 4
+Apple BookmarkData
+.sp
+Apple\(cqs \f(CRbookmarkData\fP format is used to encode information that can be resolved into a \f(CRURL\fP object for a file even if the user moves or renames it. Can also contain security scoping information for App Sandbox support.
+These \f(CRbookmarkData\fP blobs are often found encoded in data fields of Binary Property Lists. Notable examples include:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRcom.apple.finder.plist\fP \- contains an \f(CRFXRecentFolders\fP value, which is an array of ten objects, each of which consists of a \f(CRname\fP and \f(CRfile\-bookmark\fP field, which is a \f(CRbookmarkData\fP object for each recently accessed folder location.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRcom.apple.LSSharedFileList.RecentApplications.sfl2\fP \- \f(CRsfl2\fP files are actually \f(CRplist\fP files of the \f(CRNSKeyedArchiver\fP format. They can be parsed the same as \f(CRplist\fP files, but they have a more complicated tree\-like structure than would typically be found, which can make locating and retrieving specific values difficult, even once it has been converted to a JSON representation. For more information about these types of files, see Sarah Edwards\*(Aq excellent research on the subject (link in references).
+.RE
+.sp
+\f(CRfq\(cqs `grep_by\fP function can be used to recursively descend through the decoded tree, probing for and selecting any \f(CRbookmark\fP blobs, then converting them to readable JSON with \f(CRtorepr\fP:
+.sp
+.if n .RS 4
+.nf
+.fam C
+fq \*(Aqgrep_by(.type=="data" and .value[0:4] == "book") | .value | apple_bookmark |
+torepr\*(Aq <sfl2 file>
+.fam
+.fi
+.if n .RE
+.sp
+Authors
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+David McDonald \c
+.URL "https://github.com/dgmcdona" "@dgmcdona" " "
+.URL "https://twitter.com/river_rat_504" "@river_rat_504" ""
+.RE
+.RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://developer.apple.com/documentation/foundation/url/2143023\-bookmarkdata" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://mac\-alias.readthedocs.io/en/latest/bookmark_fmt.html" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://www.mac4n6.com/blog/2016/1/1/manual\-analysis\-of\-nskeyedarchiver\-formatted\-plist\-files\-a\-review\-of\-the\-new\-os\-x\-1011\-recent\-items" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://michaellynn.github.io/2015/10/24/apples\-bookmarkdata\-exposed/" "" ""
+.RE
+.RE
+.RE
+.sp
+\f(CR\fBar\fP\fP
+.RS 4
+Unix archive
+.RE
+.sp
+\f(CR\fBasn1_ber\fP\fP
+.RS 4
+ASN1 BER (basic encoding rules, also CER and DER)
+.sp
+Supports decoding BER, CER and DER (X.690).
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Currently no extra validation is done for CER and DER.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Does not support specifying a schema.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Supports \f(CRtorepr\fP but without schema all sequences and sets will be arrays.
+.RE
+.sp
+Can be used to decode certificates etc
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-d bytes \*(Aqfrom_pem | asn1_ber | d\*(Aq cert.pem
+.fam
+.fi
+.if n .RE
+.sp
+Can decode nested values
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-d asn1_ber \*(Aq.constructed[1].value | asn1_ber\*(Aq file.ber
+.fam
+.fi
+.if n .RE
+.sp
+Manual schema
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-d asn1_ber \*(Aqtorepr as $r | ["version", "modulus", "private_exponent", "prime1", "prime2", "exponent1", "exponent2", "coefficient"] | with_entries({key: .value, value: $r[.key]})\*(Aq pkcs1.der
+.fam
+.fi
+.if n .RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://www.itu.int/ITU\-T/studygroups/com10/languages/X.690_1297.pdf" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://en.wikipedia.org/wiki/X.690" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://letsencrypt.org/docs/a\-warm\-welcome\-to\-asn1\-and\-der/" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://lapo.it/asn1js/" "" ""
+.RE
+.RE
+.RE
+.sp
+\f(CR\fBav1_ccr\fP\fP
+.RS 4
+AV1 Codec Configuration Record
+.RE
+.sp
+\f(CR\fBav1_frame\fP\fP
+.RS 4
+AV1 frame
+.RE
+.sp
+\f(CR\fBav1_obu\fP\fP
+.RS 4
+AV1 Open Bitstream Unit
+.RE
+.sp
+\f(CR\fBavc_annexb\fP\fP
+.RS 4
+H.264/AVC Annex B
+.RE
+.sp
+\f(CR\fBavc_au\fP\fP
+.RS 4
+H.264/AVC Access Unit
+.sp
+.B Options
+.br
+.sp
+\f(CR\fB\-o bottom_field_pic_order_in_frame_present_flag=false\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o cpb_cnt=0\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o cpb_removal_delay_length=0\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o delta_pic_order_always_zero_flag=false\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o dpb_output_delay_length=0\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o frame_mbs_only_flag=true\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o initial_cpb_removal_delay_length=0\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o length_size=0\fP\fP
+.RS 4
+Length value size
+.RE
+.sp
+\f(CR\fB\-o log2max_frame_num=4\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o log2max_pic_order_cnt_lsb=4\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o nal_hrd_parameters_present=false\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o pic_order_cnt_type=0\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o redundant_pic_cnt_present_flag=false\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o separate_colour_plane_flag=false\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o time_offset_length=0\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o vcl_hrd_parameters_present=false\fP\fP
+.RS 4
+No description
+.RE
+.RE
+.sp
+\f(CR\fBavc_dcr\fP\fP
+.RS 4
+H.264/AVC Decoder Configuration Record
+.RE
+.sp
+\f(CR\fBavc_nalu\fP\fP
+.RS 4
+H.264/AVC Network Access Layer Unit
+.sp
+.B Options
+.br
+.sp
+\f(CR\fB\-o bottom_field_pic_order_in_frame_present_flag=false\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o cpb_cnt=0\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o cpb_removal_delay_length=0\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o delta_pic_order_always_zero_flag=false\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o dpb_output_delay_length=0\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o frame_mbs_only_flag=true\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o initial_cpb_removal_delay_length=0\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o log2max_frame_num=4\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o log2max_pic_order_cnt_lsb=4\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o nal_hrd_parameters_present=false\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o pic_order_cnt_type=0\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o redundant_pic_cnt_present_flag=false\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o separate_colour_plane_flag=false\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o time_offset_length=0\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o vcl_hrd_parameters_present=false\fP\fP
+.RS 4
+No description
+.RE
+.RE
+.sp
+\f(CR\fBavc_pps\fP\fP
+.RS 4
+H.264/AVC Picture Parameter Set
+.RE
+.sp
+\f(CR\fBavc_sei\fP\fP
+.RS 4
+H.264/AVC Supplemental Enhancement Information
+.sp
+.B Options
+.br
+.sp
+\f(CR\fB\-o cpb_cnt=0\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o cpb_removal_delay_length=0\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o delta_pic_order_always_zero_flag=false\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o dpb_output_delay_length=0\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o frame_mbs_only_flag=true\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o initial_cpb_removal_delay_length=0\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o log2max_frame_num=4\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o log2max_pic_order_cnt_lsb=4\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o nal_hrd_parameters_present=false\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o pic_order_cnt_type=0\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o separate_colour_plane_flag=false\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o time_offset_length=0\fP\fP
+.RS 4
+No description
+.RE
+.sp
+\f(CR\fB\-o vcl_hrd_parameters_present=false\fP\fP
+.RS 4
+No description
+.RE
+.RE
+.sp
+\f(CR\fBavc_sps\fP\fP
+.RS 4
+H.264/AVC Sequence Parameter Set
+.RE
+.sp
+\f(CR\fBavi\fP\fP
+.RS 4
+Audio Video Interleaved
+.sp
+Samples
+.RS 4
+AVI has many redundant ways to index samples so currently \f(CR.streams[].samples\fP will only include samples the most "modern" way used in the file. That is in order of stream super index, movi ix index then idx1 index.
+.RE
+.sp
+Extract samples for stream 1
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \*(Aq.streams[1].samples[] | tobytes\*(Aq file.avi > stream01.mp3
+.fam
+.fi
+.if n .RE
+.sp
+Show stream summary
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-o decode_samples=false \*(Aq[.chunks[0] | grep_by(.id=="LIST" and .type=="strl") | grep_by(.id=="strh") as {$type} | grep_by(.id=="strf") as {$format_tag, $compression} | {$type,$format_tag,$compression}]\*(Aq *.avi
+.fam
+.fi
+.if n .RE
+.sp
+Speed up decoding by disabling sample and extended chunks decoding
+.RS 4
+If you\(cqre not interested in sample details or extended chunks you can speed up decoding by using:
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-o decode_samples=false \-o decode_extended_chunks=false d file.avi
+.fam
+.fi
+.if n .RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://learn.microsoft.com/en\-us/windows/win32/directshow/avi\-riff\-file\-reference" "AVI RIFF File Reference" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "http://www.jmcgowan.com/odmlff2.pdf" "OpenDML AVI File Format Extensions" ""
+.RE
+.RE
+.sp
+.B Options
+.br
+.sp
+\f(CR\fB\-o decode_extended_chunks=true\fP\fP
+.RS 4
+Decode extended chunks
+.RE
+.sp
+\f(CR\fB\-o decode_samples=true\fP\fP
+.RS 4
+Decode samples
+.RE
+.RE
+.sp
+\f(CR\fBavro_ocf\fP\fP
+.RS 4
+Avro object container file
+.sp
+Supports reading Avro Object Container Format (OCF) files based on the 1.11.0 specification.
+Capable of handling null, deflate, and snappy codecs for data compression.
+Limitations:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Schema does not support self\-referential types, only built\-in types.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Decimal logical types are not supported for decoding, will just be treated as their primitive type
+.RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://avro.apache.org/docs/current/spec.html#Object+Container+Files" "" ""
+.RE
+.RE
+.sp
+Authors
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Xentripetal \c
+.MTO "xentripetal\(atfastmail.com" "" " "
+.URL "https://github.com/xentripetal" "@xentripetal" ""
+.RE
+.RE
+.RE
+.sp
+\f(CR\fBbencode\fP\fP
+.RS 4
+BitTorrent bencoding
+.sp
+Convert represented value to JSON
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-d bencode torepr file.torrent
+.fam
+.fi
+.if n .RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://wiki.theory.org/BitTorrentSpecification#Bencoding" "" ""
+.RE
+.RE
+.RE
+.sp
+\f(CR\fBbitcoin_blkdat\fP\fP
+.RS 4
+Bitcoin blk.dat
+.RE
+.sp
+\f(CR\fBbitcoin_block\fP\fP
+.RS 4
+Bitcoin block
+.sp
+.B Options
+.br
+.sp
+\f(CR\fB\-o has_header=false\fP\fP
+.RS 4
+Has blkdat header
+.RE
+.RE
+.sp
+\f(CR\fBbitcoin_script\fP\fP
+.RS 4
+Bitcoin script
+.RE
+.sp
+\f(CR\fBbitcoin_transaction\fP\fP
+.RS 4
+Bitcoin transaction
+.RE
+.sp
+\f(CR\fBbits\fP\fP
+.RS 4
+Raw bits
+.sp
+Decode to a slice and indexable binary of bits.
+.sp
+Slice and decode bit range
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ echo \*(Aqsome {"a":1} json\*(Aq | fq \-d bits \*(Aq.[40:\-48] | fromjson\*(Aq
+{
+  "a": 1
+}
+.fam
+.fi
+.if n .RE
+.sp
+Index bits
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ echo \*(Aqhello\*(Aq | fq \-d bits \*(Aq.[4]\*(Aq
+1
+$ echo \*(Aqhello\*(Aq | fq \-c \-d bits \*(Aq[.[range(8)]]\*(Aq
+[0,1,1,0,1,0,0,0]
+.fam
+.fi
+.if n .RE
+.RE
+.sp
+\f(CR\fBbplist\fP\fP
+.RS 4
+Apple Binary Property List
+.sp
+Show full decoding
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq d Info.plist
+.fam
+.fi
+.if n .RE
+.sp
+Timestamps
+.RS 4
+Timestamps in Apple Binary Property Lists are encoded as Cocoa Core Data timestamps, where the raw value is the floating point number of seconds since January 1, 2001. By default, \f(CRfq\fP will render the raw floating point value. In order to get the raw value or the string description, use the \f(CRtovalue\fP or \f(CRtodescription\fP functions:
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \*(Aqtorepr.SomeTimeStamp | tovalue\*(Aq Info.plist
+685135328
+
+$ fq \*(Aqtorepr.SomeTimeStamp | todescription\*(Aq Info.plist
+"2022\-09\-17T19:22:08Z"
+.fam
+.fi
+.if n .RE
+.sp
+Get JSON representation
+.RS 4
+\f(CRbplist\fP files can be converted to a JSON representation using the \f(CRtorepr\fP filter:
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq torepr com.apple.UIAutomation.plist
+{
+  "UIAutomationEnabled": true
+}
+.fam
+.fi
+.if n .RE
+.sp
+Decoding NSKeyedArchiver serialized objects
+.RS 4
+A common way that Swift and Objective\-C libraries on macOS serialize objects is through the NSKeyedArchiver API, which flattens objects into a list of elements and class descriptions that are reconstructed into an object graph using CFUID elements in the property list. \f(CRfq\fP includes a function, \f(CRfrom_ns_keyed_archiver\fP, which will rebuild this object graph into a friendly representation.
+If no parameters are supplied, it will assume that there is a CFUID located at \f(CR."$top".root\fP that specifies the root from which decoding should occur. If this is not present, an error will be produced, asking the user to specify a root object in the \f(CR.$objects\fP list from which to decode.
+The following examples show how this might be used (in this case, within the \f(CRfq\fP REPL):
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+# Assume $top.root is present
+bplist> from_ns_keyed_archiver
+
+# Specify optional root
+bplist> from_ns_keyed_archiver(1)
+.fam
+.fi
+.if n .RE
+.sp
+Authors
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+David McDonald \c
+.URL "https://github.com/dgmcdona" "@dgmcdona" ""
+.RE
+.RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "http://fileformats.archiveteam.org/wiki/Property_List/Binary" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://medium.com/@karaiskc/understanding\-apples\-binary\-property\-list\-format\-281e6da00dbd" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://opensource.apple.com/source/CF/CF\-550/CFBinaryPList.c" "" ""
+.RE
+.RE
+.RE
+.sp
+\f(CR\fBbsd_loopback_frame\fP\fP
+.RS 4
+BSD loopback frame
+.RE
+.sp
+\f(CR\fBbson\fP\fP
+.RS 4
+Binary JSON
+.sp
+Limitations
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+The decimal128 type is not supported for decoding, will just be treated as binary
+.RE
+.RE
+.sp
+Convert represented value to JSON
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-d bson torepr file.bson
+.fam
+.fi
+.if n .RE
+.sp
+Filter represented value
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-d bson \*(Aqtorepr | select(.name=="bob")\*(Aq file.bson
+.fam
+.fi
+.if n .RE
+.sp
+Authors
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Mattias Wadman \c
+.MTO "mattias.wadman\(atgmail.com" "" ","
+original author
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Matt Dale \c
+.URL "https://github.com/matthewdale" "@matthewdale" ","
+additional types and bug fixes
+.RE
+.RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://bsonspec.org/spec.html" "" ""
+.RE
+.RE
+.RE
+.sp
+\f(CR\fBbytes\fP\fP
+.RS 4
+Raw bytes
+.sp
+Decode to a slice and indexable binary of bytes.
+.sp
+Slice out byte ranges
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ echo \-n \*(Aqhello\*(Aq | fq \-d bytes \*(Aq.[\-3:]\*(Aq > last_3_bytes
+$ echo \-n \*(Aqhello\*(Aq | fq \-d bytes \*(Aq[.[\-2:], .[0:2]] | tobytes\*(Aq > first_last_2_bytes_swapped
+.fam
+.fi
+.if n .RE
+.sp
+Slice and decode byte range
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ echo \*(Aqsome {"a":1} json\*(Aq | fq \-d bytes \*(Aq.[5:\-6] | fromjson\*(Aq
+{
+  "a": 1
+}
+.fam
+.fi
+.if n .RE
+.sp
+Index bytes
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ echo \*(Aqhello\*(Aq | fq \-d bytes \*(Aq.[1]\*(Aq
+101
+.fam
+.fi
+.if n .RE
+.RE
+.sp
+\f(CR\fBbzip2\fP\fP
+.RS 4
+bzip2 compression
+.RE
+.sp
+\f(CR\fBcaff\fP\fP
+.RS 4
+Live2D Cubism archive
+.sp
+Authors
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://github.com/ronsor" "@ronsor" ""
+.RE
+.RE
+.sp
+.B Options
+.br
+.sp
+\f(CR\fB\-o uncompress=true\fP\fP
+.RS 4
+Uncompress and probe files
+.RE
+.RE
+.sp
+\f(CR\fBcbor\fP\fP
+.RS 4
+Concise Binary Object Representation
+.sp
+Convert represented value to JSON
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-d cbor torepr file.cbor
+.fam
+.fi
+.if n .RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://en.wikipedia.org/wiki/CBOR" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://www.rfc\-editor.org/rfc/rfc8949.html" "" ""
+.RE
+.RE
+.RE
+.sp
+\f(CR\fBcsv\fP\fP
+.RS 4
+Comma separated values
+.sp
+TSV to CSV
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-d csv \-o comma="\(rst" to_csv file.tsv
+.fam
+.fi
+.if n .RE
+.sp
+Convert rows to objects based on header row
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-d csv \*(Aq.[0] as $t | .[1:] | map(with_entries(.key = $t[.key]))\*(Aq file.csv
+.fam
+.fi
+.if n .RE
+.sp
+.B Options
+.br
+.sp
+\f(CR\fB\-o comma=","\fP\fP
+.RS 4
+Separator character
+.RE
+.sp
+\f(CR\fB\-o comment="#"\fP\fP
+.RS 4
+Comment line character
+.RE
+.RE
+.sp
+\f(CR\fBdns\fP\fP
+.RS 4
+DNS packet
+.RE
+.sp
+\f(CR\fBdns_tcp\fP\fP
+.RS 4
+DNS packet (TCP)
+.RE
+.sp
+\f(CR\fBelf\fP\fP
+.RS 4
+Executable and Linkable Format
+.RE
+.sp
+\f(CR\fBether8023_frame\fP\fP
+.RS 4
+Ethernet 802.3 frame
+.RE
+.sp
+\f(CR\fBexif\fP\fP
+.RS 4
+Exchangeable Image File Format
+.RE
+.sp
+\f(CR\fBfairplay_spc\fP\fP
+.RS 4
+FairPlay Server Playback Context
+.RE
+.sp
+\f(CR\fBfit\fP\fP
+.RS 4
+Garmin Flexible and Interoperable Data Transfer
+.sp
+Limitations
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Fields with subcomponents, such as "compressed_speed_distance" field on globalMessageNumber 20 is not represented correctly. The field is read as 3 separate bytes where the first 12 bits are speed and the last 12 bits are distance.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+There are still lots of UNKNOWN fields due to gaps in Garmin\(cqs SDK Profile documentation. (Currently FIT SDK 21.126)
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Compressed timestamp messages are not accumulated against last known full timestamp.
+.RE
+.RE
+.sp
+Convert stream of data messages to JSON array
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \*(Aq[.data_records[] | select(.record_header.message_type == "data").data_message]\*(Aq file.fit
+.fam
+.fi
+.if n .RE
+.sp
+Authors
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Mikael Lofjärd \c
+.MTO "mikael.lofjard\(atgmail.com" "" ","
+original author
+.RE
+.RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://developer.garmin.com/fit/protocol/" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://developer.garmin.com/fit/cookbook/decoding\-activity\-files/" "" ""
+.RE
+.RE
+.RE
+.sp
+\f(CR\fBflac\fP\fP
+.RS 4
+Free Lossless Audio Codec file
+.RE
+.sp
+\f(CR\fBflac_frame\fP\fP
+.RS 4
+FLAC frame
+.sp
+.B Options
+.br
+.sp
+\f(CR\fB\-o bits_per_sample=16\fP\fP
+.RS 4
+Bits per sample
+.RE
+.sp
+\f(CR\fB\-o sample_details=false\fP\fP
+.RS 4
+Decode more sample details like residuals etc
+.RE
+.RE
+.sp
+\f(CR\fBflac_metadatablock\fP\fP
+.RS 4
+FLAC metadatablock
+.RE
+.sp
+\f(CR\fBflac_metadatablocks\fP\fP
+.RS 4
+FLAC metadatablocks
+.RE
+.sp
+\f(CR\fBflac_picture\fP\fP
+.RS 4
+FLAC metadatablock picture
+.RE
+.sp
+\f(CR\fBflac_streaminfo\fP\fP
+.RS 4
+FLAC streaminfo
+.RE
+.sp
+\f(CR\fBgif\fP\fP
+.RS 4
+Graphics Interchange Format
+.RE
+.sp
+\f(CR\fBgzip\fP\fP
+.RS 4
+gzip compression
+.RE
+.sp
+\f(CR\fBheif\fP\fP
+.RS 4
+High Efficiency Image Format
+.sp
+.B Options
+.br
+.sp
+\f(CR\fB\-o allow_truncated=false\fP\fP
+.RS 4
+Allow box to be truncated
+.RE
+.RE
+.sp
+\f(CR\fBhevc_annexb\fP\fP
+.RS 4
+H.265/HEVC Annex B
+.RE
+.sp
+\f(CR\fBhevc_au\fP\fP
+.RS 4
+H.265/HEVC Access Unit
+.sp
+.B Options
+.br
+.sp
+\f(CR\fB\-o length_size=4\fP\fP
+.RS 4
+Length value size
+.RE
+.RE
+.sp
+\f(CR\fBhevc_dcr\fP\fP
+.RS 4
+H.265/HEVC Decoder Configuration Record
+.RE
+.sp
+\f(CR\fBhevc_nalu\fP\fP
+.RS 4
+H.265/HEVC Network Access Layer Unit
+.RE
+.sp
+\f(CR\fBhevc_pps\fP\fP
+.RS 4
+H.265/HEVC Picture Parameter Set
+.RE
+.sp
+\f(CR\fBhevc_sps\fP\fP
+.RS 4
+H.265/HEVC Sequence Parameter Set
+.RE
+.sp
+\f(CR\fBhevc_vps\fP\fP
+.RS 4
+H.265/HEVC Video Parameter Set
+.RE
+.sp
+\f(CR\fBhtml\fP\fP
+.RS 4
+HyperText Markup Language
+.sp
+HTML is decoded in HTML5 mode and will always include \f(CR<html>\fP, \f(CR<body>\fP and \f(CR<head>\fP elements.
+See xml format for more examples and how to preserve element order and how to encode to xml.
+There is no \f(CRto_html\fP function, see \f(CRto_xml\fP instead.
+.sp
+Element as object
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+# decode as object is the default
+$ echo \*(Aq<a href="url">text</a>\*(Aq | fq \-d html
+{
+  "html": {
+    "body": {
+      "a": {
+        "#text": "text",
+        "@href": "url"
+      }
+    },
+    "head": ""
+  }
+}
+.fam
+.fi
+.if n .RE
+.sp
+Element as array
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ echo \*(Aq<a href="url">text</a>\*(Aq | fq \-d html \-o array=true
+[
+  "html",
+  null,
+  [
+    [
+      "head",
+      null,
+      []
+    ],
+    [
+      "body",
+      null,
+      [
+        [
+          "a",
+          {
+            "#text": "text",
+            "href": "url"
+          },
+          []
+        ]
+      ]
+    ]
+  ]
+]
+
+# decode html files to a {file: "title", ...} object
+$ fq \-n \-d html \*(Aq[inputs | {key: input_filename, value: .html.head.title?}] | from_entries\*(Aq *.html
+
+# <a> href:s in file
+$ fq \-r \-o array=true \-d html \*(Aq.. | select(.[0] == "a" and .[1].href)?.[1].href\*(Aq file.html
+.fam
+.fi
+.if n .RE
+.sp
+.B Options
+.br
+.sp
+\f(CR\fB\-o array=false\fP\fP
+.RS 4
+Decode as nested arrays
+.RE
+.sp
+\f(CR\fB\-o attribute_prefix="@"\fP\fP
+.RS 4
+Prefix for attribute keys
+.RE
+.sp
+\f(CR\fB\-o seq=false\fP\fP
+.RS 4
+Use seq attribute to preserve element order
+.RE
+.RE
+.sp
+\f(CR\fBicc_profile\fP\fP
+.RS 4
+International Color Consortium profile
+.RE
+.sp
+\f(CR\fBicmp\fP\fP
+.RS 4
+Internet Control Message Protocol
+.RE
+.sp
+\f(CR\fBicmpv6\fP\fP
+.RS 4
+Internet Control Message Protocol v6
+.RE
+.sp
+\f(CR\fBid3v1\fP\fP
+.RS 4
+ID3v1 metadata
+.RE
+.sp
+\f(CR\fBid3v11\fP\fP
+.RS 4
+ID3v1.1 metadata
+.RE
+.sp
+\f(CR\fBid3v2\fP\fP
+.RS 4
+ID3v2 metadata
+.RE
+.sp
+\f(CR\fBipv4_packet\fP\fP
+.RS 4
+Internet protocol v4 packet
+.RE
+.sp
+\f(CR\fBipv6_packet\fP\fP
+.RS 4
+Internet protocol v6 packet
+.RE
+.sp
+\f(CR\fBjp2c\fP\fP
+.RS 4
+JPEG 2000 codestream
+.RE
+.sp
+\f(CR\fBjpeg\fP\fP
+.RS 4
+Joint Photographic Experts Group file
+.RE
+.sp
+\f(CR\fBjson\fP\fP
+.RS 4
+JavaScript Object Notation
+.RE
+.sp
+\f(CR\fBjsonl\fP\fP
+.RS 4
+JavaScript Object Notation Lines
+.RE
+.sp
+\f(CR\fBleveldb_descriptor\fP\fP
+.RS 4
+LevelDB Descriptor
+.sp
+Limitations
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+fragmented non\-"full" records are not merged and decoded further.
+.RE
+.RE
+.sp
+Authors
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://github.com/mikez" "@mikez" ","
+original author
+.RE
+.RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://github.com/google/leveldb/blob/main/doc/impl.md#manifest" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://github.com/google/leveldb/blob/main/doc/log_format.md" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://github.com/google/leveldb/blob/main/db/version_edit.cc" "" ""
+.RE
+.RE
+.RE
+.sp
+\f(CR\fBleveldb_log\fP\fP
+.RS 4
+LevelDB Log
+.sp
+Limitations
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+fragmented non\-"full" records are not merged and decoded further.
+.RE
+.RE
+.sp
+Authors
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://github.com/mikez" "@mikez" ","
+original author
+.RE
+.RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://github.com/google/leveldb/blob/main/doc/impl.md#log\-files" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://github.com/google/leveldb/blob/main/doc/log_format.md" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://github.com/google/leveldb/blob/main/db/write_batch.cc" "" ""
+.RE
+.RE
+.RE
+.sp
+\f(CR\fBleveldb_table\fP\fP
+.RS 4
+LevelDB Table
+.sp
+Limitations
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+no Meta Blocks (like "filter") are decoded yet.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Zstandard uncompression is not implemented yet.
+.RE
+.RE
+.sp
+Authors
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://github.com/mikez" "@mikez" ","
+original author
+.RE
+.RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://github.com/google/leveldb/blob/main/doc/table_format.md" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://github.com/google/leveldb/blob/main/doc/impl.md" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://github.com/google/leveldb/blob/main/doc/index.md" "" ""
+.RE
+.RE
+.RE
+.sp
+\f(CR\fBluajit\fP\fP
+.RS 4
+LuaJIT 2.0 bytecode
+.sp
+Authors
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://github.com/dlatchx" "@dlatchx" ""
+.RE
+.RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://github.com/LuaJIT/LuaJIT/blob/v2.1/src/lj_bcdump.h" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "http://scm.zoomquiet.top/data/20131216145900/index.html" "" ""
+.RE
+.RE
+.RE
+.sp
+\f(CR\fBmacho\fP\fP
+.RS 4
+Mach\-O macOS executable
+.sp
+Supports decoding vanilla and FAT Mach\-O binaries.
+.sp
+Select 64bit load segments
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \*(Aq.load_commands[] | select(.cmd=="segment_64")\*(Aq file
+.fam
+.fi
+.if n .RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://github.com/aidansteele/osx\-abi\-macho\-file\-format\-reference" "" ""
+.RE
+.RE
+.sp
+Authors
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Sıddık AÇIL \c
+.MTO "acils\(atitu.edu.tr" "" " "
+.URL "https://github.com/Akaame" "@Akaame" ""
+.RE
+.RE
+.RE
+.sp
+\f(CR\fBmacho_fat\fP\fP
+.RS 4
+Fat Mach\-O macOS executable (multi\-architecture)
+.RE
+.sp
+\f(CR\fBmarkdown\fP\fP
+.RS 4
+Markdown
+.sp
+Array with all level 1 and 2 headers
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-d markdown \*(Aq[.. | select(.type=="heading" and .level<=2)?.children[0]]\*(Aq file.md
+.fam
+.fi
+.if n .RE
+.RE
+.sp
+\f(CR\fBmatroska\fP\fP
+.RS 4
+Matroska file
+.sp
+Lookup element using path
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \*(Aqmatroska_path(".Segment.Tracks[0]")\*(Aq file.mkv
+.fam
+.fi
+.if n .RE
+.sp
+Get path to element
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \*(Aqgrep_by(.id == "Tracks") | matroska_path\*(Aq file.mkv
+.fam
+.fi
+.if n .RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://www.rfc\-editor.org/info/rfc8794" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://matroska.org/technical/specs/index.html" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://www.matroska.org/technical/basics.html" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://www.matroska.org/technical/codec_specs.html" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://wiki.xiph.org/MatroskaOpus" "" ""
+.RE
+.RE
+.sp
+.B Options
+.br
+.sp
+\f(CR\fB\-o decode_samples=true\fP\fP
+.RS 4
+Decode samples
+.RE
+.RE
+.sp
+\f(CR\fBmidi\fP\fP
+.RS 4
+Standard MIDI file
+.sp
+Notes
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Only supports the MIDI 1.0 MIDI file specification.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Only supports \fIMThd\fP and \fIMTrk\fP chunks.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Does only basic validation on the MIDI data.
+.RE
+.RE
+.sp
+Sample queries
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Extract the track names from a MIDI file
+.RE
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+fq \-d midi \*(Aq.. | select(.event=="track_name")? | "\(rs(.track_name)"\*(Aq midi/twinkle.mid
+.fam
+.fi
+.if n .RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Extract the tempo changes from a MIDI file
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+fq \-d midi \*(Aq.. | select(.event=="tempo")?.tempo\*(Aq midi/twinkle.mid
+.fam
+.fi
+.if n .RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Extract the key changes from a MIDI file
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+fq \-d midi \*(Aq.. | select(.event=="key_signature")?.key_signature\*(Aq midi/twinkle.mid
+.fam
+.fi
+.if n .RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Extract NoteOn events:
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+fq \-d midi \*(Aqgrep_by(.event=="note_on") | [.time.tick, .note_on.note] | join(" ")\*(Aq midi/twinkle.mid
+.fam
+.fi
+.if n .RE
+.sp
+Authors
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://github.com/transcriptaze" "transcriptaze" ""
+.RE
+.RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://www.midi.org/specifications/item/the\-midi\-1\-0\-specification" "The Complete MIDI 1.0 Detailed Specification" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://midi.org/standard\-midi\-files" "Standard MIDI Files" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "http://midi.teragonaudio.com/tech/midifile.htm" "Standard MIDI File (SMF) Format" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "http://www.somascape.org/midi/tech/mfile.html" "MIDI Files Specification" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://www.recordingblogs.com/wiki/midi\-smpte\-offset\-meta\-message" "MIDI SMPTE Offset meta message" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "http://www.somascape.org/midi/tech/mfile.html#meta" "Somascape MIDI Files Specification" ""
+.RE
+.RE
+.RE
+.sp
+\f(CR\fBmoc3\fP\fP
+.RS 4
+MOC3 file
+.sp
+Authors
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://github.com/ronsor" "@ronsor" ""
+.RE
+.RE
+.RE
+.sp
+\f(CR\fBmp3\fP\fP
+.RS 4
+MP3 file
+.sp
+.B Options
+.br
+.sp
+\f(CR\fB\-o max_sync_seek=32768\fP\fP
+.RS 4
+Max byte distance to next sync
+.RE
+.sp
+\f(CR\fB\-o max_unique_header_configs=5\fP\fP
+.RS 4
+Max number of unique frame header configs allowed
+.RE
+.sp
+\f(CR\fB\-o max_unknown=50\fP\fP
+.RS 4
+Max percent (0\-100) unknown bits
+.RE
+.RE
+.sp
+\f(CR\fBmp3_frame\fP\fP
+.RS 4
+MPEG audio layer 3 frame
+.RE
+.sp
+\f(CR\fBmp3_frame_vbri\fP\fP
+.RS 4
+MP3 frame Fraunhofer encoder variable bitrate tag
+.RE
+.sp
+\f(CR\fBmp3_frame_xing\fP\fP
+.RS 4
+MP3 frame Xing/Info tag
+.RE
+.sp
+\f(CR\fBmp4\fP\fP
+.RS 4
+ISOBMFF, QuickTime and similar
+.sp
+Speed up decoding by not decoding samples
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+# manually decode first sample as an aac_frame
+$ fq \-o decode_samples=false \*(Aq.tracks[0].samples[0] | aac_frame | d\*(Aq file.mp4
+.fam
+.fi
+.if n .RE
+.sp
+Entries for first edit list as values
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \*(Aqfirst(grep_by(.type=="elst").entries) | tovalue\*(Aq file.mp4
+.fam
+.fi
+.if n .RE
+.sp
+Whole box tree as JSON (exclude mdat data and tracks)
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \*(Aqdel(.tracks) | grep_by(.type=="mdat").data = "<excluded>" | tovalue\*(Aq file.mp4
+.fam
+.fi
+.if n .RE
+.sp
+Force decode a single box
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-n \*(Aq"AAAAHGVsc3QAAAAAAAAAAQAAADIAAAQAAAEAAA==" | from_base64 | mp4({force:true}) | d\*(Aq
+.fam
+.fi
+.if n .RE
+.sp
+Lookup mp4 box using an mp4 box path
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+# <decode value box> | mp4_path($path) \-> <decode value box>
+$ fq \*(Aqmp4_path(".moov.trak[1]")\*(Aq file.mp4
+.fam
+.fi
+.if n .RE
+.sp
+Get mp4 box path for a decode value box
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+# <decode value box> | mp4_path \-> string
+$ fq \*(Aqgrep_by(.type == "trak") | mp4_path\*(Aq file.mp4
+.fam
+.fi
+.if n .RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://en.wikipedia.org/wiki/ISO/IEC_base_media_file_format" "ISO/IEC base media file format (MPEG\-4 Part 12)" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://developer.apple.com/standards/qtff\-2001.pdf" "Quicktime file format" ""
+.RE
+.RE
+.sp
+.B Options
+.br
+.sp
+\f(CR\fB\-o allow_truncated=false\fP\fP
+.RS 4
+Allow box to be truncated
+.RE
+.sp
+\f(CR\fB\-o decode_samples=true\fP\fP
+.RS 4
+Decode track samples
+.RE
+.sp
+\f(CR\fB\-o skip_samples=false\fP\fP
+.RS 4
+Skip track samples
+.RE
+.RE
+.sp
+\f(CR\fBmpeg_asc\fP\fP
+.RS 4
+MPEG\-4 Audio Specific Config
+.RE
+.sp
+\f(CR\fBmpeg_es\fP\fP
+.RS 4
+MPEG Elementary Stream
+.RE
+.sp
+\f(CR\fBmpeg_pes\fP\fP
+.RS 4
+MPEG Packetized elementary stream
+.RE
+.sp
+\f(CR\fBmpeg_pes_packet\fP\fP
+.RS 4
+MPEG Packetized elementary stream packet
+.RE
+.sp
+\f(CR\fBmpeg_spu\fP\fP
+.RS 4
+Sub Picture Unit (DVD subtitle)
+.RE
+.sp
+\f(CR\fBmpeg_ts\fP\fP
+.RS 4
+MPEG Transport Stream
+.RE
+.sp
+\f(CR\fBmsgpack\fP\fP
+.RS 4
+MessagePack
+.sp
+Convert represented value to JSON
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-d msgpack torepr file.msgpack
+.fam
+.fi
+.if n .RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://github.com/msgpack/msgpack/blob/master/spec.md" "" ""
+.RE
+.RE
+.RE
+.sp
+\f(CR\fBnegentropy\fP\fP
+.RS 4
+Negentropy message
+.sp
+View a full Negentropy message
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-d negentropy dd file
+.fam
+.fi
+.if n .RE
+.sp
+Or from hex
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ echo \*(Aq6186b7abb47c0001108e4206828ee3bf34258465809a337c6c00019a68e37b177a50b3ae7164ccc628b962020114019c1381281c9e3849d5fbd514b7bb65ad0101e601fbf7451f5d22e7fa36ae3e910e9f5215020157014a1b26853e06e9c32eb41b1df4f9ab300201e6011840e273c84bb1344f1d4e15d9aa67920200016f12ee2340888653f10b0ec2d438ac9f0101840156d2d796f4dff004ab369b9bcfa4d81e020187013f1b3c8a019800d5764e2de6bdfd2785020114017caaf0acb5dfe249aa0f7f742402168a01018301e7b8c4decb1eae455ca5714281e3245302017a01409c22636b097362df125ddffb6d944302015b01f332208bee82acf8ed922853ee54057f020001fc3e51fdb0b92966e38017f7959903850101cc01428ce0c96d49f15b50143e4fb228cb9300000131712d30e5296a7a45d07bba452d61cd\*(Aq | fq \-R \*(Aqfrom_hex | negentropy | dd\*(Aq
+.fam
+.fi
+.if n .RE
+.sp
+Check how many ranges the message has and how many of those are of \*(Aqfingerprint\*(Aq mode
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-d negentropy \*(Aq.bounds | length as $total | map(select(.mode == "fingerprint")) | length | {$total, fingerprint: .}\*(Aq message
+.fam
+.fi
+.if n .RE
+.sp
+Check get all ids in all idlists
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-d negentropy \*(Aq.bounds | map(select(.mode == "idlist") | .idlist | .ids) | flatten\*(Aq message
+.fam
+.fi
+.if n .RE
+.sp
+Authors
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+fiatjaf, \c
+.URL "https://fiatjaf.com" "" ""
+.RE
+.RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://github.com/hoytech/negentropy" "" ""
+.RE
+.RE
+.RE
+.sp
+\f(CR\fBnes\fP\fP
+.RS 4
+iNES/NES 2.0 cartridge ROM format
+.sp
+Limitations
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRprg_rom\fP, \f(CRchr_rom\fP and \f(CRtrainer\fP fields may contain data that is just random junk from the memory chips, since they are of a fixed size.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+The \f(CRnes_toasm\fP function outputs ALL opcodes, including the unofficial ones, which means that none of the regular assemblers can recompile it.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+The \f(CRnes_tokitty\fP function works on tiles in \f(CRchr_rom\fP but only outputs a Kitty graphics compatible string. You need to manually \f(CRprintf\fP that string to get Kitty (or another compatible terminal) to output the graphics.
+.RE
+.RE
+.sp
+Decompile PRG ROM
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-r \*(Aq.prg_rom[] | nes_toasm\*(Aq file.nes
+.fam
+.fi
+.if n .RE
+.sp
+Print out first CHR ROM tile in Kitty (or Konsole, wayst, WezTerm) at size 5
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ printf $(fq \-r \-d nes \*(Aq.chr_rom[0] | nes_tokitty(5)\*(Aq file.nes)
+.fam
+.fi
+.if n .RE
+.sp
+Print out all CHR ROM tiles in Kitty (with Bash) at size 5
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ for line in $(fq \-r \*(Aq.chr_rom[] | nes_tokitty(5)\*(Aq file.nes);do printf "%b%s" "$line";done
+.fam
+.fi
+.if n .RE
+.sp
+Authors
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Mikael Lofjärd \c
+.MTO "mikael.lofjard\(atgmail.com" "" ","
+original author
+.RE
+.RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://www.nesdev.org/wiki/INES" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://www.nesdev.org/wiki/NES_2.0" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://www.nesdev.org/wiki/CPU" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://bugzmanov.github.io/nes_ebook/chapter_6_3.html" "" ""
+.RE
+.RE
+.RE
+.sp
+\f(CR\fBogg\fP\fP
+.RS 4
+OGG file
+.RE
+.sp
+\f(CR\fBogg_page\fP\fP
+.RS 4
+OGG page
+.RE
+.sp
+\f(CR\fBopentimestamps\fP\fP
+.RS 4
+OpenTimestamps file
+.sp
+View a full OpenTimestamps file
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq dd file.ots
+.fam
+.fi
+.if n .RE
+.sp
+List the names of the Calendar servers used
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \*(Aq.operations | map(select(.attestation_type == "calendar") | .url)\*(Aq file.ots
+.fam
+.fi
+.if n .RE
+.sp
+Check if there are Bitcoin attestations present
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \*(Aq.operations | map(select(.attestation_type == "bitcoin")) | length > 0\*(Aq file.ots
+.fam
+.fi
+.if n .RE
+.sp
+Authors
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+fiatjaf, \c
+.URL "https://fiatjaf.com" "" ""
+.RE
+.RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://opentimestamps.org/" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://github.com/opentimestamps/python\-opentimestamps" "" ""
+.RE
+.RE
+.RE
+.sp
+\f(CR\fBopus_packet\fP\fP
+.RS 4
+Opus packet
+.RE
+.sp
+\f(CR\fBpcap\fP\fP
+.RS 4
+PCAP packet capture
+.sp
+Build object with number of (reassembled) TCP bytes sent to/from client IP
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+# for a pcapng file you would use .[0].tcp_connections for first section
+$ fq \*(Aq.tcp_connections | group_by(.client.ip) | map({key: .[0].client.ip, value: map(.client.stream, .server.stream | tobytes.size) | add}) | from_entries\*(Aq
+{
+  "10.1.0.22": 15116,
+  "10.99.12.136": 234,
+  "10.99.12.150": 218
+}
+.fam
+.fi
+.if n .RE
+.RE
+.sp
+\f(CR\fBpcapng\fP\fP
+.RS 4
+PCAPNG packet capture
+.RE
+.sp
+\f(CR\fBpg_btree\fP\fP
+.RS 4
+PostgreSQL btree index file
+.sp
+Btree index meta page
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-d pg_btree \-o flavour=postgres14 ".[0] | d" 16404
+.fam
+.fi
+.if n .RE
+.sp
+Btree index page
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-d pg_btree \-o flavour=postgres14 ".[1]" 16404
+.fam
+.fi
+.if n .RE
+.sp
+Authors
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Pavel Safonov \c
+.MTO "p.n.safonov\(atgmail.com" "" " "
+.URL "https://github.com/pnsafonov" "@pnsafonov" ""
+.RE
+.RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://www.postgresql.org/docs/current/storage\-page\-layout.html" "" ""
+.RE
+.RE
+.sp
+.B Options
+.br
+.sp
+\f(CR\fB\-o page=0\fP\fP
+.RS 4
+First page number in file, default is 0
+.RE
+.RE
+.sp
+\f(CR\fBpg_control\fP\fP
+.RS 4
+PostgreSQL control file
+.sp
+Decode content of pg_control file
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-d pg_control \-o flavour=postgres14 d pg_control
+.fam
+.fi
+.if n .RE
+.sp
+Specific fields can be got by request
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-d pg_control \-o flavour=postgres14 ".state, .check_point_copy.redo, .wal_level" pg_control
+.fam
+.fi
+.if n .RE
+.sp
+Authors
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Pavel Safonov \c
+.MTO "p.n.safonov\(atgmail.com" "" " "
+.URL "https://github.com/pnsafonov" "@pnsafonov" ""
+.RE
+.RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://github.com/postgres/postgres/blob/REL_14_2/src/include/catalog/pg_control.h" "" ""
+.RE
+.RE
+.sp
+.B Options
+.br
+.sp
+\f(CR\fB\-o flavour=""\fP\fP
+.RS 4
+PostgreSQL flavour: postgres14, pgproee14, postgres10
+.RE
+.RE
+.sp
+\f(CR\fBpg_heap\fP\fP
+.RS 4
+PostgreSQL heap file
+.sp
+To see heap page\(cqs content
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-d pg_heap \-o flavour=postgres14 ".[0]" 16994
+.fam
+.fi
+.if n .RE
+.sp
+To see page\(cqs header
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-d pg_heap \-o flavour=postgres14 ".[0].page_header" 16994
+.fam
+.fi
+.if n .RE
+.sp
+First and last item pointers on first page
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-d pg_heap \-o flavour=postgres14 ".[0].pd_linp[0, \-1]" 16994
+.fam
+.fi
+.if n .RE
+.sp
+First and last tuple on first page
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-d pg_heap \-o flavour=postgres14 ".[0].tuples[0, \-1]" 16994
+.fam
+.fi
+.if n .RE
+.sp
+Authors
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Pavel Safonov \c
+.MTO "p.n.safonov\(atgmail.com" "" " "
+.URL "https://github.com/pnsafonov" "@pnsafonov" ""
+.RE
+.RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://www.postgresql.org/docs/current/storage\-page\-layout.html" "" ""
+.RE
+.RE
+.sp
+.B Options
+.br
+.sp
+\f(CR\fB\-o flavour="postgres14"\fP\fP
+.RS 4
+PostgreSQL flavour: postgres14, pgproee14, postgres10
+.RE
+.sp
+\f(CR\fB\-o page=0\fP\fP
+.RS 4
+First page number in file, default is 0
+.RE
+.sp
+\f(CR\fB\-o segment=0\fP\fP
+.RS 4
+Segment file number (16790.1 is 1), default is 0
+.RE
+.RE
+.sp
+\f(CR\fBpng\fP\fP
+.RS 4
+Portable Network Graphics file
+.RE
+.sp
+\f(CR\fBprores_frame\fP\fP
+.RS 4
+Apple ProRes frame
+.RE
+.sp
+\f(CR\fBprotobuf\fP\fP
+.RS 4
+Protobuf
+.sp
+Can decode sub messages
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \-d protobuf \*(Aq.fields[6].wire_value | protobuf | d\*(Aq file
+.fam
+.fi
+.if n .RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://developers.google.com/protocol\-buffers/docs/encoding" "" ""
+.RE
+.RE
+.RE
+.sp
+\f(CR\fBprotobuf_widevine\fP\fP
+.RS 4
+Widevine protobuf
+.RE
+.sp
+\f(CR\fBpssh_playready\fP\fP
+.RS 4
+PlayReady PSSH
+.RE
+.sp
+\f(CR\fBrtmp\fP\fP
+.RS 4
+Real\-Time Messaging Protocol
+.sp
+Currently only supports plain RTMP (not RTMPT or encrypted variants etc) with AMF0 (not AMF3).
+.sp
+Show rtmp streams in PCAP file
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+fq \*(Aq.tcp_connections[] | select(.server.port=="rtmp") | d\*(Aq file.cap
+.fam
+.fi
+.if n .RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://rtmp.veriskope.com/docs/spec/" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://rtmp.veriskope.com/pdf/video_file_format_spec_v10.pdf" "" ""
+.RE
+.RE
+.RE
+.sp
+\f(CR\fBsafetensors\fP\fP
+.RS 4
+SafeTensors
+.RE
+.sp
+\f(CR\fBsll2_packet\fP\fP
+.RS 4
+Linux cooked capture encapsulation v2
+.RE
+.sp
+\f(CR\fBsll_packet\fP\fP
+.RS 4
+Linux cooked capture encapsulation
+.RE
+.sp
+\f(CR\fBstl\fP\fP
+.RS 4
+Stereolithography
+.sp
+Decode binary STL (Stereolithography, Standard Tesselation Language) files.
+.sp
+Current limitations
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+No support for ASCII STL files
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+No support for VisCAM and SolidView colors
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+No support for Materialise Magics colors
+.RE
+.RE
+.RE
+.sp
+\f(CR\fBtap\fP\fP
+.RS 4
+TAP tape format for ZX Spectrum computers
+.sp
+The TAP\- (and BLK\-) format is nearly a direct copy of the data that is stored in real tapes, as it is written by the ROM save routine of the ZX\-Spectrum. A TAP file is simply one data block or a group of 2 or more data blocks, one followed after the other. The TAP file may be empty.
+You will often find this format embedded inside the TZX tape format.
+The default file extension is \f(CR.tap\fP.
+.sp
+Processing JSON files
+.RS 4
+When needing to process a generated JSON file it\(cqs recommended to convert the plain data bytes to an array by setting \f(CRbits_format=byte_array\fP:
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+fq \-o bits_format=byte_array \-d tap \-V d /path/to/file.tap
+.fam
+.fi
+.if n .RE
+.sp
+Authors
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Michael R. Cook \c
+.MTO "work.mrc\(atpm.me" "" ","
+original author
+.RE
+.RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://worldofspectrum.net/zx\-modules/fileformats/tapformat.html" "" ""
+.RE
+.RE
+.RE
+.sp
+\f(CR\fBtar\fP\fP
+.RS 4
+Tar archive
+.RE
+.sp
+\f(CR\fBtcp_segment\fP\fP
+.RS 4
+Transmission control protocol segment
+.RE
+.sp
+\f(CR\fBtiff\fP\fP
+.RS 4
+Tag Image File Format
+.RE
+.sp
+\f(CR\fBtls\fP\fP
+.RS 4
+Transport layer security
+.sp
+Supports decoding of most standard records, messages and extensions. Can also decrypt most standard cipher suites in a PCAP with traffic in both directions if a NSS key log is provided.
+.sp
+Decode and decrypt providing a PCAP and key log
+.RS 4
+Write traffic to a PCAP file:
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ tcpdump \-i <iface> \-w traffic.pcap
+.fam
+.fi
+.if n .RE
+.sp
+Make sure your curl TLS backend supports \f(CRSSLKEYLOGFILE\fP and do:
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ SSLKEYLOGFILE=traffic.keylog curl \-\-tls\-max 1.2 https://host/path
+.fam
+.fi
+.if n .RE
+.sp
+Decode, decrypt and query. Uses \f(CRkeylog=@<path>\fP to read option value from keylog file:
+.sp
+.if n .RS 4
+.nf
+.fam C
+# decode and show whole tree
+$ fq \-o keylog=@traffic.keylog d traffic.pcap
+
+# write unencrypted server response to a file.
+# first .stream is the TCP stream, second .stream is TLS application data stream
+#
+# first TCP connections:
+$ fq \-o keylog=@traffic.keylog \*(Aq.tcp_connections[0].server.stream.stream | tobytes\*(Aq traffic.pcap > data
+# first TLS connection:
+$ fq \-o keylog=@traffic.keylog\&  \*(Aqfirst(grep_by(.server.stream | format == "tls")).server.stream.stream | tobytes\*(Aq > data
+.fam
+.fi
+.if n .RE
+.sp
+Supported cipher suites for decryption
+.RS 4
+\f(CRTLS_DH_ANON_EXPORT_WITH_DES40_CBC_SHA\fP, \f(CRTLS_DH_ANON_EXPORT_WITH_RC4_40_MD5\fP, \f(CRTLS_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA\fP, \f(CRTLS_DHE_DSS_WITH_3DES_EDE_CBC_SHA\fP, \f(CRTLS_DHE_DSS_WITH_AES_128_CBC_SHA\fP, \f(CRTLS_DHE_DSS_WITH_AES_128_CBC_SHA256\fP, \f(CRTLS_DHE_DSS_WITH_AES_128_GCM_SHA256\fP, \f(CRTLS_DHE_DSS_WITH_AES_256_CBC_SHA\fP, \f(CRTLS_DHE_DSS_WITH_AES_256_CBC_SHA256\fP, \f(CRTLS_DHE_DSS_WITH_AES_256_GCM_SHA384\fP, \f(CRTLS_DHE_DSS_WITH_DES_CBC_SHA\fP, \f(CRTLS_DHE_DSS_WITH_RC4_128_SHA\fP, \f(CRTLS_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA\fP, \f(CRTLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA\fP, \f(CRTLS_DHE_RSA_WITH_AES_128_CBC_SHA\fP, \f(CRTLS_DHE_RSA_WITH_AES_128_CBC_SHA256\fP, \f(CRTLS_DHE_RSA_WITH_AES_128_GCM_SHA256\fP, \f(CRTLS_DHE_RSA_WITH_AES_256_CBC_SHA\fP, \f(CRTLS_DHE_RSA_WITH_AES_256_CBC_SHA256\fP, \f(CRTLS_DHE_RSA_WITH_AES_256_GCM_SHA384\fP, \f(CRTLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256\fP, \f(CRTLS_DHE_RSA_WITH_DES_CBC_SHA\fP, \f(CRTLS_ECDH_ECDSA_WITH_3DES_EDE_CBC_SHA\fP, \f(CRTLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA\fP, \f(CRTLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256\fP, \f(CRTLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256\fP, \f(CRTLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA\fP, \f(CRTLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384\fP, \f(CRTLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384\fP, \f(CRTLS_ECDH_ECDSA_WITH_RC4_128_SHA\fP, \f(CRTLS_ECDH_RSA_WITH_3DES_EDE_CBC_SHA\fP, \f(CRTLS_ECDH_RSA_WITH_AES_128_CBC_SHA\fP, \f(CRTLS_ECDH_RSA_WITH_AES_128_CBC_SHA256\fP, \f(CRTLS_ECDH_RSA_WITH_AES_128_GCM_SHA256\fP, \f(CRTLS_ECDH_RSA_WITH_AES_256_CBC_SHA\fP, \f(CRTLS_ECDH_RSA_WITH_AES_256_CBC_SHA384\fP, \f(CRTLS_ECDH_RSA_WITH_AES_256_GCM_SHA384\fP, \f(CRTLS_ECDH_RSA_WITH_RC4_128_SHA\fP, \f(CRTLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA\fP, \f(CRTLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA\fP, \f(CRTLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256\fP, \f(CRTLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256\fP, \f(CRTLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA\fP, \f(CRTLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384\fP, \f(CRTLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384\fP, \f(CRTLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256\fP, \f(CRTLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305\fP, \f(CRTLS_ECDHE_ECDSA_WITH_RC4_128_SHA\fP, \f(CRTLS_ECDHE_PSK_WITH_AES_128_CBC_SHA\fP, \f(CRTLS_ECDHE_PSK_WITH_AES_128_GCM_SHA256\fP, \f(CRTLS_ECDHE_PSK_WITH_AES_256_CBC_SHA\fP, \f(CRTLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA\fP, \f(CRTLS_ECDHE_RSA_WITH_AES_128_CBC_SHA\fP, \f(CRTLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256\fP, \f(CRTLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256\fP, \f(CRTLS_ECDHE_RSA_WITH_AES_256_CBC_SHA\fP, \f(CRTLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384\fP, \f(CRTLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384\fP, \f(CRTLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256\fP, \f(CRTLS_ECDHE_RSA_WITH_CHACHA20_POLY1305\fP, \f(CRTLS_ECDHE_RSA_WITH_RC4_128_SHA\fP, \f(CRTLS_PSK_WITH_AES_128_CBC_SHA\fP, \f(CRTLS_PSK_WITH_AES_256_CBC_SHA\fP, \f(CRTLS_PSK_WITH_RC4_128_SHA\fP, \f(CRTLS_RSA_EXPORT_WITH_DES40_CBC_SHA\fP, \f(CRTLS_RSA_EXPORT_WITH_RC4_40_MD5\fP, \f(CRTLS_RSA_WITH_3DES_EDE_CBC_SHA\fP, \f(CRTLS_RSA_WITH_AES_128_CBC_SHA\fP, \f(CRTLS_RSA_WITH_AES_128_CBC_SHA256\fP, \f(CRTLS_RSA_WITH_AES_128_GCM_SHA256\fP, \f(CRTLS_RSA_WITH_AES_256_CBC_SHA\fP, \f(CRTLS_RSA_WITH_AES_256_CBC_SHA256\fP, \f(CRTLS_RSA_WITH_AES_256_GCM_SHA384\fP, \f(CRTLS_RSA_WITH_DES_CBC_SHA\fP, \f(CRTLS_RSA_WITH_RC4_128_MD5\fP, \f(CRTLS_RSA_WITH_RC4_128_SHA\fP
+.RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://www.rfc\-editor.org/rfc/rfc5246" "RFC 5246: The Transport Layer Security (TLS) Protocol" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://www.rfc\-editor.org/rfc/rfc6101" "RFC 6101: The Secure Sockets Layer (SSL) Protocol Version 3.0" ""
+.RE
+.RE
+.sp
+.B Options
+.br
+.sp
+\f(CR\fB\-o keylog=""\fP\fP
+.RS 4
+NSS Key Log content
+.RE
+.RE
+.sp
+\f(CR\fBtoml\fP\fP
+.RS 4
+Tom\(cqs Obvious, Minimal Language
+.RE
+.sp
+\f(CR\fBtzif\fP\fP
+.RS 4
+Time Zone Information Format
+.sp
+Get last transition time
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+fq \*(Aq.v2plusdatablock.transition_times[\-1] | tovalue\*(Aq tziffile
+.fam
+.fi
+.if n .RE
+.sp
+Count leap second records
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+fq \*(Aq.v2plusdatablock.leap_second_records | length\*(Aq tziffile
+.fam
+.fi
+.if n .RE
+.sp
+Authors
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Takashi Oguma \c
+.URL "https://github.com/bitbears\-dev" "@bitbears\-dev" " "
+.URL "https://twitter.com/0xb17bea125" "@0xb17bea125" ""
+.RE
+.RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://datatracker.ietf.org/doc/html/rfc8536" "" ""
+.RE
+.RE
+.RE
+.sp
+\f(CR\fBtzx\fP\fP
+.RS 4
+TZX tape format for ZX Spectrum computers
+.sp
+\f(CRTZX\fP is a file format designed to preserve cassette tapes compatible with the ZX Spectrum computers, although some specialized versions of the format have been defined for other machines such as the Amstrad CPC and C64.
+The format was originally created by Tomaz Kac, who was the maintainer until \f(CRrevision 1.13\fP, before passing it to Martijn v.d. Heide. For a brief period the company Ramsoft became the maintainers, and created revision \f(CRv1.20\fP.
+The default file extension is \f(CR.tzx\fP.
+.sp
+Processing JSON files
+.RS 4
+When needing to process a generated JSON file it\(cqs recommended to convert the plain data bytes to an array by setting \f(CRbits_format=byte_array\fP:
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+fq \-o bits_format=byte_array \-d tzx \-V d /path/to/file.tzx
+.fam
+.fi
+.if n .RE
+.sp
+Authors
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Michael R. Cook \c
+.MTO "work.mrc\(atpm.me" "" ","
+original author
+.RE
+.RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://worldofspectrum.net/TZXformat.html" "" ""
+.RE
+.RE
+.RE
+.sp
+\f(CR\fBudp_datagram\fP\fP
+.RS 4
+User datagram protocol
+.RE
+.sp
+\f(CR\fBvorbis_comment\fP\fP
+.RS 4
+Vorbis comment
+.RE
+.sp
+\f(CR\fBvorbis_packet\fP\fP
+.RS 4
+Vorbis packet
+.RE
+.sp
+\f(CR\fBvp8_frame\fP\fP
+.RS 4
+VP8 frame
+.RE
+.sp
+\f(CR\fBvp9_cfm\fP\fP
+.RS 4
+VP9 Codec Feature Metadata
+.RE
+.sp
+\f(CR\fBvp9_frame\fP\fP
+.RS 4
+VP9 frame
+.RE
+.sp
+\f(CR\fBvpx_ccr\fP\fP
+.RS 4
+VPX Codec Configuration Record
+.RE
+.sp
+\f(CR\fBwasm\fP\fP
+.RS 4
+WebAssembly Binary Format
+.sp
+Count opcode usage
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \*(Aq.sections[] | select(.id == "code_section") | [.. | .opcode? // empty] | count | map({key: .[0], value: .[1]}) | from_entries\*(Aq file.wasm
+.fam
+.fi
+.if n .RE
+.sp
+List exports and imports
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \*(Aq.sections | {import: map(select(.id == "import_section").content.im.x[].nm.b), export: map(select(.id == "export_section").content.ex.x[].nm.b)}\*(Aq file.wasm
+.fam
+.fi
+.if n .RE
+.sp
+Authors
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Takashi Oguma \c
+.URL "https://github.com/bitbears\-dev" "@bitbears\-dev" " "
+.URL "https://twitter.com/0xb17bea125" "@0xb17bea125" ""
+.RE
+.RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://webassembly.github.io/spec/core/" "" ""
+.RE
+.RE
+.RE
+.sp
+\f(CR\fBwav\fP\fP
+.RS 4
+WAV file
+.RE
+.sp
+\f(CR\fBwebp\fP\fP
+.RS 4
+WebP image
+.RE
+.sp
+\f(CR\fBxml\fP\fP
+.RS 4
+Extensible Markup Language
+.sp
+XML can be decoded and encoded into jq values in two ways, elements as object or array. The object variant might be easier to query for a specific value but array might be easier to use to generate xml or to query after all elements of some kind etc.
+Encoding is done using the \f(CRto_xml\fP function and it will figure what variant that is used based on the input value. It has two optional options \f(CRindent\fP and \f(CRattribute_prefix\fP.
+.sp
+Elements as object
+.RS 4
+Element can have different shapes depending on body text, attributes and children:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR<a key="value">text</a>\fP is \f(CR{"a":{"#text":"text","@key":"value"}}\fP, has text (\f(CR#text\fP) and attributes (\f(CR@key\fP)
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR<a>text</a>\fP is \f(CR{"a":"text"}\fP
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR<a><b>text</b></a>\fP is \f(CR{"a":{"b":"text"}}\fP one child with only text and no attributes
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR<a><b/><b>text</b></a>\fP is \f(CR{"a":{"b":["","text"]}}\fP two children with same name end up in an array
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR<a><b/><b key="value">text</b></a>\fP is \f(CR{"a":{"b":["",{"#text":"text","@key":"value"}]}}\fP
+.RE
+.RE
+.sp
+If there is \f(CR#seq\fP attribute it encodes the child element order. Use \f(CR\-o seq=true\fP to include sequence number when decoding, otherwise order might be lost.
+.sp
+.if n .RS 4
+.nf
+.fam C
+# decode as object is the default
+$ echo \*(Aq<a><b/><b>bbb</b><c attr="value">ccc</c></a>\*(Aq | fq \-d xml \-o seq=true
+{
+  "a": {
+    "b": [
+      {
+        "#seq": 0
+      },
+      {
+        "#seq": 1,
+        "#text": "bbb"
+      }
+    ],
+    "c": {
+      "#seq": 2,
+      "#text": "ccc",
+      "@attr": "value"
+    }
+  }
+}
+
+# access text of the <c> element
+$ echo \*(Aq<a><b/><b>bbb</b><c attr="value">ccc</c></a>\*(Aq | fq \*(Aq.a.c["#text"]\*(Aq
+"ccc"
+
+# decode to object and encode to xml
+$ echo \*(Aq<a><b/><b>bbb</b><c attr="value">ccc</c></a>\*(Aq | fq \-r \-d xml \-o seq=true \*(Aqto_xml({indent:2})\*(Aq
+<a>
+  <b></b>
+  <b>bbb</b>
+  <c attr="value">ccc</c>
+</a>
+.fam
+.fi
+.if n .RE
+.sp
+Elements as array
+.RS 4
+Elements are arrays of the shape \f(CR["name", null|{#text|attribute: "value"}, [<child element>, .\|.\|.]]\fP.
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+# decode as array
+$ echo \*(Aq<a><b/><b>bbb</b><c attr="value">ccc</c></a>\*(Aq | fq \-d xml \-o array=true
+[
+  "a",
+  null,
+  [
+    [
+      "b",
+      null,
+      []
+    ],
+    [
+      "b",
+      {
+        "#text": "bbb"
+      },
+      []
+    ],
+    [
+      "c",
+      {
+        "#text": "ccc",
+        "attr": "value"
+      },
+      []
+    ]
+  ]
+]
+
+# decode to array and encode to xml
+$ echo \*(Aq<a><b/><b>bbb</b><c attr="value">ccc</c></a>\*(Aq | fq \-r \-d xml \-o array=true \-o seq=true \*(Aqto_xml({indent:2})\*(Aq
+<a>
+  <b></b>
+  <b>bbb</b>
+  <c attr="value">ccc</c>
+</a>
+
+# access text of the <c> element, the object variant above is probably easier to use
+$ echo \*(Aq<a><b/><b>bbb</b><c attr="value">ccc</c></a>\*(Aq | fq \-o array=true \*(Aq.[2][2][1]["#text"]\*(Aq
+"ccc"
+.fam
+.fi
+.if n .RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://www.xml.com/pub/a/2006/05/31/converting\-between\-xml\-and\-json.html" "xml.com\(cqs Converting Between XML and JSON" ""
+.RE
+.RE
+.sp
+.B Options
+.br
+.sp
+\f(CR\fB\-o array=false\fP\fP
+.RS 4
+Decode as nested arrays
+.RE
+.sp
+\f(CR\fB\-o attribute_prefix="@"\fP\fP
+.RS 4
+Prefix for attribute keys
+.RE
+.sp
+\f(CR\fB\-o seq=false\fP\fP
+.RS 4
+Use seq attribute to preserve element order
+.RE
+.RE
+.sp
+\f(CR\fByaml\fP\fP
+.RS 4
+YAML Ain\(cqt Markup Language
+.RE
+.sp
+\f(CR\fBzip\fP\fP
+.RS 4
+ZIP archive
+.sp
+Supports ZIP64.
+.sp
+Timestamp and time zones
+.RS 4
+The timestamp accessed via \f(CR.local_files[].last_modification\fP is encoded in ZIP files using \c
+.URL "https://learn.microsoft.com/en\-us/windows/win32/api/oleauto/nf\-oleauto\-dosdatetimetovarianttime" "MS\-DOS representation" ""
+which lacks a known time zone. Probably the local time/date was used at creation. The \f(CRunix_guess\fP field in \f(CRlast_modification\fP is a guess assuming the local time zone was UTC at creation.
+.RE
+.sp
+References
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://opensource.apple.com/source/zip/zip\-6/unzip/unzip/proginfo/extra.fld" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://formats.kaitai.io/dos_datetime/" "" ""
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://learn.microsoft.com/en\-us/windows/win32/api/oleauto/nf\-oleauto\-dosdatetimetovarianttime" "" ""
+.RE
+.RE
+.sp
+.B Options
+.br
+.sp
+\f(CR\fB\-o uncompress=true\fP\fP
+.RS 4
+Uncompress and probe files
+.RE
+.RE
+.SH "ENCODINGS, SERIALIZATIONS AND HASHES"
+.sp
+In addition to binary formats fq also supports various encodings and serialization formats.
+.sp
+At the moment fq does not have any dedicated argument for serialization formats but raw string input \f(CR\-R\fP slurp \f(CR\-s\fP and raw string output \f(CR\-r\fP can make things easier. The combination \f(CR\-Rs\fP will read all inputs into one string (same as jq).
+.sp
+Note that \f(CRfrom*\fP functions output jq values and \f(CRto*\fP functions take jq values as input so in some cases not all information will be properly preserved. For example, the element and attribute order might change and text and comment nodes might move or be merged. \c
+.URL "https://github.com/mikefarah/yq" "yq" ""
+might be a better tool if that is needed.
+.sp
+Some example usages:
+.sp
+.if n .RS 4
+.nf
+.fam C
+# read yml (format is probed, use \-d yaml to force) and do some query
+$ fq \*(Aq...\*(Aq file.yml
+
+# convert YAML to JSON
+# note the \-r for raw string output, without it a JSON string with escaped JSON would be output
+$ fq \-r \*(Aqtojson({indent:2})\*(Aq file.yml
+
+# add token to URL
+$ echo \-n "https://host.org" | fq \-Rsr \*(Aqfrom_url | .user.username="token" | to_url\*(Aq
+https://token@host.org
+
+# top 3 hosts in src or href attributes:
+# \-d to decode as html, can\*(Aqt be probed as html5 parsers always produce some parse tree
+# [...] to start collect values into an array
+# .. | ."@src"?, ."@href"? | values, recurse and try (?) to get src and href attributes and filter out nulls
+# from_url.host | values, parse as url and filter out those without a host
+# count to count unique values, returns [[key, count], ...]
+# reverse sort by count and pick first 3
+# map [key, count] tuples into {key: key, value: count}
+# from_entries, convert into object
+$ curl \-s https://www.discogs.com/ | fq \-d html \*(Aq[.. | ."@src"?, ."@href"? | values | from_url.host | values] | count | sort_by(\-.[1])[0:3] | map({key: .[0], value: .[1]}) | from_entries\*(Aq
+{
+  "blog.discogs.com": 9,
+  "st.discogs.com": 10,
+  "www.discogs.com": 14
+}
+
+# shows how serialization functions can be used on any string, how to transform values and output some other format
+# read and decode zip file and start an interactive REPL
+$ fq\&  \-i . <(curl \-sL https://github.com/stefangabos/world_countries/archive/master.zip)
+# select from interesting xml file
+zip> .local_files[] | select(.file_name == "world_countries\-master/data/countries/en/world.xml").uncompressed | repl
+# convert xml into jq value
+> .local_files[95].uncompressed string> from_xml | repl
+# sort countries by and select the first one
+>> object> .countries.country | sort_by(."@name") | first | repl
+# see what current input is
+>>> object> .
+{
+  "@alpha2": "af",
+  "@alpha3": "afg",
+  "@id": "4",
+  "@name": "Afghanistan"
+}
+# remove "@" prefix from keys and convert to YAML and print it
+>>> object> with_entries(.key |= .[1:]) | to_yaml | print
+alpha2: af
+alpha3: afg
+id: "4"
+name: Afghanistan
+# exit all REPLs back to shell
+>>> object> ^D
+>> object> ^D
+> .local_files[95].uncompressed string> ^D
+zip> ^D
+.fam
+.fi
+.if n .RE
+.SS "XML and HTML"
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRfrom_xml\fP/\f(CRfrom_xml($opts)\fP Parse XML into jq value. \f(CR$opts\fP are:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR{seq: true}\fP preserve element ordering if more than one sibling.
+.br
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR{array: true}\fP use nested \f(CR[name, attributes, children]\fP arrays to represent elements. Attributes will be \f(CRnull\fP if none and children will be \f(CR[]\fP if none, this is to make it easier to work with as the array always has 3 values. \f(CRto_xml\fP does not require this.
+.br
+.RE
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRfrom_html\fP/\f(CRfrom_html($opts)\fP Parse HTML into jq value.
+.br
+Similar to \f(CRfrom_xml\fP but parses html5 in non\-script mode. Will always have a \f(CRhtml\fP root with \f(CRhead\fP and \f(CRbody\fP elements.
++
+\f(CR$opts\fP are:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR{array: true}\fP use nested arrays to represent elements.
+.br
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR{seq: true}\fP preserve element ordering if more than one sibling.
+.br
+.RE
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_xml\fP/\f(CRto_xml($opts)\fP Serialize jq value into XML.
+.br
+Assumes object representation if input is an object, and nested arrays if input is an array.
+.br
+Will automatically add a root \f(CRdoc\fP element if jq value has more than one root element.
+.br
+If a \f(CR#seq\fP is found on at least one element all siblings will be sorted by sequence number. Attributes are always sorted.
++
+\f(CR$opts\fP are:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR{indent: number}\fP indent child elements.
+.RE
+.RE
+.sp
+XML elements can be represented as jq value in two ways, as objects (inspired by \c
+.URL "https://github.com/clbanning/mxj" "mxj" ""
+and
+.URL "https://www.xml.com/pub/a/2006/05/31/converting\-between\-xml\-and\-json.html" "xml.com\(cqs Converting Between XML and JSON" ")"
+or nested arrays. Both representations are lossy and might lose ordering of elements, text nodes and comments. In object representation \f(CRfrom_xml\fP, \f(CRfrom_html\fP and \f(CRto_xml\fP support \f(CR{seq: true}\fP option to parse/serialize \f(CR{"#seq": <number>}\fP attributes to preserve element sibling ordering.
+.sp
+The object version is denser and convenient to query, the nested arrays version is probably easier to use when generating XML.
+.sp
+Let\(cqs assume \f(CR$xml\fP is this XML document as a string:
+.sp
+.if n .RS 4
+.nf
+.fam C
+<doc>
+  <child attr="1"></child>
+  <child attr="2">text</child>
+  <other>text</other>
+</doc>
+.fam
+.fi
+.if n .RE
+.sp
+With object representation an element is represented as:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Attributes as \f(CR@\fP prefixed \f(CR@<key>\fP keys.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Text nodes as \f(CR#text\fP.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Comment nodes as \f(CR#comment\fP keys.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+For explicit sibling ordering \f(CR#seq\fP keys with a number, can be negative, assumed zero if missing.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Child element with only text as \f(CR<name>\fP key with text as value.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Child element with more than just text as \f(CR<name>\fP key with value an object.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Multiple child element siblings with same name as \f(CR<name>\fP key with value as array with strings and objects.
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+> $xml | from_xml
+{
+  "doc": {
+    "child": [
+      {
+        "@attr": "1"
+      },
+      {
+        "#text": "text",
+        "@attr": "2"
+      }
+    ],
+    "other": "text"
+  }
+}
+.fam
+.fi
+.if n .RE
+.sp
+With nested array representation, an array with these values \f(CR["<name>", {attributes.\|.\|.}, [children.\|.\|.]]\fP.
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Index 0 is an element name.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Index 1 object attributes (including \f(CR#text\fP and \f(CR#comment\fP keys).
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Index 2 array of child elements.
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+> $xml | from_xml({array: true})
+[
+  "doc",
+  null,
+  [
+    [
+      "child",
+      {
+        "attr": "1"
+      },
+      []
+    ],
+    [
+      "child",
+      {
+        "#text": "text",
+        "attr": "2"
+      },
+      []
+    ],
+    [
+      "other",
+      {
+        "#text": "text"
+      },
+      []
+    ]
+  ]
+]
+.fam
+.fi
+.if n .RE
+.sp
+Parse and include \f(CR#seq\fP attributes if needed:
+.sp
+.if n .RS 4
+.nf
+.fam C
+> $xml | from_xml({seq:true})
+{
+  "doc": {
+    "child": [
+      {
+        "#seq": 0,
+        "@attr": "1"
+      },
+      {
+        "#seq": 1,
+        "#text": "text",
+        "@attr": "2"
+      }
+    ],
+    "other": {
+      "#seq": 2,
+      "#text": "text"
+    }
+  }
+}
+.fam
+.fi
+.if n .RE
+.sp
+Select values in \f(CR<doc>\fP, remove \f(CR<child>\fP, add a \f(CR<new>\fP element, serialize to xml with 2 space indent and print the string
+.sp
+.if n .RS 4
+.nf
+.fam C
+> $xml | from_xml.doc | del(.child) | .new = "abc" | {root: .} | to_xml({indent: 2}) | println
+<root>
+  <new>abc</new>
+  <other>text</other>
+</root>
+.fam
+.fi
+.if n .RE
+.SS "JSON"
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRfromjson\fP Parse JSON into jq value.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRtojson\fP/\f(CRtojson($opts)\fP Serialize jq value into JSON. \f(CR$opts\fP are:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR{indent: number}\fP Indent depth.
+.RE
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRfrom_jsonl\fP Parse JSON lines into jq array.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_jsonl\fP Serialize jq array into JSONL.
+.RE
+.SS "jq\-flavoured JSON"
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRfrom_jq\fP Parse jq\-flavoured JSON into jq value.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_jq\fP/\f(CRto_jq($opts)\fP Serialize jq value into jq\-flavoured JSON. jq\-flavoured JSON has optional key quotes, \f(CR#\fP comments and can have trailing comma in objects. \f(CR$opts\fP are:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR{indent: number}\fP Indent depth.
+.RE
+.RE
+.sp
+Note that \f(CRfromjson\fP and \f(CRtojson\fP use different naming conventions as they originate from jq\(cqs standard library.
+.SS "YAML"
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRfrom_yaml\fP Parse YAML into jq value.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_yaml\fP/\f(CRto_yaml($opts)\fP Serialize jq value into YAML. \f(CR$opts\fP are:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR{indent: number}\fP Indent depth.
+.RE
+.RE
+.SS "TOML"
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRfrom_toml\fP Parse TOML into jq value.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_toml\fP/\f(CRto_toml($opts)\fP Serialize jq value into TOML. \f(CR$opts\fP are:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR{indent: number}\fP Indent depth.
+.RE
+.RE
+.SS "CSV"
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRfrom_csv\fP/\f(CRfrom_csv($opts)\fP Parse CSV into jq value.
+.br
+To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP or \f(CRfq \-d csv \-o \*(Aqcomma="\(rst"\*(Aq\fP.
+.br
+\f(CR$opts\fP are:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR{comma: string}\fP field separator, default ",".
+.br
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR{comment: string}\fP comment line character, default "#".
+.br
+.RE
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_csv\fP/\f(CRto_csv($opts)\fP Serialize jq value into CSV. \f(CR$opts\fP are:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR{comma: string}\fP field separator, default ",".
+.br
+.RE
+.RE
+.SS "XML entities"
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRfrom_xmlentities\fP Decode XML entities.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_xmlentities\fP Encode XML entities.
+.RE
+.SS "URL"
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRfrom_urlpath\fP Decode URL path component.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_urlpath\fP Encode URL path component. Whitespace as %20.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRfrom_urlencode\fP Decode URL query encoding.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_urlencode\fP Encode URL to query encoding. Whitespace as "+".
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRfrom_urlquery\fP Decode URL query into object. For duplicate keys value will be an array.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_urlquery\fP Encode object into query string.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRfrom_url\fP Decode URL into object.
+.sp
+.if n .RS 4
+.nf
+.fam C
+> "schema://user:pass@host/path?key=value#fragment" | from_url
+{
+  "fragment": "fragment",
+  "host": "host",
+  "path": "/path",
+  "query": {
+    "key": "value"
+  },
+  "rawquery": "key=value",
+  "scheme": "schema",
+  "user": {
+    "password": "pass",
+    "username": "user"
+  }
+}
+.fam
+.fi
+.if n .RE
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_url\fP Encode object into URL string.
+.RE
+.SS "Hex and base64"
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRfrom_hex\fP Decode hex string to binary.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_hex\fP Encode binary into hex string.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRfrom_base64\fP/\f(CRfrom_base64($opts)\fP Decode base64 encodings into binary. \f(CR$opts\fP are:
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR{encoding:string}\fP encoding variant: \f(CRstd\fP (default), \f(CRurl\fP, \f(CRrawstd\fP or \f(CRrawurl\fP
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_base64\fP/\f(CRto_base64($opts)\fP Encode binary into base64 encodings. \f(CR$opts\fP are:
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CR{encoding:string}\fP encoding variant: \f(CRstd\fP (default), \f(CRurl\fP, \f(CRrawstd\fP or \f(CRrawurl\fP
+.RE
+.SS "Hash functions"
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_md4\fP Hash binary using md4.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_md5\fP Hash binary using md5.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_sha1\fP Hash binary using sha1.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_sha256\fP Hash binary using sha256.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_sha512\fP Hash binary using sha512.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_sha3_224\fP Hash binary using sha3 224.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_sha3_256\fP Hash binary using sha3 256.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_sha3_384\fP Hash binary using sha3 384.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_sha3_512\fP Hash binary using sha3 512.
+.RE
+.SS "Text encodings"
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_iso8859_1\fP Encode string as ISO8859\-1 into binary.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRfrom_iso8859_1\fP Decode binary as ISO8859\-1 into string.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_utf8\fP Encode string as UTF8 into binary.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRfrom_utf8\fP Decode binary as UTF8 into string.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_utf16\fP Encode string as UTF16 into binary.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRfrom_utf16\fP Decode binary as UTF16 into string.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_utf16le\fP Encode string as UTF16 little\-endian into binary.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRfrom_utf16le\fP Decode binary as UTF16 little\-endian into string.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_utf16be\fP Encode string as UTF16 big\-endian into binary.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRfrom_utf16be\fP Decode binary as UTF16 big\-endian into string.
+.RE
+.SH "INTERACTIVE REPL"
+.sp
+The REPL can be useful in some scenarios:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+When decoding is slow you can reuse the decode result.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Dig thru a file using sub\-REPL to cut down on typing.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Use auto\-completion to speed up typing.
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+# start REPL with no (null) input
+$ fq \-i
+null>
+# same as
+$ fq \-ni
+null>
+
+# in the REPL you will see a prompt indicating current input and you can type a jq expression to evaluate.
+
+# start REPL with one file as input
+$ fq \-i . doc/file.mp3
+mp3>
+# basic arithmetic and jq expressions
+mp3> 1+1
+2
+mp3> 1, 2, 3 | . * 2
+2
+4
+6
+mp3> [1, 2, 3] | add
+6
+# "." is the identity function which just returns current input, the mp3 file.
+mp3> .
+# access the first frame in the mp3 file
+mp3> .frames[0]
+# start a new nested REPL with first frame as input
+mp3> .frames[0] | repl
+# prompt shows "path" to current input and that it\*(Aqs an mp3_frame.
+# Ctrl\-D to exit REPL or to shell if last REPL
+> .frames[0] mp3_frame> ^D
+# "jq" value of layer in first frame
+mp3> .frames[0].header.layer | tovalue
+3
+mp3> .frames[0].header.layer * 2
+6
+# symbolic value, same as "jq" value
+mp3> .frames[0].header.layer | tosym
+3
+# actual underlying decoded value
+mp3> .frames[0].header.layer | toactual
+1
+# description of value
+mp3> .frames[0].header.layer | todescription
+"MPEG Layer 3"
+mp3> ^D
+$
+.fam
+.fi
+.if n .RE
+.sp
+Use Ctrl\-D to exit and Ctrl\-C to interrupt current evaluation.
+.SH "EXAMPLES"
+.SS "Basic usage"
+.sp
+fq tries to behave the same way as jq as much as possible, so you can do:
+.sp
+.if n .RS 4
+.nf
+.fam C
+fq . file
+fq < file
+cat file | fq
+fq . < file
+fq . *.png *.mp3
+fq \*(Aq.frames[0]\*(Aq *.mp3
+fq \*(Aq.frames[\-1] | tobytes\*(Aq file.mp3 > last_frame
+.fam
+.fi
+.if n .RE
+.SS "Common usages"
+.sp
+.if n .RS 4
+.nf
+.fam C
+# recursively display decode tree but truncate long arrays
+fq d file
+# same as
+fq display file
+
+# display all bytes for each value
+fq dd file
+# same as
+fq \*(Aqd({array_truncate: 0, string_truncate: 0, display_bytes: 0})\*(Aq file
+
+# display 200 bytes for each value
+fq \*(Aqd({display_bytes: 200})\*(Aq file
+
+# recursively display decode tree without truncating
+fq da file
+# same as
+fq \*(Aqd({array_truncate: 0, string_truncate: 0})\*(Aq file
+
+# display a specific decode tree one level
+fq \*(Aq.path[1].to.value\*(Aq file
+# display a specific decode tree all levels
+fq \*(Aq.path[1].to.value | d\*(Aq file
+fq \*(Aq.path[1].to.value | dd\*(Aq file
+fq \*(Aq.path[1].to.value | da\*(Aq file
+
+# recursively and verbosely display decode tree
+fq dv file
+# same as
+fq \*(Aqd({array_truncate: 0, string_truncate: 0, verbose: true})\*(Aq file
+
+# JSON representation for whole file
+fq tovalue file
+# or use \-V (\-\-value\-output) that does tovalue automatically
+fq \-V . file
+# or \-Vr if the value is a string and you want a "raw" string
+fq \-Vr .path.to.string file
+# JSON but raw bit fields truncated
+fq \-o bits_format=truncate tovalue file
+# JSON but raw bit fields as md5 hex string
+fq \-o bits_format=md5 tovalue file
+# JSON but raw bit fields as byte arrays
+fq \-o bits_format=byte_array tovalue file
+# look up a path
+fq \*(Aq.some[1].path\*(Aq file
+# look up a path and output JSON
+fq \-V \*(Aq.some[1].path\*(Aq file
+# can be a query that outputs multiple values
+# this outputs first and last value in .some array and .path, three values in total
+fq \-V \*(Aq.some[0,\-1], .path\*(Aq file
+
+# grep whole tree by value
+fq \*(Aqgrep("^prefix")\*(Aq file
+fq \*(Aqgrep(123)\*(Aq file
+# grep whole tree by condition
+fq \*(Aqgrep_by(. >= 100 and . <= 100)\*(Aq file
+
+# recursively look for values fulfilling some condition
+fq \*(Aq.. | select(.type=="trak")?\*(Aq file
+fq \*(Aqgrep_by(.type=="trak")\*(Aq file
+# grep_by(f) is an alias for .. | select(f)?, that is: recurse, select and ignore errors
+
+# recursively look for decode value roots for a format
+fq \*(Aq.. | select(format=="jpeg")\*(Aq file
+# can also use grep_by
+fq \*(Aqgrep_by(format=="jpeg")\*(Aq file
+
+# recursively look for first decode value root for a format
+fq \*(Aqfirst(.. | select(format=="jpeg"))\*(Aq file
+fq \*(Aqfirst(grep_by(format=="jpeg"))\*(Aq file
+
+# decode file as mp4 and return a result even if there are some errors
+fq \-d mp4 file.mp4
+# decode file as mp4 and also ignore validity assertions
+fq \-o force=true \-d mp4 file.mp4
+.fam
+.fi
+.if n .RE
+.SH "AUTHOR"
+.sp
+Mattias Wadman

@@ -1,4 +1,4 @@
-HTML is decoded in HTML5 mode and will always include `<html>`, `<body>` and `<head>` element.
+HTML is decoded in HTML5 mode and will always include `<html>`, `<body>` and `<head>` elements.
 
 See xml format for more examples and how to preserve element order and how to encode to xml.
 

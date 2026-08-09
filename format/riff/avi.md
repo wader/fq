@@ -15,7 +15,7 @@ $ fq -o decode_samples=false '[.chunks[0] | grep_by(.id=="LIST" and .type=="strl
 
 ### Speed up decoding by disabling sample and extended chunks decoding
 
-If your not interested in sample details or extended chunks you can speed up decoding by using:
+If you're not interested in sample details or extended chunks you can speed up decoding by using:
 ```sh
 $ fq -o decode_samples=false -o decode_extended_chunks=false d file.avi
 ```
