@@ -16,7 +16,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
       - name: Install asciidoc
-        run: sudo apt install -y asciidoc
+        run: sudo apt install -y asciidoctor
       - name: Build website
         run: |
           make doc/fq.1.html
