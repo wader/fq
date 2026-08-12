@@ -8,6 +8,7 @@ v0.17.0
 :toclevels: 3
 :sectanchors:
 :reproducible:
+:description: fq - jq for binary formats. Tool, language and decoders for working with binary formats
 
 == Name
 
@@ -27,19 +28,24 @@ To get the most out of fq it's recommended to learn more about jq.
 It features a structural hex viewer, nested format decoding, slicing and concatenating
 binary data, bit-level decoding and an interactive REPL with auto-completion.
 
-[source,console]
+[source,shell]
 ----
-# Evaluate "d" for file.mp4
+# Evaluate "d" (display) for file.mp4
 $ fq d file.mp4
+# Evaluate "da" (display all) for file.mp4
+$ fq da file.mp4
+# JSON for file.mp4
+$ fq -V . file.mp4
 
 # Evaluate ".boxes[0].type" for all *.mp4 files
-$ fq '.boxes[0].type' *.mp4
+# -Vr to output value without quotes
+$ fq -Vr '.boxes[0].type' *.mp4
 
 # Evaluate "1+2" without reading any input
 $ fq -n 1+2
 ----
 
-For more advanced usage see `--arg`, `--slurp`, `--raw-file`, `-n` etc and examples at the end of the documentation.
+For more usage examples see examples section at the end of the documentation.
 
 == Options
 
@@ -600,7 +606,7 @@ By default fq will try to automatically determine input format. In some cases th
 possible, then a format can be specified using `-d NAME`. It's possible sometimes to force decode and get
 a partial or broken result using `-o force=true`.
 
-[source,console]
+[source,shell]
 ----
 # decode as msgpack
 $ fq -d msgpack d file
@@ -638,7 +644,7 @@ Each format provides multiple functions:
 
 Example usage:
 
-[source,console]
+[source,shell]
 ----
 # decode jpeg found inside some other format
 $ fq '.some[].query | jpeg' file
@@ -2762,7 +2768,7 @@ Note that `from*` functions output jq values and `to*` functions take jq values 
 
 Some example usages:
 
-[source,console]
+[source,shell]
 ----
 # read yml (format is probed, use -d yaml to force) and do some query
 $ fq '...' file.yml
@@ -2864,7 +2870,7 @@ With object representation an element is represented as:
 ** Child element with more than just text as `<name>` key with value an object.
 ** Multiple child element siblings with same name as `<name>` key with value as array with strings and objects.
 
-[source,console]
+[source,shell]
 ----
 > $xml | from_xml
 {
@@ -2889,7 +2895,7 @@ With nested array representation, an array with these values `["<name>", {attrib
 - Index 1 object attributes (including `#text` and `#comment` keys).
 - Index 2 array of child elements.
 
-[source,console]
+[source,shell]
 ----
 > $xml | from_xml({array: true})
 [
@@ -2924,7 +2930,7 @@ With nested array representation, an array with these values `["<name>", {attrib
 
 Parse and include `#seq` attributes if needed:
 
-[source,console]
+[source,shell]
 ----
 > $xml | from_xml({seq:true})
 {
@@ -2950,7 +2956,7 @@ Parse and include `#seq` attributes if needed:
 
 Select values in `<doc>`, remove `<child>`, add a `<new>` element, serialize to xml with 2 space indent and print the string
 
-[source,console]
+[source,shell]
 ----
 > $xml | from_xml.doc | del(.child) | .new = "abc" | {root: .} | to_xml({indent: 2}) | println
 <root>
@@ -3013,7 +3019,7 @@ Note that `fromjson` and `tojson` use different naming conventions as they origi
 - `from_url` Decode URL into object.
 +
 --
-[source,console]
+[source,shell]
 ----
 > "schema://user:pass@host/path?key=value#fragment" | from_url
 {
@@ -3076,7 +3082,7 @@ The REPL can be useful in some scenarios:
 - Dig thru a file using sub-REPL to cut down on typing.
 - Use auto-completion to speed up typing.
 
-[source,console]
+[source,shell]
 ----
 # start REPL with no (null) input
 $ fq -i
@@ -3123,7 +3129,7 @@ mp3> .frames[0].header.layer | toactual
 mp3> .frames[0].header.layer | todescription
 "MPEG Layer 3"
 mp3> ^D
-$
+$ # back to shell
 ----
 
 Use Ctrl-D to exit and Ctrl-C to interrupt current evaluation.
@@ -3134,7 +3140,7 @@ Use Ctrl-D to exit and Ctrl-C to interrupt current evaluation.
 
 fq tries to behave the same way as jq as much as possible, so you can do:
 
-[source,console]
+[source,shell]
 ----
 fq . file
 fq < file
@@ -3147,7 +3153,7 @@ fq '.frames[-1] | tobytes' file.mp3 > last_frame
 
 === Common usages
 
-[source,console]
+[source,shell]
 ----
 # recursively display decode tree but truncate long arrays
 fq d file
@@ -3225,3 +3231,24 @@ fq -d mp4 file.mp4
 fq -o force=true -d mp4 file.mp4
 ----
 
+== Links
+
+https://github.com/wader/fq[github.com/wader/fq]
+
+== Copyright
+
+See LICENSE file in source tree.
+
+== See also
+
+*jq*(1)
+
+ifdef::backend-html5[]
+++++
+<style>
+  body {
+    font-family: "Open Sans", sans-serif !important;
+  }
+</style>
+++++
+endif::[]
