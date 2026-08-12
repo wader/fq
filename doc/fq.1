@@ -46,11 +46,16 @@ binary data, bit\-level decoding and an interactive REPL with auto\-completion.
 .if n .RS 4
 .nf
 .fam C
-# Evaluate "d" for file.mp4
+# Evaluate "d" (display) for file.mp4
 $ fq d file.mp4
+# Evaluate "da" (display all) for file.mp4
+$ fq da file.mp4
+# JSON for file.mp4
+$ fq \-V . file.mp4
 
 # Evaluate ".boxes[0].type" for all *.mp4 files
-$ fq \*(Aq.boxes[0].type\*(Aq *.mp4
+# \-Vr to output value without quotes
+$ fq \-Vr \*(Aq.boxes[0].type\*(Aq *.mp4
 
 # Evaluate "1+2" without reading any input
 $ fq \-n 1+2
@@ -58,7 +63,7 @@ $ fq \-n 1+2
 .fi
 .if n .RE
 .sp
-For more advanced usage see \f(CR\-\-arg\fP, \f(CR\-\-slurp\fP, \f(CR\-\-raw\-file\fP, \f(CR\-n\fP etc and examples at the end of the documentation.
+For more usage examples see examples section at the end of the documentation.
 .SH "OPTIONS"
 .sp
 \f(CR\fB\-\-arg NAME VALUE\fP\fP
@@ -6591,7 +6596,7 @@ mp3> .frames[0].header.layer | toactual
 mp3> .frames[0].header.layer | todescription
 "MPEG Layer 3"
 mp3> ^D
-$
+$ # back to shell
 .fam
 .fi
 .if n .RE
@@ -6697,6 +6702,15 @@ fq \-o force=true \-d mp4 file.mp4
 .fam
 .fi
 .if n .RE
+.SH "LINKS"
+.sp
+.URL "https://github.com/wader/fq" "github.com/wader/fq" ""
+.SH "COPYRIGHT"
+.sp
+See LICENSE file in source tree.
+.SH "SEE ALSO"
+.sp
+\fBjq\fP(1)
 .SH "AUTHOR"
 .sp
 Mattias Wadman

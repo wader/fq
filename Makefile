@@ -64,7 +64,7 @@ doc/fq.1: doc/fq.1.adoc
 	asciidoctor -b manpage doc/fq.1.adoc > doc/fq.1
 
 doc/fq.1.html: doc/fq.1.adoc
-	asciidoctor -b html5 -a webfonts! doc/fq.1.adoc > doc/fq.1.html
+	asciidoctor -b html5 -a webfonts! -a source-highlighter=rouge doc/fq.1.adoc > doc/fq.1.html
 
 gogenerate: always
 	go generate -x ./...
