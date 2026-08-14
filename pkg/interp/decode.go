@@ -238,6 +238,21 @@ func (i *Interp) _decode(c any, format string, opts decodeOpts) any {
 			Range:       bv.r,
 			Description: filename,
 			ParseOptsFn: func(init any) any {
+				// fast path if no remaining opts matches as mapstruct
+				// calls are generally quite expensive
+				if len(opts.Remain) > 0 {
+					hasMatch := false
+					for _, f := range mapstruct.StructFieldsSquashed(init) {
+						if _, ok := opts.Remain[mapstruct.CamelToSnake(f.Name)]; ok {
+							hasMatch = true
+							break
+						}
+					}
+					if !hasMatch {
+						return nil
+					}
+				}
+
 				v, err := copystructure.Copy(init)
 				if err != nil {
 					return nil
