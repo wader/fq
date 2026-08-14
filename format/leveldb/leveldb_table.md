@@ -1,7 +1,7 @@
 ### Limitations
 
 - no Meta Blocks (like "filter") are decoded yet.
-- Zstandard uncompression is not implemented yet.
+- Zstandard decompression is not implemented yet.
 
 ### Authors
 

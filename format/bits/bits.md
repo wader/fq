@@ -9,7 +9,7 @@ $ echo 'some {"a":1} json' | fq -d bits '.[40:-48] | fromjson'
 }
 ```
 
-## Index bits
+### Index bits
 
 ```sh
 $ echo 'hello' | fq -d bits '.[4]'

@@ -33,7 +33,7 @@ fq \- tool, language and decoders for working with binary formats
 \f(CR\fBfq [\fIOPTIONS\fP] [\-\-] [\fIEXPRESSION\fP] [\fIFILE\fP.\|.\|.]\fP\fP
 .SH "DESCRIPTION"
 .sp
-\fBfq\fP is a tool, language, and decoders for working with binary formats and data.
+\fBfq\fP is a tool, language, and set of decoders for working with binary formats and data.
 In most cases it behaves and feels similar to \c
 .URL "https://jqlang.github.io/jq/" "jq" ""
 and it
@@ -63,7 +63,7 @@ $ fq \-n 1+2
 .fi
 .if n .RE
 .sp
-For more usage examples see examples section at the end of the documentation.
+For more usage examples see the examples section at the end of the documentation.
 .SH "OPTIONS"
 .sp
 \f(CR\fB\-\-arg NAME VALUE\fP\fP
@@ -437,7 +437,7 @@ fq uses an extended variant of the jq language with a few extra features:
 .  sp -1
 .  IP \(bu 2.3
 .\}
-Arbitrary\-precision integers and arithmetics.
+Arbitrary\-precision integers and arithmetic.
 .RE
 .sp
 .RS 4
@@ -590,13 +590,13 @@ Some values are readonly and can\(cqt be updated or will convert to JSON on upda
 .  sp -1
 .  IP \(bu 2.3
 .\}
-Mixing \f(CR\-\-args\fP and \f(CR\-\-jsonargs\fP does not behave the same.
+Mixing \f(CR\-\-args\fP and \f(CR\-\-jsonargs\fP does not behave the same as in jq.
 .RE
 .SS "Additional functions"
 .sp
 \f(CR\fBband\fP\fP, \f(CR\fBbor\fP\fP, \f(CR\fBbxor\fP\fP, \f(CR\fBbsl\fP\fP, \f(CR\fBbsr\fP\fP, \f(CR\fBbnot\fP\fP
 .RS 4
-Bitwise operations as functions. Works the same as jq\(cqs math functions. Functions that take one argument use
+Bitwise operations as functions. Work the same as jq\(cqs math functions. Functions that take one argument use
 input, \f(CR1 | bnot\fP, and functions with more arguments ignore the input and use formal arguments \f(CRbsl(1; 3)\fP.
 .RE
 .sp
@@ -612,7 +612,7 @@ Like \f(CRgroup\fP but outputs array of \f(CR[value, count]\fP pairs.
 .sp
 \f(CR\fBdelta\fP\fP, \f(CR\fBdelta_by(f)\fP\fP
 .RS 4
-Array with difference between consecutive. \f(CRdelta\fP is the same as \f(CRdelta_by(.b \- .a)\fP.
+Array with differences between consecutive elements. \f(CRdelta\fP is the same as \f(CRdelta_by(.b \- .a)\fP.
 .RE
 .sp
 \f(CR\fBdiff($a; $b)\fP\fP
@@ -675,6 +675,16 @@ Print string or compact JSON to stdout with and without new line.
 \f(CR\fBprinterrln\fP\fP, \f(CR\fBprinterr\fP\fP
 .RS 4
 Print string or compact JSON to stderr with and without new line.
+.RE
+.sp
+\f(CR\fBhexdump\fP\fP, \f(CR\fBhexdump($opts)\fP\fP, \f(CR\fBhd\fP\fP, \f(CR\fBhd($opts)\fP\fP
+.RS 4
+Display binary as a hex dump.
+.RE
+.sp
+\f(CR\fBformat\fP\fP
+.RS 4
+Format name for a decode value. Ex: \f(CRfirst(grep_by(format == "jpeg"))\fP.
 .RE
 .SS "Decode value"
 .sp
@@ -884,6 +894,12 @@ Description for decode value.
 Converts decode value into what it represents. For example converts msgpack decode value into a value representing its JSON representation.
 .RE
 .sp
+\f(CR\fBdecode\fP\fP, \f(CR\fBdecode($name)\fP\fP, \f(CR\fBdecode($name; $opts)\fP\fP
+.RS 4
+Decode binary as a format. \f(CR$name\fP is format name, \f(CR$opts\fP is format options. Ex: \f(CR.\|.\|. | decode("mp4")\fP.
+Note that all decoders are available as functions. Ex: \f(CR.\|.\|. | mp4\fP is the same as \f(CR.\|.\|. | decode("mp4").\fP
+.RE
+.sp
 \f(CRtobytes\fP, \f(CRtobytesrange\fP, \f(CRtobits\fP and \f(CRtobitsrange\fP on a decode value will return the raw source bits as a binary.
 .SS "Binary"
 .sp
@@ -934,7 +950,7 @@ There is also \f(CRtobitsrange\fP and \f(CRtobytesrange\fP which do the same thi
 .  sp -1
 .  IP \(bu 2.3
 .\}
-\f(CR.[index]\fP access bit or byte at index \f(CRindex\fP. Index is in units.
+\f(CR.[index]\fP accesses bit or byte at index \f(CRindex\fP. Index is in units.
 .RE
 .sp
 .RS 4
@@ -1074,10 +1090,12 @@ Transform input to binary with byte as unit and preserve source range.
 .RS 4
 Open file for reading.
 .RE
+.sp
+The standard jq functions \f(CRtest\fP, \f(CRmatch\fP, \f(CRcapture\fP, \f(CRscan\fP and \f(CRsplit\fP also work on binary values, matching against the raw bytes.
 .SS "Binary array"
 .sp
 Binary array is a value "shape" and not a new type. It\(cqs an array of numbers, strings, binaries or other
-binary arrays. They can be used as input to \f(CRtobits\fP, \f(CRtobytes\fP or other function that accept a binary as input.
+binary arrays. They can be used as input to \f(CRtobits\fP, \f(CRtobytes\fP or other functions that accept a binary as input.
 .sp
 .RS 4
 .ie n \{\
@@ -1294,7 +1312,7 @@ Here are all the non\-snake_case functions added by fq. Most of them deal with d
 .sp
 \f(CRdisplay\fP or \f(CRd\fP is the main function for displaying values and is also the function that will be used if no other output function is explicitly used. If its input is a decode value it will output a dump and tree structure or otherwise it will output as JSON.
 .sp
-Below demonstrates some usages:
+Below are some usage examples:
 .sp
 The first and second examples do the same thing, inputting \f(CR"hello"\fP to \f(CRdisplay\fP.
 .sp
@@ -1493,7 +1511,7 @@ There are also some other \f(CRdisplay\fP aliases:
 .  sp -1
 .  IP \(bu 2.3
 .\}
-\f(CRda\fP is \f(CRdisplay({array_truncate: 0, string_truncate: 0})\fP don\(cqt truncate array and strings.
+\f(CRda\fP is \f(CRdisplay({array_truncate: 0, string_truncate: 0})\fP don\(cqt truncate arrays and strings.
 .RE
 .sp
 .RS 4
@@ -1504,7 +1522,7 @@ There are also some other \f(CRdisplay\fP aliases:
 .  sp -1
 .  IP \(bu 2.3
 .\}
-\f(CRdd\fP is \f(CRdisplay({array_truncate: 0, string_truncate: 0, display_bytes: 0})\fP don\(cqt truncate array and strings, show all raw bytes.
+\f(CRdd\fP is \f(CRdisplay({array_truncate: 0, string_truncate: 0, display_bytes: 0})\fP don\(cqt truncate arrays and strings, show all raw bytes.
 .RE
 .sp
 .RS 4
@@ -1515,7 +1533,7 @@ There are also some other \f(CRdisplay\fP aliases:
 .  sp -1
 .  IP \(bu 2.3
 .\}
-\f(CRdv\fP is \f(CRdisplay({array_truncate: 0, string_truncate: 0, verbose: true})\fP don\(cqt truncate array and strings and display verbosely.
+\f(CRdv\fP is \f(CRdisplay({array_truncate: 0, string_truncate: 0, verbose: true})\fP don\(cqt truncate arrays and strings and display verbosely.
 .RE
 .sp
 .RS 4
@@ -1526,7 +1544,7 @@ There are also some other \f(CRdisplay\fP aliases:
 .  sp -1
 .  IP \(bu 2.3
 .\}
-\f(CRddv\fP is \f(CRdisplay({array_truncate: 0, string_truncate: 0, display_bytes: 0, verbose: true})\fP don\(cqt truncate array and strings, show all raw bytes and display verbosely.
+\f(CRddv\fP is \f(CRdisplay({array_truncate: 0, string_truncate: 0, display_bytes: 0, verbose: true})\fP don\(cqt truncate arrays and strings, show all raw bytes and display verbosely.
 .RE
 .SH "FORMATS"
 .sp
@@ -1550,7 +1568,7 @@ $ fq \-h formats
 .if n .RE
 .SS "Format options"
 .sp
-Some formats has own options that can be set using \f(CR\-o\fP. For
+Some formats have their own options that can be set using \f(CR\-o\fP. For
 example the \f(CRmp4\fP format has a \f(CRdecode_samples\fP option that controls
 if individual samples should be decoded. To disable it one can do
 \f(CRfq \-o decode_samples=false . file.mp4\fP. See format list for options.
@@ -1576,7 +1594,7 @@ Decode or throw on error. Ex: \f(CR.\|.\|. | from_mp4\fP
 .sp
 \f(CRfrom_<name>($options)\fP
 .RS 4
-Same as above with format options Ex: \f(CR.\|.\|. | from_mp4({decode_samples: false})\fP
+Same as above with format options. Ex: \f(CR.\|.\|. | from_mp4({decode_samples: false})\fP
 .RE
 .sp
 Example usage:
@@ -2152,7 +2170,7 @@ Audio Video Interleaved
 .sp
 Samples
 .RS 4
-AVI has many redundant ways to index samples so currently \f(CR.streams[].samples\fP will only include samples the most "modern" way used in the file. That is in order of stream super index, movi ix index then idx1 index.
+AVI has many redundant ways to index samples so currently \f(CR.streams[].samples\fP will only include samples using the most "modern" method found in the file. That is in order of stream super index, movi ix index then idx1 index.
 .RE
 .sp
 Extract samples for stream 1
@@ -3336,7 +3354,7 @@ no Meta Blocks (like "filter") are decoded yet.
 .  sp -1
 .  IP \(bu 2.3
 .\}
-Zstandard uncompression is not implemented yet.
+Zstandard decompression is not implemented yet.
 .RE
 .RE
 .sp
@@ -4100,7 +4118,7 @@ $ fq \-d negentropy \*(Aq.bounds | length as $total | map(select(.mode == "finge
 .fi
 .if n .RE
 .sp
-Check get all ids in all idlists
+Get all ids in all idlists
 .RS 4
 .RE
 .sp
@@ -4498,7 +4516,7 @@ $ fq \-d pg_control \-o flavour=postgres14 d pg_control
 .fi
 .if n .RE
 .sp
-Specific fields can be got by request
+Specific fields can be queried individually
 .RS 4
 .RE
 .sp
@@ -4768,9 +4786,9 @@ Linux cooked capture encapsulation
 .sp
 \f(CR\fBstl\fP\fP
 .RS 4
-Stereolithography
+Standard Tessellation Language
 .sp
-Decode binary STL (Stereolithography, Standard Tesselation Language) files.
+Decode binary STL (Stereolithography, Standard Tessellation Language) files.
 .sp
 Current limitations
 .RS 4
@@ -4883,7 +4901,7 @@ Tag Image File Format
 .RS 4
 Transport layer security
 .sp
-Supports decoding of most standard records, messages and extensions. Can also decrypt most standard cipher suites in a PCAP with traffic in both directions if a NSS key log is provided.
+Supports decoding of most standard records, messages and extensions. Can also decrypt most standard cipher suites in a PCAP with traffic in both directions if an NSS key log is provided.
 .sp
 Decode and decrypt providing a PCAP and key log
 .RS 4
@@ -4922,7 +4940,7 @@ $ fq \-o keylog=@traffic.keylog d traffic.pcap
 # first TCP connections:
 $ fq \-o keylog=@traffic.keylog \*(Aq.tcp_connections[0].server.stream.stream | tobytes\*(Aq traffic.pcap > data
 # first TLS connection:
-$ fq \-o keylog=@traffic.keylog\&  \*(Aqfirst(grep_by(.server.stream | format == "tls")).server.stream.stream | tobytes\*(Aq > data
+$ fq \-o keylog=@traffic.keylog \*(Aqfirst(grep_by(.server.stream | format == "tls")).server.stream.stream | tobytes\*(Aq > data
 .fam
 .fi
 .if n .RE
@@ -5198,7 +5216,7 @@ WebP image
 Extensible Markup Language
 .sp
 XML can be decoded and encoded into jq values in two ways, elements as object or array. The object variant might be easier to query for a specific value but array might be easier to use to generate xml or to query after all elements of some kind etc.
-Encoding is done using the \f(CRto_xml\fP function and it will figure what variant that is used based on the input value. It has two optional options \f(CRindent\fP and \f(CRattribute_prefix\fP.
+Encoding is done using the \f(CRto_xml\fP function and it will figure out what variant is used based on the input value. It has two optional options \f(CRindent\fP and \f(CRattribute_prefix\fP.
 .sp
 Elements as object
 .RS 4
@@ -5489,7 +5507,7 @@ https://token@host.org
 
 # top 3 hosts in src or href attributes:
 # \-d to decode as html, can\*(Aqt be probed as html5 parsers always produce some parse tree
-# [...] to start collect values into an array
+# [...] to start collecting values into an array
 # .. | ."@src"?, ."@href"? | values, recurse and try (?) to get src and href attributes and filter out nulls
 # from_url.host | values, parse as url and filter out those without a host
 # count to count unique values, returns [[key, count], ...]
@@ -5505,12 +5523,12 @@ $ curl \-s https://www.discogs.com/ | fq \-d html \*(Aq[.. | ."@src"?, ."@href"?
 
 # shows how serialization functions can be used on any string, how to transform values and output some other format
 # read and decode zip file and start an interactive REPL
-$ fq\&  \-i . <(curl \-sL https://github.com/stefangabos/world_countries/archive/master.zip)
+$ fq \-i . <(curl \-sL https://github.com/stefangabos/world_countries/archive/master.zip)
 # select from interesting xml file
 zip> .local_files[] | select(.file_name == "world_countries\-master/data/countries/en/world.xml").uncompressed | repl
 # convert xml into jq value
 > .local_files[95].uncompressed string> from_xml | repl
-# sort countries by and select the first one
+# sort countries by name and select the first one
 >> object> .countries.country | sort_by(."@name") | first | repl
 # see what current input is
 >>> object> .
@@ -6233,6 +6251,29 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRto_url\fP Encode object into URL string.
 .RE
+.SS "PEM"
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRfrom_pem\fP Decode PEM to binary.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+\f(CRto_pem\fP/\f(CRto_pem($label)\fP Encode binary to PEM. \f(CR$label\fP is the PEM header label.
+.RE
 .SS "Hex and base64"
 .sp
 .RS 4
@@ -6679,7 +6720,7 @@ fq \-V \*(Aq.some[0,\-1], .path\*(Aq file
 fq \*(Aqgrep("^prefix")\*(Aq file
 fq \*(Aqgrep(123)\*(Aq file
 # grep whole tree by condition
-fq \*(Aqgrep_by(. >= 100 and . <= 100)\*(Aq file
+fq \*(Aqgrep_by(. >= 100 and . <= 200)\*(Aq file
 
 # recursively look for values fulfilling some condition
 fq \*(Aq.. | select(.type=="trak")?\*(Aq file

@@ -1,4 +1,4 @@
-Decode binary STL (Stereolithography, Standard Tesselation Language) files.
+Decode binary STL (Stereolithography, Standard Tessellation Language) files.
 
 ### Current limitations
 

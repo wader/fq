@@ -4,7 +4,7 @@
 $ fq -d pg_control -o flavour=postgres14 d pg_control
 ```
 
-### Specific fields can be got by request
+### Specific fields can be queried individually
 
 ```sh
 $ fq -d pg_control -o flavour=postgres14 ".state, .check_point_copy.redo, .wal_level" pg_control

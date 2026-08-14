@@ -1,4 +1,4 @@
-Supports decoding of most standard records, messages and extensions. Can also decrypt most standard cipher suites in a PCAP with traffic in both directions if a NSS key log is provided.
+Supports decoding of most standard records, messages and extensions. Can also decrypt most standard cipher suites in a PCAP with traffic in both directions if an NSS key log is provided.
 
 ### Decode and decrypt providing a PCAP and key log
 
@@ -24,7 +24,7 @@ $ fq -o keylog=@traffic.keylog d traffic.pcap
 # first TCP connections:
 $ fq -o keylog=@traffic.keylog '.tcp_connections[0].server.stream.stream | tobytes' traffic.pcap > data
 # first TLS connection:
-$ fq -o keylog=@traffic.keylog  'first(grep_by(.server.stream | format == "tls")).server.stream.stream | tobytes' > data
+$ fq -o keylog=@traffic.keylog 'first(grep_by(.server.stream | format == "tls")).server.stream.stream | tobytes' > data
 ```
 
 ### Supported cipher suites for decryption
