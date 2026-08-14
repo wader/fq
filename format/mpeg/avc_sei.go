@@ -200,7 +200,7 @@ func avcSEIDecode(d *decode.D) any {
 			}
 			if numClockTS > 0 {
 				d.FieldArray("clocks", func(d *decode.D) {
-					for i := 0; i < numClockTS; i++ {
+					for range numClockTS {
 						d.FieldStruct("clock", func(d *decode.D) {
 							clock_timestamp_flag := d.FieldBool("clock_timestamp_flag")
 							if clock_timestamp_flag {

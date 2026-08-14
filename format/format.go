@@ -2,6 +2,7 @@ package format
 
 import (
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/wader/fq/pkg/decode"
@@ -29,12 +30,9 @@ func (pi Probe_In) HasExt(ss ...string) bool {
 		return false
 	}
 	ext = ext[1:]
-	for _, s := range ss {
-		if strings.EqualFold(s, ext) {
-			return true
-		}
-	}
-	return false
+	return slices.ContainsFunc(ss, func(s string) bool {
+		return strings.EqualFold(s, ext)
+	})
 }
 
 type Probe_Args_In struct {
@@ -367,12 +365,9 @@ type UDP_Payload_In struct {
 }
 
 func (u UDP_Payload_In) IsPort(ports ...int) bool {
-	for _, p := range ports {
-		if u.DestinationPort == p || u.SourcePort == p {
-			return true
-		}
-	}
-	return false
+	return slices.ContainsFunc(ports, func(p int) bool {
+		return u.DestinationPort == p || u.SourcePort == p
+	})
 }
 
 func (u UDP_Payload_In) MustIsPort(fn func(format string, a ...any), ports ...int) {
@@ -396,13 +391,10 @@ type TCP_Stream_Out struct {
 }
 
 func (t TCP_Stream_In) IsPort(ports ...int) bool {
-	for _, p := range ports {
-		if (t.IsClient && t.DestinationPort == p) ||
-			(!t.IsClient && t.SourcePort == p) {
-			return true
-		}
-	}
-	return false
+	return slices.ContainsFunc(ports, func(p int) bool {
+		return (t.IsClient && t.DestinationPort == p) ||
+			(!t.IsClient && t.SourcePort == p)
+	})
 }
 
 func (t TCP_Stream_In) MustIsPort(fn func(format string, a ...any), ports ...int) {

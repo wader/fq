@@ -29,7 +29,7 @@ var camelToSnakeCache sync.Map
 func camelToSnakeSlow(s string) string {
 	var b strings.Builder
 	b.Grow(len(s))
-	for i := 0; i < len(s); i++ {
+	for i := range len(s) {
 		c := s[i]
 		if c >= 'A' && c <= 'Z' {
 			if i > 0 && s[i-1] >= 'a' && s[i-1] <= 'z' {

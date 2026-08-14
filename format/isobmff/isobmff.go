@@ -166,7 +166,7 @@ func isobmffDecode(d *decode.D, allowTruncated bool, brandsFn func(firstType str
 		ftyp.majorBrand = strings.TrimSpace(d.UTF8(4))
 		minorCount := (size - (4 * 4)) / 4 /* size,type,major,minor_version */
 		ftyp.minorVersion = uint32(d.U32())
-		for i := 0; i < int(minorCount); i++ {
+		for range int(minorCount) {
 			ftyp.minorBrands = append(ftyp.minorBrands, strings.TrimSpace(d.UTF8(4)))
 		}
 	}

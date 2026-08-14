@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math"
 	"math/big"
+	"slices"
 
 	"github.com/wader/fq/internal/mathx"
 	"github.com/wader/fq/pkg/bitio"
@@ -51,12 +52,8 @@ func (d *D) trySEndian(nBits int, endian Endian) (int64, error) {
 	return s, nil
 }
 
-// from https://github.com/golang/go/wiki/SliceTricks#reversing
 func ReverseBytes(a []byte) {
-	for i := len(a)/2 - 1; i >= 0; i-- {
-		opp := len(a) - 1 - i
-		a[i], a[opp] = a[opp], a[i]
-	}
+	slices.Reverse(a)
 }
 
 func (d *D) tryBigIntEndianSign(nBits int, endian Endian, sign bool) (*big.Int, error) {

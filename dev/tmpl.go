@@ -67,7 +67,7 @@ func main() {
 		},
 		"map": func(args ...any) map[any]any {
 			m := map[any]any{}
-			for i := 0; i < len(args)/2; i++ {
+			for i := range len(args) / 2 {
 				m[args[i*2]] = args[i*2+1]
 			}
 			return m
