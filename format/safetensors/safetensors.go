@@ -4,8 +4,9 @@ package safetensors
 
 import (
 	"fmt"
+	"maps"
 	"math"
-	"sort"
+	"slices"
 
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/internal/mapstruct"
@@ -103,11 +104,7 @@ func decodeSafeTensors(d *decode.D) any {
 		}
 
 		// Get tensor names and sort them for deterministic output
-		tensorNames := make([]string, 0, len(header.Tensors))
-		for tensorName := range header.Tensors {
-			tensorNames = append(tensorNames, tensorName)
-		}
-		sort.Strings(tensorNames)
+		tensorNames := slices.Sorted(maps.Keys(header.Tensors))
 
 		for _, tensorName := range tensorNames {
 			tensorInfo := header.Tensors[tensorName]

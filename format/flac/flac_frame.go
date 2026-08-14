@@ -470,7 +470,7 @@ func frameDecode(d *decode.D) any {
 										d.RangeFn(d.Pos(), int64(count*escapeSampleSize), func(d *decode.D) {
 											if ffi.SampleDetails {
 												d.FieldArray("residuals", func(d *decode.D) {
-													for i := 0; i < count; i++ {
+													for range count {
 														d.FieldS("residual", escapeSampleSize)
 													}
 												})
@@ -486,7 +486,7 @@ func frameDecode(d *decode.D) any {
 								} else {
 									if ffi.SampleDetails {
 										d.FieldArray("residuals", func(d *decode.D) {
-											for i := 0; i < count; i++ {
+											for range count {
 												d.FieldStruct("residual", func(d *decode.D) {
 													high := d.FieldUnary("high", 0)
 													low := d.FieldU("low", riceParameter)
@@ -544,7 +544,7 @@ func frameDecode(d *decode.D) any {
 					d.RangeFn(d.Pos(), int64(blockSize*subframeSampleSize), func(d *decode.D) {
 						if ffi.SampleDetails {
 							d.FieldArray("samples", func(d *decode.D) {
-								for i := 0; i < blockSize; i++ {
+								for range blockSize {
 									d.FieldS("sample", subframeSampleSize)
 								}
 							})
@@ -602,8 +602,8 @@ func frameDecode(d *decode.D) any {
 				// for verbatim we already added samples above
 				if ffi.SampleDetails && subframeType != SubframeVerbatim {
 					d.FieldArray("samples", func(d *decode.D) {
-						for i := 0; i < len(samples); i++ {
-							d.FieldValueSint("sample", samples[i])
+						for _, s := range samples {
+							d.FieldValueSint("sample", s)
 						}
 					})
 				}

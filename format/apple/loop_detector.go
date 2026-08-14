@@ -1,6 +1,10 @@
 package apple
 
-import "github.com/wader/fq/internal/mathx"
+import (
+	"slices"
+
+	"github.com/wader/fq/internal/mathx"
+)
 
 // PosLoopDetector is used for detecting loops when writing decoders, and can
 // short-circuit infinite recursion that can cause stack overflows.
@@ -9,10 +13,8 @@ type PosLoopDetector[T mathx.Integer] []T
 // Push adds the current offset to the stack and executes the supplied
 // detection function
 func (pld *PosLoopDetector[T]) Push(offset T, detect func()) {
-	for _, o := range *pld {
-		if offset == o {
-			detect()
-		}
+	if slices.Contains(*pld, offset) {
+		detect()
 	}
 	*pld = append(*pld, offset)
 }

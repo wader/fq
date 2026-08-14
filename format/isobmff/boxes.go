@@ -1933,7 +1933,7 @@ func decodeBoxType(ctx *decodeContext, d *decode.D, typ string) {
 						break
 					}
 					d.FieldArray("channels", func(d *decode.D) {
-						for i := 0; i < int(numAudioChannels); i++ {
+						for range int(numAudioChannels) {
 							d.FieldStruct("channel", func(d *decode.D) {
 								speakerPosition := d.FieldU8("speaker_position")
 								if speakerPosition == 126 {
@@ -1964,7 +1964,7 @@ func decodeBoxType(ctx *decodeContext, d *decode.D, typ string) {
 				if definedLayout == 0 {
 					layoutChannelCount := d.FieldU8("layout_channel_count")
 					d.FieldArray("channels", func(d *decode.D) {
-						for i := 0; i < int(layoutChannelCount); i++ {
+						for range int(layoutChannelCount) {
 							d.FieldStruct("channel", func(d *decode.D) {
 								speakerPosition := d.FieldU8("speaker_position")
 								if speakerPosition == 126 {
