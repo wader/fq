@@ -278,13 +278,13 @@ The value of a decode value is the symbolic value if available and otherwise the
 `*topath*`::
   Path for decode value. Use `path_to_expr` to get a string representation.
 
-`*tovalue`, `tovalue($opts)*`::
+`*tovalue*`, `*tovalue($opts)*`::
   Symbolic, if available, or actual value for decode value.
 
-`*toactual`, `toactual($opts)*`::
+`*toactual*`, `*toactual($opts)*`::
   Actual value for decode value.
 
-`*tosym`, `tosym($opts)*`::
+`*tosym*`, `*tosym($opts)*`::
   Symbolic value for decode value.
 
 `*todescription*`::
