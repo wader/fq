@@ -18,7 +18,7 @@ func init() {
 	interp.RegisterFormat(
 		format.STL,
 		&decode.Format{
-			Description: "Stereolithography",
+			Description: "Standard Tessellation Language",
 			DecodeFn:    decodeSTL,
 		})
 	interp.RegisterFS(stlFS)

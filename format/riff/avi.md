@@ -1,6 +1,6 @@
 ### Samples
 
-AVI has many redundant ways to index samples so currently `.streams[].samples` will only include samples the most "modern" way used in the file. That is in order of stream super index, movi ix index then idx1 index.
+AVI has many redundant ways to index samples so currently `.streams[].samples` will only include samples using the most "modern" method found in the file. That is in order of stream super index, movi ix index then idx1 index.
 
 ### Extract samples for stream 1
 

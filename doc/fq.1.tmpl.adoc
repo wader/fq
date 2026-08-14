@@ -20,7 +20,7 @@ fq - tool, language and decoders for working with binary formats
 
 == Description
 
-**fq** is a tool, language, and decoders for working with binary formats and data.
+**fq** is a tool, language, and set of decoders for working with binary formats and data.
 In most cases it behaves and feels similar to https://jqlang.github.io/jq/[jq] and it
 also uses the same expression language.
 To get the most out of fq it's recommended to learn more about jq.
@@ -45,7 +45,7 @@ $ fq -Vr '.boxes[0].type' *.mp4
 $ fq -n 1+2
 ----
 
-For more usage examples see examples section at the end of the documentation.
+For more usage examples see the examples section at the end of the documentation.
 
 == Options
 
@@ -150,7 +150,7 @@ function `name` takes two arguments (arity).
 
 fq uses an extended variant of the jq language with a few extra features:
 
-* Arbitrary-precision integers and arithmetics.
+* Arbitrary-precision integers and arithmetic.
 * Supports raw strings using back-ticks. String interpolation and codepoint escapes are not processed.
 +
 ----
@@ -174,12 +174,12 @@ results in the string `hello world🌍` or as JSON `"hello world🌍"`.
 * Some values can act as an object with keys even when they are arrays, numbers etc.
 * There can be keys hidden from `keys` and `[]`.
 * Some values are readonly and can't be updated or will convert to JSON on update.
-* Mixing `--args` and `--jsonargs` does not behave the same.
+* Mixing `--args` and `--jsonargs` does not behave the same as in jq.
 
 === Additional functions
 
 `*band*`, `*bor*`, `*bxor*`, `*bsl*`, `*bsr*`, `*bnot*`::
-  Bitwise operations as functions. Works the same as jq's math functions. Functions that take one argument use
+  Bitwise operations as functions. Work the same as jq's math functions. Functions that take one argument use
   input, `1 | bnot`, and functions with more arguments ignore the input and use formal arguments `bsl(1; 3)`.
 
 `*chunk($size)*`::
@@ -189,7 +189,7 @@ results in the string `hello world🌍` or as JSON `"hello world🌍"`.
   Like `group` but outputs array of `[value, count]` pairs.
 
 `*delta*`, `*delta_by(f)*`::
-  Array with difference between consecutive. `delta` is the same as `delta_by(.b - .a)`.
+  Array with differences between consecutive elements. `delta` is the same as `delta_by(.b - .a)`.
 
 `*diff($a; $b)*`::
   Produce a diff between `$a` and `$b`. Differences are represented as an object `{a: <value from a>, b: <value from b>}`.
@@ -228,6 +228,12 @@ Print string or compact JSON to stdout with and without new line.
 
 `*printerrln*`, `*printerr*`::
 Print string or compact JSON to stderr with and without new line.
+
+`*hexdump*`, `*hexdump($opts)*`, `*hd*`, `*hd($opts)*`::
+  Display binary as a hex dump.
+
+`*format*`::
+  Format name for a decode value. Ex: `first(grep_by(format == "jpeg"))`.
 
 === Decode value
 
@@ -287,6 +293,10 @@ The value of a decode value is the symbolic value if available and otherwise the
 `*torepr*`::
   Converts decode value into what it represents. For example converts msgpack decode value into a value representing its JSON representation.
 
+`*decode*`, `*decode($name)*`, `*decode($name; $opts)*`::
+  Decode binary as a format. `$name` is format name, `$opts` is format options. Ex: `... | decode("mp4")`.
+  Note that all decoders are available as functions. Ex: `... | mp4` is the same as `... | decode("mp4").`
+
 `tobytes`, `tobytesrange`, `tobits` and `tobitsrange` on a decode value will return the raw source bits as a binary.
 
 === Binary
@@ -300,7 +310,7 @@ There is also `tobitsrange` and `tobytesrange` which do the same thing but will 
 - `"string" | tobytes` produces a binary with UTF8 bytes.
 - `1234 | tobits` produces a binary with the unsigned big-endian integer 1234 with enough bits to represent the number. Use `tobytes` to get the same but with enough bytes to represent the number. This is different to how numbers work inside binary arrays where they are limited to 0-255.
 - `["abc", 123, ...] | tobytes` produces a binary from a binary array. See <<binary_array>> below.
-- `.[index]` access bit or byte at index `index`. Index is in units.
+- `.[index]` accesses bit or byte at index `index`. Index is in units.
   - `[0x12, 0x34, 0x56] | tobytes[1]` is `0x34`
   - `[0x12, 0x34, 0x56] | tobits[3]` is `1`
 - `.[start:]`, `.[start:end]` or `.[:end]` is normal jq slice syntax and will slice the binary from `start` to `end`. `start` and `end` are in units.
@@ -337,10 +347,12 @@ There is also `tobitsrange` and `tobytesrange` which do the same thing but will 
 `*open*`::
   Open file for reading.
 
+The standard jq functions `test`, `match`, `capture`, `scan` and `split` also work on binary values, matching against the raw bytes.
+
 === Binary array [[binary_array]]
 
 Binary array is a value "shape" and not a new type. It's an array of numbers, strings, binaries or other
-binary arrays. They can be used as input to `tobits`, `tobytes` or other function that accept a binary as input.
+binary arrays. They can be used as input to `tobits`, `tobytes` or other functions that accept a binary as input.
 
 - Number is a byte with value 0-255
 - String as UTF8 bytes
@@ -381,7 +393,7 @@ Here are all the non-snake_case functions added by fq. Most of them deal with de
 
 `display` or `d` is the main function for displaying values and is also the function that will be used if no other output function is explicitly used. If its input is a decode value it will output a dump and tree structure or otherwise it will output as JSON.
 
-Below demonstrates some usages:
+Below are some usage examples:
 
 The first and second examples do the same thing, inputting `"hello"` to `display`.
 
@@ -427,10 +439,10 @@ Here the `sync` pattern starts at `0xb79` (bit `0`) and ends at `0xb7a.3` (exclu
 
 There are also some other `display` aliases:
 
-- `da` is `display({array_truncate: 0, string_truncate: 0})` don't truncate array and strings.
-- `dd` is `display({array_truncate: 0, string_truncate: 0, display_bytes: 0})` don't truncate array and strings, show all raw bytes.
-- `dv` is `display({array_truncate: 0, string_truncate: 0, verbose: true})` don't truncate array and strings and display verbosely.
-- `ddv` is `display({array_truncate: 0, string_truncate: 0, display_bytes: 0, verbose: true})` don't truncate array and strings, show all raw bytes and display verbosely.
+- `da` is `display({array_truncate: 0, string_truncate: 0})` don't truncate arrays and strings.
+- `dd` is `display({array_truncate: 0, string_truncate: 0, display_bytes: 0})` don't truncate arrays and strings, show all raw bytes.
+- `dv` is `display({array_truncate: 0, string_truncate: 0, verbose: true})` don't truncate arrays and strings and display verbosely.
+- `ddv` is `display({array_truncate: 0, string_truncate: 0, display_bytes: 0, verbose: true})` don't truncate arrays and strings, show all raw bytes and display verbosely.
 
 == Formats
 
@@ -452,7 +464,7 @@ $ fq -h formats
 
 === Format options
 
-Some formats has own options that can be set using `-o`. For
+Some formats have their own options that can be set using `-o`. For
 example the `mp4` format has a `decode_samples` option that controls
 if individual samples should be decoded. To disable it one can do
 `fq -o decode_samples=false . file.mp4`. See format list for options.
@@ -472,7 +484,7 @@ Each format provides multiple functions:
   Decode or throw on error. Ex: `... | from_mp4`
 
 `from_<name>($options)`::
-  Same as above with format options Ex: `... | from_mp4({decode_samples: false})`
+  Same as above with format options. Ex: `... | from_mp4({decode_samples: false})`
 
 Example usage:
 
@@ -551,7 +563,7 @@ https://token@host.org
 
 # top 3 hosts in src or href attributes:
 # -d to decode as html, can't be probed as html5 parsers always produce some parse tree
-# [...] to start collect values into an array
+# [...] to start collecting values into an array
 # .. | ."@src"?, ."@href"? | values, recurse and try (?) to get src and href attributes and filter out nulls
 # from_url.host | values, parse as url and filter out those without a host
 # count to count unique values, returns [[key, count], ...]
@@ -567,12 +579,12 @@ $ curl -s https://www.discogs.com/ | fq -d html '[.. | ."@src"?, ."@href"? | val
 
 # shows how serialization functions can be used on any string, how to transform values and output some other format
 # read and decode zip file and start an interactive REPL
-$ fq  -i . <(curl -sL https://github.com/stefangabos/world_countries/archive/master.zip)
+$ fq -i . <(curl -sL https://github.com/stefangabos/world_countries/archive/master.zip)
 # select from interesting xml file
 zip> .local_files[] | select(.file_name == "world_countries-master/data/countries/en/world.xml").uncompressed | repl
 # convert xml into jq value
 > .local_files[95].uncompressed string> from_xml | repl
-# sort countries by and select the first one
+# sort countries by name and select the first one
 >> object> .countries.country | sort_by(."@name") | first | repl
 # see what current input is
 >>> object> .
@@ -808,6 +820,11 @@ Note that `fromjson` and `tojson` use different naming conventions as they origi
 --
 - `to_url` Encode object into URL string.
 
+=== PEM
+
+- `from_pem` Decode PEM to binary.
+- `to_pem`/`to_pem($label)` Encode binary to PEM. `$label` is the PEM header label.
+
 === Hex and base64
 
 - `from_hex` Decode hex string to binary.
@@ -977,7 +994,7 @@ fq -V '.some[0,-1], .path' file
 fq 'grep("^prefix")' file
 fq 'grep(123)' file
 # grep whole tree by condition
-fq 'grep_by(. >= 100 and . <= 100)' file
+fq 'grep_by(. >= 100 and . <= 200)' file
 
 # recursively look for values fulfilling some condition
 fq '.. | select(.type=="trak")?' file

@@ -16,7 +16,7 @@ $ echo 'some {"a":1} json' | fq -d bytes '.[5:-6] | fromjson'
 }
 ```
 
-## Index bytes
+### Index bytes
 
 ```sh
 $ echo 'hello' | fq -d bytes '.[1]'

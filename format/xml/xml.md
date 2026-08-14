@@ -3,7 +3,7 @@ The object variant might be easier
 to query for a specific value but array might be easier to use to generate xml or to query
 after all elements of some kind etc.
 
-Encoding is done using the `to_xml` function and it will figure what variant that is used based on the input value.
+Encoding is done using the `to_xml` function and it will figure out what variant is used based on the input value.
 It has two optional options `indent` and `attribute_prefix`.
 
 ### Elements as object
