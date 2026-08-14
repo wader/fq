@@ -6,20 +6,41 @@ package mapstruct
 
 import (
 	"reflect"
-	"regexp"
 	"strings"
+	"sync"
 
 	"github.com/creasty/defaults"
 	"github.com/mitchellh/mapstructure"
 )
 
-var camelToSnakeRe = regexp.MustCompile(`[[:lower:]][[:upper:]]`)
-
 // "AaaBbb" -> "aaa_bbb"
 func CamelToSnake(s string) string {
-	return strings.ToLower(camelToSnakeRe.ReplaceAllStringFunc(s, func(s string) string {
-		return s[0:1] + "_" + s[1:2]
-	}))
+	if v, ok := camelToSnakeCache.Load(s); ok {
+		s, _ := v.(string)
+		return s
+	}
+	r := camelToSnakeSlow(s)
+	camelToSnakeCache.Store(s, r)
+	return r
+}
+
+var camelToSnakeCache sync.Map
+
+func camelToSnakeSlow(s string) string {
+	var b strings.Builder
+	b.Grow(len(s))
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		if c >= 'A' && c <= 'Z' {
+			if i > 0 && s[i-1] >= 'a' && s[i-1] <= 'z' {
+				b.WriteByte('_')
+			}
+			b.WriteByte(c + ('a' - 'A'))
+		} else {
+			b.WriteByte(c)
+		}
+	}
+	return b.String()
 }
 
 func ToStruct(m any, v any) error {
