@@ -13,7 +13,6 @@ def fq_tmpl_adoc($replace_svg):
 			( .image
 			| gsub(".svg"; ".txt")
 			| open
-			| tobytes
 			| tostring
 			| "[source,shell]\n----\n\(.)----\n"
 			)

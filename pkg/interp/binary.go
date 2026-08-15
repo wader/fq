@@ -286,7 +286,10 @@ func (i *Interp) _open(c any) any {
 
 	// bitio.Buffer -> (bitio.Reader) -> aheadreadseeker -> progressreadseeker -> ctxreadseeker -> readseeker
 
-	bbf.br = bitio.NewIOBitReadSeeker(aheadRs)
+	bbf.Binary, err = NewBinaryFromBitReader(bitio.NewIOBitReadSeeker(aheadRs), 8, 0)
+	if err != nil {
+		return err
+	}
 
 	return bbf
 }

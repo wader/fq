@@ -31,10 +31,9 @@ def input:
     | ($h // "<stdin>") as $name
     | $h
     | try
+        ( _input_filename($name) as $_
         # null input here means stdin
-        ( open
-        | _input_filename($name) as $_
-        | .
+        | open
         )
       catch
         ( . as $err

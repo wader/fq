@@ -137,7 +137,6 @@ def _opt_eval($rest):
           | try
               ( .[1:]
               | open
-              | tobytes
               | tostring
               )
             catch
@@ -195,7 +194,7 @@ def _opt_eval($rest):
         ( . as {$expr_file, $args, $jsonargs}
         | $expr_file
         | if . then
-            try (open | tobytes | tostring)
+            try (open | tostring)
             catch ("\($expr_file): \(.)" | _fatal_error(_exit_code_args_error))
           else ($rest[0] // $args[0] // $jsonargs[0])
           end
@@ -237,7 +236,7 @@ def _opt_eval($rest):
         | if . then
             ( map(.[1] |=
                 ( . as $f
-                | try (open | tobytes | tostring)
+                | try (open | tostring)
                   catch ("\($f): \(.)" | _fatal_error(_exit_code_args_error))
                 )
               )

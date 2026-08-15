@@ -1,0 +1,8 @@
+/a:
+abc
+$ fq -n '"a" | open | tostring, tobytes, .[1:2]'
+"abc\n"
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|61 62 63 0a|                                   |abc.|           |.: raw bits 0x0-0x4 (4)
+   |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|
+0x0|   62                                          | b              |.: raw bits 0x1-0x2 (1)

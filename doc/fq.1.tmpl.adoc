@@ -345,7 +345,7 @@ There is also `tobitsrange` and `tobytesrange` which do the same thing but will 
   Transform input to binary with byte as unit and preserve source range.
 
 `*open*`::
-  Open file for reading.
+  Open file for reading. Returns a binary. Ex: `"file" | open | decode`, `"file" | open | tostring`.
 
 The standard jq functions `test`, `match`, `capture`, `scan` and `split` also work on binary values, matching against the raw bytes.
 
