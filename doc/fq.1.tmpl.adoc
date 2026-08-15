@@ -1071,6 +1071,9 @@ ifdef::backend-html5[]
     pre.rouge code {
       filter: invert(0.9) hue-rotate(180deg);
     }
+    .dlist > .title {
+      color: #e8a796;
+    }
   }
 </style>
 ++++
