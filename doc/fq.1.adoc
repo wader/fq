@@ -488,7 +488,7 @@ Below are some usage examples:
 
 The first and second examples do the same thing, inputting `"hello"` to `display`.
 
-[source,shell]
+[source,console]
 ----
 $ fq -n '"hello"'
 "hello"
@@ -502,7 +502,7 @@ In the next few examples we select out the first "edit list" box in an mp4 file 
 
 By default, display will only show the root level:
 
-[source,shell]
+[source,console]
 ----
 $ fq 'first(grep_by(.type == "elst"))' file.mp4
      |00 01 02 03 04 05 06 07 08 09|0123456789|.boxes[3].boxes[1].boxes[1].boxes[0]{}: box
@@ -534,7 +534,7 @@ Notation:
 
 With `display` or `d` it will recursively show the whole tree:
 
-[source,shell]
+[source,console]
 ----
 $ fq 'first(grep_by(.type == "elst")) | d' file.mp4
      |00 01 02 03 04 05 06 07 08 09|0123456789|.boxes[3].boxes[1].boxes[1].boxes[0]{}: box
@@ -556,7 +556,7 @@ $ fq 'first(grep_by(.type == "elst")) | d' file.mp4
 
 Same but verbose `dv`:
 
-[source,shell]
+[source,console]
 ----
 $ fq 'first(grep_by(.type == "elst")) | dv' file.mp4
      |00 01 02 03 04 05 06 07 08 09|0123456789|.boxes[3].boxes[1].boxes[1].boxes[0]{}: box 0xd65-0xd81 (28)
@@ -582,7 +582,7 @@ Bit ranges use `<start-byte>[.<bits>]-<end-byte>[.<bits>]` as notation where `.<
 
 This verbosely displays the header of the second frame in an mp3 file which has a bunch of non-byte-aligned fields:
 
-[source,shell]
+[source,console]
 ----
 $ fq '.frames[1].header | dv' file.mp3
      |00 01 02 03 04 05 06 07 08 09|0123456789|.frames[1].header{}: 0xb79-0xb7d (4)
@@ -706,7 +706,7 @@ These `bookmarkData` blobs are often found encoded in data fields of Binary Prop
 
 //-
 `fq`'s `grep_by` function can be used to recursively descend through the decoded tree, probing for and selecting any `bookmark` blobs, then converting them to readable JSON with `torepr`:
-[source,console]
+[source,shell]
 ----
 fq 'grep_by(.type=="data" and .value[0:4] == "book") | .value | apple_bookmark |
 torepr' <sfl2 file>
@@ -748,21 +748,21 @@ Supports decoding BER, CER and DER (X.690).
 
 Can be used to decode certificates etc:::
 
-[source,console]
+[source,shell]
 ----
 $ fq -d bytes 'from_pem | asn1_ber | d' cert.pem
 ----
 
 Can decode nested values:::
 
-[source,console]
+[source,shell]
 ----
 $ fq -d asn1_ber '.constructed[1].value | asn1_ber' file.ber
 ----
 
 Manual schema:::
 
-[source,console]
+[source,shell]
 ----
 $ fq -d asn1_ber 'torepr as $r | ["version", "modulus", "private_exponent", "prime1", "prime2", "exponent1", "exponent2", "coefficient"] | with_entries({key: .value, value: $r[.key]})' pkcs1.der
 ----
@@ -970,14 +970,14 @@ AVI has many redundant ways to index samples so currently `.streams[].samples` w
 
 Extract samples for stream 1:::
 
-[source,console]
+[source,shell]
 ----
 $ fq '.streams[1].samples[] | tobytes' file.avi > stream01.mp3
 ----
 
 Show stream summary:::
 
-[source,console]
+[source,shell]
 ----
 $ fq -o decode_samples=false '[.chunks[0] | grep_by(.id=="LIST" and .type=="strl") | grep_by(.id=="strh") as {$type} | grep_by(.id=="strf") as {$format_tag, $compression} | {$type,$format_tag,$compression}]' *.avi
 ----
@@ -985,7 +985,7 @@ $ fq -o decode_samples=false '[.chunks[0] | grep_by(.id=="LIST" and .type=="strl
 Speed up decoding by disabling sample and extended chunks decoding:::
 
 If you're not interested in sample details or extended chunks you can speed up decoding by using:
-[source,console]
+[source,shell]
 ----
 $ fq -o decode_samples=false -o decode_extended_chunks=false d file.avi
 ----
@@ -1044,7 +1044,7 @@ Authors:::
 
 Convert represented value to JSON:::
 
-[source,console]
+[source,shell]
 ----
 $ fq -d bencode torepr file.torrent
 ----
@@ -1087,7 +1087,7 @@ Decode to a slice and indexable binary of bits.
 
 Slice and decode bit range:::
 
-[source,console]
+[source,shell]
 ----
 $ echo 'some {"a":1} json' | fq -d bits '.[40:-48] | fromjson'
 {
@@ -1097,7 +1097,7 @@ $ echo 'some {"a":1} json' | fq -d bits '.[40:-48] | fromjson'
 
 Index bits:::
 
-[source,console]
+[source,shell]
 ----
 $ echo 'hello' | fq -d bits '.[4]'
 1
@@ -1114,7 +1114,7 @@ $ echo 'hello' | fq -c -d bits '[.[range(8)]]'
 
 Show full decoding:::
 
-[source,console]
+[source,shell]
 ----
 $ fq d Info.plist
 ----
@@ -1122,7 +1122,7 @@ $ fq d Info.plist
 Timestamps:::
 
 Timestamps in Apple Binary Property Lists are encoded as Cocoa Core Data timestamps, where the raw value is the floating point number of seconds since January 1, 2001. By default, `fq` will render the raw floating point value. In order to get the raw value or the string description, use the `tovalue` or `todescription` functions:
-[source,console]
+[source,shell]
 ----
 $ fq 'torepr.SomeTimeStamp | tovalue' Info.plist
 685135328
@@ -1134,7 +1134,7 @@ $ fq 'torepr.SomeTimeStamp | todescription' Info.plist
 Get JSON representation:::
 
 `bplist` files can be converted to a JSON representation using the `torepr` filter:
-[source,console]
+[source,shell]
 ----
 $ fq torepr com.apple.UIAutomation.plist
 {
@@ -1147,7 +1147,7 @@ Decoding NSKeyedArchiver serialized objects:::
 A common way that Swift and Objective-C libraries on macOS serialize objects is through the NSKeyedArchiver API, which flattens objects into a list of elements and class descriptions that are reconstructed into an object graph using CFUID elements in the property list. `fq` includes a function, `from_ns_keyed_archiver`, which will rebuild this object graph into a friendly representation.
 If no parameters are supplied, it will assume that there is a CFUID located at `."$top".root` that specifies the root from which decoding should occur. If this is not present, an error will be produced, asking the user to specify a root object in the `.$objects` list from which to decode.
 The following examples show how this might be used (in this case, within the `fq` REPL):
-[source,console]
+[source,shell]
 ----
 # Assume $top.root is present
 bplist> from_ns_keyed_archiver
@@ -1191,14 +1191,14 @@ Limitations:::
 
 Convert represented value to JSON:::
 
-[source,console]
+[source,shell]
 ----
 $ fq -d bson torepr file.bson
 ----
 
 Filter represented value:::
 
-[source,console]
+[source,shell]
 ----
 $ fq -d bson 'torepr | select(.name=="bob")' file.bson
 ----
@@ -1228,7 +1228,7 @@ Decode to a slice and indexable binary of bytes.
 
 Slice out byte ranges:::
 
-[source,console]
+[source,shell]
 ----
 $ echo -n 'hello' | fq -d bytes '.[-3:]' > last_3_bytes
 $ echo -n 'hello' | fq -d bytes '[.[-2:], .[0:2]] | tobytes' > first_last_2_bytes_swapped
@@ -1236,7 +1236,7 @@ $ echo -n 'hello' | fq -d bytes '[.[-2:], .[0:2]] | tobytes' > first_last_2_byte
 
 Slice and decode byte range:::
 
-[source,console]
+[source,shell]
 ----
 $ echo 'some {"a":1} json' | fq -d bytes '.[5:-6] | fromjson'
 {
@@ -1246,7 +1246,7 @@ $ echo 'some {"a":1} json' | fq -d bytes '.[5:-6] | fromjson'
 
 Index bytes:::
 
-[source,console]
+[source,shell]
 ----
 $ echo 'hello' | fq -d bytes '.[1]'
 101
@@ -1283,7 +1283,7 @@ Authors:::
 
 Convert represented value to JSON:::
 
-[source,console]
+[source,shell]
 ----
 $ fq -d cbor torepr file.cbor
 ----
@@ -1305,14 +1305,14 @@ References:::
 
 TSV to CSV:::
 
-[source,console]
+[source,shell]
 ----
 $ fq -d csv -o comma="\t" to_csv file.tsv
 ----
 
 Convert rows to objects based on header row:::
 
-[source,console]
+[source,shell]
 ----
 $ fq -d csv '.[0] as $t | .[1:] | map(with_entries(.key = $t[.key]))' file.csv
 ----
@@ -1361,7 +1361,7 @@ Limitations:::
 
 Convert stream of data messages to JSON array:::
 
-[source,console]
+[source,shell]
 ----
 $ fq '[.data_records[] | select(.record_header.message_type == "data").data_message]' file.fit 
 ----
@@ -1471,7 +1471,7 @@ There is no `to_html` function, see `to_xml` instead.
 
 Element as object:::
 
-[source,console]
+[source,shell]
 ----
 # decode as object is the default
 $ echo '<a href="url">text</a>' | fq -d html
@@ -1490,7 +1490,7 @@ $ echo '<a href="url">text</a>' | fq -d html
 
 Element as array:::
 
-[source,console]
+[source,shell]
 ----
 $ echo '<a href="url">text</a>' | fq -d html -o array=true
 [
@@ -1696,7 +1696,7 @@ Supports decoding vanilla and FAT Mach-O binaries.
 
 Select 64bit load segments:::
 
-[source,console]
+[source,shell]
 ----
 $ fq '.load_commands[] | select(.cmd=="segment_64")' file
 ----
@@ -1727,7 +1727,7 @@ Authors:::
 
 Array with all level 1 and 2 headers:::
 
-[source,console]
+[source,shell]
 ----
 $ fq -d markdown '[.. | select(.type=="heading" and .level<=2)?.children[0]]' file.md
 ----
@@ -1741,14 +1741,14 @@ $ fq -d markdown '[.. | select(.type=="heading" and .level<=2)?.children[0]]' fi
 
 Lookup element using path:::
 
-[source,console]
+[source,shell]
 ----
 $ fq 'matroska_path(".Segment.Tracks[0]")' file.mkv
 ----
 
 Get path to element:::
 
-[source,console]
+[source,shell]
 ----
 $ fq 'grep_by(.id == "Tracks") | matroska_path' file.mkv
 ----
@@ -1791,7 +1791,7 @@ Sample queries:::
 * Extract the track names from a MIDI file
 
 //-
-[source,console]
+[source,shell]
 ----
 fq -d midi '.. | select(.event=="track_name")? | "\(.track_name)"' midi/twinkle.mid 
 ----
@@ -1799,7 +1799,7 @@ fq -d midi '.. | select(.event=="track_name")? | "\(.track_name)"' midi/twinkle.
 * Extract the tempo changes from a MIDI file
 
 //-
-[source,console]
+[source,shell]
 ----
 fq -d midi '.. | select(.event=="tempo")?.tempo' midi/twinkle.mid
 ----
@@ -1807,7 +1807,7 @@ fq -d midi '.. | select(.event=="tempo")?.tempo' midi/twinkle.mid
 * Extract the key changes from a MIDI file
 
 //-
-[source,console]
+[source,shell]
 ----
 fq -d midi '.. | select(.event=="key_signature")?.key_signature' midi/twinkle.mid
 ----
@@ -1815,7 +1815,7 @@ fq -d midi '.. | select(.event=="key_signature")?.key_signature' midi/twinkle.mi
 * Extract NoteOn events:
 
 //-
-[source,console]
+[source,shell]
 ----
 fq -d midi 'grep_by(.event=="note_on") | [.time.tick, .note_on.note] | join(" ")' midi/twinkle.mid
 ----
@@ -1889,7 +1889,7 @@ Authors:::
 
 Speed up decoding by not decoding samples:::
 
-[source,console]
+[source,shell]
 ----
 # manually decode first sample as an aac_frame
 $ fq -o decode_samples=false '.tracks[0].samples[0] | aac_frame | d' file.mp4
@@ -1897,28 +1897,28 @@ $ fq -o decode_samples=false '.tracks[0].samples[0] | aac_frame | d' file.mp4
 
 Entries for first edit list as values:::
 
-[source,console]
+[source,shell]
 ----
 $ fq 'first(grep_by(.type=="elst").entries) | tovalue' file.mp4
 ----
 
 Whole box tree as JSON (exclude mdat data and tracks):::
 
-[source,console]
+[source,shell]
 ----
 $ fq 'del(.tracks) | grep_by(.type=="mdat").data = "<excluded>" | tovalue' file.mp4
 ----
 
 Force decode a single box:::
 
-[source,console]
+[source,shell]
 ----
 $ fq -n '"AAAAHGVsc3QAAAAAAAAAAQAAADIAAAQAAAEAAA==" | from_base64 | mp4({force:true}) | d'
 ----
 
 Lookup mp4 box using an mp4 box path:::
 
-[source,console]
+[source,shell]
 ----
 # <decode value box> | mp4_path($path) -> <decode value box>
 $ fq 'mp4_path(".moov.trak[1]")' file.mp4
@@ -1926,7 +1926,7 @@ $ fq 'mp4_path(".moov.trak[1]")' file.mp4
 
 Get mp4 box path for a decode value box:::
 
-[source,console]
+[source,shell]
 ----
 # <decode value box> | mp4_path -> string
 $ fq 'grep_by(.type == "trak") | mp4_path' file.mp4
@@ -1978,7 +1978,7 @@ References:::
 
 Convert represented value to JSON:::
 
-[source,console]
+[source,shell]
 ----
 $ fq -d msgpack torepr file.msgpack
 ----
@@ -1999,28 +1999,28 @@ References:::
 
 View a full Negentropy message:::
 
-[source,console]
+[source,shell]
 ----
 $ fq -d negentropy dd file
 ----
 
 Or from hex:::
 
-[source,console]
+[source,shell]
 ----
 $ echo '6186b7abb47c0001108e4206828ee3bf34258465809a337c6c00019a68e37b177a50b3ae7164ccc628b962020114019c1381281c9e3849d5fbd514b7bb65ad0101e601fbf7451f5d22e7fa36ae3e910e9f5215020157014a1b26853e06e9c32eb41b1df4f9ab300201e6011840e273c84bb1344f1d4e15d9aa67920200016f12ee2340888653f10b0ec2d438ac9f0101840156d2d796f4dff004ab369b9bcfa4d81e020187013f1b3c8a019800d5764e2de6bdfd2785020114017caaf0acb5dfe249aa0f7f742402168a01018301e7b8c4decb1eae455ca5714281e3245302017a01409c22636b097362df125ddffb6d944302015b01f332208bee82acf8ed922853ee54057f020001fc3e51fdb0b92966e38017f7959903850101cc01428ce0c96d49f15b50143e4fb228cb9300000131712d30e5296a7a45d07bba452d61cd' | fq -R 'from_hex | negentropy | dd'
 ----
 
 Check how many ranges the message has and how many of those are of 'fingerprint' mode:::
 
-[source,console]
+[source,shell]
 ----
 $ fq -d negentropy '.bounds | length as $total | map(select(.mode == "fingerprint")) | length | {$total, fingerprint: .}' message
 ----
 
 Get all ids in all idlists:::
 
-[source,console]
+[source,shell]
 ----
 $ fq -d negentropy '.bounds | map(select(.mode == "idlist") | .idlist | .ids) | flatten' message
 ----
@@ -2057,21 +2057,21 @@ Limitations:::
 
 Decompile PRG ROM:::
 
-[source,console]
+[source,shell]
 ----
 $ fq -r '.prg_rom[] | nes_toasm' file.nes
 ----
 
 Print out first CHR ROM tile in Kitty (or Konsole, wayst, WezTerm) at size 5:::
 
-[source,console]
+[source,shell]
 ----
 $ printf $(fq -r -d nes '.chr_rom[0] | nes_tokitty(5)' file.nes)
 ----
 
 Print out all CHR ROM tiles in Kitty (with Bash) at size 5:::
 
-[source,console]
+[source,shell]
 ----
 $ for line in $(fq -r '.chr_rom[] | nes_tokitty(5)' file.nes);do printf "%b%s" "$line";done
 ----
@@ -2108,21 +2108,21 @@ References:::
 
 View a full OpenTimestamps file:::
 
-[source,console]
+[source,shell]
 ----
 $ fq dd file.ots
 ----
 
 List the names of the Calendar servers used:::
 
-[source,console]
+[source,shell]
 ----
 $ fq '.operations | map(select(.attestation_type == "calendar") | .url)' file.ots
 ----
 
 Check if there are Bitcoin attestations present:::
 
-[source,console]
+[source,shell]
 ----
 $ fq '.operations | map(select(.attestation_type == "bitcoin")) | length > 0' file.ots
 ----
@@ -2154,7 +2154,7 @@ References:::
 
 Build object with number of (reassembled) TCP bytes sent to/from client IP:::
 
-[source,console]
+[source,shell]
 ----
 # for a pcapng file you would use .[0].tcp_connections for first section
 $ fq '.tcp_connections | group_by(.client.ip) | map({key: .[0].client.ip, value: map(.client.stream, .server.stream | tobytes.size) | add}) | from_entries'
@@ -2177,14 +2177,14 @@ $ fq '.tcp_connections | group_by(.client.ip) | map({key: .[0].client.ip, value:
 
 Btree index meta page:::
 
-[source,console]
+[source,shell]
 ----
 $ fq -d pg_btree -o flavour=postgres14 ".[0] | d" 16404
 ----
 
 Btree index page:::
 
-[source,console]
+[source,shell]
 ----
 $ fq -d pg_btree -o flavour=postgres14 ".[1]" 16404
 ----
@@ -2217,14 +2217,14 @@ References:::
 
 Decode content of pg_control file:::
 
-[source,console]
+[source,shell]
 ----
 $ fq -d pg_control -o flavour=postgres14 d pg_control
 ----
 
 Specific fields can be queried individually:::
 
-[source,console]
+[source,shell]
 ----
 $ fq -d pg_control -o flavour=postgres14 ".state, .check_point_copy.redo, .wal_level" pg_control
 ----
@@ -2257,28 +2257,28 @@ References:::
 
 To see heap page's content:::
 
-[source,console]
+[source,shell]
 ----
 $ fq -d pg_heap -o flavour=postgres14 ".[0]" 16994
 ----
 
 To see page's header:::
 
-[source,console]
+[source,shell]
 ----
 $ fq -d pg_heap -o flavour=postgres14 ".[0].page_header" 16994
 ----
 
 First and last item pointers on first page:::
 
-[source,console]
+[source,shell]
 ----
 $ fq -d pg_heap -o flavour=postgres14 ".[0].pd_linp[0, -1]" 16994
 ----
 
 First and last tuple on first page:::
 
-[source,console]
+[source,shell]
 ----
 $ fq -d pg_heap -o flavour=postgres14 ".[0].tuples[0, -1]" 16994
 ----
@@ -2323,7 +2323,7 @@ References:::
 
 Can decode sub messages:::
 
-[source,console]
+[source,shell]
 ----
 $ fq -d protobuf '.fields[6].wire_value | protobuf | d' file
 ----
@@ -2351,7 +2351,7 @@ Currently only supports plain RTMP (not RTMPT or encrypted variants etc) with AM
 
 Show rtmp streams in PCAP file:::
 
-[source,console]
+[source,shell]
 ----
 fq '.tcp_connections[] | select(.server.port=="rtmp") | d' file.cap
 ----
@@ -2403,7 +2403,7 @@ The default file extension is `.tap`.
 Processing JSON files:::
 
 When needing to process a generated JSON file it's recommended to convert the plain data bytes to an array by setting `bits_format=byte_array`:
-[source,console]
+[source,shell]
 ----
 fq -o bits_format=byte_array -d tap -V d /path/to/file.tap
 ----
@@ -2442,17 +2442,17 @@ Supports decoding of most standard records, messages and extensions. Can also de
 Decode and decrypt providing a PCAP and key log:::
 
 Write traffic to a PCAP file:
-[source,console]
+[source,shell]
 ----
 $ tcpdump -i <iface> -w traffic.pcap
 ----
 Make sure your curl TLS backend supports `SSLKEYLOGFILE` and do:
-[source,console]
+[source,shell]
 ----
 $ SSLKEYLOGFILE=traffic.keylog curl --tls-max 1.2 https://host/path
 ----
 Decode, decrypt and query. Uses `keylog=@<path>` to read option value from keylog file:
-[source,console]
+[source,shell]
 ----
 # decode and show whole tree
 $ fq -o keylog=@traffic.keylog d traffic.pcap
@@ -2495,14 +2495,14 @@ References:::
 
 Get last transition time:::
 
-[source,console]
+[source,shell]
 ----
 fq '.v2plusdatablock.transition_times[-1] | tovalue' tziffile
 ----
 
 Count leap second records:::
 
-[source,console]
+[source,shell]
 ----
 fq '.v2plusdatablock.leap_second_records | length' tziffile
 ----
@@ -2534,7 +2534,7 @@ The default file extension is `.tzx`.
 Processing JSON files:::
 
 When needing to process a generated JSON file it's recommended to convert the plain data bytes to an array by setting `bits_format=byte_array`:
-[source,console]
+[source,shell]
 ----
 fq -o bits_format=byte_array -d tzx -V d /path/to/file.tzx
 ----
@@ -2583,14 +2583,14 @@ References:::
 
 Count opcode usage:::
 
-[source,console]
+[source,shell]
 ----
 $ fq '.sections[] | select(.id == "code_section") | [.. | .opcode? // empty] | count | map({key: .[0], value: .[1]}) | from_entries' file.wasm
 ----
 
 List exports and imports:::
 
-[source,console]
+[source,shell]
 ----
 $ fq '.sections | {import: map(select(.id == "import_section").content.im.x[].nm.b), export: map(select(.id == "export_section").content.ex.x[].nm.b)}' file.wasm
 ----
@@ -2636,7 +2636,7 @@ Element can have different shapes depending on body text, attributes and childre
 
 //-
 If there is `#seq` attribute it encodes the child element order. Use `-o seq=true` to include sequence number when decoding, otherwise order might be lost.
-[source,console]
+[source,shell]
 ----
 # decode as object is the default
 $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -d xml -o seq=true
@@ -2675,7 +2675,7 @@ $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -r -d xml -o seq=true
 Elements as array:::
 
 Elements are arrays of the shape `["name", null|{#text|attribute: "value"}, [<child element>, ...]]`.
-[source,console]
+[source,shell]
 ----
 # decode as array
 $ echo '<a><b/><b>bbb</b><c attr="value">ccc</c></a>' | fq -d xml -o array=true
@@ -3265,6 +3265,44 @@ ifdef::backend-html5[]
 <style>
   body {
     font-family: "Open Sans", sans-serif !important;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      background: #1e1e1e;
+      color: rgba(255, 255, 255, 0.85);
+    }
+    a {
+      color: #5c9cf5;
+    }
+    #header>h1:first-child {
+      color: rgba(255, 255, 255, 0.85);
+      border-color: #3c3c3c;
+    }
+    h1, h2, h3, h4, h5, h6, #toctitle, .title {
+      color: #e8a796;
+    }
+    #toc.toc2 {
+      background: #252526;
+      border-color: #3c3c3c;
+    }
+    code {
+      color: rgba(255, 255, 255, 0.9);
+    }
+    :not(pre):not([class^=L])>code {
+      background: #2d2d2d;
+    }
+    .literalblock pre,
+    .listingblock>.content>pre:not(.rouge) {
+      background: #0d1117;
+      color: #e6edf3;
+    }
+    pre.rouge {
+      background: #0d1117;
+    }
+    pre.rouge code {
+      filter: invert(0.9) hue-rotate(180deg);
+    }
   }
 </style>
 ++++

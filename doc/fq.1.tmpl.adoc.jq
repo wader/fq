@@ -14,7 +14,7 @@ def fq_tmpl_adoc($replace_svg):
 			| gsub(".svg"; ".txt")
 			| open
 			| tostring
-			| "[source,shell]\n----\n\(.)----\n"
+			| "[source,console]\n----\n\(.)----\n"
 			)
 		)
 	end |

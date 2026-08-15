@@ -1034,6 +1034,44 @@ ifdef::backend-html5[]
   body {
     font-family: "Open Sans", sans-serif !important;
   }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      background: #1e1e1e;
+      color: rgba(255, 255, 255, 0.85);
+    }
+    a {
+      color: #5c9cf5;
+    }
+    #header>h1:first-child {
+      color: rgba(255, 255, 255, 0.85);
+      border-color: #3c3c3c;
+    }
+    h1, h2, h3, h4, h5, h6, #toctitle, .title {
+      color: #e8a796;
+    }
+    #toc.toc2 {
+      background: #252526;
+      border-color: #3c3c3c;
+    }
+    code {
+      color: rgba(255, 255, 255, 0.9);
+    }
+    :not(pre):not([class^=L])>code {
+      background: #2d2d2d;
+    }
+    .literalblock pre,
+    .listingblock>.content>pre:not(.rouge) {
+      background: #0d1117;
+      color: #e6edf3;
+    }
+    pre.rouge {
+      background: #0d1117;
+    }
+    pre.rouge code {
+      filter: invert(0.9) hue-rotate(180deg);
+    }
+  }
 </style>
 ++++
 endif::[]

@@ -118,7 +118,7 @@ def _markdown_to_asciidoc:
     elif .type == "code_block" then
       ( .literal
       | rtrimstr("\n")
-      | "[source,console]"
+      | "[source,shell]"
       , "----"
       , .
       , "----"
