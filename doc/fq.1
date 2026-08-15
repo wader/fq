@@ -1088,7 +1088,7 @@ Transform input to binary with byte as unit and preserve source range.
 .sp
 \f(CR\fBopen\fP\fP
 .RS 4
-Open file for reading.
+Open file for reading. Returns a binary. Ex: \f(CR"file" | open | decode\fP, \f(CR"file" | open | tostring\fP.
 .RE
 .sp
 The standard jq functions \f(CRtest\fP, \f(CRmatch\fP, \f(CRcapture\fP, \f(CRscan\fP and \f(CRsplit\fP also work on binary values, matching against the raw bytes.
