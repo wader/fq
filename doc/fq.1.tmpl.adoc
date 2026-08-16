@@ -32,17 +32,24 @@ binary data, bit-level decoding and an interactive REPL with auto-completion.
 ----
 # Evaluate "d" (display) for file.mp4
 $ fq d file.mp4
+# structural hex output
+
 # Evaluate "da" (display all) for file.mp4
 $ fq da file.mp4
+# structural hex output
+
 # JSON for file.mp4
 $ fq -V . file.mp4
+# JSON output
 
 # Evaluate ".boxes[0].type" for all *.mp4 files
 # -Vr to output value without quotes
 $ fq -Vr '.boxes[0].type' *.mp4
+ftyp
 
 # Evaluate "1+2" without reading any input
 $ fq -n 1+2
+3
 ----
 
 For more usage examples see the examples section at the end of the documentation.

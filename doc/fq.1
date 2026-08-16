@@ -48,17 +48,24 @@ binary data, bit\-level decoding and an interactive REPL with auto\-completion.
 .fam C
 # Evaluate "d" (display) for file.mp4
 $ fq d file.mp4
+# structural hex output
+
 # Evaluate "da" (display all) for file.mp4
 $ fq da file.mp4
+# structural hex output
+
 # JSON for file.mp4
 $ fq \-V . file.mp4
+# JSON output
 
 # Evaluate ".boxes[0].type" for all *.mp4 files
 # \-Vr to output value without quotes
 $ fq \-Vr \*(Aq.boxes[0].type\*(Aq *.mp4
+ftyp
 
 # Evaluate "1+2" without reading any input
 $ fq \-n 1+2
+3
 .fam
 .fi
 .if n .RE
@@ -1679,7 +1686,7 @@ These \f(CRbookmarkData\fP blobs are often found encoded in data fields of Binar
 \f(CRcom.apple.LSSharedFileList.RecentApplications.sfl2\fP \- \f(CRsfl2\fP files are actually \f(CRplist\fP files of the \f(CRNSKeyedArchiver\fP format. They can be parsed the same as \f(CRplist\fP files, but they have a more complicated tree\-like structure than would typically be found, which can make locating and retrieving specific values difficult, even once it has been converted to a JSON representation. For more information about these types of files, see Sarah Edwards\*(Aq excellent research on the subject (link in references).
 .RE
 .sp
-\f(CRfq\(cqs `grep_by\fP function can be used to recursively descend through the decoded tree, probing for and selecting any \f(CRbookmark\fP blobs, then converting them to readable JSON with \f(CRtorepr\fP:
+The \f(CRgrep_by\fP function can be used to recursively descend through the decoded tree, probing for and selecting any \f(CRbookmark\fP blobs, then converting them to readable JSON with \f(CRtorepr\fP:
 .sp
 .if n .RS 4
 .nf

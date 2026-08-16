@@ -32,17 +32,24 @@ binary data, bit-level decoding and an interactive REPL with auto-completion.
 ----
 # Evaluate "d" (display) for file.mp4
 $ fq d file.mp4
+# structural hex output
+
 # Evaluate "da" (display all) for file.mp4
 $ fq da file.mp4
+# structural hex output
+
 # JSON for file.mp4
 $ fq -V . file.mp4
+# JSON output
 
 # Evaluate ".boxes[0].type" for all *.mp4 files
 # -Vr to output value without quotes
 $ fq -Vr '.boxes[0].type' *.mp4
+ftyp
 
 # Evaluate "1+2" without reading any input
 $ fq -n 1+2
+3
 ----
 
 For more usage examples see the examples section at the end of the documentation.
@@ -705,7 +712,7 @@ These `bookmarkData` blobs are often found encoded in data fields of Binary Prop
 - `com.apple.LSSharedFileList.RecentApplications.sfl2` - `sfl2` files are actually `plist` files of the `NSKeyedArchiver` format. They can be parsed the same as `plist` files, but they have a more complicated tree-like structure than would typically be found, which can make locating and retrieving specific values difficult, even once it has been converted to a JSON representation. For more information about these types of files, see Sarah Edwards' excellent research on the subject (link in references).
 
 //-
-`fq`'s `grep_by` function can be used to recursively descend through the decoded tree, probing for and selecting any `bookmark` blobs, then converting them to readable JSON with `torepr`:
+The `grep_by` function can be used to recursively descend through the decoded tree, probing for and selecting any `bookmark` blobs, then converting them to readable JSON with `torepr`:
 [source,shell]
 ----
 fq 'grep_by(.type=="data" and .value[0:4] == "book") | .value | apple_bookmark |
