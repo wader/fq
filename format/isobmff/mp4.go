@@ -540,6 +540,8 @@ func mp4Decode(d *decode.D) any {
 			"styp": // segment
 			switch ftyp.majorBrand {
 			case "isom", // iso media (mp4ish)
+				"mp41", // MP4 v1
+				"mp42", // MP4 v2
 				"isml",
 				"qt",  // quicktime mov
 				"jp2": // JPEG 2000
