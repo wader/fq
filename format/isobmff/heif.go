@@ -173,23 +173,8 @@ func heifDecode(d *decode.D) any {
 	var hi format.HEIF_In
 	d.ArgAs(&hi)
 
-	ctx := isobmffDecode(d, hi.AllowTruncated, func(firstType string, ftyp ftypBox) {
-		switch firstType {
-		case "ftyp":
-		default:
-			d.Errorf("type not ftyp")
-		}
-		switch ftyp.majorBrand {
-		case "mif1", "mif3", "msf1", "avif":
-			return
-		}
-		for _, b := range ftyp.minorBrands {
-			switch b {
-			case "mif1", "mif3", "msf1", "avif":
-				return
-			}
-		}
-		d.Errorf("not a HEIF brand (mif1/mif3/msf1/avif)")
+	ctx := isobmffDecode(d, hi.AllowTruncated, []string{
+		"mif1", "mif3", "msf1", "avif",
 	})
 
 	heifItems(d, ctx)
