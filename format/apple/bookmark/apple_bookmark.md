@@ -18,7 +18,7 @@ Property Lists. Notable examples include:
   For more information about these types of files, see Sarah Edwards' excellent
   research on the subject (link in references).
 
-`fq`'s `grep_by` function can be used to recursively descend through the decoded
+The `grep_by` function can be used to recursively descend through the decoded
 tree, probing for and selecting any `bookmark` blobs, then converting them to
 readable JSON with `torepr`:
 ```

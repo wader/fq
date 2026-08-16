@@ -21,7 +21,7 @@ parsed the same as plist files, but they have a more complicated tree-like struc
 locating and retrieving specific values difficult, even once it has been converted to a JSON representation. For more information
 about these types of files, see Sarah Edwards' excellent research on the subject (link in references).
 
-fq's grep_by function can be used to recursively descend through the decoded tree, probing for and selecting any bookmark blobs, then
+The grep_by function can be used to recursively descend through the decoded tree, probing for and selecting any bookmark blobs, then
 converting them to readable JSON with torepr:
 
   fq 'grep_by(.type=="data" and .value[0:4] == "book") | .value | apple_bookmark |
