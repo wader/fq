@@ -137,6 +137,13 @@ Windows::
 `*NO_DECODE_PROGRESS*`::
   Disables decode progress indicator.
 
+== Exit status
+
+`*2*` Argument error or input IO error +
+`*3*` Expression compile error +
+`*4*` Decode error +
+`*5*` Expression error
+
 == Expression
 
 === Syntax
