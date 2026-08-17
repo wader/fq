@@ -142,38 +142,28 @@ type decodeContext struct {
 	allowTruncated bool
 	root           *box
 	current        *box
+	boxCount       int
+	ftypSeen       bool
+	brands         []string
 }
 
-func isobmffDecode(d *decode.D, allowTruncated bool, brandsFn func(firstType string, ftyp ftypBox)) *decodeContext {
+func isobmffDecode(d *decode.D, allowTruncated bool, brands []string) *decodeContext {
 	root := &box{typ: ""}
 	ctx := &decodeContext{
 		allowTruncated: allowTruncated,
 		root:           root,
 		current:        root,
+		ftypSeen:       false,
+		brands:         brands,
 	}
 
-	// TODO: nicer, validate functions without field?
-	d.AssertLeastBytesLeft(16)
-	size := d.U32()
-	if size < 8 {
-		d.Fatalf("first box size too small < 8")
-	}
-	var ftyp ftypBox
-	firstType := strings.TrimSpace(d.UTF8(4))
-	// this is to make it possible to force decode when the first box is not ftyp or styp
-	switch firstType {
-	case "ftyp", "styp":
-		ftyp.majorBrand = strings.TrimSpace(d.UTF8(4))
-		minorCount := (size - (4 * 4)) / 4 /* size,type,major,minor_version */
-		ftyp.minorVersion = uint32(d.U32())
-		for range int(minorCount) {
-			ftyp.minorBrands = append(ftyp.minorBrands, strings.TrimSpace(d.UTF8(4)))
-		}
-	}
-
-	brandsFn(firstType, ftyp)
-	d.SeekAbs(0)
 	decodeBoxes(ctx, d)
+	if ctx.boxCount == 0 {
+		d.Fatalf("no boxes found")
+	}
+	if !ctx.ftypSeen {
+		d.Errorf("no ftyp box found")
+	}
 
 	return ctx
 }

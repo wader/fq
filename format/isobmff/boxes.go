@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"slices"
 	"time"
 
 	"github.com/wader/fq/format"
@@ -285,6 +286,11 @@ func decodeBoxes(ctx *decodeContext, d *decode.D, extraTypeMappers ...scalar.Str
 		func() bool { return d.BitsLeft() >= 8*8 },
 		func(d *decode.D) {
 			decodeBox(ctx, d, extraTypeMappers...)
+			ctx.boxCount++
+
+			if !ctx.ftypSeen && ctx.boxCount > 3 {
+				d.Errorf("no ftyp box found within first %d boxes", ctx.boxCount)
+			}
 		})
 
 	if d.BitsLeft() > 0 {
@@ -328,11 +334,13 @@ func decodeBoxIrefEntry(irefBox *irefBox, d *decode.D) {
 }
 
 func decodeBoxFtyp(ctx *decodeContext, d *decode.D) {
-	brand := d.FieldUTF8("major_brand", 4, scalar.ActualTrimSpace)
-	ctx.current.data = &ftypBox{majorBrand: brand}
+	majorBrand := d.FieldUTF8("major_brand", 4, scalar.ActualTrimSpace)
+	ctx.current.data = &ftypBox{majorBrand: majorBrand}
+
+	brands := []string{majorBrand}
 
 	d.FieldU32("minor_version", scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
-		switch brand {
+		switch majorBrand {
 		case "qt":
 			// https://developer.apple.com/library/archive/documentation/QuickTime/QTFF/QTFFChap1/qtff1.html#//apple_ref/doc/uid/TP40000939-CH203-BBCGDDDF
 			// "For QuickTime movie files, this takes the form of four binary-coded decimal values, indicating the century,
@@ -345,9 +353,26 @@ func decodeBoxFtyp(ctx *decodeContext, d *decode.D) {
 	numBrands := d.BitsLeft() / 8 / 4
 	var i int64
 	d.FieldArrayLoop("brands", func() bool { return i < numBrands }, func(d *decode.D) {
-		d.FieldUTF8("brand", 4, brandDescriptions, scalar.ActualTrimSpace)
+		b := d.FieldUTF8("brand", 4, brandDescriptions, scalar.ActualTrimSpace)
+		brands = append(brands, b)
 		i++
 	})
+
+	ctx.ftypSeen = true
+
+	foundBrand := false
+	for _, b := range ctx.brands {
+		foundBrand = slices.Contains(brands, b)
+		if foundBrand {
+			break
+		}
+	}
+
+	if !foundBrand {
+		d.Errorf("non of %v found for ftyp with brands %v",
+			ctx.brands, brands,
+		)
+	}
 }
 
 func decodeBoxType(ctx *decodeContext, d *decode.D, typ string) {

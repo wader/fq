@@ -171,9 +171,7 @@ type moofBox struct {
 }
 
 type ftypBox struct {
-	majorBrand   string
-	minorVersion uint32
-	minorBrands  []string
+	majorBrand string
 }
 
 type avcCBox struct {
@@ -530,25 +528,13 @@ func mp4Decode(d *decode.D) any {
 	var mi format.MP4_In
 	d.ArgAs(&mi)
 
-	ctx := isobmffDecode(d, mi.AllowTruncated, func(firstType string, ftyp ftypBox) {
-		switch firstType {
-		case "free", // seems to happen
-			"moov", // seems to happen
-			"pnot", // video preview file
-			"jP":   // JPEG 2000
-		case "ftyp",
-			"styp": // segment
-			switch ftyp.majorBrand {
-			case "isom", // iso media (mp4ish)
-				"isml",
-				"qt",  // quicktime mov
-				"jp2": // JPEG 2000
-			default:
-				d.Errorf("major_brand not isom, qt or jp2")
-			}
-		default:
-			d.Errorf("type not ftyp, styp or moov")
-		}
+	ctx := isobmffDecode(d, mi.AllowTruncated, []string{
+		"isom", // iso media (mp4ish)
+		"isml",
+		"qt",   // quicktime mov
+		"jp2",  // JPEG 2000
+		"mp41", // MP4 v1
+		"mp42", // MP4 v2
 	})
 
 	traks := slices.Collect(ctx.root.findAll("moov/trak"))
