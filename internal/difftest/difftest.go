@@ -8,6 +8,8 @@
 //
 // Note that output path can be the same as input which useful if the function
 // implements some kind of transcript that includes both input and output.
+//
+//nolint:wastedassign
 package difftest
 
 import (
