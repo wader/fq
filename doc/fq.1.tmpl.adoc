@@ -139,6 +139,7 @@ Windows::
 
 == Exit status
 
+`*0*` Success +
 `*2*` Argument error or input IO error +
 `*3*` Expression compile error +
 `*4*` Decode error +

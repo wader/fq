@@ -369,8 +369,10 @@ REPL completion timeout in seconds.
 .RS 4
 Disables decode progress indicator.
 .RE
-.SH "EXIT CODE"
+.SH "EXIT STATUS"
 .sp
+\f(CR\fB0\fP\fP Success
+.br
 \f(CR\fB2\fP\fP Argument error or input IO error
 .br
 \f(CR\fB3\fP\fP Expression compile error
@@ -385,7 +387,7 @@ See \fBjq\fP(1) for syntax details. But here are some common beginner gotchas:
 .sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -393,10 +395,10 @@ See \fBjq\fP(1) for syntax details. But here are some common beginner gotchas:
 .\}
 Functions that take no arguments are called using \f(CRname\fP instead of \f(CRname()\fP.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -406,10 +408,10 @@ Arguments are separated by \f(CR;\fP instead of \f(CR,\fP. Comma is used to conc
 To call a function \f(CRf\fP with two arguments use \f(CRf(1; 2)\fP. If you do \f(CRf(1, 2)\fP
 you pass a single argument \f(CR1, 2\fP, a filter that outputs \f(CR1\fP and then \f(CR2\fP, to \f(CRf\fP.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -417,10 +419,10 @@ you pass a single argument \f(CR1, 2\fP, a filter that outputs \f(CR1\fP and the
 .\}
 Expressions can return or "output" zero or more values. This is how iteration etc is done, \f(CR1, 2\fP outputs \f(CR1\fP then \f(CR2\fP.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -429,10 +431,10 @@ Expressions can return or "output" zero or more values. This is how iteration et
 Similar to shell pipelines, implicit input and output are used and piped together using \f(CR|\fP. \f(CR.\fP is used to refer to
 current input. Ex \f(CR1 | . + 2\fP outputs \f(CR3\fP, \f(CR1, 2 | . + 2\fP outputs \f(CR3\fP and \f(CR4\fP.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -447,7 +449,7 @@ fq uses an extended variant of the jq language with a few extra features:
 .sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -455,10 +457,10 @@ fq uses an extended variant of the jq language with a few extra features:
 .\}
 Arbitrary\-precision integers and arithmetic.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -487,20 +489,19 @@ In contrast
 .sp
 results in the string \f(CRhello world🌍\fP or as JSON \f(CR"hello world🌍"\fP.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
 .  IP \(bu 2.3
 .\}
 Supports more number bases in integer literals.
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -508,10 +509,10 @@ Supports more number bases in integer literals.
 .\}
 \f(CR0xabcd\fP (Hexadecimal).
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -519,10 +520,10 @@ Supports more number bases in integer literals.
 .\}
 \f(CR0o125715\fP (Octal).
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -530,10 +531,10 @@ Supports more number bases in integer literals.
 .\}
 \f(CR0b1010101111001101\fP (Binary).
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -542,10 +543,10 @@ Supports more number bases in integer literals.
 Grouping using underscore \f(CR0xab_cd\fP.
 .RE
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -553,10 +554,10 @@ Grouping using underscore \f(CR0xab_cd\fP.
 .\}
 Binary and decode value types, see below.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -564,10 +565,10 @@ Binary and decode value types, see below.
 .\}
 Try include using an ending question mark \f(CRinclude "file?";\fP that doesn\(cqt fail if file is missing or has errors.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -575,10 +576,10 @@ Try include using an ending question mark \f(CRinclude "file?";\fP that doesn\(c
 .\}
 Some values can act as an object with keys even when they are arrays, numbers etc.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -586,10 +587,10 @@ Some values can act as an object with keys even when they are arrays, numbers et
 .\}
 There can be keys hidden from \f(CRkeys\fP and \f(CR[]\fP.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -597,10 +598,10 @@ There can be keys hidden from \f(CRkeys\fP and \f(CR[]\fP.
 .\}
 Some values are readonly and can\(cqt be updated or will convert to JSON on update.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -711,7 +712,7 @@ Each decode value has these properties:
 .sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -719,20 +720,19 @@ Each decode value has these properties:
 .\}
 Bit range in the input. Can be used as a binary using \f(CRtobytes\fP, \f(CRtobytesrange\fP, \f(CRtobits\fP and \f(CRtobitsrange\fP.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
 .  IP \(bu 2.3
 .\}
 If scalar type, an actual value:
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -740,10 +740,10 @@ If scalar type, an actual value:
 .\}
 This is the decoded representation of the bits, a number, string, bool etc.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -752,20 +752,19 @@ This is the decoded representation of the bits, a number, string, bool etc.
 Can be accessed using \f(CRtoactual\fP.
 .RE
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
 .  IP \(bu 2.3
 .\}
 If scalar type, an optional symbolic value:
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -773,10 +772,10 @@ If scalar type, an optional symbolic value:
 .\}
 Is usually a mapping of the actual to symbolic value, ex: map number to a string value.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -785,20 +784,19 @@ Is usually a mapping of the actual to symbolic value, ex: map number to a string
 Can be accessed using \f(CRtosym\fP.
 .RE
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
 .  IP \(bu 2.3
 .\}
 An optional description:
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -807,10 +805,10 @@ An optional description:
 Can be accessed using \f(CRtodescription\fP.
 .RE
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -818,10 +816,10 @@ Can be accessed using \f(CRtodescription\fP.
 .\}
 \f(CRparent\fP is the parent decode value
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -829,10 +827,10 @@ Can be accessed using \f(CRtodescription\fP.
 .\}
 \f(CRparents\fP is all the parent decode values
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -840,10 +838,10 @@ Can be accessed using \f(CRtodescription\fP.
 .\}
 \f(CRtopath\fP is the jq path for the decode value
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -927,7 +925,7 @@ There is also \f(CRtobitsrange\fP and \f(CRtobytesrange\fP which do the same thi
 .sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -935,10 +933,10 @@ There is also \f(CRtobitsrange\fP and \f(CRtobytesrange\fP which do the same thi
 .\}
 \f(CR"string" | tobytes\fP produces a binary with UTF8 bytes.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -946,10 +944,10 @@ There is also \f(CRtobitsrange\fP and \f(CRtobytesrange\fP which do the same thi
 .\}
 \f(CR1234 | tobits\fP produces a binary with the unsigned big\-endian integer 1234 with enough bits to represent the number. Use \f(CRtobytes\fP to get the same but with enough bytes to represent the number. This is different to how numbers work inside binary arrays where they are limited to 0\-255.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -957,10 +955,10 @@ There is also \f(CRtobitsrange\fP and \f(CRtobytesrange\fP which do the same thi
 .\}
 \f(CR["abc", 123, .\|.\|.] | tobytes\fP produces a binary from a binary array. See Binary array below.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -968,10 +966,10 @@ There is also \f(CRtobitsrange\fP and \f(CRtobytesrange\fP which do the same thi
 .\}
 \f(CR.[index]\fP accesses bit or byte at index \f(CRindex\fP. Index is in units.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -979,10 +977,10 @@ There is also \f(CRtobitsrange\fP and \f(CRtobytesrange\fP which do the same thi
 .\}
 \f(CR[0x12, 0x34, 0x56] | tobytes[1]\fP is \f(CR0x34\fP
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -990,10 +988,10 @@ There is also \f(CRtobitsrange\fP and \f(CRtobytesrange\fP which do the same thi
 .\}
 \f(CR[0x12, 0x34, 0x56] | tobits[3]\fP is \f(CR1\fP
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1001,10 +999,10 @@ There is also \f(CRtobitsrange\fP and \f(CRtobytesrange\fP which do the same thi
 .\}
 \f(CR.[start:]\fP, \f(CR.[start:end]\fP or \f(CR.[:end]\fP is normal jq slice syntax and will slice the binary from \f(CRstart\fP to \f(CRend\fP. \f(CRstart\fP and \f(CRend\fP are in units.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1012,10 +1010,10 @@ There is also \f(CRtobitsrange\fP and \f(CRtobytesrange\fP which do the same thi
 .\}
 \f(CR[0x12, 0x34, 0x56] | tobytes[1:2]\fP will be a binary with the byte \f(CR0x34\fP
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1023,10 +1021,10 @@ There is also \f(CRtobitsrange\fP and \f(CRtobytesrange\fP which do the same thi
 .\}
 \f(CR[0x12, 0x34, 0x56] | tobits[4:12]\fP will be a binary with the byte \f(CR0x23\fP
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1034,10 +1032,10 @@ There is also \f(CRtobitsrange\fP and \f(CRtobytesrange\fP which do the same thi
 .\}
 \f(CR[0x12, 0x34, 0x56] | tobits[4:20]\fP will be a binary with the bytes \f(CR0x23\fP, \f(CR0x45\fP
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1045,10 +1043,10 @@ There is also \f(CRtobitsrange\fP and \f(CRtobytesrange\fP which do the same thi
 .\}
 \f(CR[0x12, 0x34, 0x56] | tobits[4:20] | tobytes[1:]\fP will be a binary with the byte \f(CR0x45\fP
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1056,10 +1054,10 @@ There is also \f(CRtobitsrange\fP and \f(CRtobytesrange\fP which do the same thi
 .\}
 Both \f(CR.[index]\fP and \f(CR.[start:end]\fP support negative indices to index from end.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1115,7 +1113,7 @@ binary arrays. They can be used as input to \f(CRtobits\fP, \f(CRtobytes\fP or o
 .sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1123,10 +1121,10 @@ binary arrays. They can be used as input to \f(CRtobits\fP, \f(CRtobytes\fP or o
 .\}
 Number is a byte with value 0\-255
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1134,10 +1132,10 @@ Number is a byte with value 0\-255
 .\}
 String as UTF8 bytes
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1145,10 +1143,10 @@ String as UTF8 bytes
 .\}
 Binary as is
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1164,7 +1162,7 @@ Some examples:
 .sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1172,10 +1170,10 @@ Some examples:
 .\}
 \f(CR[0, 123, 255] | tobytes\fP will be binary with 3 bytes 0, 123 and 255.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1183,10 +1181,10 @@ Some examples:
 .\}
 \f(CR[0, [123, 255]] | tobytes\fP same as above.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1194,10 +1192,10 @@ Some examples:
 .\}
 \f(CR[0, 1, 1, 0, 0, 1, 1, 0 | tobits] | tobytes\fP will be binary with 1 byte, 0x66.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1217,7 +1215,7 @@ Here are all the non\-snake_case functions added by fq. Most of them deal with d
 .sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1225,10 +1223,10 @@ Here are all the non\-snake_case functions added by fq. Most of them deal with d
 .\}
 \f(CRtoactual\fP
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1236,10 +1234,10 @@ Here are all the non\-snake_case functions added by fq. Most of them deal with d
 .\}
 \f(CRtobits\fP
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1247,10 +1245,10 @@ Here are all the non\-snake_case functions added by fq. Most of them deal with d
 .\}
 \f(CRtobitsrange\fP
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1258,10 +1256,10 @@ Here are all the non\-snake_case functions added by fq. Most of them deal with d
 .\}
 \f(CRtobytes\fP
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1269,10 +1267,10 @@ Here are all the non\-snake_case functions added by fq. Most of them deal with d
 .\}
 \f(CRtobytesrange\fP
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1280,10 +1278,10 @@ Here are all the non\-snake_case functions added by fq. Most of them deal with d
 .\}
 \f(CRtodescription\fP
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1291,10 +1289,10 @@ Here are all the non\-snake_case functions added by fq. Most of them deal with d
 .\}
 \f(CRtopath\fP
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1302,10 +1300,10 @@ Here are all the non\-snake_case functions added by fq. Most of them deal with d
 .\}
 \f(CRtorepr\fP
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1313,10 +1311,10 @@ Here are all the non\-snake_case functions added by fq. Most of them deal with d
 .\}
 \f(CRtosym\fP
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1372,7 +1370,7 @@ The columns are:
 .sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1380,10 +1378,10 @@ The columns are:
 .\}
 Start address for the line. For example we see that \f(CRsize\fP starts at \f(CR0xd5c\fP (row) + \f(CR0x09\fP (column) = \f(CR0xd65\fP.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1391,10 +1389,10 @@ Start address for the line. For example we see that \f(CRsize\fP starts at \f(CR
 .\}
 Hex representation of input bits for value. Will show the whole byte even if the value only partially uses bits from it.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1402,10 +1400,10 @@ Hex representation of input bits for value. Will show the whole byte even if the
 .\}
 ASCII representation of input bits for value. Will show the whole byte even if the value only partially uses bits from it.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1418,7 +1416,7 @@ Notation:
 .sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1426,10 +1424,10 @@ Notation:
 .\}
 \f(CR{}\fP value is an object that might have nested values.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1521,7 +1519,7 @@ There are also some other \f(CRdisplay\fP aliases:
 .sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1529,10 +1527,10 @@ There are also some other \f(CRdisplay\fP aliases:
 .\}
 \f(CRda\fP is \f(CRdisplay({array_truncate: 0, string_truncate: 0})\fP don\(cqt truncate arrays and strings.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1540,10 +1538,10 @@ There are also some other \f(CRdisplay\fP aliases:
 .\}
 \f(CRdd\fP is \f(CRdisplay({array_truncate: 0, string_truncate: 0, display_bytes: 0})\fP don\(cqt truncate arrays and strings, show all raw bytes.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1551,10 +1549,10 @@ There are also some other \f(CRdisplay\fP aliases:
 .\}
 \f(CRdv\fP is \f(CRdisplay({array_truncate: 0, string_truncate: 0, verbose: true})\fP don\(cqt truncate arrays and strings and display verbosely.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1672,10 +1670,9 @@ Apple BookmarkData
 .sp
 Apple\(cqs \f(CRbookmarkData\fP format is used to encode information that can be resolved into a \f(CRURL\fP object for a file even if the user moves or renames it. Can also contain security scoping information for App Sandbox support.
 These \f(CRbookmarkData\fP blobs are often found encoded in data fields of Binary Property Lists. Notable examples include:
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1683,10 +1680,10 @@ These \f(CRbookmarkData\fP blobs are often found encoded in data fields of Binar
 .\}
 \f(CRcom.apple.finder.plist\fP \- contains an \f(CRFXRecentFolders\fP value, which is an array of ten objects, each of which consists of a \f(CRname\fP and \f(CRfile\-bookmark\fP field, which is a \f(CRbookmarkData\fP object for each recently accessed folder location.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1708,10 +1705,9 @@ torepr\*(Aq <sfl2 file>
 .sp
 Authors
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1725,10 +1721,9 @@ David McDonald \c
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1736,10 +1731,10 @@ References
 .\}
 .URL "https://developer.apple.com/documentation/foundation/url/2143023\-bookmarkdata" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1747,10 +1742,10 @@ References
 .\}
 .URL "https://mac\-alias.readthedocs.io/en/latest/bookmark_fmt.html" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1758,10 +1753,10 @@ References
 .\}
 .URL "https://www.mac4n6.com/blog/2016/1/1/manual\-analysis\-of\-nskeyedarchiver\-formatted\-plist\-files\-a\-review\-of\-the\-new\-os\-x\-1011\-recent\-items" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1782,10 +1777,9 @@ Unix archive
 ASN1 BER (basic encoding rules, also CER and DER)
 .sp
 Supports decoding BER, CER and DER (X.690).
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1793,10 +1787,10 @@ Supports decoding BER, CER and DER (X.690).
 .\}
 Currently no extra validation is done for CER and DER.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1804,10 +1798,10 @@ Currently no extra validation is done for CER and DER.
 .\}
 Does not support specifying a schema.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1854,10 +1848,9 @@ $ fq \-d asn1_ber \*(Aqtorepr as $r | ["version", "modulus", "private_exponent",
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1865,10 +1858,10 @@ References
 .\}
 .URL "https://www.itu.int/ITU\-T/studygroups/com10/languages/X.690_1297.pdf" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1876,10 +1869,10 @@ References
 .\}
 .URL "https://en.wikipedia.org/wiki/X.690" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -1887,10 +1880,10 @@ References
 .\}
 .URL "https://letsencrypt.org/docs/a\-warm\-welcome\-to\-asn1\-and\-der/" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -2228,10 +2221,9 @@ $ fq \-o decode_samples=false \-o decode_extended_chunks=false d file.avi
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -2239,10 +2231,10 @@ References
 .\}
 .URL "https://learn.microsoft.com/en\-us/windows/win32/directshow/avi\-riff\-file\-reference" "AVI RIFF File Reference" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -2273,10 +2265,9 @@ Avro object container file
 Supports reading Avro Object Container Format (OCF) files based on the 1.11.0 specification.
 Capable of handling null, deflate, and snappy codecs for data compression.
 Limitations:
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -2284,10 +2275,10 @@ Limitations:
 .\}
 Schema does not support self\-referential types, only built\-in types.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -2298,10 +2289,9 @@ Decimal logical types are not supported for decoding, will just be treated as th
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -2313,10 +2303,9 @@ References
 .sp
 Authors
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -2347,10 +2336,9 @@ $ fq \-d bencode torepr file.torrent
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -2496,10 +2484,9 @@ bplist> from_ns_keyed_archiver(1)
 .sp
 Authors
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -2512,10 +2499,9 @@ David McDonald \c
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -2523,10 +2509,10 @@ References
 .\}
 .URL "http://fileformats.archiveteam.org/wiki/Property_List/Binary" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -2534,10 +2520,10 @@ References
 .\}
 .URL "https://medium.com/@karaiskc/understanding\-apples\-binary\-property\-list\-format\-281e6da00dbd" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -2559,10 +2545,9 @@ Binary JSON
 .sp
 Limitations
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -2598,10 +2583,9 @@ $ fq \-d bson \*(Aqtorepr | select(.name=="bob")\*(Aq file.bson
 .sp
 Authors
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -2611,10 +2595,10 @@ Mattias Wadman \c
 .MTO "mattias.wadman\(atgmail.com" "" ","
 original author
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -2628,10 +2612,9 @@ additional types and bug fixes
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -2701,10 +2684,9 @@ Live2D Cubism archive
 .sp
 Authors
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -2741,10 +2723,9 @@ $ fq \-d cbor torepr file.cbor
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -2752,10 +2733,10 @@ References
 .\}
 .URL "https://en.wikipedia.org/wiki/CBOR" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -2844,10 +2825,9 @@ Garmin Flexible and Interoperable Data Transfer
 .sp
 Limitations
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -2855,10 +2835,10 @@ Limitations
 .\}
 Fields with subcomponents, such as "compressed_speed_distance" field on globalMessageNumber 20 is not represented correctly. The field is read as 3 separate bytes where the first 12 bits are speed and the last 12 bits are distance.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -2866,10 +2846,10 @@ Fields with subcomponents, such as "compressed_speed_distance" field on globalMe
 .\}
 There are still lots of UNKNOWN fields due to gaps in Garmin\(cqs SDK Profile documentation. (Currently FIT SDK 21.126)
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -2893,10 +2873,9 @@ $ fq \*(Aq[.data_records[] | select(.record_header.message_type == "data").data_
 .sp
 Authors
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -2910,10 +2889,9 @@ original author
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -2921,10 +2899,10 @@ References
 .\}
 .URL "https://developer.garmin.com/fit/protocol/" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3204,10 +3182,9 @@ LevelDB Descriptor
 .sp
 Limitations
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3219,10 +3196,9 @@ fragmented non\-"full" records are not merged and decoded further.
 .sp
 Authors
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3235,10 +3211,9 @@ original author
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3246,10 +3221,10 @@ References
 .\}
 .URL "https://github.com/google/leveldb/blob/main/doc/impl.md#manifest" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3257,10 +3232,10 @@ References
 .\}
 .URL "https://github.com/google/leveldb/blob/main/doc/log_format.md" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3277,10 +3252,9 @@ LevelDB Log
 .sp
 Limitations
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3292,10 +3266,9 @@ fragmented non\-"full" records are not merged and decoded further.
 .sp
 Authors
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3308,10 +3281,9 @@ original author
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3319,10 +3291,10 @@ References
 .\}
 .URL "https://github.com/google/leveldb/blob/main/doc/impl.md#log\-files" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3330,10 +3302,10 @@ References
 .\}
 .URL "https://github.com/google/leveldb/blob/main/doc/log_format.md" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3350,10 +3322,9 @@ LevelDB Table
 .sp
 Limitations
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3361,10 +3332,10 @@ Limitations
 .\}
 no Meta Blocks (like "filter") are decoded yet.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3376,10 +3347,9 @@ Zstandard decompression is not implemented yet.
 .sp
 Authors
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3392,10 +3362,9 @@ original author
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3403,10 +3372,10 @@ References
 .\}
 .URL "https://github.com/google/leveldb/blob/main/doc/table_format.md" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3414,10 +3383,10 @@ References
 .\}
 .URL "https://github.com/google/leveldb/blob/main/doc/impl.md" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3434,10 +3403,9 @@ LuaJIT 2.0 bytecode
 .sp
 Authors
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3449,10 +3417,9 @@ Authors
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3460,10 +3427,10 @@ References
 .\}
 .URL "https://github.com/LuaJIT/LuaJIT/blob/v2.1/src/lj_bcdump.h" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3494,10 +3461,9 @@ $ fq \*(Aq.load_commands[] | select(.cmd=="segment_64")\*(Aq file
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3509,10 +3475,9 @@ References
 .sp
 Authors
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3577,10 +3542,9 @@ $ fq \*(Aqgrep_by(.id == "Tracks") | matroska_path\*(Aq file.mkv
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3588,10 +3552,10 @@ References
 .\}
 .URL "https://www.rfc\-editor.org/info/rfc8794" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3599,10 +3563,10 @@ References
 .\}
 .URL "https://matroska.org/technical/specs/index.html" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3610,10 +3574,10 @@ References
 .\}
 .URL "https://www.matroska.org/technical/basics.html" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3621,10 +3585,10 @@ References
 .\}
 .URL "https://www.matroska.org/technical/codec_specs.html" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3649,10 +3613,9 @@ Standard MIDI file
 .sp
 Notes
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3660,10 +3623,10 @@ Notes
 .\}
 Only supports the MIDI 1.0 MIDI file specification.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3671,10 +3634,10 @@ Only supports the MIDI 1.0 MIDI file specification.
 .\}
 Only supports \fIMThd\fP and \fIMTrk\fP chunks.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3686,10 +3649,9 @@ Does only basic validation on the MIDI data.
 .sp
 Sample queries
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3706,10 +3668,9 @@ fq \-d midi \*(Aq.. | select(.event=="track_name")? | "\(rs(.track_name)"\*(Aq m
 .fam
 .fi
 .if n .RE
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3725,10 +3686,9 @@ fq \-d midi \*(Aq.. | select(.event=="tempo")?.tempo\*(Aq midi/twinkle.mid
 .fam
 .fi
 .if n .RE
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3744,10 +3704,9 @@ fq \-d midi \*(Aq.. | select(.event=="key_signature")?.key_signature\*(Aq midi/t
 .fam
 .fi
 .if n .RE
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3766,10 +3725,9 @@ fq \-d midi \*(Aqgrep_by(.event=="note_on") | [.time.tick, .note_on.note] | join
 .sp
 Authors
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3781,10 +3739,9 @@ Authors
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3792,10 +3749,10 @@ References
 .\}
 .URL "https://www.midi.org/specifications/item/the\-midi\-1\-0\-specification" "The Complete MIDI 1.0 Detailed Specification" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3803,10 +3760,10 @@ References
 .\}
 .URL "https://midi.org/standard\-midi\-files" "Standard MIDI Files" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3814,10 +3771,10 @@ References
 .\}
 .URL "http://midi.teragonaudio.com/tech/midifile.htm" "Standard MIDI File (SMF) Format" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3825,10 +3782,10 @@ References
 .\}
 .URL "http://www.somascape.org/midi/tech/mfile.html" "MIDI Files Specification" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3836,10 +3793,10 @@ References
 .\}
 .URL "https://www.recordingblogs.com/wiki/midi\-smpte\-offset\-meta\-message" "MIDI SMPTE Offset meta message" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3856,10 +3813,9 @@ MOC3 file
 .sp
 Authors
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -3989,10 +3945,9 @@ $ fq \*(Aqgrep_by(.type == "trak") | mp4_path\*(Aq file.mp4
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4000,10 +3955,10 @@ References
 .\}
 .URL "https://en.wikipedia.org/wiki/ISO/IEC_base_media_file_format" "ISO/IEC base media file format (MPEG\-4 Part 12)" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4080,10 +4035,9 @@ $ fq \-d msgpack torepr file.msgpack
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4148,10 +4102,9 @@ $ fq \-d negentropy \*(Aq.bounds | map(select(.mode == "idlist") | .idlist | .id
 .sp
 Authors
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4164,10 +4117,9 @@ fiatjaf, \c
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4184,10 +4136,9 @@ iNES/NES 2.0 cartridge ROM format
 .sp
 Limitations
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4195,10 +4146,10 @@ Limitations
 .\}
 \f(CRprg_rom\fP, \f(CRchr_rom\fP and \f(CRtrainer\fP fields may contain data that is just random junk from the memory chips, since they are of a fixed size.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4206,10 +4157,10 @@ Limitations
 .\}
 The \f(CRnes_toasm\fP function outputs ALL opcodes, including the unofficial ones, which means that none of the regular assemblers can recompile it.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4257,10 +4208,9 @@ $ for line in $(fq \-r \*(Aq.chr_rom[] | nes_tokitty(5)\*(Aq file.nes);do printf
 .sp
 Authors
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4274,10 +4224,9 @@ original author
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4285,10 +4234,10 @@ References
 .\}
 .URL "https://www.nesdev.org/wiki/INES" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4296,10 +4245,10 @@ References
 .\}
 .URL "https://www.nesdev.org/wiki/NES_2.0" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4307,10 +4256,10 @@ References
 .\}
 .URL "https://www.nesdev.org/wiki/CPU" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4373,10 +4322,9 @@ $ fq \*(Aq.operations | map(select(.attestation_type == "bitcoin")) | length > 0
 .sp
 Authors
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4389,10 +4337,9 @@ fiatjaf, \c
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4400,10 +4347,10 @@ References
 .\}
 .URL "https://opentimestamps.org/" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4477,10 +4424,9 @@ $ fq \-d pg_btree \-o flavour=postgres14 ".[1]" 16404
 .sp
 Authors
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4494,10 +4440,9 @@ Pavel Safonov \c
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4546,10 +4491,9 @@ $ fq \-d pg_control \-o flavour=postgres14 ".state, .check_point_copy.redo, .wal
 .sp
 Authors
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4563,10 +4507,9 @@ Pavel Safonov \c
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4639,10 +4582,9 @@ $ fq \-d pg_heap \-o flavour=postgres14 ".[0].tuples[0, \-1]" 16994
 .sp
 Authors
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4656,10 +4598,9 @@ Pavel Safonov \c
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4716,10 +4657,9 @@ $ fq \-d protobuf \*(Aq.fields[6].wire_value | protobuf | d\*(Aq file
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4760,10 +4700,9 @@ fq \*(Aq.tcp_connections[] | select(.server.port=="rtmp") | d\*(Aq file.cap
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4771,10 +4710,10 @@ References
 .\}
 .URL "https://rtmp.veriskope.com/docs/spec/" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4808,10 +4747,9 @@ Decode binary STL (Stereolithography, Standard Tessellation Language) files.
 .sp
 Current limitations
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4819,10 +4757,10 @@ Current limitations
 .\}
 No support for ASCII STL files
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4830,10 +4768,10 @@ No support for ASCII STL files
 .\}
 No support for VisCAM and SolidView colors
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4867,10 +4805,9 @@ fq \-o bits_format=byte_array \-d tap \-V d /path/to/file.tap
 .sp
 Authors
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4884,10 +4821,9 @@ original author
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4968,10 +4904,9 @@ Supported cipher suites for decryption
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -4979,10 +4914,10 @@ References
 .\}
 .URL "https://www.rfc\-editor.org/rfc/rfc5246" "RFC 5246: The Transport Layer Security (TLS) Protocol" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5036,10 +4971,9 @@ fq \*(Aq.v2plusdatablock.leap_second_records | length\*(Aq tziffile
 .sp
 Authors
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5053,10 +4987,9 @@ Takashi Oguma \c
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5090,10 +5023,9 @@ fq \-o bits_format=byte_array \-d tzx \-V d /path/to/file.tzx
 .sp
 Authors
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5107,10 +5039,9 @@ original author
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5186,10 +5117,9 @@ $ fq \*(Aq.sections | {import: map(select(.id == "import_section").content.im.x[
 .sp
 Authors
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5203,10 +5133,9 @@ Takashi Oguma \c
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5237,10 +5166,9 @@ Encoding is done using the \f(CRto_xml\fP function and it will figure out what v
 Elements as object
 .RS 4
 Element can have different shapes depending on body text, attributes and children:
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5248,10 +5176,10 @@ Element can have different shapes depending on body text, attributes and childre
 .\}
 \f(CR<a key="value">text</a>\fP is \f(CR{"a":{"#text":"text","@key":"value"}}\fP, has text (\f(CR#text\fP) and attributes (\f(CR@key\fP)
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5259,10 +5187,10 @@ Element can have different shapes depending on body text, attributes and childre
 .\}
 \f(CR<a>text</a>\fP is \f(CR{"a":"text"}\fP
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5270,10 +5198,10 @@ Element can have different shapes depending on body text, attributes and childre
 .\}
 \f(CR<a><b>text</b></a>\fP is \f(CR{"a":{"b":"text"}}\fP one child with only text and no attributes
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5281,10 +5209,10 @@ Element can have different shapes depending on body text, attributes and childre
 .\}
 \f(CR<a><b/><b>text</b></a>\fP is \f(CR{"a":{"b":["","text"]}}\fP two children with same name end up in an array
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5389,10 +5317,9 @@ $ echo \*(Aq<a><b/><b>bbb</b><c attr="value">ccc</c></a>\*(Aq | fq \-o array=tru
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5441,10 +5368,9 @@ which lacks a known time zone. Probably the local time/date was used at creation
 .sp
 References
 .RS 4
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5452,10 +5378,10 @@ References
 .\}
 .URL "https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5463,10 +5389,10 @@ References
 .\}
 .URL "https://opensource.apple.com/source/zip/zip\-6/unzip/unzip/proginfo/extra.fld" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5474,10 +5400,10 @@ References
 .\}
 .URL "https://formats.kaitai.io/dos_datetime/" "" ""
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5572,17 +5498,16 @@ zip> ^D
 .sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
 .  IP \(bu 2.3
 .\}
 \f(CRfrom_xml\fP/\f(CRfrom_xml($opts)\fP Parse XML into jq value. \f(CR$opts\fP are:
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5591,10 +5516,10 @@ zip> ^D
 \f(CR{seq: true}\fP preserve element ordering if more than one sibling.
 .br
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5604,10 +5529,10 @@ zip> ^D
 .br
 .RE
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5618,10 +5543,9 @@ zip> ^D
 Similar to \f(CRfrom_xml\fP but parses html5 in non\-script mode. Will always have a \f(CRhtml\fP root with \f(CRhead\fP and \f(CRbody\fP elements.
 +
 \f(CR$opts\fP are:
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5630,10 +5554,10 @@ Similar to \f(CRfrom_xml\fP but parses html5 in non\-script mode. Will always ha
 \f(CR{array: true}\fP use nested arrays to represent elements.
 .br
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5643,10 +5567,10 @@ Similar to \f(CRfrom_xml\fP but parses html5 in non\-script mode. Will always ha
 .br
 .RE
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5661,10 +5585,9 @@ Will automatically add a root \f(CRdoc\fP element if jq value has more than one 
 If a \f(CR#seq\fP is found on at least one element all siblings will be sorted by sequence number. Attributes are always sorted.
 +
 \f(CR$opts\fP are:
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5700,7 +5623,7 @@ With object representation an element is represented as:
 .sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5708,10 +5631,10 @@ With object representation an element is represented as:
 .\}
 Attributes as \f(CR@\fP prefixed \f(CR@<key>\fP keys.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5719,10 +5642,10 @@ Attributes as \f(CR@\fP prefixed \f(CR@<key>\fP keys.
 .\}
 Text nodes as \f(CR#text\fP.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5730,10 +5653,10 @@ Text nodes as \f(CR#text\fP.
 .\}
 Comment nodes as \f(CR#comment\fP keys.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5741,10 +5664,10 @@ Comment nodes as \f(CR#comment\fP keys.
 .\}
 For explicit sibling ordering \f(CR#seq\fP keys with a number, can be negative, assumed zero if missing.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5752,10 +5675,10 @@ For explicit sibling ordering \f(CR#seq\fP keys with a number, can be negative, 
 .\}
 Child element with only text as \f(CR<name>\fP key with text as value.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5763,10 +5686,10 @@ Child element with only text as \f(CR<name>\fP key with text as value.
 .\}
 Child element with more than just text as \f(CR<name>\fP key with value an object.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5801,7 +5724,7 @@ With nested array representation, an array with these values \f(CR["<name>", {at
 .sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5809,10 +5732,10 @@ With nested array representation, an array with these values \f(CR["<name>", {at
 .\}
 Index 0 is an element name.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5820,10 +5743,10 @@ Index 0 is an element name.
 .\}
 Index 1 object attributes (including \f(CR#text\fP and \f(CR#comment\fP keys).
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5914,7 +5837,7 @@ Select values in \f(CR<doc>\fP, remove \f(CR<child>\fP, add a \f(CR<new>\fP elem
 .sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5922,20 +5845,19 @@ Select values in \f(CR<doc>\fP, remove \f(CR<child>\fP, add a \f(CR<new>\fP elem
 .\}
 \f(CRfromjson\fP Parse JSON into jq value.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
 .  IP \(bu 2.3
 .\}
 \f(CRtojson\fP/\f(CRtojson($opts)\fP Serialize jq value into JSON. \f(CR$opts\fP are:
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5944,10 +5866,10 @@ Select values in \f(CR<doc>\fP, remove \f(CR<child>\fP, add a \f(CR<new>\fP elem
 \f(CR{indent: number}\fP Indent depth.
 .RE
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5955,10 +5877,10 @@ Select values in \f(CR<doc>\fP, remove \f(CR<child>\fP, add a \f(CR<new>\fP elem
 .\}
 \f(CRfrom_jsonl\fP Parse JSON lines into jq array.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5970,7 +5892,7 @@ Select values in \f(CR<doc>\fP, remove \f(CR<child>\fP, add a \f(CR<new>\fP elem
 .sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -5978,20 +5900,19 @@ Select values in \f(CR<doc>\fP, remove \f(CR<child>\fP, add a \f(CR<new>\fP elem
 .\}
 \f(CRfrom_jq\fP Parse jq\-flavoured JSON into jq value.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
 .  IP \(bu 2.3
 .\}
 \f(CRto_jq\fP/\f(CRto_jq($opts)\fP Serialize jq value into jq\-flavoured JSON. jq\-flavoured JSON has optional key quotes, \f(CR#\fP comments and can have trailing comma in objects. \f(CR$opts\fP are:
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6006,7 +5927,7 @@ Note that \f(CRfromjson\fP and \f(CRtojson\fP use different naming conventions a
 .sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6014,20 +5935,19 @@ Note that \f(CRfromjson\fP and \f(CRtojson\fP use different naming conventions a
 .\}
 \f(CRfrom_yaml\fP Parse YAML into jq value.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
 .  IP \(bu 2.3
 .\}
 \f(CRto_yaml\fP/\f(CRto_yaml($opts)\fP Serialize jq value into YAML. \f(CR$opts\fP are:
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6040,7 +5960,7 @@ Note that \f(CRfromjson\fP and \f(CRtojson\fP use different naming conventions a
 .sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6048,20 +5968,19 @@ Note that \f(CRfromjson\fP and \f(CRtojson\fP use different naming conventions a
 .\}
 \f(CRfrom_toml\fP Parse TOML into jq value.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
 .  IP \(bu 2.3
 .\}
 \f(CRto_toml\fP/\f(CRto_toml($opts)\fP Serialize jq value into TOML. \f(CR$opts\fP are:
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6074,7 +5993,7 @@ Note that \f(CRfromjson\fP and \f(CRtojson\fP use different naming conventions a
 .sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6085,10 +6004,9 @@ Note that \f(CRfromjson\fP and \f(CRtojson\fP use different naming conventions a
 To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP or \f(CRfq \-d csv \-o \*(Aqcomma="\(rst"\*(Aq\fP.
 .br
 \f(CR$opts\fP are:
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6097,10 +6015,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 \f(CR{comma: string}\fP field separator, default ",".
 .br
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6110,20 +6028,19 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .br
 .RE
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
 .  IP \(bu 2.3
 .\}
 \f(CRto_csv\fP/\f(CRto_csv($opts)\fP Serialize jq value into CSV. \f(CR$opts\fP are:
-.sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6137,7 +6054,7 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6145,10 +6062,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRfrom_xmlentities\fP Decode XML entities.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6160,7 +6077,7 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6168,10 +6085,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRfrom_urlpath\fP Decode URL path component.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6179,10 +6096,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRto_urlpath\fP Encode URL path component. Whitespace as %20.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6190,10 +6107,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRfrom_urlencode\fP Decode URL query encoding.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6201,10 +6118,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRto_urlencode\fP Encode URL to query encoding. Whitespace as "+".
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6212,10 +6129,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRfrom_urlquery\fP Decode URL query into object. For duplicate keys value will be an array.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6223,10 +6140,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRto_urlquery\fP Encode object into query string.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6256,10 +6173,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .fi
 .if n .RE
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6271,7 +6188,7 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6279,10 +6196,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRfrom_pem\fP Decode PEM to binary.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6294,7 +6211,7 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6302,10 +6219,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRfrom_hex\fP Decode hex string to binary.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6313,10 +6230,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRto_hex\fP Encode binary into hex string.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6324,10 +6241,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRfrom_base64\fP/\f(CRfrom_base64($opts)\fP Decode base64 encodings into binary. \f(CR$opts\fP are:
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6335,10 +6252,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CR{encoding:string}\fP encoding variant: \f(CRstd\fP (default), \f(CRurl\fP, \f(CRrawstd\fP or \f(CRrawurl\fP
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6346,10 +6263,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRto_base64\fP/\f(CRto_base64($opts)\fP Encode binary into base64 encodings. \f(CR$opts\fP are:
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6361,7 +6278,7 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6369,10 +6286,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRto_md4\fP Hash binary using md4.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6380,10 +6297,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRto_md5\fP Hash binary using md5.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6391,10 +6308,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRto_sha1\fP Hash binary using sha1.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6402,10 +6319,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRto_sha256\fP Hash binary using sha256.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6413,10 +6330,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRto_sha512\fP Hash binary using sha512.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6424,10 +6341,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRto_sha3_224\fP Hash binary using sha3 224.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6435,10 +6352,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRto_sha3_256\fP Hash binary using sha3 256.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6446,10 +6363,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRto_sha3_384\fP Hash binary using sha3 384.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6461,7 +6378,7 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6469,10 +6386,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRto_iso8859_1\fP Encode string as ISO8859\-1 into binary.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6480,10 +6397,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRfrom_iso8859_1\fP Decode binary as ISO8859\-1 into string.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6491,10 +6408,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRto_utf8\fP Encode string as UTF8 into binary.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6502,10 +6419,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRfrom_utf8\fP Decode binary as UTF8 into string.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6513,10 +6430,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRto_utf16\fP Encode string as UTF16 into binary.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6524,10 +6441,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRfrom_utf16\fP Decode binary as UTF16 into string.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6535,10 +6452,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRto_utf16le\fP Encode string as UTF16 little\-endian into binary.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6546,10 +6463,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRfrom_utf16le\fP Decode binary as UTF16 little\-endian into string.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6557,10 +6474,10 @@ To work with tab separated values you can use \f(CRfrom_csv({comma: "\(rst"})\fP
 .\}
 \f(CRto_utf16be\fP Encode string as UTF16 big\-endian into binary.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6574,7 +6491,7 @@ The REPL can be useful in some scenarios:
 .sp
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6582,10 +6499,10 @@ The REPL can be useful in some scenarios:
 .\}
 When decoding is slow you can reuse the decode result.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6593,10 +6510,10 @@ When decoding is slow you can reuse the decode result.
 .\}
 Dig thru a file using sub\-REPL to cut down on typing.
 .RE
-.sp
+.br
 .RS 4
 .ie n \{\
-\h'-04'\(bu\h'+03'\c
+\h'-04'\-\h'+01'\c
 .\}
 .el \{\
 .  sp -1
@@ -6771,3 +6688,4 @@ See LICENSE file in source tree.
 .SH "AUTHOR"
 .sp
 Mattias Wadman
+
