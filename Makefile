@@ -60,8 +60,9 @@ doc/file.mp4: Makefile
 doc/fq.1.adoc: fq
 	cd doc && (../fq -Rrs -L . 'include "fq.1.tmpl.adoc"; fq_tmpl_adoc(true)' fq.1.tmpl.adoc > fq.1.adoc)
 
-doc/fq.1: doc/fq.1.adoc
-	asciidoctor -b manpage doc/fq.1.adoc > doc/fq.1
+doc/fq.1: doc/fq.1.adoc doc/man_compact_list.jq
+# doc/man_compact_list.jq post-processes the roff to compact lists a bit
+	asciidoctor -b manpage -o - doc/fq.1.adoc | jq -Rsr -f doc/man_compact_list.jq > doc/fq.1
 
 doc/fq.1.html: doc/fq.1.adoc
 	asciidoctor -b html5 -a webfonts! -a source-highlighter=rouge doc/fq.1.adoc > doc/fq.1.html
