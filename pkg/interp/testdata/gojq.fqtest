@@ -1,5 +1,5 @@
 # TODO: various gojq fq fork regression tests, should probably be move to fork code instead
-# 0xf_ffff_ffff_fffff_fffff-1 | to_radix(2,8,16)
+# 0xf_ffff_ffff_fffff_fffff-1 | to_base(2,8,16; "")
 $ fq -n '0b1111111111111111111111111111111111111111111111111111111111111111111111111110, 0o17777777777777777777777776, 0xffffffffffffffffffe'
 75557863725914323419134
 75557863725914323419134

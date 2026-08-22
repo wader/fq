@@ -8,8 +8,8 @@ def to_tar(g):
       , ("000644 " | rpad(8; 0)) # mode
       , ("000000 " | rpad(8; 0)) # uid
       , ("000000 " | rpad(8; 0)) # gid
-      , [($b.size | to_radix(8) | [lpad(11; "0")]), " "]  # size
-      , [(0| to_radix(8) | lpad(11; "0")), " "] # mtime
+      , [($b.size | to_base(8; "") | [lpad(11; "0")]), " "]  # size
+      , [(0| to_base(8; "") | lpad(11; "0")), " "] # mtime
       , "        " # chksum (blank spaces when adding checksum)
       , ("0") # typeflag
       , ("" | rpad(100; 0)) # linkname
@@ -23,7 +23,7 @@ def to_tar(g):
       ] | tobytes;
     ( h as $h
     | [ $h[0:148]
-      , [(($h | checksum) | to_radix(8) | lpad(6; "0")), 0, " "]
+      , [(($h | checksum) | to_base(8; "") | lpad(6; "0")), 0, " "]
       , $h[148+8:]
       ]
     | tobytes
