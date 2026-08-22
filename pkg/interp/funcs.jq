@@ -110,10 +110,10 @@ def iprint:
     elif type == "string" then explode[]
     else error("expected number or string")
     end
-  | { bin: "0b\(to_radix(2))"
-    , oct: "0o\(to_radix(8))"
+  | { bin: "\(to_base(2))"
+    , oct: "\(to_base(8))"
     , dec: "\(.)"
-    , hex: "0x\(to_radix(16))"
+    , hex: "\(to_base(16))"
     , str: (try ([.] | implode) catch null)
     }
   );
