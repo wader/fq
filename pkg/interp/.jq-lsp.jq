@@ -32,7 +32,7 @@ def to_jq: empty;
 def markdown: empty;
 def _markdown_to_text($width; $header_depth): empty;
 # used by funcs.jq iprint
-def to_radix($base): empty;
+def to_base($base): empty;
 def tobytes: empty;
 def eval($s): empty;
 def trim: empty;

@@ -1,7 +1,7 @@
 #!/usr/bin/env fq -rnf
 
 def color:
-  to_md5 | [.[range(3)]] | map(band(.; 0x7f)+60 | to_radix(16) | "0"[length:]+.) | join("");
+  to_md5 | [.[range(3)]] | map(band(.; 0x7f)+60 | to_base(16; "") | "0"[length:]+.) | join("");
 
 def _formats_dot:
   def _record($title; $fields):
