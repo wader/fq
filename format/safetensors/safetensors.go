@@ -88,7 +88,7 @@ var dataDecoders = map[string]func(d *decode.D){
 func decodeSafeTensors(d *decode.D) any {
 	d.Endian = decode.LittleEndian
 
-	headerSize := d.FieldU64("header size")
+	headerSize := d.FieldU64("header_size")
 
 	var dv *decode.Value
 

@@ -37,12 +37,12 @@ func ccrDecode(d *decode.D) any {
 	d.FieldU1("chroma_subsampling_x")
 	d.FieldU1("chroma_subsampling_y")
 	d.FieldU2("chroma_sample_position")
-	d.FieldU3("reserved = 0")
+	d.FieldU3("reserved0")
 	initalPreDelay := d.FieldBool("initial_presentation_delay_present")
 	if initalPreDelay {
 		d.FieldU4("initial_presentation_delay", scalar.UintActualAdd(1))
 	} else {
-		d.FieldU4("reserved")
+		d.FieldU4("reserved1")
 	}
 	d.FieldArray("config_obus", func(d *decode.D) {
 		for d.BitsLeft() > 0 {

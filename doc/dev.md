@@ -17,7 +17,7 @@ But maybe in lowercase to be jq/JSON-ish.
 - Decode only ranges you know what they are. If possible let "parent" decide what to do with unknown gaps
 bits by using `*Decode*Len/Range/Limit` functions. fq will also automatically add "gap" fields if
 it finds gaps.
-- If you have decode helpers functions that decode a bunch of fields etc it is usually nice to make it only decode fields, not seek or add it's own "containing" struct. That way the function will be easier to reuse and only do one thing. Ex the helper `func decodeHeader(d *decode.D)` can then be use as `d.FieldStruct("header", decodeHeader)`, `d.SeekRel(1234, decodeHeader)` or `d.SeekRel(1234, func(d *decode.D) { d.FieldStruct("header, decodeHeader") }`
+- If you have decode helpers functions that decode a bunch of fields etc it is usually nice to make it only decode fields, not seek or add it's own "containing" struct. That way the function will be easier to reuse and only do one thing. Ex the helper `func decodeHeader(d *decode.D)` can then be use as `d.FieldStruct("header", decodeHeader)`, `d.SeekRel(1234, decodeHeader)` or `d.SeekRel(1234, func(d *decode.D) { d.FieldStruct("header", decodeHeader) }`
 - Try to not decode too much as one value.
 A length encoded int could be two fields, but maybe a length prefixed string should be one.
 Flags can be struct with bit-fields.
