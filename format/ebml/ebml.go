@@ -17,6 +17,7 @@ type Element interface {
 	GetParentID() ID
 	GetName() string
 	GetDefinition() string
+	IsSingleton() bool
 }
 
 type Enum struct {
@@ -29,6 +30,7 @@ type ElementType struct {
 	ParentID   ID
 	Name       string
 	Definition string
+	Singleton  bool
 }
 
 func (e *ElementType) GetType() string       { return "" }
@@ -36,6 +38,7 @@ func (e *ElementType) GetID() ID             { return e.ID }
 func (e *ElementType) GetParentID() ID       { return e.ParentID }
 func (e *ElementType) GetName() string       { return e.Name }
 func (e *ElementType) GetDefinition() string { return e.Definition }
+func (e *ElementType) IsSingleton() bool     { return e.Singleton }
 
 type ElementScalarType[T comparable] struct {
 	ElementType
@@ -93,12 +96,13 @@ const (
 
 var Global = &Master{
 	ElementType: ElementType{
-		ID:       -1,
-		ParentID: -1,
-		Name:     "",
+		ID:        -1,
+		ParentID:  -1,
+		Name:      "",
+		Singleton: true,
 	},
 	Master: map[ID]Element{
-		CRC32ID: &Binary{ElementType: ElementType{Name: "crc32"}},
+		CRC32ID: &Binary{ElementType: ElementType{Name: "crc32", Singleton: true}},
 		VoidID:  &Binary{ElementType: ElementType{Name: "void"}},
 	},
 }
@@ -116,18 +120,19 @@ const (
 
 var Header = &Master{
 	ElementType: ElementType{
-		ID:       HeaderID,
-		ParentID: RootID,
-		Name:     "ebml",
+		ID:        HeaderID,
+		ParentID:  RootID,
+		Name:      "ebml",
+		Singleton: true,
 	},
 	Master: map[ID]Element{
-		EBMLVersionID:        &Uinteger{ElementType: ElementType{Name: "ebml_version", Definition: "EBML Version"}},
-		EBMLReadVersionID:    &Uinteger{ElementType: ElementType{Name: "ebml_read_version", Definition: "Minimum EBML reader version"}},
-		EBMLMaxIDLengthID:    &Uinteger{ElementType: ElementType{Name: "ebml_max_id_length", Definition: "Maximum id length"}},
-		EBMLMaxSizeLengthID:  &Uinteger{ElementType: ElementType{Name: "ebml_max_size_length", Definition: "Maximum body length"}},
-		DocTypeID:            &String{ElementType: ElementType{Name: "doc_type", Definition: "Document content type"}},
-		DocTypeVersionID:     &Uinteger{ElementType: ElementType{Name: "doc_type_version", Definition: "Document type version"}},
-		DocTypeReadVersionID: &Uinteger{ElementType: ElementType{Name: "doc_type_read_version", Definition: "Minimum document reader version"}},
+		EBMLVersionID:        &Uinteger{ElementType: ElementType{Name: "ebml_version", Definition: "EBML Version", Singleton: true}},
+		EBMLReadVersionID:    &Uinteger{ElementType: ElementType{Name: "ebml_read_version", Definition: "Minimum EBML reader version", Singleton: true}},
+		EBMLMaxIDLengthID:    &Uinteger{ElementType: ElementType{Name: "ebml_max_id_length", Definition: "Maximum id length", Singleton: true}},
+		EBMLMaxSizeLengthID:  &Uinteger{ElementType: ElementType{Name: "ebml_max_size_length", Definition: "Maximum body length", Singleton: true}},
+		DocTypeID:            &String{ElementType: ElementType{Name: "doc_type", Definition: "Document content type", Singleton: true}},
+		DocTypeVersionID:     &Uinteger{ElementType: ElementType{Name: "doc_type_version", Definition: "Document type version", Singleton: true}},
+		DocTypeReadVersionID: &Uinteger{ElementType: ElementType{Name: "doc_type_read_version", Definition: "Minimum document reader version", Singleton: true}},
 	},
 }
 

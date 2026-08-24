@@ -134,6 +134,7 @@ func main() {
 	fmt.Printf("    ID: RootID,\n")
 	fmt.Printf("    ParentID: -1,\n")
 	fmt.Printf("    Name: \"\",\n")
+	fmt.Printf("    Singleton: true,\n")
 	fmt.Printf("  },\n")
 	fmt.Printf("  Master: map[ebml.ID]ebml.Element{\n")
 	fmt.Printf("    ebml.HeaderID: ebml.Header,\n")
@@ -227,6 +228,7 @@ func main() {
 			fmt.Printf("    ID: %sID,\n", c.Name)
 			fmt.Printf("    ParentID: %sID,\n", e.Name)
 			fmt.Printf("    Name: %q,\n", camelToSnake(c.Name))
+			fmt.Printf("    Singleton: %t,\n", c.MaxOccurs == "1")
 			def, defOk := findDefintion(c.Documentations)
 			if defOk {
 				fmt.Printf("  Definition: %q,\n", newLineRE.ReplaceAllString(def, " "))
