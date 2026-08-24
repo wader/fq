@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<EBMLSchema xmlns="urn:ietf:rfc:8794" docType="mosaic" version="1">
+  <!--
+  EBML schema for swh-mosaic v1
+
+  Copyright (C) 2026 The Software Heritage developers
+
+  See https://docs.softwareheritage.org/devel/swh-mosaic/ for more information.
+  -->
+
+  <!-- ############################### Root element ###############################  -->
+
+  <element name="Mosaic" path="\Mosaic" id="0x1C535748" type="master" minOccurs="1" maxOccurs="1">
+    <documentation lang="en" purpose="definition">
+      MOSAIC root element.
+    </documentation>
+  </element>
+
+  <!-- ############################## ContainerMetaData element ############################## -->
+
+  <element name="ContainerMetaData" path="\Mosaic\ContainerMetaData" id="0x1D535748" type="master" minOccurs="1" maxOccurs="1">
+    <documentation lang="en" purpose="definition">
+      Document description
+    </documentation>
+  </element>
+
+  <element name="ObjectsCounter" path="\Mosaic\ContainerMetaData\ObjectsCounter" id="0x5000" type="uinteger" minOccurs="1" maxOccurs="1">
+    <documentation lang="en" purpose="definition">
+      Total number of objects in the document.
+    </documentation>
+  </element>
+
+  <element name="ObjectsTotalSize" path="\Mosaic\ContainerMetaData\ObjectsTotalSize" id="0x5001" type="uinteger" minOccurs="1" maxOccurs="1">
+    <documentation lang="en" purpose="definition">
+      Total size of (uncompressed) objects in the document.
+    </documentation>
+  </element>
+
+  <element name="CompressionMethod" path="\Mosaic\ContainerMetaData\CompressionMethod" id="0x5002" type="string" minOccurs="1" maxOccurs="1" default="none">
+    <documentation lang="en" purpose="definition">
+      Name of the algorithm that should be used to decompress objects, or "none" if they
+      are stored in plain.
+    </documentation>
+    <restriction>
+      <enum value="none" label="no compression"/>
+      <enum value="zstd" label="zstd (at least one frame)"/>
+      <enum value="zstd.dict" label="zstd (at least one frame) using a pre-trained dictionary provided in CompressionData"/>
+    </restriction>
+  </element>
+
+  <element name="CompressionData" path="\Mosaic\ContainerMetaData\CompressionData" id="0x5003" type="binary" minOccurs="0" maxOccurs="1">
+    <documentation lang="en" purpose="definition">
+      Decompression-specific data (for example, a dictionary).
+    </documentation>
+  </element>
+
+  <element name="Comment" path="\Mosaic\ContainerMetaData\Comment" id="0x5004" type="utf-8" minOccurs="0">
+    <documentation lang="en" purpose="definition">
+      An arbitrary-length presentation of the file. This is intended for curated archive extracts.
+      Note that a file can contain more than one comment element: this can be useful to
+      separate different documents presenting the file. For example we advise to attach
+      this XML to MOSAIC files intended for publication.
+    </documentation>
+  </element>
+
+  <element name="EndOfTilesOffset" path="\Mosaic\ContainerMetaData\EndOfTilesOffset" id="0x5099" type="uinteger" minOccurs="1" maxOccurs="1">
+    <documentation lang="en" purpose="definition">
+      Offset (number of bytes from the beginning of the file) of the first top element after `ContainerMetaData` that is not a `Tile`. This allows random-access-oriented readers to skip directly to indexes.
+    </documentation>
+  </element>
+
+  <!-- ############################## Tile elements ############################## -->
+
+  <element name="Tile" path="\Mosaic\Tile" id="0x1E535748" type="master" minOccurs="1">
+    <documentation lang="en" purpose="definition">
+      Objects should be dispatched in smaller tile and each tile should contain a CRC32
+      element. In case of data corruption, this granularity will be easier to recover.
+      We suggest to avoid tiles bigger than 32MB.
+      A tile should either contain multiple Object element, or only one Objects element
+      that compresses objects together according to what's described in
+      CompressionMethod.
+    </documentation>
+  </element>
+
+  <element name="Object" path="\Mosaic\Tile\Object" id="0xF0" type="binary" minOccurs="0">
+    <documentation lang="en" purpose="definition">
+      A single object, compressed according to CompressionMethod.
+    </documentation>
+  </element>
+
+  <!-- ############################### Index element ############################### -->
+
+  <element name="Index" path="\Mosaic\Index" id="0x1F535748" type="master">
+    <documentation lang="en" purpose="definition">
+      Index for fast lookup of objects.
+    </documentation>
+  </element>
+
+  <element name="IdxDescription" path="\Mosaic\Index\IdxDescription" id="0x6001" type="string" minOccurs="1" maxOccurs="1">
+    <documentation lang="en" purpose="definition">
+      Description of this index' key semantics and its map format, including a pURL and a SWHID of the decoder algorithm and maybe hints on the class to use and its parameters, if needed.
+    </documentation>
+    <restriction>
+      <enum value="key:sha1 pkg:cargo/ph@0.10.0 swh:1:rev:dd0d8a4b1cc7c940c5dbad3cf246a4584bfbb134 ph::fmph::GOFunction" label="Key is object's SHA1 (20-bytes array), Map is an FMPHGO MPH"/>
+      <enum value="key:sha1_git pkg:cargo/ph@0.10.0 swh:1:rev:dd0d8a4b1cc7c940c5dbad3cf246a4584bfbb134 ph::fmph::GOFunction" label="Key is the SHA1 of the object prefixed as in git (20-bytes array), Map is an FMPHGO MPH"/>
+      <enum value="key:sha256 pkg:cargo/ph@0.10.0 swh:1:rev:dd0d8a4b1cc7c940c5dbad3cf246a4584bfbb134" label="Key is object's SHA256(32-bytes array), Map is an FMPHGO MPH"/>
+      <enum value="key:blake2s256 pkg:cargo/ph@0.10.0 swh:1:rev:dd0d8a4b1cc7c940c5dbad3cf246a4584bfbb134 ph::fmph::GOFunction" label="Key is object's blake2s256 checksum (32-bytes array), Map is an FMPHGO MPH"/>
+    </restriction>
+  </element>
+
+  <element name="IdxUnrolled" path="\Mosaic\Index\IdxUnrolled" id="0x6002" type="master" maxOccurs="1">
+    <documentation lang="en" purpose="definition">
+      Unrolled index entries: all `(Key, Offset)` pairs present in the document. Order should match how `Map` places keys.
+    </documentation>
+  </element>
+
+  <element name="Key" path="\Mosaic\Index\IdxUnrolled\Key" id="0xA0" type="binary" minOccurs="1">
+    <documentation lang="en" purpose="definition">
+      Key for an index entry. All keys in a given `Index` should have the same size.
+    </documentation>
+  </element>
+
+  <element name="Offset" path="\Mosaic\Index\IdxUnrolled\Offset" id="0xA1" type="uinteger">
+    <documentation lang="en" purpose="definition">
+      Offset in file for an index entry. All offset in a given `Index` entries should
+      have the same size.
+
+      When using `Object` (individual compression), an object's offset is the distance
+      in bytes between the start of the file and the start of the `Object` tag.
+      When using `Objects` (multi-objects compression), an offset should combine the
+      distance in bytes between the start of the file and the start of the
+      `Objects` tag with the rank (or similar) of the object in decompressed data.
+      `IdxDescription` can provide precisions.
+    </documentation>
+  </element>
+
+  <element name="GoToConflicts" path="\Mosaic\Index\IdxUnrolled\GoToConflicts" id="0xA2" type="binary" length="0">
+    <documentation lang="en" purpose="definition">
+      This element should replace an `Offset` when an key is associated to more than one
+      object, to notify readers they should find all possible offsets in a `Conflict` element.
+
+      This element does not carry any data, so its length must be zero. Because
+      key-offset pairs below `IdxUnrolled` must have the same length, writers should
+      append a void element of the correct length after `GoToConflicts`.
+    </documentation>
+  </element>
+
+  <element name="IdxUnrolledEntrySize" path="\Mosaic\Index\IdxUnrolledEntrySize" id="0x6003" type="uinteger" maxOccurs="1">
+    <documentation lang="en" purpose="definition">
+      If the mapping technique assumes that index entries have a fixed size, this size
+      should be defined here (in bytes, including EBML wrappers).
+    </documentation>
+  </element>
+
+  <element name="MapContainer" path="\Mosaic\Index\MapContainer" id="0x6004" type="master" maxOccurs="1">
+    <documentation lang="en" purpose="definition">
+      This wrapper element allow us to put a CRC32 before the serialized `Map`. Readers
+      should check that `Map`'s content matches its checksum before deserializing it.
+    </documentation>
+  </element>
+
+  <element name="Map" path="\Mosaic\Index\MapContainer\Map" id="0x6005" type="binary" minOccurs="1" maxOccurs="1">
+    <documentation lang="en" purpose="definition">
+      An efficient mapping technique of keys to their position in the index or in payload.
+      We prepare for two techniques. First, minimal perfect hashes that map a key to
+      their rank in IdxUnrolled (which can be transposed to an offset thanks to
+      IdxUnrolledEntrySize). Second, static functions that map directly a key to its
+      offset in Payload.
+    </documentation>
+  </element>
+
+  <element name="Conflicts" path="\Mosaic\Index\Conflicts" id="0x6010" type="master" minOccurs="0">
+    <documentation lang="en" purpose="definition">
+      This element enumerates key conflicts, if any.
+    </documentation>
+  </element>
+
+  <element name="Conflict" path="\Mosaic\Index\Conflicts\Conflict" id="0x6011" type="master" minOccurs="1">
+    <documentation lang="en" purpose="definition">
+      A single key conflict.
+    </documentation>
+  </element>
+
+  <element name="ConflictingKey" path="\Mosaic\Index\Conflicts\Conflict\ConflictingKey" id="0x6012" type="binary" minOccurs="1" maxOccurs="1">
+    <documentation lang="en" purpose="definition">
+      The conflicting key.
+    </documentation>
+  </element>
+
+  <element name="ConflictingOffset" path="\Mosaic\Index\Conflicts\Conflict\ConflictingOffset" id="0x6013" type="uinteger" minOccurs="2">
+    <documentation lang="en" purpose="definition">
+      One of the possible offsets for the conflicting key.
+    </documentation>
+  </element>
+
+</EBMLSchema>

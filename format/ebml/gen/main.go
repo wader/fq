@@ -81,6 +81,7 @@ func findDefintion(docs []Documentation) (string, bool) {
 			s = whitespaceRE.ReplaceAllLiteralString(s, " ")
 			s = quotesRE.ReplaceAllLiteralString(s, "")
 			s = strings.TrimRight(s, " .")
+			s = strings.TrimLeft(s, " ")
 
 			if i := strings.IndexAny(s, ".,;"); i != -1 {
 				s = s[0:i]
@@ -190,6 +191,7 @@ func main() {
 			fmt.Printf("    ParentID: RootID,\n")
 		}
 		fmt.Printf("    Name: %q,\n", camelToSnake(e.Name))
+		fmt.Printf("    Singleton: %t,\n", e.MaxOccurs == "1")
 		if def, defOk := findDefintion(e.Documentations); defOk {
 			fmt.Printf("    Definition: %q,\n", newLineRE.ReplaceAllString(def, " "))
 		}

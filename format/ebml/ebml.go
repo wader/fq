@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/wader/fq/pkg/decode"
+	"github.com/wader/fq/pkg/scalar"
 )
 
 // 2001-01-01T00:00:00.000000000 UTC
@@ -86,6 +87,29 @@ type Master struct {
 
 func (e *Master) GetType() string           { return "master" }
 func (e *Master) GetMaster() map[ID]Element { return e.Master }
+
+// Simplifies the resolution of id to an Element by looking into standard EBML elements
+// if id is not found in schema-specific types.
+func (e *Master) LookupByID(id ID) (Element, bool) {
+	if match, ok := e.Master[id]; ok {
+		return match, true
+	}
+	if match, ok := Global.Master[id]; ok {
+		return match, true
+	}
+	return nil, false
+}
+
+// Peek the next element and sets `out`
+func (e *Master) PeekNextElement(d *decode.D, out *Element) uint64 {
+	n := PeekRawVint(d)
+	var ok bool
+	*out, ok = e.LookupByID(ID(n))
+	if !ok {
+		*out = &Unknown{}
+	}
+	return n
+}
 
 const (
 	RootID = 0
@@ -180,4 +204,14 @@ func DecodeVint(d *decode.D) uint64 {
 	n, w := DecodeRawVintWidth(d)
 	m := (uint64(1<<((w-1)*8+(8-w))) - 1)
 	return n & m
+}
+
+// returns a scalar.UintMapper for EBML tags' display
+func ElementIDMapper(e Element) scalar.UintMapper {
+	return scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
+		s.DisplayFormat = scalar.NumberHex
+		s.Sym = e.GetName()
+		s.Description = e.GetDefinition()
+		return s, nil
+	})
 }

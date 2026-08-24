@@ -1,0 +1,1169 @@
+$ fq -d mosaic dv basic.mosaic
+       |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: basic.mosaic (mosaic) 0x0-0x309ef (199151)
+       |                                               |                |  ebml{}: 0x0-0x26 (38)
+0x00000|1a 45 df a3                                    |.E..            |    id: "ebml" (0x1a45dfa3) 0x0-0x4 (4)
+       |                                               |                |    type: "master"
+0x00000|            a1                                 |    .           |    size: 33 0x4-0x5 (1)
+       |                                               |                |    ebml_version{}: 0x5-0x9 (4)
+0x00000|               42 86                           |     B.         |      id: "ebml_version" (0x4286) (EBML Version) 0x5-0x7 (2)
+       |                                               |                |      type: "uinteger"
+0x00000|                     81                        |       .        |      size: 1 0x7-0x8 (1)
+0x00000|                        01                     |        .       |      value: 1 0x8-0x9 (1)
+       |                                               |                |    ebml_read_version{}: 0x9-0xd (4)
+0x00000|                           42 f7               |         B.     |      id: "ebml_read_version" (0x42f7) (Minimum EBML reader version) 0x9-0xb (2)
+       |                                               |                |      type: "uinteger"
+0x00000|                                 81            |           .    |      size: 1 0xb-0xc (1)
+0x00000|                                    01         |            .   |      value: 1 0xc-0xd (1)
+       |                                               |                |    ebml_max_id_length{}: 0xd-0x11 (4)
+0x00000|                                       42 f2   |             B. |      id: "ebml_max_id_length" (0x42f2) (Maximum id length) 0xd-0xf (2)
+       |                                               |                |      type: "uinteger"
+0x00000|                                             81|               .|      size: 1 0xf-0x10 (1)
+0x00010|04                                             |.               |      value: 4 0x10-0x11 (1)
+       |                                               |                |    ebml_max_size_length{}: 0x11-0x15 (4)
+0x00010|   42 f3                                       | B.             |      id: "ebml_max_size_length" (0x42f3) (Maximum body length) 0x11-0x13 (2)
+       |                                               |                |      type: "uinteger"
+0x00010|         81                                    |   .            |      size: 1 0x13-0x14 (1)
+0x00010|            08                                 |    .           |      value: 8 0x14-0x15 (1)
+       |                                               |                |    doc_type{}: 0x15-0x1e (9)
+0x00010|               42 82                           |     B.         |      id: "doc_type" (0x4282) (Document content type) 0x15-0x17 (2)
+       |                                               |                |      type: "string"
+0x00010|                     86                        |       .        |      size: 6 0x17-0x18 (1)
+0x00010|                        6d 6f 73 61 69 63      |        mosaic  |      value: "mosaic" 0x18-0x1e (6)
+       |                                               |                |    doc_type_version{}: 0x1e-0x22 (4)
+0x00010|                                          42 87|              B.|      id: "doc_type_version" (0x4287) (Document type version) 0x1e-0x20 (2)
+       |                                               |                |      type: "uinteger"
+0x00020|81                                             |.               |      size: 1 0x20-0x21 (1)
+0x00020|   01                                          | .              |      value: 1 0x21-0x22 (1)
+       |                                               |                |    doc_type_read_version{}: 0x22-0x26 (4)
+0x00020|      42 85                                    |  B.            |      id: "doc_type_read_version" (0x4285) (Minimum document reader version) 0x22-0x24 (2)
+       |                                               |                |      type: "uinteger"
+0x00020|            81                                 |    .           |      size: 1 0x24-0x25 (1)
+0x00020|               01                              |     .          |      value: 1 0x25-0x26 (1)
+       |                                               |                |  mosaic{}: 0x26-0x309ef (199113)
+0x00020|                  1c 53 57 48                  |      .SWH      |    id: "mosaic" (0x1c535748) (MOSAIC root element) 0x26-0x2a (4)
+       |                                               |                |    type: "master"
+0x00020|                              01 00 00 00 00 03|          ......|    size: 199101 0x2a-0x32 (8)
+0x00030|09 bd                                          |..              |
+       |                                               |                |    container_meta_data{}: 0x32-0x280d (10203)
+0x00030|      1d 53 57 48                              |  .SWH          |      id: "container_meta_data" (0x1d535748) (Document description) 0x32-0x36 (4)
+       |                                               |                |      type: "master"
+0x00030|                  67 d5                        |      g.        |      size: 10197 0x36-0x38 (2)
+       |                                               |                |      crc32{}: 0x38-0x3e (6)
+0x00030|                        bf                     |        .       |        id: "crc32" (0xbf) 0x38-0x39 (1)
+       |                                               |                |        type: "binary"
+0x00030|                           84                  |         .      |        size: 4 0x39-0x3a (1)
+0x00030|                              08 8d d9 a4      |          ....  |        value: raw bits 0x3a-0x3e (4)
+       |                                               |                |      objects_counter{}: 0x3e-0x49 (11)
+0x00030|                                          50 00|              P.|        id: "objects_counter" (0x5000) (Total number of objects in the document) 0x3e-0x40 (2)
+       |                                               |                |        type: "uinteger"
+0x00040|88                                             |.               |        size: 8 0x40-0x41 (1)
+0x00040|   00 00 00 00 00 00 00 15                     | ........       |        value: 21 0x41-0x49 (8)
+       |                                               |                |      objects_total_size{}: 0x49-0x54 (11)
+0x00040|                           50 01               |         P.     |        id: "objects_total_size" (0x5001) (Total size of (uncompressed) objects in the document) 0x49-0x4b (2)
+       |                                               |                |        type: "uinteger"
+0x00040|                                 88            |           .    |        size: 8 0x4b-0x4c (1)
+0x00040|                                    00 00 00 00|            ....|        value: 186306 0x4c-0x54 (8)
+0x00050|00 02 d7 c2                                    |....            |
+       |                                               |                |      end_of_tiles_offset{}: 0x54-0x5f (11)
+0x00050|            50 99                              |    P.          |        id: "end_of_tiles_offset" (0x5099) (Offset of the first top element after ContainerMetaData that is not a Tile) 0x54-0x56 (2)
+       |                                               |                |        type: "uinteger"
+0x00050|                  88                           |      .         |        size: 8 0x56-0x57 (1)
+0x00050|                     00 00 00 00 00 03 00 6e   |       .......n |        value: 196718 0x57-0x5f (8)
+       |                                               |                |      compression_method{}: 0x5f-0x66 (7)
+0x00050|                                             50|               P|        id: "compression_method" (0x5002) (Name of the algorithm that should be used to decompress objects) 0x5f-0x61 (2)
+0x00060|02                                             |.               |
+       |                                               |                |        type: "string"
+0x00060|   84                                          | .              |        size: 4 0x61-0x62 (1)
+0x00060|      6e 6f 6e 65                              |  none          |        value: "no_compression" ("none") 0x62-0x66 (4)
+       |                                               |                |      comment[0:1]: 0x66-0x280d (10151)
+       |                                               |                |        [0]{}: comment 0x66-0x280d (10151)
+0x00060|                  50 04                        |      P.        |          id: "comment" (0x5004) (An arbitrary-length presentation of the file) 0x66-0x68 (2)
+       |                                               |                |          type: "utf8"
+0x00060|                        67 a3                  |        g.      |          size: 10147 0x68-0x6a (2)
+0x00060|                              3c 3f 78 6d 6c 20|          <?xml |          value: "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<EBMLSchema xmlns=\"urn:ietf:rfc:8794\" docType=\"mosaic\" version=\"1\">\n  <!--\n  EBML schema for swh-mosaic v1\n\n  Copyright (C) 2026 The Software Heritage developers\n\n  See https://docs.softwareheritage.org/devel/swh-mosaic/ for more information.\n  -->\n\n  <!-- ############################### Root element ###############################  -->\n\n  <element name=\"Mosaic\" path=\"\\Mosaic\" id=\"0x1C535748\" type=\"master\" minOccurs=\"1\" maxOccurs=\"1\">\n    <documentation lang=\"en\" purpose=\"definition\">\n      MOSAIC root element.\n    </documentation>\n  </element>\n\n  <!-- ############################## ContainerMetaData element ############################## -->\n\n  <element name=\"ContainerMetaData\" path=\"\\Mosaic\\ContainerMetaData\" id=\"0x1D535748\" type=\"master\" minOccurs=\"1\" maxOccurs=\"1\">\n    <documentation lang=\"en\" purpose=\"definition\">\n      Our precious objects are grouped together in this element. Any other top element is meta-data.\n    </documentation>\n  </element>\n\n  <element name=\"ObjectsCounter\" path=\"\\Mosaic\\ContainerMetaData\\ObjectsCounter\" id=\"0x5000\" type=\"uinteger\" minOccurs=\"1\" maxOccurs=\"1\">\n    <documentation lang=\"en\" purpose=\"definition\">\n      Total number of objects in the document.\n    </documentation>\n  </element>\n\n  <element name=\"ObjectsTotalSize\" path=\"\\Mosaic\\ContainerMetaData\\ObjectsTotalSize\" id=\"0x5001\" type=\"uinteger\" minOccurs=\"1\" maxOccurs=\"1\">\n    <documentation lang=\"en\" purpose=\"definition\">\n      Total size of (uncompressed) objects in the document.\n    </documentation>\n  </element>\n\n  <element name=\"CompressionMethod\" path=\"\\Mosaic\\ContainerMetaData\\CompressionMethod\" id=\"0x5002\" type=\"utf-8\" minOccurs=\"1\" maxOccurs=\"1\" default=\"none\">\n    <documentation lang=\"en\" purpose=\"definition\">\n      Name of the algorithm that should be used to decompress objects, or \"none\" if they\n      are stored in plain.\n    </documentation>\n    <restriction>\n      <enum value=\"none\" label=\"no compression\"/>\n      <enum value=\"zstd\" label=\"zstd (at least one frame)\"/>\n      <enum value=\"zstd.dict\" label=\"zstd (at least one frame) using a pre-trained dictionary provided in CompressionData\"/>\n    </restriction>\n  </element>\n\n  <element name=\"CompressionData\" path=\"\\Mosaic\\ContainerMetaData\\CompressionData\" id=\"0x5003\" type=\"binary\" minOccurs=\"0\" maxOccurs=\"1\">\n    <documentation lang=\"en\" purpose=\"definition\">\n      Decompression-specific data (for example, a dictionary).\n    </documentation>\n  </element>\n\n  <element name=\"Comment\" path=\"\\Mosaic\\ContainerMetaData\\Comment\" id=\"0x5004\" type=\"utf-8\" minOccurs=\"0\">\n    <documentation lang=\"en\" purpose=\"definition\">\n      An arbitrary-length presentation of the file. This is intended for curated archive extracts.\n      Note that a file can contain more than one comment element: this can be useful to\n      separate different documents presenting the file. For example we advise to attach\n      this XML to MOSAIC files intended for publication.\n    </documentation>\n  </element>\n\n  <element name=\"EndOfTilesOffset\" path=\"\\Mosaic\\ContainerMetaData\\EndOfTilesOffset\" id=\"0x5099\" type=\"uinteger\" minOccurs=\"1\" maxOccurs=\"1\">\n    <documentation lang=\"en\" purpose=\"definition\">\n      Offset (number of bytes from the beginning of the file) of the first top element after `ContainerMetaData` that is not a `Tile`. This allows random-access-oriented readers to skip directly to indexes.\n    </documentation>\n  </element>\n\n  <!-- ############################## Tile elements ############################## -->\n\n  <element name=\"Tile\" path=\"\\Mosaic\\Tile\" id=\"0x1E535748\" type=\"master\" minOccurs=\"1\">\n    <documentation lang=\"en\" purpose=\"definition\">\n      Objects should be dispatched in smaller tile and each tile should contain a CRC32\n      element. In case of data corruption, this granularity will be easier to recover.\n      We suggest to avoid tiles bigger than 32MB.\n      A tile should either contain multiple Object element, or only one Objects element\n      that compresses objects together according to what's described in\n      CompressionMethod.\n    </documentation>\n  </element>\n\n  <element name=\"Object\" path=\"\\Mosaic\\Tile\\Object\" id=\"0xF0\" type=\"binary\" minOccurs=\"0\">\n    <documentation lang=\"en\" purpose=\"definition\">\n      A single object, compressed according to CompressionMethod.\n    </documentation>\n  </element>\n\n  <!-- ############################### Index element ############################### -->\n\n  <element name=\"Index\" path=\"\\Mosaic\\Index\" id=\"0x1F535748\" type=\"master\">\n    <documentation lang=\"en\" purpose=\"definition\">\n      Index for fast lookup of objects.\n    </documentation>\n  </element>\n\n  <element name=\"IdxDescription\" path=\"\\Mosaic\\Index\\IdxDescription\" id=\"0x6001\" type=\"utf-8\" minOccurs=\"1\" maxOccurs=\"1\">\n    <documentation lang=\"en\" purpose=\"definition\">\n      Description of this index' key semantics and its map format, including a pURL and a SWHID of the decoder algorithm and maybe hints on the class to use and its parameters, if needed.\n    </documentation>\n    <restriction>\n      <enum value=\"key:sha1 pkg:cargo/ph@0.10.0 swh:1:rev:dd0d8a4b1cc7c940c5dbad3cf246a4584bfbb134 ph::fmph::GOFunction\" label=\"Key is object's SHA1 (20-bytes array), Map is an FMPHGO MPH\"/>\n      <enum value=\"key:sha1_git pkg:cargo/ph@0.10.0 swh:1:rev:dd0d8a4b1cc7c940c5dbad3cf246a4584bfbb134 ph::fmph::GOFunction\" label=\"Key is the SHA1 of the object prefixed as in git (20-bytes array), Map is an FMPHGO MPH\"/>\n      <enum value=\"key:sha256 pkg:cargo/ph@0.10.0 swh:1:rev:dd0d8a4b1cc7c940c5dbad3cf246a4584bfbb134\" label=\"Key is object's SHA256(32-bytes array), Map is an FMPHGO MPH\"/>\n      <enum value=\"key:blake2s256 pkg:cargo/ph@0.10.0 swh:1:rev:dd0d8a4b1cc7c940c5dbad3cf246a4584bfbb134 ph::fmph::GOFunction\" label=\"Key is object's blake2s256 checksum (32-bytes array), Map is an FMPHGO MPH\"/>\n    </restriction>\n  </element>\n\n  <element name=\"IdxUnrolled\" path=\"\\Mosaic\\Index\\IdxUnrolled\" id=\"0x6002\" type=\"master\" maxOccurs=\"1\">\n    <documentation lang=\"en\" purpose=\"definition\">\n      Unrolled index entries: all `(Key, Offset)` pairs present in the document. Order should match how `Map` places keys.\n    </documentation>\n  </element>\n\n  <element name=\"Key\" path=\"\\Mosaic\\Index\\IdxUnrolled\\Key\" id=\"0xA0\" type=\"binary\" minOccurs=\"1\">\n    <documentation lang=\"en\" purpose=\"definition\">\n      Key for an index entry. All keys in a given `Index` should have the same size.\n    </documentation>\n  </element>\n\n  <element name=\"Offset\" path=\"\\Mosaic\\Index\\IdxUnrolled\\Offset\" id=\"0xA1\" type=\"uinteger\">\n    <documentation lang=\"en\" purpose=\"definition\">\n      Offset in file for an index entry. All offset in a given `Index` entries should\n      have the same size.\n\n      When using `Object` (individual compression), an object's offset is the distance\n      in bytes between the start of the file and the start of the `Object` tag.\n      When using `Objects` (multi-objects compression), an offset should combine the\n      distance in bytes between the start of the file and the start of the\n      `Objects` tag with the rank (or similar) of the object in decompressed data.\n      `IdxDescription` can provide precisions.\n    </documentation>\n  </element>\n\n  <element name=\"GoToConflicts\" path=\"\\Mosaic\\Index\\IdxUnrolled\\GoToConflicts\" id=\"0xA2\" type=\"binary\" length=\"0\">\n    <documentation lang=\"en\" purpose=\"definition\">\n      This element should replace an `Offset` when an key is associated to more than one\n      object, to notify readers they should find all possible offsets in a `Conflict` element.\n\n      This element does not carry any data, so its length must be zero. Because\n      key-offset pairs below `IdxUnrolled` must have the same length, writers should\n      append a void element of the correct length after `GoToConflicts`.\n    </documentation>\n  </element>\n\n  <element name=\"IdxUnrolledEntrySize\" path=\"\\Mosaic\\Index\\IdxUnrolledEntrySize\" id=\"0x6003\" type=\"uinteger\" maxOccurs=\"1\">\n    <documentation lang=\"en\" purpose=\"definition\">\n      If the mapping technique assumes that index entries have a fixed size, this size\n      should be defined here (in bytes, including EBML wrappers).\n    </documentation>\n  </element>\n\n  <element name=\"MapContainer\" path=\"\\Mosaic\\Index\\MapContainer\" id=\"0x6004\" type=\"master\" maxOccurs=\"1\">\n    <documentation lang=\"en\" purpose=\"definition\">\n      This wrapper element allow us to put a CRC32 before the serialized `Map`. Readers\n      should check that `Map`'s content matches its checksum before deserializing it.\n    </documentation>\n  </element>\n\n  <element name=\"Map\" path=\"\\Mosaic\\Index\\MapContainer\\Map\" id=\"0x6005\" type=\"binary\" minOccurs=\"1\" maxOccurs=\"1\">\n    <documentation lang=\"en\" purpose=\"definition\">\n      An efficient mapping technique of keys to their position in the index or in payload.\n      We prepare for two techniques. First, minimal perfect hashes that map a key to\n      their rank in IdxUnrolled (which can be transposed to an offset thanks to\n      IdxUnrolledEntrySize). Second, static functions that map directly a key to its\n      offset in Payload.\n    </documentation>\n  </element>\n\n  <element name=\"Conflicts\" path=\"\\Mosaic\\Index\\Conflicts\" id=\"0x6010\" type=\"master\" minOccurs=\"0\">\n    <documentation lang=\"en\" purpose=\"definition\">\n      This element enumerates key conflicts, if any.\n    </documentation>\n  </element>\n\n  <element name=\"Conflict\" path=\"\\Mosaic\\Index\\Conflicts\\Conflict\" id=\"0x6011\" type=\"master\" minOccurs=\"1\">\n    <documentation lang=\"en\" purpose=\"definition\">\n      A single key conflict.\n    </documentation>\n  </element>\n\n  <element name=\"ConflictingKey\" path=\"\\Mosaic\\Index\\Conflicts\\Conflict\\ConflictingKey\" id=\"0x6012\" type=\"binary\" minOccurs=\"1\" maxOccurs=\"1\">\n    <documentation lang=\"en\" purpose=\"definition\">\n      The conflicting key.\n    </documentation>\n  </element>\n\n  <element name=\"ConflictingOffset\" path=\"\\Mosaic\\Index\\Conflicts\\Conflict\\ConflictingOffset\" id=\"0x6013\" type=\"uinteger\" minOccurs=\"2\">\n    <documentation lang=\"en\" purpose=\"definition\">\n      One of the possible offsets for the conflicting key.\n    </documentation>\n  </element>\n\n</EBMLSchema>\n" 0x6a-0x280d (10147)
+0x00070|76 65 72 73 69 6f 6e 3d 22 31 2e 30 22 20 65 6e|version="1.0" en|
+*      |until 0x280c.7 (10147)                         |                |
+       |                                               |                |    tile[0:7]: 0x280d-0x3006e (186465)
+       |                                               |                |      [0]{}: tile 0x280d-0xa2ce (31425)
+0x02800|                                       1e 53 57|             .SW|        id: "tile" (0x1e535748) (Objects should be dispatched in smaller tile and each tile should contain a CRC32 element) 0x280d-0x2811 (4)
+0x02810|48                                             |H               |
+       |                                               |                |        type: "master"
+0x02810|   20 7a ba                                    |  z.            |        size: 31418 0x2811-0x2814 (3)
+       |                                               |                |        crc32{}: 0x2814-0x281a (6)
+0x02810|            bf                                 |    .           |          id: "crc32" (0xbf) 0x2814-0x2815 (1)
+       |                                               |                |          type: "binary"
+0x02810|               84                              |     .          |          size: 4 0x2815-0x2816 (1)
+0x02810|                  61 48 a6 c6                  |      aH..      |          value: raw bits 0x2816-0x281a (4)
+       |                                               |                |        object[0:9]: 0x281a-0xa2ce (31412)
+       |                                               |                |          [0]{}: object 0x281a-0x2eaf (1685)
+0x02810|                              f0               |          .     |            id: "object" (0xf0) (A single object) 0x281a-0x281b (1)
+       |                                               |                |            type: "binary"
+0x02810|                                 46 92         |           F.   |            size: 1682 0x281b-0x281d (2)
+0x02810|                                       2f 2f 20|             // |            value: raw bits 0x281d-0x2eaf (1682)
+0x02820|43 6f 70 79 72 69 67 68 74 20 28 43 29 20 32 30|Copyright (C) 20|
+*      |until 0x2eae.7 (1682)                          |                |
+       |                                               |                |          [1]{}: object 0x2eaf-0x3085 (470)
+0x02ea0|                                             f0|               .|            id: "object" (0xf0) (A single object) 0x2eaf-0x2eb0 (1)
+       |                                               |                |            type: "binary"
+0x02eb0|41 d3                                          |A.              |            size: 467 0x2eb0-0x2eb2 (2)
+0x02eb0|      2f 2f 20 43 6f 70 79 72 69 67 68 74 20 28|  // Copyright (|            value: raw bits 0x2eb2-0x3085 (467)
+0x02ec0|43 29 20 32 30 32 36 20 20 54 68 65 20 53 6f 66|C) 2026  The Sof|
+*      |until 0x3084.7 (467)                           |                |
+       |                                               |                |          [2]{}: object 0x3085-0x321e (409)
+0x03080|               f0                              |     .          |            id: "object" (0xf0) (A single object) 0x3085-0x3086 (1)
+       |                                               |                |            type: "binary"
+0x03080|                  41 96                        |      A.        |            size: 406 0x3086-0x3088 (2)
+0x03080|                        2f 2f 20 43 6f 70 79 72|        // Copyr|            value: raw bits 0x3088-0x321e (406)
+0x03090|69 67 68 74 20 28 43 29 20 32 30 32 36 20 20 54|ight (C) 2026  T|
+*      |until 0x321d.7 (406)                           |                |
+       |                                               |                |          [3]{}: object 0x321e-0x3d2c (2830)
+0x03210|                                          f0   |              . |            id: "object" (0xf0) (A single object) 0x321e-0x321f (1)
+       |                                               |                |            type: "binary"
+0x03210|                                             4b|               K|            size: 2827 0x321f-0x3221 (2)
+0x03220|0b                                             |.               |
+0x03220|   2f 2f 20 43 6f 70 79 72 69 67 68 74 20 28 43| // Copyright (C|            value: raw bits 0x3221-0x3d2c (2827)
+0x03230|29 20 32 30 32 36 20 20 54 68 65 20 53 6f 66 74|) 2026  The Soft|
+*      |until 0x3d2b.7 (2827)                          |                |
+       |                                               |                |          [4]{}: object 0x3d2c-0x4afe (3538)
+0x03d20|                                    f0         |            .   |            id: "object" (0xf0) (A single object) 0x3d2c-0x3d2d (1)
+       |                                               |                |            type: "binary"
+0x03d20|                                       4d cf   |             M. |            size: 3535 0x3d2d-0x3d2f (2)
+0x03d20|                                             2f|               /|            value: raw bits 0x3d2f-0x4afe (3535)
+0x03d30|2f 20 43 6f 70 79 72 69 67 68 74 20 28 43 29 20|/ Copyright (C) |
+*      |until 0x4afd.7 (3535)                          |                |
+       |                                               |                |          [5]{}: object 0x4afe-0x54ea (2540)
+0x04af0|                                          f0   |              . |            id: "object" (0xf0) (A single object) 0x4afe-0x4aff (1)
+       |                                               |                |            type: "binary"
+0x04af0|                                             49|               I|            size: 2537 0x4aff-0x4b01 (2)
+0x04b00|e9                                             |.               |
+0x04b00|   2f 2f 20 43 6f 70 79 72 69 67 68 74 20 28 43| // Copyright (C|            value: raw bits 0x4b01-0x54ea (2537)
+0x04b10|29 20 32 30 32 36 20 20 54 68 65 20 53 6f 66 74|) 2026  The Soft|
+*      |until 0x54e9.7 (2537)                          |                |
+       |                                               |                |          [6]{}: object 0x54ea-0x5b93 (1705)
+0x054e0|                              f0               |          .     |            id: "object" (0xf0) (A single object) 0x54ea-0x54eb (1)
+       |                                               |                |            type: "binary"
+0x054e0|                                 46 a6         |           F.   |            size: 1702 0x54eb-0x54ed (2)
+0x054e0|                                       2f 2f 20|             // |            value: raw bits 0x54ed-0x5b93 (1702)
+0x054f0|43 6f 70 79 72 69 67 68 74 20 28 43 29 20 32 30|Copyright (C) 20|
+*      |until 0x5b92.7 (1702)                          |                |
+       |                                               |                |          [7]{}: object 0x5b93-0x88dc (11593)
+0x05b90|         f0                                    |   .            |            id: "object" (0xf0) (A single object) 0x5b93-0x5b94 (1)
+       |                                               |                |            type: "binary"
+0x05b90|            6d 46                              |    mF          |            size: 11590 0x5b94-0x5b96 (2)
+0x05b90|                  2f 2f 20 43 6f 70 79 72 69 67|      // Copyrig|            value: raw bits 0x5b96-0x88dc (11590)
+0x05ba0|68 74 20 28 43 29 20 32 30 32 36 20 20 54 68 65|ht (C) 2026  The|
+*      |until 0x88db.7 (11590)                         |                |
+       |                                               |                |          [8]{}: object 0x88dc-0xa2ce (6642)
+0x088d0|                                    f0         |            .   |            id: "object" (0xf0) (A single object) 0x88dc-0x88dd (1)
+       |                                               |                |            type: "binary"
+0x088d0|                                       59 ef   |             Y. |            size: 6639 0x88dd-0x88df (2)
+0x088d0|                                             2f|               /|            value: raw bits 0x88df-0xa2ce (6639)
+0x088e0|2f 20 43 6f 70 79 72 69 67 68 74 20 28 43 29 20|/ Copyright (C) |
+*      |until 0xa2cd.7 (6639)                          |                |
+       |                                               |                |      [1]{}: tile 0xa2ce-0xcabd (10223)
+0x0a2c0|                                          1e 53|              .S|        id: "tile" (0x1e535748) (Objects should be dispatched in smaller tile and each tile should contain a CRC32 element) 0xa2ce-0xa2d2 (4)
+0x0a2d0|57 48                                          |WH              |
+       |                                               |                |        type: "master"
+0x0a2d0|      20 27 e8                                 |   '.           |        size: 10216 0xa2d2-0xa2d5 (3)
+       |                                               |                |        crc32{}: 0xa2d5-0xa2db (6)
+0x0a2d0|               bf                              |     .          |          id: "crc32" (0xbf) 0xa2d5-0xa2d6 (1)
+       |                                               |                |          type: "binary"
+0x0a2d0|                  84                           |      .         |          size: 4 0xa2d6-0xa2d7 (1)
+0x0a2d0|                     75 63 75 f8               |       ucu.     |          value: raw bits 0xa2d7-0xa2db (4)
+       |                                               |                |        object[0:1]: 0xa2db-0xcabd (10210)
+       |                                               |                |          [0]{}: object 0xa2db-0xcabd (10210)
+0x0a2d0|                                 f0            |           .    |            id: "object" (0xf0) (A single object) 0xa2db-0xa2dc (1)
+       |                                               |                |            type: "binary"
+0x0a2d0|                                    67 df      |            g.  |            size: 10207 0xa2dc-0xa2de (2)
+0x0a2d0|                                          2f 2f|              //|            value: raw bits 0xa2de-0xcabd (10207)
+0x0a2e0|20 43 6f 70 79 72 69 67 68 74 20 28 43 29 20 32| Copyright (C) 2|
+*      |until 0xcabc.7 (10207)                         |                |
+       |                                               |                |      [2]{}: tile 0xcabd-0x13d89 (29388)
+0x0cab0|                                       1e 53 57|             .SW|        id: "tile" (0x1e535748) (Objects should be dispatched in smaller tile and each tile should contain a CRC32 element) 0xcabd-0xcac1 (4)
+0x0cac0|48                                             |H               |
+       |                                               |                |        type: "master"
+0x0cac0|   20 72 c5                                    |  r.            |        size: 29381 0xcac1-0xcac4 (3)
+       |                                               |                |        crc32{}: 0xcac4-0xcaca (6)
+0x0cac0|            bf                                 |    .           |          id: "crc32" (0xbf) 0xcac4-0xcac5 (1)
+       |                                               |                |          type: "binary"
+0x0cac0|               84                              |     .          |          size: 4 0xcac5-0xcac6 (1)
+0x0cac0|                  ee 61 67 de                  |      .ag.      |          value: raw bits 0xcac6-0xcaca (4)
+       |                                               |                |        object[0:1]: 0xcaca-0x13d89 (29375)
+       |                                               |                |          [0]{}: object 0xcaca-0x13d89 (29375)
+0x0cac0|                              f0               |          .     |            id: "object" (0xf0) (A single object) 0xcaca-0xcacb (1)
+       |                                               |                |            type: "binary"
+0x0cac0|                                 20 72 bb      |            r.  |            size: 29371 0xcacb-0xcace (3)
+0x0cac0|                                          2f 2f|              //|            value: raw bits 0xcace-0x13d89 (29371)
+0x0cad0|20 43 6f 70 79 72 69 67 68 74 20 28 43 29 20 32| Copyright (C) 2|
+*      |until 0x13d88.7 (29371)                        |                |
+       |                                               |                |      [3]{}: tile 0x13d89-0x1b1d5 (29772)
+0x13d80|                           1e 53 57 48         |         .SWH   |        id: "tile" (0x1e535748) (Objects should be dispatched in smaller tile and each tile should contain a CRC32 element) 0x13d89-0x13d8d (4)
+       |                                               |                |        type: "master"
+0x13d80|                                       20 74 45|              tE|        size: 29765 0x13d8d-0x13d90 (3)
+       |                                               |                |        crc32{}: 0x13d90-0x13d96 (6)
+0x13d90|bf                                             |.               |          id: "crc32" (0xbf) 0x13d90-0x13d91 (1)
+       |                                               |                |          type: "binary"
+0x13d90|   84                                          | .              |          size: 4 0x13d91-0x13d92 (1)
+0x13d90|      73 46 1e 1c                              |  sF..          |          value: raw bits 0x13d92-0x13d96 (4)
+       |                                               |                |        object[0:3]: 0x13d96-0x1b1d5 (29759)
+       |                                               |                |          [0]{}: object 0x13d96-0x14c46 (3760)
+0x13d90|                  f0                           |      .         |            id: "object" (0xf0) (A single object) 0x13d96-0x13d97 (1)
+       |                                               |                |            type: "binary"
+0x13d90|                     4e ad                     |       N.       |            size: 3757 0x13d97-0x13d99 (2)
+0x13d90|                           2f 2f 20 43 6f 70 79|         // Copy|            value: raw bits 0x13d99-0x14c46 (3757)
+0x13da0|72 69 67 68 74 20 28 43 29 20 32 30 32 36 20 20|right (C) 2026  |
+*      |until 0x14c45.7 (3757)                         |                |
+       |                                               |                |          [1]{}: object 0x14c46-0x16c96 (8272)
+0x14c40|                  f0                           |      .         |            id: "object" (0xf0) (A single object) 0x14c46-0x14c47 (1)
+       |                                               |                |            type: "binary"
+0x14c40|                     60 4d                     |       `M       |            size: 8269 0x14c47-0x14c49 (2)
+0x14c40|                           2f 2f 20 43 6f 70 79|         // Copy|            value: raw bits 0x14c49-0x16c96 (8269)
+0x14c50|72 69 67 68 74 20 28 43 29 20 32 30 32 36 20 20|right (C) 2026  |
+*      |until 0x16c95.7 (8269)                         |                |
+       |                                               |                |          [2]{}: object 0x16c96-0x1b1d5 (17727)
+0x16c90|                  f0                           |      .         |            id: "object" (0xf0) (A single object) 0x16c96-0x16c97 (1)
+       |                                               |                |            type: "binary"
+0x16c90|                     20 45 3b                  |        E;      |            size: 17723 0x16c97-0x16c9a (3)
+0x16c90|                              2f 2f 20 43 6f 70|          // Cop|            value: raw bits 0x16c9a-0x1b1d5 (17723)
+0x16ca0|79 72 69 67 68 74 20 28 43 29 20 32 30 32 36 20|yright (C) 2026 |
+*      |until 0x1b1d4.7 (17723)                        |                |
+       |                                               |                |      [4]{}: tile 0x1b1d5-0x22226 (28753)
+0x1b1d0|               1e 53 57 48                     |     .SWH       |        id: "tile" (0x1e535748) (Objects should be dispatched in smaller tile and each tile should contain a CRC32 element) 0x1b1d5-0x1b1d9 (4)
+       |                                               |                |        type: "master"
+0x1b1d0|                           20 70 4a            |          pJ    |        size: 28746 0x1b1d9-0x1b1dc (3)
+       |                                               |                |        crc32{}: 0x1b1dc-0x1b1e2 (6)
+0x1b1d0|                                    bf         |            .   |          id: "crc32" (0xbf) 0x1b1dc-0x1b1dd (1)
+       |                                               |                |          type: "binary"
+0x1b1d0|                                       84      |             .  |          size: 4 0x1b1dd-0x1b1de (1)
+0x1b1d0|                                          1c 77|              .w|          value: raw bits 0x1b1de-0x1b1e2 (4)
+0x1b1e0|75 55                                          |uU              |
+       |                                               |                |        object[0:1]: 0x1b1e2-0x22226 (28740)
+       |                                               |                |          [0]{}: object 0x1b1e2-0x22226 (28740)
+0x1b1e0|      f0                                       |  .             |            id: "object" (0xf0) (A single object) 0x1b1e2-0x1b1e3 (1)
+       |                                               |                |            type: "binary"
+0x1b1e0|         20 70 40                              |    p@          |            size: 28736 0x1b1e3-0x1b1e6 (3)
+0x1b1e0|                  2f 2f 20 43 6f 70 79 72 69 67|      // Copyrig|            value: raw bits 0x1b1e6-0x22226 (28736)
+0x1b1f0|68 74 20 28 43 29 20 32 30 32 36 20 20 54 68 65|ht (C) 2026  The|
+*      |until 0x22225.7 (28736)                        |                |
+       |                                               |                |      [5]{}: tile 0x22226-0x288c7 (26273)
+0x22220|                  1e 53 57 48                  |      .SWH      |        id: "tile" (0x1e535748) (Objects should be dispatched in smaller tile and each tile should contain a CRC32 element) 0x22226-0x2222a (4)
+       |                                               |                |        type: "master"
+0x22220|                              20 66 9a         |           f.   |        size: 26266 0x2222a-0x2222d (3)
+       |                                               |                |        crc32{}: 0x2222d-0x22233 (6)
+0x22220|                                       bf      |             .  |          id: "crc32" (0xbf) 0x2222d-0x2222e (1)
+       |                                               |                |          type: "binary"
+0x22220|                                          84   |              . |          size: 4 0x2222e-0x2222f (1)
+0x22220|                                             a8|               .|          value: raw bits 0x2222f-0x22233 (4)
+0x22230|3f 05 01                                       |?..             |
+       |                                               |                |        object[0:2]: 0x22233-0x288c7 (26260)
+       |                                               |                |          [0]{}: object 0x22233-0x26c46 (18963)
+0x22230|         f0                                    |   .            |            id: "object" (0xf0) (A single object) 0x22233-0x22234 (1)
+       |                                               |                |            type: "binary"
+0x22230|            20 4a 0f                           |     J.         |            size: 18959 0x22234-0x22237 (3)
+0x22230|                     2f 2f 20 43 6f 70 79 72 69|       // Copyri|            value: raw bits 0x22237-0x26c46 (18959)
+0x22240|67 68 74 20 28 43 29 20 32 30 32 36 20 20 54 68|ght (C) 2026  Th|
+*      |until 0x26c45.7 (18959)                        |                |
+       |                                               |                |          [1]{}: object 0x26c46-0x288c7 (7297)
+0x26c40|                  f0                           |      .         |            id: "object" (0xf0) (A single object) 0x26c46-0x26c47 (1)
+       |                                               |                |            type: "binary"
+0x26c40|                     5c 7e                     |       \~       |            size: 7294 0x26c47-0x26c49 (2)
+0x26c40|                           2f 2f 20 43 6f 70 79|         // Copy|            value: raw bits 0x26c49-0x288c7 (7294)
+0x26c50|72 69 67 68 74 20 28 43 29 20 32 30 32 36 20 20|right (C) 2026  |
+*      |until 0x288c6.7 (7294)                         |                |
+       |                                               |                |      [6]{}: tile 0x288c7-0x3006e (30631)
+0x288c0|                     1e 53 57 48               |       .SWH     |        id: "tile" (0x1e535748) (Objects should be dispatched in smaller tile and each tile should contain a CRC32 element) 0x288c7-0x288cb (4)
+       |                                               |                |        type: "master"
+0x288c0|                                 20 77 a0      |            w.  |        size: 30624 0x288cb-0x288ce (3)
+       |                                               |                |        crc32{}: 0x288ce-0x288d4 (6)
+0x288c0|                                          bf   |              . |          id: "crc32" (0xbf) 0x288ce-0x288cf (1)
+       |                                               |                |          type: "binary"
+0x288c0|                                             84|               .|          size: 4 0x288cf-0x288d0 (1)
+0x288d0|0f 0c 41 ba                                    |..A.            |          value: raw bits 0x288d0-0x288d4 (4)
+       |                                               |                |        object[0:4]: 0x288d4-0x3006e (30618)
+       |                                               |                |          [0]{}: object 0x288d4-0x2d955 (20609)
+0x288d0|            f0                                 |    .           |            id: "object" (0xf0) (A single object) 0x288d4-0x288d5 (1)
+       |                                               |                |            type: "binary"
+0x288d0|               20 50 7d                        |      P}        |            size: 20605 0x288d5-0x288d8 (3)
+0x288d0|                        2f 2f 20 43 6f 70 79 72|        // Copyr|            value: raw bits 0x288d8-0x2d955 (20605)
+0x288e0|69 67 68 74 20 28 43 29 20 32 30 32 36 20 20 54|ight (C) 2026  T|
+*      |until 0x2d954.7 (20605)                        |                |
+       |                                               |                |          [1]{}: object 0x2d955-0x2ef14 (5567)
+0x2d950|               f0                              |     .          |            id: "object" (0xf0) (A single object) 0x2d955-0x2d956 (1)
+       |                                               |                |            type: "binary"
+0x2d950|                  55 bc                        |      U.        |            size: 5564 0x2d956-0x2d958 (2)
+0x2d950|                        2f 2f 20 43 6f 70 79 72|        // Copyr|            value: raw bits 0x2d958-0x2ef14 (5564)
+0x2d960|69 67 68 74 20 28 43 29 20 32 30 32 36 20 20 54|ight (C) 2026  T|
+*      |until 0x2ef13.7 (5564)                         |                |
+       |                                               |                |          [2]{}: object 0x2ef14-0x2fcb1 (3485)
+0x2ef10|            f0                                 |    .           |            id: "object" (0xf0) (A single object) 0x2ef14-0x2ef15 (1)
+       |                                               |                |            type: "binary"
+0x2ef10|               4d 9a                           |     M.         |            size: 3482 0x2ef15-0x2ef17 (2)
+0x2ef10|                     73 77 68 2d 6d 6f 73 61 69|       swh-mosai|            value: raw bits 0x2ef17-0x2fcb1 (3482)
+0x2ef20|63 3a 20 4d 4f 64 75 6c 61 72 20 53 74 6f 72 61|c: MOdular Stora|
+*      |until 0x2fcb0.7 (3482)                         |                |
+       |                                               |                |          [3]{}: object 0x2fcb1-0x3006e (957)
+0x2fcb0|   f0                                          | .              |            id: "object" (0xf0) (A single object) 0x2fcb1-0x2fcb2 (1)
+       |                                               |                |            type: "binary"
+0x2fcb0|      43 ba                                    |  C.            |            size: 954 0x2fcb2-0x2fcb4 (2)
+0x2fcb0|            5b 70 61 63 6b 61 67 65 5d 0a 6e 61|    [package].na|            value: raw bits 0x2fcb4-0x3006e (954)
+0x2fcc0|6d 65 20 3d 20 22 73 77 68 2d 6d 6f 73 61 69 63|me = "swh-mosaic|
+*      |until 0x3006d.7 (954)                          |                |
+       |                                               |                |    index[0:3]: 0x3006e-0x309ef (2433)
+       |                                               |                |      [0]{}: index 0x3006e-0x30340 (722)
+0x30060|                                          1f 53|              .S|        id: "index" (0x1f535748) (Index for fast lookup of objects) 0x3006e-0x30072 (4)
+0x30070|57 48                                          |WH              |
+       |                                               |                |        type: "master"
+0x30070|      42 cc                                    |  B.            |        size: 716 0x30072-0x30074 (2)
+       |                                               |                |        crc32{}: 0x30074-0x3007a (6)
+0x30070|            bf                                 |    .           |          id: "crc32" (0xbf) 0x30074-0x30075 (1)
+       |                                               |                |          type: "binary"
+0x30070|               84                              |     .          |          size: 4 0x30075-0x30076 (1)
+0x30070|                  db ee 7f f9                  |      ....      |          value: raw bits 0x30076-0x3007a (4)
+       |                                               |                |        idx_description{}: 0x3007a-0x300e1 (103)
+0x30070|                              60 01            |          `.    |          id: "idx_description" (0x6001) (Description of this index' key semantics and its map format) 0x3007a-0x3007c (2)
+       |                                               |                |          type: "string"
+0x30070|                                    e4         |            .   |          size: 100 0x3007c-0x3007d (1)
+0x30070|                                       6b 65 79|             key|          value: "key:sha1 pkg:cargo/ph@0.10.0 swh:1:dir:795095368f036f42adebcb75782a61494940e9b8 ph::fmph::GOFunction" 0x3007d-0x300e1 (100)
+0x30080|3a 73 68 61 31 20 70 6b 67 3a 63 61 72 67 6f 2f|:sha1 pkg:cargo/|
+*      |until 0x300e0.7 (100)                          |                |
+       |                                               |                |        idx_unrolled{}: 0x300e1-0x3031c (571)
+0x300e0|   60 02                                       | `.             |          id: "idx_unrolled" (0x6002) (Unrolled index entries: all (Key) 0x300e1-0x300e3 (2)
+       |                                               |                |          type: "master"
+0x300e0|         42 37                                 |   B7           |          size: 567 0x300e3-0x300e5 (2)
+       |                                               |                |          elements[0:42]: 0x300e5-0x3031c (567)
+       |                                               |                |            [0]{}: key 0x300e5-0x300fb (22)
+0x300e0|               a0                              |     .          |              id: "key" (0xa0) (Key for an index entry) 0x300e5-0x300e6 (1)
+       |                                               |                |              type: "binary"
+0x300e0|                  94                           |      .         |              size: 20 0x300e6-0x300e7 (1)
+0x300e0|                     01 ee 36 7f 06 5c 34 90 85|       ..6..\4..|              value: raw bits 0x300e7-0x300fb (20)
+0x300f0|0b 50 44 aa 97 48 16 a0 9c 55 6d               |.PD..H...Um     |
+       |                                               |                |            [1]{}: offset 0x300fb-0x30100 (5)
+0x300f0|                                 a1            |           .    |              id: "offset" (0xa1) (Offset in file for an index entry) 0x300fb-0x300fc (1)
+       |                                               |                |              type: "uinteger"
+0x300f0|                                    83         |            .   |              size: 3 0x300fc-0x300fd (1)
+0x300f0|                                       02 22 33|             ."3|              value: 139827 0x300fd-0x30100 (3)
+       |                                               |                |            [2]{}: key 0x30100-0x30116 (22)
+0x30100|a0                                             |.               |              id: "key" (0xa0) (Key for an index entry) 0x30100-0x30101 (1)
+       |                                               |                |              type: "binary"
+0x30100|   94                                          | .              |              size: 20 0x30101-0x30102 (1)
+0x30100|      bf 54 3a 84 1d f3 20 67 6b f4 85 79 59 e9|  .T:... gk..yY.|              value: raw bits 0x30102-0x30116 (20)
+0x30110|34 c2 d5 ea e3 66                              |4....f          |
+       |                                               |                |            [3]{}: offset 0x30116-0x3011b (5)
+0x30110|                  a1                           |      .         |              id: "offset" (0xa1) (Offset in file for an index entry) 0x30116-0x30117 (1)
+       |                                               |                |              type: "uinteger"
+0x30110|                     83                        |       .        |              size: 3 0x30117-0x30118 (1)
+0x30110|                        01 3d 96               |        .=.     |              value: 81302 0x30118-0x3011b (3)
+       |                                               |                |            [4]{}: key 0x3011b-0x30131 (22)
+0x30110|                                 a0            |           .    |              id: "key" (0xa0) (Key for an index entry) 0x3011b-0x3011c (1)
+       |                                               |                |              type: "binary"
+0x30110|                                    94         |            .   |              size: 20 0x3011c-0x3011d (1)
+0x30110|                                       4a 08 f8|             J..|              value: raw bits 0x3011d-0x30131 (20)
+0x30120|51 0c b7 86 50 d2 e4 c7 79 a8 03 e4 c6 3d 10 86|Q...P...y....=..|
+0x30130|87                                             |.               |
+       |                                               |                |            [5]{}: offset 0x30131-0x30136 (5)
+0x30130|   a1                                          | .              |              id: "offset" (0xa1) (Offset in file for an index entry) 0x30131-0x30132 (1)
+       |                                               |                |              type: "uinteger"
+0x30130|      83                                       |  .             |              size: 3 0x30132-0x30133 (1)
+0x30130|         02 fc b1                              |   ...          |              value: 195761 0x30133-0x30136 (3)
+       |                                               |                |            [6]{}: key 0x30136-0x3014c (22)
+0x30130|                  a0                           |      .         |              id: "key" (0xa0) (Key for an index entry) 0x30136-0x30137 (1)
+       |                                               |                |              type: "binary"
+0x30130|                     94                        |       .        |              size: 20 0x30137-0x30138 (1)
+0x30130|                        8d 77 8e 5b 53 19 d6 dd|        .w.[S...|              value: raw bits 0x30138-0x3014c (20)
+0x30140|7e 9b 9b 34 87 99 0d 9c 7c 23 c3 6a            |~..4....|#.j    |
+       |                                               |                |            [7]{}: offset 0x3014c-0x30151 (5)
+0x30140|                                    a1         |            .   |              id: "offset" (0xa1) (Offset in file for an index entry) 0x3014c-0x3014d (1)
+       |                                               |                |              type: "uinteger"
+0x30140|                                       83      |             .  |              size: 3 0x3014d-0x3014e (1)
+0x30140|                                          00 a2|              ..|              value: 41691 0x3014e-0x30151 (3)
+0x30150|db                                             |.               |
+       |                                               |                |            [8]{}: key 0x30151-0x30167 (22)
+0x30150|   a0                                          | .              |              id: "key" (0xa0) (Key for an index entry) 0x30151-0x30152 (1)
+       |                                               |                |              type: "binary"
+0x30150|      94                                       |  .             |              size: 20 0x30152-0x30153 (1)
+0x30150|         0b f8 ca e6 e8 62 dc 7d e8 03 d8 67 53|   .....b.}...gS|              value: raw bits 0x30153-0x30167 (20)
+0x30160|26 80 06 ef a3 fe f4                           |&......         |
+       |                                               |                |            [9]{}: offset 0x30167-0x3016c (5)
+0x30160|                     a1                        |       .        |              id: "offset" (0xa1) (Offset in file for an index entry) 0x30167-0x30168 (1)
+       |                                               |                |              type: "uinteger"
+0x30160|                        83                     |        .       |              size: 3 0x30168-0x30169 (1)
+0x30160|                           01 b1 e2            |         ...    |              value: 111074 0x30169-0x3016c (3)
+       |                                               |                |            [10]{}: key 0x3016c-0x30182 (22)
+0x30160|                                    a0         |            .   |              id: "key" (0xa0) (Key for an index entry) 0x3016c-0x3016d (1)
+       |                                               |                |              type: "binary"
+0x30160|                                       94      |             .  |              size: 20 0x3016d-0x3016e (1)
+0x30160|                                          db a5|              ..|              value: raw bits 0x3016e-0x30182 (20)
+0x30170|dc d5 0b 42 33 6c 63 92 12 11 29 cb 71 35 c4 10|...B3lc...).q5..|
+0x30180|d3 f4                                          |..              |
+       |                                               |                |            [11]{}: offset 0x30182-0x30187 (5)
+0x30180|      a1                                       |  .             |              id: "offset" (0xa1) (Offset in file for an index entry) 0x30182-0x30183 (1)
+       |                                               |                |              type: "uinteger"
+0x30180|         83                                    |   .            |              size: 3 0x30183-0x30184 (1)
+0x30180|            00 2e af                           |    ...         |              value: 11951 0x30184-0x30187 (3)
+       |                                               |                |            [12]{}: key 0x30187-0x3019d (22)
+0x30180|                     a0                        |       .        |              id: "key" (0xa0) (Key for an index entry) 0x30187-0x30188 (1)
+       |                                               |                |              type: "binary"
+0x30180|                        94                     |        .       |              size: 20 0x30188-0x30189 (1)
+0x30180|                           ad 10 53 a7 c3 07 d3|         ..S....|              value: raw bits 0x30189-0x3019d (20)
+0x30190|ca f5 07 18 c1 90 0d 25 94 e3 bc 47 61         |.......%...Ga   |
+       |                                               |                |            [13]{}: offset 0x3019d-0x301a2 (5)
+0x30190|                                       a1      |             .  |              id: "offset" (0xa1) (Offset in file for an index entry) 0x3019d-0x3019e (1)
+       |                                               |                |              type: "uinteger"
+0x30190|                                          83   |              . |              size: 3 0x3019e-0x3019f (1)
+0x30190|                                             00|               .|              value: 12421 0x3019f-0x301a2 (3)
+0x301a0|30 85                                          |0.              |
+       |                                               |                |            [14]{}: key 0x301a2-0x301b8 (22)
+0x301a0|      a0                                       |  .             |              id: "key" (0xa0) (Key for an index entry) 0x301a2-0x301a3 (1)
+       |                                               |                |              type: "binary"
+0x301a0|         94                                    |   .            |              size: 20 0x301a3-0x301a4 (1)
+0x301a0|            bf 89 43 31 47 b4 59 21 b3 d2 e3 39|    ..C1G.Y!...9|              value: raw bits 0x301a4-0x301b8 (20)
+0x301b0|00 98 dc cd 7f 57 43 d7                        |.....WC.        |
+       |                                               |                |            [15]{}: offset 0x301b8-0x301bd (5)
+0x301b0|                        a1                     |        .       |              id: "offset" (0xa1) (Offset in file for an index entry) 0x301b8-0x301b9 (1)
+       |                                               |                |              type: "uinteger"
+0x301b0|                           83                  |         .      |              size: 3 0x301b9-0x301ba (1)
+0x301b0|                              01 4c 46         |          .LF   |              value: 85062 0x301ba-0x301bd (3)
+       |                                               |                |            [16]{}: key 0x301bd-0x301d3 (22)
+0x301b0|                                       a0      |             .  |              id: "key" (0xa0) (Key for an index entry) 0x301bd-0x301be (1)
+       |                                               |                |              type: "binary"
+0x301b0|                                          94   |              . |              size: 20 0x301be-0x301bf (1)
+0x301b0|                                             0f|               .|              value: raw bits 0x301bf-0x301d3 (20)
+0x301c0|39 e4 db 25 2b b1 11 d3 14 2f 59 04 59 39 33 3d|9..%+..../Y.Y93=|
+0x301d0|52 47 1f                                       |RG.             |
+       |                                               |                |            [17]{}: offset 0x301d3-0x301d8 (5)
+0x301d0|         a1                                    |   .            |              id: "offset" (0xa1) (Offset in file for an index entry) 0x301d3-0x301d4 (1)
+       |                                               |                |              type: "uinteger"
+0x301d0|            83                                 |    .           |              size: 3 0x301d4-0x301d5 (1)
+0x301d0|               00 3d 2c                        |     .=,        |              value: 15660 0x301d5-0x301d8 (3)
+       |                                               |                |            [18]{}: key 0x301d8-0x301ee (22)
+0x301d0|                        a0                     |        .       |              id: "key" (0xa0) (Key for an index entry) 0x301d8-0x301d9 (1)
+       |                                               |                |              type: "binary"
+0x301d0|                           94                  |         .      |              size: 20 0x301d9-0x301da (1)
+0x301d0|                              47 a0 56 4a 15 ce|          G.VJ..|              value: raw bits 0x301da-0x301ee (20)
+0x301e0|19 44 1c 05 9a 15 70 47 cf 28 a3 37 af 86      |.D....pG.(.7..  |
+       |                                               |                |            [19]{}: offset 0x301ee-0x301f3 (5)
+0x301e0|                                          a1   |              . |              id: "offset" (0xa1) (Offset in file for an index entry) 0x301ee-0x301ef (1)
+       |                                               |                |              type: "uinteger"
+0x301e0|                                             83|               .|              size: 3 0x301ef-0x301f0 (1)
+0x301f0|02 ef 14                                       |...             |              value: 192276 0x301f0-0x301f3 (3)
+       |                                               |                |            [20]{}: key 0x301f3-0x30209 (22)
+0x301f0|         a0                                    |   .            |              id: "key" (0xa0) (Key for an index entry) 0x301f3-0x301f4 (1)
+       |                                               |                |              type: "binary"
+0x301f0|            94                                 |    .           |              size: 20 0x301f4-0x301f5 (1)
+0x301f0|               bf e9 8a b9 80 7b 70 5e 8b 9c d1|     .....{p^...|              value: raw bits 0x301f5-0x30209 (20)
+0x30200|4a 2b f0 79 e0 fd a2 12 a4                     |J+.y.....       |
+       |                                               |                |            [21]{}: offset 0x30209-0x3020e (5)
+0x30200|                           a1                  |         .      |              id: "offset" (0xa1) (Offset in file for an index entry) 0x30209-0x3020a (1)
+       |                                               |                |              type: "uinteger"
+0x30200|                              83               |          .     |              size: 3 0x3020a-0x3020b (1)
+0x30200|                                 01 6c 96      |           .l.  |              value: 93334 0x3020b-0x3020e (3)
+       |                                               |                |            [22]{}: key 0x3020e-0x30224 (22)
+0x30200|                                          a0   |              . |              id: "key" (0xa0) (Key for an index entry) 0x3020e-0x3020f (1)
+       |                                               |                |              type: "binary"
+0x30200|                                             94|               .|              size: 20 0x3020f-0x30210 (1)
+0x30210|93 09 fd a9 3f dd ed 6a 21 36 f8 90 98 d2 d3 3d|....?..j!6.....=|              value: raw bits 0x30210-0x30224 (20)
+0x30220|41 88 bb 3a                                    |A..:            |
+       |                                               |                |            [23]{}: offset 0x30224-0x30229 (5)
+0x30220|            a1                                 |    .           |              id: "offset" (0xa1) (Offset in file for an index entry) 0x30224-0x30225 (1)
+       |                                               |                |              type: "uinteger"
+0x30220|               83                              |     .          |              size: 3 0x30225-0x30226 (1)
+0x30220|                  00 5b 93                     |      .[.       |              value: 23443 0x30226-0x30229 (3)
+       |                                               |                |            [24]{}: key 0x30229-0x3023f (22)
+0x30220|                           a0                  |         .      |              id: "key" (0xa0) (Key for an index entry) 0x30229-0x3022a (1)
+       |                                               |                |              type: "binary"
+0x30220|                              94               |          .     |              size: 20 0x3022a-0x3022b (1)
+0x30220|                                 24 d9 27 b8 f4|           $.'..|              value: raw bits 0x3022b-0x3023f (20)
+0x30230|27 0b 9c 0f 3e 0c 15 06 f9 65 d5 84 ac 4f c0   |'...>....e...O. |
+       |                                               |                |            [25]{}: offset 0x3023f-0x30244 (5)
+0x30230|                                             a1|               .|              id: "offset" (0xa1) (Offset in file for an index entry) 0x3023f-0x30240 (1)
+       |                                               |                |              type: "uinteger"
+0x30240|83                                             |.               |              size: 3 0x30240-0x30241 (1)
+0x30240|   00 4a fe                                    | .J.            |              value: 19198 0x30241-0x30244 (3)
+       |                                               |                |            [26]{}: key 0x30244-0x3025a (22)
+0x30240|            a0                                 |    .           |              id: "key" (0xa0) (Key for an index entry) 0x30244-0x30245 (1)
+       |                                               |                |              type: "binary"
+0x30240|               94                              |     .          |              size: 20 0x30245-0x30246 (1)
+0x30240|                  d9 82 6e 67 e7 ac 4e 97 52 97|      ..ng..N.R.|              value: raw bits 0x30246-0x3025a (20)
+0x30250|df 7d d1 3e e9 e2 82 51 f6 94                  |.}.>...Q..      |
+       |                                               |                |            [27]{}: offset 0x3025a-0x3025f (5)
+0x30250|                              a1               |          .     |              id: "offset" (0xa1) (Offset in file for an index entry) 0x3025a-0x3025b (1)
+       |                                               |                |              type: "uinteger"
+0x30250|                                 83            |           .    |              size: 3 0x3025b-0x3025c (1)
+0x30250|                                    02 6c 46   |            .lF |              value: 158790 0x3025c-0x3025f (3)
+       |                                               |                |            [28]{}: key 0x3025f-0x30275 (22)
+0x30250|                                             a0|               .|              id: "key" (0xa0) (Key for an index entry) 0x3025f-0x30260 (1)
+       |                                               |                |              type: "binary"
+0x30260|94                                             |.               |              size: 20 0x30260-0x30261 (1)
+0x30260|   eb 2a b8 69 12 18 49 0b 1f fe 30 4b 79 7b 5b| .*.i..I...0Ky{[|              value: raw bits 0x30261-0x30275 (20)
+0x30270|2b 24 48 86 ff                                 |+$H..           |
+       |                                               |                |            [29]{}: offset 0x30275-0x3027a (5)
+0x30270|               a1                              |     .          |              id: "offset" (0xa1) (Offset in file for an index entry) 0x30275-0x30276 (1)
+       |                                               |                |              type: "uinteger"
+0x30270|                  83                           |      .         |              size: 3 0x30276-0x30277 (1)
+0x30270|                     00 54 ea                  |       .T.      |              value: 21738 0x30277-0x3027a (3)
+       |                                               |                |            [30]{}: key 0x3027a-0x30290 (22)
+0x30270|                              a0               |          .     |              id: "key" (0xa0) (Key for an index entry) 0x3027a-0x3027b (1)
+       |                                               |                |              type: "binary"
+0x30270|                                 94            |           .    |              size: 20 0x3027b-0x3027c (1)
+0x30270|                                    2b 9d ff 68|            +..h|              value: raw bits 0x3027c-0x30290 (20)
+0x30280|29 7a 79 5b 8f 44 9d 5c ca 0a ea 87 13 49 c3 f4|)zy[.D.\.....I..|
+       |                                               |                |            [31]{}: offset 0x30290-0x30295 (5)
+0x30290|a1                                             |.               |              id: "offset" (0xa1) (Offset in file for an index entry) 0x30290-0x30291 (1)
+       |                                               |                |              type: "uinteger"
+0x30290|   83                                          | .              |              size: 3 0x30291-0x30292 (1)
+0x30290|      00 ca ca                                 |  ...           |              value: 51914 0x30292-0x30295 (3)
+       |                                               |                |            [32]{}: key 0x30295-0x302ab (22)
+0x30290|               a0                              |     .          |              id: "key" (0xa0) (Key for an index entry) 0x30295-0x30296 (1)
+       |                                               |                |              type: "binary"
+0x30290|                  94                           |      .         |              size: 20 0x30296-0x30297 (1)
+0x30290|                     86 a0 0e 29 7f 2a 75 a1 63|       ...).*u.c|              value: raw bits 0x30297-0x302ab (20)
+0x302a0|dd e4 8d c1 23 e4 43 b7 2e 2d 69               |....#.C..-i     |
+       |                                               |                |            [33]{}: offset 0x302ab-0x302b0 (5)
+0x302a0|                                 a1            |           .    |              id: "offset" (0xa1) (Offset in file for an index entry) 0x302ab-0x302ac (1)
+       |                                               |                |              type: "uinteger"
+0x302a0|                                    83         |            .   |              size: 3 0x302ac-0x302ad (1)
+0x302a0|                                       02 d9 55|             ..U|              value: 186709 0x302ad-0x302b0 (3)
+       |                                               |                |            [34]{}: key 0x302b0-0x302c6 (22)
+0x302b0|a0                                             |.               |              id: "key" (0xa0) (Key for an index entry) 0x302b0-0x302b1 (1)
+       |                                               |                |              type: "binary"
+0x302b0|   94                                          | .              |              size: 20 0x302b1-0x302b2 (1)
+0x302b0|      0f 22 d5 38 09 ad 8c 98 d3 04 48 87 2a 57|  .".8......H.*W|              value: raw bits 0x302b2-0x302c6 (20)
+0x302c0|18 26 a1 cb 59 9f                              |.&..Y.          |
+       |                                               |                |            [35]{}: offset 0x302c6-0x302cb (5)
+0x302c0|                  a1                           |      .         |              id: "offset" (0xa1) (Offset in file for an index entry) 0x302c6-0x302c7 (1)
+       |                                               |                |              type: "uinteger"
+0x302c0|                     83                        |       .        |              size: 3 0x302c7-0x302c8 (1)
+0x302c0|                        00 32 1e               |        .2.     |              value: 12830 0x302c8-0x302cb (3)
+       |                                               |                |            [36]{}: key 0x302cb-0x302e1 (22)
+0x302c0|                                 a0            |           .    |              id: "key" (0xa0) (Key for an index entry) 0x302cb-0x302cc (1)
+       |                                               |                |              type: "binary"
+0x302c0|                                    94         |            .   |              size: 20 0x302cc-0x302cd (1)
+0x302c0|                                       28 28 9e|             ((.|              value: raw bits 0x302cd-0x302e1 (20)
+0x302d0|ae 2f 94 9b 16 61 61 50 b3 a4 dc a7 10 c4 7d 5c|./...aaP......}\|
+0x302e0|e4                                             |.               |
+       |                                               |                |            [37]{}: offset 0x302e1-0x302e6 (5)
+0x302e0|   a1                                          | .              |              id: "offset" (0xa1) (Offset in file for an index entry) 0x302e1-0x302e2 (1)
+       |                                               |                |              type: "uinteger"
+0x302e0|      83                                       |  .             |              size: 3 0x302e2-0x302e3 (1)
+0x302e0|         02 88 d4                              |   ...          |              value: 166100 0x302e3-0x302e6 (3)
+       |                                               |                |            [38]{}: key 0x302e6-0x302fc (22)
+0x302e0|                  a0                           |      .         |              id: "key" (0xa0) (Key for an index entry) 0x302e6-0x302e7 (1)
+       |                                               |                |              type: "binary"
+0x302e0|                     94                        |       .        |              size: 20 0x302e7-0x302e8 (1)
+0x302e0|                        81 13 94 5b c1 ad 9e 5f|        ...[..._|              value: raw bits 0x302e8-0x302fc (20)
+0x302f0|be 6d 95 16 ff 0f ce 04 10 52 11 2a            |.m.......R.*    |
+       |                                               |                |            [39]{}: offset 0x302fc-0x30301 (5)
+0x302f0|                                    a1         |            .   |              id: "offset" (0xa1) (Offset in file for an index entry) 0x302fc-0x302fd (1)
+       |                                               |                |              type: "uinteger"
+0x302f0|                                       83      |             .  |              size: 3 0x302fd-0x302fe (1)
+0x302f0|                                          00 28|              .(|              value: 10266 0x302fe-0x30301 (3)
+0x30300|1a                                             |.               |
+       |                                               |                |            [40]{}: key 0x30301-0x30317 (22)
+0x30300|   a0                                          | .              |              id: "key" (0xa0) (Key for an index entry) 0x30301-0x30302 (1)
+       |                                               |                |              type: "binary"
+0x30300|      94                                       |  .             |              size: 20 0x30302-0x30303 (1)
+0x30300|         5d a9 ac e6 1a 86 02 9a 6a 5e c5 f5 7e|   ].......j^..~|              value: raw bits 0x30303-0x30317 (20)
+0x30310|b1 f8 23 10 bd 86 d2                           |..#....         |
+       |                                               |                |            [41]{}: offset 0x30317-0x3031c (5)
+0x30310|                     a1                        |       .        |              id: "offset" (0xa1) (Offset in file for an index entry) 0x30317-0x30318 (1)
+       |                                               |                |              type: "uinteger"
+0x30310|                        83                     |        .       |              size: 3 0x30318-0x30319 (1)
+0x30310|                           00 88 dc            |         ...    |              value: 35036 0x30319-0x3031c (3)
+       |                                               |                |        idx_unrolled_entry_size{}: 0x3031c-0x30320 (4)
+0x30310|                                    60 03      |            `.  |          id: "idx_unrolled_entry_size" (0x6003) (If the mapping technique assumes that index entries have a fixed size) 0x3031c-0x3031e (2)
+       |                                               |                |          type: "uinteger"
+0x30310|                                          81   |              . |          size: 1 0x3031e-0x3031f (1)
+0x30310|                                             1b|               .|          value: 27 0x3031f-0x30320 (1)
+       |                                               |                |        map_container{}: 0x30320-0x30340 (32)
+0x30320|60 04                                          |`.              |          id: "map_container" (0x6004) (This wrapper element allow us to put a CRC32 before the serialized Map) 0x30320-0x30322 (2)
+       |                                               |                |          type: "master"
+0x30320|      9d                                       |  .             |          size: 29 0x30322-0x30323 (1)
+       |                                               |                |          crc32{}: 0x30323-0x30329 (6)
+0x30320|         bf                                    |   .            |            id: "crc32" (0xbf) 0x30323-0x30324 (1)
+       |                                               |                |            type: "binary"
+0x30320|            84                                 |    .           |            size: 4 0x30324-0x30325 (1)
+0x30320|               da c7 e0 1c                     |     ....       |            value: raw bits 0x30325-0x30329 (4)
+       |                                               |                |          map{}: 0x30329-0x30340 (23)
+0x30320|                           60 05               |         `.     |            id: "map" (0x6005) (An efficient mapping technique of keys to their position in the index or in payload) 0x30329-0x3032b (2)
+       |                                               |                |            type: "binary"
+0x30320|                                 94            |           .    |            size: 20 0x3032b-0x3032c (1)
+0x30320|                                    10 01 04 27|            ...'|            value: raw bits 0x3032c-0x30340 (20)
+0x30330|00 90 bc 02 96 c0 49 04 00 31 00 00 00 00 00 00|......I..1......|
+       |                                               |                |      [1]{}: index 0x30340-0x3061f (735)
+0x30340|1f 53 57 48                                    |.SWH            |        id: "index" (0x1f535748) (Index for fast lookup of objects) 0x30340-0x30344 (4)
+       |                                               |                |        type: "master"
+0x30340|            42 d9                              |    B.          |        size: 729 0x30344-0x30346 (2)
+       |                                               |                |        crc32{}: 0x30346-0x3034c (6)
+0x30340|                  bf                           |      .         |          id: "crc32" (0xbf) 0x30346-0x30347 (1)
+       |                                               |                |          type: "binary"
+0x30340|                     84                        |       .        |          size: 4 0x30347-0x30348 (1)
+0x30340|                        5f 4a 16 65            |        _J.e    |          value: raw bits 0x30348-0x3034c (4)
+       |                                               |                |        idx_description{}: 0x3034c-0x303b7 (107)
+0x30340|                                    60 01      |            `.  |          id: "idx_description" (0x6001) (Description of this index' key semantics and its map format) 0x3034c-0x3034e (2)
+       |                                               |                |          type: "string"
+0x30340|                                          e8   |              . |          size: 104 0x3034e-0x3034f (1)
+0x30340|                                             6b|               k|          value: "key:sha1_git pkg:cargo/ph@0.10.0 swh:1:dir:795095368f036f42adebcb75782a61494940e9b8 ph::fmph::GOFunction" 0x3034f-0x303b7 (104)
+0x30350|65 79 3a 73 68 61 31 5f 67 69 74 20 70 6b 67 3a|ey:sha1_git pkg:|
+*      |until 0x303b6.7 (104)                          |                |
+       |                                               |                |        idx_unrolled{}: 0x303b7-0x305f2 (571)
+0x303b0|                     60 02                     |       `.       |          id: "idx_unrolled" (0x6002) (Unrolled index entries: all (Key) 0x303b7-0x303b9 (2)
+       |                                               |                |          type: "master"
+0x303b0|                           42 37               |         B7     |          size: 567 0x303b9-0x303bb (2)
+       |                                               |                |          elements[0:42]: 0x303bb-0x305f2 (567)
+       |                                               |                |            [0]{}: key 0x303bb-0x303d1 (22)
+0x303b0|                                 a0            |           .    |              id: "key" (0xa0) (Key for an index entry) 0x303bb-0x303bc (1)
+       |                                               |                |              type: "binary"
+0x303b0|                                    94         |            .   |              size: 20 0x303bc-0x303bd (1)
+0x303b0|                                       ba dd 21|             ..!|              value: raw bits 0x303bd-0x303d1 (20)
+0x303c0|f5 2c ab b4 6a fe a9 36 5a 3c e3 ab 9a 08 5a dc|.,..j..6Z<....Z.|
+0x303d0|58                                             |X               |
+       |                                               |                |            [1]{}: offset 0x303d1-0x303d6 (5)
+0x303d0|   a1                                          | .              |              id: "offset" (0xa1) (Offset in file for an index entry) 0x303d1-0x303d2 (1)
+       |                                               |                |              type: "uinteger"
+0x303d0|      83                                       |  .             |              size: 3 0x303d2-0x303d3 (1)
+0x303d0|         00 4a fe                              |   .J.          |              value: 19198 0x303d3-0x303d6 (3)
+       |                                               |                |            [2]{}: key 0x303d6-0x303ec (22)
+0x303d0|                  a0                           |      .         |              id: "key" (0xa0) (Key for an index entry) 0x303d6-0x303d7 (1)
+       |                                               |                |              type: "binary"
+0x303d0|                     94                        |       .        |              size: 20 0x303d7-0x303d8 (1)
+0x303d0|                        9a 89 91 fa c4 4e 70 b2|        .....Np.|              value: raw bits 0x303d8-0x303ec (20)
+0x303e0|bd 88 93 68 7c fa 31 fe 79 eb 85 51            |...h|.1.y..Q    |
+       |                                               |                |            [3]{}: offset 0x303ec-0x303f1 (5)
+0x303e0|                                    a1         |            .   |              id: "offset" (0xa1) (Offset in file for an index entry) 0x303ec-0x303ed (1)
+       |                                               |                |              type: "uinteger"
+0x303e0|                                       83      |             .  |              size: 3 0x303ed-0x303ee (1)
+0x303e0|                                          02 d9|              ..|              value: 186709 0x303ee-0x303f1 (3)
+0x303f0|55                                             |U               |
+       |                                               |                |            [4]{}: key 0x303f1-0x30407 (22)
+0x303f0|   a0                                          | .              |              id: "key" (0xa0) (Key for an index entry) 0x303f1-0x303f2 (1)
+       |                                               |                |              type: "binary"
+0x303f0|      94                                       |  .             |              size: 20 0x303f2-0x303f3 (1)
+0x303f0|         b3 f3 40 ee 70 40 bc b5 29 a5 e2 ba 57|   ..@.p@..)...W|              value: raw bits 0x303f3-0x30407 (20)
+0x30400|6f db a8 4b 2f c2 41                           |o..K/.A         |
+       |                                               |                |            [5]{}: offset 0x30407-0x3040c (5)
+0x30400|                     a1                        |       .        |              id: "offset" (0xa1) (Offset in file for an index entry) 0x30407-0x30408 (1)
+       |                                               |                |              type: "uinteger"
+0x30400|                        83                     |        .       |              size: 3 0x30408-0x30409 (1)
+0x30400|                           01 4c 46            |         .LF    |              value: 85062 0x30409-0x3040c (3)
+       |                                               |                |            [6]{}: key 0x3040c-0x30422 (22)
+0x30400|                                    a0         |            .   |              id: "key" (0xa0) (Key for an index entry) 0x3040c-0x3040d (1)
+       |                                               |                |              type: "binary"
+0x30400|                                       94      |             .  |              size: 20 0x3040d-0x3040e (1)
+0x30400|                                          d6 87|              ..|              value: raw bits 0x3040e-0x30422 (20)
+0x30410|bb 16 8b 39 99 16 9a 0d dd f6 fd 1f bc 1f d5 4d|...9...........M|
+0x30420|3a 3c                                          |:<              |
+       |                                               |                |            [7]{}: offset 0x30422-0x30427 (5)
+0x30420|      a1                                       |  .             |              id: "offset" (0xa1) (Offset in file for an index entry) 0x30422-0x30423 (1)
+       |                                               |                |              type: "uinteger"
+0x30420|         83                                    |   .            |              size: 3 0x30423-0x30424 (1)
+0x30420|            00 32 1e                           |    .2.         |              value: 12830 0x30424-0x30427 (3)
+       |                                               |                |            [8]{}: key 0x30427-0x3043d (22)
+0x30420|                     a0                        |       .        |              id: "key" (0xa0) (Key for an index entry) 0x30427-0x30428 (1)
+       |                                               |                |              type: "binary"
+0x30420|                        94                     |        .       |              size: 20 0x30428-0x30429 (1)
+0x30420|                           79 5d 9d f0 a0 9d f0|         y].....|              value: raw bits 0x30429-0x3043d (20)
+0x30430|f7 67 8b 49 43 02 ae 6a 3a 08 81 7e d3         |.g.IC..j:..~.   |
+       |                                               |                |            [9]{}: offset 0x3043d-0x30442 (5)
+0x30430|                                       a1      |             .  |              id: "offset" (0xa1) (Offset in file for an index entry) 0x3043d-0x3043e (1)
+       |                                               |                |              type: "uinteger"
+0x30430|                                          83   |              . |              size: 3 0x3043e-0x3043f (1)
+0x30430|                                             01|               .|              value: 93334 0x3043f-0x30442 (3)
+0x30440|6c 96                                          |l.              |
+       |                                               |                |            [10]{}: key 0x30442-0x30458 (22)
+0x30440|      a0                                       |  .             |              id: "key" (0xa0) (Key for an index entry) 0x30442-0x30443 (1)
+       |                                               |                |              type: "binary"
+0x30440|         94                                    |   .            |              size: 20 0x30443-0x30444 (1)
+0x30440|            53 65 aa 47 e8 2d 43 20 b5 76 36 61|    Se.G.-C .v6a|              value: raw bits 0x30444-0x30458 (20)
+0x30450|7b e5 c6 f3 ec 57 ec 47                        |{....W.G        |
+       |                                               |                |            [11]{}: offset 0x30458-0x3045d (5)
+0x30450|                        a1                     |        .       |              id: "offset" (0xa1) (Offset in file for an index entry) 0x30458-0x30459 (1)
+       |                                               |                |              type: "uinteger"
+0x30450|                           83                  |         .      |              size: 3 0x30459-0x3045a (1)
+0x30450|                              02 fc b1         |          ...   |              value: 195761 0x3045a-0x3045d (3)
+       |                                               |                |            [12]{}: key 0x3045d-0x30473 (22)
+0x30450|                                       a0      |             .  |              id: "key" (0xa0) (Key for an index entry) 0x3045d-0x3045e (1)
+       |                                               |                |              type: "binary"
+0x30450|                                          94   |              . |              size: 20 0x3045e-0x3045f (1)
+0x30450|                                             4a|               J|              value: raw bits 0x3045f-0x30473 (20)
+0x30460|3b 6e a6 90 75 76 5b 73 ad 3f 61 ac df 7b cb ca|;n..uv[s.?a..{..|
+0x30470|b0 2b 3d                                       |.+=             |
+       |                                               |                |            [13]{}: offset 0x30473-0x30478 (5)
+0x30470|         a1                                    |   .            |              id: "offset" (0xa1) (Offset in file for an index entry) 0x30473-0x30474 (1)
+       |                                               |                |              type: "uinteger"
+0x30470|            83                                 |    .           |              size: 3 0x30474-0x30475 (1)
+0x30470|               00 30 85                        |     .0.        |              value: 12421 0x30475-0x30478 (3)
+       |                                               |                |            [14]{}: key 0x30478-0x3048e (22)
+0x30470|                        a0                     |        .       |              id: "key" (0xa0) (Key for an index entry) 0x30478-0x30479 (1)
+       |                                               |                |              type: "binary"
+0x30470|                           94                  |         .      |              size: 20 0x30479-0x3047a (1)
+0x30470|                              c7 4c 24 18 53 61|          .L$.Sa|              value: raw bits 0x3047a-0x3048e (20)
+0x30480|b6 f0 a4 23 59 ac ad 27 a8 04 d4 ec ac e0      |...#Y..'......  |
+       |                                               |                |            [15]{}: offset 0x3048e-0x30493 (5)
+0x30480|                                          a1   |              . |              id: "offset" (0xa1) (Offset in file for an index entry) 0x3048e-0x3048f (1)
+       |                                               |                |              type: "uinteger"
+0x30480|                                             83|               .|              size: 3 0x3048f-0x30490 (1)
+0x30490|01 b1 e2                                       |...             |              value: 111074 0x30490-0x30493 (3)
+       |                                               |                |            [16]{}: key 0x30493-0x304a9 (22)
+0x30490|         a0                                    |   .            |              id: "key" (0xa0) (Key for an index entry) 0x30493-0x30494 (1)
+       |                                               |                |              type: "binary"
+0x30490|            94                                 |    .           |              size: 20 0x30494-0x30495 (1)
+0x30490|               9e 12 c7 24 aa 63 e3 68 6d 7d a3|     ...$.c.hm}.|              value: raw bits 0x30495-0x304a9 (20)
+0x304a0|bc 08 7e 02 d2 6f d1 a9 d0                     |..~..o...       |
+       |                                               |                |            [17]{}: offset 0x304a9-0x304ae (5)
+0x304a0|                           a1                  |         .      |              id: "offset" (0xa1) (Offset in file for an index entry) 0x304a9-0x304aa (1)
+       |                                               |                |              type: "uinteger"
+0x304a0|                              83               |          .     |              size: 3 0x304aa-0x304ab (1)
+0x304a0|                                 00 a2 db      |           ...  |              value: 41691 0x304ab-0x304ae (3)
+       |                                               |                |            [18]{}: key 0x304ae-0x304c4 (22)
+0x304a0|                                          a0   |              . |              id: "key" (0xa0) (Key for an index entry) 0x304ae-0x304af (1)
+       |                                               |                |              type: "binary"
+0x304a0|                                             94|               .|              size: 20 0x304af-0x304b0 (1)
+0x304b0|0c 6a d1 44 5f 4f 6e be 02 17 7c fa 17 71 36 73|.j.D_On...|..q6s|              value: raw bits 0x304b0-0x304c4 (20)
+0x304c0|4d ff 7b ed                                    |M.{.            |
+       |                                               |                |            [19]{}: offset 0x304c4-0x304c9 (5)
+0x304c0|            a1                                 |    .           |              id: "offset" (0xa1) (Offset in file for an index entry) 0x304c4-0x304c5 (1)
+       |                                               |                |              type: "uinteger"
+0x304c0|               83                              |     .          |              size: 3 0x304c5-0x304c6 (1)
+0x304c0|                  02 88 d4                     |      ...       |              value: 166100 0x304c6-0x304c9 (3)
+       |                                               |                |            [20]{}: key 0x304c9-0x304df (22)
+0x304c0|                           a0                  |         .      |              id: "key" (0xa0) (Key for an index entry) 0x304c9-0x304ca (1)
+       |                                               |                |              type: "binary"
+0x304c0|                              94               |          .     |              size: 20 0x304ca-0x304cb (1)
+0x304c0|                                 e3 85 aa b9 a0|           .....|              value: raw bits 0x304cb-0x304df (20)
+0x304d0|6a f8 d1 c6 d9 24 63 31 d3 2d 45 68 fb 12 98   |j....$c1.-Eh... |
+       |                                               |                |            [21]{}: offset 0x304df-0x304e4 (5)
+0x304d0|                                             a1|               .|              id: "offset" (0xa1) (Offset in file for an index entry) 0x304df-0x304e0 (1)
+       |                                               |                |              type: "uinteger"
+0x304e0|83                                             |.               |              size: 3 0x304e0-0x304e1 (1)
+0x304e0|   00 88 dc                                    | ...            |              value: 35036 0x304e1-0x304e4 (3)
+       |                                               |                |            [22]{}: key 0x304e4-0x304fa (22)
+0x304e0|            a0                                 |    .           |              id: "key" (0xa0) (Key for an index entry) 0x304e4-0x304e5 (1)
+       |                                               |                |              type: "binary"
+0x304e0|               94                              |     .          |              size: 20 0x304e5-0x304e6 (1)
+0x304e0|                  8c 20 10 67 68 55 47 ea 8e c0|      . .ghUG...|              value: raw bits 0x304e6-0x304fa (20)
+0x304f0|0c 06 22 79 01 3d 45 db 23 21                  |.."y.=E.#!      |
+       |                                               |                |            [23]{}: offset 0x304fa-0x304ff (5)
+0x304f0|                              a1               |          .     |              id: "offset" (0xa1) (Offset in file for an index entry) 0x304fa-0x304fb (1)
+       |                                               |                |              type: "uinteger"
+0x304f0|                                 83            |           .    |              size: 3 0x304fb-0x304fc (1)
+0x304f0|                                    02 ef 14   |            ... |              value: 192276 0x304fc-0x304ff (3)
+       |                                               |                |            [24]{}: key 0x304ff-0x30515 (22)
+0x304f0|                                             a0|               .|              id: "key" (0xa0) (Key for an index entry) 0x304ff-0x30500 (1)
+       |                                               |                |              type: "binary"
+0x30500|94                                             |.               |              size: 20 0x30500-0x30501 (1)
+0x30500|   bc 5e 52 3c d0 38 f1 df a9 20 fa 5a e3 6f 89| .^R<.8... .Z.o.|              value: raw bits 0x30501-0x30515 (20)
+0x30510|4a bb f6 a6 22                                 |J..."           |
+       |                                               |                |            [25]{}: offset 0x30515-0x3051a (5)
+0x30510|               a1                              |     .          |              id: "offset" (0xa1) (Offset in file for an index entry) 0x30515-0x30516 (1)
+       |                                               |                |              type: "uinteger"
+0x30510|                  83                           |      .         |              size: 3 0x30516-0x30517 (1)
+0x30510|                     02 6c 46                  |       .lF      |              value: 158790 0x30517-0x3051a (3)
+       |                                               |                |            [26]{}: key 0x3051a-0x30530 (22)
+0x30510|                              a0               |          .     |              id: "key" (0xa0) (Key for an index entry) 0x3051a-0x3051b (1)
+       |                                               |                |              type: "binary"
+0x30510|                                 94            |           .    |              size: 20 0x3051b-0x3051c (1)
+0x30510|                                    17 b2 b5 2f|            .../|              value: raw bits 0x3051c-0x30530 (20)
+0x30520|15 f4 db 45 36 c9 63 4a 9a 66 5c 33 99 76 0b ae|...E6.cJ.f\3.v..|
+       |                                               |                |            [27]{}: offset 0x30530-0x30535 (5)
+0x30530|a1                                             |.               |              id: "offset" (0xa1) (Offset in file for an index entry) 0x30530-0x30531 (1)
+       |                                               |                |              type: "uinteger"
+0x30530|   83                                          | .              |              size: 3 0x30531-0x30532 (1)
+0x30530|      00 ca ca                                 |  ...           |              value: 51914 0x30532-0x30535 (3)
+       |                                               |                |            [28]{}: key 0x30535-0x3054b (22)
+0x30530|               a0                              |     .          |              id: "key" (0xa0) (Key for an index entry) 0x30535-0x30536 (1)
+       |                                               |                |              type: "binary"
+0x30530|                  94                           |      .         |              size: 20 0x30536-0x30537 (1)
+0x30530|                     72 b2 da 10 86 31 3b 12 52|       r....1;.R|              value: raw bits 0x30537-0x3054b (20)
+0x30540|54 f1 55 78 2e a4 cb 49 64 c2 39               |T.Ux...Id.9     |
+       |                                               |                |            [29]{}: offset 0x3054b-0x30550 (5)
+0x30540|                                 a1            |           .    |              id: "offset" (0xa1) (Offset in file for an index entry) 0x3054b-0x3054c (1)
+       |                                               |                |              type: "uinteger"
+0x30540|                                    83         |            .   |              size: 3 0x3054c-0x3054d (1)
+0x30540|                                       00 54 ea|             .T.|              value: 21738 0x3054d-0x30550 (3)
+       |                                               |                |            [30]{}: key 0x30550-0x30566 (22)
+0x30550|a0                                             |.               |              id: "key" (0xa0) (Key for an index entry) 0x30550-0x30551 (1)
+       |                                               |                |              type: "binary"
+0x30550|   94                                          | .              |              size: 20 0x30551-0x30552 (1)
+0x30550|      1b 29 0e 23 78 c5 a7 ba 0b 4e a2 20 dc 39|  .).#x....N. .9|              value: raw bits 0x30552-0x30566 (20)
+0x30560|e4 07 93 1c fa fd                              |......          |
+       |                                               |                |            [31]{}: offset 0x30566-0x3056b (5)
+0x30560|                  a1                           |      .         |              id: "offset" (0xa1) (Offset in file for an index entry) 0x30566-0x30567 (1)
+       |                                               |                |              type: "uinteger"
+0x30560|                     83                        |       .        |              size: 3 0x30567-0x30568 (1)
+0x30560|                        00 5b 93               |        .[.     |              value: 23443 0x30568-0x3056b (3)
+       |                                               |                |            [32]{}: key 0x3056b-0x30581 (22)
+0x30560|                                 a0            |           .    |              id: "key" (0xa0) (Key for an index entry) 0x3056b-0x3056c (1)
+       |                                               |                |              type: "binary"
+0x30560|                                    94         |            .   |              size: 20 0x3056c-0x3056d (1)
+0x30560|                                       b4 5f 18|             ._.|              value: raw bits 0x3056d-0x30581 (20)
+0x30570|57 8c 51 24 bb 54 11 5a 4a da 81 e4 2d 99 65 eb|W.Q$.T.ZJ...-.e.|
+0x30580|d1                                             |.               |
+       |                                               |                |            [33]{}: offset 0x30581-0x30586 (5)
+0x30580|   a1                                          | .              |              id: "offset" (0xa1) (Offset in file for an index entry) 0x30581-0x30582 (1)
+       |                                               |                |              type: "uinteger"
+0x30580|      83                                       |  .             |              size: 3 0x30582-0x30583 (1)
+0x30580|         00 2e af                              |   ...          |              value: 11951 0x30583-0x30586 (3)
+       |                                               |                |            [34]{}: key 0x30586-0x3059c (22)
+0x30580|                  a0                           |      .         |              id: "key" (0xa0) (Key for an index entry) 0x30586-0x30587 (1)
+       |                                               |                |              type: "binary"
+0x30580|                     94                        |       .        |              size: 20 0x30587-0x30588 (1)
+0x30580|                        a5 72 91 a7 36 35 00 6a|        .r..65.j|              value: raw bits 0x30588-0x3059c (20)
+0x30590|33 1e 5e 5d cb 9b f3 1d 57 21 26 cb            |3.^]....W!&.    |
+       |                                               |                |            [35]{}: offset 0x3059c-0x305a1 (5)
+0x30590|                                    a1         |            .   |              id: "offset" (0xa1) (Offset in file for an index entry) 0x3059c-0x3059d (1)
+       |                                               |                |              type: "uinteger"
+0x30590|                                       83      |             .  |              size: 3 0x3059d-0x3059e (1)
+0x30590|                                          01 3d|              .=|              value: 81302 0x3059e-0x305a1 (3)
+0x305a0|96                                             |.               |
+       |                                               |                |            [36]{}: key 0x305a1-0x305b7 (22)
+0x305a0|   a0                                          | .              |              id: "key" (0xa0) (Key for an index entry) 0x305a1-0x305a2 (1)
+       |                                               |                |              type: "binary"
+0x305a0|      94                                       |  .             |              size: 20 0x305a2-0x305a3 (1)
+0x305a0|         da 47 fa 29 a4 33 af d8 6d 4e 5a b2 56|   .G.).3..mNZ.V|              value: raw bits 0x305a3-0x305b7 (20)
+0x305b0|2e 2e d0 50 59 b9 9f                           |...PY..         |
+       |                                               |                |            [37]{}: offset 0x305b7-0x305bc (5)
+0x305b0|                     a1                        |       .        |              id: "offset" (0xa1) (Offset in file for an index entry) 0x305b7-0x305b8 (1)
+       |                                               |                |              type: "uinteger"
+0x305b0|                        83                     |        .       |              size: 3 0x305b8-0x305b9 (1)
+0x305b0|                           00 3d 2c            |         .=,    |              value: 15660 0x305b9-0x305bc (3)
+       |                                               |                |            [38]{}: key 0x305bc-0x305d2 (22)
+0x305b0|                                    a0         |            .   |              id: "key" (0xa0) (Key for an index entry) 0x305bc-0x305bd (1)
+       |                                               |                |              type: "binary"
+0x305b0|                                       94      |             .  |              size: 20 0x305bd-0x305be (1)
+0x305b0|                                          c6 e8|              ..|              value: raw bits 0x305be-0x305d2 (20)
+0x305c0|0e 8a 0e 25 d2 d2 7c f6 ee 43 6a a5 07 27 b1 36|...%..|..Cj..'.6|
+0x305d0|76 4e                                          |vN              |
+       |                                               |                |            [39]{}: offset 0x305d2-0x305d7 (5)
+0x305d0|      a1                                       |  .             |              id: "offset" (0xa1) (Offset in file for an index entry) 0x305d2-0x305d3 (1)
+       |                                               |                |              type: "uinteger"
+0x305d0|         83                                    |   .            |              size: 3 0x305d3-0x305d4 (1)
+0x305d0|            02 22 33                           |    ."3         |              value: 139827 0x305d4-0x305d7 (3)
+       |                                               |                |            [40]{}: key 0x305d7-0x305ed (22)
+0x305d0|                     a0                        |       .        |              id: "key" (0xa0) (Key for an index entry) 0x305d7-0x305d8 (1)
+       |                                               |                |              type: "binary"
+0x305d0|                        94                     |        .       |              size: 20 0x305d8-0x305d9 (1)
+0x305d0|                           7d 3d 4f f9 06 8c 43|         }=O...C|              value: raw bits 0x305d9-0x305ed (20)
+0x305e0|7a 73 dc a1 f1 fe 6d 69 77 23 11 d2 3e         |zs....miw#..>   |
+       |                                               |                |            [41]{}: offset 0x305ed-0x305f2 (5)
+0x305e0|                                       a1      |             .  |              id: "offset" (0xa1) (Offset in file for an index entry) 0x305ed-0x305ee (1)
+       |                                               |                |              type: "uinteger"
+0x305e0|                                          83   |              . |              size: 3 0x305ee-0x305ef (1)
+0x305e0|                                             00|               .|              value: 10266 0x305ef-0x305f2 (3)
+0x305f0|28 1a                                          |(.              |
+       |                                               |                |        idx_unrolled_entry_size{}: 0x305f2-0x305f6 (4)
+0x305f0|      60 03                                    |  `.            |          id: "idx_unrolled_entry_size" (0x6003) (If the mapping technique assumes that index entries have a fixed size) 0x305f2-0x305f4 (2)
+       |                                               |                |          type: "uinteger"
+0x305f0|            81                                 |    .           |          size: 1 0x305f4-0x305f5 (1)
+0x305f0|               1b                              |     .          |          value: 27 0x305f5-0x305f6 (1)
+       |                                               |                |        map_container{}: 0x305f6-0x3061f (41)
+0x305f0|                  60 04                        |      `.        |          id: "map_container" (0x6004) (This wrapper element allow us to put a CRC32 before the serialized Map) 0x305f6-0x305f8 (2)
+       |                                               |                |          type: "master"
+0x305f0|                        a6                     |        .       |          size: 38 0x305f8-0x305f9 (1)
+       |                                               |                |          crc32{}: 0x305f9-0x305ff (6)
+0x305f0|                           bf                  |         .      |            id: "crc32" (0xbf) 0x305f9-0x305fa (1)
+       |                                               |                |            type: "binary"
+0x305f0|                              84               |          .     |            size: 4 0x305fa-0x305fb (1)
+0x305f0|                                 e7 2b 15 8f   |           .+.. |            value: raw bits 0x305fb-0x305ff (4)
+       |                                               |                |          map{}: 0x305ff-0x3061f (32)
+0x305f0|                                             60|               `|            id: "map" (0x6005) (An efficient mapping technique of keys to their position in the index or in payload) 0x305ff-0x30601 (2)
+0x30600|05                                             |.               |
+       |                                               |                |            type: "binary"
+0x30600|   9d                                          | .              |            size: 29 0x30601-0x30602 (1)
+0x30600|      10 02 04 04 9b 51 09 41 b0 00 31 08 00 10|  .....Q.A..1...|            value: raw bits 0x30602-0x3061f (29)
+0x30610|00 00 00 10 00 00 04 05 00 00 00 00 00 00 00   |............... |
+       |                                               |                |      [2]{}: index 0x3061f-0x309ef (976)
+0x30610|                                             1f|               .|        id: "index" (0x1f535748) (Index for fast lookup of objects) 0x3061f-0x30623 (4)
+0x30620|53 57 48                                       |SWH             |
+       |                                               |                |        type: "master"
+0x30620|         43 ca                                 |   C.           |        size: 970 0x30623-0x30625 (2)
+       |                                               |                |        crc32{}: 0x30625-0x3062b (6)
+0x30620|               bf                              |     .          |          id: "crc32" (0xbf) 0x30625-0x30626 (1)
+       |                                               |                |          type: "binary"
+0x30620|                  84                           |      .         |          size: 4 0x30626-0x30627 (1)
+0x30620|                     57 60 2d ad               |       W`-.     |          value: raw bits 0x30627-0x3062b (4)
+       |                                               |                |        idx_description{}: 0x3062b-0x30694 (105)
+0x30620|                                 60 01         |           `.   |          id: "idx_description" (0x6001) (Description of this index' key semantics and its map format) 0x3062b-0x3062d (2)
+       |                                               |                |          type: "string"
+0x30620|                                       e6      |             .  |          size: 102 0x3062d-0x3062e (1)
+0x30620|                                          6b 65|              ke|          value: "key:sha256 pkg:cargo/ph@0.10.0 swh:1:dir:795095368f036f42adebcb75782a61494940e9b8 ph::fmph::GOFunction" 0x3062e-0x30694 (102)
+0x30630|79 3a 73 68 61 32 35 36 20 70 6b 67 3a 63 61 72|y:sha256 pkg:car|
+*      |until 0x30693.7 (102)                          |                |
+       |                                               |                |        idx_unrolled{}: 0x30694-0x309cb (823)
+0x30690|            60 02                              |    `.          |          id: "idx_unrolled" (0x6002) (Unrolled index entries: all (Key) 0x30694-0x30696 (2)
+       |                                               |                |          type: "master"
+0x30690|                  43 33                        |      C3        |          size: 819 0x30696-0x30698 (2)
+       |                                               |                |          elements[0:42]: 0x30698-0x309cb (819)
+       |                                               |                |            [0]{}: key 0x30698-0x306ba (34)
+0x30690|                        a0                     |        .       |              id: "key" (0xa0) (Key for an index entry) 0x30698-0x30699 (1)
+       |                                               |                |              type: "binary"
+0x30690|                           a0                  |         .      |              size: 32 0x30699-0x3069a (1)
+0x30690|                              b9 93 34 98 48 7a|          ..4.Hz|              value: raw bits 0x3069a-0x306ba (32)
+0x306a0|72 c8 dc 96 12 1e 56 74 86 c7 b9 18 4f b7 7b f5|r.....Vt....O.{.|
+0x306b0|9a 42 64 8f 05 c1 e4 c6 14 2b                  |.Bd......+      |
+       |                                               |                |            [1]{}: offset 0x306ba-0x306bf (5)
+0x306b0|                              a1               |          .     |              id: "offset" (0xa1) (Offset in file for an index entry) 0x306ba-0x306bb (1)
+       |                                               |                |              type: "uinteger"
+0x306b0|                                 83            |           .    |              size: 3 0x306bb-0x306bc (1)
+0x306b0|                                    00 88 dc   |            ... |              value: 35036 0x306bc-0x306bf (3)
+       |                                               |                |            [2]{}: key 0x306bf-0x306e1 (34)
+0x306b0|                                             a0|               .|              id: "key" (0xa0) (Key for an index entry) 0x306bf-0x306c0 (1)
+       |                                               |                |              type: "binary"
+0x306c0|a0                                             |.               |              size: 32 0x306c0-0x306c1 (1)
+0x306c0|   30 73 ff 74 c1 39 54 60 8e 6a 6f 91 74 91 47| 0s.t.9T`.jo.t.G|              value: raw bits 0x306c1-0x306e1 (32)
+0x306d0|d7 4a a4 a4 f1 cb ba 2c 21 53 23 86 bc 91 3a 75|.J.....,!S#...:u|
+0x306e0|d1                                             |.               |
+       |                                               |                |            [3]{}: offset 0x306e1-0x306e6 (5)
+0x306e0|   a1                                          | .              |              id: "offset" (0xa1) (Offset in file for an index entry) 0x306e1-0x306e2 (1)
+       |                                               |                |              type: "uinteger"
+0x306e0|      83                                       |  .             |              size: 3 0x306e2-0x306e3 (1)
+0x306e0|         01 6c 96                              |   .l.          |              value: 93334 0x306e3-0x306e6 (3)
+       |                                               |                |            [4]{}: key 0x306e6-0x30708 (34)
+0x306e0|                  a0                           |      .         |              id: "key" (0xa0) (Key for an index entry) 0x306e6-0x306e7 (1)
+       |                                               |                |              type: "binary"
+0x306e0|                     a0                        |       .        |              size: 32 0x306e7-0x306e8 (1)
+0x306e0|                        d3 ab 22 8f 32 19 65 ab|        ..".2.e.|              value: raw bits 0x306e8-0x30708 (32)
+0x306f0|b3 26 f9 06 37 0d d3 48 5c b4 7a f3 1d 8f ba 70|.&..7..H\.z....p|
+0x30700|76 a5 8e 27 a2 31 75 40                        |v..'.1u@        |
+       |                                               |                |            [5]{}: offset 0x30708-0x3070d (5)
+0x30700|                        a1                     |        .       |              id: "offset" (0xa1) (Offset in file for an index entry) 0x30708-0x30709 (1)
+       |                                               |                |              type: "uinteger"
+0x30700|                           83                  |         .      |              size: 3 0x30709-0x3070a (1)
+0x30700|                              02 6c 46         |          .lF   |              value: 158790 0x3070a-0x3070d (3)
+       |                                               |                |            [6]{}: key 0x3070d-0x3072f (34)
+0x30700|                                       a0      |             .  |              id: "key" (0xa0) (Key for an index entry) 0x3070d-0x3070e (1)
+       |                                               |                |              type: "binary"
+0x30700|                                          a0   |              . |              size: 32 0x3070e-0x3070f (1)
+0x30700|                                             2a|               *|              value: raw bits 0x3070f-0x3072f (32)
+0x30710|46 36 7b 64 90 54 e5 5b 4c 3e 59 c9 de 3e 41 00|F6{d.T.[L>Y..>A.|
+0x30720|b6 86 a9 db 5f 57 00 f4 36 fa 28 2e b7 21 48   |...._W..6.(..!H |
+       |                                               |                |            [7]{}: offset 0x3072f-0x30734 (5)
+0x30720|                                             a1|               .|              id: "offset" (0xa1) (Offset in file for an index entry) 0x3072f-0x30730 (1)
+       |                                               |                |              type: "uinteger"
+0x30730|83                                             |.               |              size: 3 0x30730-0x30731 (1)
+0x30730|   02 fc b1                                    | ...            |              value: 195761 0x30731-0x30734 (3)
+       |                                               |                |            [8]{}: key 0x30734-0x30756 (34)
+0x30730|            a0                                 |    .           |              id: "key" (0xa0) (Key for an index entry) 0x30734-0x30735 (1)
+       |                                               |                |              type: "binary"
+0x30730|               a0                              |     .          |              size: 32 0x30735-0x30736 (1)
+0x30730|                  06 50 b8 02 e5 ca 00 65 5f eb|      .P.....e_.|              value: raw bits 0x30736-0x30756 (32)
+0x30740|d8 43 4e 51 fa 49 f8 cc 92 aa a3 a2 03 79 0d ed|.CNQ.I.......y..|
+0x30750|38 ae 8a 50 60 e8                              |8..P`.          |
+       |                                               |                |            [9]{}: offset 0x30756-0x3075b (5)
+0x30750|                  a1                           |      .         |              id: "offset" (0xa1) (Offset in file for an index entry) 0x30756-0x30757 (1)
+       |                                               |                |              type: "uinteger"
+0x30750|                     83                        |       .        |              size: 3 0x30757-0x30758 (1)
+0x30750|                        00 30 85               |        .0.     |              value: 12421 0x30758-0x3075b (3)
+       |                                               |                |            [10]{}: key 0x3075b-0x3077d (34)
+0x30750|                                 a0            |           .    |              id: "key" (0xa0) (Key for an index entry) 0x3075b-0x3075c (1)
+       |                                               |                |              type: "binary"
+0x30750|                                    a0         |            .   |              size: 32 0x3075c-0x3075d (1)
+0x30750|                                       01 71 a9|             .q.|              value: raw bits 0x3075d-0x3077d (32)
+0x30760|66 e9 d1 45 86 a7 8e 97 67 22 04 5c 71 d4 ee e6|f..E....g".\q...|
+0x30770|9d ff 1c a6 8c 39 3f 6c 00 59 c7 5e 79         |.....9?l.Y.^y   |
+       |                                               |                |            [11]{}: offset 0x3077d-0x30782 (5)
+0x30770|                                       a1      |             .  |              id: "offset" (0xa1) (Offset in file for an index entry) 0x3077d-0x3077e (1)
+       |                                               |                |              type: "uinteger"
+0x30770|                                          83   |              . |              size: 3 0x3077e-0x3077f (1)
+0x30770|                                             00|               .|              value: 11951 0x3077f-0x30782 (3)
+0x30780|2e af                                          |..              |
+       |                                               |                |            [12]{}: key 0x30782-0x307a4 (34)
+0x30780|      a0                                       |  .             |              id: "key" (0xa0) (Key for an index entry) 0x30782-0x30783 (1)
+       |                                               |                |              type: "binary"
+0x30780|         a0                                    |   .            |              size: 32 0x30783-0x30784 (1)
+0x30780|            f2 9b f4 2c eb 94 e7 94 9f 31 36 94|    ...,.....16.|              value: raw bits 0x30784-0x307a4 (32)
+0x30790|31 f9 d2 3f 3a 45 aa ee 03 8c 66 d3 60 50 83 50|1..?:E....f.`P.P|
+0x307a0|01 95 55 c3                                    |..U.            |
+       |                                               |                |            [13]{}: offset 0x307a4-0x307a9 (5)
+0x307a0|            a1                                 |    .           |              id: "offset" (0xa1) (Offset in file for an index entry) 0x307a4-0x307a5 (1)
+       |                                               |                |              type: "uinteger"
+0x307a0|               83                              |     .          |              size: 3 0x307a5-0x307a6 (1)
+0x307a0|                  01 b1 e2                     |      ...       |              value: 111074 0x307a6-0x307a9 (3)
+       |                                               |                |            [14]{}: key 0x307a9-0x307cb (34)
+0x307a0|                           a0                  |         .      |              id: "key" (0xa0) (Key for an index entry) 0x307a9-0x307aa (1)
+       |                                               |                |              type: "binary"
+0x307a0|                              a0               |          .     |              size: 32 0x307aa-0x307ab (1)
+0x307a0|                                 c0 aa bf a1 35|           ....5|              value: raw bits 0x307ab-0x307cb (32)
+0x307b0|03 61 a8 51 6b 99 8a 71 26 37 eb 67 9c 95 93 c8|.a.Qk..q&7.g....|
+0x307c0|80 b7 5d c0 19 3b 30 27 73 54 82               |..]..;0'sT.     |
+       |                                               |                |            [15]{}: offset 0x307cb-0x307d0 (5)
+0x307c0|                                 a1            |           .    |              id: "offset" (0xa1) (Offset in file for an index entry) 0x307cb-0x307cc (1)
+       |                                               |                |              type: "uinteger"
+0x307c0|                                    83         |            .   |              size: 3 0x307cc-0x307cd (1)
+0x307c0|                                       01 3d 96|             .=.|              value: 81302 0x307cd-0x307d0 (3)
+       |                                               |                |            [16]{}: key 0x307d0-0x307f2 (34)
+0x307d0|a0                                             |.               |              id: "key" (0xa0) (Key for an index entry) 0x307d0-0x307d1 (1)
+       |                                               |                |              type: "binary"
+0x307d0|   a0                                          | .              |              size: 32 0x307d1-0x307d2 (1)
+0x307d0|      f3 ea 85 f2 7d 3a f5 be 6f 9e 2c e5 1c fd|  ....}:..o.,...|              value: raw bits 0x307d2-0x307f2 (32)
+0x307e0|47 3a cd cb a1 73 75 25 6d 8a d6 12 51 6a 62 80|G:...su%m...Qjb.|
+0x307f0|4b 3b                                          |K;              |
+       |                                               |                |            [17]{}: offset 0x307f2-0x307f7 (5)
+0x307f0|      a1                                       |  .             |              id: "offset" (0xa1) (Offset in file for an index entry) 0x307f2-0x307f3 (1)
+       |                                               |                |              type: "uinteger"
+0x307f0|         83                                    |   .            |              size: 3 0x307f3-0x307f4 (1)
+0x307f0|            02 22 33                           |    ."3         |              value: 139827 0x307f4-0x307f7 (3)
+       |                                               |                |            [18]{}: key 0x307f7-0x30819 (34)
+0x307f0|                     a0                        |       .        |              id: "key" (0xa0) (Key for an index entry) 0x307f7-0x307f8 (1)
+       |                                               |                |              type: "binary"
+0x307f0|                        a0                     |        .       |              size: 32 0x307f8-0x307f9 (1)
+0x307f0|                           33 f0 87 8b f2 37 79|         3....7y|              value: raw bits 0x307f9-0x30819 (32)
+0x30800|3c 7e 45 1d 7d ac d4 61 b5 b7 de 35 0f 68 cc 89|<~E.}..a...5.h..|
+0x30810|35 7b 91 f4 81 ce 94 44 7f                     |5{.....D.       |
+       |                                               |                |            [19]{}: offset 0x30819-0x3081e (5)
+0x30810|                           a1                  |         .      |              id: "offset" (0xa1) (Offset in file for an index entry) 0x30819-0x3081a (1)
+       |                                               |                |              type: "uinteger"
+0x30810|                              83               |          .     |              size: 3 0x3081a-0x3081b (1)
+0x30810|                                 00 28 1a      |           .(.  |              value: 10266 0x3081b-0x3081e (3)
+       |                                               |                |            [20]{}: key 0x3081e-0x30840 (34)
+0x30810|                                          a0   |              . |              id: "key" (0xa0) (Key for an index entry) 0x3081e-0x3081f (1)
+       |                                               |                |              type: "binary"
+0x30810|                                             a0|               .|              size: 32 0x3081f-0x30820 (1)
+0x30820|12 f1 f5 14 48 6d 1e e9 fb d0 2e 3e f6 74 62 44|....Hm.....>.tbD|              value: raw bits 0x30820-0x30840 (32)
+0x30830|e8 aa 62 a5 97 7c 12 4b 3f 6f 79 33 5e 0e 7e f9|..b..|.K?oy3^.~.|
+       |                                               |                |            [21]{}: offset 0x30840-0x30845 (5)
+0x30840|a1                                             |.               |              id: "offset" (0xa1) (Offset in file for an index entry) 0x30840-0x30841 (1)
+       |                                               |                |              type: "uinteger"
+0x30840|   83                                          | .              |              size: 3 0x30841-0x30842 (1)
+0x30840|      02 ef 14                                 |  ...           |              value: 192276 0x30842-0x30845 (3)
+       |                                               |                |            [22]{}: key 0x30845-0x30867 (34)
+0x30840|               a0                              |     .          |              id: "key" (0xa0) (Key for an index entry) 0x30845-0x30846 (1)
+       |                                               |                |              type: "binary"
+0x30840|                  a0                           |      .         |              size: 32 0x30846-0x30847 (1)
+0x30840|                     06 fb 8b 0f fe 6e e3 8e 1a|       .....n...|              value: raw bits 0x30847-0x30867 (32)
+0x30850|38 fa 0f ac f6 15 aa a1 94 fe 30 0c d1 c4 0a f2|8.........0.....|
+0x30860|50 48 35 a7 b5 a1 78                           |PH5...x         |
+       |                                               |                |            [23]{}: offset 0x30867-0x3086c (5)
+0x30860|                     a1                        |       .        |              id: "offset" (0xa1) (Offset in file for an index entry) 0x30867-0x30868 (1)
+       |                                               |                |              type: "uinteger"
+0x30860|                        83                     |        .       |              size: 3 0x30868-0x30869 (1)
+0x30860|                           00 5b 93            |         .[.    |              value: 23443 0x30869-0x3086c (3)
+       |                                               |                |            [24]{}: key 0x3086c-0x3088e (34)
+0x30860|                                    a0         |            .   |              id: "key" (0xa0) (Key for an index entry) 0x3086c-0x3086d (1)
+       |                                               |                |              type: "binary"
+0x30860|                                       a0      |             .  |              size: 32 0x3086d-0x3086e (1)
+0x30860|                                          88 0f|              ..|              value: raw bits 0x3086e-0x3088e (32)
+0x30870|52 62 e8 18 1a 33 db 96 df d8 94 d9 1a 58 27 b6|Rb...3.......X'.|
+0x30880|ab 52 05 44 0c a2 86 94 02 06 23 c2 7d 82      |.R.D......#.}.  |
+       |                                               |                |            [25]{}: offset 0x3088e-0x30893 (5)
+0x30880|                                          a1   |              . |              id: "offset" (0xa1) (Offset in file for an index entry) 0x3088e-0x3088f (1)
+       |                                               |                |              type: "uinteger"
+0x30880|                                             83|               .|              size: 3 0x3088f-0x30890 (1)
+0x30890|00 54 ea                                       |.T.             |              value: 21738 0x30890-0x30893 (3)
+       |                                               |                |            [26]{}: key 0x30893-0x308b5 (34)
+0x30890|         a0                                    |   .            |              id: "key" (0xa0) (Key for an index entry) 0x30893-0x30894 (1)
+       |                                               |                |              type: "binary"
+0x30890|            a0                                 |    .           |              size: 32 0x30894-0x30895 (1)
+0x30890|               34 09 04 27 d5 b8 81 1d 10 b4 98|     4..'.......|              value: raw bits 0x30895-0x308b5 (32)
+0x308a0|8a 62 39 ae 7c a3 8c 1b 0f f6 4c 03 1f 11 ac 27|.b9.|.....L....'|
+0x308b0|80 0c 35 d2 cf                                 |..5..           |
+       |                                               |                |            [27]{}: offset 0x308b5-0x308ba (5)
+0x308b0|               a1                              |     .          |              id: "offset" (0xa1) (Offset in file for an index entry) 0x308b5-0x308b6 (1)
+       |                                               |                |              type: "uinteger"
+0x308b0|                  83                           |      .         |              size: 3 0x308b6-0x308b7 (1)
+0x308b0|                     00 3d 2c                  |       .=,      |              value: 15660 0x308b7-0x308ba (3)
+       |                                               |                |            [28]{}: key 0x308ba-0x308dc (34)
+0x308b0|                              a0               |          .     |              id: "key" (0xa0) (Key for an index entry) 0x308ba-0x308bb (1)
+       |                                               |                |              type: "binary"
+0x308b0|                                 a0            |           .    |              size: 32 0x308bb-0x308bc (1)
+0x308b0|                                    88 da ee 4c|            ...L|              value: raw bits 0x308bc-0x308dc (32)
+0x308c0|98 ca 55 7c ae ec 72 bc db c7 60 06 6a 21 70 9c|..U|..r...`.j!p.|
+0x308d0|a0 bc d4 2e 47 7c fc ae f1 bf 1c 09            |....G|......    |
+       |                                               |                |            [29]{}: offset 0x308dc-0x308e1 (5)
+0x308d0|                                    a1         |            .   |              id: "offset" (0xa1) (Offset in file for an index entry) 0x308dc-0x308dd (1)
+       |                                               |                |              type: "uinteger"
+0x308d0|                                       83      |             .  |              size: 3 0x308dd-0x308de (1)
+0x308d0|                                          01 4c|              .L|              value: 85062 0x308de-0x308e1 (3)
+0x308e0|46                                             |F               |
+       |                                               |                |            [30]{}: key 0x308e1-0x30903 (34)
+0x308e0|   a0                                          | .              |              id: "key" (0xa0) (Key for an index entry) 0x308e1-0x308e2 (1)
+       |                                               |                |              type: "binary"
+0x308e0|      a0                                       |  .             |              size: 32 0x308e2-0x308e3 (1)
+0x308e0|         76 ed 03 52 c0 f7 d1 1e 6f c3 ff 5a 18|   v..R....o..Z.|              value: raw bits 0x308e3-0x30903 (32)
+0x308f0|e4 b3 cc 2a 12 cc 24 92 1f 4d 2b c6 70 f7 c1 b3|...*..$..M+.p...|
+0x30900|7d a6 f4                                       |}..             |
+       |                                               |                |            [31]{}: offset 0x30903-0x30908 (5)
+0x30900|         a1                                    |   .            |              id: "offset" (0xa1) (Offset in file for an index entry) 0x30903-0x30904 (1)
+       |                                               |                |              type: "uinteger"
+0x30900|            83                                 |    .           |              size: 3 0x30904-0x30905 (1)
+0x30900|               02 d9 55                        |     ..U        |              value: 186709 0x30905-0x30908 (3)
+       |                                               |                |            [32]{}: key 0x30908-0x3092a (34)
+0x30900|                        a0                     |        .       |              id: "key" (0xa0) (Key for an index entry) 0x30908-0x30909 (1)
+       |                                               |                |              type: "binary"
+0x30900|                           a0                  |         .      |              size: 32 0x30909-0x3090a (1)
+0x30900|                              af 6c 5a 16 bd 1d|          .lZ...|              value: raw bits 0x3090a-0x3092a (32)
+0x30910|63 4d ca 14 3b a5 b6 17 b4 eb 54 fd 85 a4 b0 99|cM..;.....T.....|
+0x30920|da bb 41 44 69 13 42 68 04 e4                  |..ADi.Bh..      |
+       |                                               |                |            [33]{}: offset 0x3092a-0x3092f (5)
+0x30920|                              a1               |          .     |              id: "offset" (0xa1) (Offset in file for an index entry) 0x3092a-0x3092b (1)
+       |                                               |                |              type: "uinteger"
+0x30920|                                 83            |           .    |              size: 3 0x3092b-0x3092c (1)
+0x30920|                                    00 ca ca   |            ... |              value: 51914 0x3092c-0x3092f (3)
+       |                                               |                |            [34]{}: key 0x3092f-0x30951 (34)
+0x30920|                                             a0|               .|              id: "key" (0xa0) (Key for an index entry) 0x3092f-0x30930 (1)
+       |                                               |                |              type: "binary"
+0x30930|a0                                             |.               |              size: 32 0x30930-0x30931 (1)
+0x30930|   01 50 61 d9 14 72 98 82 ee 4f 9d 69 bf c1 e2| .Pa..r...O.i...|              value: raw bits 0x30931-0x30951 (32)
+0x30940|a7 bc a1 40 26 b0 bf e4 74 62 e5 b9 a8 fd d2 24|...@&...tb.....$|
+0x30950|1a                                             |.               |
+       |                                               |                |            [35]{}: offset 0x30951-0x30956 (5)
+0x30950|   a1                                          | .              |              id: "offset" (0xa1) (Offset in file for an index entry) 0x30951-0x30952 (1)
+       |                                               |                |              type: "uinteger"
+0x30950|      83                                       |  .             |              size: 3 0x30952-0x30953 (1)
+0x30950|         00 4a fe                              |   .J.          |              value: 19198 0x30953-0x30956 (3)
+       |                                               |                |            [36]{}: key 0x30956-0x30978 (34)
+0x30950|                  a0                           |      .         |              id: "key" (0xa0) (Key for an index entry) 0x30956-0x30957 (1)
+       |                                               |                |              type: "binary"
+0x30950|                     a0                        |       .        |              size: 32 0x30957-0x30958 (1)
+0x30950|                        83 b4 c6 04 dc cf f0 29|        .......)|              value: raw bits 0x30958-0x30978 (32)
+0x30960|9e fd 7c d0 d4 f3 34 c6 6e 98 03 cf 80 02 62 44|..|...4.n.....bD|
+0x30970|52 cc d9 33 0d c7 23 a5                        |R..3..#.        |
+       |                                               |                |            [37]{}: offset 0x30978-0x3097d (5)
+0x30970|                        a1                     |        .       |              id: "offset" (0xa1) (Offset in file for an index entry) 0x30978-0x30979 (1)
+       |                                               |                |              type: "uinteger"
+0x30970|                           83                  |         .      |              size: 3 0x30979-0x3097a (1)
+0x30970|                              02 88 d4         |          ...   |              value: 166100 0x3097a-0x3097d (3)
+       |                                               |                |            [38]{}: key 0x3097d-0x3099f (34)
+0x30970|                                       a0      |             .  |              id: "key" (0xa0) (Key for an index entry) 0x3097d-0x3097e (1)
+       |                                               |                |              type: "binary"
+0x30970|                                          a0   |              . |              size: 32 0x3097e-0x3097f (1)
+0x30970|                                             55|               U|              value: raw bits 0x3097f-0x3099f (32)
+0x30980|09 af 3c 10 80 b2 b4 70 17 c5 f3 7b 4e ef 90 32|..<....p...{N..2|
+0x30990|67 18 ab 26 cf 7f 74 8f 80 d9 2b a1 bc fc 2c   |g..&..t...+..., |
+       |                                               |                |            [39]{}: offset 0x3099f-0x309a4 (5)
+0x30990|                                             a1|               .|              id: "offset" (0xa1) (Offset in file for an index entry) 0x3099f-0x309a0 (1)
+       |                                               |                |              type: "uinteger"
+0x309a0|83                                             |.               |              size: 3 0x309a0-0x309a1 (1)
+0x309a0|   00 a2 db                                    | ...            |              value: 41691 0x309a1-0x309a4 (3)
+       |                                               |                |            [40]{}: key 0x309a4-0x309c6 (34)
+0x309a0|            a0                                 |    .           |              id: "key" (0xa0) (Key for an index entry) 0x309a4-0x309a5 (1)
+       |                                               |                |              type: "binary"
+0x309a0|               a0                              |     .          |              size: 32 0x309a5-0x309a6 (1)
+0x309a0|                  58 8f fd 1b 65 21 02 4c 5c 29|      X...e!.L\)|              value: raw bits 0x309a6-0x309c6 (32)
+0x309b0|91 6b d9 5f f8 04 00 7e f5 c7 fc 89 9a de 1d a1|.k._...~........|
+0x309c0|21 4b 6a c2 03 d6                              |!Kj...          |
+       |                                               |                |            [41]{}: offset 0x309c6-0x309cb (5)
+0x309c0|                  a1                           |      .         |              id: "offset" (0xa1) (Offset in file for an index entry) 0x309c6-0x309c7 (1)
+       |                                               |                |              type: "uinteger"
+0x309c0|                     83                        |       .        |              size: 3 0x309c7-0x309c8 (1)
+0x309c0|                        00 32 1e               |        .2.     |              value: 12830 0x309c8-0x309cb (3)
+       |                                               |                |        idx_unrolled_entry_size{}: 0x309cb-0x309cf (4)
+0x309c0|                                 60 03         |           `.   |          id: "idx_unrolled_entry_size" (0x6003) (If the mapping technique assumes that index entries have a fixed size) 0x309cb-0x309cd (2)
+       |                                               |                |          type: "uinteger"
+0x309c0|                                       81      |             .  |          size: 1 0x309cd-0x309ce (1)
+0x309c0|                                          27   |              ' |          value: 39 0x309ce-0x309cf (1)
+       |                                               |                |        map_container{}: 0x309cf-0x309ef (32)
+0x309c0|                                             60|               `|          id: "map_container" (0x6004) (This wrapper element allow us to put a CRC32 before the serialized Map) 0x309cf-0x309d1 (2)
+0x309d0|04                                             |.               |
+       |                                               |                |          type: "master"
+0x309d0|   9d                                          | .              |          size: 29 0x309d1-0x309d2 (1)
+       |                                               |                |          crc32{}: 0x309d2-0x309d8 (6)
+0x309d0|      bf                                       |  .             |            id: "crc32" (0xbf) 0x309d2-0x309d3 (1)
+       |                                               |                |            type: "binary"
+0x309d0|         84                                    |   .            |            size: 4 0x309d3-0x309d4 (1)
+0x309d0|            02 c3 35 eb                        |    ..5.        |            value: raw bits 0x309d4-0x309d8 (4)
+       |                                               |                |          map{}: 0x309d8-0x309ef (23)
+0x309d0|                        60 05                  |        `.      |            id: "map" (0x6005) (An efficient mapping technique of keys to their position in the index or in payload) 0x309d8-0x309da (2)
+       |                                               |                |            type: "binary"
+0x309d0|                              94               |          .     |            size: 20 0x309da-0x309db (1)
+0x309d0|                                 10 01 04 20 92|           ... .|            value: raw bits 0x309db-0x309ef (20)
+0x309e0|b2 8c 22 5c 40 58 04 40 12 00 00 00 00 00 00|  |.."\@X.@.......||

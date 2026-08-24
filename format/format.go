@@ -135,6 +135,7 @@ var (
 	Matroska            = &decode.Group{Name: "matroska"}
 	MIDI                = &decode.Group{Name: "midi"}
 	MOC3                = &decode.Group{Name: "moc3"}
+	MOSAIC              = &decode.Group{Name: "mosaic"}
 	MP3                 = &decode.Group{Name: "mp3"}
 	MP3_Frame           = &decode.Group{Name: "mp3_frame"}
 	MP3_Frame_VBRI      = &decode.Group{Name: "mp3_frame_vbri"}
