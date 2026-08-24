@@ -1,8 +1,8 @@
-// Code below generated from ebml_matroska.xml
+// Code below generated from format/matroska/ebml_matroska/ebml_matroska.xml
 package ebml_matroska
 
 import (
-	"github.com/wader/fq/format/matroska/ebml"
+	"github.com/wader/fq/format/ebml"
 )
 
 var RootElement = &ebml.Master{

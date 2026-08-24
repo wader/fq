@@ -17,7 +17,7 @@ import (
 	"time"
 
 	"github.com/wader/fq/format"
-	"github.com/wader/fq/format/matroska/ebml"
+	"github.com/wader/fq/format/ebml"
 	"github.com/wader/fq/format/matroska/ebml_matroska"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
@@ -142,10 +142,10 @@ func decodeLacingFn(d *decode.D, lacingType int, fn func(d *decode.D)) {
 	case lacingTypeEBML:
 		numLaces := int(d.FieldU8("num_laces"))
 		d.FieldArray("lace_sizes", func(d *decode.D) {
-			s := int64(d.FieldUintFn("lace_size", decodeVint)) // first is unsigned, not ranged shifted
+			s := int64(d.FieldUintFn("lace_size", ebml.DecodeVint)) // first is unsigned, not ranged shifted
 			laceSizes = append(laceSizes, s)
 			for range numLaces - 1 {
-				d := int64(d.FieldUintFn("lace_size_delta", decodeRawVint))
+				d := int64(d.FieldUintFn("lace_size_delta", ebml.DecodeRawVint))
 				// range shifting
 				switch {
 				case d&0b1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1000_0000 == 0b0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_1000_0000:
@@ -196,36 +196,6 @@ func decodeLacingFn(d *decode.D, lacingType int, fn func(d *decode.D)) {
 	})
 }
 
-// TODO: smarter?
-func decodeRawVintWidth(d *decode.D) (uint64, int) {
-	n := d.U8()
-	w := 1
-	for i := 0; i <= 7 && (n&(1<<(7-i))) == 0; i++ {
-		w++
-	}
-	for i := 1; i < w; i++ {
-		n = n<<8 | d.U8()
-	}
-	return n, w
-}
-
-func decodeRawVint(d *decode.D) uint64 {
-	n, _ := decodeRawVintWidth(d)
-	return n
-}
-
-func peekRawVint(d *decode.D) uint64 {
-	n, w := decodeRawVintWidth(d)
-	d.SeekRel(int64(-w) * 8)
-	return n
-}
-
-func decodeVint(d *decode.D) uint64 {
-	n, w := decodeRawVintWidth(d)
-	m := (uint64(1<<((w-1)*8+(8-w))) - 1)
-	return n & m
-}
-
 func decodeXiphLaceSize(d *decode.D) uint64 {
 	var s uint64
 	for {
@@ -272,7 +242,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, elm *ebml.Master, unknownSize bo
 			// TODO: What to do if peeked is unknown?
 			// TODO: Handle garbage between element
 			if unknownSize {
-				peekTagID := peekRawVint(d)
+				peekTagID := ebml.PeekRawVint(d)
 				_, validParent := ebml.FindParentID(ebml_matroska.IDToElement, elm.GetID(), ebml.ID(peekTagID))
 				if validParent {
 					break
@@ -283,7 +253,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, elm *ebml.Master, unknownSize bo
 				var childElm ebml.Element
 				childElm = &ebml.Unknown{}
 
-				tagID := d.FieldUintFn("id", decodeRawVint, scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
+				tagID := d.FieldUintFn("id", ebml.DecodeRawVint, scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
 					n := s.Actual
 					var ok bool
 					childElm, ok = elm.Master[ebml.ID(n)]
@@ -309,7 +279,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, elm *ebml.Master, unknownSize bo
 				}
 
 				const maxStringTagSize = 100 * 1024 * 1024
-				tagSize := d.FieldUintFn("size", decodeVint, scalar.UintMapDescription{
+				tagSize := d.FieldUintFn("size", ebml.DecodeVint, scalar.UintMapDescription{
 					0xffffffffffffff: "Unknown size",
 				})
 				unknownSize := tagSize == tagSizeUnknown
@@ -382,6 +352,9 @@ func decodeMaster(d *decode.D, bitsLimit int64, elm *ebml.Master, unknownSize bo
 					v := d.FieldUTF8("value", int(tagSize), sm...)
 					if dc.currentTrack != nil && tagID == ebml_matroska.CodecIDID {
 						dc.currentTrack.codec = v
+					}
+					if tagID == ebml.DocTypeID && v != "matroska" {
+						d.Errorf("EBML doctype is not matroska")
 					}
 				case *ebml.UTF8:
 					d.FieldUTF8NullFixedLen("value", int(tagSize))
@@ -515,7 +488,7 @@ func matroskaDecode(d *decode.D) any {
 	for _, b := range dc.blocks {
 		b.d.RangeFn(b.r.Start, b.r.Len, func(d *decode.D) {
 			var lacing uint64
-			trackNumber := d.FieldUintFn("track_number", decodeVint)
+			trackNumber := d.FieldUintFn("track_number", ebml.DecodeVint)
 			d.FieldU16("timestamp")
 			if b.simple {
 				d.FieldStruct("flags", func(d *decode.D) {

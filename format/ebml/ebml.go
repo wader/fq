@@ -1,6 +1,10 @@
 package ebml
 
-import "time"
+import (
+	"time"
+
+	"github.com/wader/fq/pkg/decode"
+)
 
 // 2001-01-01T00:00:00.000000000 UTC
 var EpochDate = time.Date(2001, time.January, 1, 0, 0, 0, 0, time.UTC)
@@ -141,4 +145,34 @@ func FindParentID(idToElement map[ID]Element, startID ID, id ID) (Element, bool)
 		}
 	}
 	return nil, false
+}
+
+// TODO: smarter?
+func DecodeRawVintWidth(d *decode.D) (uint64, int) {
+	n := d.U8()
+	w := 1
+	for i := 0; i <= 7 && (n&(1<<(7-i))) == 0; i++ {
+		w++
+	}
+	for i := 1; i < w; i++ {
+		n = n<<8 | d.U8()
+	}
+	return n, w
+}
+
+func DecodeRawVint(d *decode.D) uint64 {
+	n, _ := DecodeRawVintWidth(d)
+	return n
+}
+
+func PeekRawVint(d *decode.D) uint64 {
+	n, w := DecodeRawVintWidth(d)
+	d.SeekRel(int64(-w) * 8)
+	return n
+}
+
+func DecodeVint(d *decode.D) uint64 {
+	n, w := DecodeRawVintWidth(d)
+	m := (uint64(1<<((w-1)*8+(8-w))) - 1)
+	return n & m
 }

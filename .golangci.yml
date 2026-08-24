@@ -81,7 +81,7 @@ linters:
       # ignore warnings in code from crypto/tls and zmap/zcrypto
       - format/tls/tlsdecrypt
       - format/fuzz_test.go
-      - format/matroska/ebml/gen/main.go
+      - format/ebml/gen/main.go
 formatters:
   enable:
     - goimports
