@@ -273,7 +273,7 @@ Each decode value has these properties:
 
 The value of a decode value is the symbolic value if available and otherwise the actual value. To explicitly access the value use `tovalue`. In most expressions this is not needed as it will be done automatically.
 
-==== Decode value functions
+=== Decode value functions
 
 `*root*`::
   Root decode value for decode value.
@@ -336,7 +336,7 @@ There is also `tobitsrange` and `tobytesrange` which do the same thing but will 
   - Both `.[index]` and `.[start:end]` support negative indices to index from end.
 - `explode` outputs an array with all bytes or bits as integers.
 
-==== Binary functions
+=== Binary functions
 
 `*grep($v)*`, `*grep($v; $flags)*`, `*vgrep($v)*`, `*vgrep($v; $flags)*`, `*bgrep($v)*`, `*bgrep($v; $flags)*`::
   Recursively match `$v`.
@@ -1085,6 +1085,9 @@ ifdef::backend-html5[]
     }
     pre.rouge code {
       filter: invert(0.9) hue-rotate(180deg);
+    }
+    pre.rouge code .w {
+      background-color: transparent;
     }
     .dlist > .title {
       color: #e8a796;
