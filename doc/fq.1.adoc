@@ -1,6 +1,6 @@
 = fq(1)
 Mattias Wadman
-v0.17.0
+v0.18.0
 :doctype: manpage
 :manmanual: FQ
 :mansource: FQ
@@ -1865,6 +1865,57 @@ Authors:::
 
 
 - https://github.com/ronsor[@ronsor]
+
+//-
+--
++
+
+`*mosaic*`::
+  MOdular Storage of Archived and Indexed Contents
++
+--
+
+List indexes in a mosaic:::
+
+[source,shell]
+----
+$ fq '.mosaic.index[].idx_description' file.mosaic
+----
+
+List only small objects:::
+
+[source,shell]
+----
+$ fq '.mosaic.tile[].object[] | select(.size < 1000)' file.mosaic
+----
+
+Check if the reported size is correct:::
+
+[source,shell]
+----
+$ fq 'add(.mosaic.tile[].object[].size) == .mosaic.container_meta_data.objects_total_size.value' basic.mosaic
+----
+Command above only works if the file does not use compression:
+
+See if a file uses compression:::
+
+[source,shell]
+----
+$ fq '.mosaic.container_meta_data.compression_method' basic.mosaic
+----
+
+Authors:::
+
+
+- https://github.com/martinkirch/[@martinkirch]
+
+//-
+
+References:::
+
+
+- https://docs.softwareheritage.org/devel/swh-mosaic/
+- https://gitlab.softwareheritage.org/swh/devel/swh-mosaic
 
 //-
 --
