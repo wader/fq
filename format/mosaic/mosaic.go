@@ -32,7 +32,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, elm *ebml.Master) {
 		var childElm ebml.Element
 		elm.PeekNextElement(d, &childElm)
 
-		if childElm.IsSingleton() {
+		if childElm.GetMaxOccurs() == 1 {
 			d.FieldStruct(childElm.GetName(), func(d *decode.D) {
 				decodeElement(d, childElm)
 			})

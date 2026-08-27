@@ -23,7 +23,7 @@ $ fq -d matroska dv hevc.mkv
 0x0000|                                             81|               .|          size: 1 0xf-0x10 (1)
 0x0010|04                                             |.               |          value: 4 0x10-0x11 (1)
       |                                               |                |        [3]{}: element 0x11-0x15 (4)
-0x0010|   42 f3                                       | B.             |          id: "ebml_max_size_length" (0x42f3) (Maximum body length) 0x11-0x13 (2)
+0x0010|   42 f3                                       | B.             |          id: "ebml_max_size_length" (0x42f3) (Maximum length of encoded size) 0x11-0x13 (2)
       |                                               |                |          type: "uinteger"
 0x0010|         81                                    |   .            |          size: 1 0x13-0x14 (1)
 0x0010|            08                                 |    .           |          value: 8 0x14-0x15 (1)

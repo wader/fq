@@ -44,17 +44,22 @@ type Enum struct {
 }
 
 type Element struct {
-	Name           string          `xml:"name,attr"`
-	Path           string          `xml:"path,attr"`
-	ID             string          `xml:"id,attr"`
-	Type           string          `xml:"type,attr"`
-	Range          string          `xml:"range,attr"`
-	Default        string          `xml:"default,attr"`
-	MinOccurs      string          `xml:"minOccurs,attr"`
-	MaxOccurs      string          `xml:"maxOccurs,attr"`
-	Length         string          `xml:"length,attr"`
-	Documentations []Documentation `xml:"documentation"`
-	Enums          []Enum          `xml:"restriction>enum"`
+	Name               string          `xml:"name,attr"`
+	Path               string          `xml:"path,attr"`
+	ID                 string          `xml:"id,attr"`
+	Type               string          `xml:"type,attr"`
+	Range              string          `xml:"range,attr"`
+	Default            string          `xml:"default,attr"`
+	MinOccurs          string          `xml:"minOccurs,attr"`
+	MaxOccurs          string          `xml:"maxOccurs,attr"`
+	Length             string          `xml:"length,attr"`
+	UnknownSizeAllowed string          `xml:"unknownsizeallowed,attr"`
+	Recursive          string          `xml:"recursive,attr"`
+	Recurring          string          `xml:"recurring,attr"`
+	MinVer             string          `xml:"minver,attr"`
+	MaxVer             string          `xml:"maxver,attr"`
+	Documentations     []Documentation `xml:"documentation"`
+	Enums              []Enum          `xml:"restriction>enum"`
 }
 
 // <documentation lang="en" purpose="definition">A randomly generated unique ID to identify the Segment amongst many others (128 bits).</documentation>
@@ -135,7 +140,8 @@ func main() {
 	fmt.Printf("    ID: RootID,\n")
 	fmt.Printf("    ParentID: -1,\n")
 	fmt.Printf("    Name: \"\",\n")
-	fmt.Printf("    Singleton: true,\n")
+	fmt.Printf("    MinOccurs: 1,\n")
+	fmt.Printf("    MaxOccurs: 1,\n")
 	fmt.Printf("  },\n")
 	fmt.Printf("  Master: map[ebml.ID]ebml.Element{\n")
 	fmt.Printf("    ebml.HeaderID: ebml.Header,\n")
@@ -191,7 +197,37 @@ func main() {
 			fmt.Printf("    ParentID: RootID,\n")
 		}
 		fmt.Printf("    Name: %q,\n", camelToSnake(e.Name))
-		fmt.Printf("    Singleton: %t,\n", e.MaxOccurs == "1")
+		if e.MinOccurs != "" {
+			fmt.Printf("    MinOccurs: %s,\n", e.MinOccurs)
+		}
+		if e.MaxOccurs != "" {
+			fmt.Printf("    MaxOccurs: %s,\n", e.MaxOccurs)
+		}
+		if e.Range != "" {
+			fmt.Printf("    Range: \"%s\",\n", e.Range)
+		}
+		if e.Length != "" {
+			fmt.Printf("    Length: \"%s\",\n", e.Length)
+		}
+		if e.Default != "" {
+			fmt.Printf("    Default: \"%s\",\n", e.Default)
+		}
+		if e.UnknownSizeAllowed == "1" {
+			fmt.Printf("    UnknownSizeAllowed: true,\n")
+		}
+		if e.Recursive == "1" {
+			fmt.Printf("    Recursive: true,\n")
+		}
+		if e.Recurring == "1" {
+			fmt.Printf("    Recurring: true,\n")
+		}
+		if e.MinVer != "" {
+			fmt.Printf("    MinVer: %s,\n", e.MinVer)
+		}
+		if e.MaxVer != "" {
+			fmt.Printf("    MaxVer: %s,\n", e.MaxVer)
+		}
+
 		if def, defOk := findDefintion(e.Documentations); defOk {
 			fmt.Printf("    Definition: %q,\n", newLineRE.ReplaceAllString(def, " "))
 		}
@@ -230,7 +266,36 @@ func main() {
 			fmt.Printf("    ID: %sID,\n", c.Name)
 			fmt.Printf("    ParentID: %sID,\n", e.Name)
 			fmt.Printf("    Name: %q,\n", camelToSnake(c.Name))
-			fmt.Printf("    Singleton: %t,\n", c.MaxOccurs == "1")
+			if c.MinOccurs != "" {
+				fmt.Printf("    MinOccurs: %s,\n", c.MinOccurs)
+			}
+			if c.MaxOccurs != "" {
+				fmt.Printf("    MaxOccurs: %s,\n", c.MaxOccurs)
+			}
+			if c.Range != "" {
+				fmt.Printf("    Range: \"%s\",\n", c.Range)
+			}
+			if c.Length != "" {
+				fmt.Printf("    Length: \"%s\",\n", c.Length)
+			}
+			if c.Default != "" {
+				fmt.Printf("    Default: \"%s\",\n", c.Default)
+			}
+			if c.UnknownSizeAllowed == "1" {
+				fmt.Printf("    UnknownSizeAllowed: true,\n")
+			}
+			if c.Recursive == "1" {
+				fmt.Printf("    Recursive: true,\n")
+			}
+			if c.Recurring == "1" {
+				fmt.Printf("    Recurring: true,\n")
+			}
+			if c.MinVer != "" {
+				fmt.Printf("    MinVer: %s,\n", c.MinVer)
+			}
+			if c.MaxVer != "" {
+				fmt.Printf("    MaxVer: %s,\n", c.MaxVer)
+			}
 			def, defOk := findDefintion(c.Documentations)
 			if defOk {
 				fmt.Printf("  Definition: %q,\n", newLineRE.ReplaceAllString(def, " "))

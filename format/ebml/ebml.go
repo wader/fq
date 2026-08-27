@@ -18,7 +18,16 @@ type Element interface {
 	GetParentID() ID
 	GetName() string
 	GetDefinition() string
-	IsSingleton() bool
+	GetMinOccurs() uint64
+	GetMaxOccurs() uint64
+	GetRange() string
+	GetLength() string
+	GetDefault() string
+	GetUnknownSizeAllowed() bool
+	GetRecursive() bool
+	GetRecurring() bool
+	GetMinVer() uint64
+	GetMaxVer() uint64
 }
 
 type Enum struct {
@@ -27,19 +36,37 @@ type Enum struct {
 }
 
 type ElementType struct {
-	ID         ID
-	ParentID   ID
-	Name       string
-	Definition string
-	Singleton  bool
+	ID                 ID
+	ParentID           ID
+	Name               string
+	Definition         string
+	MinOccurs          uint64
+	MaxOccurs          uint64
+	Range              string
+	Length             string
+	Default            string
+	UnknownSizeAllowed bool
+	Recursive          bool
+	Recurring          bool
+	MinVer             uint64
+	MaxVer             uint64
 }
 
-func (e *ElementType) GetType() string       { return "" }
-func (e *ElementType) GetID() ID             { return e.ID }
-func (e *ElementType) GetParentID() ID       { return e.ParentID }
-func (e *ElementType) GetName() string       { return e.Name }
-func (e *ElementType) GetDefinition() string { return e.Definition }
-func (e *ElementType) IsSingleton() bool     { return e.Singleton }
+func (e *ElementType) GetType() string             { return "" }
+func (e *ElementType) GetID() ID                   { return e.ID }
+func (e *ElementType) GetParentID() ID             { return e.ParentID }
+func (e *ElementType) GetName() string             { return e.Name }
+func (e *ElementType) GetDefinition() string       { return e.Definition }
+func (e *ElementType) GetMinOccurs() uint64        { return e.MinOccurs }
+func (e *ElementType) GetMaxOccurs() uint64        { return e.MaxOccurs }
+func (e *ElementType) GetRange() string            { return e.Range }
+func (e *ElementType) GetLength() string           { return e.Length }
+func (e *ElementType) GetDefault() string          { return e.Default }
+func (e *ElementType) GetUnknownSizeAllowed() bool { return e.UnknownSizeAllowed }
+func (e *ElementType) GetRecursive() bool          { return e.Recursive }
+func (e *ElementType) GetRecurring() bool          { return e.Recurring }
+func (e *ElementType) GetMinVer() uint64           { return e.MinVer }
+func (e *ElementType) GetMaxVer() uint64           { return e.MaxVer }
 
 type ElementScalarType[T comparable] struct {
 	ElementType
@@ -123,40 +150,54 @@ var Global = &Master{
 		ID:        -1,
 		ParentID:  -1,
 		Name:      "",
-		Singleton: true,
+		MinOccurs: 1,
+		MaxOccurs: 1,
 	},
 	Master: map[ID]Element{
-		CRC32ID: &Binary{ElementType: ElementType{Name: "crc32", Singleton: true}},
+		CRC32ID: &Binary{ElementType: ElementType{Name: "crc32", Length: "4", MinOccurs: 0, MaxOccurs: 1}},
 		VoidID:  &Binary{ElementType: ElementType{Name: "void"}},
 	},
 }
 
 const (
-	HeaderID             = 0x1a45dfa3
-	EBMLVersionID        = 0x4286
-	EBMLReadVersionID    = 0x42f7
-	EBMLMaxIDLengthID    = 0x42f2
-	EBMLMaxSizeLengthID  = 0x42f3
-	DocTypeID            = 0x4282
-	DocTypeVersionID     = 0x4287
-	DocTypeReadVersionID = 0x4285
+	HeaderID                  = 0x1a45dfa3
+	EBMLVersionID             = 0x4286
+	EBMLReadVersionID         = 0x42f7
+	EBMLMaxIDLengthID         = 0x42f2
+	EBMLMaxSizeLengthID       = 0x42f3
+	DocTypeID                 = 0x4282
+	DocTypeVersionID          = 0x4287
+	DocTypeReadVersionID      = 0x4285
+	DocTypeExtensionID        = 0x4281
+	DocTypeExtensionNameID    = 0x4283
+	DocTypeExtensionVersionID = 0x4284
 )
 
 var Header = &Master{
 	ElementType: ElementType{
 		ID:        HeaderID,
-		ParentID:  RootID,
 		Name:      "ebml",
-		Singleton: true,
+		MinOccurs: 1,
+		MaxOccurs: 1,
 	},
 	Master: map[ID]Element{
-		EBMLVersionID:        &Uinteger{ElementType: ElementType{Name: "ebml_version", Definition: "EBML Version", Singleton: true}},
-		EBMLReadVersionID:    &Uinteger{ElementType: ElementType{Name: "ebml_read_version", Definition: "Minimum EBML reader version", Singleton: true}},
-		EBMLMaxIDLengthID:    &Uinteger{ElementType: ElementType{Name: "ebml_max_id_length", Definition: "Maximum id length", Singleton: true}},
-		EBMLMaxSizeLengthID:  &Uinteger{ElementType: ElementType{Name: "ebml_max_size_length", Definition: "Maximum body length", Singleton: true}},
-		DocTypeID:            &String{ElementType: ElementType{Name: "doc_type", Definition: "Document content type", Singleton: true}},
-		DocTypeVersionID:     &Uinteger{ElementType: ElementType{Name: "doc_type_version", Definition: "Document type version", Singleton: true}},
-		DocTypeReadVersionID: &Uinteger{ElementType: ElementType{Name: "doc_type_read_version", Definition: "Minimum document reader version", Singleton: true}},
+		EBMLVersionID:        &Uinteger{ElementType: ElementType{Name: "ebml_version", Definition: "EBML Version", MinOccurs: 1, MaxOccurs: 1, Range: ">0", Default: "1"}},
+		EBMLReadVersionID:    &Uinteger{ElementType: ElementType{Name: "ebml_read_version", Definition: "Minimum EBML reader version", MinOccurs: 1, MaxOccurs: 1, Range: "1", Default: "1"}},
+		EBMLMaxIDLengthID:    &Uinteger{ElementType: ElementType{Name: "ebml_max_id_length", Definition: "Maximum id length", MinOccurs: 1, MaxOccurs: 1, Range: ">=4", Default: "4"}},
+		EBMLMaxSizeLengthID:  &Uinteger{ElementType: ElementType{Name: "ebml_max_size_length", Definition: "Maximum length of encoded size", MinOccurs: 1, MaxOccurs: 1, Range: ">0", Default: "8"}},
+		DocTypeID:            &String{ElementType: ElementType{Name: "doc_type", Definition: "Document content type", MinOccurs: 1, MaxOccurs: 1}},
+		DocTypeVersionID:     &Uinteger{ElementType: ElementType{Name: "doc_type_version", Definition: "Document type version", MinOccurs: 1, MaxOccurs: 1, Range: ">0", Default: "1"}},
+		DocTypeReadVersionID: &Uinteger{ElementType: ElementType{Name: "doc_type_read_version", Definition: "Minimum document reader version", MinOccurs: 1, MaxOccurs: 1, Range: ">0", Default: "1"}},
+		DocTypeExtensionID: &Master{
+			ElementType: ElementType{
+				ID:   DocTypeExtensionID,
+				Name: "doc_type_extension",
+			},
+			Master: map[ID]Element{
+				DocTypeExtensionNameID:    &String{ElementType: ElementType{Name: "doc_type_extension_name", Definition: "Extensions of the main doctype", MinOccurs: 1, MaxOccurs: 1}},
+				DocTypeExtensionVersionID: &Uinteger{ElementType: ElementType{Name: "doc_type_extension_version", Definition: "Extension version", MinOccurs: 1, MaxOccurs: 1, Range: ">0"}},
+			},
+		},
 	},
 }
 

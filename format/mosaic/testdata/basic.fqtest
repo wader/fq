@@ -20,7 +20,7 @@ $ fq -d mosaic dv basic.mosaic
 0x00000|                                             81|               .|      size: 1 0xf-0x10 (1)
 0x00010|04                                             |.               |      value: 4 0x10-0x11 (1)
        |                                               |                |    ebml_max_size_length{}: 0x11-0x15 (4)
-0x00010|   42 f3                                       | B.             |      id: "ebml_max_size_length" (0x42f3) (Maximum body length) 0x11-0x13 (2)
+0x00010|   42 f3                                       | B.             |      id: "ebml_max_size_length" (0x42f3) (Maximum length of encoded size) 0x11-0x13 (2)
        |                                               |                |      type: "uinteger"
 0x00010|         81                                    |   .            |      size: 1 0x13-0x14 (1)
 0x00010|            08                                 |    .           |      value: 8 0x14-0x15 (1)

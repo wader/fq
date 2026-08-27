@@ -10,7 +10,8 @@ var RootElement = &ebml.Master{
 		ID:        RootID,
 		ParentID:  -1,
 		Name:      "",
-		Singleton: true,
+		MinOccurs: 1,
+		MaxOccurs: 1,
 	},
 	Master: map[ebml.ID]ebml.Element{
 		ebml.HeaderID: ebml.Header,
@@ -50,7 +51,8 @@ var MosaicElement = &ebml.Master{
 		ID:         MosaicID,
 		ParentID:   RootID,
 		Name:       "mosaic",
-		Singleton:  true,
+		MinOccurs:  1,
+		MaxOccurs:  1,
 		Definition: "MOSAIC root element",
 	},
 	Master: map[ebml.ID]ebml.Element{
@@ -65,7 +67,8 @@ var ContainerMetaDataElement = &ebml.Master{
 		ID:         ContainerMetaDataID,
 		ParentID:   MosaicID,
 		Name:       "container_meta_data",
-		Singleton:  true,
+		MinOccurs:  1,
+		MaxOccurs:  1,
 		Definition: "Document description",
 	},
 	Master: map[ebml.ID]ebml.Element{
@@ -82,7 +85,8 @@ var ObjectsCounterElement = &ebml.Uinteger{
 		ID:         ObjectsCounterID,
 		ParentID:   ContainerMetaDataID,
 		Name:       "objects_counter",
-		Singleton:  true,
+		MinOccurs:  1,
+		MaxOccurs:  1,
 		Definition: "Total number of objects in the document",
 	},
 }
@@ -91,7 +95,8 @@ var ObjectsTotalSizeElement = &ebml.Uinteger{
 		ID:         ObjectsTotalSizeID,
 		ParentID:   ContainerMetaDataID,
 		Name:       "objects_total_size",
-		Singleton:  true,
+		MinOccurs:  1,
+		MaxOccurs:  1,
 		Definition: "Total size of (uncompressed) objects in the document",
 	},
 }
@@ -100,7 +105,9 @@ var CompressionMethodElement = &ebml.String{
 		ID:         CompressionMethodID,
 		ParentID:   ContainerMetaDataID,
 		Name:       "compression_method",
-		Singleton:  true,
+		MinOccurs:  1,
+		MaxOccurs:  1,
+		Default:    "none",
 		Definition: "Name of the algorithm that should be used to decompress objects",
 	},
 	Enums: map[string]ebml.Enum{
@@ -114,7 +121,8 @@ var CompressionDataElement = &ebml.Binary{
 		ID:         CompressionDataID,
 		ParentID:   ContainerMetaDataID,
 		Name:       "compression_data",
-		Singleton:  true,
+		MinOccurs:  0,
+		MaxOccurs:  1,
 		Definition: "Decompression-specific data",
 	},
 }
@@ -123,7 +131,7 @@ var CommentElement = &ebml.UTF8{
 		ID:         CommentID,
 		ParentID:   ContainerMetaDataID,
 		Name:       "comment",
-		Singleton:  false,
+		MinOccurs:  0,
 		Definition: "An arbitrary-length presentation of the file",
 	},
 }
@@ -132,7 +140,8 @@ var EndOfTilesOffsetElement = &ebml.Uinteger{
 		ID:         EndOfTilesOffsetID,
 		ParentID:   ContainerMetaDataID,
 		Name:       "end_of_tiles_offset",
-		Singleton:  true,
+		MinOccurs:  1,
+		MaxOccurs:  1,
 		Definition: "Offset of the first top element after ContainerMetaData that is not a Tile",
 	},
 }
@@ -142,7 +151,7 @@ var TileElement = &ebml.Master{
 		ID:         TileID,
 		ParentID:   MosaicID,
 		Name:       "tile",
-		Singleton:  false,
+		MinOccurs:  1,
 		Definition: "Objects should be dispatched in smaller tile and each tile should contain a CRC32 element",
 	},
 	Master: map[ebml.ID]ebml.Element{
@@ -154,7 +163,7 @@ var ObjectElement = &ebml.Binary{
 		ID:         ObjectID,
 		ParentID:   TileID,
 		Name:       "object",
-		Singleton:  false,
+		MinOccurs:  0,
 		Definition: "A single object",
 	},
 }
@@ -164,7 +173,6 @@ var IndexElement = &ebml.Master{
 		ID:         IndexID,
 		ParentID:   MosaicID,
 		Name:       "index",
-		Singleton:  false,
 		Definition: "Index for fast lookup of objects",
 	},
 	Master: map[ebml.ID]ebml.Element{
@@ -180,7 +188,8 @@ var IdxDescriptionElement = &ebml.String{
 		ID:         IdxDescriptionID,
 		ParentID:   IndexID,
 		Name:       "idx_description",
-		Singleton:  true,
+		MinOccurs:  1,
+		MaxOccurs:  1,
 		Definition: "Description of this index' key semantics and its map format",
 	},
 	Enums: map[string]ebml.Enum{
@@ -195,7 +204,7 @@ var IdxUnrolledEntrySizeElement = &ebml.Uinteger{
 		ID:         IdxUnrolledEntrySizeID,
 		ParentID:   IndexID,
 		Name:       "idx_unrolled_entry_size",
-		Singleton:  true,
+		MaxOccurs:  1,
 		Definition: "If the mapping technique assumes that index entries have a fixed size",
 	},
 }
@@ -205,7 +214,7 @@ var IdxUnrolledElement = &ebml.Master{
 		ID:         IdxUnrolledID,
 		ParentID:   IndexID,
 		Name:       "idx_unrolled",
-		Singleton:  true,
+		MaxOccurs:  1,
 		Definition: "Unrolled index entries: all (Key",
 	},
 	Master: map[ebml.ID]ebml.Element{
@@ -219,7 +228,7 @@ var KeyElement = &ebml.Binary{
 		ID:         KeyID,
 		ParentID:   IdxUnrolledID,
 		Name:       "key",
-		Singleton:  false,
+		MinOccurs:  1,
 		Definition: "Key for an index entry",
 	},
 }
@@ -228,7 +237,6 @@ var OffsetElement = &ebml.Uinteger{
 		ID:         OffsetID,
 		ParentID:   IdxUnrolledID,
 		Name:       "offset",
-		Singleton:  false,
 		Definition: "Offset in file for an index entry",
 	},
 }
@@ -237,7 +245,7 @@ var GoToConflictsElement = &ebml.Binary{
 		ID:         GoToConflictsID,
 		ParentID:   IdxUnrolledID,
 		Name:       "go_to_conflicts",
-		Singleton:  false,
+		Length:     "0",
 		Definition: "This element should replace an Offset when an key is associated to more than one object",
 	},
 }
@@ -247,7 +255,7 @@ var MapContainerElement = &ebml.Master{
 		ID:         MapContainerID,
 		ParentID:   IndexID,
 		Name:       "map_container",
-		Singleton:  true,
+		MaxOccurs:  1,
 		Definition: "This wrapper element allow us to put a CRC32 before the serialized Map",
 	},
 	Master: map[ebml.ID]ebml.Element{
@@ -259,7 +267,8 @@ var MapElement = &ebml.Binary{
 		ID:         MapID,
 		ParentID:   MapContainerID,
 		Name:       "map",
-		Singleton:  true,
+		MinOccurs:  1,
+		MaxOccurs:  1,
 		Definition: "An efficient mapping technique of keys to their position in the index or in payload",
 	},
 }
@@ -269,7 +278,7 @@ var ConflictsElement = &ebml.Master{
 		ID:         ConflictsID,
 		ParentID:   IndexID,
 		Name:       "conflicts",
-		Singleton:  false,
+		MinOccurs:  0,
 		Definition: "This element enumerates key conflicts",
 	},
 	Master: map[ebml.ID]ebml.Element{
@@ -282,7 +291,7 @@ var ConflictElement = &ebml.Master{
 		ID:         ConflictID,
 		ParentID:   ConflictsID,
 		Name:       "conflict",
-		Singleton:  false,
+		MinOccurs:  1,
 		Definition: "A single key conflict",
 	},
 	Master: map[ebml.ID]ebml.Element{
@@ -295,7 +304,8 @@ var ConflictingKeyElement = &ebml.Binary{
 		ID:         ConflictingKeyID,
 		ParentID:   ConflictID,
 		Name:       "conflicting_key",
-		Singleton:  true,
+		MinOccurs:  1,
+		MaxOccurs:  1,
 		Definition: "The conflicting key",
 	},
 }
@@ -304,7 +314,7 @@ var ConflictingOffsetElement = &ebml.Uinteger{
 		ID:         ConflictingOffsetID,
 		ParentID:   ConflictID,
 		Name:       "conflicting_offset",
-		Singleton:  false,
+		MinOccurs:  2,
 		Definition: "One of the possible offsets for the conflicting key",
 	},
 }
