@@ -3826,6 +3826,100 @@ Authors
 .RE
 .RE
 .sp
+\f(CR\fBmosaic\fP\fP
+.RS 4
+MOdular Storage of Archived and Indexed Contents
+.sp
+List indexes in a mosaic
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \*(Aq.mosaic.index[].idx_description\*(Aq file.mosaic
+.fam
+.fi
+.if n .RE
+.sp
+List only small objects
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \*(Aq.mosaic.tile[].object[] | select(.size < 1000)\*(Aq file.mosaic
+.fam
+.fi
+.if n .RE
+.sp
+Check if the reported size is correct
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \*(Aqadd(.mosaic.tile[].object[].size) == .mosaic.container_meta_data.objects_total_size.value\*(Aq basic.mosaic
+.fam
+.fi
+.if n .RE
+.sp
+Command above only works if the file does not use compression:
+.sp
+See if a file uses compression
+.RS 4
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+$ fq \*(Aq.mosaic.container_meta_data.compression_method\*(Aq basic.mosaic
+.fam
+.fi
+.if n .RE
+.sp
+Authors
+.RS 4
+.RS 4
+.ie n \{\
+\h'-04'\-\h'+01'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://github.com/martinkirch/" "@martinkirch" ""
+.RE
+.RE
+.sp
+References
+.RS 4
+.RS 4
+.ie n \{\
+\h'-04'\-\h'+01'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://docs.softwareheritage.org/devel/swh\-mosaic/" "" ""
+.RE
+.br
+.RS 4
+.ie n \{\
+\h'-04'\-\h'+01'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+.URL "https://gitlab.softwareheritage.org/swh/devel/swh\-mosaic" "" ""
+.RE
+.RE
+.RE
+.sp
 \f(CR\fBmp3\fP\fP
 .RS 4
 MP3 file
