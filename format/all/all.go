@@ -39,6 +39,7 @@ import (
 	_ "github.com/wader/fq/format/matroska"
 	_ "github.com/wader/fq/format/midi"
 	_ "github.com/wader/fq/format/moc3"
+	_ "github.com/wader/fq/format/mosaic"
 	_ "github.com/wader/fq/format/mp3"
 	_ "github.com/wader/fq/format/mpeg"
 	_ "github.com/wader/fq/format/msgpack"
