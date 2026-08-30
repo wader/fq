@@ -1,0 +1,148 @@
+# A binary behaves as the string of its bytes would, so a byte that no string
+# can carry is found where it is instead of being folded into every other byte
+# that is not valid UTF-8.
+
+("00ff80fe01" | hex) | indices("80" | hex)
+null
+[2]
+
+("00ff80fe01" | hex) | index("80" | hex)
+null
+2
+
+("00ff80fe01" | hex) | rindex("ff" | hex)
+null
+1
+
+("00ff00ff" | hex) | indices("ff" | hex)
+null
+[1,3]
+
+# overlapping matches, as the string version reports them
+("6162616261" | hex) | indices("616261" | hex)
+null
+[0,2]
+
+# the case functions move the twenty six letters and nothing else
+("00ff80fe01" | hex) | ascii_upcase | tohex
+null
+"00ff80fe01"
+
+("00ff80fe01" | hex) | ascii_downcase | tohex
+null
+"00ff80fe01"
+
+("6142ff" | hex) | ascii_upcase | tohex
+null
+"4142ff"
+
+("6142ff" | hex) | ascii_downcase | tohex
+null
+"6162ff"
+
+# a result is a binary, so it can be read on as one
+("616263646566" | hex) | ltrimstr("ab") | tohex
+null
+"63646566"
+
+("616263646566" | hex) | rtrimstr("ef") | tohex
+null
+"61626364"
+
+("00ff80fe01" | hex) | ltrimstr("00ff" | hex) | tohex
+null
+"80fe01"
+
+("00ff80fe01" | hex) | rtrimstr("fe01" | hex) | tohex
+null
+"00ff80"
+
+# a needle may be a string or a binary
+("616263646566" | hex) | index("cd")
+null
+2
+
+("616263646566" | hex) | index("6364" | hex)
+null
+2
+
+# prefix, suffix and containment over bytes
+("00ff80fe01" | hex) | startswith("00ff" | hex)
+null
+true
+
+("00ff80fe01" | hex) | startswith("00fe" | hex)
+null
+false
+
+("00ff80fe01" | hex) | endswith("fe01" | hex)
+null
+true
+
+("00ff80fe01" | hex) | contains("80fe" | hex)
+null
+true
+
+("00ff80fe01" | hex) | contains("8080" | hex)
+null
+false
+
+# sub and gsub replace bytes with bytes
+("00ff80fe01" | hex) | gsub(("ff" | hex); ("41" | hex)) | tohex
+null
+"004180fe01"
+
+("00ff80fe01" | hex) | sub(("80" | hex); ("4243" | hex)) | tohex
+null
+"00ff4243fe01"
+
+("ff80fe" | hex) | gsub(("80" | hex); ("41" | hex)) | tohex
+null
+"ff41fe"
+
+("616263646566" | hex) | sub("cd"; "XY") | tohex
+null
+"616258596566"
+
+("616263646566" | hex) | gsub("c"; "Z") | tohex
+null
+"61625a646566"
+
+# the replacement sees the captures
+("616263646566" | hex) | sub("(?<x>cd)"; .x + .x) | tohex
+null
+"6162636463646566"
+
+# the empty needle, as the string version treats it
+("616263646566" | hex) | indices("")
+null
+[]
+
+("616263646566" | hex) | startswith("")
+null
+true
+
+("616263646566" | hex) | contains("")
+null
+true
+
+# a string is still a string and behaves exactly as it did
+"abcdef" | ltrimstr("ab")
+null
+"cdef"
+
+"ababa" | indices("aba")
+null
+[0,2]
+
+"aBc1_~" | ascii_upcase
+null
+"ABC1_~"
+
+"abcdef" | sub("cd"; "XY")
+null
+"abXYef"
+
+"abc" | indices("")
+null
+[]
