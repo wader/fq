@@ -1,6 +1,6 @@
 module github.com/wader/fq
 
-go 1.25.0
+go 1.26.0
 
 // fork of github.com/itchyny/gojq, see github.com/wader/gojq fq branch
 require github.com/wader/gojq v0.12.1-0.20260709150221-6128faeeac7b
@@ -48,7 +48,7 @@ require (
 	// bump: gomod-golang-x-crypto /golang\.org\/x\/crypto v(.*)/ https://github.com/golang/crypto.git|^0
 	// bump: gomod-golang-x-crypto command go get golang.org/x/crypto@v$LATEST && go mod tidy
 	// bump: gomod-golang-x-crypto link "Tags" https://github.com/golang/crypto/tags
-	golang.org/x/crypto v0.55.0
+	golang.org/x/crypto v0.56.0
 
 	// bump: gomod-golang-x-net /golang\.org\/x\/net v(.*)/ https://github.com/golang/net.git|^0
 	// bump: gomod-golang-x-net command go get golang.org/x/net@v$LATEST && go mod tidy
