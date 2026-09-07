@@ -72,7 +72,7 @@ func fieldRational(d *decode.D, name string) float64 {
 		numerator := d.FieldU32("numerator")
 		denominator := d.FieldU32("denominator")
 		v := float64(numerator) / float64(denominator)
-		d.FieldValueFlt("float", v)
+		d.FieldSynFlt("float", v)
 	})
 	return v
 }
@@ -83,7 +83,7 @@ func fieldSRational(d *decode.D, name string) float64 {
 		numerator := d.FieldS32("numerator")
 		denominator := d.FieldS32("denominator")
 		v := float64(numerator) / float64(denominator)
-		d.FieldValueFlt("float", v)
+		d.FieldSynFlt("float", v)
 	})
 	return v
 }

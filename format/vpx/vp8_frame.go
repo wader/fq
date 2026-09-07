@@ -42,12 +42,12 @@ func vp8Decode(d *decode.D) any {
 		firstPartSize1 := d.FieldU16LE("first_part_size1")
 
 		firstPartSize := firstPartSize0 | firstPartSize1<<3
-		d.FieldValueUint("first_part_size", firstPartSize)
+		d.FieldSynUint("first_part_size", firstPartSize)
 
 		isKeyFrame = !keyFrameV
 		if v, ok := versions[version]; ok {
-			d.FieldValueStr("reconstruction", v.reconstruction)
-			d.FieldValueStr("loop", v.loop)
+			d.FieldSynStr("reconstruction", v.reconstruction)
+			d.FieldSynStr("loop", v.loop)
 		}
 	})
 
@@ -58,12 +58,12 @@ func vp8Decode(d *decode.D) any {
 		width0 := d.FieldU8("width0")
 		d.FieldU2("horizontal_scale")
 		width1 := d.FieldU6("width1")
-		d.FieldValueUint("width", width0|width1<<8)
+		d.FieldSynUint("width", width0|width1<<8)
 
 		height0 := d.FieldU8("height0")
 		d.FieldU2("vertical_scale")
 		height1 := d.FieldU6("height1")
-		d.FieldValueUint("height", height0|height1<<8)
+		d.FieldSynUint("height", height0|height1<<8)
 	}
 
 	d.FieldRawLen("data", d.BitsLeft())

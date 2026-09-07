@@ -37,11 +37,11 @@ func fieldFlows(d *decode.D, fd *flowsdecoder.Decoder, tcpStreamFormat decode.Gr
 		for _, s := range fd.TCPConnections {
 			d.FieldStruct("tcp_connection", func(d *decode.D) {
 				f := func(d *decode.D, td *flowsdecoder.TCPDirection, tsi format.TCP_Stream_In) any {
-					d.FieldValueStr("ip", td.Endpoint.IP.String())
-					d.FieldValueUint("port", uint64(td.Endpoint.Port), format.TCPPortMap)
-					d.FieldValueBool("has_start", td.HasStart)
-					d.FieldValueBool("has_end", td.HasEnd)
-					d.FieldValueUint("skipped_bytes", td.SkippedBytes)
+					d.FieldSynStr("ip", td.Endpoint.IP.String())
+					d.FieldSynUint("port", uint64(td.Endpoint.Port), format.TCPPortMap)
+					d.FieldSynBool("has_start", td.HasStart)
+					d.FieldSynBool("has_end", td.HasEnd)
+					d.FieldSynUint("skipped_bytes", td.SkippedBytes)
 
 					br := bitio.NewBitReader(td.Buffer.Bytes(), -1)
 					dv, outV, _ := d.TryFieldFormatBitBuf(

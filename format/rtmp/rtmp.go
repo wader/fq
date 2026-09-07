@@ -411,7 +411,7 @@ func rtmpDecode(d *decode.D) any {
 					}
 					h.timestamp = cs.prevHeader.timestamp
 					h.messageStreamID = cs.prevHeader.messageStreamID
-					d.FieldValueUint("message_stream_id", h.messageStreamID, scalar.UintDescription("previous"))
+					d.FieldSynUint("message_stream_id", h.messageStreamID, scalar.UintDescription("previous"))
 
 				case 2:
 					h.timestampDelta = d.FieldU24("timestamp_delta", timestampUintDescription)
@@ -422,23 +422,23 @@ func rtmpDecode(d *decode.D) any {
 					h.messageLength = cs.prevHeader.messageLength
 					h.messageStreamID = cs.prevHeader.messageStreamID
 					h.messageTypeID = cs.prevHeader.messageTypeID
-					d.FieldValueUint("message_length", h.messageLength, scalar.UintDescription("previous"))
-					d.FieldValueUint("message_type_id", h.messageTypeID, scalar.UintDescription("previous"))
-					d.FieldValueUint("message_stream_id", h.messageStreamID, scalar.UintDescription("previous"))
+					d.FieldSynUint("message_length", h.messageLength, scalar.UintDescription("previous"))
+					d.FieldSynUint("message_type_id", h.messageTypeID, scalar.UintDescription("previous"))
+					d.FieldSynUint("message_stream_id", h.messageStreamID, scalar.UintDescription("previous"))
 				case 3:
 					h.timestamp = cs.prevHeader.timestamp
 					h.timestampDelta = cs.prevHeader.timestampDelta
 					h.messageLength = cs.prevHeader.messageLength
 					h.messageStreamID = cs.prevHeader.messageStreamID
 					h.messageTypeID = cs.prevHeader.messageTypeID
-					d.FieldValueUint("message_length", h.messageLength, scalar.UintDescription("previous"))
-					d.FieldValueUint("message_type_id", h.messageTypeID, scalar.UintDescription("previous"))
-					d.FieldValueUint("message_stream_id", h.messageStreamID, scalar.UintDescription("previous"))
+					d.FieldSynUint("message_length", h.messageLength, scalar.UintDescription("previous"))
+					d.FieldSynUint("message_type_id", h.messageTypeID, scalar.UintDescription("previous"))
+					d.FieldSynUint("message_stream_id", h.messageStreamID, scalar.UintDescription("previous"))
 				}
 
 				h.timestamp += h.timestampDelta
 
-				d.FieldValueUint("calculated_timestamp", h.timestamp)
+				d.FieldSynUint("calculated_timestamp", h.timestamp)
 
 				m, ok := cs.messageSteams[h.messageStreamID]
 				if !ok {
@@ -468,8 +468,8 @@ func rtmpDecode(d *decode.D) any {
 				if m.l == uint64(m.b.Len()) {
 					messageBR := bitio.NewBitReader(m.b.Bytes(), -1)
 					messages.FieldStructRootBitBufFn("message", messageBR, func(d *decode.D) {
-						d.FieldValueUint("message_stream_id", h.messageStreamID)
-						d.FieldValueUint("message_type_id", m.typ, rtmpMessageTypeIDNames)
+						d.FieldSynUint("message_stream_id", h.messageStreamID)
+						d.FieldSynUint("message_type_id", m.typ, rtmpMessageTypeIDNames)
 						rtmpDecodeMessageType(d, int(m.typ), &chunkSize)
 					})
 

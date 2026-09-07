@@ -84,9 +84,9 @@ func amf0DecodeValue(d *decode.D) {
 			}
 		})
 	case typeNull:
-		d.FieldValueAny("value", nil)
+		d.FieldSynAny("value", nil)
 	case typeUndefined:
-		d.FieldValueAny("value", nil) // TODO: ?
+		d.FieldSynAny("value", nil) // TODO: ?
 	case typeReference:
 		d.FieldU16("value") // TODO: index pointer
 	case typeECMAArray:

@@ -102,16 +102,16 @@ func decodeMsgPackValue(d *decode.D) {
 			d.FieldUTF8("value", int(length))
 		}},
 		{r: [2]byte{0xc0, 0xc0}, s: scalar.Uint{Sym: "nil"}, d: func(d *decode.D) {
-			d.FieldValueAny("value", nil)
+			d.FieldSynAny("value", nil)
 		}},
 		{r: [2]byte{0xc1, 0xc1}, s: scalar.Uint{Sym: "never_used"}, d: func(d *decode.D) {
 			d.Fatalf("0xc1 never used")
 		}},
 		{r: [2]byte{0xc2, 0xc2}, s: scalar.Uint{Sym: "false"}, d: func(d *decode.D) {
-			d.FieldValueBool("value", false)
+			d.FieldSynBool("value", false)
 		}},
 		{r: [2]byte{0xc3, 0xc3}, s: scalar.Uint{Sym: "true"}, d: func(d *decode.D) {
-			d.FieldValueBool("value", true)
+			d.FieldSynBool("value", true)
 		}},
 		{r: [2]byte{0xc4, 0xc4}, s: scalar.Uint{Sym: "bin8"}, d: func(d *decode.D) { d.FieldRawLen("value", int64(d.FieldU8("length"))*8) }},
 		{r: [2]byte{0xc5, 0xc5}, s: scalar.Uint{Sym: "bin16"}, d: func(d *decode.D) { d.FieldRawLen("value", int64(d.FieldU16("length"))*8) }},

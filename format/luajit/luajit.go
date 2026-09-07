@@ -85,10 +85,10 @@ func LuaJITDecodeHeader(di *DumpInfo, d *decode.D) {
 	d.FieldStruct("flags", func(d *decode.D) {
 		flags = d.FieldULEB128("raw")
 
-		d.FieldValueBool("be", flags&0x01 > 0)
-		d.FieldValueBool("strip", flags&0x02 > 0)
-		d.FieldValueBool("ffi", flags&0x04 > 0)
-		d.FieldValueBool("fr2", flags&0x08 > 0)
+		d.FieldSynBool("be", flags&0x01 > 0)
+		d.FieldSynBool("strip", flags&0x02 > 0)
+		d.FieldSynBool("ffi", flags&0x04 > 0)
+		d.FieldSynBool("fr2", flags&0x08 > 0)
 	})
 
 	di.Strip = flags&0x2 > 0
@@ -147,15 +147,15 @@ func LuaJITDecodeKTabK(d *decode.D) {
 	switch ktabtype {
 	case 0:
 		// nil
-		d.FieldValueAny("value", nil)
+		d.FieldSynAny("value", nil)
 
 	case 1:
 		// false
-		d.FieldValueBool("value", false)
+		d.FieldSynBool("value", false)
 
 	case 2:
 		// true
-		d.FieldValueBool("value", true)
+		d.FieldSynBool("value", true)
 
 	case 3:
 		// int

@@ -271,7 +271,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, elm *ebml.Master, unknownSize bo
 						Description:   childElm.GetDefinition(),
 					}, nil
 				}))
-				d.FieldValueStr("type", childElm.GetType())
+				d.FieldSynStr("type", childElm.GetType())
 
 				if tagID == ebml_matroska.TrackEntryID {
 					dc.currentTrack = &track{}
@@ -361,7 +361,7 @@ func decodeMaster(d *decode.D, bitsLimit int64, elm *ebml.Master, unknownSize bo
 				case *ebml.Date:
 					switch tagSize {
 					case 0:
-						d.FieldValueSint("value", 0, sintActualMatroskaEpochDescription)
+						d.FieldSynSint("value", 0, sintActualMatroskaEpochDescription)
 					case 8:
 						d.FieldS("value", int(tagSize)*8, sintActualMatroskaEpochDescription)
 					default:

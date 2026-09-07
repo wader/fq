@@ -262,7 +262,7 @@ func aacFillElement(d *decode.D) {
 			cnt += escCount - 1
 		}
 	})
-	d.FieldValueUint("payload_length", cnt)
+	d.FieldSynUint("payload_length", cnt)
 
 	d.FieldStruct("extension_payload", func(d *decode.D) {
 		d.FramedFn(int64(cnt)*8, func(d *decode.D) {

@@ -244,7 +244,7 @@ func frameDecode(d *decode.D) any {
 			sideChannelIndex = 1
 		}
 		if sideChannelIndex != -1 {
-			d.FieldValueUint("side_channel_index", uint64(sideChannelIndex))
+			d.FieldSynUint("side_channel_index", uint64(sideChannelIndex))
 		}
 
 		// <3> Sample size in bits:
@@ -360,7 +360,7 @@ func frameDecode(d *decode.D) any {
 					lpcOrder = int((subframeTypeUint.Actual & 0b11111) + 1)
 				}
 				if lpcOrder != -1 {
-					d.FieldValueUint("lpc_order", uint64(lpcOrder))
+					d.FieldSynUint("lpc_order", uint64(lpcOrder))
 				}
 
 				// 'Wasted bits-per-sample' flag:
@@ -381,7 +381,7 @@ func frameDecode(d *decode.D) any {
 				if channelIndex == sideChannelIndex {
 					subframeSampleSize++
 				}
-				d.FieldValueUint("subframe_sample_size", uint64(subframeSampleSize))
+				d.FieldSynUint("subframe_sample_size", uint64(subframeSampleSize))
 
 				decodeWarmupSamples := func(samples []int64, n int, sampleSize int) {
 					if len(samples) < n {
@@ -422,7 +422,7 @@ func frameDecode(d *decode.D) any {
 					partitionOrder := int(d.FieldU4("partition_order"))
 					// There will be 2^order partitions.
 					ricePartitions := 1 << partitionOrder
-					d.FieldValueUint("rice_partitions", uint64(ricePartitions))
+					d.FieldSynUint("rice_partitions", uint64(ricePartitions))
 
 					d.FieldArray("partitions", func(d *decode.D) {
 						for i := range ricePartitions {
@@ -448,7 +448,7 @@ func frameDecode(d *decode.D) any {
 									count = (blockSize / ricePartitions) - lpcOrder
 								}
 
-								d.FieldValueUint("count", uint64(count))
+								d.FieldSynUint("count", uint64(count))
 
 								riceParameter := int(d.FieldU("rice_parameter", riceBits))
 
@@ -491,7 +491,7 @@ func frameDecode(d *decode.D) any {
 													high := d.FieldUnary("high", 0)
 													low := d.FieldU("low", riceParameter)
 													residual := mathx.ZigZag[uint64, int64](high<<riceParameter | low)
-													d.FieldValueSint("value", residual)
+													d.FieldSynSint("value", residual)
 													samples[n] = residual
 												})
 												n++
@@ -603,7 +603,7 @@ func frameDecode(d *decode.D) any {
 				if ffi.SampleDetails && subframeType != SubframeVerbatim {
 					d.FieldArray("samples", func(d *decode.D) {
 						for _, s := range samples {
-							d.FieldValueSint("sample", s)
+							d.FieldSynSint("sample", s)
 						}
 					})
 				}

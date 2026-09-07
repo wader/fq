@@ -269,7 +269,7 @@ func decodeBox(ctx *decodeContext, d *decode.D, extraTypeMappers ...scalar.StrMa
 
 	if ctx.allowTruncated && dataSize > uint64(d.BitsLeft()/8) {
 		dataSize = uint64(d.BitsLeft() / 8)
-		d.FieldValueUint("truncated_size", dataSize)
+		d.FieldSynUint("truncated_size", dataSize)
 	}
 
 	b := &box{typ: typ, parent: ctx.current}

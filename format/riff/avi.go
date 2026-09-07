@@ -180,8 +180,8 @@ func aviIsStreamType(typ string) bool {
 func aviDecorateStreamID(d *decode.D, id string) (string, int) {
 	typ, index, ok := aviParseChunkID(id)
 	if ok && aviIsStreamType(typ) {
-		d.FieldValueStr("stream_type", typ, aviStreamChunkTypeDescriptions)
-		d.FieldValueUint("stream_nr", uint64(index))
+		d.FieldSynStr("stream_type", typ, aviStreamChunkTypeDescriptions)
+		d.FieldSynUint("stream_nr", uint64(index))
 		return typ, index
 	}
 	return "", 0
@@ -205,8 +205,8 @@ func aviDecodeChunkIndex(d *decode.D) []ranges.Range {
 				offset := int64(d.FieldU32("offset"))
 				sizeKeyFrame := d.FieldU32("size_keyframe")
 				size := sizeKeyFrame & 0x7f_ff_ff_ff
-				d.FieldValueUint("size", size)
-				d.FieldValueBool("key_frame", sizeKeyFrame&0x80_00_00_00 == 0)
+				d.FieldSynUint("size", size)
+				d.FieldSynBool("key_frame", sizeKeyFrame&0x80_00_00_00 == 0)
 				rs = append(rs, ranges.Range{
 					Start: baseOffset*8 + offset*8,
 					Len:   int64(size) * 8,
@@ -543,13 +543,13 @@ func aviDecodeEx(d *decode.D, ai format.AVI_In, extendedChunk bool) {
 			for streamIndex, stream := range streams {
 
 				d.FieldStruct("stream", func(d *decode.D) {
-					d.FieldValueStr("type", stream.typ)
-					d.FieldValueStr("handler", stream.handler)
+					d.FieldSynStr("type", stream.typ)
+					d.FieldSynStr("handler", stream.handler)
 					switch stream.typ {
 					case aviStrhTypeAudio:
-						d.FieldValueUint("format_tag", stream.formatTag, format.WAVTagNames)
+						d.FieldSynUint("format_tag", stream.formatTag, format.WAVTagNames)
 					case aviStrhTypeVideo:
-						d.FieldValueStr("compression", stream.compression)
+						d.FieldSynStr("compression", stream.compression)
 					}
 
 					var streamIndexSampleRanges []ranges.Range

@@ -78,7 +78,7 @@ func decodeOgg(d *decode.D) any {
 			if !sFound {
 				var packetsD *decode.D
 				streamsD.FieldStruct("stream", func(d *decode.D) {
-					d.FieldValueUint("serial_number", uint64(oggPageOut.StreamSerialNumber))
+					d.FieldSynUint("serial_number", uint64(oggPageOut.StreamSerialNumber))
 					packetsD = d.FieldArrayValue("packets")
 				})
 				s = &stream{

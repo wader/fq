@@ -1263,7 +1263,7 @@ func (d *D) FieldReaderRangeFormat(name string, startBit int64, nBits int64, fn 
 	return cz, rBR, dv, v
 }
 
-func (d *D) TryFieldValue(name string, fn func() (*Value, error)) (*Value, error) {
+func (d *D) TryFieldSyn(name string, fn func() (*Value, error)) (*Value, error) {
 	start := d.Pos()
 	v, err := fn()
 	stop := d.Pos()
@@ -1278,10 +1278,10 @@ func (d *D) TryFieldValue(name string, fn func() (*Value, error)) (*Value, error
 	return v, err
 }
 
-func (d *D) FieldValue(name string, fn func() *Value) *Value {
-	v, err := d.TryFieldValue(name, func() (*Value, error) { return fn(), nil })
+func (d *D) FieldSyn(name string, fn func() *Value) *Value {
+	v, err := d.TryFieldSyn(name, func() (*Value, error) { return fn(), nil })
 	if err != nil {
-		d.IOPanic(err, name, "FieldValue: TryFieldValue")
+		d.IOPanic(err, name, "FieldSyn: TryFieldSyn")
 	}
 	return v
 }

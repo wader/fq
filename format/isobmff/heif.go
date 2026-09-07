@@ -109,13 +109,13 @@ func heifItems(d *decode.D, ctx *decodeContext) {
 					return
 				}
 
-				d.FieldValueUint("id", inf.itemID)
-				d.FieldValueStr("type", inf.itemType)
+				d.FieldSynUint("id", inf.itemID)
+				d.FieldSynStr("type", inf.itemType)
 				if inf.contentType != "" {
-					d.FieldValueStr("content_type", inf.contentType)
+					d.FieldSynStr("content_type", inf.contentType)
 				}
 				if inf.itemName != "" {
-					d.FieldValueStr("name", inf.itemName)
+					d.FieldSynStr("name", inf.itemName)
 				}
 
 				ipma := findData[*ipmaBox](meta, "iprp/ipma")
@@ -128,11 +128,11 @@ func heifItems(d *decode.D, ctx *decodeContext) {
 							for _, assoc := range entry.associations {
 								d.FieldStruct("property", func(d *decode.D) {
 									idx := assoc.propertyIndex - 1
-									d.FieldValueUint("index", uint64(assoc.propertyIndex))
-									d.FieldValueBool("essential", assoc.essential)
+									d.FieldSynUint("index", uint64(assoc.propertyIndex))
+									d.FieldSynBool("essential", assoc.essential)
 									if ipco != nil && idx >= 0 && idx < len(ipco.children) {
 										prop := ipco.children[idx]
-										d.FieldValueStr("type", prop.typ)
+										d.FieldSynStr("type", prop.typ)
 									}
 								})
 							}

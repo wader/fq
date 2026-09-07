@@ -390,9 +390,9 @@ func machoDecode(d *decode.D) any {
 
 	d.SeekRel(-4 * 8)
 	d.FieldStruct("header", func(d *decode.D) {
-		d.FieldValueSint("arch_bits", int64(archBits))
+		d.FieldSynSint("arch_bits", int64(archBits))
 		d.FieldU32("magic", magicSymMapper, scalar.UintHex)
-		d.FieldValueUint("bits", uint64(archBits))
+		d.FieldSynUint("bits", uint64(archBits))
 		cpuType = d.FieldU32("cputype", cpuTypes, scalar.UintHex)
 		d.FieldU32("cpusubtype", cpuSubTypes[cpuType], scalar.UintHex)
 		d.FieldU32("filetype", fileTypes)
@@ -431,7 +431,7 @@ func machoDecode(d *decode.D) any {
 
 					var nsects uint64
 					d.FieldStruct("segment_command", func(d *decode.D) {
-						d.FieldValueSint("arch_bits", int64(archBits))
+						d.FieldSynSint("arch_bits", int64(archBits))
 						d.FieldUTF8NullFixedLen("segname", 16) // OPCODE_DECODER segname==__TEXT
 						if archBits == 32 {
 							vmaddr = int64(d.FieldU32("vmaddr", scalar.UintHex))

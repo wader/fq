@@ -68,7 +68,7 @@ func decodeBitcoinScript(d *decode.D) any {
 		{r: [2]byte{0x51, 0x51}, s: scalar.Uint{Sym: "true"}},
 		// TODO: name
 		{r: [2]byte{0x52, 0x60}, s: scalar.Uint{Sym: "push"}, d: func(d *decode.D, opcode byte) {
-			d.FieldValueUint("arg", uint64(opcode-0x50))
+			d.FieldSynUint("arg", uint64(opcode-0x50))
 		}},
 		{r: [2]byte{0x61, 0x61}, s: scalar.Uint{Sym: "nop"}},
 		{r: [2]byte{0x62, 0x62}, s: scalar.Uint{Sym: "ver"}},

@@ -192,7 +192,7 @@ func frameDecode(d *decode.D) any {
 			3: [...]int{0, 1152, 576, 576},
 		}
 		sampleCount = samplesFrameIndex[uint(mpegLayerNr)][uint(mpegVersionNr)]
-		d.FieldValueUint("sample_count", uint64(sampleCount))
+		d.FieldSynUint("sample_count", uint64(sampleCount))
 		protection := d.FieldBool("protection_absent", protectionNames)
 		// note false mean has protection
 		hasCRC := !protection
@@ -389,7 +389,7 @@ func frameDecode(d *decode.D) any {
 		_ = crcValue.TryUintScalarFn(d.UintValidateBytes(crcHash.Sum(nil)))
 	}
 
-	d.FieldValueBitBuf("crc_calculated", bitio.NewBitReader(crcHash.Sum(nil), -1), scalar.RawHex)
+	d.FieldSynBitBuf("crc_calculated", bitio.NewBitReader(crcHash.Sum(nil), -1), scalar.RawHex)
 
 	return format.MP3_Frame_Out{
 		MPEGVersion:      int(mpegVersionNr),

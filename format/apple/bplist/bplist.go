@@ -125,29 +125,29 @@ func decodeItem(d *decode.D, p *plist) bool {
 		}
 	case elementTypeReal:
 		n := 1 << decodeSize(d)
-		d.FieldValueUint("size", uint64(n))
+		d.FieldSynUint("size", uint64(n))
 		d.FieldF("value", n*8)
 	case elementTypeDate:
 		n := 1 << decodeSize(d, d.UintAssert(4, 8))
-		d.FieldValueUint("size", uint64(n))
+		d.FieldSynUint("size", uint64(n))
 		d.FieldF("value", n*8, scalar.FltActualDateDescription(cocoaTimeEpochDate, time.Second, time.RFC3339))
 	case elementTypeData:
 		n := decodeSize(d)
-		d.FieldValueUint("size", n)
+		d.FieldSynUint("size", n)
 		d.FieldRawLen("value", int64(n*8))
 	case elementTypeASCIIString:
 		n := decodeSize(d)
-		d.FieldValueUint("size", n)
+		d.FieldSynUint("size", n)
 		d.FieldUTF8("value", int(n))
 		return true
 	case elementTypeUnicodeString:
 		n := decodeSize(d)
-		d.FieldValueUint("size", n)
+		d.FieldSynUint("size", n)
 		d.FieldUTF16BE("value", int(n*2))
 		return true
 	case elementTypeArray:
 		n := decodeSize(d)
-		d.FieldValueUint("size", n)
+		d.FieldSynUint("size", n)
 		d.FieldStructNArray("entries", "entry", int64(n),
 			func(d *decode.D) {
 				idx := d.FieldU("object_index", int(p.t.objRefSize)*8)
@@ -155,7 +155,7 @@ func decodeItem(d *decode.D, p *plist) bool {
 			})
 	case elementTypeSet:
 		n := decodeSize(d)
-		d.FieldValueUint("size", n)
+		d.FieldSynUint("size", n)
 		d.FieldStructNArray("entries", "entry", int64(n),
 			func(d *decode.D) {
 				idx := d.FieldU("object_index", int(p.t.objRefSize)*8)
@@ -163,7 +163,7 @@ func decodeItem(d *decode.D, p *plist) bool {
 			})
 	case elementTypeDict:
 		n := decodeSize(d)
-		d.FieldValueUint("size", n)
+		d.FieldSynUint("size", n)
 		d.FieldStructNArray("entries", "entry", int64(n),
 			func(d *decode.D) {
 				var ki, vi uint64

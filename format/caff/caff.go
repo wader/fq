@@ -170,10 +170,10 @@ func decodeCAFF(d *decode.D) any {
 		for _, entry := range fileInfoList {
 			d.FieldStruct("file", func(d *decode.D) {
 				d.SeekAbs(entry.startPos * 8)
-				d.FieldValueStr("file_path", entry.filePath)
-				d.FieldValueUint("file_size", uint64(entry.fileSize))
-				d.FieldValueBool("is_obfuscated", entry.isObfuscated)
-				d.FieldValueUint("compress_option", uint64(entry.compressOption), compressOptionNames)
+				d.FieldSynStr("file_path", entry.filePath)
+				d.FieldSynUint("file_size", uint64(entry.fileSize))
+				d.FieldSynBool("is_obfuscated", entry.isObfuscated)
+				d.FieldSynUint("compress_option", uint64(entry.compressOption), compressOptionNames)
 
 				rawBr := d.FieldRawLen("raw", int64(entry.fileSize)*8)
 				rawBytes := make([]byte, entry.fileSize)

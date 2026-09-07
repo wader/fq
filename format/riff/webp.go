@@ -81,10 +81,10 @@ func webpDecode(d *decode.D) any {
 				alphaIsUsed := b0&0b0001_0000 != 0
 				versionNumber := (b0 & 0b1110_0000) >> 5
 
-				d.FieldValueUint("width", width)
-				d.FieldValueUint("height", height)
-				d.FieldValueBool("alpha_is_used", alphaIsUsed)
-				d.FieldValueUint("version_number", versionNumber)
+				d.FieldSynUint("width", width)
+				d.FieldSynUint("height", height)
+				d.FieldSynBool("alpha_is_used", alphaIsUsed)
+				d.FieldSynUint("version_number", versionNumber)
 				d.FieldRawLen("data", d.BitsLeft())
 				return false, nil
 			case "VP8X":

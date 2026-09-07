@@ -146,12 +146,12 @@ func fieldMSDOSTime(d *decode.D) (int, int, int) {
 	second := (fatTime >> 0) & 0b1_1111
 	minute := (fatTime >> 5) & 0b11_1111
 	hour := (fatTime >> (5 + 6)) & 0b1_1111
-	d.FieldValueUint("second", second, scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
+	d.FieldSynUint("second", second, scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
 		s.Sym = s.Actual * 2
 		return s, nil
 	}))
-	d.FieldValueUint("minute", minute)
-	d.FieldValueUint("hour", hour)
+	d.FieldSynUint("minute", minute)
+	d.FieldSynUint("hour", hour)
 
 	return int(second), int(minute), int(hour)
 }
@@ -165,9 +165,9 @@ func fieldMSDOSDate(d *decode.D) (int, int, int) {
 	day := (fatDate >> 0) & 0b1_1111
 	month := (fatDate >> 5) & 0b1111
 	year := (fatDate >> (5 + 4)) & 0b111_1111
-	d.FieldValueUint("day", day)
-	d.FieldValueUint("month", month)
-	d.FieldValueUint("year", year, scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
+	d.FieldSynUint("day", day)
+	d.FieldSynUint("month", month)
+	d.FieldSynUint("year", year, scalar.UintFn(func(s scalar.Uint) (scalar.Uint, error) {
 		s.Sym = s.Actual + 1980
 		return s, nil
 	}))
@@ -184,7 +184,7 @@ func fieldTimeDate(d *decode.D) {
 	second, minute, hour = fieldMSDOSTime(d)
 	day, month, year = fieldMSDOSDate(d)
 	t := time.Date(1980+year, time.Month(month), day, hour, minute, second*2, 0, time.UTC)
-	d.FieldValueUint("unix_guess", uint64(t.Unix()),
+	d.FieldSynUint("unix_guess", uint64(t.Unix()),
 		scalar.UintActualUnixTimeDescription(time.Second, rfc3339Local))
 }
 

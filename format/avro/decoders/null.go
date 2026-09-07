@@ -8,7 +8,7 @@ import (
 func decodeNullFn(sms ...scalar.AnyMapper) (DecodeFn, error) {
 	// null is written as zero bytes.
 	return func(name string, d *decode.D) any {
-		d.FieldValueAny(name, nil, sms...)
+		d.FieldSynAny(name, nil, sms...)
 		return nil
 	}, nil
 }

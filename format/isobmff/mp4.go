@@ -353,7 +353,7 @@ func mp4Tracks(d *decode.D, mi format.MP4_In, traks, moofs []*box) {
 			d.FieldStruct("track", func(d *decode.D) {
 				tn := tc.trak
 
-				d.FieldValueUint("id", uint64(tc.trackID))
+				d.FieldSynUint("id", uint64(tc.trackID))
 
 				var stblBox *box
 				if tn != nil {
@@ -379,10 +379,10 @@ func mp4Tracks(d *decode.D, mi format.MP4_In, traks, moofs []*box) {
 						trackSDDataFormat = sd.originalFormat
 					}
 				}
-				d.FieldValueStr("data_format", trackSDDataFormat, dataFormatNames)
+				d.FieldSynStr("data_format", trackSDDataFormat, dataFormatNames)
 
 				if db := findData[*drefBox](tn, "minf/dinf/dref"); db != nil && db.url != "" {
-					d.FieldValueStr("data_reference_url", db.url)
+					d.FieldSynStr("data_reference_url", db.url)
 					return
 				}
 

@@ -181,9 +181,9 @@ func decodeHeapPage(heap *Heap, d *decode.D, blockNumber uint32) {
 	d.FieldStruct("page_header", func(d *decode.D) {
 		heap.DecodePageHeaderData(page, d)
 
-		d.FieldValueUint("pd_checksum_check", uint64(checkSum))
+		d.FieldSynUint("pd_checksum_check", uint64(checkSum))
 		sumEqual := page.PdChecksum == checkSum
-		d.FieldValueBool("pd_checksum_check_equal", sumEqual)
+		d.FieldSynBool("pd_checksum_check_equal", sumEqual)
 	})
 
 	DecodeItemIds(page, d)
@@ -312,9 +312,9 @@ func decodeTuples(heap *Heap, d *decode.D) {
 }
 
 func decodeInfomask2(d *decode.D, infomask2 uint64) {
-	d.FieldValueBool("heap_keys_updated", common.IsMaskSet0(infomask2, HEAP_KEYS_UPDATED))
-	d.FieldValueBool("heap_hot_updated", common.IsMaskSet0(infomask2, HEAP_HOT_UPDATED))
-	d.FieldValueBool("heap_only_tuple", common.IsMaskSet0(infomask2, HEAP_ONLY_TUPLE))
+	d.FieldSynBool("heap_keys_updated", common.IsMaskSet0(infomask2, HEAP_KEYS_UPDATED))
+	d.FieldSynBool("heap_hot_updated", common.IsMaskSet0(infomask2, HEAP_HOT_UPDATED))
+	d.FieldSynBool("heap_only_tuple", common.IsMaskSet0(infomask2, HEAP_ONLY_TUPLE))
 }
 
 func decodeInfomask(heap *Heap, d *decode.D, infomask uint64) {
@@ -323,26 +323,26 @@ func decodeInfomask(heap *Heap, d *decode.D, infomask uint64) {
 	isMulti := common.IsMaskSet0(infomask, HEAP_XMAX_IS_MULTI)
 	tuple.IsMulti = isMulti
 
-	d.FieldValueBool("heap_hasnull", common.IsMaskSet0(infomask, HEAP_HASNULL))
-	d.FieldValueBool("heap_hasvarwidth", common.IsMaskSet0(infomask, HEAP_HASVARWIDTH))
-	d.FieldValueBool("heap_hasexternal", common.IsMaskSet0(infomask, HEAP_HASEXTERNAL))
-	d.FieldValueBool("heap_hasoid_old", common.IsMaskSet0(infomask, HEAP_HASOID_OLD))
-	d.FieldValueBool("heap_xmax_keyshr_lock", common.IsMaskSet0(infomask, HEAP_XMAX_KEYSHR_LOCK))
-	d.FieldValueBool("heap_combocid", common.IsMaskSet0(infomask, HEAP_COMBOCID))
-	d.FieldValueBool("heap_xmax_excl_lock", common.IsMaskSet0(infomask, HEAP_XMAX_EXCL_LOCK))
-	d.FieldValueBool("heap_xmax_lock_only", common.IsMaskSet0(infomask, HEAP_XMAX_LOCK_ONLY))
-	d.FieldValueBool("heap_xmax_shr_lock", common.IsMaskSet0(infomask, HEAP_XMAX_SHR_LOCK))
-	d.FieldValueBool("heap_lock_mask", common.IsMaskSet0(infomask, HEAP_LOCK_MASK))
-	d.FieldValueBool("heap_xmin_committed", common.IsMaskSet0(infomask, HEAP_XMIN_COMMITTED))
-	d.FieldValueBool("heap_xmin_invalid", common.IsMaskSet0(infomask, HEAP_XMIN_INVALID))
-	d.FieldValueBool("heap_xmin_frozen", common.IsMaskSet0(infomask, HEAP_XMIN_FROZEN))
-	d.FieldValueBool("heap_xmax_committed", common.IsMaskSet0(infomask, HEAP_XMAX_COMMITTED))
-	d.FieldValueBool("heap_xmax_invalid", common.IsMaskSet0(infomask, HEAP_XMAX_INVALID))
-	d.FieldValueBool("heap_xmax_is_multi", isMulti)
-	d.FieldValueBool("heap_updated", common.IsMaskSet0(infomask, HEAP_UPDATED))
-	d.FieldValueBool("heap_moved_off", common.IsMaskSet0(infomask, HEAP_MOVED_OFF))
-	d.FieldValueBool("heap_moved_in", common.IsMaskSet0(infomask, HEAP_MOVED_IN))
-	d.FieldValueBool("heap_moved", common.IsMaskSet0(infomask, HEAP_MOVED))
+	d.FieldSynBool("heap_hasnull", common.IsMaskSet0(infomask, HEAP_HASNULL))
+	d.FieldSynBool("heap_hasvarwidth", common.IsMaskSet0(infomask, HEAP_HASVARWIDTH))
+	d.FieldSynBool("heap_hasexternal", common.IsMaskSet0(infomask, HEAP_HASEXTERNAL))
+	d.FieldSynBool("heap_hasoid_old", common.IsMaskSet0(infomask, HEAP_HASOID_OLD))
+	d.FieldSynBool("heap_xmax_keyshr_lock", common.IsMaskSet0(infomask, HEAP_XMAX_KEYSHR_LOCK))
+	d.FieldSynBool("heap_combocid", common.IsMaskSet0(infomask, HEAP_COMBOCID))
+	d.FieldSynBool("heap_xmax_excl_lock", common.IsMaskSet0(infomask, HEAP_XMAX_EXCL_LOCK))
+	d.FieldSynBool("heap_xmax_lock_only", common.IsMaskSet0(infomask, HEAP_XMAX_LOCK_ONLY))
+	d.FieldSynBool("heap_xmax_shr_lock", common.IsMaskSet0(infomask, HEAP_XMAX_SHR_LOCK))
+	d.FieldSynBool("heap_lock_mask", common.IsMaskSet0(infomask, HEAP_LOCK_MASK))
+	d.FieldSynBool("heap_xmin_committed", common.IsMaskSet0(infomask, HEAP_XMIN_COMMITTED))
+	d.FieldSynBool("heap_xmin_invalid", common.IsMaskSet0(infomask, HEAP_XMIN_INVALID))
+	d.FieldSynBool("heap_xmin_frozen", common.IsMaskSet0(infomask, HEAP_XMIN_FROZEN))
+	d.FieldSynBool("heap_xmax_committed", common.IsMaskSet0(infomask, HEAP_XMAX_COMMITTED))
+	d.FieldSynBool("heap_xmax_invalid", common.IsMaskSet0(infomask, HEAP_XMAX_INVALID))
+	d.FieldSynBool("heap_xmax_is_multi", isMulti)
+	d.FieldSynBool("heap_updated", common.IsMaskSet0(infomask, HEAP_UPDATED))
+	d.FieldSynBool("heap_moved_off", common.IsMaskSet0(infomask, HEAP_MOVED_OFF))
+	d.FieldSynBool("heap_moved_in", common.IsMaskSet0(infomask, HEAP_MOVED_IN))
+	d.FieldSynBool("heap_moved", common.IsMaskSet0(infomask, HEAP_MOVED))
 }
 
 /*    0      |    12 */ // union {

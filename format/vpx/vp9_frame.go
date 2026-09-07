@@ -79,7 +79,7 @@ func vp9DecodeColorConfig(d *decode.D, profile int) {
 			bitDepth = 10
 		}
 	}
-	d.FieldValueUint("bit_depth", uint64(bitDepth))
+	d.FieldSynUint("bit_depth", uint64(bitDepth))
 	colorSpace := d.FieldU3("color_space", vp9ColorSpaceNames)
 	_, colorSpaceOk := vp9ColorSpaceNames[colorSpace]
 	if !colorSpaceOk || colorSpace != CS_RGB {
@@ -89,14 +89,14 @@ func vp9DecodeColorConfig(d *decode.D, profile int) {
 			d.FieldU1("subsampling_y")
 			d.FieldU1("reserved_zero1")
 		} else {
-			d.FieldValueUint("subsampling_x", 1)
-			d.FieldValueUint("subsampling_y", 1)
+			d.FieldSynUint("subsampling_x", 1)
+			d.FieldSynUint("subsampling_y", 1)
 		}
 	} else {
-		d.FieldValueUint("color_range", 1)
+		d.FieldSynUint("color_range", 1)
 		if profile == 1 || profile == 3 {
-			d.FieldValueUint("subsampling_x", 0)
-			d.FieldValueUint("subsampling_y", 0)
+			d.FieldSynUint("subsampling_x", 0)
+			d.FieldSynUint("subsampling_y", 0)
 			d.FieldU1("reserved_zero2")
 		}
 	}
@@ -115,7 +115,7 @@ func vp9Decode(d *decode.D) any {
 	profileLowBit := d.FieldU1("profile_low_bit")
 	profileHighBit := d.FieldU1("profile_high_bit")
 	profile := int(profileHighBit<<1 + profileLowBit)
-	d.FieldValueUint("profile", uint64(profile), vp9ProfilesMap)
+	d.FieldSynUint("profile", uint64(profile), vp9ProfilesMap)
 	if profile == 3 {
 		d.FieldU1("reserved_zero0")
 	}
