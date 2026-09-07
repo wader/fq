@@ -22,16 +22,15 @@ type Compound struct {
 // TODO: Value/Compound interface? can have per type and save memory
 // TODO: Make some fields optional somehow? map/slice?
 type Value struct {
-	V           any // scalar.S or Compound (array/struct)
-	RootReader  bitio.ReaderAtSeeker
-	Err         error
-	Parent      *Value
-	Format      *Format // TODO: rework
-	Name        string
-	Description string
-	Range       ranges.Range
-	Index       int  // index in parent array/struct
-	IsRoot      bool // TODO: rework?
+	V          any // scalar.S or Compound (array/struct)
+	RootReader bitio.ReaderAtSeeker
+	Err        error
+	Parent     *Value
+	Format     *Format // TODO: rework
+	Name       string
+	Range      ranges.Range
+	Index      int  // index in parent array/struct
+	IsRoot     bool // TODO: rework?
 }
 
 type WalkFn func(v *Value, rootV *Value, depth int, rootDepth int) error
