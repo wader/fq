@@ -26,7 +26,7 @@ import (
 	func (d *D) Field{{$name}}ScalarFn(name string, fn func(d *D) scalar.{{$name}}, sms ...scalar.{{$name}}Mapper) {{$t.go_type}} {
 		v, err := d.TryFieldScalar{{$name}}Fn(name, func(d *D) (scalar.{{$name}}, error) { return fn(d), nil }, sms...)
 		if err != nil {
-			d.IOPanic(err, name, "{{$name}}")
+			d.IOPanic(err, name, "Field{{$name}}")
 		}
 		return v.Actual
 	}
@@ -48,29 +48,39 @@ import (
 	func (d *D) FieldScalar{{$name}}Fn(name string, fn func(d *D) scalar.{{$name}}, sms ...scalar.{{$name}}Mapper) *scalar.{{$name}} {
 		v, err := d.TryFieldScalar{{$name}}Fn(name, func(d *D) (scalar.{{$name}}, error) { return fn(d), nil }, sms...)
 		if err != nil {
-			d.IOPanic(err, name, "{{$name}}")
+			d.IOPanic(err, name, "FieldScalar{{$name}}")
 		}
 		return v
 	}
 
 	func (d *D) FieldValue{{$name}}(name string, a {{$t.go_type}}, sms ...scalar.{{$name}}Mapper) {
-		d.FieldScalar{{$name}}Fn(name, func(_ *D) scalar.{{$name}} { return scalar.{{$name}}{Actual: a, Flags: scalar.FlagSynthetic}}, sms...)
+		v, err := d.tryFieldScalar{{$name}}Fn(name, func(d *D) (scalar.{{$name}}, error) {
+			return scalar.{{$name}}{Actual: a}, nil
+		}, FlagSynthetic, sms...)
+		if err != nil {
+			d.IOPanic(err, name, "FieldValue{{$name}}")
+		}
+		_ = v
 	}
 
 	// TryFieldScalar{{$name}}Fn tries to add a field, calls {{$t.go_type}} decode function and returns scalar
 	func (d *D) TryFieldScalar{{$name}}Fn(name string, fn func(d *D) (scalar.{{$name}}, error), sms ...scalar.{{$name}}Mapper) (*scalar.{{$name}}, error) {
+		return d.tryFieldScalar{{$name}}Fn(name, fn, 0, sms...)
+	}
+
+	func (d *D) tryFieldScalar{{$name}}Fn(name string, fn func(d *D) (scalar.{{$name}}, error), flags Flags, sms ...scalar.{{$name}}Mapper) (*scalar.{{$name}}, error) {
 		v, err := d.TryFieldValue(name, func() (*Value, error) {
 			s, err := fn(d)
 			if err != nil {
-				return &Value{V: &s}, err
+				return &Value{V: &s, Flags: flags}, err
 			}
 			for _, sm := range sms {
 				s, err = sm.Map{{$name}}(s)
 				if err != nil {
-					return &Value{V: &s}, err
+					return &Value{V: &s, Flags: flags}, err
 				}
 			}
-			return &Value{V: &s}, nil
+			return &Value{V: &s, Flags: flags}, nil
 		})
 		if err != nil {
 			return &scalar.{{$name}}{}, err

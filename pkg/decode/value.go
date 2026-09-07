@@ -18,19 +18,31 @@ type Compound struct {
 	IsArray     bool
 }
 
+type Flags uint
+
+const (
+	FlagGap Flags = 1 << iota
+	FlagSynthetic
+	FlagIsRoot
+)
+
+func (f Flags) IsGap() bool       { return f&FlagGap != 0 }
+func (f Flags) IsSynthetic() bool { return f&FlagSynthetic != 0 }
+func (f Flags) IsRoot() bool      { return f&FlagIsRoot != 0 }
+
 // TODO: Encoding, u16le, varint etc, encode?
 // TODO: Value/Compound interface? can have per type and save memory
 // TODO: Make some fields optional somehow? map/slice?
 type Value struct {
 	V          any // scalar.S or Compound (array/struct)
+	Flags      Flags
 	RootReader bitio.ReaderAtSeeker
 	Err        error
 	Parent     *Value
 	Format     *Format // TODO: rework
 	Name       string
 	Range      ranges.Range
-	Index      int  // index in parent array/struct
-	IsRoot     bool // TODO: rework?
+	Index      int // index in parent array/struct
 }
 
 type WalkFn func(v *Value, rootV *Value, depth int, rootDepth int) error
@@ -49,13 +61,13 @@ func (v *Value) Walk(opts WalkOpts) error {
 	var walkFn WalkFn
 
 	walkFn = func(wv *Value, rootV *Value, depth int, rootDepth int) error {
-		if opts.OneRoot && wv != v && wv.IsRoot {
+		if opts.OneRoot && wv != v && wv.Flags.IsRoot() {
 			return nil
 		}
 
 		rootDepthDelta := 0
 		// only count switching to a new root
-		if wv.IsRoot && wv != rootV {
+		if wv.Flags.IsRoot() && wv != rootV {
 			rootV = wv
 			rootDepthDelta = 1
 		}
@@ -146,7 +158,7 @@ func (v *Value) WalkRootPostOrder(fn WalkFn) error {
 func (v *Value) root(findSubRoot bool, findFormatRoot bool) *Value {
 	rootV := v
 	for rootV.Parent != nil {
-		if findSubRoot && rootV.IsRoot {
+		if findSubRoot && rootV.Flags.IsRoot() {
 			break
 		}
 		if findFormatRoot && rootV.Format != nil {
@@ -174,7 +186,7 @@ func (v *Value) Errors() []error {
 }
 
 func (v *Value) InnerRange() ranges.Range {
-	if v.IsRoot {
+	if v.Flags.IsRoot() {
 		return ranges.Range{Start: 0, Len: v.Range.Len}
 	}
 	return v.Range
@@ -186,10 +198,10 @@ func (v *Value) postProcess() {
 		case *Compound:
 			first := true
 			for _, f := range vv.Children {
-				if f.IsRoot {
+				if f.Flags.IsRoot() {
 					continue
 				}
-				if s, ok := f.V.(scalar.Scalarable); ok && s.ScalarFlags().IsSynthetic() {
+				if f.Flags.IsSynthetic() {
 					continue
 				}
 

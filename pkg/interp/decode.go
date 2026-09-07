@@ -460,7 +460,7 @@ func (dvb decodeValueBase) DecodeValue() *decode.Value {
 
 func (dvb decodeValueBase) Display(w io.Writer, opts *Options) error { return dump(dvb.dv, w, opts) }
 func (dvb decodeValueBase) ToBinary() (Binary, error) {
-	if s, ok := dvb.dv.V.(scalar.Scalarable); ok && s.ScalarFlags().IsSynthetic() {
+	if dvb.dv.Flags.IsSynthetic() {
 		return Binary{}, fmt.Errorf("synthetic value can't be a binary")
 	}
 	return Binary{br: dvb.dv.RootReader, r: dvb.dv.InnerRange(), unit: 8}, nil
@@ -534,7 +534,7 @@ func (dvb decodeValueBase) JQValueKey(name string) any {
 			return nil
 		}
 	case "_bits":
-		if s, ok := dv.V.(scalar.Scalarable); ok && s.ScalarFlags().IsSynthetic() {
+		if dv.Flags.IsSynthetic() {
 			return nil
 		}
 		return Binary{
@@ -546,7 +546,7 @@ func (dvb decodeValueBase) JQValueKey(name string) any {
 		// TODO: rename?
 		return makeDecodeValue(dv.BufferRoot(), decodeValueValue)
 	case "_bytes":
-		if s, ok := dv.V.(scalar.Scalarable); ok && s.ScalarFlags().IsSynthetic() {
+		if dv.Flags.IsSynthetic() {
 			return nil
 		}
 		return Binary{
@@ -574,12 +574,7 @@ func (dvb decodeValueBase) JQValueKey(name string) any {
 		// TODO: rename?
 		return makeDecodeValue(dv.FormatRoot(), decodeValueValue)
 	case "_gap":
-		switch vv := dv.V.(type) {
-		case scalar.Scalarable:
-			return vv.ScalarFlags().IsGap()
-		default:
-			return false
-		}
+		return dv.Flags.IsGap()
 	case "_len":
 		return big.NewInt(dv.Range.Len)
 	case "_name":
@@ -647,7 +642,7 @@ func (v decodeValue) JQValueToGoJQEx(optsFn func() (*Options, error)) any {
 		return v.JQValueToGoJQ()
 	}
 
-	if s, ok := v.dv.V.(scalar.Scalarable); ok && !s.ScalarFlags().IsSynthetic() {
+	if _, ok := v.dv.V.(scalar.Scalarable); ok && !v.dv.Flags.IsSynthetic() {
 		bv, err := v.ToBinary()
 		if err != nil {
 			return err
@@ -730,12 +725,9 @@ func (v ArrayDecodeValue) JQValueToGoJQEx(optsFn func() (*Options, error)) any {
 
 	vs := make([]any, 0, len(v.Compound.Children))
 	for _, f := range v.Compound.Children {
-		switch s := f.V.(type) {
-		case scalar.Scalarable:
-			if s.ScalarFlags().IsGap() && opts.SkipGaps {
-				// skip, note for arrays this will affect indexes
-				continue
-			}
+		if f.Flags.IsGap() && opts.SkipGaps {
+			// skip, note for arrays this will affect indexes
+			continue
 		}
 
 		vs = append(vs, makeDecodeValue(f, decodeValueValue))
@@ -835,11 +827,8 @@ func (v StructDecodeValue) JQValueToGoJQEx(optsFn func() (*Options, error)) any 
 
 	vm := make(map[string]any, len(v.Compound.Children))
 	for _, f := range v.Compound.Children {
-		switch s := f.V.(type) {
-		case scalar.Scalarable:
-			if s.ScalarFlags().IsGap() && opts.SkipGaps {
-				continue
-			}
+		if f.Flags.IsGap() && opts.SkipGaps {
+			continue
 		}
 
 		vm[f.Name] = makeDecodeValue(f, decodeValueValue)

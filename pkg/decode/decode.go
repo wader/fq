@@ -161,7 +161,7 @@ func decode(ctx context.Context, br bitio.ReaderAtSeeker, group *Group, opts Opt
 
 		d.Value.Range = ranges.Range{Start: decodeRange.Start, Len: minMaxRange.Len}
 
-		if opts.IsRoot {
+		if d.Value.Flags.IsRoot() {
 			d.Value.postProcess()
 		}
 
@@ -201,15 +201,20 @@ func newDecoder(ctx context.Context, format *Format, br bitio.ReaderAtSeeker, op
 		Description: opts.Description,
 	}
 
+	var flags Flags
+	if opts.IsRoot {
+		flags |= FlagIsRoot
+	}
+
 	return &D{
 		Ctx:    ctx,
 		Endian: BigEndian,
 		Value: &Value{
 			Name:       name,
 			V:          rootV,
+			Flags:      flags,
 			RootReader: br,
 			Range:      ranges.Range{Start: 0, Len: 0},
-			IsRoot:     opts.IsRoot,
 			Format:     format,
 		},
 		Options: opts,
@@ -354,11 +359,9 @@ func (d *D) FillGaps(r ranges.Range, namePrefix string) {
 		}
 
 		v := &Value{
-			Name: fmt.Sprintf("%s%d", namePrefix, i),
-			V: &scalar.BitBuf{
-				Actual: br,
-				Flags:  scalar.FlagGap,
-			},
+			Name:       fmt.Sprintf("%s%d", namePrefix, i),
+			V:          &scalar.BitBuf{Actual: br},
+			Flags:      FlagGap,
 			RootReader: d.bitBuf,
 			Range:      gap,
 		}
@@ -1146,7 +1149,7 @@ func (d *D) FieldRootBitBuf(name string, br bitio.ReaderAtSeeker, sms ...scalar.
 	v.V = &scalar.BitBuf{Actual: br}
 	v.Name = name
 	v.RootReader = br
-	v.IsRoot = true
+	v.Flags |= FlagIsRoot
 	v.Range = ranges.Range{Start: d.Pos(), Len: brLen}
 
 	// if err := v.TryScalarFn(sms...); err != nil {
@@ -1161,7 +1164,7 @@ func (d *D) FieldRootBitBuf(name string, br bitio.ReaderAtSeeker, sms ...scalar.
 func (d *D) FieldArrayRootBitBufFn(name string, br bitio.ReaderAtSeeker, fn func(d *D)) *Value {
 	c := &Compound{IsArray: true}
 	cd := d.fieldDecoder(name, br, c)
-	cd.Value.IsRoot = true
+	cd.Value.Flags |= FlagIsRoot
 	d.AddChild(cd.Value)
 	fn(cd)
 
@@ -1179,7 +1182,7 @@ func (d *D) FieldArrayRootBitBufFn(name string, br bitio.ReaderAtSeeker, fn func
 func (d *D) FieldStructRootBitBufFn(name string, br bitio.ReaderAtSeeker, fn func(d *D)) *Value {
 	c := &Compound{IsArray: false}
 	cd := d.fieldDecoder(name, br, c)
-	cd.Value.IsRoot = true
+	cd.Value.Flags |= FlagIsRoot
 	d.AddChild(cd.Value)
 	fn(cd)
 

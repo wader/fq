@@ -230,7 +230,7 @@ $ fq -o keylog=@testtls.com.http1.1-tls1.2.pcap.keylog '.tcp_connections[0] | dv
     *     |until 0x4a.7 (end) (75)                        |                |
           |                                               |                |  server{}: 0x6e4d-0x6e4d (0)
           |                                               |                |    ip: "116.203.76.237"
-          |                                               |                |    port: "https" (443) (http protocol over TLS/SSL) 0x6e4d-0x6e4d (0)
+          |                                               |                |    port: "https" (443) (http protocol over TLS/SSL)
           |                                               |                |    has_start: true
           |                                               |                |    has_end: true
           |                                               |                |    skipped_bytes: 0

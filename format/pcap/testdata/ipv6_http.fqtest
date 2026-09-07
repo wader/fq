@@ -3494,7 +3494,7 @@ $ fq -d pcap dv ipv6_http.pcap
   *    |until 0xef.7 (end) (240)                       |                |
        |                                               |                |      server{}: 0x23c7-0x23c7 (0)
        |                                               |                |        ip: "2001:6f8:900:7c0::2"
-       |                                               |                |        port: "http" (80) (World Wide Web HTTP) 0x23c7-0x23c7 (0)
+       |                                               |                |        port: "http" (80) (World Wide Web HTTP)
        |                                               |                |        has_start: true
        |                                               |                |        has_end: true
        |                                               |                |        skipped_bytes: 0

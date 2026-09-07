@@ -117,7 +117,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 	willDisplayData := innerRange.Len > 0 && (!isCompound || (opts.Depth != 0 && opts.Depth == depth))
 
 	// show address bar on root, nested root and format change
-	if depth == 0 || v.IsRoot || v.Format != nil {
+	if depth == 0 || v.Flags.IsRoot() || v.Format != nil {
 		cfmt(colHex, "%s", deco.DumpHeader.F(ctx.hexHeader))
 		cfmt(colASCII, "%s", deco.DumpHeader.F(ctx.asciiHeader))
 
@@ -156,7 +156,7 @@ func dumpEx(v *decode.Value, ctx *dumpCtx, depth int, rootV *decode.Value, rootD
 			cfmt(colField, " (%s)", deco.ValueColor(actual).F(previewValue(actual, df, opts)))
 		}
 		desc = vv.ScalarDescription()
-		isSynthetic = vv.ScalarFlags().IsSynthetic()
+		isSynthetic = v.Flags.IsSynthetic()
 	default:
 		panic(fmt.Sprintf("unreachable vv %#+v", vv))
 	}
