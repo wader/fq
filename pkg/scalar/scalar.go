@@ -23,7 +23,6 @@ type Scalarable interface {
 	ScalarValue() any
 	ScalarSym() any
 	ScalarDescription() string
-	ScalarFlags() Flags
 	ScalarDisplayFormat() DisplayFormat
 }
 
@@ -50,16 +49,6 @@ func (df DisplayFormat) FormatBase() int {
 		return 0
 	}
 }
-
-const (
-	FlagGap Flags = 1 << iota
-	FlagSynthetic
-)
-
-type Flags uint
-
-func (f Flags) IsGap() bool       { return f&FlagGap != 0 }
-func (f Flags) IsSynthetic() bool { return f&FlagSynthetic != 0 }
 
 // TODO: todos
 // rename raw?

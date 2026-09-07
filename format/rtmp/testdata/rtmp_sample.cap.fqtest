@@ -230,7 +230,7 @@ $ fq '.tcp_connections | dv' rtmp_sample.cap
   0x00d7|      00 03 00 00 00 01 00 00 00 00|           |  ..........|   |            data: raw bits 0xd72-0xd7c (10)
         |                                               |                |    server{}: 0x2268-0x2268 (0)
         |                                               |                |      ip: "192.168.43.128"
-        |                                               |                |      port: "rtmp" (1935) (Real-Time Messaging Protocol) 0x2268-0x2268 (0)
+        |                                               |                |      port: "rtmp" (1935) (Real-Time Messaging Protocol)
         |                                               |                |      has_start: true
         |                                               |                |      has_end: false
         |                                               |                |      skipped_bytes: 0

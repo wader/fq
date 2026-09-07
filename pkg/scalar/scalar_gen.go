@@ -13,7 +13,6 @@ import (
 type Any struct {
 	Sym         any
 	Description string
-	Flags       Flags
 	Actual      any
 }
 
@@ -27,7 +26,6 @@ func (s Any) ScalarValue() any {
 }
 func (s Any) ScalarSym() any                     { return s.Sym }
 func (s Any) ScalarDescription() string          { return s.Description }
-func (s Any) ScalarFlags() Flags                 { return s.Flags }
 func (s Any) ScalarDisplayFormat() DisplayFormat { return 0 }
 
 func AnyActual(v any) AnyMapper {
@@ -200,7 +198,6 @@ func (s Any) SymUint() uint64 {
 type BigInt struct {
 	Sym           any
 	Description   string
-	Flags         Flags
 	Actual        *big.Int
 	DisplayFormat DisplayFormat
 }
@@ -215,7 +212,6 @@ func (s BigInt) ScalarValue() any {
 }
 func (s BigInt) ScalarSym() any                     { return s.Sym }
 func (s BigInt) ScalarDescription() string          { return s.Description }
-func (s BigInt) ScalarFlags() Flags                 { return s.Flags }
 func (s BigInt) ScalarDisplayFormat() DisplayFormat { return s.DisplayFormat }
 
 func BigIntActual(v *big.Int) BigIntMapper {
@@ -388,7 +384,6 @@ func (s BigInt) SymUint() uint64 {
 type BitBuf struct {
 	Sym         any
 	Description string
-	Flags       Flags
 	Actual      bitio.ReaderAtSeeker
 }
 
@@ -402,7 +397,6 @@ func (s BitBuf) ScalarValue() any {
 }
 func (s BitBuf) ScalarSym() any                     { return s.Sym }
 func (s BitBuf) ScalarDescription() string          { return s.Description }
-func (s BitBuf) ScalarFlags() Flags                 { return s.Flags }
 func (s BitBuf) ScalarDisplayFormat() DisplayFormat { return 0 }
 
 func BitBufActual(v bitio.ReaderAtSeeker) BitBufMapper {
@@ -575,7 +569,6 @@ func (s BitBuf) SymUint() uint64 {
 type Bool struct {
 	Sym         any
 	Description string
-	Flags       Flags
 	Actual      bool
 }
 
@@ -589,7 +582,6 @@ func (s Bool) ScalarValue() any {
 }
 func (s Bool) ScalarSym() any                     { return s.Sym }
 func (s Bool) ScalarDescription() string          { return s.Description }
-func (s Bool) ScalarFlags() Flags                 { return s.Flags }
 func (s Bool) ScalarDisplayFormat() DisplayFormat { return 0 }
 
 func BoolActual(v bool) BoolMapper {
@@ -762,7 +754,6 @@ func (s Bool) SymUint() uint64 {
 type Flt struct {
 	Sym         any
 	Description string
-	Flags       Flags
 	Actual      float64
 }
 
@@ -776,7 +767,6 @@ func (s Flt) ScalarValue() any {
 }
 func (s Flt) ScalarSym() any                     { return s.Sym }
 func (s Flt) ScalarDescription() string          { return s.Description }
-func (s Flt) ScalarFlags() Flags                 { return s.Flags }
 func (s Flt) ScalarDisplayFormat() DisplayFormat { return 0 }
 
 func FltActual(v float64) FltMapper {
@@ -949,7 +939,6 @@ func (s Flt) SymUint() uint64 {
 type Sint struct {
 	Sym           any
 	Description   string
-	Flags         Flags
 	Actual        int64
 	DisplayFormat DisplayFormat
 }
@@ -964,7 +953,6 @@ func (s Sint) ScalarValue() any {
 }
 func (s Sint) ScalarSym() any                     { return s.Sym }
 func (s Sint) ScalarDescription() string          { return s.Description }
-func (s Sint) ScalarFlags() Flags                 { return s.Flags }
 func (s Sint) ScalarDisplayFormat() DisplayFormat { return s.DisplayFormat }
 
 func SintActual(v int64) SintMapper {
@@ -1137,7 +1125,6 @@ func (s Sint) SymUint() uint64 {
 type Str struct {
 	Sym         any
 	Description string
-	Flags       Flags
 	Actual      string
 }
 
@@ -1151,7 +1138,6 @@ func (s Str) ScalarValue() any {
 }
 func (s Str) ScalarSym() any                     { return s.Sym }
 func (s Str) ScalarDescription() string          { return s.Description }
-func (s Str) ScalarFlags() Flags                 { return s.Flags }
 func (s Str) ScalarDisplayFormat() DisplayFormat { return 0 }
 
 func StrActual(v string) StrMapper {
@@ -1324,7 +1310,6 @@ func (s Str) SymUint() uint64 {
 type Uint struct {
 	Sym           any
 	Description   string
-	Flags         Flags
 	Actual        uint64
 	DisplayFormat DisplayFormat
 }
@@ -1339,7 +1324,6 @@ func (s Uint) ScalarValue() any {
 }
 func (s Uint) ScalarSym() any                     { return s.Sym }
 func (s Uint) ScalarDescription() string          { return s.Description }
-func (s Uint) ScalarFlags() Flags                 { return s.Flags }
 func (s Uint) ScalarDisplayFormat() DisplayFormat { return s.DisplayFormat }
 
 func UintActual(v uint64) UintMapper {

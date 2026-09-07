@@ -110,7 +110,7 @@ $ fq '.ipv4_reassembled, .tcp_connections | dv' tcp-ipv4frag.pcap
   *    |until 0x1bc.7 (end) (445)                      |                |
        |                                               |                |    server{}: 0x70f-0x70f (0)
        |                                               |                |      ip: "192.168.69.1"
-       |                                               |                |      port: "http" (80) (World Wide Web HTTP) 0x70f-0x70f (0)
+       |                                               |                |      port: "http" (80) (World Wide Web HTTP)
        |                                               |                |      has_start: true
        |                                               |                |      has_end: true
        |                                               |                |      skipped_bytes: 0

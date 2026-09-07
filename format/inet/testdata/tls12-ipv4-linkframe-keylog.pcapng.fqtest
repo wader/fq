@@ -72,7 +72,7 @@ $ fq 'first(grep_by(.type=="enhanced_packet")), .[0].tcp_connections | dv' tls12
   *    |until 0x1ea.7 (end) (491)                      |                |
        |                                               |                |    server{}: 0x2814-0x2814 (0)
        |                                               |                |      ip: "93.184.216.34"
-       |                                               |                |      port: "https" (443) (http protocol over TLS/SSL) 0x2814-0x2814 (0)
+       |                                               |                |      port: "https" (443) (http protocol over TLS/SSL)
        |                                               |                |      has_start: false
        |                                               |                |      has_end: false
        |                                               |                |      skipped_bytes: 0
@@ -91,7 +91,7 @@ $ fq 'first(grep_by(.type=="enhanced_packet")), .[0].tcp_connections | dv' tls12
   *    |until 0x1ea.7 (end) (491)                      |                |
        |                                               |                |    server{}: 0x2814-0x2814 (0)
        |                                               |                |      ip: "93.184.216.34"
-       |                                               |                |      port: "https" (443) (http protocol over TLS/SSL) 0x2814-0x2814 (0)
+       |                                               |                |      port: "https" (443) (http protocol over TLS/SSL)
        |                                               |                |      has_start: false
        |                                               |                |      has_end: false
        |                                               |                |      skipped_bytes: 0

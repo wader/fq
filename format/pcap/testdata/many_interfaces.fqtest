@@ -5722,7 +5722,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
   *    |until 0x7b0.7 (end) (41)                       |                |
        |                                               |                |        server{}: 0x51b8-0x51b8 (0)
        |                                               |                |          ip: "74.125.228.227"
-       |                                               |                |          port: "https" (443) (http protocol over TLS/SSL) 0x51b8-0x51b8 (0)
+       |                                               |                |          port: "https" (443) (http protocol over TLS/SSL)
        |                                               |                |          has_start: true
        |                                               |                |          has_end: false
        |                                               |                |          skipped_bytes: 0
@@ -5965,7 +5965,7 @@ $ fq -d pcapng dv many_interfaces.pcapng
   0x00d|                  00 18|                       |      ..|       |                        [1]: 0x18 supported_group 0xd6-0xd8 (2)
        |                                               |                |        server{}: 0x51b8-0x51b8 (0)
        |                                               |                |          ip: "74.125.228.227"
-       |                                               |                |          port: "https" (443) (http protocol over TLS/SSL) 0x51b8-0x51b8 (0)
+       |                                               |                |          port: "https" (443) (http protocol over TLS/SSL)
        |                                               |                |          has_start: true
        |                                               |                |          has_end: false
        |                                               |                |          skipped_bytes: 0
