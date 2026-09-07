@@ -256,15 +256,15 @@ func decodeFileHeader(d *decode.D, nc *nesContext) {
 		// byte 8
 		d.FieldU4("submapper")
 		mapper2 := d.FieldU4("mapper2")
-		d.FieldValueUint("mapper", mapper0+(mapper1<<4)+(mapper2<<8))
+		d.FieldSynUint("mapper", mapper0+(mapper1<<4)+(mapper2<<8))
 
 		// byte 9
 		chrROMSize1 := d.FieldU4("chr_rom_size1")
 		prgROMSize1 := d.FieldU4("prg_rom_size1")
 		nc.chrROMSize = romSize(chrROMSize0, chrROMSize1, 8)
-		d.FieldValueUint("chr_rom_size", nc.chrROMSize)
+		d.FieldSynUint("chr_rom_size", nc.chrROMSize)
 		nc.prgROMSize = romSize(prgROMSize0, prgROMSize1, 16)
-		d.FieldValueUint("prg_rom_size", nc.prgROMSize)
+		d.FieldSynUint("prg_rom_size", nc.prgROMSize)
 
 		// byte 10
 		d.FieldU4("prg_nvram_size", shiftRAMSizeMapper)
@@ -297,8 +297,8 @@ func decodeFileHeader(d *decode.D, nc *nesContext) {
 
 	} else { // iNES
 		mapper := mapper0 + (mapper1 << 4)
-		d.FieldValueUint("mapper", mapper)
-		d.FieldValueUint("chr_ram_size", iNESCHRRAMSize(mapper, nc.chrROMSize))
+		d.FieldSynUint("mapper", mapper)
+		d.FieldSynUint("chr_ram_size", iNESCHRRAMSize(mapper, nc.chrROMSize))
 
 		// byte 8
 		d.FieldU8("prg_ram_size", multiplyRAMSizeMapper)
@@ -378,7 +378,7 @@ func decodeCHRROM(d *decode.D) {
 				}
 			}
 
-			d.FieldValueStr("combined", string(final))
+			d.FieldSynStr("combined", string(final))
 		})
 	}
 }

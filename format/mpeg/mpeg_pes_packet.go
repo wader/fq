@@ -115,7 +115,7 @@ func pesPacketDecode(d *decode.D) any {
 		}
 		d.FieldU1("marker_bits4")
 		scr := scr0<<30 | scr1<<15 | scr2
-		d.FieldValueUint("scr", scr)
+		d.FieldSynUint("scr", scr)
 		d.FieldU22("mux_rate")
 		d.FieldU1("marker_bits5")
 		if isMPEG2 {

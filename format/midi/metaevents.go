@@ -78,7 +78,7 @@ func decodeMetaEvent(d *decode.D, event uint8, ctx *context) {
 
 	delta := func(d *decode.D) {
 		ctx.tick += d.FieldUintFn("delta", vlq)
-		d.FieldValueUint("tick", ctx.tick)
+		d.FieldSynUint("tick", ctx.tick)
 	}
 
 	if fn, ok := metafns[uint64(event)]; ok {

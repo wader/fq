@@ -323,7 +323,7 @@ func readPrefixedBytes(prefixBytes []byte, nBytes int, d *decode.D) error {
 		return err
 	}
 	full := append(prefixBytes, d.ReadAllBits(br)...)
-	d.FieldValueStr("full", string(full), strInferred)
+	d.FieldSynStr("full", string(full), strInferred)
 	return nil
 }
 
@@ -366,7 +366,7 @@ func readInternalKey(sharedBytes []byte, unsharedSize int, d *decode.D) error {
 	// case 2: type and sequence_number fit fully in unshared: simulate user_key value.
 	if unsharedSize >= typeAndSequenceNumberSize {
 		suffix := fieldUTF8ReturnBytes("user_key_suffix", unsharedSize-typeAndSequenceNumberSize, d)
-		d.FieldValueStr("user_key", stringify(sharedBytes, suffix), strInferred)
+		d.FieldSynStr("user_key", stringify(sharedBytes, suffix), strInferred)
 		d.FieldU8("type", valueTypes, scalar.UintHex)
 		d.FieldU56("sequence_number")
 		return nil
@@ -376,16 +376,16 @@ func readInternalKey(sharedBytes []byte, unsharedSize int, d *decode.D) error {
 	sequenceNumberSize := typeAndSequenceNumberSize - 1
 	if unsharedSize == sequenceNumberSize {
 		lastIndex := len(sharedBytes) - 1
-		d.FieldValueStr("user_key", string(sharedBytes[:lastIndex]), strInferred)
-		d.FieldValueUint("type", uint64(sharedBytes[lastIndex]), valueTypes, scalar.UintHex, uintInferred)
+		d.FieldSynStr("user_key", string(sharedBytes[:lastIndex]), strInferred)
+		d.FieldSynUint("type", uint64(sharedBytes[lastIndex]), valueTypes, scalar.UintHex, uintInferred)
 		d.FieldU56("sequence_number")
 		return nil
 	}
 
 	// case 4: sequence_number cut: simulate user_key, type, and sequence_number value.
 	typeByteIndex := keySize - typeAndSequenceNumberSize
-	d.FieldValueStr("user_key", string(sharedBytes[:typeByteIndex]), strInferred)
-	d.FieldValueUint("type", uint64(sharedBytes[typeByteIndex]), valueTypes, scalar.UintHex, uintInferred)
+	d.FieldSynStr("user_key", string(sharedBytes[:typeByteIndex]), strInferred)
+	d.FieldSynUint("type", uint64(sharedBytes[typeByteIndex]), valueTypes, scalar.UintHex, uintInferred)
 	var suffixBytes []byte
 	if unsharedSize > 0 {
 		br := d.FieldRawLen("sequence_number_suffix", int64(unsharedSize)*8)
@@ -397,7 +397,7 @@ func readInternalKey(sharedBytes []byte, unsharedSize int, d *decode.D) error {
 	)
 	sequenceNumberBE := bitio.Read64(sequenceNumberBytes[:], 0, int64(sequenceNumberSize*8))
 	sequenceNumberLE := bitio.ReverseBytes64(56, sequenceNumberBE)
-	d.FieldValueUint("sequence_number", sequenceNumberLE, uintInferred)
+	d.FieldSynUint("sequence_number", sequenceNumberLE, uintInferred)
 
 	return nil
 }

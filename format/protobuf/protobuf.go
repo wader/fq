@@ -44,8 +44,8 @@ func protobufDecodeField(d *decode.D, pbm *format.ProtoBufMessage) {
 		keyN := d.FieldULEB128("key_n")
 		fieldNumber := keyN >> 3
 		wireType := keyN & 0x7
-		d.FieldValueUint("field_number", fieldNumber)
-		d.FieldValueUint("wire_type", wireType, scalar.UintSym(wireTypeNames[wireType]))
+		d.FieldSynUint("field_number", fieldNumber)
+		d.FieldSynUint("wire_type", wireType, scalar.UintSym(wireTypeNames[wireType]))
 
 		var value uint64
 		var length uint64
@@ -65,32 +65,32 @@ func protobufDecodeField(d *decode.D, pbm *format.ProtoBufMessage) {
 
 		if pbm != nil {
 			if pbf, ok := (*pbm)[int(fieldNumber)]; ok {
-				d.FieldValueStr("name", pbf.Name)
-				d.FieldValueStr("type", format.ProtoBufTypeNames[uint64(pbf.Type)])
+				d.FieldSynStr("name", pbf.Name)
+				d.FieldSynStr("type", format.ProtoBufTypeNames[uint64(pbf.Type)])
 
 				switch pbf.Type {
 				case format.ProtoBufTypeInt32, format.ProtoBufTypeInt64:
 					v := mathx.ZigZag[uint64, int64](value)
-					d.FieldValueSint("value", v)
+					d.FieldSynSint("value", v)
 					if len(pbf.Enums) > 0 {
-						d.FieldValueStr("enum", pbf.Enums[uint64(v)])
+						d.FieldSynStr("enum", pbf.Enums[uint64(v)])
 					}
 				case format.ProtoBufTypeUInt32, format.ProtoBufTypeUInt64:
-					d.FieldValueUint("value", value)
+					d.FieldSynUint("value", value)
 					if len(pbf.Enums) > 0 {
-						d.FieldValueStr("enum", pbf.Enums[value])
+						d.FieldSynStr("enum", pbf.Enums[value])
 					}
 				case format.ProtoBufTypeSInt32, format.ProtoBufTypeSInt64:
 					// TODO: correct? 32 different?
 					v := mathx.TwosComplement(64, value)
-					d.FieldValueSint("value", v)
+					d.FieldSynSint("value", v)
 					if len(pbf.Enums) > 0 {
-						d.FieldValueStr("enum", pbf.Enums[uint64(v)])
+						d.FieldSynStr("enum", pbf.Enums[uint64(v)])
 					}
 				case format.ProtoBufTypeBool:
-					d.FieldValueBool("value", value != 0)
+					d.FieldSynBool("value", value != 0)
 				case format.ProtoBufTypeEnum:
-					d.FieldValueStr("enum", pbf.Enums[value])
+					d.FieldSynStr("enum", pbf.Enums[value])
 				case format.ProtoBufTypeFixed64:
 					// TODO:
 				case format.ProtoBufTypeSFixed64:

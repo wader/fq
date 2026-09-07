@@ -125,7 +125,7 @@ func decodeSafeTensors(d *decode.D) any {
 			d.FieldStruct(tensorName, func(d *decode.D) {
 				d.FieldArray("shape", func(d *decode.D) {
 					for _, s := range tensorInfo.Shape {
-						d.FieldValueSint("dim", int64(s))
+						d.FieldSynSint("dim", int64(s))
 					}
 				})
 

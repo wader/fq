@@ -161,7 +161,7 @@ func decodeBTPageOpaqueData(d *decode.D) {
 		d.FieldU7("skip1")
 		d.FieldBool("has_full_xid")
 
-		d.FieldValueBool("is_ignore", isDeleted || isHalfDead)
+		d.FieldSynBool("is_ignore", isDeleted || isHalfDead)
 	})
 
 	d.FieldU16("btpo_cycleid")
@@ -227,10 +227,10 @@ func decodeIndexTuples(page *postgres.HeapPage, d *decode.D) {
 				hasNulls := (tInfo & INDEX_NULL_MASK) != 0
 				hasVarWidths := (tInfo & INDEX_VAR_MASK) != 0
 				d.FieldStruct("flags", func(d *decode.D) {
-					d.FieldValueBool("has_nulls", hasNulls)
-					d.FieldValueBool("has_var_widths", hasVarWidths)
+					d.FieldSynBool("has_nulls", hasNulls)
+					d.FieldSynBool("has_var_widths", hasVarWidths)
 				})
-				d.FieldValueUint("size", size)
+				d.FieldSynUint("size", size)
 				if size < IndexTupleDataSize {
 					d.Fatalf("invalid size of tuple = %d", size)
 				}

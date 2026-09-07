@@ -72,7 +72,7 @@ func decodeElements(d *decode.D, bitsLimit int64, elm *ebml.Master) {
 
 func decodeElement(d *decode.D, childElm ebml.Element) {
 	tagID := d.FieldUintFn("id", ebml.DecodeRawVint, ebml.ElementIDMapper(childElm))
-	d.FieldValueStr("type", childElm.GetType())
+	d.FieldSynStr("type", childElm.GetType())
 
 	const maxStringTagSize = 100 * 1024 * 1024
 	tagSize := d.FieldUintFn("size", ebml.DecodeVint, scalar.UintMapDescription{

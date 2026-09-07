@@ -150,7 +150,7 @@ func decodeFlagDataObject(d *decode.D, flagFn func(d *decode.D)) {
 	d.FieldStruct("record", func(d *decode.D) {
 		d.FieldU32("length", d.UintAssert(dataObjectLen))
 		d.FieldU32("raw_type", dataTypeMap, d.UintAssert(dataTypeData))
-		d.FieldValueStr("type", "flag_data")
+		d.FieldSynStr("type", "flag_data")
 		d.FieldStruct("property_flags", flagFn)
 		d.FieldStruct("enabled_property_flags", flagFn)
 		d.FieldRawLen("reserved", 64)

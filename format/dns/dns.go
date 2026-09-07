@@ -164,7 +164,7 @@ func fieldDecodeLabel(d *decode.D, pointerOffset int64, name string) {
 				})
 			}
 		})
-		d.FieldValueStr("value", strings.Join(ls, "."))
+		d.FieldSynStr("value", strings.Join(ls, "."))
 	})
 
 	if endPos != 0 {
@@ -209,7 +209,7 @@ func dnsDecodeRR(d *decode.D, pointerOffset int64, resp bool, count uint64, name
 										ss = append(ss, d.FieldUTF8ShortString("string"))
 									}
 								})
-								d.FieldValueStr("value", strings.Join(ss, ""))
+								d.FieldSynStr("value", strings.Join(ss, ""))
 							})
 						case class == classIN && typ == typeAAAA:
 							d.FieldStrFn("address", decodeAAAAStr)

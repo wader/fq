@@ -19,7 +19,7 @@ func decodeSysExEvent(d *decode.D, status uint8, ctx *context) {
 
 	delta := func(d *decode.D) {
 		ctx.tick += d.FieldUintFn("delta", vlq)
-		d.FieldValueUint("tick", ctx.tick)
+		d.FieldSynUint("tick", ctx.tick)
 	}
 
 	switch {
@@ -62,7 +62,7 @@ func decodeSysExMessage(d *decode.D, ctx *context) {
 
 		if length < 1 {
 			ctx.casio = true
-			d.FieldValueBool("continued", true)
+			d.FieldSynBool("continued", true)
 		} else {
 			bytes := d.PeekBytes(int(length - 1))
 			N := len(bytes)
@@ -78,7 +78,7 @@ func decodeSysExMessage(d *decode.D, ctx *context) {
 				d.FieldU8("end_of_message")
 			} else {
 				d.FieldRawLen("data", int64(8*N))
-				d.FieldValueBool("continued", true)
+				d.FieldSynBool("continued", true)
 			}
 		}
 	})
@@ -107,7 +107,7 @@ func decodeSysExContinuation(d *decode.D, ctx *context) {
 				d.FieldU8("end_of_message")
 			} else {
 				d.FieldRawLen("data", int64(8*N))
-				d.FieldValueBool("continued", true)
+				d.FieldSynBool("continued", true)
 			}
 		}
 	})

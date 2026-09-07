@@ -48,7 +48,7 @@ func decodeMIDIEvent(d *decode.D, status uint8, ctx *context) {
 
 	delta := func(d *decode.D) {
 		ctx.tick += d.FieldUintFn("delta", vlq)
-		d.FieldValueUint("tick", ctx.tick)
+		d.FieldSynUint("tick", ctx.tick)
 	}
 
 	if fn, ok := midifns[uint64(status&0x00f0)]; ok {
@@ -62,8 +62,8 @@ func decodeMIDIEvent(d *decode.D, status uint8, ctx *context) {
 				}, midievents)
 				d.FieldU4("channel")
 			} else {
-				d.FieldValueUint("event", uint64(status&0x00f0), midievents)
-				d.FieldValueUint("channel", uint64(status&0x000f))
+				d.FieldSynUint("event", uint64(status&0x00f0), midievents)
+				d.FieldSynUint("channel", uint64(status&0x000f))
 			}
 
 			fn(d)

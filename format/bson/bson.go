@@ -99,7 +99,7 @@ func decodeBSONDocument(d *decode.D) {
 					case elementTypeDatetime:
 						d.FieldS64("value")
 					case elementTypeNull:
-						d.FieldValueAny("value", nil)
+						d.FieldSynAny("value", nil)
 					case elementTypeRegexp:
 						d.FieldUTF8Null("value")
 						d.FieldUTF8Null("options")
@@ -116,9 +116,9 @@ func decodeBSONDocument(d *decode.D) {
 						// TODO: Parse the IEEE 754 decimal128 value.
 						d.FieldRawLen("value", 128)
 					case elementTypeMinKey:
-						d.FieldValueAny("value", nil)
+						d.FieldSynAny("value", nil)
 					case elementTypeMaxKey:
-						d.FieldValueAny("value", nil)
+						d.FieldSynAny("value", nil)
 					default:
 						d.FieldRawLen("value", d.BitsLeft())
 					}

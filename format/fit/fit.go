@@ -258,9 +258,9 @@ func fieldUint(d *decode.D, fDef mappers.LocalFieldDef, uintFormatter scalar.Uin
 	} else {
 		if fDef.GlobalFieldDef.HasSubField {
 			var found = false
-			if subFieldValueMap, ok := mappers.SubFieldDefMap[fDef.GlobalMessageNo][fDef.GlobalFieldDefNo]; ok {
-				for k := range subFieldValueMap {
-					if subFieldDef, ok := subFieldValueMap[k][mappers.TypeDefMap[valMap[k].typ][valMap[k].value].Name]; ok {
+			if subFieldSynMap, ok := mappers.SubFieldDefMap[fDef.GlobalMessageNo][fDef.GlobalFieldDefNo]; ok {
+				for k := range subFieldSynMap {
+					if subFieldDef, ok := subFieldSynMap[k][mappers.TypeDefMap[valMap[k].typ][valMap[k].value].Name]; ok {
 						subUintFormatter := mappers.GetUintFormatter(mappers.LocalFieldDef{
 							Name:   subFieldDef.Name,
 							Type:   fDef.Type,

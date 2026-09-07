@@ -53,12 +53,12 @@ import (
 		return v
 	}
 
-	func (d *D) FieldValue{{$name}}(name string, a {{$t.go_type}}, sms ...scalar.{{$name}}Mapper) {
+	func (d *D) FieldSyn{{$name}}(name string, a {{$t.go_type}}, sms ...scalar.{{$name}}Mapper) {
 		v, err := d.tryFieldScalar{{$name}}Fn(name, func(d *D) (scalar.{{$name}}, error) {
 			return scalar.{{$name}}{Actual: a}, nil
 		}, FlagSynthetic, sms...)
 		if err != nil {
-			d.IOPanic(err, name, "FieldValue{{$name}}")
+			d.IOPanic(err, name, "FieldSyn{{$name}}")
 		}
 		_ = v
 	}
@@ -69,7 +69,7 @@ import (
 	}
 
 	func (d *D) tryFieldScalar{{$name}}Fn(name string, fn func(d *D) (scalar.{{$name}}, error), flags Flags, sms ...scalar.{{$name}}Mapper) (*scalar.{{$name}}, error) {
-		v, err := d.TryFieldValue(name, func() (*Value, error) {
+		v, err := d.TryFieldSyn(name, func() (*Value, error) {
 			s, err := fn(d)
 			if err != nil {
 				return &Value{V: &s, Flags: flags}, err

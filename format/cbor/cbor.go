@@ -112,13 +112,13 @@ const (
 func decodeCBORValue(d *decode.D) any {
 	majorTypeMap := majorTypeEntries{
 		majorTypePositiveInt: {s: scalar.Uint{Sym: "positive_int"}, d: func(d *decode.D, shortCount uint64, count uint64) any {
-			d.FieldValueUint("value", count)
+			d.FieldSynUint("value", count)
 			return nil
 		}},
 		majorTypeNegativeInt: {s: scalar.Uint{Sym: "negative_int"}, d: func(d *decode.D, shortCount uint64, count uint64) any {
 			n := new(big.Int)
 			n.SetUint64(count).Neg(n).Sub(n, mathx.BigIntOne)
-			d.FieldValueBigInt("value", n)
+			d.FieldSynBigInt("value", n)
 			return nil
 		}},
 		majorTypeBytes: {s: scalar.Uint{Sym: "bytes"}, d: func(d *decode.D, shortCount uint64, count uint64) any {
@@ -162,7 +162,7 @@ func decodeCBORValue(d *decode.D) any {
 						})
 					}
 				})
-				d.FieldValueStr("value", sb.String())
+				d.FieldSynStr("value", sb.String())
 				// nil, nested indefinite string is not allowed
 				return nil
 			}
@@ -205,7 +205,7 @@ func decodeCBORValue(d *decode.D) any {
 			return nil
 		}},
 		majorTypeSematic: {s: scalar.Uint{Sym: "semantic"}, d: func(d *decode.D, shortCount uint64, count uint64) any {
-			d.FieldValueUint("tag", count, tagMap)
+			d.FieldSynUint("tag", count, tagMap)
 			d.FieldStruct("value", func(d *decode.D) { decodeCBORValue(d) })
 			return nil
 		}},
@@ -213,11 +213,11 @@ func decodeCBORValue(d *decode.D) any {
 			switch shortCount {
 			// TODO: 0-19
 			case shortCountSpecialFalse:
-				d.FieldValueBool("value", false)
+				d.FieldSynBool("value", false)
 			case shortCountSpecialTrue:
-				d.FieldValueBool("value", true)
+				d.FieldSynBool("value", true)
 			case shortCountSpecialNull:
-				d.FieldValueAny("value", nil)
+				d.FieldSynAny("value", nil)
 			case shortCountSpecialUndefined:
 				// TODO: undefined
 			case 24:

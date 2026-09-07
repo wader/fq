@@ -84,7 +84,7 @@ func decodeNegentropyMessage(d *decode.D) any {
 
 	d.FieldStructArrayLoop("bounds", "bound", d.NotEnd, func(d *decode.D) {
 		delta := d.FieldSintFn("timestamp_delta", decodeVarInt, tdt)
-		d.FieldValueSint("timestamp", delta, tt)
+		d.FieldSynSint("timestamp", delta, tt)
 
 		size := d.FieldSintFn("id_prefix_size", decodeVarInt)
 		if size > 32 {

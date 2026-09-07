@@ -52,12 +52,12 @@ func (d *D) FieldScalarAnyFn(name string, fn func(d *D) scalar.Any, sms ...scala
 	return v
 }
 
-func (d *D) FieldValueAny(name string, a any, sms ...scalar.AnyMapper) {
+func (d *D) FieldSynAny(name string, a any, sms ...scalar.AnyMapper) {
 	v, err := d.tryFieldScalarAnyFn(name, func(d *D) (scalar.Any, error) {
 		return scalar.Any{Actual: a}, nil
 	}, FlagSynthetic, sms...)
 	if err != nil {
-		d.IOPanic(err, name, "FieldValueAny")
+		d.IOPanic(err, name, "FieldSynAny")
 	}
 	_ = v
 }
@@ -68,7 +68,7 @@ func (d *D) TryFieldScalarAnyFn(name string, fn func(d *D) (scalar.Any, error), 
 }
 
 func (d *D) tryFieldScalarAnyFn(name string, fn func(d *D) (scalar.Any, error), flags Flags, sms ...scalar.AnyMapper) (*scalar.Any, error) {
-	v, err := d.TryFieldValue(name, func() (*Value, error) {
+	v, err := d.TryFieldSyn(name, func() (*Value, error) {
 		s, err := fn(d)
 		if err != nil {
 			return &Value{V: &s, Flags: flags}, err
@@ -133,12 +133,12 @@ func (d *D) FieldScalarBigIntFn(name string, fn func(d *D) scalar.BigInt, sms ..
 	return v
 }
 
-func (d *D) FieldValueBigInt(name string, a *big.Int, sms ...scalar.BigIntMapper) {
+func (d *D) FieldSynBigInt(name string, a *big.Int, sms ...scalar.BigIntMapper) {
 	v, err := d.tryFieldScalarBigIntFn(name, func(d *D) (scalar.BigInt, error) {
 		return scalar.BigInt{Actual: a}, nil
 	}, FlagSynthetic, sms...)
 	if err != nil {
-		d.IOPanic(err, name, "FieldValueBigInt")
+		d.IOPanic(err, name, "FieldSynBigInt")
 	}
 	_ = v
 }
@@ -149,7 +149,7 @@ func (d *D) TryFieldScalarBigIntFn(name string, fn func(d *D) (scalar.BigInt, er
 }
 
 func (d *D) tryFieldScalarBigIntFn(name string, fn func(d *D) (scalar.BigInt, error), flags Flags, sms ...scalar.BigIntMapper) (*scalar.BigInt, error) {
-	v, err := d.TryFieldValue(name, func() (*Value, error) {
+	v, err := d.TryFieldSyn(name, func() (*Value, error) {
 		s, err := fn(d)
 		if err != nil {
 			return &Value{V: &s, Flags: flags}, err
@@ -214,12 +214,12 @@ func (d *D) FieldScalarBitBufFn(name string, fn func(d *D) scalar.BitBuf, sms ..
 	return v
 }
 
-func (d *D) FieldValueBitBuf(name string, a bitio.ReaderAtSeeker, sms ...scalar.BitBufMapper) {
+func (d *D) FieldSynBitBuf(name string, a bitio.ReaderAtSeeker, sms ...scalar.BitBufMapper) {
 	v, err := d.tryFieldScalarBitBufFn(name, func(d *D) (scalar.BitBuf, error) {
 		return scalar.BitBuf{Actual: a}, nil
 	}, FlagSynthetic, sms...)
 	if err != nil {
-		d.IOPanic(err, name, "FieldValueBitBuf")
+		d.IOPanic(err, name, "FieldSynBitBuf")
 	}
 	_ = v
 }
@@ -230,7 +230,7 @@ func (d *D) TryFieldScalarBitBufFn(name string, fn func(d *D) (scalar.BitBuf, er
 }
 
 func (d *D) tryFieldScalarBitBufFn(name string, fn func(d *D) (scalar.BitBuf, error), flags Flags, sms ...scalar.BitBufMapper) (*scalar.BitBuf, error) {
-	v, err := d.TryFieldValue(name, func() (*Value, error) {
+	v, err := d.TryFieldSyn(name, func() (*Value, error) {
 		s, err := fn(d)
 		if err != nil {
 			return &Value{V: &s, Flags: flags}, err
@@ -295,12 +295,12 @@ func (d *D) FieldScalarBoolFn(name string, fn func(d *D) scalar.Bool, sms ...sca
 	return v
 }
 
-func (d *D) FieldValueBool(name string, a bool, sms ...scalar.BoolMapper) {
+func (d *D) FieldSynBool(name string, a bool, sms ...scalar.BoolMapper) {
 	v, err := d.tryFieldScalarBoolFn(name, func(d *D) (scalar.Bool, error) {
 		return scalar.Bool{Actual: a}, nil
 	}, FlagSynthetic, sms...)
 	if err != nil {
-		d.IOPanic(err, name, "FieldValueBool")
+		d.IOPanic(err, name, "FieldSynBool")
 	}
 	_ = v
 }
@@ -311,7 +311,7 @@ func (d *D) TryFieldScalarBoolFn(name string, fn func(d *D) (scalar.Bool, error)
 }
 
 func (d *D) tryFieldScalarBoolFn(name string, fn func(d *D) (scalar.Bool, error), flags Flags, sms ...scalar.BoolMapper) (*scalar.Bool, error) {
-	v, err := d.TryFieldValue(name, func() (*Value, error) {
+	v, err := d.TryFieldSyn(name, func() (*Value, error) {
 		s, err := fn(d)
 		if err != nil {
 			return &Value{V: &s, Flags: flags}, err
@@ -376,12 +376,12 @@ func (d *D) FieldScalarFltFn(name string, fn func(d *D) scalar.Flt, sms ...scala
 	return v
 }
 
-func (d *D) FieldValueFlt(name string, a float64, sms ...scalar.FltMapper) {
+func (d *D) FieldSynFlt(name string, a float64, sms ...scalar.FltMapper) {
 	v, err := d.tryFieldScalarFltFn(name, func(d *D) (scalar.Flt, error) {
 		return scalar.Flt{Actual: a}, nil
 	}, FlagSynthetic, sms...)
 	if err != nil {
-		d.IOPanic(err, name, "FieldValueFlt")
+		d.IOPanic(err, name, "FieldSynFlt")
 	}
 	_ = v
 }
@@ -392,7 +392,7 @@ func (d *D) TryFieldScalarFltFn(name string, fn func(d *D) (scalar.Flt, error), 
 }
 
 func (d *D) tryFieldScalarFltFn(name string, fn func(d *D) (scalar.Flt, error), flags Flags, sms ...scalar.FltMapper) (*scalar.Flt, error) {
-	v, err := d.TryFieldValue(name, func() (*Value, error) {
+	v, err := d.TryFieldSyn(name, func() (*Value, error) {
 		s, err := fn(d)
 		if err != nil {
 			return &Value{V: &s, Flags: flags}, err
@@ -457,12 +457,12 @@ func (d *D) FieldScalarSintFn(name string, fn func(d *D) scalar.Sint, sms ...sca
 	return v
 }
 
-func (d *D) FieldValueSint(name string, a int64, sms ...scalar.SintMapper) {
+func (d *D) FieldSynSint(name string, a int64, sms ...scalar.SintMapper) {
 	v, err := d.tryFieldScalarSintFn(name, func(d *D) (scalar.Sint, error) {
 		return scalar.Sint{Actual: a}, nil
 	}, FlagSynthetic, sms...)
 	if err != nil {
-		d.IOPanic(err, name, "FieldValueSint")
+		d.IOPanic(err, name, "FieldSynSint")
 	}
 	_ = v
 }
@@ -473,7 +473,7 @@ func (d *D) TryFieldScalarSintFn(name string, fn func(d *D) (scalar.Sint, error)
 }
 
 func (d *D) tryFieldScalarSintFn(name string, fn func(d *D) (scalar.Sint, error), flags Flags, sms ...scalar.SintMapper) (*scalar.Sint, error) {
-	v, err := d.TryFieldValue(name, func() (*Value, error) {
+	v, err := d.TryFieldSyn(name, func() (*Value, error) {
 		s, err := fn(d)
 		if err != nil {
 			return &Value{V: &s, Flags: flags}, err
@@ -538,12 +538,12 @@ func (d *D) FieldScalarStrFn(name string, fn func(d *D) scalar.Str, sms ...scala
 	return v
 }
 
-func (d *D) FieldValueStr(name string, a string, sms ...scalar.StrMapper) {
+func (d *D) FieldSynStr(name string, a string, sms ...scalar.StrMapper) {
 	v, err := d.tryFieldScalarStrFn(name, func(d *D) (scalar.Str, error) {
 		return scalar.Str{Actual: a}, nil
 	}, FlagSynthetic, sms...)
 	if err != nil {
-		d.IOPanic(err, name, "FieldValueStr")
+		d.IOPanic(err, name, "FieldSynStr")
 	}
 	_ = v
 }
@@ -554,7 +554,7 @@ func (d *D) TryFieldScalarStrFn(name string, fn func(d *D) (scalar.Str, error), 
 }
 
 func (d *D) tryFieldScalarStrFn(name string, fn func(d *D) (scalar.Str, error), flags Flags, sms ...scalar.StrMapper) (*scalar.Str, error) {
-	v, err := d.TryFieldValue(name, func() (*Value, error) {
+	v, err := d.TryFieldSyn(name, func() (*Value, error) {
 		s, err := fn(d)
 		if err != nil {
 			return &Value{V: &s, Flags: flags}, err
@@ -619,12 +619,12 @@ func (d *D) FieldScalarUintFn(name string, fn func(d *D) scalar.Uint, sms ...sca
 	return v
 }
 
-func (d *D) FieldValueUint(name string, a uint64, sms ...scalar.UintMapper) {
+func (d *D) FieldSynUint(name string, a uint64, sms ...scalar.UintMapper) {
 	v, err := d.tryFieldScalarUintFn(name, func(d *D) (scalar.Uint, error) {
 		return scalar.Uint{Actual: a}, nil
 	}, FlagSynthetic, sms...)
 	if err != nil {
-		d.IOPanic(err, name, "FieldValueUint")
+		d.IOPanic(err, name, "FieldSynUint")
 	}
 	_ = v
 }
@@ -635,7 +635,7 @@ func (d *D) TryFieldScalarUintFn(name string, fn func(d *D) (scalar.Uint, error)
 }
 
 func (d *D) tryFieldScalarUintFn(name string, fn func(d *D) (scalar.Uint, error), flags Flags, sms ...scalar.UintMapper) (*scalar.Uint, error) {
-	v, err := d.TryFieldValue(name, func() (*Value, error) {
+	v, err := d.TryFieldSyn(name, func() (*Value, error) {
 		s, err := fn(d)
 		if err != nil {
 			return &Value{V: &s, Flags: flags}, err

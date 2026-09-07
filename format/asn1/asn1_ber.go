@@ -255,7 +255,7 @@ func decodeASN1BERValue(d *decode.D, bib *bitio.Buffer, sb *strings.Builder, par
 					universalTypeVisibleString, // not encoded?
 					universalTypeGeneralString: // not encoded?
 					if sb != nil {
-						d.FieldValueStr("value", sb.String())
+						d.FieldSynStr("value", sb.String())
 					}
 				}
 			}
@@ -296,7 +296,7 @@ func decodeASN1BERValue(d *decode.D, bib *bitio.Buffer, sb *strings.Builder, par
 				}
 			}
 		case class == classUniversal && tag == universalTypeNull:
-			d.FieldValueAny("value", nil)
+			d.FieldSynAny("value", nil)
 		case class == classUniversal && tag == universalTypeObjectIdentifier:
 			d.FieldArray("value", func(d *decode.D) {
 				// first byte is = oid0*40 + oid1
@@ -323,7 +323,7 @@ func decodeASN1BERValue(d *decode.D, bib *bitio.Buffer, sb *strings.Builder, par
 		case class == classUniversal && tag == universalTypeReal:
 			switch length {
 			case 0:
-				d.FieldValueUint("value", 0)
+				d.FieldSynUint("value", 0)
 			default:
 				switch d.FieldBool("binary_encoding") {
 				case true:
@@ -356,7 +356,7 @@ func decodeASN1BERValue(d *decode.D, bib *bitio.Buffer, sb *strings.Builder, par
 
 					n := d.FieldU("n", int(d.BitsLeft()))
 					m := float64(s) * float64(n) * math.Pow(float64(base), float64(exp)) * float64(int(1)<<scale)
-					d.FieldValueFlt("value", m)
+					d.FieldSynFlt("value", m)
 
 				case false:
 					switch d.FieldBool("decimal_encoding") {
@@ -370,13 +370,13 @@ func decodeASN1BERValue(d *decode.D, bib *bitio.Buffer, sb *strings.Builder, par
 
 						switch n {
 						case decimalPlusInfinity:
-							d.FieldValueFlt("value", math.Inf(1))
+							d.FieldSynFlt("value", math.Inf(1))
 						case decimalMinusInfinity:
-							d.FieldValueFlt("value", math.Inf(-1))
+							d.FieldSynFlt("value", math.Inf(-1))
 						case decimalNan:
-							d.FieldValueFlt("value", math.NaN())
+							d.FieldSynFlt("value", math.NaN())
 						case decimalMinusZero:
-							d.FieldValueFlt("value", -0)
+							d.FieldSynFlt("value", -0)
 						}
 					case false:
 						d.FieldU6("representation", scalar.UintMapSymStr{

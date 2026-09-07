@@ -954,7 +954,7 @@ func elfDecodeDynamicTag(d *decode.D, ec elfContext, dc dynamicContext) {
 	case DT_HASH:
 		v := d.FieldU(name, ec.archBits, dfMapper)
 		if i, ok := ec.sectionIndexByAddr(int64(v) * 8); ok {
-			d.FieldValueUint("section_index", uint64(i))
+			d.FieldSynUint("section_index", uint64(i))
 		}
 	case DT_SYMTAB,
 		DT_STRTAB,
@@ -964,7 +964,7 @@ func elfDecodeDynamicTag(d *decode.D, ec elfContext, dc dynamicContext) {
 		DT_FINI:
 		v := d.FieldU(name, ec.archBits, dfMapper)
 		if i, ok := ec.sectionIndexByAddr(int64(v) * 8); ok {
-			d.FieldValueUint("section_index", uint64(i))
+			d.FieldSynUint("section_index", uint64(i))
 		}
 	default:
 		d.FieldU(name, ec.archBits, dfMapper)

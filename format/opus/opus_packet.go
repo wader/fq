@@ -33,7 +33,7 @@ func opusDecode(d *decode.D) any {
 	}
 	switch {
 	case bytes.Equal(prefix, []byte("OpusHead")):
-		d.FieldValueStr("type", "head")
+		d.FieldSynStr("type", "head")
 		d.FieldUTF8("prefix", 8)
 		d.FieldU8("version")
 		channelCount := d.FieldU8("channel_count")
@@ -50,11 +50,11 @@ func opusDecode(d *decode.D) any {
 			})
 		}
 	case bytes.Equal(prefix, []byte("OpusTags")):
-		d.FieldValueStr("type", "tags")
+		d.FieldSynStr("type", "tags")
 		d.FieldUTF8("prefix", 8)
 		d.FieldFormat("comment", &vorbisComment, nil)
 	default:
-		d.FieldValueStr("type", "audio")
+		d.FieldSynStr("type", "audio")
 		d.FieldStruct("toc", func(d *decode.D) {
 			d.FieldStruct("config", func(d *decode.D) {
 				configurations := map[uint64]struct {
@@ -97,9 +97,9 @@ func opusDecode(d *decode.D) any {
 				}
 				n := d.FieldU5("config")
 				config := configurations[n]
-				d.FieldValueStr("mode", config.mode)
-				d.FieldValueStr("bandwidth", config.bandwidth)
-				d.FieldValueFlt("frame_size", config.frameSize)
+				d.FieldSynStr("mode", config.mode)
+				d.FieldSynStr("bandwidth", config.bandwidth)
+				d.FieldSynFlt("frame_size", config.frameSize)
 			})
 			d.FieldBool("stereo")
 			d.FieldStruct("frames_per_packet", func(d *decode.D) {
@@ -114,8 +114,8 @@ func opusDecode(d *decode.D) any {
 				}
 				n := d.FieldU2("config")
 				config := framesPerPacketConfigs[n]
-				d.FieldValueUint("frames", config.frames)
-				d.FieldValueStr("mode", config.mode)
+				d.FieldSynUint("frames", config.frames)
+				d.FieldSynStr("mode", config.mode)
 			})
 			d.FieldRawLen("data", d.BitsLeft())
 		})
