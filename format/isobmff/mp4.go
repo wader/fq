@@ -152,6 +152,7 @@ type tencBox struct {
 // Fragmented MP4 boxes
 type tfhdBox struct {
 	trackID                       int
+	baseDataOffsetPresent         bool
 	baseDataOffset                int64
 	defaultSampleSize             int64
 	defaultSampleDescriptionIndex int
@@ -493,7 +494,15 @@ func mp4Tracks(d *decode.D, mi format.MP4_In, traks, moofs []*box) {
 							if trunNr < len(td.sencs) {
 								sencEntries = td.sencs[trunNr].entries
 							}
-							sampleOffset := td.moofOffset + tr.dataOffset
+							// ISO 14496-12 8.8.7: base offset for sample data
+							// if base_data_offset_present: use base_data_offset from tfhd
+							// if default_base_is_moof (or no flag): use moof offset
+							var sampleOffset int64
+							if td.tfhd != nil && td.tfhd.baseDataOffsetPresent {
+								sampleOffset = td.tfhd.baseDataOffset + tr.dataOffset
+							} else {
+								sampleOffset = td.moofOffset + tr.dataOffset
+							}
 
 							for trunSampleNr, sz := range tr.sampleSizes {
 								dataFormat := trackSDDataFormat
