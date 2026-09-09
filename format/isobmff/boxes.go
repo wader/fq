@@ -1025,6 +1025,7 @@ func decodeBoxType(ctx *decodeContext, d *decode.D, typ string) {
 		tfhdBox.trackID = trackID
 
 		if baseDataOffsetPresent {
+			tfhdBox.baseDataOffsetPresent = true
 			tfhdBox.baseDataOffset = int64(d.FieldU64("base_data_offset"))
 		}
 		if sampleDescriptionIndexPresent {
