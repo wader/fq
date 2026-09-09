@@ -1,6 +1,6 @@
 module github.com/wader/fq
 
-go 1.25.0
+go 1.26.0
 
 // fork of github.com/itchyny/gojq, see github.com/wader/gojq fq branch
 require github.com/wader/gojq v0.12.1-0.20260709150221-6128faeeac7b
@@ -63,7 +63,7 @@ require (
 	// bump: gomod-golang/text /golang\.org\/x\/text v(.*)/ https://github.com/golang/text.git|^0
 	// bump: gomod-golang/text command go get golang.org/x/text@v$LATEST && go mod tidy
 	// bump: gomod-golang/text link "Source diff $CURRENT..$LATEST" https://github.com/golang/text/compare/v$CURRENT..v$LATEST
-	golang.org/x/text v0.41.0
+	golang.org/x/text v0.42.0
 
 	// bump: gomod-gopkg.in/yaml.v3 /gopkg\.in\/yaml\.v3 v(.*)/ https://github.com/go-yaml/yaml.git|^3
 	// bump: gomod-gopkg.in/yaml.v3 command go get gopkg.in/yaml.v3@v$LATEST && go mod tidy
