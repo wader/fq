@@ -95,3 +95,112 @@ def _scan_binary($regex; $flags):
   );
 def scan($val): _bytes_or_orig(_scan_binary($val; "g"); _orig_scan($val));
 def scan($regex; $flags): _bytes_or_orig(_scan_binary($regex; "g"+$flags); _orig_scan($regex; $flags));
+
+# The functions below were left out when the overloads above were written, so
+# they still reach a binary through a coercion that replaces every byte it
+# cannot read as UTF-8. Each one now works on the bytes and gives back a binary
+# wherever the string version gives back a string.
+
+def _orig_startswith($v): startswith($v);
+def startswith($v): _bytes_or_orig(_binary_starts_with($v); _orig_startswith($v));
+
+def _orig_endswith($v): endswith($v);
+def endswith($v): _bytes_or_orig(_binary_ends_with($v); _orig_endswith($v));
+
+def _orig_indices($v): indices($v);
+def indices($v): _bytes_or_orig(_binary_indices($v); _orig_indices($v));
+
+def _orig_index($v): index($v);
+def index($v):
+  _bytes_or_orig(
+    ( _binary_indices($v)
+    | if length == 0 then null else .[0] end
+    );
+    _orig_index($v)
+  );
+
+def _orig_rindex($v): rindex($v);
+def rindex($v):
+  _bytes_or_orig(
+    ( _binary_indices($v)
+    | if length == 0 then null else .[-1] end
+    );
+    _orig_rindex($v)
+  );
+
+def _orig_contains($v): contains($v);
+def contains($v):
+  _bytes_or_orig(
+    ( if _binary_needle_length($v) == 0 then true
+      else _binary_indices($v) | length > 0
+      end
+    );
+    _orig_contains($v)
+  );
+
+def _orig_ltrimstr($v): ltrimstr($v);
+def ltrimstr($v):
+  _bytes_or_orig(
+    ( _binary_needle_length($v) as $n
+    | if _binary_starts_with($v) then .[$n:]
+      else .
+      end
+    );
+    _orig_ltrimstr($v)
+  );
+
+def _orig_rtrimstr($v): rtrimstr($v);
+def rtrimstr($v):
+  _bytes_or_orig(
+    ( _binary_needle_length($v) as $n
+    | if $n > 0 and _binary_ends_with($v) then .[0:length-$n]
+      else .
+      end
+    );
+    _orig_rtrimstr($v)
+  );
+
+def _orig_ascii_downcase: ascii_downcase;
+def ascii_downcase: _bytes_or_orig(_binary_ascii_case(false); _orig_ascii_downcase);
+
+def _orig_ascii_upcase: ascii_upcase;
+def ascii_upcase: _bytes_or_orig(_binary_ascii_case(true); _orig_ascii_upcase);
+
+# sub and gsub were left out of the overloads above even though match, scan,
+# split and capture were done, so they still went through the coercion. The
+# replacement is evaluated once for each match with that match's capture object
+# as its input, the way the string versions evaluate it, and its first value is
+# used. A replacement may be a string or a binary.
+
+def _capture_object_of($m):
+  ( $m.captures
+  | map(select(.name) | {key: .name, value: .string})
+  | from_entries
+  );
+
+def _sub_binary($regex; str; $flags):
+  ( . as $b
+  | [ foreach (_match_binary($regex; $flags), null) as $m (
+        {prev: 0, parts: []};
+        if $m == null then
+          {prev: .prev, parts: (.parts + [$b[.prev:]])}
+        else
+          { prev: ($m.offset + $m.length),
+            parts: (.parts + [$b[.prev:$m.offset], first(_capture_object_of($m) | str)])
+          }
+        end
+      )
+    ]
+  | last.parts
+  | tobytes
+  );
+
+def _orig_sub($regex; str): sub($regex; str);
+def _orig_sub($regex; str; $flags): sub($regex; str; $flags);
+def sub($regex; str): _bytes_or_orig(_sub_binary($regex; str; ""); _orig_sub($regex; str));
+def sub($regex; str; $flags): _bytes_or_orig(_sub_binary($regex; str; $flags); _orig_sub($regex; str; $flags));
+
+def _orig_gsub($regex; str): gsub($regex; str);
+def _orig_gsub($regex; str; $flags): gsub($regex; str; $flags);
+def gsub($regex; str): _bytes_or_orig(_sub_binary($regex; str; "g"); _orig_gsub($regex; str));
+def gsub($regex; str; $flags): _bytes_or_orig(_sub_binary($regex; str; "g"+$flags); _orig_gsub($regex; str; $flags));
