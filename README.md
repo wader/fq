@@ -348,7 +348,7 @@ Licenses of direct dependencies:
 - github.com/gomarkdown/markdown - https://github.com/gomarkdown/markdown/blob/master/LICENSE.txt (BSD)
 - github.com/gopacket/gopacket - https://github.com/gopacket/gopacket/blob/master/LICENSE (BSD)
 - github.com/mitchellh/copystructure - https://github.com/mitchellh/copystructure/blob/master/LICENSE (MIT)
-- github.com/mitchellh/mapstructure - https://github.com/mitchellh/mapstructure/blob/master/LICENSE (MIT)
+- github.com/go-viper/mapstructure/v2 - https://github.com/go-viper/mapstructure/blob/main/LICENSE (MIT)
 - github.com/pmezard/go-difflib - https://github.com/pmezard/go-difflib/blob/master/LICENSE (BSD)
 - golang/snappy - https://github.com/golang/snappy/blob/master/LICENSE (BSD)
 - golang/x/* - https://github.com/golang/text/blob/master/LICENSE (BSD)

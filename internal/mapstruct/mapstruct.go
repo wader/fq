@@ -10,7 +10,7 @@ import (
 	"sync"
 
 	"github.com/creasty/defaults"
-	"github.com/mitchellh/mapstructure"
+	"github.com/go-viper/mapstructure/v2"
 )
 
 // "AaaBbb" -> "aaa_bbb"

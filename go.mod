@@ -21,6 +21,11 @@ require (
 	// bump: gomod-ergochat-readline link "Release notes" https://github.com/ergochat/readline/releases/tag/v$LATEST
 	github.com/ergochat/readline v0.1.3
 
+	// bump: gomod-mapstructure /github\.com\/go-viper\/mapstructure\/v2 v(.*)/ https://github.com/go-viper/mapstructure.git|^2
+	// bump: gomod-mapstructure command go get github.com/go-viper/mapstructure/v2@v$LATEST && go mod tidy
+	// bump: gomod-mapstructure link "CHANGELOG" https://github.com/go-viper/mapstructure/blob/main/CHANGELOG.md
+	github.com/go-viper/mapstructure/v2 v2.5.0
+
 	// bump: gomod-golang-snappy /github\.com\/golang\/snappy v(.*)/ https://github.com/golang/snappy.git|^1
 	// bump: gomod-golang-snappy command go get github.com/golang/snappy@v$LATEST && go mod tidy
 	// bump: gomod-golang-snappy link "Source diff $CURRENT..$LATEST" https://github.com/golang/snappy/compare/v$CURRENT..v$LATEST
@@ -39,11 +44,6 @@ require (
 	// bump: gomod-copystructure command go get github.com/mitchellh/copystructure@v$LATEST && go mod tidy
 	// bump: gomod-copystructure link "CHANGELOG" https://github.com/mitchellh/copystructure/blob/master/CHANGELOG.md
 	github.com/mitchellh/copystructure v1.2.0
-
-	// bump: gomod-mapstructure /github\.com\/mitchellh\/mapstructure v(.*)/ https://github.com/mitchellh/mapstructure.git|^1
-	// bump: gomod-mapstructure command go get github.com/mitchellh/mapstructure@v$LATEST && go mod tidy
-	// bump: gomod-mapstructure link "CHANGELOG" https://github.com/mitchellh/mapstructure/blob/master/CHANGELOG.md
-	github.com/mitchellh/mapstructure v1.5.0
 
 	// bump: gomod-golang-x-crypto /golang\.org\/x\/crypto v(.*)/ https://github.com/golang/crypto.git|^0
 	// bump: gomod-golang-x-crypto command go get golang.org/x/crypto@v$LATEST && go mod tidy
