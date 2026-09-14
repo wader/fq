@@ -8,13 +8,13 @@ import (
 	"errors"
 	"io"
 
+	"github.com/goccy/go-yaml"
 	"github.com/wader/fq/format"
 	"github.com/wader/fq/internal/gojqx"
 	"github.com/wader/fq/pkg/bitio"
 	"github.com/wader/fq/pkg/decode"
 	"github.com/wader/fq/pkg/interp"
 	"github.com/wader/fq/pkg/scalar"
-	"gopkg.in/yaml.v3"
 )
 
 //go:embed yaml.jq
@@ -63,16 +63,16 @@ func decodeYAML(d *decode.D) any {
 }
 
 type ToYAMLOpts struct {
-	Indent int `default:"4"` // 4 is default for gopkg.in/yaml.v3
+	Indent int `default:"4"`
 }
 
 func toYAML(_ *interp.Interp, c any, opts ToYAMLOpts) any {
 	b := &bytes.Buffer{}
-	e := yaml.NewEncoder(b)
-	// yaml.SetIndent panics if < 0
+	var encOpts []yaml.EncodeOption
 	if opts.Indent >= 0 {
-		e.SetIndent(opts.Indent)
+		encOpts = append(encOpts, yaml.Indent(opts.Indent))
 	}
+	e := yaml.NewEncoder(b, encOpts...)
 	if err := e.Encode(gojqx.Normalize(c)); err != nil {
 		return err
 	}

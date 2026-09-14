@@ -4,10 +4,10 @@ a:
 
 $ fq -rn "{a: {b: 123}} | to_yaml({indent: range(8)})"
 a:
-    b: 123
+b: 123
 
 a:
-  b: 123
+ b: 123
 
 a:
   b: 123

@@ -44,15 +44,15 @@ error at position 0x7: root not object or array
 ]
 ----
 array:
-    - true
-    - false
-    - null
-    - 1.2
-    - string
-    - - 1.2
-      - 3
-    - a: 1
-escape \": 456
+- true
+- false
+- null
+- 1.2
+- string
+- - 1.2
+  - 3
+- a: 1
+"escape \\\"": 456
 "false": false
 "null": null
 number: 1.2
