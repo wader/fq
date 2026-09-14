@@ -26,6 +26,11 @@ require (
 	// bump: gomod-mapstructure link "CHANGELOG" https://github.com/go-viper/mapstructure/blob/main/CHANGELOG.md
 	github.com/go-viper/mapstructure/v2 v2.5.0
 
+	// bump: gomod-goccy/go-yaml /github\.com\/goccy\/go-yaml v(.*)/ https://github.com/goccy/go-yaml.git|^1
+	// bump: gomod-goccy/go-yaml command go get github.com/goccy/go-yaml@v$LATEST && go mod tidy
+	// bump: gomod-goccy/go-yaml link "Source diff $CURRENT..$LATEST" https://github.com/goccy/go-yaml/compare/v$CURRENT..v$LATEST
+	github.com/goccy/go-yaml v1.19.2
+
 	// bump: gomod-golang-snappy /github\.com\/golang\/snappy v(.*)/ https://github.com/golang/snappy.git|^1
 	// bump: gomod-golang-snappy command go get github.com/golang/snappy@v$LATEST && go mod tidy
 	// bump: gomod-golang-snappy link "Source diff $CURRENT..$LATEST" https://github.com/golang/snappy/compare/v$CURRENT..v$LATEST
@@ -64,17 +69,10 @@ require (
 	// bump: gomod-golang/text command go get golang.org/x/text@v$LATEST && go mod tidy
 	// bump: gomod-golang/text link "Source diff $CURRENT..$LATEST" https://github.com/golang/text/compare/v$CURRENT..v$LATEST
 	golang.org/x/text v0.42.0
-
-	// bump: gomod-gopkg.in/yaml.v3 /gopkg\.in\/yaml\.v3 v(.*)/ https://github.com/go-yaml/yaml.git|^3
-	// bump: gomod-gopkg.in/yaml.v3 command go get gopkg.in/yaml.v3@v$LATEST && go mod tidy
-	// bump: gomod-gopkg.in/yaml.v3 link "Source diff $CURRENT..$LATEST" https://github.com/go-yaml/yaml/compare/v$CURRENT..v$LATEST
-	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
 	github.com/itchyny/timefmt-go v0.1.8 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
-	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	golang.org/x/sys v0.48.0 // indirect
-	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 )
