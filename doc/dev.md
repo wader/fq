@@ -363,7 +363,7 @@ Issues and PR:s related to fq:<br>
 [#141](https://github.com/itchyny/gojq/issues/141) Empty array flatten regression since "improve flatten performance by reducing copy"
 
 - [gopacket](https://github.com/gopacket/gopacket) for TCP and IPv4 reassembly
-- [mapstructure](https://github.com/mitchellh/mapstructure) for convenient JSON/map conversion
+- [mapstructure](https://github.com/go-viper/mapstructure) for convenient JSON/map conversion
 - [go-difflib](https://github.com/pmezard/go-difflib) for diff tests
 - [golang.org/x/text](https://pkg.go.dev/golang.org/x/text) for text encoding conversions
 - [float16.go](https://android.googlesource.com/platform/tools/gpu/+/gradle_2.0.0/binary/float16.go) to convert bits into 16-bit floats
