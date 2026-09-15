@@ -1,5 +1,4 @@
 // Package mapstruct maps struct <-> JSON using came case <-> snake case
-// also set default values based on struct tags
 package mapstruct
 
 // TODO: implement own version as we don't need much?
