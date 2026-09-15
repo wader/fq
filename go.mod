@@ -11,11 +11,6 @@ require (
 	// bump: gomod-BurntSushi/toml link "Source diff $CURRENT..$LATEST" https://github.com/BurntSushi/toml/compare/v$CURRENT..v$LATEST
 	github.com/BurntSushi/toml v1.6.0
 
-	// bump: gomod-creasty-defaults /github\.com\/creasty\/defaults v(.*)/ https://github.com/creasty/defaults.git|^1
-	// bump: gomod-creasty-defaults command go get github.com/creasty/defaults@v$LATEST && go mod tidy
-	// bump: gomod-creasty-defaults link "Source diff $CURRENT..$LATEST" https://github.com/creasty/defaults/compare/v$CURRENT..v$LATEST
-	github.com/creasty/defaults v1.8.0
-
 	// bump: gomod-ergochat-readline /github\.com\/ergochat\/readline v(.*)/ https://github.com/ergochat/readline.git|*
 	// bump: gomod-ergochat-readline command go get github.com/ergochat/readline@v$LATEST && go mod tidy
 	// bump: gomod-ergochat-readline link "Release notes" https://github.com/ergochat/readline/releases/tag/v$LATEST

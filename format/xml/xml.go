@@ -51,7 +51,7 @@ func init() {
 			Functions: []string{"_todisplay"},
 		})
 	interp.RegisterFS(xmlFS)
-	interp.RegisterFunc1("to_xml", toXML)
+	interp.RegisterFunc1("_to_xml", toXML)
 	interp.RegisterFunc0("from_xmlentities", func(_ *interp.Interp, c string) any {
 		return html.UnescapeString(c)
 	})
@@ -364,7 +364,7 @@ func xmlNameSort(a, b xml.Name) int {
 
 type ToXMLOpts struct {
 	Indent          int
-	AttributePrefix string `default:"@"`
+	AttributePrefix string
 }
 
 func toXMLFromObject(c any, opts ToXMLOpts) any {
