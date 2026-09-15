@@ -90,7 +90,7 @@ func decodeTOML(d *decode.D) any {
 }
 
 type ToTOMLOpts struct {
-	Indent int `default:"2"` // 2 is default for BurntSushi/toml
+	Indent int
 }
 
 func toTOML(_ *interp.Interp, c any, opts ToTOMLOpts) any {

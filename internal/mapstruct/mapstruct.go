@@ -9,7 +9,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/creasty/defaults"
 	"github.com/go-viper/mapstructure/v2"
 )
 
@@ -44,7 +43,6 @@ func camelToSnakeSlow(s string) string {
 }
 
 func ToStruct(m any, v any) error {
-	_ = defaults.Set(v)
 	ms, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{
 		MatchName: func(mapKey, fieldName string) bool {
 			return CamelToSnake(fieldName) == mapKey

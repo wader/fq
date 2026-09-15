@@ -63,7 +63,7 @@ func decodeYAML(d *decode.D) any {
 }
 
 type ToYAMLOpts struct {
-	Indent int `default:"4"`
+	Indent int
 }
 
 func toYAML(_ *interp.Interp, c any, opts ToYAMLOpts) any {

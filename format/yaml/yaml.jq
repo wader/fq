@@ -1,3 +1,3 @@
 def _yaml__todisplay: tovalue;
-def to_yaml($opts): _to_yaml($opts);
-def to_yaml: _to_yaml(null);
+def to_yaml($opts): _to_yaml({"indent": 4} + $opts);
+def to_yaml: to_yaml({});
