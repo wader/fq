@@ -3,7 +3,7 @@
 ### Steps to add new decoder
 
 - Create a directory  `format/<name>`
-- Copy some similar decoder, `format/format/bson.go` is quite small, to `format/<name>/<name>.go`
+- Copy some similar decoder, `format/bson/bson.go` is quite small, to `format/<name>/<name>.go`
 - Cleanup and fill in the register struct, rename `format.BSON` and add it
 to `format/format.go` and don't forget to change the string constant.
 - Add an import to `format/all/all.go`
