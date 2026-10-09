@@ -5,25 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math/rand"
 	"testing"
 
 	"github.com/wader/fq/pkg/bitio"
 )
-
-type lcg uint64
-
-func (r *lcg) next() uint64 {
-	*r = *r*6364136223846793005 + 1
-	return uint64(*r)
-}
-
-func (r *lcg) intn(n int) int {
-	return int(r.next() % uint64(n))
-}
-
-func (r *lcg) int63n(n int64) int64 {
-	return int64(r.next() % uint64(n))
-}
 
 func createMultiReader(numSegments int, segmentSize int) (*bitio.MultiReader, []byte, error) {
 	data := make([]byte, numSegments*segmentSize)
@@ -118,15 +104,15 @@ func TestMultiReaderRandomAccess(t *testing.T) {
 
 			buf := make([]byte, 4)
 
-			rng := lcg(42)
+			rng := rand.New(rand.NewSource(42)) //nolint:gosec
 			for i := 0; i < 200; i++ {
 				// Pick a bit offset and nBits within a single segment so ReadBitsAt returns nBits
-				segIdx := rng.intn(count)
+				segIdx := rng.Intn(count)
 				segStart := int64(segIdx * segmentSize * 8)
 				segBits := int64(segmentSize * 8)
 
-				nBits := int64(rng.intn(32) + 1)
-				offsetInSeg := rng.int63n(segBits - nBits + 1)
+				nBits := int64(rng.Intn(32) + 1)
+				offsetInSeg := rng.Int63n(segBits - nBits + 1)
 				bitOff := segStart + offsetInSeg
 
 				n, err := mr.ReadBitsAt(buf, nBits, bitOff)
@@ -259,11 +245,11 @@ func BenchmarkMultiReaderReadBitsAt(b *testing.B) {
 
 			totalBits := int64(len(data) * 8)
 			offsets := make([]int64, 1024)
-			rng := lcg(42)
+			rng := rand.New(rand.NewSource(42)) //nolint:gosec
 			maxOffset := totalBits - 64
 			for i := range offsets {
 				if maxOffset > 0 {
-					offsets[i] = rng.int63n(maxOffset)
+					offsets[i] = rng.Int63n(maxOffset)
 				} else {
 					offsets[i] = 0
 				}
