@@ -3,9 +3,8 @@ package bitio
 import (
 	"errors"
 	"io"
+	"sort"
 )
-
-// TODO: smarter, track index?
 
 func endPos(rs Seeker) (int64, error) {
 	c, err := rs.SeekBits(0, io.SeekCurrent)
@@ -47,23 +46,33 @@ func NewMultiReader(rs ...ReadAtSeeker) (*MultiReader, error) {
 }
 
 func (m *MultiReader) ReadBitsAt(p []byte, nBits int64, bitOff int64) (n int64, err error) {
-	var end int64
-	if len(m.readers) > 0 {
-		end = m.readerEnds[len(m.readers)-1]
+	if len(m.readers) == 0 {
+		return 0, io.EOF
 	}
+	end := m.readerEnds[len(m.readers)-1]
 	if end <= bitOff {
 		return 0, io.EOF
 	}
 
-	prevAtEnd := int64(0)
-	readerAt := m.readers[0]
-	for i, end := range m.readerEnds {
-		if bitOff < end {
-			readerAt = m.readers[i]
-			break
+	var i int
+	var prevAtEnd int64
+	if len(m.readerEnds) <= 8 {
+		for idx, rEnd := range m.readerEnds {
+			if bitOff < rEnd {
+				i = idx
+				break
+			}
+			prevAtEnd = rEnd
 		}
-		prevAtEnd = end
+	} else {
+		i = sort.Search(len(m.readerEnds), func(i int) bool {
+			return m.readerEnds[i] > bitOff
+		})
+		if i > 0 {
+			prevAtEnd = m.readerEnds[i-1]
+		}
 	}
+	readerAt := m.readers[i]
 
 	rBits, err := readerAt.ReadBitsAt(p, nBits, bitOff-prevAtEnd)
 
