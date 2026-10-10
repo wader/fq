@@ -1,0 +1,23 @@
+# fq
+
+> jq for binary formats — a CLI tool, query language, and set of decoders for inspecting, querying, slicing, and transforming binary and text file formats. Supports 100+ formats including MP4, JPEG, PCAP, ELF, protobuf, JSON, and CBOR.
+
+## Getting Started
+
+- [Install](https://github.com/wader/fq#install): Prebuilt releases for macOS/Linux/Windows, or Homebrew, MacPorts, Scoop, pacman, Guix, Nix, FreeBSD, Alpine, or `go install github.com/wader/fq@latest`.
+- [Basic usage](https://github.com/wader/fq/blob/master/doc/usage.md): `fq . file`, `fq d file`, `fq 'query' file` — command patterns and common recipes.
+
+## Usage
+
+- [CLI arguments](https://github.com/wader/fq/blob/master/doc/usage.md): jq-compatible flags plus fq-specific ones like `--decode`/`-d NAME` to force a format instead of probing.
+- [Supported formats](https://github.com/wader/fq/blob/master/doc/formats.md): Full list and per-format reference (media containers, network protocols, filesystems, serialization formats, etc.).
+
+## Development
+
+- [Development guide](https://github.com/wader/fq/blob/master/doc/dev.md): How to add a new decoder and the internal architecture.
+
+## Optional
+
+- [Presentations and media](https://github.com/wader/fq#presentations-and-media): FOSDEM 2023 talk, podcast episodes, conference slides.
+- [Related and similar tools](https://github.com/wader/fq#similar-or-related-works): HexFiend, ImHex, kaitai, Wireshark, and others, with notes on how fq differs.
+- [License](https://github.com/wader/fq/blob/master/LICENSE): MIT.
