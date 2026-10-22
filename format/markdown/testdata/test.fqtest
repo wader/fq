@@ -55,6 +55,7 @@ $ fq -d markdown . test.md
           "children": [
             "^1"
           ],
+          "deferred_id": "^1",
           "destination": "footnote1",
           "note_id": 0,
           "type": "link"
@@ -65,6 +66,7 @@ $ fq -d markdown . test.md
           "children": [
             "^note"
           ],
+          "deferred_id": "^note",
           "destination": "footnote2",
           "note_id": 0,
           "type": "link"
@@ -310,6 +312,16 @@ $ fq -d markdown . test.md
         }
       ],
       "type": "paragraph"
+    },
+    {
+      "destination": "footnote1",
+      "label": "^1",
+      "type": "reference_definition"
+    },
+    {
+      "destination": "footnote2",
+      "label": "^note",
+      "type": "reference_definition"
     }
   ],
   "type": "document"
