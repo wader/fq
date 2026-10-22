@@ -103,7 +103,7 @@ func container(v map[string]any, typ string, c ast.Container) {
 	for _, n := range children {
 		cv := node(n)
 		if cv != nil {
-			cs = append(cs, node(n))
+			cs = append(cs, cv)
 		}
 	}
 	v["children"] = cs
@@ -307,8 +307,13 @@ func node(n ast.Node) any {
 		leaf(v, "superscript", n.Leaf)
 	case *ast.Footnotes:
 		container(v, "footnotes", n.Container)
+	case *ast.ReferenceDefinition:
+		leaf(v, "reference_definition", n.Leaf)
+		v["label"] = string(n.Label)
+		v["destination"] = string(n.Destination)
+		v["title"] = string(n.Title)
 	default:
-		panic(fmt.Sprintf("unknown node %T", node))
+		panic(fmt.Sprintf("unknown node %T", n))
 	}
 
 	for k, e := range v {
