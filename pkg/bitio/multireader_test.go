@@ -14,6 +14,9 @@ import (
 func createMultiReader(numSegments int, segmentSize int) (*bitio.MultiReader, []byte, error) {
 	data := make([]byte, numSegments*segmentSize)
 	for i := range data {
+		// 251 is chosen as a prime number coprime with standard byte and word
+		// alignments (8, 16, 32, 64) that exercises bit boundary crossovers
+		// across all bit positions.
 		data[i] = byte(i % 251)
 	}
 
@@ -226,7 +229,7 @@ func TestMultiReaderClone(t *testing.T) {
 		t.Fatalf("reads failed: %v %v", err1, err2)
 	}
 
-	// Original was at bit 64 (byte 8), cloned was at bit 0 (byte 0)
+	// cloned starts at 64 and was not affected by mr read
 	if bytes.Equal(buf1, buf2) {
 		t.Fatalf("expected different bytes at bit 64 vs 0, got both %x", buf1)
 	}
