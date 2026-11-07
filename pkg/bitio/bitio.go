@@ -211,9 +211,13 @@ func readFull(p []byte, nBits int64, bitOff int64, fn func(p []byte, nBits int64
 				readBits = leftBits
 			}
 
-			var pb [1]byte
-			rBits, err := fn(pb[:], readBits, bitOff+readBitOffset)
-			Write64(uint64(pb[0]>>(8-rBits)), rBits, p, readBitOffset)
+			// use the byte in p as scratch, a local array escapes to the heap via fn
+			pb := p[byteOffset : byteOffset+1]
+			old := pb[0]
+			rBits, err := fn(pb, readBits, bitOff+readBitOffset)
+			v := pb[0]
+			pb[0] = old
+			Write64(uint64(v>>(8-rBits)), rBits, p, readBitOffset)
 			readBitOffset += rBits
 
 			if err != nil {
