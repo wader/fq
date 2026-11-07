@@ -18,8 +18,8 @@ github.com/mitchellh/copystructure v1.2.0 h1:vpKXTN4ewci03Vljg/q9QvCGUDttBOGBIa1
 github.com/mitchellh/copystructure v1.2.0/go.mod h1:qLl+cE2AmVv+CoeAwDPye/v+N2HKCj9FbZEVFJRxO9s=
 github.com/mitchellh/reflectwalk v1.0.2 h1:G2LzWKi524PWgd3mLHV8Y5k7s6XUvT0Gef6zxSIeXaQ=
 github.com/mitchellh/reflectwalk v1.0.2/go.mod h1:mSTlrgnPZtwu0c4WaC2kGObEpuNDbx0jmZXqmk4esnw=
-github.com/wader/gojq v0.12.1-0.20260709150221-6128faeeac7b h1:V+ns0DUsXp2pTL9UTkmeZuHtmLDYLq+eQ25CQKJOXKU=
-github.com/wader/gojq v0.12.1-0.20260709150221-6128faeeac7b/go.mod h1:2qlJEpLA7UIwCGSPnC42SOQbXwVaMtaGQGApfOHp884=
+github.com/wader/gojq v0.12.1-0.20261107174852-3adf7dba5f4c h1:YpjzNdz4RoGuVLme/W9Sq7e7AJXOWrh+RSeXrJqbofI=
+github.com/wader/gojq v0.12.1-0.20261107174852-3adf7dba5f4c/go.mod h1:25dJvvzN0ZUECBcnyChpEDTzkwbf0OPU75vwnn1J7Qo=
 golang.org/x/crypto v0.58.0 h1:COkYLr4k7nDI4r6QtMML2AfzeIswWHAJthLS6K/M/54=
 golang.org/x/crypto v0.58.0/go.mod h1:Xh+kl5A+M0gMiWDytH2Hhr5Z7WbNCpv/eB/EFgfSk+w=
 golang.org/x/net v0.62.0 h1:18ELalfM5+XNRwzM2nYqXsZQ9ByS1uhj2O/U7+5jqRY=
