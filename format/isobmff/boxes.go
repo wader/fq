@@ -369,7 +369,7 @@ func decodeBoxFtyp(ctx *decodeContext, d *decode.D) {
 	}
 
 	if !foundBrand {
-		d.Errorf("non of %v found for ftyp with brands %v",
+		d.Errorf("non of %v found for ftyp/styp with brands %v",
 			ctx.brands, brands,
 		)
 	}
