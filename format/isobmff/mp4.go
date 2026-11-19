@@ -544,6 +544,10 @@ func mp4Decode(d *decode.D) any {
 		"jp2",  // JPEG 2000
 		"mp41", // MP4 v1
 		"mp42", // MP4 v2
+		"msdh", // media segment general format (CMAF)
+		"msix", // media segment indexed format (CMAF)
+		"iso5", // ISO file format (used in CMAF)
+		"iso6", // ISO file format (used in CMAF)
 	})
 
 	traks := slices.Collect(ctx.root.findAll("moov/trak"))

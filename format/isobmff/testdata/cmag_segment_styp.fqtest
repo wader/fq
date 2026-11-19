@@ -1,0 +1,11 @@
+$ fq d cmag_segment_styp.m4s
+    |00 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|0123456789abcdef|.{}: cmag_segment_styp.m4s (mp4)
+    |                                               |                |  boxes[0:1]:
+    |                                               |                |    [0]{}: box
+0x00|00 00 00 18                                    |....            |      size: 24
+0x00|            73 74 79 70                        |    styp        |      type: "styp" (Segment Type Box)
+0x00|                        6d 73 64 68            |        msdh    |      major_brand: "msdh"
+0x00|                                    00 00 00 00|            ....|      minor_version: 0
+    |                                               |                |      brands[0:2]:
+0x10|6d 73 64 68                                    |msdh            |        [0]: "msdh" (Media Segment conforming to the general format type for ISO base media file format)
+0x10|            6d 73 69 78|                       |    msix|       |        [1]: "msix" (Media Segment conforming to the Indexed Media Segment format type for ISO base media file format)
