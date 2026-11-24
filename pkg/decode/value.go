@@ -73,16 +73,11 @@ func (v *Value) Walk(opts WalkOpts) error {
 		}
 
 		if opts.PreOrder {
-			err := opts.Fn(wv, rootV, depth, rootDepth+rootDepthDelta)
-			switch {
-			case errors.Is(err, ErrWalkSkipChildren):
-				return nil
-			case errors.Is(err, ErrWalkStop):
-				fallthrough
-			default:
-				if err != nil {
-					return err
+			if err := opts.Fn(wv, rootV, depth, rootDepth+rootDepthDelta); err != nil {
+				if errors.Is(err, ErrWalkSkipChildren) {
+					return nil
 				}
+				return err
 			}
 		}
 
@@ -99,16 +94,11 @@ func (v *Value) Walk(opts WalkOpts) error {
 		}
 
 		if !opts.PreOrder {
-			err := opts.Fn(wv, rootV, depth, rootDepth+rootDepthDelta)
-			switch {
-			case errors.Is(err, ErrWalkSkipChildren):
-				return errors.New("can't skip children in post-order")
-			case errors.Is(err, ErrWalkStop):
-				fallthrough
-			default:
-				if err != nil {
-					return err
+			if err := opts.Fn(wv, rootV, depth, rootDepth+rootDepthDelta); err != nil {
+				if errors.Is(err, ErrWalkSkipChildren) {
+					return errors.New("can't skip children in post-order")
 				}
+				return err
 			}
 		}
 		return nil
