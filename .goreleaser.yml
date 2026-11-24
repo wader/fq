@@ -16,6 +16,13 @@ builds:
     goarch:
       - amd64
       - arm64
+      - s390x
+    # s390x is a Linux-only architecture
+    ignore:
+      - goos: windows
+        goarch: s390x
+      - goos: darwin
+        goarch: s390x
     goos:
       - linux
       - windows
