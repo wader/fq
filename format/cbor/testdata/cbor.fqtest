@@ -3,3 +3,25 @@ $ fq -n '"v2NGdW71Y0FtdCH/" | from_base64 | cbor | torepr'
   "Amt": -2,
   "Fun": true
 }
+# indefinite length string as map key, break marker must be consumed
+$ fq -n '"on9hYWFi/wFhYwI=" | from_base64 | cbor | torepr'
+{
+  "ab": 1,
+  "c": 2
+}
+# indefinite length strings followed by more array elements
+$ fq -n '"g39hYWFi/19BAf8D" | from_base64 | cbor | torepr'
+[
+  "ab",
+  "\u0001",
+  3
+]
+# semantic tags are unwrapped and bignums are converted to numbers
+$ fq -n '"omFhwRpRS2ewYWKCwl9BAUEA/8NA" | from_base64 | cbor | torepr'
+{
+  "a": 1363896240,
+  "b": [
+    256,
+    -1
+  ]
+}
