@@ -16,3 +16,12 @@ $ fq -n '"g39hYWFi/19BAf8D" | from_base64 | cbor | torepr'
   "\u0001",
   3
 ]
+# semantic tags are unwrapped and bignums are converted to numbers
+$ fq -n '"omFhwRpRS2ewYWKCwl9BAUEA/8NA" | from_base64 | cbor | torepr'
+{
+  "a": 1363896240,
+  "b": [
+    256,
+    -1
+  ]
+}

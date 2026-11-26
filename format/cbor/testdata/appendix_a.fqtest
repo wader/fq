@@ -1,35 +1,34 @@
 # appendix_a.json from https://github.com/cbor/test-vectors
-# TODO: "w0kBAAAAAAAAAAA=" "wkkBAAAAAAAAAAA=" semantic bigint
 $ fq -i -d json . appendix_a.json
 json> length
 82
 json> map(select(.decoded) | (.cbor | from_base64 | cbor | torepr) as $a | select( .decoded != $a) | {test: ., actual: $a})
+[]
+json> map(select(.diagnostic and (.hex | test("^[cd]"))) | {diagnostic, actual: (.cbor | from_base64 | cbor | torepr)})
 [
   {
-    "actual": {
-      "major_type": "bytes",
-      "short_count": 9,
-      "value": "\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
-    },
-    "test": {
-      "cbor": "wkkBAAAAAAAAAAA=",
-      "decoded": 18446744073709551616,
-      "hex": "c249010000000000000000",
-      "roundtrip": true
-    }
+    "actual": "2013-03-21T20:04:00Z",
+    "diagnostic": "0(\"2013-03-21T20:04:00Z\")"
   },
   {
-    "actual": {
-      "major_type": "bytes",
-      "short_count": 9,
-      "value": "\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
-    },
-    "test": {
-      "cbor": "w0kBAAAAAAAAAAA=",
-      "decoded": -18446744073709551617,
-      "hex": "c349010000000000000000",
-      "roundtrip": true
-    }
+    "actual": 1363896240,
+    "diagnostic": "1(1363896240)"
+  },
+  {
+    "actual": 1363896240.5,
+    "diagnostic": "1(1363896240.5)"
+  },
+  {
+    "actual": "\u0001\u0002\u0003\u0004",
+    "diagnostic": "23(h'01020304')"
+  },
+  {
+    "actual": "dIETF",
+    "diagnostic": "24(h'6449455446')"
+  },
+  {
+    "actual": "http://www.example.com",
+    "diagnostic": "32(\"http://www.example.com\")"
   }
 ]
 json> .[] | select(.decoded) | .cbor | from_base64 | cbor | dv
