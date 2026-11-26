@@ -13,6 +13,7 @@ import (
 	_ "github.com/wader/fq/format/bencode"
 	_ "github.com/wader/fq/format/bitcoin"
 	_ "github.com/wader/fq/format/bits"
+	_ "github.com/wader/fq/format/bmp"
 	_ "github.com/wader/fq/format/bson"
 	_ "github.com/wader/fq/format/bzip2"
 	_ "github.com/wader/fq/format/caff"
