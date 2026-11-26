@@ -137,6 +137,7 @@ func decodeCBORValue(d *decode.D) any {
 						})
 					}
 				})
+				d.FieldU8("break")
 				d.FieldRootBitBuf("value", bitio.NewBitReader(bb.Bytes(), -1))
 				// nil, nested indefinite bytes is not allowed
 				return nil
@@ -162,6 +163,7 @@ func decodeCBORValue(d *decode.D) any {
 						})
 					}
 				})
+				d.FieldU8("break")
 				d.FieldSynStr("value", sb.String())
 				// nil, nested indefinite string is not allowed
 				return nil
